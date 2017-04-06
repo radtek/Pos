@@ -1,8 +1,9 @@
 #include "ReportUtilities.h"
-#include "ManagerReports.h"
 #include "SecurityReference.h"
 #include "MMMessageBox.h"
 #include "Printout.h"
+#include "StringTools.h"
+#include "Payment.h"
 __fastcall TTransactionCount::TTransactionCount()
 {
 	Count = 0;
@@ -187,8 +188,8 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             {
                 if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT) &&
-                        !(itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails) &&
-                        !(itCurrentPayment->second.Properties & ePayTypeCredit) &&
+                        !(itCurrentPayment->second.GetPaymentAttribute(ePayTypeGetVoucherDetails)) &&
+                        !(itCurrentPayment->second.GetPaymentAttribute(ePayTypeCredit)) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CASH))
                 {
                     groupGrandTotal += itCurrentPayment->second.CashOut;
@@ -402,10 +403,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                // before = Now();    //arun
                 qrXArcPay->Close();
                 GetArcPayForNormalZed(qrXArcPay);
-                /*qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";*/
-                //}
+
                 qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                 qrXArcPay->ExecQuery();
 
@@ -729,16 +727,20 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
 
             // Summarise all points type payments.
             UnicodeString paymentName = "";
-
-            if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypePoints)
+            //qrXArcPay->FieldByName("PROPERTIES")->AsString & ePayTypePoints)
+            if (TStringTools::Instance()->HasAllProperties(qrXArcPay->FieldByName("PROPERTIES")->AsString,"17,"))
             {
                 paymentName = "Points";
             }
-            else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency < 0)
+            //qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit
+            else if (TStringTools::Instance()->HasAllProperties(qrXArcPay->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency < 0)
             {
                 paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString + " Purchased";
             }
-            else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
+            //qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit
+            else if (TStringTools::Instance()->HasAllProperties(qrXArcPay->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
             {
                 paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString + " Redeemed";
             }
@@ -785,11 +787,7 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
             bool IsCashOut = false;
             if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
             {
-                //if(qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency > 0)
-                //{
                    CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
-                //}
-
             }
             else
             {
@@ -802,7 +800,8 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
                  CurrentPayment.TipQty++;
             }
             CurrentPayment.Rounding -= qrXArcPay->FieldByName("ROUNDING")->AsCurrency;
-            CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
+            //CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
+            CurrentPayment.ExtractPaymentAttributes(qrXArcPay->FieldByName("PROPERTIES")->AsString);
 
             PaymentValues[CurrentPayment.Name] = CurrentPayment;
             TransactionInfo->Payments[groupNumber] = PaymentValues;
@@ -880,19 +879,22 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcPoints1, TT
     {
         for (; !qXArcPoints1->Eof; qXArcPoints1->Next())
         {
+
             TSumPayments CurrentPayment;
             int GroupNumber = qXArcPoints1->FieldByName("GROUP_NUMBER")->AsInteger;
             // Summarise all points type payments.
             UnicodeString paymentName = "";
-            if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypePoints)
+            if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"17,"))
             {
                 paymentName = "Points";
             }
-            else if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qXArcPoints1->FieldByName("SUBTOTAL")->AsCurrency < 0)
+            else if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qXArcPoints1->FieldByName("SUBTOTAL")->AsCurrency < 0)
             {
                 paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Purchased";
             }
-            else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
+            else if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
             {
                 paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Redeemed";
             }
@@ -911,7 +913,8 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcPoints1, TT
             CurrentPayment.Points = Points;
 
             CurrentPayment.Rounding -= qXArcPoints1->FieldByName("ROUNDING")->AsCurrency;
-            CurrentPayment.Properties = qXArcPoints1->FieldByName("PROPERTIES")->AsInteger;
+            //CurrentPayment.Properties = qXArcPoints1->FieldByName("PROPERTIES")->AsInteger;
+            CurrentPayment.ExtractPaymentAttributes(qXArcPoints1->FieldByName("PROPERTIES")->AsString);
 
             PaymentValues[CurrentPayment.Name] = CurrentPayment;
             TransactionInfo->Payments[GroupNumber] = PaymentValues;
@@ -957,8 +960,8 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcSurcharge, 
 
             CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
             CurrentPayment.Rounding -= qXArcSurcharge->FieldByName("ROUNDING")->AsCurrency;
-            CurrentPayment.Properties = qXArcSurcharge->FieldByName("PROPERTIES")->AsInteger;
-
+            //CurrentPayment.Properties = qXArcSurcharge->FieldByName("PROPERTIES")->AsInteger;
+            CurrentPayment.ExtractPaymentAttributes(qXArcSurcharge->FieldByName("PROPERTIES")->AsString);
             PaymentValues[CurrentPayment.Name] = CurrentPayment;
             TransactionInfo->Payments[GroupNumber] = PaymentValues;
 
@@ -1444,8 +1447,8 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             {
                 if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT) &&
-                        !(itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails) &&
-                        !(itCurrentPayment->second.Properties & ePayTypeCredit) &&
+                        !(itCurrentPayment->second.GetPaymentAttribute(ePayTypeGetVoucherDetails)) &&
+                        !(itCurrentPayment->second.GetPaymentAttribute(ePayTypeCredit)) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CASH))
                 {
                     groupGrandTotal += itCurrentPayment->second.CashOut;

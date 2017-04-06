@@ -9,7 +9,6 @@
 #include "Comms.h"
 #include "ShowPrintout.h"
 #include "Printout.h"
-#include "Payment.h"
 #include "GlobalSettings.h"
 #include <vector>
 #include <cctype>
@@ -24,7 +23,7 @@ TSumPayments::TSumPayments()
  CashOut = 0;
  Rounding = 0;
  Surcharge = 0;
- Properties = 0;
+ Properties.clear();
  Qty = 0;
  TipAmount = 0;
  TipQty = 0;
@@ -32,9 +31,49 @@ TSumPayments::TSumPayments()
 
 bool TSumPayments::IsLoyaltyVoucher()
 {
-   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" )
+   return (GetPaymentAttribute(ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" ))
           && TGlobalSettings::Instance().LoyaltyMateEnabled;
 }
+
+void TSumPayments::SetPaymentAttribute(ePaymentAttribute attributeIndex)
+{
+  if(!(Properties.find(attributeIndex) != Properties.end()))
+    Properties.insert(attributeIndex);
+}
+
+bool TSumPayments::GetPaymentAttribute(ePaymentAttribute attributeIndex)
+{
+  bool retVal = false;
+  for(std::set<int>::iterator it = Properties.begin() ; it != Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        if(attribute == attributeIndex)
+          return true;
+   }
+  return false;
+}
+
+void TSumPayments::ExtractPaymentAttributes(AnsiString properties)
+{
+  AnsiString searchString = "";
+  const char* line = properties.c_str();
+  for(int i = 0 ; i < line[i] != '\0' ; i++)
+  {
+     if(line[i] == '-')
+     {
+        if(searchString != "")
+        {
+           SetPaymentAttribute(StrToInt(searchString));
+        }
+        searchString = "";
+     }
+     else
+     {
+        searchString += line[i];
+     }
+  }
+}
+
 
 TManagerReports::TManagerReports(TForm * inOwner)
 {
@@ -49,9 +88,7 @@ TManagerReports::~TManagerReports()
 
 typedef std::pair<AnsiString, float> TTableTabSummaryData;
 
-void
-TManagerReports::PrintTableTabSummaryReport(
-  Database::TDBTransaction &tr)
+void TManagerReports::PrintTableTabSummaryReport(Database::TDBTransaction &tr)
 {
 	static const AnsiString generateTableTabSummary(
 		"select "
@@ -104,7 +141,7 @@ TManagerReports::PrintTableTabSummaryReport(
     TPrintFormat *pfmt;
 	std::auto_ptr<TPrintout> pout(new TPrintout);
 	std::auto_ptr<TfrmShowPrintout>(showPrintWnd)(
-	  TfrmShowPrintout::Create<TfrmShowPrintout>(Owner));
+    TfrmShowPrintout::Create<TfrmShowPrintout>(Owner));
 	AnsiString tab_name;
 	float totals[2] = {0.0f, 0.0f};
 	TDateTime base_date_time;

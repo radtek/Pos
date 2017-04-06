@@ -51,10 +51,7 @@ void TMallExportSalesTypeGroupDBDriver::LoadAllSalesTypeGroup(TList* groups)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 };
 //---------------------------------------------------------------------------
@@ -70,10 +67,7 @@ void TMallExportSalesTypeGroupDBDriver::LoadAssignedItemsByGroup(int salestypeGr
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 };
 //---------------------------------------------------------------------------
@@ -101,10 +95,7 @@ bool TMallExportSalesTypeGroupDBDriver::AssignItemsToSalesTypeGroup(int salestyp
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
     return status;
 };
@@ -121,10 +112,6 @@ void TMallExportSalesTypeGroupDBDriver::LoadAssignedSalesTypeGroupByItem(int sal
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
 };
 //---------------------------------------------------------------------------

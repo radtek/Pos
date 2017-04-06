@@ -766,7 +766,8 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
             "Where "
             "ArcBill.Time_Stamp >= :StartTime and "
             "ArcBill.Time_Stamp < :EndTime and "
-         "ArcBillPay.Properties != 131072 and "
+            //"ArcBillPay.Properties != 131072 and "
+            "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
 			"Security.Security_Event = 'Billed By' and "
 			"ArcBillPay.SubTotal <> 0  ";
 
@@ -815,26 +816,27 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 	qrCashupTotal->SQL->Text =
 
         "Select  CASHUP_TOTAL.Pay_Type, "
-                "CASHUP_TOTAL.Group_number,	"
-                "Sum (CASHUP_TOTAL.SubTotal) SubTotal, "
-                "cast((Sum (CASHUP_TOTAL.Trans_Count)  )   as  int) Trans_Count "
-	    "FROM "
-		"(Select "
-			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
-			"ArcBillPay.Group_number,"
-			"Sum (ArcBillPay.SubTotal) SubTotal,"
-            
-         "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
+        "CASHUP_TOTAL.Group_number,	"
+        "Sum (CASHUP_TOTAL.SubTotal) SubTotal, "
+        "cast((Sum (CASHUP_TOTAL.Trans_Count)  )   as  int) Trans_Count "
+        "FROM "
+        "(Select "
+        "UPPER(ArcBillPay.Pay_Type) Pay_Type,"
+        "ArcBillPay.Group_number,"
+        "Sum (ArcBillPay.SubTotal) SubTotal,"
+
+        "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
         "From ArcBill "
-  "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
-  "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-  "WHERE "
-   "ArcBill.Time_Stamp >= :StartTime and "
-   "ArcBill.Time_Stamp < :EndTime and "
-         "ArcBillPay.Properties != 131072 and "
-			"Security.Security_Event = 'Billed By'    and "
-			"ArcBillPay.SubTotal <> 0  ";
+        "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+        "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+        "WHERE "
+        "ArcBill.Time_Stamp >= :StartTime and "
+        "ArcBill.Time_Stamp < :EndTime and "
+        //"ArcBillPay.Properties != 131072 and "
+        "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
+        "Security.Security_Event = 'Billed By'    and "
+        "ArcBillPay.SubTotal <> 0  ";
 	if (Terminals->Count > 0)
 	{
 		qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
@@ -5134,7 +5136,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
     qrInvoice->SQL->Text =
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, DAYARCBILL.TIME_STAMP, DAYARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5151,7 +5155,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -5162,7 +5166,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
 		"Union All "
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+             "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, ARCBILL.TIME_STAMP, ARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5178,7 +5184,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -5215,7 +5221,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
             "contacts.member_number, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED "
         "from ARCBILL "
             "left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
@@ -5231,7 +5237,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -5247,7 +5253,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "dayARCHIVE.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from dayARCBILL "
@@ -5264,7 +5270,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -5279,7 +5285,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "ORDERS.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.NAME, "
+            "(CONTACTS.Name ||'  '|| CONTACTS.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from INVOICES "
@@ -5294,7 +5300,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
@@ -9441,17 +9447,18 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 			"cast(0 as numeric(17, 4))  Total_Points_Redeemed,"
 			"Sum(ArcSurcharge.SubTotal) Total_Points_Loaded "
 		"From "
-			"ArcSurcharge Left Join ArcBill On "
-				"ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
-             "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
-			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
-			"Left Join Security On "
-				"ArcBill.Security_Ref = Security.Security_Ref "
+            "ArcSurcharge Left Join ArcBill On "
+            "ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
+            "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
+            "INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
+            "Left Join Security On "
+            "ArcBill.Security_Ref = Security.Security_Ref "
 		"Where "
 			"ArcBill.Time_Stamp > :StartTime And "
 			"ArcBill.Time_Stamp < :EndTime And "
 			"Security.Security_Event = 'Billed By' And "
-			"ArcSurcharge.Properties = 65536 ";
+			//"ArcSurcharge.Properties = 65536 ";
+            "UPPER(ArcSurcharge.Pay_Type) != 'POINTS' ";
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
 			"ArcBill.Billed_Location,CT.NAME "
@@ -9582,16 +9589,17 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 			"Sum(ArcSurcharge.SubTotal) Total_Points_Loaded "
 		"From "
 			"ArcSurcharge Left Join ArcBill On "
-				"ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
-             "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
+			"ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
+            "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
 			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
 			"Left Join Security On "
-				"ArcBill.Security_Ref = Security.Security_Ref "
+			"ArcBill.Security_Ref = Security.Security_Ref "
 		"Where "
 			"ArcBill.Time_Stamp > :StartTime And "
 			"ArcBill.Time_Stamp < :EndTime And "
 			"Security.Security_Event = 'Billed By' And "
-			"ArcSurcharge.Properties = 65536 ";
+			//"ArcSurcharge.Properties = 65536 ";
+             "UPPER(ArcSurcharge.Pay_Type) != 'POINTS' ";
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
@@ -15091,7 +15099,6 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 			"Security.Terminal_Name,"
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
 			"ArcBillPay.Group_number,"
-		 //	"ArcBillPay.Properties,"
 			"Sum (ArcBillPay.SubTotal) SubTotal,"
           "ARCBILL.BILLED_LOCATION, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
@@ -15104,7 +15111,8 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 		"Where "
 			"ARCBILL.Time_Stamp >= :StartTime and "
 			"ARCBILL.Time_Stamp < :EndTime and "
-         "ArcBillPay.Properties != 131072 and "
+            //"ArcBillPay.Properties != 131072 and "
+            "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
 			"Security.Security_Event = 'Billed By'   and "
 			"ArcBillPay.SubTotal <> 0  ";
 	if (Terminals->Count > 0)
@@ -15123,8 +15131,7 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
 			"UPPER(ArcBillPay.Pay_Type),"
-		 //	"ArcBillPay.Properties, "
-         "ARCBILL.BILLED_LOCATION "
+           "ARCBILL.BILLED_LOCATION "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
 
@@ -15188,7 +15195,8 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 		"Where "
 			"ARCBILL.Time_Stamp >= :StartTime and "
 			"ARCBILL.Time_Stamp < :EndTime and "
-         "ArcBillPay.Properties != 131072 and "
+            //"ArcBillPay.Properties != 131072 and "
+            "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
 			"Security.Security_Event = 'Billed By' and "
 			"ArcBillPay.SubTotal <> 0  ";
 	if (Terminals->Count > 0)
@@ -15563,7 +15571,10 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
        "select  "
 		"UPPER(ARCBILLPAY.PAY_TYPE) PAYMENT_NAME, cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL  "
 		"FROM ARCBILLPAY inner JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY inner join security on security.SECURITY_REF=ARCBILL.SECURITY_REF "
-		"WHERE ArcBillPay.Properties != 131072 and Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime "
+		"WHERE "
+        //"ArcBillPay.Properties != 131072 and "
+        "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
+        "Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime "
 		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) " 
 		"union all "
 		"SELECT  Cast('CASH' as VarChar(50)) PAYMENT_NAME, SUM(a.AMOUNT) SubTotal FROM REFLOAT_SKIM a "
@@ -15617,7 +15628,10 @@ void TdmMMReportData::SetupDSRSum(TDateTime StartTime, TDateTime EndTime)
 	"coalesce((select "
 	"cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL "
 	"FROM ARCBILLPAY inner JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY inner join security on security.SECURITY_REF=ARCBILL.SECURITY_REF "
-	 "WHERE ArcBillPay.Properties != 131072 and Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime),0)as PAIDAMOUNT "
+	 "WHERE "
+     //"ArcBillPay.Properties != 131072 and "
+     "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
+     "Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime),0)as PAIDAMOUNT "
 	"from archive )a "
 	"group by a.categorysum,a.taxessum,a.discountsum,a.surchargesum,a.PAIDAMOUNT  " ;
 

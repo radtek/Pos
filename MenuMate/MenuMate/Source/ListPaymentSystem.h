@@ -75,7 +75,14 @@ class TListPaymentSystem : public TMMPaymentSystem
 	void PaymentLoad(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
 	void PaymentSave(Database::TDBTransaction &DBTransaction,int &PaymentKey,TPayment &Payment);
 	void PaymentDelete(Database::TDBTransaction &DBTransaction,int PaymentKey);
-
+    void GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void SetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void SetPaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute);
+    void DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey);
+    void DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute);
+    void GetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void SetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void DeletePaymentWalletAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey);
     void SaveToFileCSV(TPaymentTransaction &PaymentTransaction);
 	void Initialise(Database::TDBTransaction &DBTransaction);
 	void RemoveTabs(TPaymentTransaction &PaymentTransaction);
@@ -206,6 +213,11 @@ protected:
      void UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction, double amount );
      void CheckSubscription(TPaymentTransaction &PaymentTransaction);
      UnicodeString PrepareLastReceiptDataForPanasonic(TStringList *_receipt);
+     bool ProcessWalletTransaction(TPaymentTransaction &PaymentTransaction);
+     bool ProcessInvoicePayment(TPaymentTransaction &PaymentTransaction);
+     bool ProcessPocketVoucherPayment(TPaymentTransaction &PaymentTransaction);
+     bool ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt);
+     bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
 };
 
 #endif

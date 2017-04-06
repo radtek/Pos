@@ -51,12 +51,12 @@ void TApplyParser::upgrade6_37Tables()
 {
 	update6_37Tables();
 }
-
+//6.38
 void TApplyParser::upgrade6_38Tables()
 {
 	update6_38Tables();
 }
-
+//6.39
 void TApplyParser::upgrade6_39Tables()
 {
 	update6_39Tables();
@@ -976,7 +976,8 @@ void TApplyParser::Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBCo
        executeQuery( "ALTER TABLE SCD_PWD_CUSTOMER_DETAILS ALTER DATA_TYPE TYPE VARCHAR(25) ;", inDBControl);
     }
 }
-//--------------------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.37::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_37Tables()
 {
     CREATEDSR_PIVOT_BY_ITEMProcedure6_37( _dbControl ) ;
@@ -1810,7 +1811,6 @@ void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
         inDBControl);
     }
 }
-
 //------------------------------------------------------------------------------
 void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
 {
@@ -1849,7 +1849,8 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
         transaction.Rollback();
     }
 }
-//--------------------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.38::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_38Tables()
 {
      AlterTable_PaymentTypes(_dbControl);
@@ -1889,10 +1890,16 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
-//--------------------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.39::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_39Tables()
 {
-    CreateGenerators6_39(_dbControl);
+     CreateTable_PaymentAttributes(_dbControl);
+     PopulateTable_PaymentAttributes(_dbControl);
+     Updatetable_PaymentProperties(_dbControl);
+     PopulatePaymentProperties(_dbControl);
+     CreateTable_PaymentWalletAttributes(_dbControl);
+	CreateGenerators6_39(_dbControl);
     CreateTable6_39MallSalesType(_dbControl);
     CreateTable6_39MallSalesTypeItemRelation(_dbControl);
     CreateTable6_39MallSalesBySalesType(_dbControl);
@@ -1900,8 +1907,166 @@ void TApplyParser::update6_39Tables()
     int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 2);
 }
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTable_PaymentAttributes(TDBControl* const inDBControl)
+{
+  if( !tableExists( "PAYMENT_ATTRIBUTES", inDBControl ) )
+    {
+        executeQuery(
+                "CREATE TABLE PAYMENT_ATTRIBUTES "
+                "( "
 
-//-------------------------------------------------------------------------------------------------------------
+                "   PAYMENT_KEY INTEGER, "
+                "   ATTRIBUTE_VALUE INTEGER , "
+                "   foreign key(PAYMENT_KEY) references PAYMENTTYPES(PAYMENT_KEY) ON DELETE cascade"
+                ");",
+            inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateTable_PaymentAttributes(TDBControl* const inDBControl)
+{
+   long PaymentAttributes[33] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x100,0x200,0x400,0x800,0x1000,
+                                 0x2000,0x4000,0x8000,0x10000,0x20000,0x40000,0x80000,0x100000,0x200000,
+                                 0x400000,0x800000,0x1000000,0x2000000,0x4000000,0x8000000,0x10000000,
+                                 0x20000000,0x40000000,0x80000000,0x100000000};
+
+
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *FetchQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *AttributeQuery    = transaction.Query(transaction.AddQuery());
+        FetchQuery->Close();
+        FetchQuery->SQL->Text =    "SELECT a.PAYMENT_KEY, a.PROPERTIES  FROM PAYMENTTYPES a";
+
+        AttributeQuery->SQL->Text =  "INSERT INTO PAYMENT_ATTRIBUTES (PAYMENT_KEY, ATTRIBUTE_VALUE) "
+                                     "VALUES (:PAYMENT_KEY, :ATTRIBUTE_VALUE)";
+        FetchQuery->ExecQuery();
+
+        for (; !FetchQuery->Eof;)
+        {
+            int properties = FetchQuery->FieldByName("PROPERTIES")->AsInteger;
+
+            for(int i = 0 ; i < 33 ; i++)
+            {
+               if(properties & PaymentAttributes[i])
+               {
+                    AttributeQuery->Close();
+                    AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = FetchQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+                    AttributeQuery->ParamByName("ATTRIBUTE_VALUE")->AsInteger = i+1;
+                    AttributeQuery->ExecQuery();
+               }
+            }
+            FetchQuery->Next();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Updatetable_PaymentProperties(TDBControl* const inDBControl)
+{
+   executeQuery("ALTER TABLE ARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE ARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE DAYARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE DAYARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE PAYMENTTYPES ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
+{
+
+
+   long PaymentAttributes[33] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x100,0x200,0x400,0x800,0x1000,
+                                 0x2000,0x4000,0x8000,0x10000,0x20000,0x40000,0x80000,0x100000,0x200000,
+                                 0x400000,0x800000,0x1000000,0x2000000,0x4000000,0x8000000,0x10000000,
+                                 0x20000000,0x40000000,0x80000000,0x100000000};
+
+    AnsiString Tables[5] = {"ARCBILLPAY","DAYARCBILLPAY","ARCSURCHARGE","DAYARCSURCHARGE","PAYMENTTYPES"};
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *FetchQuery  = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery = transaction.Query(transaction.AddQuery());
+        FetchQuery->Close();
+        FetchQuery->SQL->Text =  "select distinct(PROPERTIES) FROM  "
+                                 "(SELECT distinct(a.PROPERTIES) FROM ARCBILLPAY a "
+                                 "union all "
+                                 "SELECT distinct(a.PROPERTIES) FROM DAYARCBILLPAY a "
+                                 "union all "
+                                 "SELECT distinct(a.PROPERTIES) FROM ARCSURCHARGE a "
+                                 "union all "
+                                 "SELECT distinct(a.PROPERTIES) FROM DAYARCSURCHARGE a "
+                                 "union all "
+                                 "SELECT distinct(a.PROPERTIES) FROM PAYMENTTYPES a) ";;
+
+        FetchQuery->ExecQuery();
+
+        for (; !FetchQuery->Eof;)
+        {
+            AnsiString propStrDb = FetchQuery->FieldByName("PROPERTIES")->AsString;
+            Currency propStrCurr = StrToCurr(propStrDb);
+            int properties = (int)propStrCurr;
+            AnsiString propStr = "-";
+            if(properties != 0)
+            {
+               for(int i = 0 ; i < 33 ; i++)
+                {
+                   if(properties & PaymentAttributes[i])
+                   {
+                      propStr = propStr + IntToStr(i+1) + "-";
+                   }
+                }
+            }
+            else
+              propStr = "-0-";
+
+            for(int j = 0 ; j < 5 ; j++)
+            {
+                UpdateQuery->SQL->Text =  "UPDATE " + Tables[j] + " SET PROPERTIES = :NEW_PROPERTIES WHERE PROPERTIES = :OLD_PROPERTIES";
+                UpdateQuery->Close();
+                UpdateQuery->ParamByName("NEW_PROPERTIES")->AsString = propStr;
+                UpdateQuery->ParamByName("OLD_PROPERTIES")->AsString = FetchQuery->FieldByName("PROPERTIES")->AsString;
+                UpdateQuery->ExecQuery();
+            }
+            FetchQuery->Next();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTable_PaymentWalletAttributes(TDBControl* const inDBControl)
+{
+  if( !tableExists( "PAYMENT_WALLET_ATTRIBUTES", inDBControl ) )
+    {
+        executeQuery(
+                "CREATE TABLE PAYMENT_WALLET_ATTRIBUTES "
+                "( "
+
+                "   PAYMENT_KEY INTEGER, "
+                "   WALLET_TYPE INTEGER , "
+                "   MERCHENT_ID VARCHAR(25) , "
+                "   TERMINAL_ID VARCHAR(25) , "
+                "   USER_NAME VARCHAR(25) , "
+                "   WALLET_PASSWORD VARCHAR(50) , "
+                "   SECURITY_TOKEN VARCHAR(50),  "
+                "   foreign key(PAYMENT_KEY) references PAYMENTTYPES(PAYMENT_KEY) ON DELETE cascade"
+                ");",
+            inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
 void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive)
 {
     TDBTransaction transaction( *_dbControl );
@@ -1909,6 +2074,19 @@ void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, U
     try
     {
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         InsertQuery->Close();
         InsertQuery->SQL->Text =
@@ -2051,6 +2229,7 @@ int TApplyParser::GetMallExportSettingsMappingIndex(TDBControl* const inDBContro
 
     return index + 1;
 }
+
 }
 
 

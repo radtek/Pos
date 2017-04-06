@@ -203,11 +203,11 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 			if (SubPayment->GetPay() != 0)
 			{
                 amount = (double)(SubPayment->GetPayTendered() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
-                if(SubPayment->Properties & ePayTypeElectronicTransaction)
+                if(SubPayment->GetPaymentAttribute(ePayTypeElectronicTransaction))
                 {
                      fieldData->TotalChargedSales += amount;
                 }
-                else if ((SubPayment->Properties & ePayTypeGetVoucherDetails) || (SubPayment->Properties & ePayTypeGetVoucherDetails))
+                else if (SubPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
                 {
                     fieldData->TotalGCSales += amount;
                 }

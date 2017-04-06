@@ -54,10 +54,6 @@ void TMMBillCalculatorAdapter::CalculateOrderItemPrices( TItemMinorComplete* inO
 TPriceInfo TMMBillCalculatorAdapter::ConvertItemCompleteToPriceInfo( TItemMinorComplete* inOrderItem  )
 {
 
-    #ifdef _DEBUG
-    //AllocConsole();
-    #endif
-
     TPriceInfo priceInfo;
 
     priceInfo.Value                       = inOrderItem->PriceEach(); // always use the positive prices for billCalculator as it does not support negative calculations
@@ -128,22 +124,6 @@ TPriceInfo TMMBillCalculatorAdapter::ConvertItemCompleteToPriceInfo( TItemMinorC
         priceInfo.CalcDWTOnBasePrice =  priceInfo.PriceTaxExempt|| discountInfo.RecalcPriceWithTaxAfterDiscount;
     }
 
-    #ifdef _DEBUG
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    AnsiString priceInfoString =
-        "Price Info\n"
-        "Value: " + priceInfo.Value + "\n"
-        "TaxInclusive: " + (priceInfo.TaxInclusive ? "True" : "False") + "\n"
-        "TaxExclusiveServiceCharge: " + (priceInfo.TaxExclusiveServiceCharge ? "True" : "False") + "\n"
-        "TaxBeforeDiscount: " + (priceInfo.TaxBeforeDiscount ? "True" : "False") + "\n"
-        "ServiceChargeBeforeDiscount: " + (priceInfo.ServiceChargeBeforeDiscount ? "True" : "False") + "\n"
-        "MultiDiscountType: " + priceInfo.MultiDiscountType + "\n"
-        "MultiTaxType: " + priceInfo.MultiTaxType + "\n"
-        "PriceTaxExempt: " + (priceInfo.PriceTaxExempt ? "True" : "False") + "\n\n";
-    WriteConsole( handle, priceInfoString.c_str(), priceInfoString.Length(), 0, 0 );
-    FreeConsole();
-    #endif
-
     return priceInfo;
 }
 //---------------------------------------------------------------------------
@@ -169,16 +149,6 @@ TTaxInfo TMMBillCalculatorAdapter::ConvertTaxProfileToTaxInfo( TaxProfile* inTax
         default:
             break;
     }
-
-    //*
-    #ifdef _DEBUG
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    AnsiString taxInfoString =
-        "Tax Info\n"
-        "Name: " + taxInfo.Name + "\n"
-        "Percentage: " + CurrToStrF( taxInfo.Percentage, ffCurrency, 2 ) + "\n\n";
-    WriteConsole( handle, taxInfoString.c_str(), taxInfoString.Length(), 0, 0 );
-    #endif //*/
 
     return taxInfo;
 }
@@ -227,19 +197,6 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
             throw Exception("Discount Type Not Implemented in Bill Calculator");
     }
 
-    #ifdef _DEBUG
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    AnsiString discountInfoString =
-        "Discount Info\n"
-        "Name: " + discountInfo.Name + "\n"
-        "Value: " + CurrToStr(discountInfo.Value) + "\n"
-        "Percentage: " + FloatToStr(discountInfo.Percentage) + "\n"
-        "Priority: " + discountInfo.Priority + "\n"
-        "DiscountType: " + discountInfo.DiscountType + "\n"
-        "DiscountWay: " + discountInfo.DiscountWay + "\n\n";
-    WriteConsole( handle, discountInfoString.c_str(), discountInfoString.Length(), 0, 0 );
-    #endif //*/
-
     return discountInfo;
 }
 //---------------------------------------------------------------------------
@@ -257,15 +214,6 @@ TServiceChargeInfo TMMBillCalculatorAdapter::ConvertTaxProfileToServiceChargeInf
     {
         serviceChargeInfo.TaxPercentage = 0;
     }
-
-    #ifdef _DEBUG
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    AnsiString serviceChargeInfoString =
-        "Service Charge Info\n"
-        "Percentage: " + FloatToStr(serviceChargeInfo.Percentage) + "\n"
-        "TaxPercentage: " + FloatToStr(serviceChargeInfo.TaxPercentage) + "\n\n";
-    WriteConsole( handle, serviceChargeInfoString.c_str(), serviceChargeInfoString.Length(), 0, 0 );
-    #endif //*/
 
     return serviceChargeInfo;
 }
