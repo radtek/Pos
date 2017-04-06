@@ -5136,7 +5136,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
     qrInvoice->SQL->Text =
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, DAYARCBILL.TIME_STAMP, DAYARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5153,7 +5155,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -5164,7 +5166,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
 		"Union All "
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+             "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, ARCBILL.TIME_STAMP, ARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5180,7 +5184,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -5217,7 +5221,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
             "contacts.member_number, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED "
         "from ARCBILL "
             "left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
@@ -5233,7 +5237,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -5249,7 +5253,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "dayARCHIVE.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from dayARCBILL "
@@ -5266,7 +5270,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -5281,7 +5285,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "ORDERS.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.NAME, "
+            "(CONTACTS.Name ||'  '|| CONTACTS.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from INVOICES "
@@ -5296,7 +5300,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +

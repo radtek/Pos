@@ -61,7 +61,7 @@ bool TXeroInvoiceBuilder::ChargeToXero( TPaymentTransaction& inPaymentTransactio
 	{
 		FXeroPayment =  inPaymentTransaction.PaymentGet(i);
 
-		if(FXeroPayment->GetPaymentAttribute(ePayTypeChargeToXero)  && FXeroPayment->GetPay() != 0)
+		if((FXeroPayment->Properties & ePayTypeChargeToXero)  && FXeroPayment->GetPay() != 0)
 		{
 			 result = true;
 			 break;
@@ -135,7 +135,7 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice( TPaymentTransaction& inPaymentTrans
     }
     // same Items with similar properties should show in one node of XML
     // with quantity as total
-    MakeVectorForItems(FXeroInvoice,inPaymentTransaction);
+    CompressItemForInvoice(FXeroInvoice,inPaymentTransaction);
 
 	return FXeroInvoice->InvoiceItemCount > 0;
 }
@@ -275,9 +275,9 @@ void TXeroInvoiceBuilder::AddPaymentToXeroInvoice( TXeroInvoice* inXeroInvoice, 
 
 }
 // All items and sides are to be stored in vector
-void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPaymentTransaction& inPaymentTransaction)
+void TXeroInvoiceBuilder::CompressItemForInvoice(TXeroInvoice *FXeroInvoice,TPaymentTransaction& inPaymentTransaction)
 {
-    NodeItems.erase(NodeItems.begin(),NodeItems.end());
+    std::vector<NodeItem> nodeItems;
     for( int i = 0; i < inPaymentTransaction.Orders->Count; i++ )
 	{
            NodeItem xeroNodeItem;
@@ -295,9 +295,12 @@ void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPayment
            xeroNodeItem.UnitAmount = unitAmountStr;
            xeroNodeItem.TaxAmount = taxStr;
            xeroNodeItem.Qty = qtyStr;
-           NodeItems.push_back(xeroNodeItem);
+
+           ///Add Node to vector if not exist there else update quantity and tax
+           AddItemToCollection(xeroNodeItem, nodeItems);
+
            for( int j = 0; j < item->SubOrders->Count; j++ )
-            {
+           {
                 TItemCompleteSub *SubOrderImage = item->SubOrders->SubOrderGet(j);
                 NodeItem xeroSubNodeItem;
 
@@ -313,72 +316,14 @@ void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPayment
                xeroSubNodeItem.UnitAmount = unitAmountStr;
                xeroSubNodeItem.TaxAmount = taxStr;
                xeroSubNodeItem.Qty = qtyStr;
-               NodeItems.push_back(xeroSubNodeItem);
-            }
+
+               ///Add Node to vector if not exist there else update quantity and tax
+               AddItemToCollection(xeroSubNodeItem, nodeItems);
+           }
     }
-   ModifyVector(FXeroInvoice , NodeItems) ;
-}
 
-void TXeroInvoiceBuilder::ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<NodeItem> nodeItems)
-{
-      bool erase = false;
-      //storeIndex = "";
-       double qty;
-       double totalTax;
-       AnsiString storeIndex = "";
-
-      for(int i = 0; i < nodeItems.size()  ; i++)
-      {
-
-        totalTax=0;
-        int j = 0;
-        qty = 0;
-        if(storeIndex.Pos(i) == 0)
-        {
-            for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
-            {
-                if((nodeItems.at(i).ItemCode == it->ItemCode) &&(nodeItems.at(i).ItemName == it->ItemName) &&(nodeItems.at(i).UnitAmount == it->UnitAmount))
-                {
-                    AnsiString tx= it->TaxAmount;
-                    qty +=  StrToFloat(it->Qty.c_str());
-                    nodeItems.at(i).Qty = qty;
-                    try
-                    {
-                        totalTax += StrToFloat(tx.c_str());
-                        nodeItems.at(i).TaxAmount = totalTax;
-                    }
-                    catch(Exception &e)
-                    {
-
-                    }
-
-                    if(i != j)
-                    {
-                        // the indices which should be skipped while creating XML are stored
-                        // because the quantity of first occurrence has been modified
-                        storeIndex += ",";
-                        storeIndex += j ;
-                    }
-                }
-                j++;
-            }
-        }
-      }
-      storeIndex += ",";
-      int index = 0;
-      for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
-      {
-         AnsiString checkIndex = "";
-         checkIndex = ",";
-         checkIndex += index;
-         checkIndex += ",";
-         if(storeIndex.Pos(checkIndex) == 0)
-         {
-            // Items are added to Invoice XML
-            FXeroInvoice->AddItem( it->ItemCode, it->ItemName, it->UnitAmount.ToDouble(), it->TaxAmount.ToDouble(), it->Qty.ToDouble() );
-         }
-         index ++;
-      }
+    //Add Item To XML
+   AddItemToInvoiceXML(FXeroInvoice , nodeItems) ;
 }
 
 void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail)
@@ -446,6 +391,42 @@ bool TXeroInvoiceBuilder::CheckInvoiceTotal(double invoiceTotal)
          }
      }
    return retVal;
+}
+//-------------------------------------------------------------------------------------------------
+void TXeroInvoiceBuilder::AddItemToCollection(NodeItem xeroNodeItem, std::vector<NodeItem> &nodeItems)
+{
+    double qty = 0;
+    double totalTax = 0;
+    bool isFound = false;
+
+    //Iterate vector and compare the received item whether it exist in the vector or not. if exist then update it's quantity and tax
+    //otherwise add it to vector.
+    for(int index = 0; index < nodeItems.size() ; ++index)
+    {
+         if((nodeItems[index].ItemCode == xeroNodeItem.ItemCode) &&(nodeItems[index].ItemName == xeroNodeItem.ItemName) &&
+                        (nodeItems[index].UnitAmount == xeroNodeItem.UnitAmount))
+         {
+            qty =  StrToFloat(nodeItems[index].Qty.c_str()) + StrToFloat(xeroNodeItem.Qty.c_str());
+            totalTax = StrToFloat(nodeItems[index].TaxAmount.c_str()) + StrToFloat(xeroNodeItem.TaxAmount.c_str());
+            nodeItems[index].Qty = qty;
+            nodeItems[index].TaxAmount = totalTax;
+            isFound = true;
+            break;
+         }
+    }
+    if(!isFound)
+    {
+        nodeItems.push_back(xeroNodeItem);
+    }
+}
+//----------------------------------------------------------------------------------------------------------
+void TXeroInvoiceBuilder::AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems)
+{
+    for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
+    {
+        // Items are added to Invoice XML
+        FXeroInvoice->AddItem( it->ItemCode, it->ItemName, it->UnitAmount.ToDouble(), it->TaxAmount.ToDouble(), it->Qty.ToDouble() );
+    }
 }
 
 

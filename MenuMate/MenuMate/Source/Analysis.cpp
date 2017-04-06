@@ -3403,9 +3403,9 @@ void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiStr
          " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
 
          AnsiString nonZeroTaxFilter =
-         " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE <> 0 group by Archive_Key) " ;
+         " and a.ARCHIVE_KEY in (Select Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE <> 0 GROUP BY Archive_Key) " ;
          AnsiString ZeroTaxFilter =
-         " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 group by Archive_Key) " ;
+         " and a.ARCHIVE_KEY in (Select Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 GROUP BY Archive_Key) and a.PRICE <> 0 " ;
          AnsiString groupBy =
          " group by c.GL_CODE ";
 
@@ -3428,7 +3428,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
              " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
              " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
              " where "
-             " b.PAY_TYPE <> 'Credit' "
+             " b.PAY_TYPE <> 'Credit'  and b.SUBTOTAL <> 0 "
              " and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " ;
 
         AnsiString optionalXero = " and b.CHARGED_TO_XERO <> 'T'" ;
@@ -3552,7 +3552,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           for (; !IBInternalQueryTax->Eof; )
           {
               AnsiString categoryName;
-              AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
+              AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;
               ii = CollectCategoryName.find(glCode);
               if(ii != CollectCategoryName.end())
               {
@@ -3564,6 +3564,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               double discount = 0.0;
               price = RoundTo(IBInternalQueryTax->FieldByName("PRICE")->AsFloat, -2);
               discount = RoundTo(IBInternalQueryTax->FieldByName("DISCOUNT")->AsFloat, -2);
+
+              //Check if category name is null then send "sales" in it.
+              if(categoryName == "" || categoryName == NULL)
+              {
+                categoryName = "Sales";
+              }
+
               if(TGlobalSettings::Instance().ReCalculateTaxPostDiscount)
               {
                   AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
@@ -3598,6 +3605,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               {
                  categoryName = ii->second;
               }
+
               AnsiString taxStatus = "ZeroTax";
               double taxRate = 0.0;
               double price = 0.0;
@@ -3605,6 +3613,12 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
               price = RoundTo(IBInternalQueryZeroTax->FieldByName("PRICE")->AsFloat, -2);
               catTotal += price;
+
+              //Check if category name is null then send "sales" in it.
+              if(categoryName == "" || categoryName == NULL)
+              {
+                categoryName = "Sales";
+              }
               AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
               IBInternalQueryZeroTax->Next();
           }

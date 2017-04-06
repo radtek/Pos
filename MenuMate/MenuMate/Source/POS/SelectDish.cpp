@@ -1194,7 +1194,14 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				}
 
 				DBTransaction.StartTransaction();
-				AddItemToSeat(DBTransaction, Item, false, ItemSize,Price);
+                if(Always_Prompt)
+                {
+                    AddItemToSeat(DBTransaction, Item, false, ItemSize, Price);
+                }
+                else
+                {
+				    AddItemToSeat(DBTransaction, Item, false, ItemSize, Price, true);
+                }
 				DBTransaction.Commit();
 
 				AfterItemOrdered.Occured();
@@ -1223,7 +1230,15 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				}
 
 				DBTransaction.StartTransaction();
-				AddItemToSeat(DBTransaction, Item, false, ItemSize);
+                if(Always_Prompt)
+                {
+                    AddItemToSeat(DBTransaction, Item, false, ItemSize);
+                }
+                else
+                {
+				    AddItemToSeat(DBTransaction, Item, false, ItemSize, 0, true);
+                }
+
 				DBTransaction.Commit();
 				AfterItemOrdered.Occured();
 				if (AfterItemOrdered.EventsFailed)
@@ -1251,7 +1266,14 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				else
 				{
 					DBTransaction.StartTransaction();
-					AddItemToSeat(DBTransaction, Item, false, ItemSize);
+                    if(Always_Prompt)
+                    {
+                        AddItemToSeat(DBTransaction, Item, false, ItemSize);
+                    }
+                    else
+                    {
+                        AddItemToSeat(DBTransaction, Item, false, ItemSize, 0, true);
+                    }
 					DBTransaction.Commit();
 				}
 
@@ -1306,6 +1328,7 @@ std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeSt
 		for (int j = 0; j < Menu->Count && !ItemFound; j++)
 		{
 			TListCourse *Course = Menu->CourseGet(j);
+            Always_Prompt = Course->No_Default_Serving_Course;
 
 			for (int i = 0; i < Course->Count && !ItemFound; i++)
 			{
@@ -7412,7 +7435,6 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 			DBTransaction.StartTransaction();
             Item->ItemWeight.SetWeightIn_g(0);
 			AddItemToSeat(DBTransaction, Item, false);
-
 			DBTransaction.Commit();
 		}
   	}
@@ -7990,8 +8012,7 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 	    		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	    		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	    		DBTransaction.StartTransaction();
-	    		ApplyMembership(DBTransaction, TempUserInfo);
-
+	        	ApplyMembership(DBTransaction, TempUserInfo);
 		    	DBTransaction.Commit();
 
 	    	}
@@ -8031,12 +8052,21 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                    TDrinkCommandData::Instance().UpdateTimeStampToNull(cardId)  ;
                    dc_item_show = false;
                 }
-	        	ApplyMembership(DBTransaction, TempUserInfo);
-	              	DBTransaction.Commit();
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                {
+                    GetLoyaltyMember(DBTransaction,TempUserInfo);
+                }
+                else
+                {
+                    ApplyMembership(DBTransaction, TempUserInfo);
+                }
+
+	            DBTransaction.Commit();
                 if (!TGlobalSettings::Instance().EnablePhoneOrders)
-                   {
-                      AutoLogOut();
-                   }
+                {
+                    AutoLogOut();
+                }
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
@@ -12555,10 +12585,12 @@ bool  TfrmSelectDish::ShowTabCreditLimitExceedsMessage(Database::TDBTransaction 
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TItem* inItem,	bool  inSetMenuItem,
-								   TItemSize* inItemSize,Currency  inPrice )
+								   TItemSize* inItemSize,Currency  inPrice , bool IsItemSearchedOrScan)
 {
+
     CheckLastAddedItem(); // check any added item in list;
-	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize );
+
+	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
 
 	if (inPrice != 0)
 	{
@@ -12646,7 +12678,8 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					Database::TDBTransaction& DBTransaction,
 									   TItem* Item,
 										bool  SetMenuItem,
-								   TItemSize* inItemSize )
+								   TItemSize* inItemSize,
+                                   bool IsItemSeaarchedOrScan )
 {
 	TItemComplete *itemComplete = new TItemComplete;
 	TItemSize *itemSize;
@@ -12673,8 +12706,14 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->Note = "";
 	itemComplete->Course = Item->Course;
 	itemComplete->CourseKitchenName = Item->CourseKitchenName;
-	itemComplete->ServingCourse = CurrentServingCourse;
-
+    if(IsItemSeaarchedOrScan)   // get default serving course for scanned and serached items..
+    {
+        itemComplete->ServingCourse =  TDeviceRealTerminal::Instance().Menus->GetServingCourse(GetDefaultServingCourse(itemComplete->ItemKey));
+    }
+    else
+    {
+        itemComplete->ServingCourse = CurrentServingCourse;
+    }
 	itemComplete->ItemAppearanceOrder = Item->ItemAppearanceOrder;
 	itemComplete->FontInfo = Item->FontInfo;
 	itemComplete->Loyalty_Key = SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey;
@@ -14227,7 +14266,7 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
+    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
 
 	if (info.Valid())
      {
@@ -14235,6 +14274,33 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
 		ApplyMembership(DBTransaction, info);
 	}
+
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
+{
+     eMemberSource MemberSource = emsManual;
+     TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Info, MemberSource);
+
+     if (Result == lsAccountBlocked)
+      {
+            MessageBox("Account Blocked " + Info.Name + " " + Info.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
+      }
+	 else if (Result == lsAccepted)
+	  {
+        if(Info.ContactKey != 0)
+        {
+            TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+            bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+
+            if (Info.Valid())
+             {
+                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+                ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
+                ApplyMembership(DBTransaction, Info);
+             }
+         }
+     }
 
 }
 
@@ -14478,6 +14544,7 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
 
     if (ItemFound && Item->Enabled)
     {
+        Always_Prompt = CheckForServingCoursePrompt(Item->ItemKey);
         BeforeItemOrdered.Occured();
         if (BeforeItemOrdered.EventsFailed)
         {
@@ -14487,7 +14554,14 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
         {
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();
-            AddItemToSeat(DBTransaction, Item, false, ItemSize);
+            if(Always_Prompt)
+            {
+                AddItemToSeat(DBTransaction, Item, false, ItemSize);
+            }
+            else
+            {
+                AddItemToSeat(DBTransaction, Item, false, ItemSize, 0, true);
+            }
             DBTransaction.Commit();
         }
 
@@ -14540,9 +14614,67 @@ void TfrmSelectDish::SetPOSBackgroundColor()
     }
 
 }
+//-----------------------------------------------------------------------------------------------------------------------------
 void TfrmSelectDish::UpdateMenuItemsAfterLoginScreen()
 {
     RedrawItems();
     RedrawItemSideCourses();
     RedrawSetMenuItems();
 }
+//-----------------------------------------------------------------------------------------------------------------------------
+int TfrmSelectDish::GetDefaultServingCourse(int item_key)
+{
+    int retVal = 0;
+	try
+	{
+        Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+        transaction.StartTransaction();
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			" Select a.SERVINGCOURSES_KEY FROM COURSE a inner join Item b on b.COURSE_KEY = a.COURSE_KEY where b.ITEM_KEY = :ITEM_KEY " ;
+		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = item_key;
+		IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+             retVal	= IBInternalQuery->FieldByName("SERVINGCOURSES_KEY")->AsInteger;
+        }
+        transaction.Commit();
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+   return retVal;
+}
+//-----------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::CheckForServingCoursePrompt(int item_key)
+{
+    bool retVal = false;
+	try
+	{
+        Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+        transaction.StartTransaction();
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			" SELECT a.NO_DEFAULT_SERVING_COURSE FROM COURSE a INNER JOIN ITEM b on b.COURSE_KEY = a.COURSE_KEY where b.ITEM_KEY = :ITEM_KEY " ;
+		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = item_key;
+		IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+             retVal = (IBInternalQuery->FieldByName("NO_DEFAULT_SERVING_COURSE")->AsString == "T") ? true : false;
+        }
+        transaction.Commit();
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+   return retVal;
+}
+//-----------------------------------------------------------------------------------------------------------------------------

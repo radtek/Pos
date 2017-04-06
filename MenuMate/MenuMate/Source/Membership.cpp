@@ -3032,9 +3032,9 @@ AnsiString TMembership::SendRequestForRefund(TRefundTransaction refundTransactio
 bool TMembership::CallInitMethod()
 {}
 
-bool TMembership::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
+bool TMembership::LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard)
 {
-  return MemberCodeScanned(DBTransaction, UserInfo, memberCardCode);
+  return LoyaltyMemberSelected(DBTransaction, UserInfo, memberCardCode,triggeredByCard);
 }
 
 bool TMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode)
