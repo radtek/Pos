@@ -13,7 +13,7 @@
 TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)
 {
     TRoomRequest roomRequest;
-    roomRequest.TransactionNumber = "PMS " + GetTransNumber();
+    roomRequest.TransactionNumber = GetTransNumber();
     for(std::vector<TSiHotAccounts>::iterator i = siHotAccounts.begin();
           i != siHotAccounts.end() ; ++i)
     {
@@ -28,7 +28,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
 {
     bool AddDiscountPart = false;
     double discountValue = 0.0;
-    _roomCharge.TransactionNumber = "PMS " + GetTransNumber();
+    _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
