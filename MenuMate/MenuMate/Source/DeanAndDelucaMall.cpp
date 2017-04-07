@@ -228,7 +228,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
 
         fieldData->ZKey = 0;
-        fieldData->SalesCount = (fieldData->TotalRefundAmount > 0 ? 0 : 1);
+        fieldData->SalesCount =  1;
 
         if(fieldData->TotalVoidAmount > 0)
         {
