@@ -82,6 +82,7 @@ namespace AccountingIntegration.MYOB
         private void OnError(Uri uri, Exception ex)
         {
             ServiceLogger.Log("Error Occurred" + ex.Message);
+            ServiceLogger.Log("Error Occurred" + ex.StackTrace);
         }
 
         private void LogintoCompanyFile()
