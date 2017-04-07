@@ -3815,7 +3815,7 @@ void TfrmMaintain::EnablePanasonicIntegration()
         SelectionForm1->Items.push_back(Item);
 
         TVerticalSelection Item1;
-        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsRunRateBoardEnabled? "Enabled" : "Disabled"));
+        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled? "Enabled" : "Disabled"));
         Item1.Properties["Action"] = IntToStr(1);
 
         if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
