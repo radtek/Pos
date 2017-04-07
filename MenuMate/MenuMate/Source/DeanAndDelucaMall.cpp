@@ -421,7 +421,7 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
         PrepareDataForDailySalesFile(dbTransaction, keyToCheck, dailySalekeys2, preparedData, 1, zKey);
 
        //indexes for selecting total Net sale, patron count, etc
-        int  hourIndexkeys[3] = {18,20,21};
+        int  hourIndexkeys[2] = {18,20};
         int hourIndexKeys2[3] = {13,20,18};
 
         //Clear the map because same map is used for many time insertion
@@ -429,7 +429,7 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
         keyToCheck2.clear();
 
         //insert these indexes into set.
-        keyToCheck = InsertInToSet(hourIndexkeys, 3);
+        keyToCheck = InsertInToSet(hourIndexkeys, 2);
         keyToCheck2 = InsertInToSet(hourIndexKeys2, 3);
 
         //Prepare Data For Hourly File
@@ -621,7 +621,7 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
                                 "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE, "
                                                         "Extract (Hour From a.DATE_CREATED) Hour_code "
                                  "FROM MALLEXPORT_SALES a "
-                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ")  AND a.MALL_KEY = :MALL_KEY ";
+                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ")  AND a.MALL_KEY = :MALL_KEY AND A.FIELD_VALUE <> 0  ";
         if(zKey)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
@@ -631,7 +631,23 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
         }
 
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+        "UNION ALL "
+                        "SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE, "
+                                                        "Extract (Hour From a.DATE_CREATED) Hour_code "
+                                 "FROM MALLEXPORT_SALES a "
+                                 "WHERE a.FIELD_INDEX = 21 AND a.MALL_KEY = :MALL_KEY  ";
+        if(zKey)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY 1 ASC )HOURLYDATA  "
                             "GROUP BY HOURLYDATA.FIELD_INDEX,HOURLYDATA.FIELD,HOURLYDATA.VALUE_TYPE , "
                                     " HOURLYDATA.Hour_code, HOURLYDATA.FIELD_VALUE "
 
