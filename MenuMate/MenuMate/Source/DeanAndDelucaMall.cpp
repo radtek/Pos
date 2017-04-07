@@ -966,7 +966,7 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
         //Query for fetching setting for files according to file type and index keys.
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, "
-                                                "a.FIELD_VALUE, a.VALUE_TYPE "
+                                                "MAX(a.FIELD_VALUE) FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") "
                                       "AND a.MALL_KEY = :MALL_KEY ";
@@ -979,7 +979,7 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         }
 
-		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
+		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,4 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
