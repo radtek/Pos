@@ -230,7 +230,15 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->ZKey = 0;
         fieldData->SalesCount = (fieldData->TotalRefundAmount > 0 ? 0 : 1);
 
-        fieldData->CustomerCount = GetPatronCount(paymentTransaction);
+        if(fieldData->TotalVoidAmount > 0)
+        {
+            fieldData->CustomerCount = 0;
+            fieldData->SalesCount = 0;
+        }
+        else
+        {
+            fieldData->CustomerCount = GetPatronCount(paymentTransaction);
+        }
 
         //call For inserting into list
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, *fieldData, arcBillKey);
@@ -472,7 +480,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
                 "SELECT DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
-                "CAST (SUM((DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
+                "CAST (SUM((DISCOUNT_BREAKUP.DISCOUNTED_VALUE*-1)) AS NUMERIC(17,2)) DISC_AMOUNT "
                 "FROM "
                     "(SELECT A.ARCBILL_KEY, CASE WHEN AOD.NAME = 'Member Reward' THEN 'LP' "
                                                 "WHEN AOD.NAME = 'Location Reward' THEN 'PC' "
@@ -1164,10 +1172,10 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
         grossAmount = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
 
     salesBySalesType =  (double)(order->PriceEach_BillCalc()*order->GetQty());
-    discounts.scdDiscount = fabs(discounts.scdDiscount);
-    discounts.pwdDiscount = fabs(discounts.pwdDiscount);
+    discounts.scdDiscount = order->GetQty() > 0.00 ? fabs(discounts.scdDiscount) : discounts.scdDiscount*-1;
+    discounts.pwdDiscount = order->GetQty() > 0.00 ? fabs(discounts.pwdDiscount) : discounts.pwdDiscount*-1;
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
-    fieldData.TotalOtherDiscount += fabs(discounts.otherDiscount);
+    fieldData.TotalOtherDiscount += order->GetQty() > 0.00 ? fabs(discounts.otherDiscount) : discounts.otherDiscount*-1;
     fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
     fieldData.TotalServiceCharge += taxes.serviceCharge;
 

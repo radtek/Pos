@@ -28,6 +28,8 @@ __published:	// IDE-managed Components
 private:	// User declarations
     UnicodeString SalesTypeInfoPointers[2];
     void DisplaySalesTypeInfoFromPointers();
+    UnicodeString salesCode;
+    UnicodeString salesTypeName;
 public:		// User declarations
     __fastcall TfrmAddSalesType(TComponent* Owner);
     int SalesTypeId;

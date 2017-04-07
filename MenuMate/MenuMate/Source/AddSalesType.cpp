@@ -22,8 +22,8 @@ void __fastcall TfrmAddSalesType::FormShow(TObject *Sender)
 {
     if(Editing)
     {
-        UnicodeString salesCode = "";
-        UnicodeString salesTypeName = "";
+        salesCode = "";
+        salesTypeName = "";
         TDBSalesTypeAssignment::LoadSelectedSalesType(SalesTypeId, salesCode, salesTypeName);
         SalesTypeInfoPointers[0] = salesTypeName;
         SalesTypeInfoPointers[1] = salesCode;
@@ -41,7 +41,7 @@ void __fastcall TfrmAddSalesType::btnOkMouseClick(TObject *Sender)
         ModalResult = mrOk;
         bool isCodeExist = TDBSalesTypeAssignment::IsSalesTypeCodeExist(SalesTypeInfoPointers[1]);
 
-        if(Editing)
+        if(Editing && (salesCode == SalesTypeInfoPointers[1] || (!isCodeExist && salesCode != SalesTypeInfoPointers[1])))
         {
             TDBSalesTypeAssignment::UpdateSalesType(SalesTypeId, SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
             ModalResult = mrOk;

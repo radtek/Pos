@@ -174,42 +174,45 @@ void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObjec
 {
     if(SelectedSalesType)
     {
-        std::map <int, std::map <int, TItemDetails> >::iterator deletaIt;
-        std::map <int, std::map <int, UnicodeString> >::iterator dbStateIt;
-
-        TDBSalesTypeAssignment::DeleteSalesType(SelectedSalesType);
-        salesTypeList->RowCount = 0;
-        DisplaySalesTypes();
-
-        //find whether select sales type exist in assignedRemovedItemsBySalesType (delta) map.
-        //if exist then erase it because sales type is being deleted.
-        deletaIt = assignedRemovedItemsBySalesType.find(SelectedSalesType);
-        if(deletaIt != assignedRemovedItemsBySalesType.end())
+        if (MessageBox("Are you sure you wish to delete it?", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
         {
-            //read all items from map at selected sales type and remove them from set it means now they can be assigned to others sales type
-            for(std::map <int, TItemDetails>::iterator innerit = deletaIt->second.begin(); innerit != deletaIt->second.end(); ++innerit)
-            {
-                alreadyAssignedItems.erase(innerit->first);
-            }
-            assignedRemovedItemsBySalesType.erase(deletaIt);
-        }
+            std::map <int, std::map <int, TItemDetails> >::iterator deletaIt;
+            std::map <int, std::map <int, UnicodeString> >::iterator dbStateIt;
 
-        //find whether select sales type exist in assignedItemsDBState map.
-        //if exist then erase it because sales type is being deleted.
-        dbStateIt = assignedItemsDBState.find(SelectedSalesType);
+            TDBSalesTypeAssignment::DeleteSalesType(SelectedSalesType);
+            salesTypeList->RowCount = 0;
+            DisplaySalesTypes();
 
-        if(dbStateIt != assignedItemsDBState.end())
-        {
-            //read all items from map at selected sales type and remove them from set it means now they can be assigned to others sales type
-            for(std::map <int, UnicodeString>::iterator innerit = dbStateIt->second.begin(); innerit != dbStateIt->second.end(); ++innerit)
+            //find whether select sales type exist in assignedRemovedItemsBySalesType (delta) map.
+            //if exist then erase it because sales type is being deleted.
+            deletaIt = assignedRemovedItemsBySalesType.find(SelectedSalesType);
+            if(deletaIt != assignedRemovedItemsBySalesType.end())
             {
-                alreadyAssignedItems.erase(innerit->first);
+                //read all items from map at selected sales type and remove them from set it means now they can be assigned to others sales type
+                for(std::map <int, TItemDetails>::iterator innerit = deletaIt->second.begin(); innerit != deletaIt->second.end(); ++innerit)
+                {
+                    alreadyAssignedItems.erase(innerit->first);
+                }
+                assignedRemovedItemsBySalesType.erase(deletaIt);
             }
 
-           assignedItemsDBState.erase(dbStateIt);
+            //find whether select sales type exist in assignedItemsDBState map.
+            //if exist then erase it because sales type is being deleted.
+            dbStateIt = assignedItemsDBState.find(SelectedSalesType);
+
+            if(dbStateIt != assignedItemsDBState.end())
+            {
+                //read all items from map at selected sales type and remove them from set it means now they can be assigned to others sales type
+                for(std::map <int, UnicodeString>::iterator innerit = dbStateIt->second.begin(); innerit != dbStateIt->second.end(); ++innerit)
+                {
+                    alreadyAssignedItems.erase(innerit->first);
+                }
+
+               assignedItemsDBState.erase(dbStateIt);
+            }
+            //Remove from map which has DB state..
+            DisplayAssignedItemBySalesType();
         }
-        //Remove from map which has DB state..
-        DisplayAssignedItemBySalesType();
     }
     else
     {
