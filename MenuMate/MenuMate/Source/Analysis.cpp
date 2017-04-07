@@ -1892,11 +1892,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             {
                 IBMallQuery->Close();
                 IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                         "WHERE A.DEVICE_KEY = :DEVICE_KEY "    ;
+                                         "AND A.DEVICE_KEY = :DEVICE_KEY "    ;
 
                 IBMallSalesTypeQuery->Close();
                 IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                                  "WHERE A.DEVICE_KEY = :DEVICE_KEY "  ;
+                                                  "AND A.DEVICE_KEY = :DEVICE_KEY "  ;
             }
 
          	IBDayArcBill->ExecQuery();
@@ -2994,7 +2994,7 @@ Zed:
 
                 //Method for mall Design According to newly pattern
 
-                if(TGlobalSettings::Instance().mallInfo.MallId)
+                 if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
