@@ -33,7 +33,9 @@ __published:	// IDE-managed Components
    TTouchBtn *TouchBtn1;
    TTouchBtn *btnOk;
    TTouchBtn *tbTipAccount;
-    TTouchBtn *tbExpensesAccount;
+   TTouchBtn *tbExpensesAccount;
+   TTouchBtn *tbServiceCharge;
+   TTouchBtn *tbLoyaltyPurchase;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -49,6 +51,10 @@ __published:	// IDE-managed Components
    void __fastcall TouchBtn1MouseClick(TObject *Sender);
     void __fastcall tbTipAccountClick(TObject *Sender);
     void __fastcall tbExpensesAccountClick(TObject *Sender);
+    void __fastcall tbServiceChargeAutoRepeat(TObject *Sender);
+    void __fastcall tbLoyaltyPurchaseAutoRepeat(TObject *Sender);
+    void __fastcall tbLoyaltyPurchaseMouseClick(TObject *Sender);
+    void __fastcall tbServiceChargeMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
