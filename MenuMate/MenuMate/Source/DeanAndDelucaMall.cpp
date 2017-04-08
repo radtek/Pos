@@ -472,7 +472,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
                 "SELECT DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
-                "CAST (SUM(ABS(DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
+                "CAST (SUM((DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
                 "FROM "
                     "(SELECT A.ARCBILL_KEY, CASE WHEN AOD.NAME = 'Member Reward' THEN 'LP' "
                                                 "WHEN AOD.NAME = 'Location Reward' THEN 'PC' "
