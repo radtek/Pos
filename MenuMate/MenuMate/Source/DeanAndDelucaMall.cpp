@@ -595,13 +595,13 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
         prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
          //insert indexes into array for fetching tenant code, date , terminal number
-        int hourIndexKeys[3] = {1, 2, 3};
+        int hourIndexKeys[2] = {1, 2};
 
         //clear the map
         keysToSelect.clear();
 
         //Store keys into set
-        keysToSelect = InsertInToSet(hourIndexKeys, 3);
+        keysToSelect = InsertInToSet(hourIndexKeys, 2);
 
         ///Load MallSetting For writing into file
         LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index, zKey);
@@ -784,13 +784,13 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
          //insert indexes into array for fetching tenant code, date , terminal number
-        int dailyIndexKeys[3] = {1, 2, 3};
+        int dailyIndexKeys[2] = {1, 2};
 
         //clear the map
         keysToSelect.clear();
 
         //Store keys into set
-        keysToSelect = InsertInToSet(dailyIndexKeys, 3);
+        keysToSelect = InsertInToSet(dailyIndexKeys, 2);
 
         ///Load MallSetting For writing into file
         LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index, zKey);
@@ -1003,6 +1003,23 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         }
 
+		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,4 "
+
+        "UNION ALL "
+        "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, "
+                                                "MIN(a.FIELD_VALUE) FIELD_VALUE, a.VALUE_TYPE "
+                                      "FROM MALLEXPORT_SALES a "
+                                      "WHERE a.FIELD_INDEX = 3 "
+                                      "AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+
 		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,4 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
@@ -1051,7 +1068,7 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
 
         //Query for fetching file name.
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, MAX(a.DATE_CREATED)   "
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, MIN(a.DATE_CREATED)   "
                                     "FROM MALLEXPORT_SALES a "
                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey)
