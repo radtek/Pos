@@ -872,7 +872,8 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                      "FROM MALLEXPORT_SALES a  "
                                      "WHERE a.FIELD_INDEX  = 5 "
                                      "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
-                                                "(SELECT MAX(ARCBILL_KEY)FROM MALLEXPORT_SALES A WHERE a.Z_KEY = :MAX_ZKEY2 ) "
+                                                "(SELECT ARCBILL_KEY FROM MALLEXPORT_SALES a WHERE a.MALLEXPORT_SALE_KEY = "
+                                                        " (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  WHERE a.Z_KEY = :MAX_ZKEY2 ) ) "
                                       "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                                                     "GROUP BY 1,2,4";
