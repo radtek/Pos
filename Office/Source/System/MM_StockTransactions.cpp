@@ -543,7 +543,7 @@ void TStockTransaction::fSetStockParams(int StockKey, AnsiString Location, TTran
 	sqlAdjustStock->ExecQuery();
 }
 
-void TStockTransaction::fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost,double onhand)
+void TStockTransaction::fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost,double onhand, double inwardsQty)
 {
       sqlAdjustStock->Close();
       sqlAdjustStock->SQL->Text =
@@ -554,7 +554,8 @@ void TStockTransaction::fUpdateStockParams(int StockKey, AnsiString Location, TT
       sqlAdjustStock->SQL->Text = sqlAdjustStock->SQL->Text +
               "Average_Cost = :Average_Cost, "
               "Latest_Cost = :Latest_Cost, "
-              "On_Hand           = :On_Hand "
+              "On_Hand           = :On_Hand, "
+              "INWARDS  = INWARDS + :inwardsQty "
           "Where "
               "Stock_Key = :Stock_Key And "
               "Location = :Location";
@@ -564,6 +565,7 @@ void TStockTransaction::fUpdateStockParams(int StockKey, AnsiString Location, TT
       sqlAdjustStock->ParamByName("Average_Cost")->AsDouble	= AverageCost;
       sqlAdjustStock->ParamByName("Latest_Cost")->AsDouble	= LatestCost;
       sqlAdjustStock->ParamByName("On_Hand")->AsDouble	= onhand;
+      sqlAdjustStock->ParamByName("inwardsQty")->AsDouble = inwardsQty;
       sqlAdjustStock->ExecQuery();
 }
 
@@ -804,7 +806,7 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 
                     }
 
-                fUpdateStockParams(InvoiceItemInfo->Stock_Key, TransactionInfo.Location, BatchInfo.BatchType, NewAverage, NewLatestCost, NewOnHand);
+                fUpdateStockParams(InvoiceItemInfo->Stock_Key, TransactionInfo.Location, BatchInfo.BatchType, NewAverage, NewLatestCost, NewOnHand, TransactionInfo.Qty);
 
 				// Update the latest cost of the item supplied by the supplier if details are the same.
 				// Don't change the latest cost if it's $0.00 (i.e. freebie)
@@ -2204,7 +2206,7 @@ void TManufactureStock::UpdateStock(AnsiString temp[], double Qty, double Cost)
 
     TransactionInfo.Unit_Cost = Cost;
     TransactionInfo.Qty = Qty;
-    TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * Qty;
+    TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * abs(Qty);
     TransactionInfo.Total_GST = 0;
     TransactionInfo.Note = temp[3];
     fAddBatchTransaction(TransactionInfo);

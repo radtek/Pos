@@ -223,7 +223,7 @@ protected:
 	void				fSetStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType,
 									Currency AverageCost, Currency LatestCost,
 									double Qty);
-    void fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost, double onhand);
+    void fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost, double onhand, double inwardsQty);
 
 	bool				fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails);
 	void				fReadStockDetails(TStockLocationDetails& StockLocationDetails);
