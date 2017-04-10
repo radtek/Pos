@@ -145,10 +145,14 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
+        tbRoundingAccount->Enabled = false;
 
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
+    tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+    tbRoundingAccount->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
+    tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
 }
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
@@ -298,10 +302,7 @@ void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount = frmTouchKeyboard->KeyboardText;
-            //if(PMSType == SiHot)
-    		  //	tbDefTransAccount->Caption = "Default Service Charge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-            //else
-            tbDefTransAccount->Caption = "Default Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultAccount,TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount);
@@ -434,7 +435,6 @@ void __fastcall TfrmPHSConfiguration::tbTipAccountClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 {
     if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
@@ -460,11 +460,10 @@ void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 		}
 	}
 }
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmPHSConfiguration::tbServiceChargeAutoRepeat(TObject *Sender)
+//----------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbRoundingAccountClick(TObject *Sender)
 {
-    /*if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
 	{
 		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
 	}
@@ -474,59 +473,44 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeAutoRepeat(TObject *Sender)
 		frmTouchKeyboard->MaxLength = 255;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
-		frmTouchKeyboard->Caption = "Enter the Expenses Account";
+		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
+		frmTouchKeyboard->Caption = "Enter the Default Transaction Account";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
-			TDeviceRealTerminal::Instance().BasePMS->TipAccount = frmTouchKeyboard->KeyboardText;
-			tbRoundingCategory->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSExpensesAccount,TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount);
+			TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot = frmTouchKeyboard->KeyboardText;
+			tbRoundingAccount->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSRoundingAccountSiHot,TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot);
             DBTransaction1.Commit();
 		}
-	}*/
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmPHSConfiguration::tbLoyaltyPurchaseAutoRepeat(TObject *Sender)
-
-{
-     /* if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
-	{
-		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
 	}
-	else
-	{
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
-		frmTouchKeyboard->Caption = "Enter the Expenses Account";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->TipAccount = frmTouchKeyboard->KeyboardText;
-			tbRoundingCategory->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSExpensesAccount,TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount);
-            DBTransaction1.Commit();
-		}
-	} */
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TfrmPHSConfiguration::tbLoyaltyPurchaseMouseClick(TObject *Sender)
-
-{
-     // todo
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 {
-   // todo
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+		frmTouchKeyboard->MaxLength = 255;
+		frmTouchKeyboard->AllowCarriageReturn = false;
+		frmTouchKeyboard->StartWithShiftDown = false;
+		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+		frmTouchKeyboard->Caption = "Enter the Service Charge Account";
+		if (frmTouchKeyboard->ShowModal() == mrOk)
+		{
+			TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount = frmTouchKeyboard->KeyboardText;
+			tbServiceCharge->Caption = "Service Charge Account\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSServiceChargeAccount,TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount);
+            DBTransaction1.Commit();
+		}
+	}
 }
 //---------------------------------------------------------------------------
 

@@ -48,13 +48,20 @@ namespace SiHotIntegration.Utility
                         }
                         roomDetails.GuestDetailsList.Add(guestDetails);
                     }
-                    if (roomDetails.GuestDetailsList.Count > 0)
-                    {
-                        roomDetails.IsSuccessful = true;
-                        roomDetails.ResponseMessage = "Successful";
-                    }
-                    return roomDetails;
                 }
+                if (roomDetails.GuestDetailsList.Count > 0)
+                {
+                    roomDetails.IsSuccessful = true;
+                    roomDetails.ResponseMessage = "Successful";
+                }
+                else 
+                {
+                    roomDetails.IsSuccessful = false;
+                    string message = "";
+                    message = response.Replace(fieldSeparator,"");
+                    roomDetails.ResponseMessage = message.Replace(groupSeparator, "");
+                }
+                return roomDetails;
                 
             }
             catch (Exception ex)

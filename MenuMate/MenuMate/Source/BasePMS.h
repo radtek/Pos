@@ -30,6 +30,10 @@ class TBasePMS
         AnsiString DefaultSurchargeAccount;
         AnsiString TipAccount;
         AnsiString ExpensesAccount;
+        AnsiString ServiceChargeAccount;
+        AnsiString RoundingAccountSiHot;
+        AnsiString DefaultAccountNumber;
+        AnsiString RoundingAccountNumber;
 
 
         std::set<AnsiString> CodesTestedOk;

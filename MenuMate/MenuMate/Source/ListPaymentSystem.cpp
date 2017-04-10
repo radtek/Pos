@@ -3046,7 +3046,10 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	{
 		if (PaymentTransaction.Phoenix.AccountNumber != 0 &&PaymentTransaction.Phoenix.AccountNumber != "")
 		{
-			LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.AccountNumber);
+            if(TGlobalSettings::Instance().PMSType != SiHot)
+			    LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.AccountNumber);
+            else
+                LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.RoomNumber);
 			LastReceipt->ExtraInfo->Add("Guest " + PaymentTransaction.Phoenix.AccountName);
 			LastReceipt->ExtraInfo->Add("PMS Reference : " + PaymentTransaction.Phoenix.ReferenceNumber);
 		}

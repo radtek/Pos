@@ -3206,6 +3206,22 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"The Category Menu Items will add against in the PMS system/r"
 		"Default is 32",
 		vmg3rdPartyInterface, "32");
+		SetVarStr(DBTransaction,vmPMSServiceChargeAccount, "PMS Default Service Charge Account",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is 32",
+		vmg3rdPartyInterface, "32");
+		SetVarStr(DBTransaction,vmPMSRoundingAccountSiHot, "PMS Default Rounding Account SiHot",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is ",
+		vmg3rdPartyInterface, "");
+		SetVarStr(DBTransaction,vmSiHotRounding, "PMS Default Rounding Account SiHot",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is ",
+		vmg3rdPartyInterface, "");
+		SetVarStr(DBTransaction,vmSiHotDefaultTransaction, "PMS Default Rounding Account SiHot",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is ",
+		vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

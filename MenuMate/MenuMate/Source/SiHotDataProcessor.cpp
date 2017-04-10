@@ -24,12 +24,14 @@ TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> 
     return roomRequest;
 }
 //----------------------------------------------------------------------------
-void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTransaction, TRoomCharge &_roomCharge)
+void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTransaction, TRoomCharge &_roomCharge)
 {
     bool AddDiscountPart = false;
     double discountValue = 0.0;
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
+    if(_roomCharge.AccountNumber == "")
+        _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
     // Iterate pyamentTransaction orders loop and identify the same III party codes
@@ -75,10 +77,10 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
     }
 
     // Add Rounding as service to SiHot
-    if(RoundTo((double)(_paymentTransaction.Money.PaymentRounding),-2) != 0.00)
-    {
-        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
-    }
+//    if(RoundTo((double)(_paymentTransaction.Money.PaymentRounding),-2) != 0.00)
+//    {
+//        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
+//    }
 
     // Adding payment types
     AddPaymentMethods(_roomCharge, billNo, _paymentTransaction);
@@ -174,7 +176,7 @@ void TSiHotDataProcessor::AddExpensesToSiHotService(TPayment* payment, TRoomChar
     _roomCharge.SiHotServices.push_back(siHotService);
 }
 //----------------------------------------------------------------------------
-void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,TRoomCharge &_roomCharge, TPaymentTransaction _paymentTransaction
+void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,TRoomCharge &_roomCharge, TPaymentTransaction &_paymentTransaction
                                                    ,UnicodeString _billNo)
 {
     TSiHotService siHotService;
@@ -379,16 +381,16 @@ void TSiHotDataProcessor::PrepareRoomStatus(std::vector<TSiHotAccounts> &siHotAc
     }
 }
 //----------------------------------------------------------------------------
-void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction)
+void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     TSiHotService siHotService;
-    siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     siHotService.SuperCategory_Desc = "Service Charge";
-    siHotService.MiddleCategory = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    siHotService.MiddleCategory = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     siHotService.MiddleCategory_Desc = "Service Charge";
-    siHotService.ArticleCategory = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    siHotService.ArticleCategory = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     siHotService.ArticleCategory_Desc = "Service Charge";
-    siHotService.ArticleNo = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    siHotService.ArticleNo = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     siHotService.ArticleNo_Desc = "Service Charge";
     siHotService.PricePerUnit = fabs((double)(_paymentTransaction.Money.ServiceCharge+_paymentTransaction.Money.ServiceChargeTax));
     siHotService.Amount = _paymentTransaction.Money.ServiceCharge < 0 ? "-1" : "1";
@@ -404,7 +406,7 @@ void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, Un
     _roomCharge.SiHotServices.push_back(siHotService);
 }
 //----------------------------------------------------------------------------
-void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction)
+void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     TSiHotService siHotService;
     siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -426,7 +428,7 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
     _roomCharge.SiHotServices.push_back(siHotService);
 }
 //----------------------------------------------------------------------------
-void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction)
+void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     double surcharge = 0.0;
     int indexcash = 0;
@@ -512,5 +514,71 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     {
         AddSurchargeAndTip(_roomCharge,surcharge,billNo,tip);
     }
+}
+//----------------------------------------------------------------------------
+bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort)
+{
+    bool retValue = false;
+    std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
+    TRoomRequest roomRequest;
+    roomRequest.IPAddress = tcpIPAddress;
+    roomRequest.PortNumber = atoi(tcpPort.c_str());
+    roomRequest.TransactionNumber = GetTransNumber();
+    roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    TRoomResponse roomresponse;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest) ;
+    if(roomresponse.GuestsInformation.size() != 0)
+    {
+        if(roomresponse.GuestsInformation[0].AccountNumber != "")
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            try
+            {
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransaction,roomresponse.GuestsInformation[0].AccountNumber);
+                DBTransaction.Commit();
+                return true;
+            }
+            catch(Exception &ex)
+            {
+                TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+                DBTransaction.Rollback();
+            }
+        }
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------
+bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiString tcpPort)
+{
+    bool retValue = false;
+    std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
+    TRoomRequest roomRequest;
+    roomRequest.IPAddress = tcpIPAddress;
+    roomRequest.PortNumber = atoi(tcpPort.c_str());
+    roomRequest.TransactionNumber = GetTransNumber();
+    roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
+    TRoomResponse roomresponse;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest);
+    if(roomresponse.GuestsInformation.size() != 0)
+    {
+        if(roomresponse.GuestsInformation[0].AccountNumber != "")
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            try
+            {
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotRounding,roomresponse.GuestsInformation[0].AccountNumber);
+                DBTransaction.Commit();
+                return true;
+            }
+            catch(Exception &ex)
+            {
+                TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+                DBTransaction.Rollback();
+            }
+        }
+    }
+    return retValue;
 }
 //----------------------------------------------------------------------------

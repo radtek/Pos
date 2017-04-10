@@ -142,7 +142,7 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
-        if(TGlobalSettings::Instance().PMSType == 2)
+        if(TGlobalSettings::Instance().PMSType == SiHot)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
         else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";

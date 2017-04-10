@@ -14,12 +14,13 @@ class TManagerSiHot : public TBasePMS
        TManagerSiHot();
        ~TManagerSiHot();
        void GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString PMSIPAddress,int PMSPort);
-       bool RoomChargePost(TPaymentTransaction _paymentTransaction);
        void Initialise();
        bool ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
     private :
+       bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);
        bool SendRoomChargePost(TPaymentTransaction &PaymentTransaction);
        bool CheckIPAddressPort(AnsiString tcpIPAddress,int tcpPort);
+       bool GetRoundingandDefaultAccount();
 };
 #endif

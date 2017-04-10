@@ -680,7 +680,14 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
 	{
 		if (CurrentTransaction.Phoenix.AccountNumber != "" && CurrentTransaction.Phoenix.AccountNumber != 0)
 		{
-    		Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
+            if(TGlobalSettings::Instance().PMSType != SiHot)
+            {
+        		Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
+            }
+            else
+            {
+                Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.RoomNumber);
+            }
 			Receipt->ExtraInfo->Add("Guest " + CurrentTransaction.Phoenix.AccountName);
 		}
 		else
@@ -1383,6 +1390,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         CurrentTransaction.SalesType = eRoomSale;
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                     }
                     else
                     {
@@ -1723,11 +1731,6 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 }
                 else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
-                    if(TGlobalSettings::Instance().PMSType == 2 && CurrentTransaction.Membership.Member.Points.getCurrentPointsPurchased() > 0)
-                    {
-                        MessageBox("Points can not be purchased with Room Charge","Info",MB_OK);
-                        return;
-                    }
                     // Override the ipaddress and port.
                     AnsiString PMSIPAddress;
                     int PMSPort;
@@ -1745,17 +1748,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
                     if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
                     {
-//                        MessageBox("Got OK","",MB_OK);
                         CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-//                        MessageBox(CurrentTransaction.Phoenix.AccountNumber,"account Number",MB_OK);
                         CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
                         [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-//                        MessageBox(CurrentTransaction.Phoenix.AccountName,"account Name",MB_OK);
                         CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-//                        MessageBox(CurrentTransaction.Phoenix.FolderNumber,"Folder Number",MB_OK);
                         CurrentTransaction.SalesType = eRoomSale;
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                     }
                     else
                     {
