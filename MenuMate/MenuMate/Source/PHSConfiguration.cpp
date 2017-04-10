@@ -45,7 +45,7 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIPAddressClick(TObject *Sender)
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress);
             DBTransaction1.Commit();
-            if(PMSType == 2)
+            if(PMSType == 2 && TDeviceRealTerminal::Instance().BasePMS->POSID == 0)
                 MessageBox("Please ensure POS ID should be other than 0 for SiHot .", "Info", MB_OK);
 		}
 	}
