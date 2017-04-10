@@ -3,9 +3,8 @@
 
 #pragma hdrstop
 
-#include "SiHotDataObjects.h"
+#include "SalesTypeItemDetails.h"
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
-

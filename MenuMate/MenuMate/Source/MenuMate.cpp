@@ -140,6 +140,8 @@ USEFORM("Maintenance\NewUser.cpp", frmNewUser);
 USEFORM("Maintenance\TaxMaintenance.cpp", frmTaxMaintenance);
 USEFORM("MallExportResendReport.cpp", frmMallExportResendReport);
 USEFORM("SelectSizesAsList.cpp", frmSelectSizes);
+USEFORM("AddSalesType.cpp", frmAddSalesType);
+USEFORM("MallSalesTypeAssignment.cpp", frmMallSalesTypeAssignment);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 

@@ -30,6 +30,7 @@ TDeviceRealTerminal::TDeviceRealTerminal()
 	 ManagerGeneralLedger(new TManagerGeneralLedger)
 {
    PaymentSystem = new TListPaymentSystem;
+
    /* OSVERSIONINFO osvi;
    char szVersion [80];
    memset(&osvi, 0, sizeof(OSVERSIONINFO));
@@ -57,7 +58,6 @@ __fastcall TDeviceRealTerminal::~TDeviceRealTerminal()
    delete ProxReader;
    delete BarcodeReader;
    delete Menus;
-//   delete BasePMS;
 }
 
 void TDeviceRealTerminal::LoadPrinterGraphic()

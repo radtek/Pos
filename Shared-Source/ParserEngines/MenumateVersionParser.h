@@ -823,7 +823,14 @@ namespace MenumateVersionParser
         void Updatetable_PaymentProperties(TDBControl* const inDBControl);
         void PopulatePaymentProperties(TDBControl* const inDBControl);
         void CreateTable_PaymentWalletAttributes(TDBControl* const inDBControl);
-        void Create6_39SiHotTransNumberGenerator(TDBControl* const inDBControl);
+		void CreateGenerators6_39(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesType(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesTypeItemRelation(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesBySalesType(TDBControl* const inDBControl);
+        void Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive);
+        void InsertInTo_MallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex);
+        int GetMallExportSettingsMappingIndex(TDBControl* const inDBControl);
+		void Create6_39SiHotTransNumberGenerator(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

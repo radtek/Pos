@@ -64,7 +64,7 @@
 #include "ReceiptUtility.h"
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
-#include "EstanciaMall.h"
+#include "MallFactory.h"
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 
@@ -1518,11 +1518,13 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
-    if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+
+    if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        //TODO: Instantiation will happen in a factory based on the active mall in database
-        TMallExport* estanciaMall = new TEstanciaMall();
-        estanciaMall->PushToDatabase(PaymentTransaction, ArcBillKey);
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey);
+        delete mall;
     }
 }
 

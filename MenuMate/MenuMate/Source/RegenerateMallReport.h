@@ -13,7 +13,7 @@
 #include <ExtCtrls.hpp>
 #include "ZForm.h"
 #include <ComCtrls.hpp>
-#include "EstanciaMall.h"
+#include "MallFactory.h"
 #include <IBQuery.hpp>
 #include "MM_DBCore.h"
 //---------------------------------------------------------------------------

@@ -81,9 +81,13 @@ void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
 {
     if(EDate >= SDate)
     {
-        //instantiation will happen in a factory base pattern
-        TMallExport* estanciaMall = new TEstanciaMall();
-        estanciaMall->RegenerateMallReport(SDate, EDate);
+        if(TGlobalSettings::Instance().mallInfo.MallId)
+        {
+            //Instantiation is happenning in a factory based on the active mall in database
+            TMallExport* mall = TMallFactory::GetMallType();
+            mall->RegenerateMallReport(SDate, EDate);
+            delete mall;
+        }
     }
     else
     {
@@ -92,7 +96,6 @@ void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmRegenerateMallReport::cbStartHourChange(TObject *Sender)
-
 {
     StartHour = cbStartHour->ItemIndex;
     StartHour = FixTime(StartHour);

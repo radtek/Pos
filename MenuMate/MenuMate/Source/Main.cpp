@@ -184,8 +184,6 @@ __fastcall TfrmMain::~TfrmMain()
 	ManagerReceipt = NULL;
 	delete ManagerDockets;
 	ManagerDockets = NULL;
-//	delete PhoenixHM;
-//	PhoenixHM = NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormDestroy(TObject *Sender)

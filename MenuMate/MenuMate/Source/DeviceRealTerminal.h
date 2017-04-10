@@ -104,7 +104,6 @@ public:
     // by looking at the count we can determine whether a message box is already on screen if so do not display again
     std::map<TerminalGlobalMessageTypes,int> AppGlobalMessagesMap;
     std::auto_ptr<TBasePMS> BasePMS;
-//    TBasePMS* BasePMS;
 
 private:
 //	void CreateDevice(Database::TDBTransaction &DBTransaction);

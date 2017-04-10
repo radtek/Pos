@@ -17,7 +17,7 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
     try
     {
         // Create TMallExportPrepareData object to store Preapared Data
-        std::list<TMallExportSalesData> salesData;
+        TMallExportSalesWrapper salesData;
 
         ///Prepare Data For Inserting Data Into DataBase
         salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
@@ -58,7 +58,7 @@ bool TMallExport::Export()
     return true;
 }
 //----------------------------------------------------------
-bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData)
+bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportSalesWrapper mallExportSalesData)
 {
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
@@ -66,8 +66,9 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
     try
     {
         std::list<TMallExportSalesData>::iterator it;
+        int arcBillKey;
         //Iterate mallExport Sales data for inserting into DB
-        for(it = mallExportSalesData.begin(); it != mallExportSalesData.end(); it++)
+        for(it = mallExportSalesData.SalesData.begin(); it != mallExportSalesData.SalesData.end(); it++)
         {
             // Inserting Each field of nall into Table
             IBInternalQuery->Close();
@@ -110,8 +111,16 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = it->ZKey;
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
+            arcBillKey = it->ArcBillKey;
             IBInternalQuery->ExecQuery();
         }
+
+        //Insert sales total amount according to sales type.
+        if(mallExportSalesData.SaleBySalsType.size())
+        {
+            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey);
+        }
+
         isInserted = true;
     }
     catch(Exception &E)
@@ -181,7 +190,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
                                         "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME ";
 
-        if(!isMasterTerminal)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId !=2)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.DEVICE_KEY = :DEVICE_KEY ";
         }
@@ -192,7 +201,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
         IBInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
         IBInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
-        if(!isMasterTerminal)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId != 2)
         {
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
         }
@@ -229,3 +238,50 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 		throw;
 	}
 }
+//---------------------------------------------------------------------------------------------------------------------
+void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey)
+{
+    TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+    try
+    {
+        std::map<int, double>::iterator itSalesBySalesTypes;
+        for (itSalesBySalesTypes = salesBySalesType.begin(); itSalesBySalesTypes != salesBySalesType.end(); ++itSalesBySalesTypes)
+        {
+            incrementGenerator->Close();
+            incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SALES_BY_TYPE, 1) FROM RDB$DATABASE";
+            incrementGenerator->ExecQuery();
+
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text =
+            "INSERT INTO MALL_SALES_BY_SALES_TYPE ( "
+                    "SALES_ID, "
+                    "ARCBILL_KEY, "
+                    "SALES_TYPE_ID, "
+                    "SUBTOTAL, "
+                    "DEVICE_KEY "
+                     ") "
+            "VALUES ( "
+                    ":SALES_ID, "
+                    ":ARCBILL_KEY, "
+                    ":SALES_TYPE_ID, "
+                    ":SUBTOTAL, "
+                    ":DEVICE_KEY "
+                     ") ";
+
+            ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+            ibInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
+            ibInternalQuery->ParamByName("SALES_TYPE_ID")->AsInteger = itSalesBySalesTypes->first;
+            ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
+            ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            ibInternalQuery->ExecQuery();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
