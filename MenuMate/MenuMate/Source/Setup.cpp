@@ -2216,7 +2216,10 @@ void __fastcall TfrmSetup::edNewMallPathMouseUp(TObject *Sender, TMouseButton Bu
 	frmTouchKeyboard->Caption = "Enter File Location";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+        if((frmTouchKeyboard->KeyboardText).Trim() != "")
+            edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+        else
+           edNewMallPath->Text = "";
 
     }
 }
