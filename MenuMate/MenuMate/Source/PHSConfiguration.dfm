@@ -285,25 +285,6 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbServiceChargeMouseClick
     end
-    object tbRoundingAccount: TTouchBtn
-      Left = 310
-      Top = 367
-      Width = 266
-      Height = 49
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -17
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Rounding Account'
-      ButtonColor = clGreen
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = tbRoundingAccountClick
-    end
   end
   object Panel2: TPanel
     Left = 615

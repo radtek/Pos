@@ -5,6 +5,7 @@
 
 #include "SiHotDataProcessor.h"
 #include "Math.h"
+#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -431,9 +432,10 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
 void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     double surcharge = 0.0;
-    int indexcash = 0;
+    UnicodeString indexcash = "";
     double cashOutStore = 0.0;
     double tip = 0.0;
+    UnicodeString cashType = "";
     for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
     {
         TSiHotPayments siHotPayment;
@@ -444,8 +446,13 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         }
         if(payment->GetPaymentAttribute(ePayTypeSurcharge))
         {
-            surcharge = (double)payment->GetAdjustment();
+            surcharge += (double)payment->GetAdjustment();
         }
+        if(payment->GetPaymentAttribute(ePayTypeCash))
+        {
+            cashType = payment->PaymentThirdPartyID;
+        }
+
         if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->GetPaymentAttribute(ePayTypeRoomInterface)))
         {
             tip += (double)payment->TipAmount;
@@ -460,49 +467,40 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                siHotPayment.Amount = -(payment->GetPayTendered() - payment->GetSurchargeTotal() - payment->TipAmount + payment->GetCashOut());
+                siHotPayment.Amount = -(payment->GetPayTendered() - payment->GetSurchargeTotal()
+                                      - payment->TipAmount + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description = payment->Name;
                 siHotPayment.Billno = billNo;
                 siHotPayment.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
                 siHotPayment.Cashier = TDeviceRealTerminal::Instance().User.Name;
                 siHotPayment.Source = "Guest";
-
                 paymentSiHot[siHotPayment.Type] = siHotPayment;
             }
             else
             {
                 double amount = StrToCurr(iter->second.Amount) + (-(payment->GetPayTendered() -
-                                payment->GetSurchargeTotal() - payment->TipAmount + payment->GetCashOut()));
+                                payment->GetSurchargeTotal() - payment->TipAmount + payment->GetCashOut()- payment->GetChange()));
                 iter->second.Amount = amount;
             }
-
             if(payment->GetPaymentAttribute(ePayTypeCash))
-                indexcash = i;
+            {
+                indexcash = "Cash";
+            }
             cashOutStore += (double)payment->GetCashOut();
         }
         if(i + 1 == _paymentTransaction.PaymentsCount())
         {
-            if(indexcash != 0 && cashOutStore != 0.0)
-            {
-                _roomCharge.SiHotPayments[indexcash].Amount += cashOutStore;
-            }
-            else if(indexcash == 0 && cashOutStore != 0.0)
+            if(indexcash == "" && cashOutStore != 0.0)
             {
                 TSiHotPayments siHotPaymentCash;
-                for(int k = 0; k < _paymentTransaction.PaymentsCount(); k++)
-                {
-                    TPayment *payment1 = _paymentTransaction.PaymentGet(k);
-                    if(!(payment1->GetPaymentAttribute(ePayTypeCash)))
-                       continue;
-                    siHotPaymentCash.Type = payment1->PaymentThirdPartyID;
-                    siHotPaymentCash.Amount = cashOutStore;
-                    siHotPaymentCash.Description = payment1->Name;
-                    siHotPaymentCash.Billno = billNo;
-                    siHotPaymentCash.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
-                    siHotPaymentCash.Cashier = TDeviceRealTerminal::Instance().User.Name;
-                    siHotPaymentCash.Source = "Guest";
-                    _roomCharge.SiHotPayments.push_back(siHotPaymentCash);
-                }
+                siHotPaymentCash.Type = cashType;
+                siHotPaymentCash.Amount = (double)cashOutStore;
+                siHotPaymentCash.Description = "Cash";
+                siHotPaymentCash.Billno = billNo;
+                siHotPaymentCash.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
+                siHotPaymentCash.Cashier = TDeviceRealTerminal::Instance().User.Name;
+                siHotPaymentCash.Source = "Guest";
+                paymentSiHot[cashType] = siHotPaymentCash;
             }
         }
         if((payment->GetPaymentAttribute(ePayTypeRoomInterface)) && payment->GetCashOut() != 0)
@@ -510,6 +508,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             AddExpensesToSiHotService(payment,_roomCharge,billNo);
         }
     }
+//    if(_paymentTransaction.Money.)
     if((surcharge != 0) /*|| (_paymentTransaction.Money.ProductSurcharge != 0)*/ || tip != 0)
     {
         AddSurchargeAndTip(_roomCharge,surcharge,billNo,tip);
