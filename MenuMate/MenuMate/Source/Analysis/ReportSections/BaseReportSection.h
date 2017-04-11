@@ -1,7 +1,7 @@
 #ifndef BaseReportSectionH
 #define BaseReportSectionH
 
-#include <vector>
+
 #include "IReportSection.h"
 #include "MM_DBCore.h"
 #include "GlobalSettings.h"

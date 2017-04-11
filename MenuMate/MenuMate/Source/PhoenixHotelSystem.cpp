@@ -9,7 +9,6 @@
 #include "MMLogging.h"
 #include "DBThirdPartyCodes.h"
 #include "ManagerPatron.h"
-
 #ifdef MenuMate
 #include "DeviceRealTerminal.h"
 #endif
@@ -20,13 +19,11 @@
 
 #pragma package(smart_init)
 
-TPhoenixHM *PhoenixHM;
-
-TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) : DBControl(inDBControl), fPhoenixNet(new TPhoenixNetTCPManager)
+TPhoenixHM::TPhoenixHM() :TBasePMS(),fPhoenixNet(new TPhoenixNetTCPManager)
 {
-	FTCPPort = 4444;
-	FTCPIPAddress = "";
-	FPOSID = 0;
+	TCPPort = 4444;
+	TCPIPAddress = "";
+	POSID = 0;
 	DefaultPaymentCategory = "";
 	DefaultItemCategory = "";
 	PointsCategory = "";
@@ -36,186 +33,17 @@ TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) : DBControl(inDBContro
 	Enabled = false;
 	Registered = false;
 }
-
-void __fastcall TPhoenixHM::SetTCPPort(int value)
+//----------------------------------------------------------------------------
+TPhoenixHM::~TPhoenixHM()
 {
-	if(FTCPPort != value)
-	{
-		FTCPPort = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSTCPPort,FTCPPort);
-		DBTransaction.Commit();
-	}
 }
-int __fastcall TPhoenixHM::GetTCPPort()
-{
-	return FTCPPort;
-}
-
-void __fastcall TPhoenixHM::SetTCPIPAddress(AnsiString value)
-{
-	if(FTCPIPAddress != value) {
-		FTCPIPAddress = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSIPAddress,FTCPIPAddress);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetTCPIPAddress()
-{
-	return FTCPIPAddress;
-}
-
-void __fastcall TPhoenixHM::SetPOSID(int value)
-{
-	if(FPOSID != value) {
-		FPOSID = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSPOSID,FPOSID);
-		DBTransaction.Commit();
-	}
-}
-int __fastcall TPhoenixHM::GetPOSID()
-{
-	return FPOSID;
-}
-
-void __fastcall TPhoenixHM::SetDefaultPaymentCategory(AnsiString value)
-{
-	if(FDefaultPaymentCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FDefaultPaymentCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPaymentCategory,FDefaultPaymentCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultPaymentCategory()
-{
-	return FDefaultPaymentCategory;
-}
-
-void __fastcall TPhoenixHM::SetDefaultItemCategory(AnsiString value)
-{
-	if(FDefaultItemCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FDefaultItemCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSItemCategory,FDefaultItemCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultItemCategory()
-{
-	return FDefaultItemCategory;
-}
-
-void __fastcall TPhoenixHM::SetCreditCategory(AnsiString value)
-{
-	if(FCreditCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FCreditCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSCreditCategory,FCreditCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-
-void __fastcall TPhoenixHM::SetRoundingCategory(AnsiString value)
-{
-	if(FRoundingCategory != value) {
-		FRoundingCategory = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultRoundingAccount,FRoundingCategory);
-		DBTransaction.Commit();
-	}
-}
-
-AnsiString __fastcall TPhoenixHM::GetRoundingCategory()
-{
-	return FRoundingCategory;
-}
-
-AnsiString __fastcall TPhoenixHM::GetCreditCategory()
-{
-	return FCreditCategory;
-}
-
-void __fastcall TPhoenixHM::SetPointsCategory(AnsiString value)
-{
-	if(FPointsCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FPointsCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPointsCategory,FPointsCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetPointsCategory()
-{
-	return FPointsCategory;
-}
-
-void __fastcall TPhoenixHM::SetDefaultTransactionAccount(AnsiString value)
-{
-	if(FDefaultTransactionAccount != value) {
-		FDefaultTransactionAccount = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultAccount,FDefaultTransactionAccount);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultTransactionAccount()
-{
-	return FDefaultTransactionAccount;
-}
-
-void __fastcall TPhoenixHM::SetDefaultSurchargeAccount(AnsiString value)
-{
-	if(FDefaultSurchargeAccount != value) {
-		FDefaultSurchargeAccount = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultSurchargeAccount,FDefaultSurchargeAccount);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultSurchargeAccount()
-{
-	return FDefaultSurchargeAccount;
-}
-
+//----------------------------------------------------------------------------
 bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID)
 {
 	bool RetVal = false;
 
-   AnsiString PMSIPAddress = FTCPIPAddress;
-   int PMSPort = FTCPPort;
+   AnsiString PMSIPAddress = TCPIPAddress;
+   int PMSPort = TCPPort;
 
 	TPhoenixRoomCharge RoomCharge;
 	RoomCharge.AccountNumber = PaymentTransaction.Phoenix.AccountNumber;
@@ -274,7 +102,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				Payment->PaymentThirdPartyID = DefaultPaymentCategory;
 				TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,Payment->Name + " Has No 3rdParty ID");
 			}
-			if(Payment->GetPaymentAttribute(ePayTypeCredit))
+            if(Payment->GetPaymentAttribute(ePayTypeCredit))
 			{
 				RoomCharge.Categories[CreditCategory] += -Payment->GetPayTendered();
 				Total += -Payment->GetPayTendered();
@@ -282,7 +110,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				CreditCategory +
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 			}
-			else if(Payment->GetPaymentAttribute(ePayTypePoints))
+            else if(Payment->GetPaymentAttribute(ePayTypePoints))
 			{
 				RoomCharge.Categories[PointsCategory] += -Payment->GetPayTendered();
 				Total += -Payment->GetPayTendered();
@@ -291,7 +119,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 
 			}
-			else if(Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+            else if(Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
 			{
 				RoomCharge.Categories[Payment->PaymentThirdPartyID] += Payment->GetSurcharge();
 				Total += Payment->GetAdjustment();
@@ -299,11 +127,11 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				Payment->PaymentThirdPartyID +
 				" Custom Surcharge " + CurrToStrF(Payment->GetAdjustment(), ffCurrency, 2));
 			}
-			else if(Payment->GetPaymentAttribute(ePayTypeRoomInterface))
+            else if(Payment->GetPaymentAttribute(ePayTypeRoomInterface))
 			{
 				// Dont adjust total as its being charged to his room.
 			}
-			else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
+            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 			{
 				// If Voucher Purchase the amount is storedin the Surchage.
 				RoomCharge.Categories[Payment->PaymentThirdPartyID] += -Payment->GetPayTendered();
@@ -326,7 +154,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 			}
 
-			if(Payment->GetPaymentAttribute(ePayTypeSurcharge))
+            if(Payment->GetPaymentAttribute(ePayTypeSurcharge))
 			{
 				RoomCharge.Categories[DefaultSurchargeAccount] += Payment->GetAdjustment(); // GetAdjustment() is positive, when a surcharge is present
 				Total += Payment->GetAdjustment();
@@ -338,12 +166,13 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				//Total += -Payment->Surcharge;
 			}
 
-			if(Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport))
+            if(Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport))
 			{
-                // Override the ipaddress and port.
-                PMSIPAddress = Payment->SecondaryPMSIPAddress;
-                PMSPort = Payment->SecondaryPMSPortNumber;
+            // Override the ipaddress and port.
+            PMSIPAddress = Payment->SecondaryPMSIPAddress;
+            PMSPort = Payment->SecondaryPMSPortNumber;
 			}
+         
 			TotalRounding += Payment->GetRoundingTotal();
 		}
 	}
@@ -433,6 +262,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 		else
 		{
 			TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"PMS Export Failed.\r" + RoomCharge.ResultText);
+            MessageBox("PMS Export failed","After receiving repsonse",MB_OK);
 			MessageBox("PMS Export Failed.\r" + RoomCharge.ResultText,
 					  "PMS Hotel Export Error", MB_OK + MB_ICONERROR);
 		}
@@ -445,7 +275,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 	}
 	return RetVal;
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort)
 {
 	TPhoenixRoomStatusExt RoomStatus;
@@ -473,7 +303,7 @@ void TPhoenixHM::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSI
 		}
 	}
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAddress,int PMSPort)
 {
 	// Select the room number.
@@ -482,6 +312,7 @@ void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAdd
 	{
 		Status.POSID = POSID;
 		fPhoenixNet->SendAndFetch(Status,PMSIPAddress,PMSPort);
+//        MessageBox((AnsiString)Status.Folders->operator [](),"content",MB_OK)
 	}
 	else
 	{ // Canceled by User.
@@ -490,10 +321,10 @@ void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAdd
 		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");
 	}
 }
-
+//----------------------------------------------------------------------------
 AnsiString TPhoenixHM::GetRefNumber()
 {
-	Database::TDBTransaction DBTransaction(DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -503,21 +334,20 @@ AnsiString TPhoenixHM::GetRefNumber()
 	IBInternalQuery->ExecQuery();
 	int PhoenixRef = IBInternalQuery->Fields[0]->AsInteger;
 	DBTransaction.Commit();
-	
+
 	return "PMS" + IntToStr(PhoenixRef);
 }
-
+//----------------------------------------------------------------------------
 AnsiString TPhoenixHM::GetLastTransactionRef()
 {
 	return LastTransactionRef;
 }
-
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort)
 {
 	// Select the room number.
 	// Retrive the Room Folders.
-	if(RoomCharge.AccountNumber != "" && FTCPIPAddress != "")
+	if(RoomCharge.AccountNumber != "" && TCPIPAddress != "")
 	{
 		RoomCharge.POSID = POSID;
 		fPhoenixNet->SendAndFetch(RoomCharge,PMSIPAddress,PMSPort);
@@ -526,28 +356,28 @@ void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddre
 	{ // Canceled by User.
 		RoomCharge.Result = eFailed;
 		RoomCharge.ResultText = "Invalid Account Number";
-		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");		
+		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");
 	}
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::Initialise()
 {
-	Database::TDBTransaction DBTransaction(DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-	FTCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
-	FTCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
-	FPOSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
+	TCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
+	TCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
+	POSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
 
-	FDefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
-	FDefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
-	FCreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
-	FPointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
-	FDefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
-	FDefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
-	FRoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
+	DefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
+	DefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
+	CreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
+	PointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
+	DefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
+	DefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
+	RoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
 
 	DBTransaction.Commit();
-	if(Registered && FTCPIPAddress != "")
+	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
 		Enabled = TestDefaultCodes();
@@ -556,8 +386,9 @@ void TPhoenixHM::Initialise()
 	{
 		Enabled = false;
 	}
-}
 
+}
+//----------------------------------------------------------------------------
 bool TPhoenixHM::TestDefaultCodes()
 {
 	bool Success = true;
@@ -576,12 +407,12 @@ bool TPhoenixHM::TestDefaultCodes()
    ClearCodesTestedOk();
 	return Success;
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::ClearCodesTestedOk()
 {
    CodesTestedOk.clear();
 }
-
+//----------------------------------------------------------------------------
 bool TPhoenixHM::TestCode(AnsiString CodeToTest)
 {
 	bool RetVal = true;
@@ -597,7 +428,7 @@ bool TPhoenixHM::TestCode(AnsiString CodeToTest)
             RoomCharge.StaffID = 0;
             RoomCharge.Categories[CodeToTest] = 0;
 
-            ChargeRoom(RoomCharge,FTCPIPAddress,FTCPPort);
+            ChargeRoom(RoomCharge,TCPIPAddress,TCPPort);
             if(RoomCharge.Result != eAccepted)
             {
                RetVal = false;
@@ -621,13 +452,11 @@ bool TPhoenixHM::TestCode(AnsiString CodeToTest)
 	}
 	return RetVal;
 }
-
-
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::FindAndReplaceCode(AnsiString SourceCode, AnsiString DestCode)
 {
-   
-	Database::TDBTransaction DBTransaction(DBControl);
+
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
    int ThirdPartyKey = TDBThirdPartyCodes::GetThirdPartyKeyByCode(DBTransaction,SourceCode,tpItemSize);
    if(ThirdPartyKey)
@@ -638,3 +467,4 @@ void TPhoenixHM::FindAndReplaceCode(AnsiString SourceCode, AnsiString DestCode)
    }
 	DBTransaction.Commit();
 }
+//----------------------------------------------------------------------------

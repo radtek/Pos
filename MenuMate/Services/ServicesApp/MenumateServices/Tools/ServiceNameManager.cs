@@ -48,6 +48,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.ThorLink: return "MenumateServiceThorlink";
                 case MenumateServicesIdentifier.PocketVoucher: return "PocketVoucherWebService";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "SalesForceIntegrationWebService";
+                case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
                 case MenumateServicesIdentifier.WalletPayments: return "MenumateServiceWalletPayments";
                 default: return @"";
             }

@@ -3,11 +3,8 @@
 
 #ifndef DrinkCommandDataH
 #define DrinkCommandDataH
-#include <system.hpp>
-#include <memory>
 #include "PaymentTransaction.h"
 #include "SystemEvents.h"
-#include <vector>
 
 struct TOpenSessionDetails
 {

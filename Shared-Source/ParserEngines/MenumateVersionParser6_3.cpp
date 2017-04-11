@@ -1894,11 +1894,19 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
 //::::::::::::::::::::::::Version 6.39::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_39Tables()
 {
-     CreateTable_PaymentAttributes(_dbControl);
-     PopulateTable_PaymentAttributes(_dbControl);
-     Updatetable_PaymentProperties(_dbControl);
-     PopulatePaymentProperties(_dbControl);
-     CreateTable_PaymentWalletAttributes(_dbControl);
+    CreateTable_PaymentAttributes(_dbControl);
+    PopulateTable_PaymentAttributes(_dbControl);
+    Updatetable_PaymentProperties(_dbControl);
+    PopulatePaymentProperties(_dbControl);
+    CreateTable_PaymentWalletAttributes(_dbControl);
+    CreateGenerators6_39(_dbControl);
+    CreateTable6_39MallSalesType(_dbControl);
+    CreateTable6_39MallSalesTypeItemRelation(_dbControl);
+    CreateTable6_39MallSalesBySalesType(_dbControl);
+    Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
+    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 2);
+	Create6_39SiHotTransNumberGenerator(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::CreateTable_PaymentAttributes(TDBControl* const inDBControl)
@@ -2060,7 +2068,171 @@ void TApplyParser::CreateTable_PaymentWalletAttributes(TDBControl* const inDBCon
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
 
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLS VALUES (:MALL_ID, :MALL_NAME, :IS_ACTIVE) ";
+        InsertQuery->ParamByName("MALL_ID")->AsInteger = mallKey;
+        InsertQuery->ParamByName("MALL_NAME")->AsString = mallName;
+        InsertQuery->ParamByName("IS_ACTIVE")->AsString = isActive;
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::InsertInTo_MallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        int mallExportSettingMapIndex = GetMallExportSettingsMappingIndex(inDBControl);
+
+        for(int index = 0; index < arraySize; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (:MAPPING_KEY, :SETTING_KEY, :MALL_KEY) ";
+            InsertQuery->ParamByName("MAPPING_KEY")->AsInteger = index + mallExportSettingMapIndex;
+            InsertQuery->ParamByName("SETTING_KEY")->AsString = settingIds[index];
+            InsertQuery->ParamByName("MALL_KEY")->AsString = mallIndex;
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::CreateGenerators6_39(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_MALLSALES_TYPE", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MALLSALES_TYPE;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_MALLSALES_TYPE TO 0;", inDBControl
+        );
+    }
+
+	if(!generatorExists("GEN_MALLSALES_TYPE_ITEMS_REL",_dbControl))
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_MALLSALES_TYPE_ITEMS_REL;",inDBControl
+		);
+		executeQuery(
+		"SET GENERATOR GEN_MALLSALES_TYPE_ITEMS_REL TO 0;",inDBControl
+		);
+	}
+
+    if(!generatorExists("GEN_MALL_SALES_BY_TYPE",_dbControl))
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_MALL_SALES_BY_TYPE;",inDBControl
+		);
+		executeQuery(
+		"SET GENERATOR GEN_MALL_SALES_BY_TYPE TO 0;",inDBControl
+		);
+	}
+}
+//---------------------------------------------------------------------------
+void TApplyParser::CreateTable6_39MallSalesType( TDBControl* const inDBControl )
+{
+	if ( !tableExists( "MALL_SALES_TYPE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_TYPE "
+		"( "
+		"   SALES_TYPE_ID INTEGER PRIMARY KEY,"
+        "   SALES_TYPE_CODE VARCHAR(5), "
+		"   SALES_TYPE_NAME VARCHAR(25) "
+		");",
+		inDBControl );
+	}
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_39MallSalesTypeItemRelation( TDBControl* const inDBControl )
+{
+	if ( !tableExists( "MALL_SALES_TYPE_ITEMS_RELATION", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_TYPE_ITEMS_RELATION "
+		"( "
+		"   STI_ID INTEGER PRIMARY KEY,"
+		"   ITEM_ID INTEGER,"
+		"   SALES_TYPE_ID INTEGER, "
+        "   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE "
+		");",
+		inDBControl );
+	}
+}
+//---------------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_39MallSalesBySalesType( TDBControl* const inDBControl )
+{
+    if ( !tableExists( "MALL_SALES_BY_SALES_TYPE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_BY_SALES_TYPE "
+		"( "
+		"   SALES_ID INTEGER PRIMARY KEY,"
+		"   ARCBILL_KEY INTEGER,"
+		"   SALES_TYPE_ID INTEGER,"
+        "   SUBTOTAL  NUMERIC(15,4), "
+        "   DEVICE_KEY INTEGER "
+		");",
+		inDBControl );
+	}
+}
+//-------------------------------------------------------------------------------------------
+int TApplyParser::GetMallExportSettingsMappingIndex(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    int index = 0;
+
+    if ( tableExists( "MALLEXPORT_SETTINGS_MAPPING", _dbControl ) )
+	{
+        TIBSQL *selectQuery    = transaction.Query(transaction.AddQuery());
+		selectQuery->SQL->Text = "SELECT MAX(A.MALLEXPORT_SETTING_MAP_KEY) MALLEXPORT_SETTING_MAP_KEY FROM MALLEXPORT_SETTINGS_MAPPING a ";
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+            index = selectQuery->FieldByName("MALLEXPORT_SETTING_MAP_KEY")->AsInteger;
+	}
+
+    return index + 1;
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_39SiHotTransNumberGenerator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_SIHOTTRANSNUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_SIHOTTRANSNUMBER;", inDBControl
+        );
+
+
+        executeQuery(
+            "SET GENERATOR GEN_SIHOTTRANSNUMBER TO 0;", inDBControl
+        );
+    }
+}
 
 }
 

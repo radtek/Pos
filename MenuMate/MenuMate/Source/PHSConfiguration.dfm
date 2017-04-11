@@ -4,8 +4,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 617
-  ClientWidth = 531
+  ClientHeight = 445
+  ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,14 +20,14 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   object Panel24: TPanel
     Left = 8
     Top = 8
-    Width = 369
-    Height = 601
+    Width = 600
+    Height = 435
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
     object Label4: TLabel
-      Left = 16
-      Top = 8
+      Left = 152
+      Top = 7
       Width = 348
       Height = 19
       Caption = 'Property Management System Configuration'
@@ -39,9 +39,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       ParentFont = False
     end
     object tbPhoenixIPAddress: TTouchBtn
-      Left = 16
-      Top = 88
-      Width = 345
+      Left = 310
+      Top = 32
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -59,8 +59,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixPortNumber: TTouchBtn
       Left = 16
-      Top = 144
-      Width = 345
+      Top = 88
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -79,7 +79,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     object tbPhoenixID: TTouchBtn
       Left = 16
       Top = 32
-      Width = 345
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -96,9 +96,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbPhoenixIDClick
     end
     object tbPaymentDefCat: TTouchBtn
-      Left = 16
-      Top = 200
-      Width = 345
+      Left = 310
+      Top = 88
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -116,8 +116,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbItemDefCat: TTouchBtn
       Left = 16
-      Top = 256
-      Width = 345
+      Top = 144
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -134,9 +134,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbItemDefCatClick
     end
     object tbPointCat: TTouchBtn
-      Left = 16
-      Top = 312
-      Width = 345
+      Left = 310
+      Top = 144
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -154,8 +154,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbCreditCat: TTouchBtn
       Left = 16
-      Top = 368
-      Width = 345
+      Top = 200
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -172,9 +172,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbCreditCatClick
     end
     object tbDefTransAccount: TTouchBtn
-      Left = 16
-      Top = 536
-      Width = 345
+      Left = 310
+      Top = 255
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -191,9 +191,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbDefTransAccountClick
     end
     object tbSurchargeCat: TTouchBtn
-      Left = 16
-      Top = 424
-      Width = 345
+      Left = 310
+      Top = 200
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -211,8 +211,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbRoundingCategory: TTouchBtn
       Left = 16
-      Top = 480
-      Width = 345
+      Top = 256
+      Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -228,12 +228,88 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbRoundingCategoryClick
     end
+    object tbTipAccount: TTouchBtn
+      Left = 16
+      Top = 368
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Tip Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbTipAccountClick
+    end
+    object tbExpensesAccount: TTouchBtn
+      Left = 310
+      Top = 312
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Expenses Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbExpensesAccountClick
+    end
+    object tbServiceCharge: TTouchBtn
+      Left = 16
+      Top = 312
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Service Charge'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbServiceChargeMouseClick
+    end
+    object tbRoundingAccount: TTouchBtn
+      Left = 310
+      Top = 367
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Rounding Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbRoundingAccountClick
+    end
   end
   object Panel2: TPanel
-    Left = 384
+    Left = 615
     Top = 8
     Width = 137
-    Height = 601
+    Height = 435
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

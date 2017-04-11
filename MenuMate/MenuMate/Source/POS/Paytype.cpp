@@ -680,7 +680,14 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
 	{
 		if (CurrentTransaction.Phoenix.AccountNumber != "" && CurrentTransaction.Phoenix.AccountNumber != 0)
 		{
-			Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
+            if(TGlobalSettings::Instance().PMSType != SiHot)
+            {
+        		Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
+            }
+            else
+            {
+                Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.RoomNumber);
+            }
 			Receipt->ExtraInfo->Add("Guest " + CurrentTransaction.Phoenix.AccountName);
 		}
 		else
@@ -1111,6 +1118,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 {
 	if (SecurePaymentAccess(Payment))
 	{
+
 		bool proceed = true;
 		if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount) && TGlobalSettings::Instance().IsXeroEnabled)))
 		{
@@ -1342,7 +1350,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             int RoomNumber = 0;
             if (CurrentTransaction.RoomNumber == 0)
             {
-                if (TRooms::Instance().Enabled && !PhoenixHM->Enabled)
+                if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
                     if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
                     {
@@ -1357,7 +1365,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         GuestMasterOk = false;
                     }
                 }
-                else if (!TRooms::Instance().Enabled && PhoenixHM->Enabled)
+                else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
                     // Override the ipaddress and port.
                     AnsiString PMSIPAddress;
@@ -1369,8 +1377,8 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                     }
                     else
                     {
-                        PMSIPAddress = PhoenixHM->TCPIPAddress;
-                        PMSPort = PhoenixHM->TCPPort;
+                        PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+                        PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
                     }
                     std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
                     if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
@@ -1382,6 +1390,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         CurrentTransaction.SalesType = eRoomSale;
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                     }
                     else
                     {
@@ -1705,7 +1714,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             int RoomNumber = 0;
             if (CurrentTransaction.RoomNumber == 0)
             {
-                if (TRooms::Instance().Enabled && !PhoenixHM->Enabled)
+                if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
                     if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
                     {
@@ -1720,7 +1729,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         GuestMasterOk = false;
                     }
                 }
-                else if (!TRooms::Instance().Enabled && PhoenixHM->Enabled)
+                else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
                     // Override the ipaddress and port.
                     AnsiString PMSIPAddress;
@@ -1732,8 +1741,8 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     }
                     else
                     {
-                        PMSIPAddress = PhoenixHM->TCPIPAddress;
-                        PMSPort = PhoenixHM->TCPPort;
+                        PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+                        PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
                     }
 
                     std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
@@ -1746,6 +1755,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         CurrentTransaction.SalesType = eRoomSale;
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                     }
                     else
                     {
@@ -1794,7 +1804,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 Payment->RMSRoom = frmRoom->SelectedRoom;
                 CurrentTransaction.SalesType = eRoomSale;
             }
-            else if (PhoenixHM->Registered&&(TGlobalSettings::Instance().NewBook==2)&&frmRoom->SelectNewBookRoom(Payment->CVSReadLocation) == mrOk)
+            else if (TDeviceRealTerminal::Instance().BasePMS->Registered&&(TGlobalSettings::Instance().NewBook==2)&&frmRoom->SelectNewBookRoom(Payment->CVSReadLocation) == mrOk)
             {
                 Payment->NewBookRoom = frmRoom-> NewBookSelectedRoom;
                 CurrentTransaction.RoomNumber=StrToInt(frmRoom-> NewBookSelectedRoom.RoomNo);

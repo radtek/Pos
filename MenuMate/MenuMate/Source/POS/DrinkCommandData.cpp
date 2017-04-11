@@ -13,17 +13,8 @@
 
 #include <math.h>
 #include "DeviceRealTerminal.h"
-#include "DBSaleTimes.h"
-#include "DBTab.h"
-#include "DBOrder.h"
-#include "ManagerStock.h"
-#include <DateUtils.hpp>
-#include "DBTables.h"
-#include "DBSecurity.h"
 #include "TcpStreamPrepare.h"
-#include "DBTierLevel.h"
 #include "SelectDish.h"
-#include "SystemEvents.h"
 //------------------------------------------------------------------
 
 #pragma package(smart_init)

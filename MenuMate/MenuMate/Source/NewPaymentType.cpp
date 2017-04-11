@@ -652,7 +652,7 @@ void __fastcall TfrmNewPaymentType::tbRoomPaymentClick(TObject *Sender)
 {
    if (tbRoomPayment->Checked)
    {
-	  if (!TRooms::Instance().Enabled && !PhoenixHM->Enabled)
+	  if (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	  {
 		 MessageBox("You must have the Rooms or PMS Module in order to use Room Payments.", "Error", MB_OK);
 	  }
@@ -753,11 +753,11 @@ void __fastcall TfrmNewPaymentType::tbThirdPartyIDClick(TObject *Sender)
    frmTouchKeyboard->Caption = "Enter the third party Payment ID.";
    if (frmTouchKeyboard->ShowModal() == mrOk)
    {
-	  if (PhoenixHM->TestCode(frmTouchKeyboard->KeyboardText))
+	  if (TDeviceRealTerminal::Instance().BasePMS->TestCode(frmTouchKeyboard->KeyboardText))
 	  {
 		 PaymentThirdPartyID = frmTouchKeyboard->KeyboardText;
 	  }
-	  PhoenixHM->ClearCodesTestedOk();
+	  TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
    }
 
    tbThirdPartyID->Caption = "Third Party Payment ID\r" + PaymentThirdPartyID;
@@ -844,7 +844,7 @@ void __fastcall TfrmNewPaymentType::tbInterfacesMouseClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::tbtnSecondaryIPAddressClick(TObject *Sender)
 {
-   if (!PhoenixHM->Registered)
+   if (!TDeviceRealTerminal::Instance().BasePMS->Registered)
    {
 	  MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
    }
@@ -866,7 +866,7 @@ void __fastcall TfrmNewPaymentType::tbtnSecondaryIPAddressClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::tbtnSecondaryPMSPortClick(TObject *Sender)
 {
-   if (!PhoenixHM->Registered)
+   if (!TDeviceRealTerminal::Instance().BasePMS->Registered)
    {
 	  MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
    }
