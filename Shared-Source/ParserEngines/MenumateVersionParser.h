@@ -23,68 +23,14 @@ namespace MenumateVersionParser
 
     enum TParserVersions
     {
-            pv5_18,
-            pv5_19,
-            pv5_20,
-            pv5_21,
-            pv5_22,
-            pv5_23,
-            pv5_24,
-            pv5_25,
-            pv5_26,
-            pv5_27,
-            pv5_28,
-            pv5_29,
-            pv5_30,
-            pv5_31,
-            pv5_32,
-            pv5_33,
-            pv5_34,
-            pv5_35,
-            pv5_36,
-            pv5_37,
-            pv5_38,
+            pv5_18,pv5_19,pv5_20,pv5_21,pv5_22,pv5_23,pv5_24,pv5_25,pv5_26,pv5_27,pv5_28,pv5_29,pv5_30,
+            pv5_31,pv5_32,pv5_33,pv5_34,pv5_35,pv5_36,pv5_37,pv5_38,
 
             //version 6
-            pv6_00,
-            pv6_01,
-            pv6_02,
-            pv6_03,
-            pv6_04,
-            pv6_05,
-            pv6_06,
-            pv6_07,
-            pv6_08,
-            pv6_09,
-            pv6_10,
-            pv6_11,
-            pv6_12,
-            pv6_13,
-            pv6_14,
-            pv6_15,
-            pv6_16,
-            pv6_17,
-            pv6_18,
-            pv6_19,
-            pv6_20,
-            pv6_21,
-            pv6_22,
-            pv6_23,
-            pv6_24,
-            pv6_25,
-            pv6_26,
-            pv6_27,
-            pv6_28,
-            pv6_29,
-            pv6_30,
-            pv6_31,
-            pv6_32,
-            pv6_33,
-            pv6_34,
-            pv6_35,
-            pv6_36,
-            pv6_37,
-            pv6_38,
+            pv6_00,pv6_01,pv6_02,pv6_03,pv6_04,pv6_05,pv6_06,pv6_07,pv6_08,pv6_09,pv6_10,
+            pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
+            pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
+            pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,
     };
 
     class TApplyParser
@@ -168,6 +114,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_36( TDBControl* const inDBControl );
         PARSER_ERROR apply6_37( TDBControl* const inDBControl );
         PARSER_ERROR apply6_38( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_39( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -868,6 +815,14 @@ namespace MenumateVersionParser
         void update6_38Tables();
         void AlterTable_PaymentTypes(TDBControl* const inDBControl);
         void Updatetable_PaymentTypes(TDBControl* const inDBControl);
+
+        void upgrade6_39Tables();
+        void update6_39Tables();
+        void CreateTable_PaymentAttributes(TDBControl* const inDBControl);
+        void PopulateTable_PaymentAttributes(TDBControl* const inDBControl);
+        void Updatetable_PaymentProperties(TDBControl* const inDBControl);
+        void PopulatePaymentProperties(TDBControl* const inDBControl);
+        void CreateTable_PaymentWalletAttributes(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

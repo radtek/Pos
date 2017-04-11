@@ -174,14 +174,19 @@
     <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
     <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
     <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
+    <Compile Include="Internal Classes\WalletPayments\WalletPaymentController.cs" />
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
+    <Compile Include="MenumateRunners\WalletPaymentsServiceRunner.cs" />
     <Compile Include="MenumateServiceAccounting.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -310,6 +315,12 @@
     <Compile Include="MenumateServiceSmartLink.Designer.cs">
       <DependentUpon>MenumateServiceSmartLink.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenumateServiceWalletPayments.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceWalletPayments.Designer.cs">
+      <DependentUpon>MenumateServiceWalletPayments.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServiceWebMate.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -344,6 +355,7 @@
     <Compile Include="Tools\ServiceNameManager.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
@@ -360,6 +372,7 @@
     <Compile Include="WCFServices\WCFServiceChefMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
+    <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -407,6 +420,10 @@
     <ProjectReference Include="..\SalesForceCommunication\SalesForceCommunication.csproj">
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
       <Name>SalesForceCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WalletPaymets\WalletPaymets.csproj">
+      <Project>{843E831F-1B70-4238-AA55-96492F53AAE5}</Project>
+      <Name>WalletPaymets</Name>
     </ProjectReference>
     <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>

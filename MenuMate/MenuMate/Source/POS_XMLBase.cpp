@@ -113,18 +113,12 @@ void TPOS_XMLBase::Parse()
       {
       	Result = eIMFailed;
          ResultText = "Incorrect Responce Status : " + UpperCase(Status);
-#ifdef _DEBUG
-         SaveToFile(IntaMateID);
-#endif
       }
    }
    else
    {
-   	Result = eIMFailed;
+   	  Result = eIMFailed;
       ResultText = "Incorrect XML format ";
-#ifdef _DEBUG
-      SaveToFile(IntaMateID);
-#endif
    }
 }
 
@@ -165,18 +159,12 @@ void TPOS_XMLStatus::Parse()
       {
       	Result = eIMFailed;
          ResultText = "Incorrect Responce format";
-#ifdef _DEBUG
-         // SaveToFile(IntaMateID);
-#endif
       }
    }
    else
    {
    	Result = eIMFailed;
       ResultText = "Incorrect XML format";
-#ifdef _DEBUG
-         // SaveToFile(IntaMateID);
-#endif
    }
 }
 

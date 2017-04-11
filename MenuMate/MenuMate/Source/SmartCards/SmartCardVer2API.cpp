@@ -361,9 +361,6 @@ void TSmartCardVer2::Restore(TSmartCardBlock &RestorePoint)
    TMemoryStream &RestoreStream = RestorePoint.GetStreamRef();
    lReturn = CardInfoWrite(V2_CARD_RESTORE_POINT_DATA_START,CARD_RESTORE_POINT_LENGTH,RestoreStream);
    RestoreStream.Position = 0;
-   #ifdef _DEBUG
-   RestoreStream.SaveToFile("MMRestoreToRestorePoint.bin");
-   #endif
    if (lReturn != SCARD_S_SUCCESS && lReturn != SCARD_M_CHECK_ERROR)
    {
       TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Write Restore Point Failed. : " + AnsiString(IntToHex(int(lReturn),2)));

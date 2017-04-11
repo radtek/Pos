@@ -212,7 +212,7 @@ void TBlindBalanceController::PopulateListManager()
          ///Get Totalpayment done by every payment
          std::map< AnsiString, Currency> payTypeTotal = LoadAutoBlindBalance(IsMaster);
 
-		  for (std::vector<TPayment>::const_iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
+		  for (std::vector<TPayment>::iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
 		  {
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
@@ -232,7 +232,7 @@ void TBlindBalanceController::PopulateListManager()
                 BlindBalances.UpdateBlindBalance(ptr->Name, amount);
 			}
 
-				if(ptr->Properties & ePayTypeAllowCashOut)
+				if(ptr->GetPaymentAttribute(ePayTypeAllowCashOut))
 				{
 					 if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
 					 {

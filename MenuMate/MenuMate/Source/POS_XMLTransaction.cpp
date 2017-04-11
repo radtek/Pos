@@ -162,7 +162,7 @@ void TPOS_XMLTransaction::BuildPayment(TPaymentTransaction &PaymentTransaction, 
 	ElePaymnet->SetAttribute(xmlAttrName, inPayment->Name.t_str());
   	ElePaymnet->SetAttribute(xmlAttrCode, inPayment->PaymentThirdPartyID.t_str());
 
-	if(inPayment->Properties & ePayTypePoints && inPayment->GetAdjustment() != 0)
+	if(inPayment->GetPaymentAttribute(ePayTypePoints) && inPayment->GetAdjustment() != 0)
    {
 		ElePaymnet->SetAttribute(xmlAttrTotal, FormatFloat("-0.00", inPayment->GetAdjustment()).t_str());
 		ElePaymnet->SetAttribute(xmlAttrAmountTendered, FormatFloat("-0.00", inPayment->GetAdjustment()).t_str());

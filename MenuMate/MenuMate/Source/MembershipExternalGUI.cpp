@@ -120,10 +120,6 @@ bool TMembershipExternalGUI::AuthPIN(TMMContactInfo &UserInfo,AnsiString PIN,Ans
         request->SetTerminalName("MenuMate");
         request->SetCard(UserInfo.CardStr);
         request->SetPIN(PIN);
-        #ifdef _DEBUG
-        request->Build();
-        request->SaveToFile();
-        #endif
         MembershipGeneralLedgerTCP->Process(IP,Port,*request.get());
         if (request->Result == eMSAccepted && request->Authorised != 0)
         {

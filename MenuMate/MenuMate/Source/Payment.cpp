@@ -15,100 +15,114 @@
 
 TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
 {
-   Result = eProcessing;
-   FPay = 0;
-   FPayRounding = 0;
-   FCashOut = 0;
-   FCashOutRounding = 0;
-   DisplayOrder = 0;
-   GroupNumber = 0;
-   RefundPointsVal = 0;
-   AdjustmentReason = "";
-   AmountAdjust = 0;
-   PercentAdjust = 0;
-   CSVNumber = 0;
-   Name = "";
-   NameOveride = "";
-   ReferenceNumber = "";
-   ExternalReferenceNumber = "";
-   VoucherCode = "";
-   FixedVoucherCode = "";
-   VoucherMerchantID = "";
-   SysNameOveride = "";
-   Properties = 0;
-   TabCreditKey = 0;
-   TaxRate = 0;
-   Colour = clWhite;
-   Visible = true;
-   CreditTransaction = false;
-   SuppressEftPosReceipt = false;
-   PaymentThirdPartyID = "";
-   SecondaryPMSIPAddress = "";
-   SecondaryPMSPortNumber = 0;
-   RoundTo = MIN_CURRENCY_VALUE;
-   UniVoucherURL = "";
-   UniVoucherUser = "";
-   UniVoucherPass = "";
-   UniVoucherToken = "";
-   CardType = "";
-   RefundPoints = false;
-   TabKey=0;
-   TabName="";
-   GLCode = "";
-   _assignedPaymentGroups.clear();
-   TipAmount = 0;
-   AutoPopulateBlindBalance = false;
+    Result = eProcessing;
+    FPay = 0;
+    FPayRounding = 0;
+    FCashOut = 0;
+    FCashOutRounding = 0;
+    DisplayOrder = 0;
+    GroupNumber = 0;
+    RefundPointsVal = 0;
+    AdjustmentReason = "";
+    AmountAdjust = 0;
+    PercentAdjust = 0;
+    CSVNumber = 0;
+    Name = "";
+    NameOveride = "";
+    ReferenceNumber = "";
+    ExternalReferenceNumber = "";
+    VoucherCode = "";
+    FixedVoucherCode = "";
+    VoucherMerchantID = "";
+    SysNameOveride = "";
+    TabCreditKey = 0;
+    TaxRate = 0;
+    Colour = clWhite;
+    Visible = true;
+    CreditTransaction = false;
+    SuppressEftPosReceipt = false;
+    PaymentThirdPartyID = "";
+    SecondaryPMSIPAddress = "";
+    SecondaryPMSPortNumber = 0;
+    RoundTo = MIN_CURRENCY_VALUE;
+    UniVoucherURL = "";
+    UniVoucherUser = "";
+    UniVoucherPass = "";
+    UniVoucherToken = "";
+    CardType = "";
+    RefundPoints = false;
+    TabKey=0;
+    TabName="";
+    GLCode = "";
+    TipAmount = 0;
+    AutoPopulateBlindBalance = false;
+    _assignedPaymentGroups.clear();
+    Properties.clear();
+    WalletType = eNoWallet;
+    MerchentId = "";
+    TerminalId = "";
+    WalletUserName = "";
+    WalletPassword = "";
+    WalletSecurityToken = "";
+    WalletQrCode = "";
 }
 
 void TPayment:: operator = (const TPayment & Data)
 {
-   FPay = Data.FPay;
-   FCashOut = Data.FCashOut;
-   FPayRounding = Data.FPayRounding;
-   FCashOutRounding = Data.FCashOutRounding;
-   FAdjustment = Data.FAdjustment;
-   FAdjustmentRounding = Data.FAdjustmentRounding;
-   AdjustmentReason = Data.AdjustmentReason;
-   AmountAdjust = Data.AmountAdjust;
-   Colour = Data.Colour;
-   CreditTransaction = Data.CreditTransaction;
-   CSVNumber = Data.CSVNumber;
-   DisplayOrder = Data.DisplayOrder;
-   Result = Data.Result;
-   GroupNumber = Data.GroupNumber;
-   Name = Data.Name;
-   NameOveride = Data.NameOveride;
-   Note = Data.Note;
-   VoucherCode = Data.VoucherCode;
-   FixedVoucherCode = Data.FixedVoucherCode;
-   VoucherMerchantID = Data.VoucherMerchantID;
-   PaymentThirdPartyID = Data.PaymentThirdPartyID;
-   PercentAdjust = Data.PercentAdjust;
-   Properties = Data.Properties;
-   ReferenceNumber = Data.ReferenceNumber;
-   ExternalReferenceNumber = Data.ExternalReferenceNumber;
-   Result = Data.Result;
-   SuppressEftPosReceipt = Data.SuppressEftPosReceipt;
-   SysNameOveride = Data.SysNameOveride;
-   TabCreditKey = Data.TabCreditKey;
-   TaxRate = Data.TaxRate;
-   Visible = Data.Visible;
-   UniVoucherURL = Data.UniVoucherURL;
-   UniVoucherUser = Data.UniVoucherUser;
-   UniVoucherPass = Data.UniVoucherPass;
-   UniVoucherToken = Data.UniVoucherToken;
-   CardType = Data.CardType;
-   TabKey=Data.TabKey;
-   TabName= Data.TabName;
-   GLCode = Data.GLCode;
-   TipAmount = Data.TipAmount;
-   SetAssignedGroups( Data.GetAssignedGroups() );
+    FPay = Data.FPay;
+    FCashOut = Data.FCashOut;
+    FPayRounding = Data.FPayRounding;
+    FCashOutRounding = Data.FCashOutRounding;
+    FAdjustment = Data.FAdjustment;
+    FAdjustmentRounding = Data.FAdjustmentRounding;
+    AdjustmentReason = Data.AdjustmentReason;
+    AmountAdjust = Data.AmountAdjust;
+    Colour = Data.Colour;
+    CreditTransaction = Data.CreditTransaction;
+    CSVNumber = Data.CSVNumber;
+    DisplayOrder = Data.DisplayOrder;
+    Result = Data.Result;
+    GroupNumber = Data.GroupNumber;
+    Name = Data.Name;
+    NameOveride = Data.NameOveride;
+    Note = Data.Note;
+    VoucherCode = Data.VoucherCode;
+    FixedVoucherCode = Data.FixedVoucherCode;
+    VoucherMerchantID = Data.VoucherMerchantID;
+    PaymentThirdPartyID = Data.PaymentThirdPartyID;
+    PercentAdjust = Data.PercentAdjust;
+    ReferenceNumber = Data.ReferenceNumber;
+    ExternalReferenceNumber = Data.ExternalReferenceNumber;
+    Result = Data.Result;
+    SuppressEftPosReceipt = Data.SuppressEftPosReceipt;
+    SysNameOveride = Data.SysNameOveride;
+    TabCreditKey = Data.TabCreditKey;
+    TaxRate = Data.TaxRate;
+    Visible = Data.Visible;
+    UniVoucherURL = Data.UniVoucherURL;
+    UniVoucherUser = Data.UniVoucherUser;
+    UniVoucherPass = Data.UniVoucherPass;
+    UniVoucherToken = Data.UniVoucherToken;
+    CardType = Data.CardType;
+    TabKey=Data.TabKey;
+    TabName= Data.TabName;
+    GLCode = Data.GLCode;
+    TipAmount = Data.TipAmount;
+    SetAssignedGroups( Data.GetAssignedGroups() );
+    AssignPaymentAttribute(Data.Properties);
+    WalletType = Data.WalletType;
+    MerchentId = Data.MerchentId;
+    TerminalId = Data.TerminalId;
+    WalletUserName = Data.WalletUserName;
+    WalletPassword = Data.WalletPassword;
+    WalletSecurityToken = Data.WalletSecurityToken;
+    WalletQrCode = Data.WalletQrCode;
 }
 
 void TPayment::Reset()
 {
    Result = eProcessing;
-   if (!(Properties & ePayTypeCredit))
+   if (!GetPaymentAttribute(ePayTypeCredit))
    {
 	  SetPay(0);
 	  SetChange(0);
@@ -123,6 +137,7 @@ void TPayment::Reset()
    CreditTransaction = false;
    SuppressEftPosReceipt = false;
    TipAmount = 0;
+   WalletQrCode = "";
 }
 
 void TPayment::Failed()
@@ -184,8 +199,6 @@ void __fastcall TPayment::SetRefundPointsValue(Currency value)
 {
     RefundPointsVal = value;
 }
-
-// ---------------------------------------------------------------------------
 
 Currency __fastcall TPayment::GetPay()
 {
@@ -422,12 +435,55 @@ void TPayment::SetAssignedGroups( TPaymentTypeGroup group )
    _assignedPaymentGroups.push_back( group );
 }
 
+void TPayment::SetPaymentAttribute(ePaymentAttribute attributeIndex,bool attributeValue)
+{
+  if(attributeValue && !(Properties.find(attributeIndex) != Properties.end()))
+    Properties.insert(attributeIndex);
+}
+
+void TPayment::AssignPaymentAttribute(std::set<int> inProperties)
+{
+   for(std::set<int>::iterator it = inProperties.begin() ; it != inProperties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        SetPaymentAttribute(attribute);
+   }
+}
+
+void TPayment::ClearPaymentAttribute()
+{
+  Properties.clear();
+}
+
+bool TPayment::GetPaymentAttribute(ePaymentAttribute attributeIndex)
+{
+  bool retVal = false;
+  for(std::set<int>::iterator it = Properties.begin() ; it != Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        if(attribute == attributeIndex)
+          return true;
+   }
+  return false;
+}
+
+AnsiString TPayment::GetPropertyString()
+{
+   AnsiString propStr = "-";
+   for(std::set<int>::iterator it = Properties.begin() ; it != Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        propStr = propStr + IntToStr(attribute) + "-";
+   }
+   return (propStr != "-") ? propStr : AnsiString("-0-");
+}
+
 bool TPayment::IsLoyaltyVoucher()
 {
-   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
+   return GetPaymentAttribute(ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
 }
 
 bool TPayment::IsLoyaltyGiftCard()
 {
-   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card");
+   return GetPaymentAttribute(ePayTypeGetVoucherDetails) && (Name == "Gift Card");
 }

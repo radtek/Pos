@@ -287,7 +287,7 @@ TPayment * TPaymentTransaction::PaymentFindByProperty(int ePayTypeProperty)
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if(Payment->Properties & ePayTypeProperty)
+		if(Payment->GetPaymentAttribute(ePayTypeProperty))
 		{
 			return Payment;
 		}
@@ -342,7 +342,7 @@ bool TPaymentTransaction::TransElectronicPayment()
 	for ( int i = 0 ; i < PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeElectronicTransaction) && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0) )
+		if(Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0) )
 		{
 			return true;
 		}
@@ -355,7 +355,8 @@ bool TPaymentTransaction::TransInvoicePayment()
 	for ( int i = 0 ; i < PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if(((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount)) && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0) )
+		if((Payment->GetPaymentAttribute(ePayTypeInvoiceExport) || Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
+          && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -368,9 +369,9 @@ bool TPaymentTransaction::TransIntegratedEFTPOS()
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeElectronicTransaction) &&
-			(Payment->Properties & ePayTypeIntegratedEFTPOS) &&
-			(Payment->GetCashOut() != 0|| Payment->GetPay() != 0) )
+		if(Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) &&
+           Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) &&
+           (Payment->GetCashOut() != 0|| Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -383,7 +384,7 @@ bool TPaymentTransaction::TransVerifyCheque()
 	for ( int i = 0 ; i < PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeChequeVerify) && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0) )
+		if(Payment->GetPaymentAttribute(ePayTypeChequeVerify) && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -396,7 +397,7 @@ bool TPaymentTransaction::TransOpenCashDraw()
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0))
+		if(Payment->GetPaymentAttribute(ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -486,7 +487,7 @@ void TPaymentTransaction::ProcessPoints()
         for ( int i = 0 ; i < PaymentsCount(); i++ )
         {
             TPayment *Payment = PaymentGet(i);
-            if(Payment->Properties & ePayTypePoints)
+            if(Payment->GetPaymentAttribute(ePayTypePoints))
             {
                 TPointsTypePair Pair(pttEarned,ptstLoyalty);
                 TPointsTransactionAccountType AccountType = ptstLoyalty;

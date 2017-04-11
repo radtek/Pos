@@ -930,7 +930,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         TPayment NewPayment;
         NewPayment.Name = "Voucher";
         NewPayment.SysNameOveride = "Voucher";
-        NewPayment.Properties |= ePayTypeGetVoucherDetails;
+        NewPayment.SetPaymentAttribute(ePayTypeGetVoucherDetails);
         NewPayment.DisplayOrder = 1;
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;
@@ -963,7 +963,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         TPayment NewPayment;
         NewPayment.Name = "Gift Card";
         NewPayment.SysNameOveride = "Gift Card";
-        NewPayment.Properties |= ePayTypeGetVoucherDetails;
+        NewPayment.SetPaymentAttribute(ePayTypeGetVoucherDetails);
         NewPayment.DisplayOrder = 1;
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;

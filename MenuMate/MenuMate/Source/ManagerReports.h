@@ -8,7 +8,7 @@
 #include <map>
 #include "MM_DBCore.h"
 #include "Printing.h"
-
+#include "Payment.h"
 //---------------------------------------------------------------------------
 class TBaseTotal
 {
@@ -30,7 +30,8 @@ class TSumPayments
 {
 	public:
         TSumPayments();
-        int Properties;
+        //int Properties;
+        std::set<int> Properties;
         int Qty;
         AnsiString Name;
         Currency Total;
@@ -41,6 +42,9 @@ class TSumPayments
         bool IsLoyaltyVoucher();
         Currency TipAmount;
         int TipQty;
+        void SetPaymentAttribute(ePaymentAttribute attributeIndex);
+        bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
+        void ExtractPaymentAttributes(AnsiString properties);
 };
 
 //<Cobb Loaf (small)> <Totals for this Item>
