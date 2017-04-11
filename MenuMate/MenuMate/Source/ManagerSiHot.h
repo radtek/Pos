@@ -5,7 +5,6 @@
 #include "PaymentTransaction.h"
 #include "SiHotDataObjects.h"
 #include "BasePMS.h"
-#include <System.hpp>
 //---------------------------------------------------------------------------
 
 class TManagerSiHot : public TBasePMS

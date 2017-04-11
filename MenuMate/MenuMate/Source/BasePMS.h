@@ -2,8 +2,6 @@
 
 #ifndef BasePMSH
 #define BasePMSH
-#include <System.hpp>
-#include <memory>
 #include "MM_DBCore.h"
 #include "PHSTCPIP.h"
 #include "SiHotDataObjects.h"

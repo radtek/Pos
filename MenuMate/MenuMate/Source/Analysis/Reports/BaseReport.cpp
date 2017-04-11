@@ -2,9 +2,7 @@
 #include "Comms.h"
 #include "PrinterPhysical.h"
 #include "ShowPrintout.h"
-#include <vector>
-#include <algorithm>
-#include <memory>
+
 
 
 BaseReport::BaseReport()
