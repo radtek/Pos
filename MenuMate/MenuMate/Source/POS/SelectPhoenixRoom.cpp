@@ -595,6 +595,7 @@ void TfrmPhoenixRoom::DisplayData()
                 SelectedRoom.Folders->Add(j->FirstName + " " + j->LastName);
                 if(!displayed)
                 {
+                    LimitSiHot = (double)((StrToCurr)(SiHotAccounts[0].AccountDetails[0].CreditLimit));
                     memText->Clear();
                     memText->Lines->Add("Room Number : " + RoomNumber);
                     memText->Lines->Add("Balance   : " + Balance);
@@ -784,13 +785,14 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
         SelectedRoom.AccountNumber = SiHotAccounts[FolderNumber-1].AccountNumber;
         SelectedRoom.FolderNumber = FolderNumber;
         SelectedRoom.SiHotRoom = edSearch->Text;
+        LimitSiHot = (double)((StrToCurr)(SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit));
 		tbtnOk->Enabled = true;
 		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
         AnsiString Balance = "0.0";
         memText->Clear();
         memText->Lines->Add("Room Number : " + edSearch->Text);
         memText->Lines->Add("Balance   : " + Balance);
-        memText->Lines->Add("Credit Limit : " + SiHotAccounts[0].AccountDetails[0].CreditLimit);
+        memText->Lines->Add("Credit Limit : " + SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit);
 		SelectionVisible = true;
     }
 	else

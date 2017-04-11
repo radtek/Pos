@@ -241,6 +241,7 @@ public:		// User declarations
 	TPhoenixRoomStatusExt SelectedRoom;
 	void UpdateInterface();
     std::vector<TSiHotAccounts> SiHotAccounts;
+    double LimitSiHot;
 };
 //---------------------------------------------------------------------------
 

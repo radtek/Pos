@@ -1748,6 +1748,16 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
                     if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
                     {
+                        if(TGlobalSettings::Instance().PMSType == SiHot)
+                        {
+                            if(((double)Payment->GetPay() > frmPhoenixRoom->LimitSiHot) && (frmPhoenixRoom->LimitSiHot != 0.0))
+                            {
+                                GuestMasterOk = false;
+                                MessageBox("Credit Limit Exceeded","Info",MB_OK);
+                            }
+                        }
+                        if(GuestMasterOk)
+                        {
                         CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
                         [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
@@ -1756,6 +1766,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
                         CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                        }
                     }
                     else
                     {

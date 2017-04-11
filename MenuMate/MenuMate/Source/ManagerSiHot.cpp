@@ -74,24 +74,9 @@ bool TManagerSiHot::GetRoundingandDefaultAccount()
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort);
-    if(retValue)
-        retValue = siHotDataProcessor->GetRoundingAccounting(TCPIPAddress,TCPPort);
-    else
-        MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address,Port Number and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     if(!retValue)
-        MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address,Port Number and Default Rounding Account","Error", MB_OK + MB_ICONERROR);
+        MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address,Port Number and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     return retValue;
-}
-//---------------------------------------------------------------------------
-bool TManagerSiHot::CheckIPAddressPort(AnsiString tcpIPAddress,int tcpPort)
-{
-    std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
-    int transno = siHotDataProcessor->GetTransNumber();
-    std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    bool value = siHotInterface->ValidateIPAddressPort(tcpIPAddress,tcpPort,transno);
-    if(!value)
-       MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address and Port Number","Error", MB_OK + MB_ICONERROR);
-    return value;
 }
 //---------------------------------------------------------------------------
 void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)
@@ -120,6 +105,7 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
 bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
 {
      // Call to SiHotDataProcessor for making Room Charge Post
+
     std::auto_ptr<TfrmProcessing>
     (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
     Processing->Message = "Posting Data to SiHot , Please Wait...";
@@ -150,19 +136,5 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 {
     bool retValue = false;
     retValue = RoomChargePost(paymentTransaction) ;
-    if(RoundTo((double)(paymentTransaction.Money.PaymentRounding),-2) != 0.00)
-    {
-        TRoomCharge roomCharge;
-        TRoomChargeResponse roomResponse;
-        std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
-        std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-        roomCharge.TransactionNumber = siHotDataProcessor->GetTransNumber();
-        roomCharge.AccountNumber = DefaultAccountNumber;
-        UnicodeString billNo = siHotDataProcessor->GetInvoiceNumber(paymentTransaction);
-        siHotDataProcessor->AddRoundingAsService(roomCharge, billNo, paymentTransaction);
-        roomCharge.IPAddress = TCPIPAddress;
-        roomCharge.PortNumber = TCPPort;
-        roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
-    }
 }
 //---------------------------------------------------------------------------
