@@ -3004,10 +3004,13 @@ Zed:
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
 
-                    //Instantiation is happenning in a factory based on the active mall in database
-                    TMallExport* mallExport = TMallFactory::GetMallType();
-                    mallExport->Export();
-                    delete mallExport;
+                    if(TGlobalSettings::Instance().mallInfo.MallId)
+                    {
+                        //Instantiation is happenning in a factory based on the active mall in database
+                        TMallExport* mallExport = TMallFactory::GetMallType();
+                        mallExport->Export();
+                        delete mallExport;
+                    }
                 }
             }
       }

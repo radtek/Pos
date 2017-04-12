@@ -2356,6 +2356,7 @@ void TfrmSetup::UpdateNoMallUI()
 
     UnicodeString controlNameSubString = "";
     TMall mallDetails;
+    mallDetails.MallId = 0;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
     TControl *ChildControl;
