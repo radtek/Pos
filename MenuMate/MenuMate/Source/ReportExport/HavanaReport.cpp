@@ -454,10 +454,10 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 OutputValue += menuTotal ;
 
                 //Check Rounding value is Negative include Brackets As String
-               if(rounding < 0)
+               if(StrToCurr(rounding) < 0)
                {
                 //rounding = rounding*-1;
-                rounding = "(" + rounding + ")";
+                rounding = "(" + StrToCurr(rounding)*-1 + ")";
                }
 
                 OutputValue += format + rounding + newLine;
@@ -502,10 +502,10 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 totalRounding = paymentTotal - menuTotal;
 
                 //Check Rounding value is Negative include Brackets As String
-                 if(totalRounding < 0)
+                 if(StrToCurr(totalRounding) < 0)
                  {
                     //rounding = rounding*-1;
-                    totalRounding = "(" + totalRounding + ")";
+                    totalRounding = "(" + StrToCurr(totalRounding)*-1 + ")";
                  }
 
                 OutputValue += menuTotal ;
@@ -537,7 +537,7 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllPaymentTypes(Databas
         ibInternalQuery->SQL->Text = "SELECT * FROM (SELECT CASE WHEN (ABP.PAY_TYPE != 'Credit') THEN (ABP.PAY_TYPE) "
                                                   "WHEN (ABP.PAY_TYPE = 'Credit' AND ABP.SUBTOTAL > 0) THEN (ABP.PAY_TYPE) END PAY_TYPE "
                                      "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                                     "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME  ";
+                                     "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME  AND ABP.SUBTOTAL <> 0 ";
 
         if (!isAllTerminalSelected)
         {
