@@ -461,6 +461,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
             if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
+            if(payment->GetPaymentAttribute(ePayTypeCredit) && (double)payment->GetPayTendered() < 0.0)
+               continue;
             if(payment->GetPaymentAttribute(ePayTypeCredit))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
             std::map<UnicodeString, TSiHotPayments>::iterator iter;
