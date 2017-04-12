@@ -467,7 +467,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                siHotPayment.Amount = -(payment->GetPayTendered() - payment->TipAmount + payment->GetCashOut() - payment->GetChange());
+                siHotPayment.Amount = -(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description = payment->Name;
                 siHotPayment.Billno = billNo;
                 siHotPayment.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
@@ -477,7 +477,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount = StrToCurr(iter->second.Amount) + (-(payment->GetPayTendered() - payment->TipAmount + payment->GetCashOut()- payment->GetChange()));
+                double amount = StrToCurr(iter->second.Amount) + (-(payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
                 iter->second.Amount = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))
