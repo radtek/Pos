@@ -446,13 +446,29 @@ void TdmStockReportData::SetupStockMovement(TDateTime StartTime, TDateTime EndTi
 {
 	qrStockMovement->Close();
 	qrStockMovement->SQL->Text =
+
+        "Select "
+            "Location, "
+            "Stock_Category, "
+            "Stock_Group, "
+            "Description, "
+            "Note, "
+            "cast(Sum(Cost * Qty) as float) Total_Cost "
+   		"From "
+		"( "
+
 		"Select "
-			"StockTrans.Location,"
-			"StockTrans.Stock_Category,"
-			"StockTrans.Stock_Group,"
-            "StockTrans.Description,"
-            "StockTrans.Note,"
-			"cast(Sum(StockTrans.Unit_Cost * abs(StockTrans.Qty)) as float) Total_Cost "
+			"StockTrans.Location Location,"
+			"StockTrans.Stock_Category Stock_Category,"
+			"StockTrans.Stock_Group Stock_Group,"
+            "StockTrans.Description Description,"
+            "StockTrans.Note Note, "
+            "StockTrans.Unit_Cost Cost, "
+            "case "
+            "when(StockTrans.TRANSACTION_TYPE ='Manufacture') "
+            "then  abs(StockTrans.Qty) "
+            "else "
+            "StockTrans.Qty end Qty "
 		"From "
 			"StockTrans "
 		"Where "
@@ -473,16 +489,18 @@ void TdmStockReportData::SetupStockMovement(TDateTime StartTime, TDateTime EndTi
 												ParamString(Groups->Count, "StockTrans.Stock_Group", "GroupParam") + ")";
 	}
 	qrStockMovement->SQL->Text =	qrStockMovement->SQL->Text +
+
+    ") "
 		"Group By "
-			"StockTrans.Location,"
-			"StockTrans.Stock_Category,"
-			"StockTrans.Stock_Group,"
-            "StockTrans.Description,"
-            "StockTrans.Note "
+			"Location,"
+			"Stock_Category,"
+			"Stock_Group,"
+            "Description,"
+            "Note "
 		"Order By "
-			"StockTrans.Location,"
-			"StockTrans.Stock_Category,"
-			"StockTrans.Stock_Group";
+			"Location,"
+			"Stock_Category,"
+			"Stock_Group";
 	for (int i=0; i<Locations->Count; i++)
 	{
 		qrStockMovement->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
@@ -637,8 +655,16 @@ void TdmStockReportData::SetupStockInquiry (TDateTime StartTime, TDateTime EndTi
 			"StockTrans.Transaction_Type,"
 			"StockTrans.Location,"
 			"StockTrans.Unit,"
-			"abs(StockTrans.Qty) Qty,"
-			"cast(StockTrans.Unit_Cost * abs(StockTrans.Qty) as float) Total_Cost,"
+            "case "
+            "when(StockTrans.Transaction_Type = 'Manufacture') "
+            "then abs(StockTrans.Qty) "
+            "else "
+            "StockTrans.Qty end QTY, "
+            "case "
+            "when(StockTrans.Transaction_Type = 'Manufacture') "
+            "then cast(StockTrans.Unit_Cost * abs(StockTrans.Qty) as float) "
+            "else "
+            "cast(StockTrans.Unit_Cost * StockTrans.Qty as float) end Total_Cost, "
 			"StockTrans.User_Name,"
 			"StockTrans.Supplier_Name,"
 			"StockTrans.Reference,"
@@ -749,7 +775,7 @@ void TdmStockReportData::SetupManufactureRecipe(TDateTime StartTime, TDateTime E
 			"StockTrans.Description,"
 			"StockTrans.Created,"
 			"StockTrans.Location,"
-			"StockTrans.Qty, "
+			"abs(StockTrans.Qty) Qty, "
             "StockTrans.Total_Cost,"
             "StockTrans.Unit_Cost,"
             "StockTrans.Unit,"
@@ -1395,12 +1421,12 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
 			"StockLocation.Location,"
 			"StockLocation.Average_Cost,"
 			"StockLocation.Latest_Cost,"
-			"StockLocation.On_Hand,"
+			"StockLocation.On_Hand, "
 			"StockLocation.Stocktake,"
 			"StockLocation.Variance ,"
 			"Cast(StockLocation.Variance * StockLocation.Average_Cost As Numeric(15, 4)) Cost,"
 			"StockLocation.Opening,"
-			"StockLocation.Sales*(-1) Sales, "
+            "StockLocation.Sales*(-1) Sales , "
 			"StockLocation.Writeoff*(-1) Writeoff,"
 			"StockLocation.Inwards,"
 			"StockLocation.Transfer, "
@@ -1452,7 +1478,8 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
         "StockLocation.Writeoff, "
         "StockLocation.Inwards, "
         "StockLocation.Transfer, "
-        "STK.QTY "
+        "STK.QTY, "
+        "StockLocation.SALES_PENDING "
         
 		"Order By "
         //"StockGroup.Stock_Group, "
@@ -1579,14 +1606,6 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			   " stocktrans.CODE, "
 			   " stocktrans.LOCATION "
             " )STK on STOCKTAKEHISTORY.CODE=STK.CODE and STK.LOCATION=STOCKTAKEHISTORY.LOCATION "
-            ///////////////******************************Add new join to calculate on hand values for an item to show in commited stocktake reports...*************************************************/////////////
-            /*"left join "
-            "( "
-                " SELECT a.STOCK_KEY, b.LOCATION, b.ON_HAND, a.CODE, a.DESCRIPTION "
-                " FROM STOCK a inner join STOCKLOCATION b on b.STOCK_KEY = a.STOCK_KEY "
-
-            ") STKLOC on STOCKTAKEHISTORY.CODE = STKLOC.CODE and STKLOC.LOCATION=STOCKTAKEHISTORY.LOCATION " */
-
 
 		"Where "
 			"StocktakeHistory.Stocktake_Key = :Stocktake_Key "
@@ -1606,7 +1625,6 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			" StocktakeHistory.Inwards, "
 			" StocktakeHistory.Transfer, "
 			" STK.QTY "
-            //" STKLOC.On_Hand  "
 
 		"Order By "
 			"StocktakeHistory.Location, "

@@ -366,7 +366,7 @@ private:
 
 public:
     TManufactureStock(TIBDatabase *IBDatabase, double TotalCost, int RecipeKey);
-    void UpdateStock(AnsiString temp[], double Qty, double Cost);
+    void UpdateStock(AnsiString temp[], double Qty, double Cost, bool IsManufactured = false);
 };
 }
 // namespace

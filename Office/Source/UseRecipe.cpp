@@ -432,7 +432,7 @@ void TfrmUseRecipe::UpdateDB(void)
 
             double AveCost = ItemPrices[NodeData->Text + "," + NodeData->Location];
 
-            ManufactureStock.UpdateStock(temp, -NodeData->RecipeQty, AveCost);     // change for manufacture receipes for initial items...... 
+            ManufactureStock.UpdateStock(temp, -NodeData->RecipeQty, AveCost, true);     // change for manufacture receipes qty for initial items...... 
 
             Node = vtvStock->GetNext(Node);
         }   

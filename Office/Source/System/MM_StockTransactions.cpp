@@ -724,6 +724,7 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 			// Otherwise calculate a weighted average based on total value of items in stock and
 			// total value of stock received.
 			double NewOnHand	= StockDetails.On_Hand + TransactionInfo.Qty;
+            double inwards_qty = TransactionInfo.Qty;
 
 			Currency NewAverage;
 			Currency NewLatestCost;
@@ -782,7 +783,9 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
                }
                }
                 if(!isAlreadycommitted)
-                	{ NewOnHand	= StockDetails.On_Hand ;
+                	{
+                        NewOnHand = StockDetails.On_Hand ;
+                        inwards_qty = 0;
                     
 
 
@@ -806,7 +809,7 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 
                     }
 
-                fUpdateStockParams(InvoiceItemInfo->Stock_Key, TransactionInfo.Location, BatchInfo.BatchType, NewAverage, NewLatestCost, NewOnHand, TransactionInfo.Qty);
+                fUpdateStockParams(InvoiceItemInfo->Stock_Key, TransactionInfo.Location, BatchInfo.BatchType, NewAverage, NewLatestCost, NewOnHand, inwards_qty);
 
 				// Update the latest cost of the item supplied by the supplier if details are the same.
 				// Don't change the latest cost if it's $0.00 (i.e. freebie)
@@ -2165,15 +2168,13 @@ TManufactureStock::TManufactureStock(TIBDatabase *IBDatabase, double TotalCost, 
 }
 //--------------------------------------------------------------------------
 
-void TManufactureStock::UpdateStock(AnsiString temp[], double Qty, double Cost)
+void TManufactureStock::UpdateStock(AnsiString temp[], double Qty, double Cost, bool IsManufactured)
 {
 	fDBTransaction.StartTransaction();
     TTransactionInfo TransactionInfo(ttManufacture, fBatchInfo);
     int GroupKey;
     int CategoryKey;
     int StockKey;
-
-
 
     TransactionInfo.BatchInfo.Created = Now();
     TransactionInfo.Location = temp[0];
@@ -2206,7 +2207,14 @@ void TManufactureStock::UpdateStock(AnsiString temp[], double Qty, double Cost)
 
     TransactionInfo.Unit_Cost = Cost;
     TransactionInfo.Qty = Qty;
-    TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * abs(Qty);
+    if(IsManufactured)
+    {
+        TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * abs(Qty);
+    }
+    else
+    {
+        TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * Qty;
+    }
     TransactionInfo.Total_GST = 0;
     TransactionInfo.Note = temp[3];
     fAddBatchTransaction(TransactionInfo);
