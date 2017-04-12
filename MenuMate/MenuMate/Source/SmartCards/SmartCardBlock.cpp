@@ -152,9 +152,6 @@ void TSmartCardBlock::BlockInfoWrite(int BlockStart, int MaxBlockLength,TMemoryS
 			inStream.Position = 0;
 		}
 	}
-	#ifdef _DEBUG
-	SaveToFile("MMBlockInfo.bin");
-	#endif
 }
 
 void TSmartCardBlock::Read(int Pos,unsigned short &Value)

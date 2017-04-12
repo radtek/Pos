@@ -393,5 +393,6 @@ TGlobalSettings::TGlobalSettings()
     PanasonicServerIP = "";
     CashVarianceGLCode = "";
     ReportExportPath = "";
+    MembershipType = 0;
 }
 

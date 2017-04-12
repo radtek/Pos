@@ -61,7 +61,7 @@ bool TXeroInvoiceBuilder::ChargeToXero( TPaymentTransaction& inPaymentTransactio
 	{
 		FXeroPayment =  inPaymentTransaction.PaymentGet(i);
 
-		if((FXeroPayment->Properties & ePayTypeChargeToXero)  && FXeroPayment->GetPay() != 0)
+		if((FXeroPayment->GetPaymentAttribute(ePayTypeChargeToXero))  && FXeroPayment->GetPay() != 0)
 		{
 			 result = true;
 			 break;

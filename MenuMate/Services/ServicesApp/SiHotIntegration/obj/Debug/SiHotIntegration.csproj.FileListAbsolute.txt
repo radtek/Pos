@@ -1,0 +1,7 @@
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\SiHotIntegration.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\SiHotIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\NLog.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\NLog.xml
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb

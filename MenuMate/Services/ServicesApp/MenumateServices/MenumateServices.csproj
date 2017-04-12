@@ -94,8 +94,9 @@
     <Reference Include="FirebirdSql.Data.FirebirdClient">
       <HintPath>..\..\..\..\Assemblies\3rdParty\Firebird\32\FirebirdSql.Data.FirebirdClient.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Json.Net\Net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\Newtonsoft.Json.7.0.1\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\..\Program Files\NLog\.NET Framework 4.0\NLog.dll</HintPath>
@@ -174,14 +175,26 @@
     <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
     <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
     <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
+    <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateServiceSiHotIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSiHotIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceSiHotIntegration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Internal Classes\WalletPayments\WalletPaymentController.cs" />
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
+    <Compile Include="MenumateRunners\WalletPaymentsServiceRunner.cs" />
     <Compile Include="MenumateServiceAccounting.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -310,6 +323,12 @@
     <Compile Include="MenumateServiceSmartLink.Designer.cs">
       <DependentUpon>MenumateServiceSmartLink.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenumateServiceWalletPayments.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceWalletPayments.Designer.cs">
+      <DependentUpon>MenumateServiceWalletPayments.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServiceWebMate.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -344,8 +363,11 @@
     <Compile Include="Tools\ServiceNameManager.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\WCFServiceThorlink.cs" />
     <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
@@ -360,6 +382,7 @@
     <Compile Include="WCFServices\WCFServiceChefMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
+    <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -408,6 +431,14 @@
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
       <Name>SalesForceCommunication</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiHotIntegration\SiHotIntegration.csproj">
+      <Project>{BE08BEA6-3A39-43C9-9E2A-94C2D89734C4}</Project>
+      <Name>SiHotIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WalletPaymets\WalletPaymets.csproj">
+      <Project>{843E831F-1B70-4238-AA55-96492F53AAE5}</Project>
+      <Name>WalletPaymets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>
       <Name>AccountingIntegration</Name>
@@ -442,6 +473,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

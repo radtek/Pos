@@ -210,6 +210,7 @@ void TMembershipThorlink::UpdateThorlinkVouchers(Database::TDBTransaction &DBTra
 	}
 
 }
+
 int TMembershipThorlink::GenerateThorVoucherKey(Database::TDBTransaction &DBTransaction)
 {
     DBTransaction.StartTransaction();

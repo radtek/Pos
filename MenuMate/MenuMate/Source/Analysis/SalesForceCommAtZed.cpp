@@ -8,6 +8,7 @@
 #include "PocketVoucherInterface.h"
 #include "SalesForceInterface.h"
 #include "StockInterface.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -70,14 +71,15 @@ bool TSalesForceCommAtZed::CheckPocketVoucherPaymentType(Database::TDBTransactio
         PVFieldSalesForce = pvDetailsLocal.PocketVoucherField;
         std::vector<TPayment> Payments;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
+
         for(std::vector<TPayment>::iterator i = Payments.begin() ; i != Payments.end() ; ++i)
         {
             // Identifies the Payment type is Pocket Voucher Type
-            if(i->Properties & ePayTypePocketVoucher)
+            if(i->GetPaymentAttribute(ePayTypePocketVoucher))
             {
                 // Finds out if any property s different from what is present at SF
                 if((i->UniVoucherPass != pvDetailsLocal.Password || i->VoucherMerchantID != pvDetailsLocal.MerchantId ||
-                   !(i->Properties & ePayTypeDispPVMsg) || TDeviceRealTerminal::Instance().PocketVouchers->URL != pvDetailsLocal.Url || i->UniVoucherUser != pvDetailsLocal.Username
+                   !(i->GetPaymentAttribute(ePayTypeDispPVMsg)) || TDeviceRealTerminal::Instance().PocketVouchers->URL != pvDetailsLocal.Url || i->UniVoucherUser != pvDetailsLocal.Username
                      || i->DisplayOrder != 99) &&(pvDetailsLocal.MerchantId.Length()!= 0 && pvDetailsLocal.Password.Length()!= 0
                      && pvDetailsLocal.Url.Length()!= 0 && pvDetailsLocal.Username.Length()!= 0))
                  {
@@ -118,9 +120,9 @@ void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTrans
 {
     try
     {
-        int Properties = 0;
-        Properties |= ePayTypePocketVoucher;
-        Properties |= ePayTypeDispPVMsg;
+        AnsiString Properties = "-" + IntToStr(ePayTypePocketVoucher) + "-" + IntToStr(ePayTypeDispPVMsg)  + "-";
+        //Properties |= ePayTypePocketVoucher;
+        //Properties |= ePayTypeDispPVMsg;
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE PAYMENTTYPES SET PROPERTIES = :PROPERTIES, "
@@ -128,7 +130,7 @@ void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTrans
         "VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, DISPLAY_ORDER = :DISPLAY_ORDER "
         "WHERE "
         "PAYMENT_NAME	= :PAYMENT_NAME";
-        IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+        IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
         IBInternalQuery->ParamByName("VOUCHER_MERCHANT_ID")->AsString = MerchantId;
         IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Username;
         IBInternalQuery->ParamByName("VOUCHER_PASS")->AsString = Password;
@@ -136,6 +138,18 @@ void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTrans
         IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = name;
         IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsString = 99;
         IBInternalQuery->ExecQuery();
+
+        //Add Atrributes to Payment
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME	= :PAYMENT_NAME";
+        IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = name;
+        IBInternalQuery->ExecQuery();
+        int PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+
+        TDeviceRealTerminal::Instance().PaymentSystem->DeletePaymentAttribute(DBTransaction,PaymentKey);
+
+        TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypePocketVoucher);
+        TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypeDispPVMsg);
     }
    catch(Exception &E)
 	{
@@ -145,23 +159,28 @@ void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTrans
 
 void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTransaction)
 {
-        int a = 0;
-        int Properties = 0;
-        Properties |= ePayTypePocketVoucher;
-        Properties |= ePayTypeDispPVMsg;
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        TIBSQL *IBInternalQuery  = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int PaymentKey = IBInternalQuery->Fields[0]->AsInteger;
+
+
+        AnsiString Properties = "-" + IntToStr(ePayTypePocketVoucher) + "-" + IntToStr(ePayTypeDispPVMsg)  + "-";
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
 			"INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "EXCHANGE_RATE, " "COLOUR, "
 			"DISPLAY_ORDER, " "PERCENT_ADJUST, " "AMOUNT_ADJUST, " "ROUNDTO, " "ADJUST_REASON, " "GROUP_NUMBER, " "THIRDPARTYCODES_KEY, "
 			"DEST_IP," "DEST_PORT," "TAX_RATE," "PRE_VOUCHER_CODE," "VOUCHER_MERCHANT_ID," "INVOICE_EXPORT,VOUCHER_URL,VOUCHER_USER, "
-			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE " ") " "VALUES (" "(SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE), " ":PAYMENT_NAME, "
+			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
 			":PROPERTIES, " ":EXCHANGE_RATE, " ":COLOUR, " ":DISPLAY_ORDER, " ":PERCENT_ADJUST, " ":AMOUNT_ADJUST, " ":ROUNDTO, "
 			":ADJUST_REASON, " ":GROUP_NUMBER, " ":THIRDPARTYCODES_KEY, " ":DEST_IP," ":DEST_PORT," ":TAX_RATE," ":PRE_VOUCHER_CODE,"
 			":VOUCHER_MERCHANT_ID, " ":INVOICE_EXPORT,:VOUCHER_URL,:VOUCHER_USER,:VOUCHER_PASS,"
 			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE ) ";
+        IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
         IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Pocket Voucher";
-        IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+        IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
         IBInternalQuery->ParamByName("EXCHANGE_RATE")->AsCurrency = 0.0;
         IBInternalQuery->ParamByName("COLOUR")->AsInteger = clAqua;
         IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 99;
@@ -185,6 +204,11 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
         IBInternalQuery->ParamByName("GL_CODE")->AsString = 0;
         IBInternalQuery->ParamByName("THIRDPARTYCODES_KEY")->AsInteger = 0;
         IBInternalQuery->ExecQuery();
+
+        TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypePocketVoucher);
+        TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypeDispPVMsg);
+
+
         if(TDeviceRealTerminal::Instance().PocketVouchers->URL != Url)
         {
            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,Url);
@@ -204,7 +228,7 @@ void TSalesForceCommAtZed::EnableOrDisablePV(AnsiString CompanyName)
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction1,Payments);
         for(std::vector<TPayment>::iterator i = Payments.begin() ; i != Payments.end() ; ++i)
         {
-            if(i->Properties & ePayTypePocketVoucher)
+            if(i->GetPaymentAttribute(ePayTypePocketVoucher))
              {
                  pocketVoucherExists = true;
              }

@@ -568,7 +568,7 @@ TListMenu *TDBMenu::LoadMenuFromDB(Database::TDBControl &DBControl, const Unicod
    MenuEnumerator.EnumMenus(MenusInfo);
    // Find the menu key based on name.
 #ifdef MenuMate
-   PhoenixHM->ClearCodesTestedOk();
+   TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 #endif
 
    for (iMenus = MenusInfo.begin(); iMenus != MenusInfo.end(); iMenus++)
@@ -744,7 +744,7 @@ TListMenu *TDBMenu::LoadMenuFromDB(Database::TDBControl &DBControl, const Unicod
 						DBTransaction.StartTransaction();
 						UnicodeString Code = Size->ThirdPartyCode;
 						DBTransaction.Commit();
-						if (!PhoenixHM->TestCode(Code))
+						if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
 						{
 						   throw Exception("Unable to Load Menu " + Menu->MenuName + ". The Third Party Code : " + Code +
 							  " is not found in the PMS System");

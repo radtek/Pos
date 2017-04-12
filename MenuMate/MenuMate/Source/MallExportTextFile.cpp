@@ -17,7 +17,7 @@ TMallExportTextFile::TMallExportTextFile()
 //----------------------------------------------------------------------------------------------
 void TMallExportTextFile::WriteToFile(TMallExportPrepareData preparedData)
 {
-    for( int index = 1; index <= preparedData.MallSettings.size(); index++)
+    for( int index = 1; index <= preparedData.FileName.size(); index++)
     {
         //Iterator for iterating settings
         std::map<int,list<TMallExportSettings> >::iterator itSettings = preparedData.MallSettings.find(index);
@@ -104,14 +104,17 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
             }
 
             //First Write Settings in the file ex:- Tenant Code, TerminalNumber etc
-            for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
+            if(itSettings->second.size())
             {
-                //Convert Value into String
-                outFile << itFileSettings->Value.t_str();
+                for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
+                {
+                    //Convert Value into String
+                    outFile << itFileSettings->Value.t_str();
 
-                //Append new line if setting is on
-                if(appendNewLine == "true")
-                    outFile << "\n";
+                    //Append new line if setting is on
+                    if(appendNewLine == "true")
+                        outFile << "\n";
+                }
             }
 
             //Secondly Write data in the file

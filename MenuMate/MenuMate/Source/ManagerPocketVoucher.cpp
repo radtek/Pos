@@ -78,7 +78,7 @@ void TManagerPocketVoucher::Initialise(Database::TDBTransaction &DBTransaction)
              if(redemptionResponse.status.CompareIC("Successful") == 0)
              {
                 Payment->Result = eAccepted;
-                if(Payment->Properties & ePayTypeDispPVMsg)
+                if(Payment->GetPaymentAttribute(ePayTypeDispPVMsg))
                 {
                    MessageBox(redemptionResponse.responseMessage,"Pocket Voucher Accepted", MB_OK + MB_ICONINFORMATION);
                 }
@@ -145,7 +145,7 @@ void TManagerPocketVoucher::Initialise(Database::TDBTransaction &DBTransaction)
                {
                   Payment->Result = eAccepted;
                   Payment->ExternalReferenceNumber = Voucher->GetPVTransCode();
-                  if(Payment->Properties & ePayTypeDispPVMsg)
+                  if(Payment->GetPaymentAttribute(ePayTypeDispPVMsg))
                   {
                      MessageBox(Voucher->ResultText,"Pocket Voucher Accepted", MB_OK + MB_ICONINFORMATION);
                   }

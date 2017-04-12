@@ -1,8 +1,6 @@
 #ifndef BaseReportH
 #define BaseReportH
 
-#include <vector>
-
 #include "IReport.h"
 #include "IReportSection.h"
 

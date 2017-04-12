@@ -90,6 +90,7 @@
 #include "ManagerCloudSync.h"
 #include "CSVExportReceiver.h"
 #include "ManagerPanasonic.h"
+#include "ManagerPMS.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -132,7 +133,6 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 	ManagerFreebie = new TManagerFreebie();
 	ManagerReceipt = new TManagerReceipt(TDeviceRealTerminal::Instance().DBControl);
 	ManagerDockets = new TManagerDockets(TDeviceRealTerminal::Instance().DBControl);
-	PhoenixHM = new TPhoenixHM(TDeviceRealTerminal::Instance().DBControl);
 	TManagerPatron::Instance();
 	TManagerChitNumber::Instance();
 	EftPos = NULL;
@@ -184,8 +184,6 @@ __fastcall TfrmMain::~TfrmMain()
 	ManagerReceipt = NULL;
 	delete ManagerDockets;
 	ManagerDockets = NULL;
-	delete PhoenixHM;
-	PhoenixHM = NULL;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormDestroy(TObject *Sender)
@@ -230,6 +228,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			Close();
 			return;
 		}
+        std::auto_ptr<TManagerPMS> managerPMS (new TManagerPMS());
+        managerPMS->Initialize(TDeviceRealTerminal::Instance().DBControl, TGlobalSettings::Instance().PMSType);
 		lbeVersion->Caption = "";
 		frmDBMod->SetCaption("Initialising Terminal...");
 		Database::TDBTransaction DBBootTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -297,8 +297,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		}
 		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
 		{
-			PhoenixHM->Registered = true;
-			PhoenixHM->Initialise();
+   			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
+			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])

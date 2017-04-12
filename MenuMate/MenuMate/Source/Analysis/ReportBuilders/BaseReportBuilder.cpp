@@ -1,6 +1,5 @@
 #include "BaseReportBuilder.h"
 #include "ReportSectionFactoryProvider.h"
-#include "PrintFormat.h"
 #include "Comms.h"
 
 BaseReportBuilder::BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction)

@@ -25,10 +25,6 @@ bool TPaymentTypeGroupsDBDriver::AddPaymentTypeGroup(TPaymentTypeGroup* group)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
     return status;
 }
@@ -45,10 +41,7 @@ bool TPaymentTypeGroupsDBDriver::UpdatePaymentTypeGroup(TPaymentTypeGroup* group
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
     return status;
 }
@@ -65,10 +58,7 @@ bool TPaymentTypeGroupsDBDriver::DeletePaymentTypeGroup(int groupKey)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
     return status;
 }
@@ -86,10 +76,7 @@ void TPaymentTypeGroupsDBDriver::LoadAssignedGroupsByType(
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 }
 
@@ -105,10 +92,7 @@ void TPaymentTypeGroupsDBDriver::LoadAllPaymentTypeGroups(TList* groups)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 }
 //---------------------------------------------------------------------------
@@ -173,10 +157,6 @@ bool TPaymentTypeGroupsDBDriver::AssignTypesToPaymentGroup(
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
     return status;
 }
@@ -194,10 +174,7 @@ TPaymentTypeGroup TPaymentTypeGroupsDBDriver::GetPaymentGroupByName(UnicodeStrin
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 }
 //---------------------------------------------------------------------------
@@ -337,10 +314,6 @@ void TPaymentTypeGroupsDBDriver::LoadAssignedTypesByGroup(int paymentGroupKey,TL
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
 }
 //---------------------------------------------------------------------------

@@ -22,6 +22,7 @@
 #include "VerticalSelect.h"
 #include "StringTools.h"
 #include "PaymentMaintenance.h"
+#include "WalletConfiguration.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
@@ -37,8 +38,6 @@ __fastcall TfrmNewPaymentType::TfrmNewPaymentType(TComponent* Owner, Database::T
 {
    PaymentKey = inPaymentKey;
 }
-
-// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::CreateParams(Controls::TCreateParams &params)
 {
@@ -49,7 +48,6 @@ void __fastcall TfrmNewPaymentType::CreateParams(Controls::TCreateParams &params
 	  WinOwner = NULL;
    }
 }
-
 // ---------------------------------------------------------------------------
 TfrmNewPaymentType *TfrmNewPaymentType::Create(TForm* Owner, Database::TDBControl &inDBControl, TListPaymentSystem *inPaymentSystem,
    int inPaymentKey)
@@ -57,7 +55,6 @@ TfrmNewPaymentType *TfrmNewPaymentType::Create(TForm* Owner, Database::TDBContro
    WinOwner = Owner;
    return new TfrmNewPaymentType(Owner, inDBControl, inPaymentSystem, inPaymentKey);
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 {
@@ -73,107 +70,79 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 
    try
    {
-      Payment.Name = btnName->Caption;
-	  Payment.DisplayOrder = PaymentPos;
-	  Payment.Colour = btnName->ButtonColor;
-	  Payment.GroupNumber = PaymentGroup;
-	  Payment.PaymentThirdPartyID = PaymentThirdPartyID;
-	  Payment.VoucherMerchantID = VoucherMerchantID;
-	  Payment.TaxRate = TaxRate;
-	  Payment.Properties = 0;
-	  Payment.RoundTo = RoundTo;
-	  Payment.SecondaryPMSIPAddress = SecondaryPMSIPAddress;
-	  Payment.SecondaryPMSPortNumber = SecondaryPMSPortNumber;
-      Payment.Export = Export;
-      Payment.UniVoucherUser = UniUser;
-   	  Payment.UniVoucherPass = UniPass;
-	  Payment.UniVoucherToken = "";
-	  Payment.CVSReadLocation = CVSReadLocation;
-	  Payment.CVSWriteLocation = CVSWriteLocation;
-      Payment.TabKey  =TabKey;
-      Payment.GLCode = GLCode;
-      Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
-	  if (cbIsTip->Checked)
-		 Payment.Properties |= ePayTypeCustomSurcharge;
-	  if (cbOpendrawer->Checked)
-		 Payment.Properties |= ePayTypeOpensCashDrawer;
-	  if (cbIsCash->Checked)
-		 Payment.Properties |= ePayTypeCash;
-	  if (cbCashOut->Checked)
-		 Payment.Properties |= ePayTypeAllowCashOut;
-	  if (cbElectronicTransaction->Checked)
-		 Payment.Properties |= ePayTypeElectronicTransaction;
-	  if (cbCheckAccepted->Checked)
-		 Payment.Properties |= ePayTypeCheckAccepted;
-	  if (cbGetVoucherDetails->Checked)
-		 Payment.Properties |= ePayTypeGetVoucherDetails;
-	  if (cbGetCardDetails->Checked)
-		 Payment.Properties |= ePayTypeGetCardDetails;
-	  if (cbTaxFree->Checked)
-		 Payment.Properties |= ePayTypeTaxFree;
-	  if (cbReqNote->Checked)
-		 Payment.Properties |= ePayTypeReqNote;
-	  if (cbSec1->Checked)
-		 Payment.Properties |= ePayTypeSecure1;
-	  if (cbSec2->Checked)
-		 Payment.Properties |= ePayTypeSecure2;
-	  if (cbSec3->Checked)
-		 Payment.Properties |= ePayTypeSecure3;
-	  if (cbCSVPaymentType->Checked)
-		 Payment.Properties |= ePayTypeCSV;
-	  if (cbSurcharge->Checked)
-		 Payment.Properties |= ePayTypeSurcharge;
-	  if (tbRoomPayment->Checked)
-		 Payment.Properties |= ePayTypeRoomInterface;
-	  if (cbIntegrated->Checked)
-		 Payment.Properties |= ePayTypeIntegratedEFTPOS;
-	  if (cbAllowReversal->Checked)
-		 Payment.Properties |= ePayTypeAllowReversal;
-	  if (cbAllowManPan->Checked)
-		 Payment.Properties |= ePayTypeAllowMANPAN;
-	  if (cbCheckSig->Checked)
-		 Payment.Properties |= ePayTypeCheckSignature;
-	  if (tbChequeVerify->Checked)
-		 Payment.Properties |= ePayTypeChequeVerify;
-	  if (tbInvoiceInterface->Checked)
-		 Payment.Properties |= ePayTypeInvoiceExport;
-	  if (SecondaryPMSIPAddress != "")
-		 Payment.Properties |= ePayTypeSecondaryPMSExport;
-	  if (cbPocketVoucher->Checked)
-		 Payment.Properties |= ePayTypePocketVoucher;
-	  if (cbPVAcceptedMsg->Checked)
-		 Payment.Properties |= ePayTypeDispPVMsg;
-	  if(CheckBoxExport->Checked)
-		 Payment.Properties |= ePayTypeChargeToAccount;
-	  if(tbChargeToXero->Checked)
-		 Payment.Properties |= ePayTypeChargeToXero;
-	  if(cbRMSInterface->Checked)
-		 Payment.Properties |= ePayTypeRMSInterface;
-	  if(cbAllowTips->Checked)
-		 Payment.Properties |= ePayTypeAllowTips;
+        Payment.Name = btnName->Caption;
+        Payment.DisplayOrder = PaymentPos;
+        Payment.Colour = btnName->ButtonColor;
+        Payment.GroupNumber = PaymentGroup;
+        Payment.PaymentThirdPartyID = PaymentThirdPartyID;
+        Payment.VoucherMerchantID = VoucherMerchantID;
+        Payment.TaxRate = TaxRate;
+        Payment.ClearPaymentAttribute();
+        Payment.RoundTo = RoundTo;
+        Payment.SecondaryPMSIPAddress = SecondaryPMSIPAddress;
+        Payment.SecondaryPMSPortNumber = SecondaryPMSPortNumber;
+        Payment.Export = Export;
+        Payment.UniVoucherUser = UniUser;
+        Payment.UniVoucherPass = UniPass;
+        Payment.UniVoucherToken = "";
+        Payment.CVSReadLocation = CVSReadLocation;
+        Payment.CVSWriteLocation = CVSWriteLocation;
+        Payment.TabKey  =TabKey;
+        Payment.GLCode = GLCode;
+        Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
 
- 	  if (Reason != "")
-	  {
-		 Payment.AdjustmentReason = Reason;
-		 if (SurchargeIsAPercentAdjust)
-		 {
-			Payment.AmountAdjust = 0;
-			Payment.PercentAdjust = SurchargeAmount;
-		 }
-		 else
-		 {
-			Payment.AmountAdjust = SurchargeAmount;
-			Payment.PercentAdjust = 0;
-		 }
-	  }
-	  else
-	  {
-		 Payment.AdjustmentReason = "";
-		 Payment.AmountAdjust = 0;
-		 Payment.PercentAdjust = 0;
-	  }
+        Payment.SetPaymentAttribute(ePayTypeCustomSurcharge,cbIsTip->Checked);
+        Payment.SetPaymentAttribute(ePayTypeOpensCashDrawer,cbOpendrawer->Checked);
+        Payment.SetPaymentAttribute(ePayTypeCash,cbIsCash->Checked); 
+        Payment.SetPaymentAttribute(ePayTypeAllowCashOut,cbCashOut->Checked);
+        Payment.SetPaymentAttribute(ePayTypeElectronicTransaction,cbElectronicTransaction->Checked);
+        Payment.SetPaymentAttribute(ePayTypeCheckAccepted,cbCheckAccepted->Checked);
+        Payment.SetPaymentAttribute(ePayTypeGetVoucherDetails,cbGetVoucherDetails->Checked);
+        Payment.SetPaymentAttribute(ePayTypeGetCardDetails,cbGetCardDetails->Checked);
+        Payment.SetPaymentAttribute(ePayTypeTaxFree,cbTaxFree->Checked);
+        Payment.SetPaymentAttribute(ePayTypeReqNote,cbReqNote->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSecure1,cbSec1->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSecure2,cbSec2->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSecure3,cbSec3->Checked);
+        Payment.SetPaymentAttribute(ePayTypeCSV,cbCSVPaymentType->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSurcharge,cbSurcharge->Checked);
+        Payment.SetPaymentAttribute(ePayTypeRoomInterface,tbRoomPayment->Checked)  ;
+        Payment.SetPaymentAttribute(ePayTypeIntegratedEFTPOS,cbIntegrated->Checked);
+        Payment.SetPaymentAttribute(ePayTypeAllowReversal,cbAllowReversal->Checked);
+        Payment.SetPaymentAttribute(ePayTypeAllowMANPAN,cbAllowManPan->Checked);
+        Payment.SetPaymentAttribute(ePayTypeCheckSignature,cbCheckSig->Checked);
+        Payment.SetPaymentAttribute(ePayTypeChequeVerify,tbChequeVerify->Checked);
+        Payment.SetPaymentAttribute(ePayTypeInvoiceExport,tbInvoiceInterface->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSecondaryPMSExport,SecondaryPMSIPAddress != "");
+        Payment.SetPaymentAttribute(ePayTypePocketVoucher,cbPocketVoucher->Checked);
+        Payment.SetPaymentAttribute(ePayTypeDispPVMsg,cbPVAcceptedMsg->Checked);
+        Payment.SetPaymentAttribute(ePayTypeChargeToAccount,CheckBoxExport->Checked);
+        Payment.SetPaymentAttribute(ePayTypeChargeToXero,tbChargeToXero->Checked);
+        Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
+        Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
+        Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
+        if (Reason != "")
+        {
+            Payment.AdjustmentReason = Reason;
+            if (SurchargeIsAPercentAdjust)
+            {
+                Payment.AmountAdjust = 0;
+                Payment.PercentAdjust = SurchargeAmount;
+            }
+            else
+            {
+                Payment.AmountAdjust = SurchargeAmount;
+                Payment.PercentAdjust = 0;
+            }
+        }
+        else
+        {
+             Payment.AdjustmentReason = "";
+             Payment.AmountAdjust = 0;
+             Payment.PercentAdjust = 0;
+        }
 
-	  PaymentSystem->PaymentSave(DBTransaction, PaymentKey, Payment);
+        PaymentSystem->PaymentSave(DBTransaction, PaymentKey, Payment);
    }
    catch(EDatabaseError & Err)
    {
@@ -184,13 +153,11 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
    DBTransaction.Commit();
    Close();
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::Panel20Click(TObject *Sender)
 {
    Close();
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 {
@@ -211,7 +178,6 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         ExchangeRate = 0.0;
         Reason = Payment.AdjustmentReason;
         PaymentThirdPartyID = Payment.PaymentThirdPartyID;
-        //FixedVoucherCode = Payment.FixedVoucherCode;
         VoucherMerchantID = Payment.VoucherMerchantID;
         SecondaryPMSIPAddress = Payment.SecondaryPMSIPAddress;
         SecondaryPMSPortNumber = Payment.SecondaryPMSPortNumber;
@@ -220,7 +186,6 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         TaxRate = Payment.TaxRate;
         RoundTo = Payment.RoundTo;
         SurchargeIsAPercentAdjust = false;
-        // UniURL = Payment.UniVoucherURL;
         UniUser = Payment.UniVoucherUser;
         UniPass = Payment.UniVoucherPass;
         TabKey  = Payment.TabKey;
@@ -307,9 +272,9 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             btnName->Font->Color = clWhite;
         }
 
-        int Properties = Payment.Properties;
 
-        if (Properties & ePayTypeSurcharge)
+
+        if (Payment.GetPaymentAttribute(ePayTypeSurcharge))
         {
             cbSurcharge->OnClick = NULL;
             cbSurcharge->Checked = true;
@@ -320,21 +285,14 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             cbSurcharge->Checked = false;
         }
 
-        if (Properties & ePayTypeOpensCashDrawer)
-            cbOpendrawer->Checked = true;
-        else
-            cbOpendrawer->Checked = false;
+
+        cbOpendrawer->Checked = Payment.GetPaymentAttribute(ePayTypeOpensCashDrawer);
         cbIsTip->OnClick = NULL;
-        if (Properties & ePayTypeCustomSurcharge)
-            cbIsTip->Checked = true;
-        else
-            cbIsTip->Checked = false;
+        cbIsTip->Checked = Payment.GetPaymentAttribute(ePayTypeCustomSurcharge);
         cbIsTip->OnClick = cbIsTipClick;
-        if (Properties & ePayTypeAllowCashOut)
-            cbCashOut->Checked = true;
-        else
-            cbCashOut->Checked = false;
-        if (Properties & ePayTypeCash)
+        cbCashOut->Checked = Payment.GetPaymentAttribute(ePayTypeAllowCashOut);
+
+        if (Payment.GetPaymentAttribute(ePayTypeCash))
         {
             cbIsCash->Checked = true;
             tbTabLink->Enabled=false;
@@ -344,146 +302,30 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             cbIsCash->Checked = false;
             tbTabLink->Enabled=true;
         }
-        if (Properties & ePayTypeElectronicTransaction)
-            cbElectronicTransaction->Checked = true;
-        else
-            cbElectronicTransaction->Checked = false;
-        if (Properties & ePayTypeCheckAccepted)
-            cbCheckAccepted->Checked = true;
-        else
-            cbCheckAccepted->Checked = false;
-        if (Properties & ePayTypeGetVoucherDetails)
-            cbGetVoucherDetails->Checked = true;
-        else
-            cbGetVoucherDetails->Checked = false;
-        if (Properties & ePayTypeGetCardDetails)
-            cbGetCardDetails->Checked = true;
-        else
-            cbGetCardDetails->Checked = false;
-        if (Properties & ePayTypeTaxFree)
-        {
-            cbTaxFree->Checked = true;
-        }
-        else
-        {
-            cbTaxFree->Checked = false;
-        }
-        if (Properties & ePayTypeReqNote)
-        {
-            cbReqNote->Checked = true;
-        }
-        else
-        {
-            cbReqNote->Checked = false;
-        }
-        if (Properties & ePayTypeSecure1)
-        {
-            cbSec1->Checked = true;
-        }
-        else
-        {
-            cbSec1->Checked = false;
-        }
-        if (Properties & ePayTypeSecure2)
-        {
-            cbSec2->Checked = true;
-        }
-        else
-        {
-            cbSec2->Checked = false;
-        }
-        if (Properties & ePayTypeSecure3)
-        {
-            cbSec3->Checked = true;
-        }
-        else
-        {
-            cbSec3->Checked = false;
-        }
-        if (Properties & ePayTypeCSV)
-        {
-            cbCSVPaymentType->Checked = true;
-        }
-        else
-        {
-            cbCSVPaymentType->Checked = false;
-        }
-        if (Properties & ePayTypePocketVoucher)
-        {
-            cbPocketVoucher->Checked = true;
-        }
-        else
-        {
-            cbPocketVoucher->Checked = false;
-        }
-        if (Properties & ePayTypeRoomInterface)
-        {
-            tbRoomPayment->Checked = true;
-        }
-        else
-        {
-            tbRoomPayment->Checked = false;
-        }
-
-        if (Properties & ePayTypeIntegratedEFTPOS)
-        {
-            cbIntegrated->Checked = true;
-        }
-        else
-        {
-            cbIntegrated->Checked = false;
-        }
-        if (Properties & ePayTypeAllowReversal)
-        {
-            cbAllowReversal->Checked = true;
-        }
-        else
-        {
-            cbAllowReversal->Checked = false;
-        }
-        if (Properties & ePayTypeAllowMANPAN)
-        {
-            cbAllowManPan->Checked = true;
-        }
-        else
-        {
-            cbAllowManPan->Checked = false;
-        }
-        if (Properties & ePayTypeCheckSignature)
-        {
-            cbCheckSig->Checked = true;
-        }
-        else
-        {
-            cbCheckSig->Checked = false;
-        }
-        if (Properties & ePayTypeChequeVerify)
-        {
-            tbChequeVerify->Checked = true;
-        }
-        else
-        {
-            tbChequeVerify->Checked = false;
-        }
-        if (Properties & ePayTypeInvoiceExport)
-        {
-            tbInvoiceInterface->Checked = true;
-        }
-        else
-        {
-            tbInvoiceInterface->Checked = false;
-        }
-        if (Properties & ePayTypeDispPVMsg)
-        {
-            cbPVAcceptedMsg->Checked = true;
-        }
-        else
-        {
-            cbPVAcceptedMsg->Checked = false;
-        }
+        cbElectronicTransaction->Checked = Payment.GetPaymentAttribute(ePayTypeElectronicTransaction);
+        cbCheckAccepted->Checked = Payment.GetPaymentAttribute(ePayTypeCheckAccepted);
+        cbGetVoucherDetails->Checked = Payment.GetPaymentAttribute(ePayTypeGetVoucherDetails);
+        cbGetCardDetails->Checked = Payment.GetPaymentAttribute(ePayTypeGetCardDetails);
+        cbTaxFree->Checked = Payment.GetPaymentAttribute(ePayTypeTaxFree);
+        cbReqNote->Checked = Payment.GetPaymentAttribute(ePayTypeReqNote);
+        cbSec1->Checked = Payment.GetPaymentAttribute(ePayTypeSecure1);
+        cbSec2->Checked = Payment.GetPaymentAttribute(ePayTypeSecure2);
+        cbSec3->Checked = Payment.GetPaymentAttribute(ePayTypeSecure3);
+        cbCSVPaymentType->Checked = Payment.GetPaymentAttribute(ePayTypeCSV);
+        cbPocketVoucher->Checked = Payment.GetPaymentAttribute(ePayTypePocketVoucher);
+        tbRoomPayment->Checked = Payment.GetPaymentAttribute(ePayTypeRoomInterface);
+        cbIntegrated->Checked = Payment.GetPaymentAttribute(ePayTypeIntegratedEFTPOS);
+        cbAllowReversal->Checked = Payment.GetPaymentAttribute(ePayTypeAllowReversal);
+        cbAllowManPan->Checked = Payment.GetPaymentAttribute(ePayTypeAllowMANPAN);
+        cbCheckSig->Checked = Payment.GetPaymentAttribute(ePayTypeCheckSignature);
+        tbChequeVerify->Checked = Payment.GetPaymentAttribute(ePayTypeChequeVerify);
+        tbInvoiceInterface->Checked = Payment.GetPaymentAttribute(ePayTypeInvoiceExport);
+        cbPVAcceptedMsg->Checked = Payment.GetPaymentAttribute(ePayTypeDispPVMsg);
+        cbRMSInterface->Checked = Payment.GetPaymentAttribute(ePayTypeRMSInterface);
+        cbAllowTips->Checked = Payment.GetPaymentAttribute(ePayTypeAllowTips);
         if(TGlobalSettings::Instance().IsXeroEnabled)
         {
-            if (Properties & ePayTypeChargeToAccount)
+            if (Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
             {
                 CheckBoxExport->Checked = true;
             }
@@ -491,17 +333,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             {
                 CheckBoxExport->Checked = false;
             }
-        }
-        else
-        {
-            CheckBoxExport->Enabled = false;
-            CheckBoxExport->Checked = false;
-        }
 
-
-        if(TGlobalSettings::Instance().IsXeroEnabled)
-        {
-            if(Properties & ePayTypeChargeToXero)
+            if(Payment.GetPaymentAttribute(ePayTypeChargeToXero))
             {
                 tbChargeToXero->Checked = true;
             }
@@ -509,23 +342,21 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             {
                 tbChargeToXero->Checked = false;
             }
+
+
         }
         else
         {
+            CheckBoxExport->Enabled = false;
+            CheckBoxExport->Checked = false;
             tbChargeToXero->Enabled = false;
             tbChargeToXero->Checked = false;
         }
+        cbWalletPayments->Checked = Payment.GetPaymentAttribute(ePayTypeWallet);
+        btnWalletType->Enabled = cbWalletPayments->Checked;
+        btnWalletConfig->Enabled = cbWalletPayments->Checked;
 
-        if(Payment.Properties & ePayTypeRMSInterface)
-        {
-            cbRMSInterface->Checked = true;
-        }
-        else
-        {
-            cbRMSInterface->Checked = false;
-        }
 
-	  cbAllowTips->Checked = Payment.Properties & ePayTypeAllowTips ? true : false;
 	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
 	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;
    }
@@ -539,9 +370,10 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 	  tbRounding->Caption = "Round To\r" + FormatFloat("$0.00", RoundTo);
       tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
       CheckBoxExport->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
+      btnWalletType->Enabled = cbWalletPayments->Checked;
+      btnWalletConfig->Enabled = cbWalletPayments->Checked;
    }
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
 {
@@ -549,10 +381,10 @@ void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
    {
 	  int Temp = Tag;
 	  Tag = Screen->Width;
-          if((double)Screen->Width/Screen->Height < 1.4)
-          {
-	  	ScaleBy(Screen->Width, Temp);
-          }
+      if((double)Screen->Width/Screen->Height < 1.4)
+      {
+        ScaleBy(Screen->Width, Temp);
+      }
    }
 
    Left = (Screen->Width - Width) / 2;
@@ -562,7 +394,6 @@ void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
    Pages->Width = pnlButtons->Left - this->BorderWidth;
    TouchBtn2->Top = pnlButtons->Height - TouchBtn2->Height - 8;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
 {
@@ -606,7 +437,6 @@ void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
     }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::ccgColourChange(TObject *Sender)
 {
    btnName->ButtonColor = ccgColour->ForegroundColor;
@@ -625,7 +455,6 @@ void __fastcall TfrmNewPaymentType::ccgColourChange(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbPositionClick(TObject *Sender)
 {
    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -642,7 +471,6 @@ void __fastcall TfrmNewPaymentType::tbPositionClick(TObject *Sender)
    tbPosition->Caption = "Position  \r" + IntToStr(PaymentPos);
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbExchangeClick(TObject *Sender)
 {
    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -659,7 +487,6 @@ void __fastcall TfrmNewPaymentType::tbExchangeClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbSurchargeClick(TObject *Sender)
 {
    if (cbSurcharge->Checked)
@@ -766,7 +593,6 @@ void __fastcall TfrmNewPaymentType::cbSurchargeClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbIsTipClick(TObject *Sender)
 {
    if (cbIsTip->Checked)
@@ -806,7 +632,6 @@ void __fastcall TfrmNewPaymentType::cbIsTipClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbCashOutClick(TObject *Sender)
 {
    if (cbCashOut->Checked)
@@ -823,19 +648,17 @@ void __fastcall TfrmNewPaymentType::cbCashOutClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbRoomPaymentClick(TObject *Sender)
 {
    if (tbRoomPayment->Checked)
    {
-	  if (!TRooms::Instance().Enabled && !PhoenixHM->Enabled)
+	  if (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	  {
 		 MessageBox("You must have the Rooms or PMS Module in order to use Room Payments.", "Error", MB_OK);
 	  }
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbGroupNumberClick(TObject *Sender)
 {
    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -852,39 +675,33 @@ void __fastcall TfrmNewPaymentType::tbGroupNumberClick(TObject *Sender)
    tbGroupNumber->Caption = "Group Number\r" + IntToStr(PaymentGroup);
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbIsCashClick(TObject *Sender)
 {   tbTabLink->Enabled=true;
    if (cbIsCash->Checked)
    {
-	  if (cbCashOut->Checked)
-	  {
-		 cbCashOut->Checked = false;
-
-	  }
-      tbTabLink->Enabled=false;
-       Payment.TabKey=0;
-         TabKey=0;
-           tbTabLink->Caption = "Tab Link";
+        if(cbCashOut->Checked)
+        {
+           cbCashOut->Checked = false;
+        }
+        tbTabLink->Enabled=false;
+        Payment.TabKey=0;
+        TabKey=0;
+        tbTabLink->Caption = "Tab Link";
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbIntegratedClick(TObject *Sender)
 {
    if (cbIntegrated->Checked)
    {
 	  cbElectronicTransaction->Checked = true;
-
 	  if (cbIsTip->Checked)
 	  {
 		 cbIsTip->Checked = false;
-
 	  }
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbChequeVerifyClick(TObject *Sender)
 {
    if (tbChequeVerify->Checked)
@@ -896,7 +713,6 @@ void __fastcall TfrmNewPaymentType::tbChequeVerifyClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbElectronicTransactionClick(TObject *Sender)
 {
    if (cbElectronicTransaction->Checked)
@@ -917,7 +733,6 @@ void __fastcall TfrmNewPaymentType::cbElectronicTransactionClick(TObject *Sender
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbAllowReversalClick(TObject *Sender)
 {
    if (cbAllowReversal->Checked)
@@ -929,7 +744,6 @@ void __fastcall TfrmNewPaymentType::cbAllowReversalClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbThirdPartyIDClick(TObject *Sender)
 {
    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
@@ -939,17 +753,16 @@ void __fastcall TfrmNewPaymentType::tbThirdPartyIDClick(TObject *Sender)
    frmTouchKeyboard->Caption = "Enter the third party Payment ID.";
    if (frmTouchKeyboard->ShowModal() == mrOk)
    {
-	  if (PhoenixHM->TestCode(frmTouchKeyboard->KeyboardText))
+	  if (TDeviceRealTerminal::Instance().BasePMS->TestCode(frmTouchKeyboard->KeyboardText))
 	  {
 		 PaymentThirdPartyID = frmTouchKeyboard->KeyboardText;
 	  }
-	  PhoenixHM->ClearCodesTestedOk();
+	  TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
    }
 
    tbThirdPartyID->Caption = "Third Party Payment ID\r" + PaymentThirdPartyID;
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbSurchargeTaxRateClick(TObject *Sender)
 {
    std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
@@ -967,7 +780,6 @@ void __fastcall TfrmNewPaymentType::tbSurchargeTaxRateClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbRoundingMouseClick(TObject *Sender)
 {
    std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
@@ -986,7 +798,6 @@ void __fastcall TfrmNewPaymentType::tbRoundingMouseClick(TObject *Sender)
 
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbInvoiceInterfaceClick(TObject *Sender)
 {
    if (tbInvoiceInterface->Checked)
@@ -997,7 +808,6 @@ void __fastcall TfrmNewPaymentType::tbInvoiceInterfaceClick(TObject *Sender)
 	  }
    }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmNewPaymentType::RedrawButtons(TObject * Sender)
 {
@@ -1020,24 +830,21 @@ void __fastcall TfrmNewPaymentType::tbPaymentMouseClick(TObject *Sender)
    RedrawButtons(Sender);
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbSecurityMouseClick(TObject *Sender)
 {
    Pages->ActivePage = tsSecurity;
    RedrawButtons(Sender);
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbInterfacesMouseClick(TObject *Sender)
 {
    Pages->ActivePage = tsInterfaces;
    RedrawButtons(Sender);
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbtnSecondaryIPAddressClick(TObject *Sender)
 {
-   if (!PhoenixHM->Registered)
+   if (!TDeviceRealTerminal::Instance().BasePMS->Registered)
    {
 	  MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
    }
@@ -1057,10 +864,9 @@ void __fastcall TfrmNewPaymentType::tbtnSecondaryIPAddressClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbtnSecondaryPMSPortClick(TObject *Sender)
 {
-   if (!PhoenixHM->Registered)
+   if (!TDeviceRealTerminal::Instance().BasePMS->Registered)
    {
 	  MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
    }
@@ -1081,32 +887,6 @@ void __fastcall TfrmNewPaymentType::tbtnSecondaryPMSPortClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
-/*void __fastcall TfrmNewPaymentType::tbtnFixedVoucherCodeMouseClick(TObject *Sender)
-
-{
-   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-   if (FixedVoucherCode == "")
-   {
-	  frmTouchKeyboard->KeyboardText = "639491";
-   }
-   else
-   {
-	  frmTouchKeyboard->KeyboardText = FixedVoucherCode;
-   }
-
-   frmTouchKeyboard->MaxLength = 25;
-   frmTouchKeyboard->AllowCarriageReturn = false;
-   frmTouchKeyboard->Caption = "Enter the Fixed Voucher Code.";
-   if (frmTouchKeyboard->ShowModal() == mrOk)
-   {
-	  FixedVoucherCode = frmTouchKeyboard->KeyboardText;
-   }
-
-   tbtnFixedVoucherCode->Caption = "Fixed Voucher Code\r" + FixedVoucherCode;
-}  */
-// ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbtnVoucherMerchantMouseClick(TObject *Sender)
 
 {
@@ -1123,7 +903,6 @@ void __fastcall TfrmNewPaymentType::tbtnVoucherMerchantMouseClick(TObject *Sende
    tbtnVoucherMerchant->Caption = "Voucher Merchant ID\r" + VoucherMerchantID;
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbGetVoucherDetailsClick(TObject *Sender)
 {
    if (cbGetVoucherDetails->Checked)
@@ -1135,7 +914,6 @@ void __fastcall TfrmNewPaymentType::cbGetVoucherDetailsClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::cbPocketVoucherClick(TObject *Sender)
 {
    if (cbPocketVoucher->Checked)
@@ -1164,8 +942,6 @@ void __fastcall TfrmNewPaymentType::ExportMouseClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbtnUniUserMouseClick(TObject *Sender)
 {
    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
@@ -1189,7 +965,6 @@ void __fastcall TfrmNewPaymentType::tbtnUniUserMouseClick(TObject *Sender)
    tbtnUniUser->Caption = "Universal User\r" + UniUser;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbtnUniPassMouseClick(TObject *Sender)
 {
 std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
@@ -1223,9 +998,6 @@ void __fastcall TfrmNewPaymentType::tbChargeToXeroClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
-
-
 void __fastcall TfrmNewPaymentType::cbRMSInterfaceClick(TObject *Sender)
 {
    /*if (cbRMSInterface->Checked)
@@ -1237,7 +1009,6 @@ void __fastcall TfrmNewPaymentType::cbRMSInterfaceClick(TObject *Sender)
    } */
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbRMSReadLocationMouseClick(TObject *Sender)
 {
    if(CVSReadLocation == "")
@@ -1263,7 +1034,6 @@ void __fastcall TfrmNewPaymentType::tbRMSReadLocationMouseClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmNewPaymentType::tbRMSWriteLocationMouseClick(TObject *Sender)
 
 {
@@ -1290,8 +1060,6 @@ void __fastcall TfrmNewPaymentType::tbRMSWriteLocationMouseClick(TObject *Sender
    }
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmNewPaymentType::tbTabLinkMouseClick(TObject *Sender)
 {
      Database::TDBTransaction DBTransaction(DBControl);
@@ -1303,119 +1071,113 @@ void __fastcall TfrmNewPaymentType::tbTabLinkMouseClick(TObject *Sender)
 
 }
 
-
 void TfrmNewPaymentType::GetTabDetailDetails(Database::TDBTransaction &DBTransaction)
 {
-//TDBTab::GetTabName(DBTransaction,Order->TabKey);
- bool    Retval = mrOk;
-		int Count = 0;
-        int	tabKey=0;
-		std::auto_ptr <TStringList> TabList(new TStringList);
-		TDBTab::GetTabs(DBTransaction, TabList.get(), CurrentDestTabType);
-		for (int i = 0; i < TabList->Count; i++)
-		{
-		   Count++;
-		}
+    bool    Retval = mrOk;
+    int Count = 0;
+    int	tabKey=0;
+    std::auto_ptr <TStringList> TabList(new TStringList);
+    TDBTab::GetTabs(DBTransaction, TabList.get(), CurrentDestTabType);
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        Count++;
+    }
 
-		std::auto_ptr<TfrmVerticalSelect>SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-		TVerticalSelection Item;
-		Item.Title = "Cancel";
-		Item.Properties["Color"] = "0x000098F5";
-                Item.Properties["FontColor"] = IntToStr(clWhite);;
-		Item.CloseSelection = true;
+    std::auto_ptr<TfrmVerticalSelect>SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
 
-		SelectionForm->Items.push_back(Item);
-		TDBTab::GetTabs(DBTransaction, TabList.get(), CurrentDestTabType);
-        for (int i = 0; i < TabList->Count; i++)
+    SelectionForm->Items.push_back(Item);
+    TDBTab::GetTabs(DBTransaction, TabList.get(), CurrentDestTabType);
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        Item.Title = TabList->Strings[i];
+        Item.Properties["TabKey"] = (int)TabList->Objects[i];
+        Item.Properties["Color"] = clInfoBk;
+        Item.CloseSelection = true;
+        if (Item.Properties["TabKey"]==Payment.TabKey)
         {
-            Item.Title = TabList->Strings[i];
-            Item.Properties["TabKey"] = (int)TabList->Objects[i];
-            Item.Properties["Color"] = clInfoBk;
-            Item.CloseSelection = true;
-              if ( Item.Properties["TabKey"]==Payment.TabKey)
-		{
-			 Item.Properties["Color"]  = "0x00BF9D00";//clGreen;
-             
-		}
-		else
-		{
-            Item.Properties["Color"]  ="0x00605D5C"; //clRed;
-
-		}
-            SelectionForm->Items.push_back(Item);
+            Item.Properties["Color"]  = "0x00BF9D00";//clGreen;
         }
-        SelectionForm->ShowModal();
-        TVerticalSelection SelectedItem;
-        if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
-		{
+        else
+        {
+            Item.Properties["Color"]  ="0x00605D5C"; //clRed;
+        }
+        SelectionForm->Items.push_back(Item);
+    }
+    SelectionForm->ShowModal();
+    TVerticalSelection SelectedItem;
+    if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
+    {
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);;
+        Item.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item);
 
+        TVerticalSelection Item1;
+        Item1.Title = "Enable";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clGreen);
+        Item1.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item1);
 
-        	std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item2;
+        Item2.Title = "Disable";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clRed);
+        Item2.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item2);
 
-				TVerticalSelection Item;
-				Item.Title = "Cancel";
-				Item.Properties["Color"] = "0x000098F5";
-				Item.Properties["FontColor"] = IntToStr(clWhite);;
-				Item.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item);
-
-				TVerticalSelection Item1;
-				Item1.Title = "Enable";
-				Item1.Properties["Action"] = IntToStr(1);
-				Item1.Properties["Color"] = IntToStr(clGreen);
-				Item1.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item1);
-
-				TVerticalSelection Item2;
-				Item2.Title = "Disable";
-				Item2.Properties["Action"] = IntToStr(2);
-				Item2.Properties["Color"] = IntToStr(clRed);
-				Item2.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item2);
-
-				SelectionForm1->ShowModal();
-				TVerticalSelection SelectedItem1;
-				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-				{
-					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-                    	switch(Action)
-						{
-				 case 1 :
-					  tabKey=	SelectedItem.Properties["TabKey"];
-						break;
-					case 2 :
-					  tabKey=0;
-						break;
-                        }
-				}
-
-             if(tabKey==0)
-             {  SelectedItem.Properties["Color"]  ="0x00605D5C";// clRed;
-
-             }
-             else{ SelectedItem.Properties["Color"]  ="0x00BF9D00"; //clGreen;
-
-             }
-		  // int	tabKey = SelectedItem.Properties["TabKey"];
-            if (Retval == mrOk)
+        SelectionForm1->ShowModal();
+        TVerticalSelection SelectedItem1;
+        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+            switch(Action)
             {
-                TabKey=0;
-                TabName="";
-                TabKey =tabKey;
-                Payment.TabKey =tabKey ;
-                TabName =SelectedItem.Title;
-                if(tabKey==0)
-                   tbTabLink->Caption = "Tab Link";
-                else
+                case 1 :
+                    tabKey=	SelectedItem.Properties["TabKey"];
+                    break;
+                case 2 :
+                    tabKey=0;
+                    break;
+            }
+        }
+
+        if(tabKey==0)
+        {
+            SelectedItem.Properties["Color"]  ="0x00605D5C";// clRed;
+        }
+        else
+        {
+            SelectedItem.Properties["Color"]  ="0x00BF9D00"; //clGreen;
+        }
+
+        if (Retval == mrOk)
+        {
+            TabKey=0;
+            TabName="";
+            TabKey =tabKey;
+            Payment.TabKey =tabKey ;
+            TabName =SelectedItem.Title;
+            if(tabKey==0)
+                tbTabLink->Caption = "Tab Link";
+            else
                 tbTabLink->Caption = "Tab Link \r" + SelectedItem.Title;
 
-            }
-		}
-		else
-		{
-			Retval = mrAbort;
-		}
+        }
+    }
+    else
+    {
+        Retval = mrAbort;
+    }
 
 }
 
@@ -1444,3 +1206,75 @@ void __fastcall TfrmNewPaymentType::tbGLCodeMouseClick(TObject *Sender)
    }
 
 }
+
+void __fastcall TfrmNewPaymentType::btnWalletConfigMouseClick(TObject *Sender)
+{
+   TfrmWalletConfiguration *frmWalletConfiguration = new TfrmWalletConfiguration(this);
+   frmWalletConfiguration->MerchentId = Payment.MerchentId;
+   frmWalletConfiguration->TerminalId = Payment.TerminalId;
+   frmWalletConfiguration->WalletUserName = Payment.WalletUserName;
+   frmWalletConfiguration->WalletPassword = Payment.WalletPassword;
+   frmWalletConfiguration->WalletSecurityToken = Payment.WalletSecurityToken;
+   if(frmWalletConfiguration->ShowModal() == mrOk)
+   {
+       Payment.MerchentId = frmWalletConfiguration->MerchentId;
+       Payment.TerminalId = frmWalletConfiguration->TerminalId;
+       Payment.WalletUserName = frmWalletConfiguration->WalletUserName;
+       Payment.WalletPassword = frmWalletConfiguration->WalletPassword;
+       Payment.WalletSecurityToken = frmWalletConfiguration->WalletSecurityToken;
+   }
+   delete frmWalletConfiguration;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmNewPaymentType::btnWalletTypeMouseClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm->Items.push_back(Item);
+
+    TVerticalSelection Item1;
+    Item1.Title = "We Chat";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = (Payment.WalletType == eWeChatWallet) ? IntToStr(clGreen) : IntToStr(clNavy);
+    Item1.CloseSelection = true;
+    SelectionForm->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+    Item2.Title = "Jio";
+    Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = (Payment.WalletType == eJioWallet) ? IntToStr(clGreen) : IntToStr(clNavy);;
+    Item2.CloseSelection = true;
+    SelectionForm->Items.push_back(Item2);
+
+    SelectionForm->ShowModal();
+    TVerticalSelection SelectedItem;
+    if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+        switch(Action)
+        {
+            case 1 :
+                Payment.WalletType = eWeChatWallet;
+                break;
+            case 2 :
+                Payment.WalletType = eJioWallet;
+                break;
+            default:
+                Payment.WalletType = eNoWallet;
+                break;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmNewPaymentType::cbWalletPaymentsClick(TObject *Sender)
+{
+  btnWalletType->Enabled = cbWalletPayments->Checked;
+  btnWalletConfig->Enabled = cbWalletPayments->Checked;
+}
+//---------------------------------------------------------------------------
+

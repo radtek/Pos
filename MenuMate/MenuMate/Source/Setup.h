@@ -160,6 +160,7 @@ __published:	// IDE-managed Components
     TTouchBtn *btnResendMallReport;
     TTouchBtn *btnRegenMallReport;
     TEdit *edTaxRate;
+    TTouchBtn *btnAssignMallSalesType;
 
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -241,6 +242,7 @@ __published:	// IDE-managed Components
     void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall btnRegenMallReportMouseClick(TObject *Sender);
     void __fastcall edTaxRateClick(TObject *Sender);
+    void __fastcall btnAssignMallSalesTypeMouseClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);

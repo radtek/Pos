@@ -20,6 +20,7 @@ class TPanasonicThread : public TThread
         void UpdateArcBillAndDayArcBill(Database::TDBTransaction &dbTransaction, int arcBillKey);
         int GetSiteId(Database::TDBTransaction &dbTransaction);
         TDateTime GetStartDateTime(Database::TDBTransaction &dbTransaction, int arcBillKey);
+        bool HasAllProperties(AnsiString propertyString,AnsiString allProperties);
     protected:
         virtual void __fastcall Execute();
     public:
