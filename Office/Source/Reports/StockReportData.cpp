@@ -1478,8 +1478,8 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
         "StockLocation.Writeoff, "
         "StockLocation.Inwards, "
         "StockLocation.Transfer, "
-        "STK.QTY, "
-        "StockLocation.SALES_PENDING "
+        "STK.QTY "
+
         
 		"Order By "
         //"StockGroup.Stock_Group, "
