@@ -396,7 +396,7 @@ void TfrmPhoenixRoom::QuickSearch()
 
 	SelectedRoom.Clear();
 	SelectedRoom.AccountNumber = edSearch->Text;
-    if(TGlobalSettings::Instance().PMSType == Phoenix)
+    if(TGlobalSettings::Instance().PMSType != SiHot)
     {
     	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
         if(SelectedRoom.Result != eAccepted)
@@ -568,7 +568,7 @@ void TfrmPhoenixRoom::RefreshList()
 
 void TfrmPhoenixRoom::DisplayData()
 {
-	if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType == Phoenix)
+	if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		AnsiString Balance = CurrToStrF(SelectedRoom.Balance, ffCurrency, 2);
 		AnsiString CreditLimit = CurrToStrF(SelectedRoom.CreditLimit, ffCurrency, 2);

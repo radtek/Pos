@@ -383,6 +383,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
          int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
          if(mallIndex != 0)
             TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
+         else
+            TGlobalSettings::Instance().mallInfo.MallId = 0;
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
         TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
         TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
