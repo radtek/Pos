@@ -149,6 +149,13 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
          {
             Info.SiteID = TGlobalSettings::Instance().SiteID;
          }
+         if(!TGlobalSettings::Instance().UseMemberSubs)
+         {
+            int PointRule = 0;
+            PointRule |= eprAllowDiscounts;
+            PointRule |= eprFinancial;
+            TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
+         }
 
       }
       catch(Exception & Err)

@@ -906,13 +906,10 @@ void __fastcall TfrmPaymentType::pnlCancelClick(TObject *Sender)
     {
         if(PrintCancelEvent > 0)
         {
-            TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[0];
-
             for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
             {
-               TItemComplete *PrelimOrder = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-               PrelimOrder->PrintCancel = true;
-
+                 TItemComplete *PrelimOrder = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+                 PrelimOrder->PrintCancel = true;
                  for( int j = 0; j < PrelimOrder->SubOrders->Count; j++ )
                  {
                     TItemComplete *SideItem = (TItemComplete*)PrelimOrder->SubOrders->SubOrderGet(j);
@@ -928,11 +925,10 @@ void __fastcall TfrmPaymentType::pnlCancelClick(TObject *Sender)
 
             if(CurrentTransaction.Orders->Count != 0 )  //check current transaction has orders
             {
-                TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[0];
                 for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
                 {
-                    TItemComplete *PrelimOrder = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-                    PrelimOrder->PrintCancel = true;
+                     TItemComplete *PrelimOrder = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+                     PrelimOrder->PrintCancel = true;
 
                      for( int j = 0; j < PrelimOrder->SubOrders->Count; j++ )
                      {
