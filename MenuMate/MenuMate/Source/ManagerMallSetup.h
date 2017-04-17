@@ -19,7 +19,9 @@ class TManagerMallSetup
      static void UpdateINActiveMall(Database::TDBTransaction &dbTransaction);
      static void InsertInToMallExport_Settings_Values(int mallKey);
  private:
-     static void InsertInToMallExport_Settings_Values(Database::TDBTransaction &dbTransaction, TMall &mallInfo);
+     static void InsertSettingValuesForEstancia(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
+     static void InsertSettingValuesForDeanAndDeluca(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
+     static bool IsSettingExistInDB(Database::TDBTransaction &dbTransaction, int deviceKey, int mallID);
 };
 #endif
 

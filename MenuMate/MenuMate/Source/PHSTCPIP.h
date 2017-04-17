@@ -61,6 +61,7 @@ public:
 	virtual ~TPhoenixRoomStatusExt();
 	AnsiString SerializeOut();
 	void SerializeIn(AnsiString);
+    AnsiString SiHotRoom;
 };
 
 class TPhoenixNetTCPManager

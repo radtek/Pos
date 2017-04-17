@@ -3,10 +3,12 @@
 #ifndef MallExportSalesDataH
 #define MallExportSalesDataH
 #include <System.hpp>
+#include <map.h>
+#include <list>
 //---------------------------------------------------------------------------
 class TMallExportSalesData
 {
-    private:
+private:
     int _mallExportSaleKey;
     int _mallKey;
     UnicodeString _field;
@@ -31,7 +33,7 @@ class TMallExportSalesData
     void SetZKey(int zKey);
     void SetDeviceKey(int deviceKey);
 
-    public:
+public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
     __property int MallKey = {read = _mallKey, write = SetMallKey};
     __property UnicodeString Field = {read = _field, write = SetField};
@@ -43,5 +45,19 @@ class TMallExportSalesData
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
     __property int DeviceKey = {read = _deviceKey, write = SetDeviceKey};
+};
+
+class TMallExportSalesWrapper
+{
+private:
+    std::list<TMallExportSalesData> _mallExportSalesData;
+    std::map<int, double> _saleBySalsType;
+
+    void SetMallExportSalesData(std::list<TMallExportSalesData> salesData);
+    void SetSalesBySalesType(std::map<int, double> saleBySalsType);
+
+public:
+    __property std::list<TMallExportSalesData> SalesData =  {read = _mallExportSalesData, write = SetMallExportSalesData};
+    __property std::map<int, double> SaleBySalsType = {read = _saleBySalsType, write = SetSalesBySalesType};
 };
 #endif

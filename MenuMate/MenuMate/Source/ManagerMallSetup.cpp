@@ -19,7 +19,7 @@ std::vector<UnicodeString> TManagerMallSetup::LoadAllMalls(Database::TDBTransact
 
     try
 	{
-        ibInternalQuery->SQL->Text = " SELECT MALL_NAME FROM MALLS ORDER BY 1 ASC ";
+        ibInternalQuery->SQL->Text = " SELECT MALL_NAME FROM MALLS ORDER BY MALLS.MALL_ID ASC ";
         ibInternalQuery->ExecQuery();
 
         for ( ; !ibInternalQuery->Eof; ibInternalQuery->Next())
@@ -86,7 +86,7 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
                                     "SELECT * FROM MALLEXPORT_SETTINGS a "
                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING msp ON msp.MALLEXPORT_SETTING_ID = a.MALLEXPORT_SETTING_KEY "
                                     "LEFT JOIN MALLEXPORT_SETTINGS_VALUES msv    on msv.MALLEXPORTSETTING_ID  = a.MALLEXPORT_SETTING_KEY "
-                                    " WHERE msp.MALL_ID = :MALL_ID  and msv.DEVICE_KEY = :DEVICE_KEY ";
+                                    " WHERE msp.MALL_ID = :MALL_ID  AND msv.MALL_KEY = :MALL_ID AND msv.DEVICE_KEY = :DEVICE_KEY ";
 
             ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallProperties.MallId;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = mallProperties.DeviceKey;
@@ -202,25 +202,45 @@ void TManagerMallSetup::UpdateINActiveMall(Database::TDBTransaction &dbTransacti
 	}
 }
 //---------------------------------------------------------------------------------------------
-void TManagerMallSetup::InsertInToMallExport_Settings_Values(int mallKey)
+void TManagerMallSetup::InsertInToMallExport_Settings_Values(int mallId)
 {
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+    int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 
     try
     {
-        int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
-        ibInternalQuery->Close();
-        ibInternalQuery->SQL->Clear();
-        ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES a WHERE a.DEVICE_KEY = :DEVICE_KEY and a.MALL_KEY = :MALL_KEY ";
-        ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
-        ibInternalQuery->ParamByName("MALL_KEY")->AsString = mallKey;
-        ibInternalQuery->ExecQuery();
+        switch(mallId)
+        {
+            case 1:
+                InsertSettingValuesForEstancia(dbTransaction, deviceKey, mallId);
+                break;
+            case 2:
+                InsertSettingValuesForDeanAndDeluca(dbTransaction, deviceKey, mallId);
+                break;
+            default:
+                break;
+        }
 
-        if(!ibInternalQuery->RecordCount)
+        //Commit The Transaction Since We Have done All Transaction.
+        dbTransaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+    }
+}
+//-------------------------------------------------------------------------------------------------
+void TManagerMallSetup::InsertSettingValuesForEstancia(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId)
+{
+    try
+    {
+        bool isRecordExist = IsSettingExistInDB(dbTransaction, deviceKey, mallId);
+
+        if(!isRecordExist)
         {
              const int numberOfFields = 77;
              UnicodeString fieldTypes[numberOfFields] =
@@ -268,15 +288,94 @@ void TManagerMallSetup::InsertInToMallExport_Settings_Values(int mallKey)
                 insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
                 insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
                 insertQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
-                insertQuery->ParamByName("MALL_KEY")->AsInteger = mallKey;
+                insertQuery->ParamByName("MALL_KEY")->AsInteger = mallId;
                 insertQuery->ExecQuery();
             }
         }
-        dbTransaction.Commit();
     }
     catch( Exception &E )
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        dbTransaction.Rollback();
+        throw;
     }
+}
+//-------------------------------------------------------------------------------------------------
+void TManagerMallSetup::InsertSettingValuesForDeanAndDeluca(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId)
+{
+    try
+    {
+        bool isRecordExist = IsSettingExistInDB(dbTransaction, deviceKey, mallId);
+
+        if(!isRecordExist)
+        {
+            const int numberOfFields = 10;
+             UnicodeString fieldTypes[numberOfFields] =
+             {
+                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool"
+             };
+
+             UnicodeString fieldValues[numberOfFields] =
+             {
+                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true"
+             };
+
+             int settingID[numberOfFields] =
+             {
+                1, 2, 7, 9, 16, 18, 19, 20, 24, 25
+             };
+
+            TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );
+            TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+
+            for(int index = 0; index < numberOfFields; index++)
+            {
+                incrementGenerator->Close();
+                incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SETT_VAL_KEY, 1) FROM RDB$DATABASE";
+                incrementGenerator->ExecQuery();
+
+                insertQuery->Close();
+                insertQuery->SQL->Text =
+                            "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE, :DEVICE_KEY, :MALL_KEY) ";
+                insertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+                insertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
+                insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
+                insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
+                insertQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+                insertQuery->ParamByName("MALL_KEY")->AsInteger = mallId;
+                insertQuery->ExecQuery();
+            }
+        }
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+//--------------------------------------------------------------------------------------------------------------
+bool TManagerMallSetup::IsSettingExistInDB(Database::TDBTransaction &dbTransaction, int deviceKey, int mallID)
+{
+    bool isSettingExist = false;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Clear();
+        ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES a WHERE a.DEVICE_KEY = :DEVICE_KEY and a.MALL_KEY = :MALL_KEY ";
+        ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        ibInternalQuery->ParamByName("MALL_KEY")->AsString = mallID;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            isSettingExist = true;
+        }
+    }
+
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isSettingExist;
 }

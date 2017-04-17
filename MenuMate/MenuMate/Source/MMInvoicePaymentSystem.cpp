@@ -71,7 +71,7 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 	TDeviceRealTerminal::Instance().ProcessingController.Pop();
 	OnAfterTransactionComplete.Occured();
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && PaymentComplete)
     {
         TManagerPanasonic::Instance()->TriggerTransactionSync();
     }

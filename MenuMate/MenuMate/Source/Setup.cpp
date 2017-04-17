@@ -44,6 +44,7 @@
 #include "MallExportSalesTypeAssignment.h"
 #include "Mall.h"
 #include "GUIDiscount.h"
+#include "MallSalesTypeAssignment.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -70,7 +71,12 @@ void __fastcall TfrmSetup::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
-    if(cbNewMallLoc->ItemIndex== 1)
+    if(cbNewMallLoc->ItemIndex > 1)
+    {
+        UpdateMallInfo();
+        Close();
+    }
+    else if(cbNewMallLoc->ItemIndex == 1)
     {
         if(edTaxRate->Text != "")
         {
@@ -81,7 +87,6 @@ void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
         {
             MessageBox("Please Enter Tax Rate", "Error",MB_OK + MB_ICONERROR);
         }
-
     }
     else
     {
@@ -102,18 +107,16 @@ void __fastcall TfrmSetup::FormClose(TObject *Sender, TCloseAction &Action)
    }
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmSetup::FormResize(TObject *Sender)
 {
 	if (Tag != Screen->Width)
    {
       int Temp = Tag;
-		Tag = Screen->Width;
-                if((double)Screen->Width / Screen->Height < 1.4)
-                {
+      Tag = Screen->Width;
+      if((double)Screen->Width / Screen->Height < 1.4)
+      {
    			ScaleBy(Screen->Width, Temp);
-        	}
+      }
 
    }
    Width = Screen->Width;
@@ -247,7 +250,7 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 	tbtnIPSettingsRefreshMouseClick(Sender);
 
     cbShowCustomerDisplay->Checked = TGlobalSettings::Instance().ShowCustomerDisplay;
-    if(PhoenixHM->Registered)
+    if(TDeviceRealTerminal::Instance().BasePMS->Registered)
     {
      cbNewbookType->Enabled  =true;
     }
@@ -2195,14 +2198,11 @@ UnicodeString TfrmSetup::RenameTenantNumber()
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::cbNewMallLocChange(TObject *Sender)
 {
-    if(cbNewMallLoc->ItemIndex != 0)
+    UpdateNoMallUI();
+    if(cbNewMallLoc->ItemIndex )
     {
         TManagerMallSetup::InsertInToMallExport_Settings_Values(cbNewMallLoc->ItemIndex);
         LoadMallSettingInfo();
-    }
-    else
-    {
-        UpdateNoMallUI();
     }
 }
 //------------------------------------------------------------------------------
@@ -2216,7 +2216,10 @@ void __fastcall TfrmSetup::edNewMallPathMouseUp(TObject *Sender, TMouseButton Bu
 	frmTouchKeyboard->Caption = "Enter File Location";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+        if((frmTouchKeyboard->KeyboardText).Trim() != "")
+            edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+        else
+           edNewMallPath->Text = "";
 
     }
 }
@@ -2257,17 +2260,17 @@ void  TfrmSetup::SetupNewMalls()
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
     cbNewMallLoc->Clear();
-    std::vector<UnicodeString> malllist;
+    std::vector<UnicodeString> mallList;
     cbNewMallLoc->AddItem("None",NULL);
 
-    malllist = TManagerMallSetup::LoadAllMalls(dbTransaction);
-    for (int index = 0; index < malllist.size() ; index++)
+    mallList = TManagerMallSetup::LoadAllMalls(dbTransaction);
+    for (int index = 0; index < mallList.size() ; index++)
     {
-        cbNewMallLoc->AddItem(malllist[index],NULL);
+        cbNewMallLoc->AddItem(mallList[index],NULL);
     }
     int mallIndex = TManagerMallSetup::CheckActiveMallExist(dbTransaction);
     cbNewMallLoc->ItemIndex = mallIndex;
-    if(cbNewMallLoc->ItemIndex != 0)
+    if(cbNewMallLoc->ItemIndex)
         LoadMallSettingInfo();
     else
     {
@@ -2282,6 +2285,11 @@ void TfrmSetup::LoadMallSettingInfo()
         Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
+
+        //First We have to Inactive Activated mall Since mall Index has been changed..
+        TManagerMallSetup::UpdateINActiveMall(dbTransaction);
+
+        //Now Active selected mall
         TManagerMallSetup::UpdateActiveMall(dbTransaction, cbNewMallLoc->ItemIndex);
 
         //load all mall settings info
@@ -2290,6 +2298,7 @@ void TfrmSetup::LoadMallSettingInfo()
         std::list<TMallExportSettings>::iterator it;
         TControl *ChildControl;
         TEdit* editBox;
+
         for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
         {
             for (int i = 0; i < gbMallsNew->ControlCount; i++)
@@ -2347,6 +2356,7 @@ void TfrmSetup::UpdateNoMallUI()
 
     UnicodeString controlNameSubString = "";
     TMall mallDetails;
+    mallDetails.MallId = 0;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
     TControl *ChildControl;
@@ -2402,6 +2412,12 @@ void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
     {
         edTaxRate->Text = frmDiscount->PERCResult;
     }
+}
+//----------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmMallSalesTypeAssignment> mallSalesTypeAssignment(new TfrmMallSalesTypeAssignment(this));
+    mallSalesTypeAssignment->ShowModal();
 }
 
 

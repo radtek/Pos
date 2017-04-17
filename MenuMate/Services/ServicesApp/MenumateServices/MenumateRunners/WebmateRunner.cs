@@ -1,5 +1,6 @@
 ﻿using System.ServiceModel;
-
+using System;
+using System.Diagnostics;
 using MenumateServices.WCFServices;
 using MenumateServices.WebMate.InternalClasses;
 
@@ -9,41 +10,92 @@ namespace MenumateServices.MenumateRunners
     {
         public WebmateRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In WebmateRunner WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 180, short.MaxValue);
+            }
         }
 
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
         }
 
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Stop WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
+            }
         }
 
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Pause WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 183, short.MaxValue);
+            }
         }
 
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Resume WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 184, short.MaxValue);
+            }
         }
 
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 185, short.MaxValue);
+            }
+            return false;
         }
 
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(WCFServiceWebMate));
+            try
+            {
+                return new ServiceHost(typeof(WCFServiceWebMate));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In CreateServiceHost WebmateRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 186, short.MaxValue);
+            }
+            return null;
         }
 
         protected override bool StartRunner()

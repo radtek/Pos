@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AccountingIntegration;
+using System.Diagnostics;
 
 namespace MenumateServices.MenumateRunners
 {
@@ -9,7 +10,14 @@ namespace MenumateServices.MenumateRunners
         #region PUBLIC
         public AccountingIntegrationRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In AccountingIntegrationRunner acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 121, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -18,9 +26,16 @@ namespace MenumateServices.MenumateRunners
         public override void Start()
         {
             // go ahead and start the worker thread
-            WorkerThread.Start();
+            try
+            {
+                WorkerThread.Start();
 
-            Paused = false;
+                Paused = false;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Start acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 122, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -28,9 +43,16 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Stop()
         {
-            StopRunner();
+            try
+            {
+                StopRunner();
 
-            Paused = true;
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Stop acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 123, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -38,9 +60,16 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Pause()
         {
-            StopRunner();
+            try
+            {
+                StopRunner();
 
-            Paused = true;
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Pause acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 124, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -48,9 +77,16 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Resume()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
 
-            Start();
+                Start();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Resume acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 125, short.MaxValue);
+            }
         }
         #endregion
 
@@ -60,21 +96,36 @@ namespace MenumateServices.MenumateRunners
 
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In StartServiceTask acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 126, short.MaxValue);
+            }
+            return false;
         }
 
         protected override bool StartRunner()
         {
             bool result = false;
 
-            ServiceLogger.Log(@"Starting Accounting Integration ...");
-            if (result = runAccounting())
+            try
             {
-                ServiceLogger.Log(@"Accounting Integration is running in shared folder mode ...");
+                ServiceLogger.Log(@"Starting Accounting Integration ...");
+                if (result = runAccounting())
+                {
+                    ServiceLogger.Log(@"Accounting Integration is running in shared folder mode ...");
+                }
+                else
+                {
+                    ServiceLogger.Log(@"Accounting Integration failed to run in shared folder mode ...");
+                }
             }
-            else
+            catch (Exception exc)
             {
-                ServiceLogger.Log(@"Accounting Integration failed to run in shared folder mode ...");
+                EventLog.WriteEntry("In StartRunner acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 127, short.MaxValue);
             }
 
             return result;
@@ -85,15 +136,22 @@ namespace MenumateServices.MenumateRunners
             bool result = false;
 
             //...........................................
+            try
+            {
 
-            ServiceLogger.Log(@"Stopping Accounting Integration ...");
-            if (result = stopAccounting())
-            {
-                ServiceLogger.Log(@"Accounting Accounting stopped ...");
+                ServiceLogger.Log(@"Stopping Accounting Integration ...");
+                if (result = stopAccounting())
+                {
+                    ServiceLogger.Log(@"Accounting Accounting stopped ...");
+                }
+                else
+                {
+                    ServiceLogger.Log(@"Accounting Accounting failed to stop in shared folder mode ...");
+                }
             }
-            else
+            catch (Exception exc)
             {
-                ServiceLogger.Log(@"Accounting Accounting failed to stop in shared folder mode ...");
+                EventLog.WriteEntry("In StopRunner acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 128, short.MaxValue);
             }
 
             //...........................................
@@ -104,55 +162,69 @@ namespace MenumateServices.MenumateRunners
         protected bool runAccounting()  // todo RunAccounting
         {
 
-            bool result;
-            _appID = InitAccountingIntegration();
-
-            if (_appID.Trim() != @"")
+            bool result = false; ;
+            try
             {
-                AccountingIntegrationError error = AccountingIntegrationManager.Instance.RunAppWithID(_appID);
+                _appID = InitAccountingIntegration();
 
-                if (error == AccountingIntegrationError.NoError)
+                if (_appID.Trim() != @"")
                 {
-                    result = true;
+                    AccountingIntegrationError error = AccountingIntegrationManager.Instance.RunAppWithID(_appID);
+
+                    if (error == AccountingIntegrationError.NoError)
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        ServiceLogger.Log(AccountingIntegrationManager.Instance.ErrorMessage);
+                        result = false;
+                    }
                 }
                 else
                 {
-                    ServiceLogger.Log(AccountingIntegrationManager.Instance.ErrorMessage);
+                    ServiceLogger.Log(string.Format(@"Invalid app ID: {0}", _appID));
                     result = false;
                 }
             }
-            else
+            catch (Exception exc)
             {
-                ServiceLogger.Log(string.Format(@"Invalid app ID: {0}", _appID));
-                result = false;
+                EventLog.WriteEntry("In runAccounting acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 129, short.MaxValue);
             }
             return result;
         }
 
         public bool stopAccounting()   // todo StopAcounting
         {
-            bool result;
+            bool result = false;
 
             //...........................................
 
-            if (_appID.Trim() != @"")
+            try
             {
-                AccountingIntegrationError error = AccountingIntegrationManager.Instance.StopAppWithID(_appID);
-
-                if (error == AccountingIntegrationError.NoError)
+                if (_appID.Trim() != @"")
                 {
-                    result = true;
+                    AccountingIntegrationError error = AccountingIntegrationManager.Instance.StopAppWithID(_appID);
+
+                    if (error == AccountingIntegrationError.NoError)
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        ServiceLogger.Log(AccountingIntegrationManager.Instance.ErrorMessage);
+                        result = false;
+                    }
                 }
                 else
                 {
-                    ServiceLogger.Log(AccountingIntegrationManager.Instance.ErrorMessage);
+                    ServiceLogger.Log(string.Format(@"Invalid app ID: {0}", _appID));
                     result = false;
                 }
             }
-            else
+            catch (Exception exc)
             {
-                ServiceLogger.Log(string.Format(@"Invalid app ID: {0}", _appID));
-                result = false;
+                EventLog.WriteEntry("In stopAccounting acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 130, short.MaxValue);
             }
 
             //...........................................
@@ -163,16 +235,31 @@ namespace MenumateServices.MenumateRunners
         private string InitAccountingIntegration()
         {
             string result = @"";
-            if (AccountingIntegrationManager.Instance.Init() == AccountingIntegrationError.NoError)
+            try
             {
-                result = AppID();
+                if (AccountingIntegrationManager.Instance.Init() == AccountingIntegrationError.NoError)
+                {
+                    result = AppID();
+                }
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In InitAccountingIntegration acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
             }
             return result;
         }
 
         private string AppID()
         {
-            return AccountingIntegrationConfigManager.Instance.AccountingAppInUse;
+            try
+            {
+                return AccountingIntegrationConfigManager.Instance.AccountingAppInUse;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In AppID acrunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 132, short.MaxValue);
+            }
+            return "";
         }
 
         #endregion

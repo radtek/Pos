@@ -12,7 +12,6 @@
 #include "GetMoney.h"
 #include "SplitPayment.h"
 #include "Rooms.h"
-#include "DBTab.h"
 #include "DBClippTab.h"
 #include "ContactStaff.h"
 #include "Invoice.h"
@@ -48,7 +47,6 @@
 #include "SelectSaveOption.h"
 #include "ManagerClippIntegration.h"
 #include "MallExportOtherDetailsUpdate.h"
-#include "MallExportDefines.h"
 #include "ManagerLoyaltyVoucher.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)

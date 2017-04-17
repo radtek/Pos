@@ -5,50 +5,102 @@ using System.Text;
 using System.ServiceModel;
 using MenumateServices.WCFServices;
 using Thorlink.Net;
+using System.Diagnostics;
 
 namespace MenumateServices.MenumateRunners
 {
-    public class ThorlinkServiceRunner: MenumateWebServiceRunner
+    public class ThorlinkServiceRunner : MenumateWebServiceRunner
     {
         public ThorlinkServiceRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In ThorlinkServiceRunner ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 174, short.MaxValue);
+            }
         }
 
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+            }
         }
 
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Stop ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+            }
         }
 
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Pause ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 176, short.MaxValue);
+            }
         }
 
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Resume ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 177, short.MaxValue);
+            }
         }
 
         protected override bool StartServiceTask()
         {
-            var thorPingTimer = new ThorPingTimer();
-            return StartRunner();
+            try
+            {
+                var thorPingTimer = new ThorPingTimer();
+                return StartRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
+            }
+            return false;
         }
 
-        
+
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(WCFServiceThorlink));
+            try
+            {
+                return new ServiceHost(typeof(WCFServiceThorlink));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In CreateServiceHost ThorRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 179, short.MaxValue);
+            }
+            return null; ;
         }
 
         protected override bool StartRunner()

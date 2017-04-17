@@ -2,8 +2,6 @@
 
 #ifndef DrinkCommandManagerH
 #define DrinkCommandManagerH
-#include <system.hpp>
-#include <memory>
 #include "PaymentTransaction.h"
 
 enum RequestType {eStartSession=1,eSendCash,eSessionSummary,eCloseSession,eSessionBill,eProductList};

@@ -5,6 +5,7 @@ using SalesForceCommunication.Domain;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using PocketVoucherIntegration;
+using System.Diagnostics;
 using PocketVoucherIntegration.RedemptionDetails;
 
 namespace MenumateServices.WCFServices
@@ -30,6 +31,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In ForceCloseAllTabs Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 9, short.MaxValue);
                 ServiceLogger.LogException("Exception in RedeemVoucher", exception);
             }
             return null;
@@ -55,6 +57,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In GetPocketVoucherDetail Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 10, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetPocketVoucherDetail", exception);
             }
 
@@ -83,6 +86,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In EnablePocketVouchers Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 11, short.MaxValue);
                 ServiceLogger.LogException("Exception in EnablePocketVouchers", exception);
             }
 
@@ -111,6 +115,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In DisablePocketVouchers Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 12, short.MaxValue);
                 ServiceLogger.LogException("Exception in DisablePocketVouchers", exception);
             }
 

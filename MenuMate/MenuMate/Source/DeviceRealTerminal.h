@@ -19,6 +19,8 @@
 #include "ProcessingController.h"
 #include "ManagerGeneralLedger.h"
 #include "enumTerminalGlobalMessageTypes.h"
+#include "BasePMS.h"
+#include "PhoenixHotelSystem.h"
 
 //---------------------------------------------------------------------------
 class TDeviceRealTerminal : public TDeviceRealControl
@@ -101,6 +103,7 @@ public:
     // This collection holds number of global application messages shown throughout the system
     // by looking at the count we can determine whether a message box is already on screen if so do not display again
     std::map<TerminalGlobalMessageTypes,int> AppGlobalMessagesMap;
+    std::auto_ptr<TBasePMS> BasePMS;
 
 private:
 //	void CreateDevice(Database::TDBTransaction &DBTransaction);

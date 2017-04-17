@@ -129,6 +129,7 @@ class TPaymentTransaction
                 UnicodeString AccountName;
                 UnicodeString ReferenceNumber;
                 int FolderNumber;
+                UnicodeString RoomNumber;
         } Phoenix;
 
         std::vector<TPatronType> Patrons;

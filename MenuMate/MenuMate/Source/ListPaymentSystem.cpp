@@ -64,7 +64,7 @@
 #include "ReceiptUtility.h"
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
-#include "EstanciaMall.h"
+#include "MallFactory.h"
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 
@@ -1334,7 +1334,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 {
 	bool RetVal = true;
 
-	if (!PhoenixHM->Enabled)
+	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
 		" The PMS Interface Software has not been installed or enabled correctly." " Please contact your MenuMate support agent.").w_str
@@ -1343,7 +1343,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 	}
 	else
 	{
-		if (!PhoenixHM->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
+		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
 			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
@@ -1357,7 +1357,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		}
 		else
 		{
-			AnsiString TransactionRef = PhoenixHM->GetLastTransactionRef();
+			AnsiString TransactionRef = TDeviceRealTerminal::Instance().BasePMS->GetLastTransactionRef();
 			PaymentTransaction.References.push_back(RefRefType(TransactionRef,
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
 		}
@@ -1518,11 +1518,13 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
-    if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+
+    if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        //TODO: Instantiation will happen in a factory based on the active mall in database
-        TMallExport* estanciaMall = new TEstanciaMall();
-        estanciaMall->PushToDatabase(PaymentTransaction, ArcBillKey);
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey);
+        delete mall;
     }
 }
 
@@ -3046,7 +3048,10 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	{
 		if (PaymentTransaction.Phoenix.AccountNumber != 0 &&PaymentTransaction.Phoenix.AccountNumber != "")
 		{
-			LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.AccountNumber);
+            if(TGlobalSettings::Instance().PMSType != SiHot)
+			    LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.AccountNumber);
+            else
+                LastReceipt->ExtraInfo->Add("Room Number # " + PaymentTransaction.Phoenix.RoomNumber);
 			LastReceipt->ExtraInfo->Add("Guest " + PaymentTransaction.Phoenix.AccountName);
 			LastReceipt->ExtraInfo->Add("PMS Reference : " + PaymentTransaction.Phoenix.ReferenceNumber);
 		}
@@ -3524,7 +3529,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if(!DialogsOk)
 	  return RetVal;
 
-	if (PhoenixHM->Enabled)
+	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}
