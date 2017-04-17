@@ -29,73 +29,88 @@ namespace MenumateServices.WCFServices
 
         public DTO_TPurchaseInfo GetTenderInformation(DTO_TenderList tenderDetailsList)
         {
-            ThorPurchase purchase = new ThorPurchase();
-            foreach (DTO_ItemDetails items in tenderDetailsList.itemDetailsList)
+            try
             {
-                purchase.ItemDetail.Add(new ThorItemDetail()
+                ThorPurchase purchase = new ThorPurchase();
+                foreach (DTO_ItemDetails items in tenderDetailsList.itemDetailsList)
                 {
-                    ProductCode = items.thirdPartyCode,
-                    UnitPrice = items.unitPrice,
-                    Quantity = items.qty,
-                });
-            }
-            foreach (DTO_TenderDetails tendered in tenderDetailsList.tenderItemDetails)
-            {
+                    purchase.ItemDetail.Add(new ThorItemDetail()
+                    {
+                        ProductCode = items.thirdPartyCode,
+                        UnitPrice = items.unitPrice,
+                        Quantity = items.qty,
+                    });
+                }
+                foreach (DTO_TenderDetails tendered in tenderDetailsList.tenderItemDetails)
+                {
 
-                purchase.AccessToken = ThorAuthCheck.Instance.ThorlinkAccessToken;
-                string tenderIdent = tendered.tenderIdentifier;
-                purchase.CardNo = tendered.cardNo;
-                int tenderCode = 0;
-                if (tendered.thorTenderType == TenderTypeThor.eThorCash)
-                {
-                    tenderCode = (int)ThorTenderType.Cash;
+                    purchase.AccessToken = ThorAuthCheck.Instance.ThorlinkAccessToken;
+                    string tenderIdent = tendered.tenderIdentifier;
+                    purchase.CardNo = tendered.cardNo;
+                    int tenderCode = 0;
+                    if (tendered.thorTenderType == TenderTypeThor.eThorCash)
+                    {
+                        tenderCode = (int)ThorTenderType.Cash;
+                    }
+                    else if (tendered.thorTenderType == TenderTypeThor.eThorPoints)
+                    {
+                        tenderCode = (int)ThorTenderType.Loyalty;
+                    }
+                    else if (tendered.thorTenderType == TenderTypeThor.eThorVoucher)
+                    {
+                        tenderCode = (int)ThorTenderType.Voucher;
+                        tendered.tenderValue = 0.0;
+                    }
+                    else if (tendered.thorTenderType == TenderTypeThor.eThorDebitCard)
+                    {
+                        tenderCode = (int)ThorTenderType.DebitCard;
+                    }
+                    else if (tendered.thorTenderType == TenderTypeThor.eThorCheque)
+                    {
+                        tenderCode = (int)ThorTenderType.Cheque;
+                    }
+                    purchase.TenderDetail.Add(new ThorTenderDetail()
+                    {
+                        TenderTypeCode = tenderCode,
+                        TenderIdentifier = tenderIdent,
+                        TenderValue = tendered.tenderValue,
+                    });
+                    if (tendered.sendTransactionValue == false)
+                    {
+                        purchase.TransactionValue += 0;
+                    }
+                    else
+                    {
+                        purchase.TransactionValue += tendered.tenderValue;
+                    }
                 }
-                else if (tendered.thorTenderType == TenderTypeThor.eThorPoints)
-                {
-                    tenderCode = (int)ThorTenderType.Loyalty;
-                }
-                else if (tendered.thorTenderType == TenderTypeThor.eThorVoucher)
-                {
-                    tenderCode = (int)ThorTenderType.Voucher;
-                    tendered.tenderValue = 0.0;
-                }
-                else if (tendered.thorTenderType == TenderTypeThor.eThorDebitCard)
-                {
-                    tenderCode = (int)ThorTenderType.DebitCard;
-                }
-                else if (tendered.thorTenderType == TenderTypeThor.eThorCheque)
-                {
-                    tenderCode = (int)ThorTenderType.Cheque;
-                }
-                purchase.TenderDetail.Add(new ThorTenderDetail()
-                {
-                    TenderTypeCode = tenderCode,
-                    TenderIdentifier = tenderIdent,
-                    TenderValue = tendered.tenderValue,
-                });
-                if (tendered.sendTransactionValue == false)
-                {
-                    purchase.TransactionValue += 0;
-                }
-                else
-                {
-                    purchase.TransactionValue += tendered.tenderValue;
-                }
+                DoProcess(purchase);
+                return _purchaseResponseInfo;
             }
-            DoProcess(purchase);
-            return _purchaseResponseInfo;
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetTenderInformation Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 41, short.MaxValue);
+            }
+            return null;
         }
 
         public DTO_TPurchaseInfo GetRefundInformation(DTO_RefundDetails refundDetails)
         {
-            ThorPurchaseRefund refund = new ThorPurchaseRefund();
-            refund.AccessToken = ThorAuthCheck.Instance.ThorlinkAccessToken;
-            refund.CardNo = refundDetails.CardNo;
-            refund.CreditValue = refundDetails.CreditValue;
-            refund.LoyaltyValue = refundDetails.LoyaltyValue;
-            refund.TransactionValue = refundDetails.TransactionValue;
-            refund.Callback = TransactionResponseHandler;
-            refund.Submit();
+            try
+            {
+                ThorPurchaseRefund refund = new ThorPurchaseRefund();
+                refund.AccessToken = ThorAuthCheck.Instance.ThorlinkAccessToken;
+                refund.CardNo = refundDetails.CardNo;
+                refund.CreditValue = refundDetails.CreditValue;
+                refund.LoyaltyValue = refundDetails.LoyaltyValue;
+                refund.TransactionValue = refundDetails.TransactionValue;
+                refund.Callback = TransactionResponseHandler;
+                refund.Submit();
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetRefundInformation Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 40, short.MaxValue);
+            }
             
             return _purchaseResponseInfo;
         }
@@ -122,6 +137,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In Initialize Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 39, short.MaxValue);
                 ServiceLogger.Log(" exception is ---" + ex.Message);
             }
         }
@@ -142,6 +158,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In GetMemberInformation Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 38, short.MaxValue);
                 ServiceLogger.Log(" exception is ---" + ex.Message);
             }
             return _response;
@@ -173,6 +190,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In WaitForResponse Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 37, short.MaxValue);
                 ServiceLogger.Log(" exception is ---" + ex.Message);
             }
 
@@ -188,6 +206,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In DoInquiry Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 36, short.MaxValue);
                 ServiceLogger.Log(" exception is ---" + ex.Message);
                 _waitflag = false;
             }
@@ -204,6 +223,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In DoProcess Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 35, short.MaxValue);
                 ServiceLogger.Log(" exception is ---" + ex.Message);
                 _waitflag = false;
             }
@@ -228,6 +248,7 @@ namespace MenumateServices.WCFServices
                 }
                 catch (Exception ex)
                 {
+                    EventLog.WriteEntry("In TransactionResponseHandler Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 34, short.MaxValue);
                     ServiceLogger.Log("TransactionResponseHandler exception is ---" + ex.Message);
                 }
             }));
@@ -252,6 +273,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
+                EventLog.WriteEntry("In InquiryResponseHandler Thorlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 33, short.MaxValue);
                 ServiceLogger.Log("InquiryResponseHandler exception is ---" + ex.Message);
             }
         }

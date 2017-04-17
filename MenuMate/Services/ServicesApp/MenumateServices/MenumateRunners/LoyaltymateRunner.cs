@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Diagnostics;
 using System.ServiceModel;
 
 using MenumateServices.WCFServices;
@@ -13,48 +13,73 @@ namespace MenumateServices.MenumateRunners
         #region PUBLIC
         public LoyaltymateRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In LoyaltymateRunner LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 141, short.MaxValue);
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public override void Start()
         {
             // go ahead and start the worker thread
-            WorkerThread.Start();
+            try
+            {
+                WorkerThread.Start();
 
-            Paused = false;
+                Paused = false;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Start LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 142, short.MaxValue);
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public override void Stop()
         {
-            StopRunner();
+            try
+            {
+                StopRunner();
 
-            Paused = true;
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Stop LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 143, short.MaxValue);
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public override void Pause()
         {
-            StopRunner();
+            try
+            {
+                StopRunner();
 
-            Paused = true;
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In LoyaltymateRunner Pause", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 144, short.MaxValue);
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public override void Resume()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
 
-            Start();
+                Start();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Resume LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+            }
         }
         #endregion
 
@@ -66,7 +91,15 @@ namespace MenumateServices.MenumateRunners
         /// <returns></returns>
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In StartServiceTask LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 146, short.MaxValue);
+            }
+            return false;
         }
 
         /// <summary>
@@ -75,7 +108,15 @@ namespace MenumateServices.MenumateRunners
         /// <returns></returns>
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(WCFServiceLoyaltyMate));
+            try
+            {
+                return new ServiceHost(typeof(WCFServiceLoyaltyMate));
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In CreateServiceHost LoyaltymateRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 147, short.MaxValue);
+            }
+            return null;
         }
 
         /// <summary>

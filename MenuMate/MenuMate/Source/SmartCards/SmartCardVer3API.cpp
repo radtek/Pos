@@ -51,14 +51,7 @@ void TSmartCardVer3::UnlockCard(std::map <int, TSyndCode> SyndCodes)
    for (ptrSyndCodes = SyndCodes.begin();ptrSyndCodes != SyndCodes.end() && !SyndCodeValidated ; advance(ptrSyndCodes,1))
    {
 		StreamGetContact(*ContactStream.get());
-#ifdef _DEBUG
-	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedContactSteam.bin");
-#endif
 		DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
-#ifdef _DEBUG
-	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedContactSteam.bin");
-#endif
-
 	  ContactInfo.LoadFromStream(BlockData.Version,ContactStream.get());
       CRC = 0; CalcCRC = 0;
 	  StreamRead(ContactStream.get(),CRC);
@@ -66,14 +59,7 @@ void TSmartCardVer3::UnlockCard(std::map <int, TSyndCode> SyndCodes)
       {
          std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
          StreamGetPoints(*PointsStream.get());
-#ifdef _DEBUG
-	     PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedPointsStreamRead.bin");
-#endif
-
          DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
-#ifdef _DEBUG
-	     PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedPointsStreamRead.bin");
-#endif
          ContactInfo.Points.LoadFromStream(BlockData.Version,PointsStream.get());
          CRC = 0; CalcCRC = 0;
 		 StreamRead(PointsStream.get(),CRC);
@@ -371,9 +357,6 @@ void TSmartCardVer3::Restore(TSmartCardBlock &RestorePoint)
    TMemoryStream &RestoreStream = RestorePoint.GetStreamRef();
    lReturn = CardInfoWrite(V3_CARD_RESTORE_POINT_DATA_START,CARD_RESTORE_POINT_LENGTH,RestoreStream);
    RestoreStream.Position = 0;
-   #ifdef _DEBUG
-   RestoreStream.SaveToFile("MMRestoreToRestorePoint.bin");
-   #endif
    if (lReturn != SCARD_S_SUCCESS && lReturn != SCARD_M_CHECK_ERROR)
    {
       TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Write Restore Point Failed. : " + AnsiString(IntToHex(int(lReturn),2)));

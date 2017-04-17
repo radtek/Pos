@@ -5,7 +5,7 @@
 
 #include "ManagerPanasonic.h"
 #include "PanasonicModels.h"
-
+#include "StringTools.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -261,20 +261,24 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 
              for(; !selectPaymentType->Eof; selectPaymentType->Next())
              {
-                    if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 4097)
+                    //if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 4097)
+                    if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,13,"))
                     {
                         panasonicModel->TenderCash = selectPaymentType->FieldByName("SUBTOTAL")->AsCurrency;
                         panasonicModel->Cash = true;
                     }
-                    else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 13)
+                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,3,4,"))
+                    //else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 13)
                     {
                         panasonicModel->CreditCard = true;
                     }
-                    else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 1)
+                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,"))
+                    //else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 1)
                     {
                         panasonicModel->Cheque = true;
                     }
-                    else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 15)
+                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,2,3,4,"))
+                    //else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 15)
                     {
                         panasonicModel->EFTPOS = true;
                         panasonicModel->CashOut = selectPaymentType->FieldByName("CASH_OUT")->AsString == "T" ? true : false;
@@ -304,6 +308,11 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 	}
     delete dbPanasonic;
     delete panasonicModel;
+}
+//----------------------------------------------------------------------------------------------------------------
+bool TPanasonicThread::HasAllProperties(AnsiString propertyString,AnsiString allProperties)
+{
+  return TStringTools::Instance()->HasAllProperties(propertyString,allProperties);;
 }
 //----------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction, int arcBillKey)

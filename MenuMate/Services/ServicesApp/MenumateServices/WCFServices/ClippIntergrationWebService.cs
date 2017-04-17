@@ -11,6 +11,7 @@ using MenumateServices.Utilities;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace MenumateServices.WCFServices
 {
@@ -61,6 +62,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In GetOpenMessages Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 1, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetOpenMessages", exception);
             }
 
@@ -94,6 +96,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In GetPreviousMessages Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 2, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetPreviousMessages", exception);
             }
 
@@ -132,6 +135,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In UpdateTabDetails Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 3, short.MaxValue);
                 ServiceLogger.LogException("Exception in UpdateTabDetails", exception);
             }
         }
@@ -168,6 +172,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In UpdateTabDetailsOnError Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
                 ServiceLogger.LogException("Exception in UpdateTabDetailsOnError", exception);
             }
         }
@@ -214,6 +219,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In CloseTab Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 5, short.MaxValue);
                 ServiceLogger.LogException("Exception in CloseTab", exception);
             }
             return null;
@@ -251,6 +257,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In CloseTabOnError Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 6, short.MaxValue);
                 ServiceLogger.LogException("Exception in CloseTabOnError)", exception);
             }
         }
@@ -290,6 +297,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In RequestTabPayment Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 7, short.MaxValue);
                 ServiceLogger.LogException("Exception in RequestTabPayment", exception);
             }
             return null;
@@ -315,6 +323,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
+                EventLog.WriteEntry("In ForceCloseAllTabs Clipp", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 8, short.MaxValue);
                 ServiceLogger.LogException("Exception in ForceCloseAllTabs", exception);
             }
             return false;

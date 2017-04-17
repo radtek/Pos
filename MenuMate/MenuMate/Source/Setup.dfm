@@ -1396,7 +1396,7 @@ object frmSetup: TfrmSetup
           OnMouseClick = btnRegenMallReportMouseClick
         end
         object btnAssignMallSalesType: TTouchBtn
-          Left = 32
+          Left = 16
           Top = 569
           Width = 329
           Height = 30
@@ -1413,6 +1413,7 @@ object frmSetup: TfrmSetup
           DisabledButtonColor = clBtnFace
           Enabled = False
           LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnAssignMallSalesTypeMouseClick
         end
         object edMallFTPServer: TEdit
           Left = 392

@@ -16,6 +16,8 @@ namespace MenumateServices
         SmartLink,
         ThorLink,
         PocketVoucher,
-        SalesForceIntegration
+        SalesForceIntegration,
+        SiHotIntegration,
+        WalletPayments
     };
 }

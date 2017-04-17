@@ -1,5 +1,7 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.ServiceModel;
 using MenumateServices.WCFServices;
+using System.Diagnostics;
 
 namespace MenumateServices.MenumateRunners
 {
@@ -7,39 +9,82 @@ namespace MenumateServices.MenumateRunners
     {
         public ClippIntegrationServiceRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In ClippIntegrationServiceRunner clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
         }
 
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Start clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 134, short.MaxValue);
+            }
         }
 
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Stop clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 135, short.MaxValue);
+            }
         }
 
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Pause clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 136, short.MaxValue);
+            }
         }
 
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In Resume clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 137, short.MaxValue);
+            }
         }
 
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In StartServiceTask clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 138, short.MaxValue);
+            }
+            return false;
         }
 
-        
+
         protected override ServiceHost CreateServiceHost()
         {
             return new ServiceHost(typeof(ClippIntergrationWebService));
@@ -49,26 +94,33 @@ namespace MenumateServices.MenumateRunners
         {
             bool result = false;
 
-            ServiceLogger.Log(@"Starting Clipp Server endpoint ...");
-
-            result = OpenServiceHost();
-
-            if (result)
+            try
             {
-                ServiceLogger.Log(@"Clipp Server endpoint is running ...");
+                ServiceLogger.Log(@"Starting Clipp Server endpoint ...");
 
-                //TODO: Initialize the Clipp Integration Server....
+                result = OpenServiceHost();
 
-                ServiceInfo serviceInfo = ServiceInfo.Instance;
+                if (result)
+                {
+                    ServiceLogger.Log(@"Clipp Server endpoint is running ...");
 
-                ServiceLogger.Log(string.Format(@"Clipp Server: Database server URL: {0}", serviceInfo.WebmateDatabaseServerPath()));
-                ServiceLogger.Log(string.Format(@"Clipp Server: Database location: {0}", serviceInfo.WebmateDatabaseLocation()));
+                    //TODO: Initialize the Clipp Integration Server....
 
-                ServiceLogger.Log(@"Clipp Server runner: Clipp Integration Service has started");
+                    ServiceInfo serviceInfo = ServiceInfo.Instance;
+
+                    ServiceLogger.Log(string.Format(@"Clipp Server: Database server URL: {0}", serviceInfo.WebmateDatabaseServerPath()));
+                    ServiceLogger.Log(string.Format(@"Clipp Server: Database location: {0}", serviceInfo.WebmateDatabaseLocation()));
+
+                    ServiceLogger.Log(@"Clipp Server runner: Clipp Integration Service has started");
+                }
+                else
+                {
+                    ServiceLogger.Log(@"Clipp Server endpoint failed to run ...");
+                }
             }
-            else
+            catch (Exception exc)
             {
-                ServiceLogger.Log(@"Clipp Server endpoint failed to run ...");
+                EventLog.WriteEntry("In StartRunner clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 139, short.MaxValue);
             }
 
             return result;
@@ -78,14 +130,21 @@ namespace MenumateServices.MenumateRunners
         {
             bool result = false;
 
-            ServiceLogger.Log(@"Stopping Clipp Integration Service endpoint ...");
+            try
+            {
+                ServiceLogger.Log(@"Stopping Clipp Integration Service endpoint ...");
 
-            //TODO: Clear the Clipp Integration Server....
-            result = CloseServiceHost();
+                //TODO: Clear the Clipp Integration Server....
+                result = CloseServiceHost();
 
-            ServiceLogger.Log(result
-                ? @"Clipp Integration Service endpoint stopped ..."
-                : @"Clipp Integration Service endpoint failed to stop ...");
+                ServiceLogger.Log(result
+                    ? @"Clipp Integration Service endpoint stopped ..."
+                    : @"Clipp Integration Service endpoint failed to stop ...");
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In StopRunner clipprunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 140, short.MaxValue);
+            }
 
             return result;
         }

@@ -730,9 +730,6 @@ void TManagerSmartCard::SaveContactInfo(TMMContactInfo &inContactInfo)
 {
    try
    {
-#ifdef _DEBUG
-	  __int64 start = ::GetTickCount();
-#endif
 
 	  if (Enabled)
 	  {
@@ -771,13 +768,6 @@ void TManagerSmartCard::SaveContactInfo(TMMContactInfo &inContactInfo)
 			throw TSCException(tsceNoCard, "No Smart Card in Reader.");
 		 }
 	  }
-
-#ifdef _DEBUG
-	  int Time = ((::GetTickCount() - start));
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Save Time :" + IntToStr(Time));
-#endif
-
    }
    catch(Exception & E)
    {
@@ -791,10 +781,6 @@ void TManagerSmartCard::SaveContactPoints(TContactPoints Points)
 {
    try
    {
-#ifdef _DEBUG
-	  __int64 start = ::GetTickCount();
-#endif
-
 	  if (Enabled)
 	  {
 		 if (CardInserted)
@@ -831,13 +817,6 @@ void TManagerSmartCard::SaveContactPoints(TContactPoints Points)
 			throw TSCException(tsceNoCard, "No Smart Card in Reader.");
 		 }
 	  }
-
-#ifdef _DEBUG
-	  __int64 Time = ((::GetTickCount() - start));
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Save Time :" + IntToStr(Time));
-#endif
-
    }
    catch(Exception & E)
    {
@@ -851,10 +830,6 @@ void TManagerSmartCard::SaveCardGUID(TSmartCardGUID &CardGuid)
 {
    try
    {
-#ifdef _DEBUG
-	  __int64 start = ::GetTickCount();
-#endif
-
 	  if (Enabled)
 	  {
 		 if (CardInserted)
@@ -878,13 +853,6 @@ void TManagerSmartCard::SaveCardGUID(TSmartCardGUID &CardGuid)
 			throw TSCException(tsceNoCard, "No Smart Card in Reader.");
 		 }
 	  }
-
-#ifdef _DEBUG
-	  __int64 Time = ((::GetTickCount() - start));
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Save Time :" + IntToStr(Time));
-#endif
-
    }
    catch(Exception & E)
    {

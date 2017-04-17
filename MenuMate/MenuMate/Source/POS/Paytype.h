@@ -154,6 +154,8 @@ private:	// User declarations
     void ProcessCreditPayment(TPayment *Payment);
     void ProcessNormalPayment(TPayment *Payment);
     void ProcessLoyaltyVoucher(TPayment *Payment);
+    void ProcessWalletTransaction(TPayment *Payment);
+    bool ValidateWalletAccount(TPayment *Payment);
     void ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment);
     void ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPayment *Payment);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);

@@ -13,6 +13,7 @@
 #include "ContactStaff.h"
 #include <vector.h>
 #include "PhoenixHotelSystem.h"
+#include "SiHotDataObjects.h"
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
@@ -239,6 +240,8 @@ public:		// User declarations
 	eVisibleInterface	DefaultInterfaceDisplay;
 	TPhoenixRoomStatusExt SelectedRoom;
 	void UpdateInterface();
+    std::vector<TSiHotAccounts> SiHotAccounts;
+    double LimitSiHot;
 };
 //---------------------------------------------------------------------------
 

@@ -231,6 +231,9 @@ private:
     void EnablePanasonicIntegration();
     void SaveServerIp(Database::TDBTransaction &dbTransaction);
     void SaveEnabledState(Database::TDBTransaction &dbTransaction);
+    void SelectPMSType();
+    bool SetUpSiHot() ;
+    bool SetUpPhoenix();
 public: // User declarations
 };
 #endif

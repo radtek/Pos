@@ -92,3 +92,30 @@ AnsiString TStringTools::UpperCaseWithNoSpace(AnsiString string)
     return retVal;
 }
 
+//Method to check that payment have requested Properties
+//param - propertyString -> propertystring saved in DB
+//param - allProperties -> all properties need to be checked,
+//should be separeted by comman and ended by comma e.g to check 1 and 2 string should be "1,2,"
+bool TStringTools::HasAllProperties(AnsiString propertyString,AnsiString allProperties)
+{
+  bool retVal = false;
+  AnsiString searchString = "";
+  const char* line = allProperties.c_str();
+  for(int i = 0 ; i < line[i] != '\0' ; i++)
+  {
+     if(line[i] == ',')
+     {
+         searchString = "-" + searchString + "-";
+         retVal = propertyString.AnsiPos(searchString) > 0;
+         if(!retVal)
+           break;
+         searchString = "";
+     }
+     else
+     {
+        searchString += line[i];
+     }
+  }
+  return retVal;
+}
+

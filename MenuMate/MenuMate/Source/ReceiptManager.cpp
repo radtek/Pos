@@ -12,6 +12,7 @@
 #include "MallExportUpdateAdaptor.h"
 #include "DBSecurity.h"
 #include "PosMain.h"
+#include "StringTools.h"
 TManagerReceipt *ManagerReceipt;
 // ---------------------------------------------------------------------------
 
@@ -831,10 +832,7 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
     delete Printout;
 }
 
-bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(
-	WideString &outPaymentRefNumber,
-	Currency &outOriginalVisaPaymentAmount,
-	int &outArcbillKey)
+bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymentRefNumber,Currency &outOriginalVisaPaymentAmount,int &outArcbillKey)
 {
     bool retVal = false;
 
@@ -877,9 +875,9 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(
                 outPaymentRefNumber = WideString( IBInternalQuery->Fields[0]->AsString );
                 outOriginalVisaPaymentAmount = IBInternalQuery->Fields[1]->AsDouble;
                 outArcbillKey = Array[ArrayIndex].second;
-                int properties = IBInternalQuery->Fields[4]->AsInteger;
-
-                if(properties & ePayTypeAllowTips)
+                AnsiString properties = IBInternalQuery->Fields[4]->AsString;
+                AnsiString proptoSearch = IntToStr(ePayTypeAllowTips) + ",";
+                if(TStringTools::Instance()->HasAllProperties(properties,proptoSearch))
                     retVal = true;
              }
 

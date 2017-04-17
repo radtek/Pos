@@ -52,9 +52,9 @@ TaskResult TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMC
 {
     TaskResult result;
     result.OperationSuccussful = false;
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
     try
     {
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
         MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->CreateMember(syndicateCode,info, info.CloudUUID);
         if(createResponse.IsSuccesful)
         {
@@ -72,7 +72,7 @@ TaskResult TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMC
         result.ErrorMessage = E.Message ;
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
-
+    delete LoyaltyMateInterface;
     return result;
 }
 //---------------------------------------------------------------------------
@@ -170,18 +170,18 @@ bool TLoyaltyMateThread::UpdateMemberOnCloud(TSyndCode syndicateCode, const TMMC
     {
         result = true;
     }
-
+    delete LoyaltyMateInterface;
     return result;
 }
 //---------------------------------------------------------------------------
 bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction transaction)
 {
     bool result = false;
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
     try
     {
         if(transaction.CloudUUID.Length() > 0)
         {
-           TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
            MMLoyaltyServiceResponse postTransactionResponse = LoyaltyMateInterface->PostTransaction(
                                                                                 transaction.SyndicateCode,
                                                                                 transaction.CloudUUID,
@@ -200,6 +200,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
     {
         TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,exc.Message);
     }
+    delete LoyaltyMateInterface;
     return result;
 }
 //---------------------------------------------------------------------------
@@ -310,13 +311,15 @@ void TLoyaltyMateDownloadMemberThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingEmail()
 {
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
    try
 	{
 		TMMContactInfo contactInfo;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+
 		if(Terminated)
 		{
 			ThreadTerminated();
+            delete LoyaltyMateInterface;
 			return;
         }
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByEmail(syndicateCode, MemberEmail, contactInfo, replacePoints);
@@ -340,17 +343,20 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingEmail()
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		ErrorMessage = E.Message;
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingUUID()
 {
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 	try
 	{
 		TMMContactInfo contactInfo;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+
 		if(Terminated)
 		{
 			ThreadTerminated();
+            delete LoyaltyMateInterface;
 			return;
         }
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetails(syndicateCode, UUID, contactInfo, replacePoints);
@@ -373,17 +379,20 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingUUID()
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		ErrorMessage = E.Message;
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingCode()
 {
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 	try
 	{
 		TMMContactInfo contactInfo;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+
 		if(Terminated)
 		{
 			ThreadTerminated();
+            delete LoyaltyMateInterface;
 			return;
         }
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByCode(syndicateCode, MemberCode, contactInfo, replacePoints);
@@ -407,6 +416,7 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingCode()
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		ErrorMessage = E.Message;
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMateDownloadMemberThread::Execute()
@@ -511,15 +521,15 @@ void __fastcall TLoyaltyMateSyncThread::Execute()
 //---------------------------------------------------------------------------
 void TLoyaltyMateSyncThread::SyncCompanyDetails()
 {
- try
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+   try
     {
         if(Terminated)
         {
             ThreadTerminated();
+            delete LoyaltyMateInterface;
             return;
         }
-
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
         MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->SyncCompanyDetails(_syndicateCode);
 
         if(!createResponse.IsSuccesful  && createResponse.ResponseCode == AuthenticationFailed)
@@ -541,6 +551,7 @@ void TLoyaltyMateSyncThread::SyncCompanyDetails()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         ErrorMessage = E.Message;
     }
+    delete LoyaltyMateInterface;
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -571,17 +582,16 @@ void __fastcall TLoyaltyMateUpdateCardThread::Execute()
 //---------------------------------------------------------------------------
 void TLoyaltyMateUpdateCardThread::UpdateMemberCardCodeOnCloud()
 {
- try
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+   try
     {
         if(Terminated)
         {
-                ThreadTerminated();
-                return;
+            ThreadTerminated();
+            delete LoyaltyMateInterface;
+            return;
         }
-
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
         MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->UpdateMemberCardCode(_syndicateCode,_uniqueId,_memberCardCode);
-
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
             throw Exception("Authentication failed with Loyaltymate Service");
@@ -604,7 +614,7 @@ void TLoyaltyMateUpdateCardThread::UpdateMemberCardCodeOnCloud()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         ErrorMessage = E.Message;
     }
-
+    delete LoyaltyMateInterface;
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -627,10 +637,10 @@ void TLoyaltyMateGiftVoucherThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
 {
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
    try
 	{
         TGiftCardDetail giftCardDetail;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 		if(Terminated)
 		{
 			ThreadTerminated();
@@ -656,6 +666,7 @@ void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
     {
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMateGiftVoucherThread::Execute()
@@ -684,10 +695,10 @@ void TLoyaltyMatePocketVoucherThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void TLoyaltyMatePocketVoucherThread::GetPocketVoucherDetail()
 {
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
    try
 	{
 		TVoucherDetail voucherDetail;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 		if(Terminated)
 		{
 			ThreadTerminated();
@@ -711,6 +722,7 @@ void TLoyaltyMatePocketVoucherThread::GetPocketVoucherDetail()
     {
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMatePocketVoucherThread::Execute()
@@ -740,10 +752,11 @@ void TLoyaltyMateVoucherProcessThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void TLoyaltyMateVoucherProcessThread::ProcessVouchers()
 {
-try
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+    try
 	{
 		TMMContactInfo contactInfo;
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+
 		if(Terminated)
 		{
 			ThreadTerminated();
@@ -761,6 +774,7 @@ try
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		ErrorMessage = E.Message;
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMateVoucherProcessThread::Execute()
@@ -791,9 +805,9 @@ void TLoyaltyMateReleaseVoucherThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void TLoyaltyMateReleaseVoucherThread::ReleaseVouchers()
 {
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
    try
 	{
-        TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 		if(Terminated)
 		{
 			ThreadTerminated();
@@ -811,6 +825,7 @@ void TLoyaltyMateReleaseVoucherThread::ReleaseVouchers()
     {
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMateReleaseVoucherThread::Execute()

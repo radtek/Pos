@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
-
+using System.Diagnostics;
 using MenumateServices.DTO;
 
 namespace MenumateServices.WCFServices
@@ -19,7 +19,15 @@ namespace MenumateServices.WCFServices
         /// <returns></returns>
         public DTOResponse useDevice(DTODevice inDeviceDTO)
         {
-            return DTOFactory.BuildUseDeviceResponseDTO(inDeviceDTO);
+            try
+            {
+                return DTOFactory.BuildUseDeviceResponseDTO(inDeviceDTO);
+            }
+            catch (Exception exception)
+            {
+                EventLog.WriteEntry("In useDevice EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 16, short.MaxValue);
+            }
+            return null;
         }
 
         /// <summary>
@@ -29,7 +37,15 @@ namespace MenumateServices.WCFServices
         /// <returns></returns>
         public DTOResponse[] status(DTODevice[] inDeviceDTOList)
         {
-            return DTOFactory.BuildStatusResponseDTO(inDeviceDTOList);
+            try
+            {
+                return DTOFactory.BuildStatusResponseDTO(inDeviceDTOList);
+            }
+            catch (Exception exception)
+            {
+                EventLog.WriteEntry("In status EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 17, short.MaxValue);
+            }
+            return null;
         }
     }
 }
