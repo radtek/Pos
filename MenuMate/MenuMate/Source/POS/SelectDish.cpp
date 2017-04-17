@@ -10977,7 +10977,6 @@ std::vector<TPatronType> TfrmSelectDish::GetPatronCount(Database::TDBTransaction
     }
     catch(Exception & E)
     {
-         MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
          TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 	return patrons;
