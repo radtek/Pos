@@ -509,14 +509,22 @@ Currency TDBTab::GetTabCreditLimit(Database::TDBTransaction &DBTransaction,long 
 {
 	Currency CreditLimit = 0;
 
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SELECT CREDIT_LIMIT FROM TAB WHERE TAB_KEY = :TAB_KEY";
-	IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
-	IBInternalQuery->ExecQuery();
-	if (IBInternalQuery->RecordCount)
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT CREDIT_LIMIT FROM TAB WHERE TAB_KEY = :TAB_KEY";
+        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
+        IBInternalQuery->ExecQuery();
+        if (IBInternalQuery->RecordCount)
+        {
+            CreditLimit = IBInternalQuery->FieldByName("CREDIT_LIMIT")->AsCurrency;
+        }
+    }
+	catch(Exception &E)
 	{
-		CreditLimit = IBInternalQuery->FieldByName("CREDIT_LIMIT")->AsCurrency;
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
 	}
 	return CreditLimit;
 }
@@ -1101,49 +1109,66 @@ bool TDBTab::GetTabLocked(Database::TDBTransaction &DBTransaction,int inTabKey)
 {
 	bool RetVal = false;
 
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    try
+    {
 
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"SELECT "
-	"LOCKED_REASON "
-	"FROM "
-	"TAB "
-	"WHERE "
-	"TAB_KEY = :TAB_KEY";
-	IBInternalQuery->ParamByName("TAB_KEY")->AsString = inTabKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "SELECT "
+        "LOCKED_REASON "
+        "FROM "
+        "TAB "
+        "WHERE "
+        "TAB_KEY = :TAB_KEY";
+        IBInternalQuery->ParamByName("TAB_KEY")->AsString = inTabKey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+            if(IBInternalQuery->FieldByName("LOCKED_REASON")->AsString != "")
+            {
+                RetVal = true;
+            }
+        }
+    }
+	catch(Exception &E)
 	{
-		if(IBInternalQuery->FieldByName("LOCKED_REASON")->AsString != "")
-		{
-			RetVal = true;
-		}
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
 	}
 	return RetVal;
 }
 
 UnicodeString TDBTab::GetTabLockedReason(Database::TDBTransaction &DBTransaction,int inTabKey)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	UnicodeString RetVal = "";
 
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"SELECT "
-	"LOCKED_REASON "
-	"FROM "
-	"TAB "
-	"WHERE "
-	"TAB_KEY = :TAB_KEY";
-	IBInternalQuery->ParamByName("TAB_KEY")->AsString = inTabKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    UnicodeString RetVal = "";
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "SELECT "
+        "LOCKED_REASON "
+        "FROM "
+        "TAB "
+        "WHERE "
+        "TAB_KEY = :TAB_KEY";
+        IBInternalQuery->ParamByName("TAB_KEY")->AsString = inTabKey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+            if(IBInternalQuery->FieldByName("LOCKED_REASON")->AsString != "")
+            {
+                RetVal = IBInternalQuery->FieldByName("LOCKED_REASON")->AsString;
+            }
+        }
+    }
+	catch(Exception &E)
 	{
-		if(IBInternalQuery->FieldByName("LOCKED_REASON")->AsString != "")
-		{
-			RetVal = IBInternalQuery->FieldByName("LOCKED_REASON")->AsString;
-		}
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
 	}
 	return RetVal;
 }

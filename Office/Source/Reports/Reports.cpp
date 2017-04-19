@@ -6234,7 +6234,8 @@ void TfrmReports::PrintTurnaroundTimes(TReportControl *ReportControl)
             if (ReportType == rtExcel)
             {
                 std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-                ExcelDataSetsList->AddObject("Turn Around",(TObject *)dmMMReportData->qrTurnAround);
+                ExcelDataSetsList->AddObject("Turn Around",(TObject *)dmMMReportData->qrTurnAroundExcel);
+                ExcelDataSetsList->AddObject("Turn Around Secondary",(TObject *)dmMMReportData->qrTurnAround);
                 ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
             }
             else

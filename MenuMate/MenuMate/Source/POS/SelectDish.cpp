@@ -1899,107 +1899,122 @@ void TfrmSelectDish::RedrawSeatOrders()
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateExternalDevices(bool UpdateTopPoleDisplay, bool UpdateBottomPoleDisplay)
 {
-	AnsiString PoleDisplayItem;
-	Currency PoleDisplayItemPrice;
-	for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-	{
-		TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[i];
+    try
+    {
+        AnsiString PoleDisplayItem;
+        Currency PoleDisplayItemPrice;
+        for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        {
+            TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[i];
 
-		if (SeatOrders[SelectedSeat]->Orders->LastItemAdded == Order)
-		{
-			PoleDisplayItemPrice = Order->TotalPriceAdjustment();
-			PoleDisplayItem = Order->Item;
-		}
-		else
-		{
-			for (UINT j = 0; j < Order->SubOrders->Count; j++)
-			{
-				TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[j];
-				if (SeatOrders[SelectedSeat]->Orders->LastItemAdded == SubOrder)
-				{
-					PoleDisplayItemPrice = SubOrder->TotalPriceAdjustmentSides();
-					PoleDisplayItem = SubOrder->Item;
-				}
-			}
-		}
-	}
-	AnsiString PoleDisplayPrice = CurrToStrF(PoleDisplayItemPrice, ffNumber, CurrencyDecimals);
-	AnsiString StringTotal = CurrToStrF(InitialMoney.GrandTotal, ffNumber, CurrencyDecimals);
+            if (SeatOrders[SelectedSeat]->Orders->LastItemAdded == Order)
+            {
+                PoleDisplayItemPrice = Order->TotalPriceAdjustment();
+                PoleDisplayItem = Order->Item;
+            }
+            else
+            {
+                for (UINT j = 0; j < Order->SubOrders->Count; j++)
+                {
+                    TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[j];
+                    if (SeatOrders[SelectedSeat]->Orders->LastItemAdded == SubOrder)
+                    {
+                        PoleDisplayItemPrice = SubOrder->TotalPriceAdjustmentSides();
+                        PoleDisplayItem = SubOrder->Item;
+                    }
+                }
+            }
+        }
+        AnsiString PoleDisplayPrice = CurrToStrF(PoleDisplayItemPrice, ffNumber, CurrencyDecimals);
+        AnsiString StringTotal = CurrToStrF(InitialMoney.GrandTotal, ffNumber, CurrencyDecimals);
 
-	if (!UpdateTopPoleDisplay)
-	{
-		PoleDisplayItem = "";
-		PoleDisplayPrice = "";
-	}
-	AnsiString BottomLeft = "";
-	if (!UpdateBottomPoleDisplay)
-	{
-		BottomLeft = "";
-		StringTotal = "";
-	}
+        if (!UpdateTopPoleDisplay)
+        {
+            PoleDisplayItem = "";
+            PoleDisplayPrice = "";
+        }
+        AnsiString BottomLeft = "";
+        if (!UpdateBottomPoleDisplay)
+        {
+            BottomLeft = "";
+            StringTotal = "";
+        }
 
-	if (SeatOrders[SelectedSeat]->Orders->Count != 0)
-	{
-		BottomLeft = "Sub Total ";
-		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay(PoleDisplayItem, PoleDisplayPrice, BottomLeft, StringTotal);
-		TDeviceRealTerminal::Instance().SecurityPort->SetData(PoleDisplayItem + " " + PoleDisplayPrice);
-		TDeviceRealTerminal::Instance().SecurityPort->SetData(BottomLeft + StringTotal);
-		LastSale = 0;
-	}
+        if (SeatOrders[SelectedSeat]->Orders->Count != 0)
+        {
+            BottomLeft = "Sub Total ";
+            TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay(PoleDisplayItem, PoleDisplayPrice, BottomLeft, StringTotal);
+            TDeviceRealTerminal::Instance().SecurityPort->SetData(PoleDisplayItem + " " + PoleDisplayPrice);
+            TDeviceRealTerminal::Instance().SecurityPort->SetData(BottomLeft + StringTotal);
+            LastSale = 0;
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::TotalCosts()
 {
-	InitialMoney.Clear();
-    if(ChitNumber.Valid())
+    try
     {
-       AssignremovedTaxesList();
-       AssignDiscountLists();
-    }
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TPaymentTransaction PaymentTransaction(DBTransaction);
-
-	TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(PaymentTransaction);
-	DBTransaction.Commit();
-	std::auto_ptr<TList>OrdersList(new TList);
-
-    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        InitialMoney.Clear();
+        if(ChitNumber.Valid())
         {
-                TItemMinorComplete *Order = (TItemMinorComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
-                OrdersList->Add(Order);
+           AssignremovedTaxesList();
+           AssignDiscountLists();
+        }
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TPaymentTransaction PaymentTransaction(DBTransaction);
+
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(PaymentTransaction);
+        DBTransaction.Commit();
+        std::auto_ptr<TList>OrdersList(new TList);
+
+        for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+            {
+                    TItemMinorComplete *Order = (TItemMinorComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+                    OrdersList->Add(Order);
+            }
+
+        PaymentTransaction.Orders->Assign(OrdersList.get());
+        PaymentTransaction.Membership.Assign(Membership);
+        PaymentTransaction.ProcessPoints();
+
+
+
+        InitialMoney.Recalc(PaymentTransaction,false);
+
+        if (InitialMoney.PaymentDue != 0)
+        {
+            if (CurrentTender != 0)
+            {
+                InitialMoney.PaymentAmount = CurrentTender;
+                TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
+                if (CashPayment != NULL)
+                {
+                    CashPayment->SetPay(CurrentTender);
+                }
+                InitialMoney.Recalc(PaymentTransaction,false);
+            }
         }
 
-	PaymentTransaction.Orders->Assign(OrdersList.get());
-    PaymentTransaction.Membership.Assign(Membership);
-    PaymentTransaction.ProcessPoints();
+        UpdateTaxLabels();
 
+            customerDisp.TierLevel=     TGlobalSettings::Instance().TierLevelChange ;
 
+        lbeTotalCost->Caption = CurrToStrF(InitialMoney.RoundedGrandTotal, ffNumber, CurrencyDecimals) + " ";
+        lbeChange->Caption    = CurrToStrF(RoundToNearest(InitialMoney.Change, 0.01, TGlobalSettings::Instance().MidPointRoundsDown), ffNumber, CurrencyDecimals) + " ";
 
-	InitialMoney.Recalc(PaymentTransaction,false);
+        customerDisplaySendOrder( SeatOrders );
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 
-	if (InitialMoney.PaymentDue != 0)
-	{
-		if (CurrentTender != 0)
-		{
-			InitialMoney.PaymentAmount = CurrentTender;
-			TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
-			if (CashPayment != NULL)
-			{
-				CashPayment->SetPay(CurrentTender);
-			}
-			InitialMoney.Recalc(PaymentTransaction,false);
-		}
-	}
-
-    UpdateTaxLabels();
-
-        customerDisp.TierLevel=     TGlobalSettings::Instance().TierLevelChange ;
-
-	lbeTotalCost->Caption = CurrToStrF(InitialMoney.RoundedGrandTotal, ffNumber, CurrencyDecimals) + " ";
-	lbeChange->Caption    = CurrToStrF(RoundToNearest(InitialMoney.Change, 0.01, TGlobalSettings::Instance().MidPointRoundsDown), ffNumber, CurrencyDecimals) + " ";
-
-    customerDisplaySendOrder( SeatOrders );
 }
 // ---------------------------------------------------------------------------
 __fastcall TDataBtn::TDataBtn(Classes::TComponent* AOwner) : TTouchBtn(AOwner) // TCustomStaticText(AOwner)
@@ -3025,19 +3040,26 @@ void TfrmSelectDish::SetSelectedSeat(bool selectGuest) //changes for 5900
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RefreshSeats()
 {
-	UpdateTableButton();
+    try
+    {
+        UpdateTableButton();
 
-	tbtnChangeTable->Visible = (SelectedTable > 0);
-	tgridSeats->Visible = (SelectedTable > 0);
+        tbtnChangeTable->Visible = (SelectedTable > 0);
+        tgridSeats->Visible = (SelectedTable > 0);
 
-	tbtnTender->Visible = !(SelectedTable > 0);
-	tbtnSave->Visible = !(SelectedTable > 0);
-	tbtnCashSale->Visible = !(SelectedTable > 0);
-	tbtnDollar1->Visible = !(SelectedTable > 0);
-	tbtnDollar2->Visible = !(SelectedTable > 0);
-	tbtnDollar3->Visible = !(SelectedTable > 0);
-	tbtnDollar4->Visible = !(SelectedTable > 0);
-	tbtnDollar5->Visible = !(SelectedTable > 0);
+        tbtnTender->Visible = !(SelectedTable > 0);
+        tbtnSave->Visible = !(SelectedTable > 0);
+        tbtnCashSale->Visible = !(SelectedTable > 0);
+        tbtnDollar1->Visible = !(SelectedTable > 0);
+        tbtnDollar2->Visible = !(SelectedTable > 0);
+        tbtnDollar3->Visible = !(SelectedTable > 0);
+        tbtnDollar4->Visible = !(SelectedTable > 0);
+        tbtnDollar5->Visible = !(SelectedTable > 0);
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::btnUpMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
@@ -4437,14 +4459,21 @@ void TfrmSelectDish::OnTillsMenusAltered(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::NagUserToSelectChit()
 {
-    if (TGlobalSettings::Instance().NagUserToSelectChit && !ChitNumber.Assigned() && Active)
+    try
     {
-        Database::TDBTransaction t(TDeviceRealControl::ActiveInstance().DBControl);
+        if (TGlobalSettings::Instance().NagUserToSelectChit && !ChitNumber.Assigned() && Active)
+        {
+            Database::TDBTransaction t(TDeviceRealControl::ActiveInstance().DBControl);
 
-        t.StartTransaction();
-        SetupChit(t);
+            t.StartTransaction();
+            SetupChit(t);
 
-        t.Commit();
+            t.Commit();
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
 // ---------------------------------------------------------------------------
@@ -8364,47 +8393,54 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
-	for (int i = 0; i < tgridSeats->ColCount; i++)
-	{
-		tgridSeats->Buttons[0][i]->Latched = false;
-	}
-	GridButton->Latched = true;
+    try
+    {
+        for (int i = 0; i < tgridSeats->ColCount; i++)
+        {
+            tgridSeats->Buttons[0][i]->Latched = false;
+        }
+        GridButton->Latched = true;
 
-	int CurrentSeat = tgridSeats->Col(GridButton) + 1; // Zero Indexed.
-	if (CurrentSeat == SelectedSeat)
-	{
-		std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 32;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = true;
-		frmTouchKeyboard->KeyboardText = SeatOrders[CurrentSeat]->SeatName;
-		frmTouchKeyboard->Caption = "Enter a name for this " + TGlobalSettings::Instance().SeatLabel + ".";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			if (frmTouchKeyboard->KeyboardText == "")
-			{
-				SeatOrders[CurrentSeat]->SeatName = "";
-				GridButton->Caption = TGlobalSettings::Instance().SeatLabel + " " + IntToStr(CurrentSeat);
-				Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-				DBTransaction.StartTransaction();
-				TDBTables::SetSeatName(DBTransaction, frmTouchKeyboard->KeyboardText, SelectedTable, CurrentSeat);
-				DBTransaction.Commit();
-			}
-			else
-			{
-				SeatOrders[SelectedSeat]->SeatName = frmTouchKeyboard->KeyboardText;
-				GridButton->Caption = SeatOrders[SelectedSeat]->SeatName;
-				Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-				DBTransaction.StartTransaction();
-				TDBTables::SetSeatName(DBTransaction, frmTouchKeyboard->KeyboardText, SelectedTable, CurrentSeat);
-				DBTransaction.Commit();
-			}
-		}
-	}
-	else
-	{
-       GetItemsFromTable(tgridSeats->Col(GridButton), GridButton);
-	}
+        int CurrentSeat = tgridSeats->Col(GridButton) + 1; // Zero Indexed.
+        if (CurrentSeat == SelectedSeat)
+        {
+            std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 32;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = true;
+            frmTouchKeyboard->KeyboardText = SeatOrders[CurrentSeat]->SeatName;
+            frmTouchKeyboard->Caption = "Enter a name for this " + TGlobalSettings::Instance().SeatLabel + ".";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                if (frmTouchKeyboard->KeyboardText == "")
+                {
+                    SeatOrders[CurrentSeat]->SeatName = "";
+                    GridButton->Caption = TGlobalSettings::Instance().SeatLabel + " " + IntToStr(CurrentSeat);
+                    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                    DBTransaction.StartTransaction();
+                    TDBTables::SetSeatName(DBTransaction, frmTouchKeyboard->KeyboardText, SelectedTable, CurrentSeat);
+                    DBTransaction.Commit();
+                }
+                else
+                {
+                    SeatOrders[SelectedSeat]->SeatName = frmTouchKeyboard->KeyboardText;
+                    GridButton->Caption = SeatOrders[SelectedSeat]->SeatName;
+                    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                    DBTransaction.StartTransaction();
+                    TDBTables::SetSeatName(DBTransaction, frmTouchKeyboard->KeyboardText, SelectedTable, CurrentSeat);
+                    DBTransaction.Commit();
+                }
+            }
+        }
+        else
+        {
+           GetItemsFromTable(tgridSeats->Col(GridButton), GridButton);
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
@@ -8752,50 +8788,64 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 int TfrmSelectDish::GetCount(std::vector<TPatronType> patronTypes)
 {
     int patronCount = 0;
-    if(!patronTypes.empty())
+    try
     {
-        for(std::vector<TPatronType>::iterator it = patronTypes.begin(); it != patronTypes.end(); ++it)
+        if(!patronTypes.empty())
         {
-            (patronCount) += it->Count;
+            for(std::vector<TPatronType>::iterator it = patronTypes.begin(); it != patronTypes.end(); ++it)
+            {
+                (patronCount) += it->Count;
+            }
         }
     }
-
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
     return patronCount;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeTablePatrons()
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-    DBTransaction.StartTransaction();
-
-    //Get the patrons for the current selected table, verify if it is already keyed in
-    std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
-    int patronCount = GetCount(selectedTablePatrons);
-
-    //Verify if the patrons have already not been assigned, if selected table is a valid table and the setting for patron count is enabled
-    if(patronCount <= 0 && SelectedTable > 0 && (TGlobalSettings::Instance().PromptForPatronCount || TGlobalSettings::Instance().PromptPatronCountOnTableSales))
+    try
     {
-        if (TManagerPatron::Instance().GetCount(DBTransaction) > 0)
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+
+        //Get the patrons for the current selected table, verify if it is already keyed in
+        std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
+        int patronCount = GetCount(selectedTablePatrons);
+
+        //Verify if the patrons have already not been assigned, if selected table is a valid table and the setting for patron count is enabled
+        if(patronCount <= 0 && SelectedTable > 0 && (TGlobalSettings::Instance().PromptForPatronCount || TGlobalSettings::Instance().PromptPatronCountOnTableSales))
         {
-            std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
-
-            //Set to table patron count table...
-            TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
-
-            if(!patrons.empty())
+            if (TManagerPatron::Instance().GetCount(DBTransaction) > 0)
             {
-                patronCount = GetCount(patrons);
-                setPatronCount(patronCount);
-            }
-        }
-        else
-        {
-            MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
-        }
+                std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
 
-        DBTransaction.Commit();
+                //Set to table patron count table...
+                TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
+
+                if(!patrons.empty())
+                {
+                    patronCount = GetCount(patrons);
+                    setPatronCount(patronCount);
+                }
+            }
+            else
+            {
+                MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
+            }
+
+            DBTransaction.Commit();
+        }
     }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ResetPOS()
@@ -10393,57 +10443,77 @@ void TfrmSelectDish::CloseTPConnector()
 //---------------------------------------------------------------------------
 void TfrmSelectDish::showTablePicker()
 {
-	if( tpConnectorUp )
-	{
-		showNewTablePicker( tpConnector );
-	}
-	else
-	{
-		showOldTablePicker();
-	}
+    try
+    {
+        if( tpConnectorUp )
+        {
+            showNewTablePicker( tpConnector );
+        }
+        else
+        {
+            showOldTablePicker();
+        }
 
-    //MM-1647: Ask for chit if it is enabled for every order.
-    NagUserToSelectChit();
+        //MM-1647: Ask for chit if it is enabled for every order.
+        NagUserToSelectChit();
 
-    //MM-1649: Ask for patron count if it is enabled..
-    InitializeTablePatrons();
+        //MM-1649: Ask for patron count if it is enabled..
+        InitializeTablePatrons();
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::showNewTablePicker( TMMTablePickerConnectorServer* inConnector )
 {
-	if( !tpOpen )
-	{
-		std::vector<TLocationStatus> currentTables;
-		//setCurrentTables( currentTables );
-		inConnector->ShowTablePicker( currentTables );
-		tpOpen = true;
+    try
+    {
+        if( !tpOpen )
+        {
+            std::vector<TLocationStatus> currentTables;
+            //setCurrentTables( currentTables );
+            inConnector->ShowTablePicker( currentTables );
+            tpOpen = true;
 
-		currentTables.clear();
-	}
+            currentTables.clear();
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::showOldTablePicker()
 {
-	bool tableSelected = false;
+    try
+    {
+        bool tableSelected = false;
+        //std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
+        TFloorPlanReturnParams floorPlanReturnParams;
 
-	//std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
-    TFloorPlanReturnParams floorPlanReturnParams;
-
-	// Runs new web app of floorPlan
-    if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
-	{
-		tableSelected            = true;
-		SelectedTable            = floorPlanReturnParams.TabContainerNumber;
-		SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
-        SelectedParty = floorPlanReturnParams.PartyName;
-
-		refreshSelectedSeat();
-		RefreshSeats();
-		if( TGlobalSettings::Instance().CaptureCustomerName )
+        // Runs new web app of floorPlan
+        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
-            TCustNameAndOrderType::Instance()->LoadFromOrdersDatabase( SelectedTable );
+            tableSelected            = true;
+            SelectedTable            = floorPlanReturnParams.TabContainerNumber;
+            SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
+            SelectedParty = floorPlanReturnParams.PartyName;
+
+            refreshSelectedSeat();
+            RefreshSeats();
+            if( TGlobalSettings::Instance().CaptureCustomerName )
+            {
+                TCustNameAndOrderType::Instance()->LoadFromOrdersDatabase( SelectedTable );
+            }
         }
-	}
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 //---------------------------------------------------------------------------
  // NOT USED!!!
@@ -10895,15 +10965,20 @@ std::vector<TPatronType> TfrmSelectDish::QueryForPatronCount(TPaymentTransaction
 std::vector<TPatronType> TfrmSelectDish::GetPatronCount(Database::TDBTransaction &dbTransaction)
 {
 	std::vector<TPatronType> patrons;
+    try
+    {
+        if (TManagerPatron::Instance().GetCount(dbTransaction) > 0)
+        {
+            std::auto_ptr <TfrmPatronCount> frmPatronCount(TfrmPatronCount::Create <TfrmPatronCount> (this, TDeviceRealTerminal::Instance().DBControl));
 
-	if (TManagerPatron::Instance().GetCount(dbTransaction) > 0)
-	{
-		std::auto_ptr <TfrmPatronCount> frmPatronCount(TfrmPatronCount::Create <TfrmPatronCount> (this, TDeviceRealTerminal::Instance().DBControl));
-
-        frmPatronCount->ShowModal();
-		patrons = frmPatronCount->Patrons;
-	}
-
+            frmPatronCount->ShowModal();
+            patrons = frmPatronCount->Patrons;
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 	return patrons;
 }
 //---------------------------------------------------------------------------
@@ -11289,58 +11364,64 @@ TModalResult TfrmSelectDish::setupAutoSaveTabContainer(Database::TDBTransaction 
     TModalResult Retval = mrAbort;
     bool uniqueTab = false;
 
-    std::auto_ptr<TfrmAddTab>frmAddTab(TfrmAddTab::Create(this));
-    frmAddTab->LoadDetails(DBTransaction, 0);
-    //frn
-    frmAddTab->btnName->Caption = CustName;
-    frmAddTab->TabName=CustName;
-    frmAddTab->btnNumber->Caption = CustPhone;
-    frmAddTab->TabIDNumber = CustPhone;
-    frmAddTab->AllowCancel = false;
-
-    // forcing user to create a unique tab
-    while( !uniqueTab && frmAddTab->ShowModal() == mrOk )
+    try
     {
-        uniqueTab = TDBTab::GetTab(DBTransaction, frmAddTab->TabName, TabNormal) == 0;
+        std::auto_ptr<TfrmAddTab>frmAddTab(TfrmAddTab::Create(this));
+        frmAddTab->LoadDetails(DBTransaction, 0);
+        //frn
+        frmAddTab->btnName->Caption = CustName;
+        frmAddTab->TabName=CustName;
+        frmAddTab->btnNumber->Caption = CustPhone;
+        frmAddTab->TabIDNumber = CustPhone;
+        frmAddTab->AllowCancel = false;
 
-        if ( !uniqueTab )
+        // forcing user to create a unique tab
+        while( !uniqueTab && frmAddTab->ShowModal() == mrOk )
         {
-            MessageBox("A Tab with this name already exists. Please select a different name.", "Warning", MB_OK + MB_ICONWARNING);
-        }
-    }
+            uniqueTab = TDBTab::GetTab(DBTransaction, frmAddTab->TabName, TabNormal) == 0;
 
-    if (uniqueTab)
-    {
-        int TabyKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
-        TDBTab::SetTabDetails(DBTransaction, TabyKey, frmAddTab->TabName, frmAddTab->TabIDType, frmAddTab->TabIDNumber, frmAddTab->TabIDExpiry, TabNormal);
-        TDBTab::SetTabCard(DBTransaction, TabyKey, frmAddTab->CardString);
-        OrderContainer.Location["TabKey"] = TabyKey;
-        OrderContainer.Location["ContainerName"] = frmAddTab->TabName;
-        OrderContainer.Location["TabName"] = frmAddTab->TabName;
-
-        // setting return value here, in case if the execution did not go through the next section
-        Retval = mrOk;
-
-        if (!TGlobalSettings::Instance().DisableConfirmationOnSave)
-        {
-            OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Total", InitialMoney.GrandTotal));
-            Currency Balance = TDBTab::GetTabBalance(DBTransaction, TabyKey);
-            OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Balance", Balance));
-            OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("New Balance", Balance + InitialMoney.GrandTotal));
-
-            TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
-            if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
+            if ( !uniqueTab )
             {
-                SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
-                OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
-                OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
+                MessageBox("A Tab with this name already exists. Please select a different name.", "Warning", MB_OK + MB_ICONWARNING);
             }
+        }
 
-            Retval = frmConfirmOrder->ShowModal();
-            delete frmConfirmOrder;
+        if (uniqueTab)
+        {
+            int TabyKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+            TDBTab::SetTabDetails(DBTransaction, TabyKey, frmAddTab->TabName, frmAddTab->TabIDType, frmAddTab->TabIDNumber, frmAddTab->TabIDExpiry, TabNormal);
+            TDBTab::SetTabCard(DBTransaction, TabyKey, frmAddTab->CardString);
+            OrderContainer.Location["TabKey"] = TabyKey;
+            OrderContainer.Location["ContainerName"] = frmAddTab->TabName;
+            OrderContainer.Location["TabName"] = frmAddTab->TabName;
+
+            // setting return value here, in case if the execution did not go through the next section
+            Retval = mrOk;
+
+            if (!TGlobalSettings::Instance().DisableConfirmationOnSave)
+            {
+                OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Total", InitialMoney.GrandTotal));
+                Currency Balance = TDBTab::GetTabBalance(DBTransaction, TabyKey);
+                OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Balance", Balance));
+                OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("New Balance", Balance + InitialMoney.GrandTotal));
+
+                TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
+                if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
+                {
+                    SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
+                    OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
+                    OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
+                }
+
+                Retval = frmConfirmOrder->ShowModal();
+                delete frmConfirmOrder;
+            }
         }
     }
-
+  catch(Exception & E)
+  {
+	 TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+  }
     return Retval;
 }
 
@@ -12198,119 +12279,133 @@ void TfrmSelectDish::CheckMandatoryMembershipCardSetting(TObject * Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
 {
-    seatkey += 1;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-
-    TTableSeat TableSeat;
-    // Find its tab.
-    __int64 NewTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, seatkey);
-    if (NewTabKey != 0)
+    try
     {
-        if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
+        seatkey += 1;
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+
+        TTableSeat TableSeat;
+        // Find its tab.
+        __int64 NewTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, seatkey);
+        if (NewTabKey != 0)
         {
-            // Unlock Old Tab.
-            TTableSeat OldTableSeat;
-            OldTableSeat.TableNo = SelectedTable;
-            OldTableSeat.SeatNo = SelectedSeat;
-            __int64 OldTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, SelectedSeat);
-            if (OldTabKey != 0)
+            if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
             {
-                TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, OldTabKey);
+                // Unlock Old Tab.
+                TTableSeat OldTableSeat;
+                OldTableSeat.TableNo = SelectedTable;
+                OldTableSeat.SeatNo = SelectedSeat;
+                __int64 OldTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, SelectedSeat);
+                if (OldTabKey != 0)
+                {
+                    TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, OldTabKey);
+                }
+                // Move on to New (Locked)Seat.
+                SelectedSeat = seatkey;
             }
-            // Move on to New (Locked)Seat.
-            SelectedSeat = seatkey;
+            else
+            {
+                GridButton->Latched = false;
+                GridButton->Color = ButtonColors[BUTTONTYPE_LOCKED][ATTRIB_BUTTONCOLOR];
+
+                AnsiString LockedBy = TDBTab::GetLocker(DBTransaction, NewTabKey);
+                if (MessageBox("This " + TGlobalSettings::Instance().SeatLabel + "/Tab is in use by " + LockedBy + "\rDo you wish to override this lock", "Warning",
+                        MB_YESNO + MB_ICONWARNING) == ID_YES)
+                {
+                    TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey);
+                    if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
+                    {
+                        __int64 OldTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, SelectedSeat);
+                        if (OldTabKey != 0)
+                        {
+                            TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, OldTabKey);
+                        }
+                        // Move on to New (Locked)Seat.
+                        GridButton->Latched = true;
+                        GridButton->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+                        SelectedSeat = seatkey;
+                    }
+                    else
+                    {
+                        MessageBox("Unable to Unlock " + TGlobalSettings::Instance().SeatLabel + "/Tab Try again Later", "Warning", MB_OK + MB_ICONWARNING);
+                    }
+                }
+            }
         }
         else
         {
-            GridButton->Latched = false;
-            GridButton->Color = ButtonColors[BUTTONTYPE_LOCKED][ATTRIB_BUTTONCOLOR];
-
-            AnsiString LockedBy = TDBTab::GetLocker(DBTransaction, NewTabKey);
-            if (MessageBox("This " + TGlobalSettings::Instance().SeatLabel + "/Tab is in use by " + LockedBy + "\rDo you wish to override this lock", "Warning",
-                    MB_YESNO + MB_ICONWARNING) == ID_YES)
-            {
-                TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey);
-                if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
-                {
-                    __int64 OldTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, SelectedSeat);
-                    if (OldTabKey != 0)
-                    {
-                        TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, OldTabKey);
-                    }
-                    // Move on to New (Locked)Seat.
-                    GridButton->Latched = true;
-                    GridButton->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-                    SelectedSeat = seatkey;
-                }
-                else
-                {
-                    MessageBox("Unable to Unlock " + TGlobalSettings::Instance().SeatLabel + "/Tab Try again Later", "Warning", MB_OK + MB_ICONWARNING);
-                }
-            }
+            SelectedSeat = seatkey;
         }
-    }
-    else
-    {
-        SelectedSeat = seatkey;
-    }
-    DBTransaction.Commit();
-    // Check for orders on Seat 0 and move them to selected seat.
-    if (SeatOrders[0]->Orders->Count != 0 && SelectedSeat != 0)
-    {
-        while (SeatOrders[0]->Orders->Count != 0)
+        DBTransaction.Commit();
+        // Check for orders on Seat 0 and move them to selected seat.
+        if (SeatOrders[0]->Orders->Count != 0 && SelectedSeat != 0)
         {
-            SeatOrders[SelectedSeat]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
-            SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
+            while (SeatOrders[0]->Orders->Count != 0)
+            {
+                SeatOrders[SelectedSeat]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
+                SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
+            }
+            SeatOrders[0]->Orders->Clear();
         }
-        SeatOrders[0]->Orders->Clear();
-    }
 
-    if (SeatOrders[0]->Orders->AppliedMembership.ContactKey != 0)
-    {
-        SeatOrders[SelectedSeat]->Orders->AppliedMembership = SeatOrders[0]->Orders->AppliedMembership;
-        SeatOrders[0]->Orders->AppliedMembership.Clear();
+        if (SeatOrders[0]->Orders->AppliedMembership.ContactKey != 0)
+        {
+            SeatOrders[SelectedSeat]->Orders->AppliedMembership = SeatOrders[0]->Orders->AppliedMembership;
+            SeatOrders[0]->Orders->AppliedMembership.Clear();
+        }
+        RedrawSeatOrders();
+        TotalCosts();
+        UpdateExternalDevices();
+        CloseSidePanel();
     }
-    RedrawSeatOrders();
-    TotalCosts();
-    UpdateExternalDevices();
-    CloseSidePanel();
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 UnicodeString TfrmSelectDish::SetPartyNameOnChitSettings(Database::TDBTransaction &DBTransaction, AnsiString partyName, int tableNo,  bool setPartyName)
 {
-    if(ChitNumber.Valid())
+    try
     {
-       if(ChitNumber.IsCaptureCustomerNameAndPhone && ChitNumber.SaveCustomerName)
-       {
-          partyName = CustName;
-          if(setPartyName)
-          {
-            TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
-          }
-       }
-       else
-       {
-          if(ChitNumber.IsCaptureCustomerDetails && ChitNumber.SaveMemberName)
-          {
-             partyName = CustName;
-             if(setPartyName)
-             {
-               TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
-             }
-          }
-          else
-          {
-             if(ChitNumber.IsCaptureCustomerDetails && ChitNumber.SaveMemberAddress)
-             {
-                partyName = PrepareAddress(CustAddress);
-                if(setPartyName)
-                {
-                  TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
-                }
-             }
-          }
-       }
+        if(ChitNumber.Valid())
+        {
+           if(ChitNumber.IsCaptureCustomerNameAndPhone && ChitNumber.SaveCustomerName)
+           {
+              partyName = CustName;
+              if(setPartyName)
+              {
+                TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
+              }
+           }
+           else
+           {
+              if(ChitNumber.IsCaptureCustomerDetails && ChitNumber.SaveMemberName)
+              {
+                 partyName = CustName;
+                 if(setPartyName)
+                 {
+                   TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
+                 }
+              }
+              else
+              {
+                 if(ChitNumber.IsCaptureCustomerDetails && ChitNumber.SaveMemberAddress)
+                 {
+                    partyName = PrepareAddress(CustAddress);
+                    if(setPartyName)
+                    {
+                      TDBTables::SetPartyName(DBTransaction, tableNo, partyName);
+                    }
+                 }
+              }
+           }
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
     return partyName;
 }
@@ -12535,23 +12630,31 @@ bool  TfrmSelectDish::CheckCreditLimitExceeds(Database::TDBTransaction &dBTransa
 bool TfrmSelectDish::CheckTabIsInUse(Database::TDBTransaction &dBTransaction, int tabKey)
 {
     bool Proceed = true;
-    if (!TDBTab::LockTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey))
+    try
     {
-        AnsiString LockedBy = TDBTab::GetLocker(dBTransaction, tabKey);
-        if (MessageBox("This " + TGlobalSettings::Instance().SeatLabel + "/Tab is in use by " + LockedBy + "\rDo you wish to override this lock", "Warning",
-                MB_YESNO + MB_ICONWARNING) == ID_YES)
+        if (!TDBTab::LockTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey))
         {
-            TDBTab::ReleaseTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey);
-            if (!TDBTab::LockTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey))
+            AnsiString LockedBy = TDBTab::GetLocker(dBTransaction, tabKey);
+            if (MessageBox("This " + TGlobalSettings::Instance().SeatLabel + "/Tab is in use by " + LockedBy + "\rDo you wish to override this lock", "Warning",
+                    MB_YESNO + MB_ICONWARNING) == ID_YES)
             {
-                MessageBox("Unable to Unlock " + TGlobalSettings::Instance().SeatLabel + "/Tab Try again Later", "Warning", MB_OK + MB_ICONWARNING);
+                TDBTab::ReleaseTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey);
+                if (!TDBTab::LockTab(dBTransaction, TDeviceRealTerminal::Instance().ID.Name, tabKey))
+                {
+                    MessageBox("Unable to Unlock " + TGlobalSettings::Instance().SeatLabel + "/Tab Try again Later", "Warning", MB_OK + MB_ICONWARNING);
+                    Proceed = false;
+                }
+            }
+            else
+            {
                 Proceed = false;
             }
         }
-        else
-        {
-            Proceed = false;
-        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
     }
     return Proceed;
 }
@@ -14070,36 +14173,43 @@ void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
 {
-	if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
-             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
-	{
-		MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);
-	}
-	else
-	{
+    try
+    {
+        if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+                 TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
+        {
+            MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
 
-		// Remove all Free Items.
-		TManagerFreebie::UndoFreeCount(DBTransaction, SeatOrders[SelectedSeat]->Orders->List);
-		for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-		{
-			TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
-			// Calculate Membership Pricing.
-			Item->Loyalty_Key = 0;
-			Item->ResetPrice();
+            // Remove all Free Items.
+            TManagerFreebie::UndoFreeCount(DBTransaction, SeatOrders[SelectedSeat]->Orders->List);
+            for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+            {
+                TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+                // Calculate Membership Pricing.
+                Item->Loyalty_Key = 0;
+                Item->ResetPrice();
 
-			for (int j = 0; j < Item->SubOrders->Count; j++)
-			{
-				TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Item->SubOrders->Items[j];
-				CurrentSubOrder->Loyalty_Key = 0;
-				CurrentSubOrder->ResetPrice();
-			}
-		}
+                for (int j = 0; j < Item->SubOrders->Count; j++)
+                {
+                    TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Item->SubOrders->Items[j];
+                    CurrentSubOrder->Loyalty_Key = 0;
+                    CurrentSubOrder->ResetPrice();
+                }
+            }
 
-		SeatOrders[SelectedSeat]->Orders->AppliedMembership.Clear();
-		Membership.Clear();
-		RemoveMembershipDiscounts();
-        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
-	}
+            SeatOrders[SelectedSeat]->Orders->AppliedMembership.Clear();
+            Membership.Clear();
+            RemoveMembershipDiscounts();
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
+        }
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -14349,19 +14459,26 @@ void TCustNameAndOrderType::CatchCustNameAndOrderType(int CustKey, AnsiString Or
 void TCustNameAndOrderType::LoadFromOrdersDatabase(int TableNumber)
 {
     //Load contacts key and order type message from database
-    std::pair<int, AnsiString> CustNameAndOrderType;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TDBOrder::GetCNaOTFromTableNum(DBTransaction, TableNumber, CustNameAndOrderType);
-    DBTransaction.Commit();
-    if(CustNameAndOrderType.first != -1)
+    try
     {
-        CustNameKey = CustNameAndOrderType.first;
-        OrderTypeMessage = CustNameAndOrderType.second;
+        std::pair<int, AnsiString> CustNameAndOrderType;
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TDBOrder::GetCNaOTFromTableNum(DBTransaction, TableNumber, CustNameAndOrderType);
+        DBTransaction.Commit();
+        if(CustNameAndOrderType.first != -1)
+        {
+            CustNameKey = CustNameAndOrderType.first;
+            OrderTypeMessage = CustNameAndOrderType.second;
+        }
+        else
+        {
+            NameCaught = false;
+        }
     }
-    else
+    catch(Exception & E)
     {
-        NameCaught = false;
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
 // ---------------------------------------------------------------------------
