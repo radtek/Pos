@@ -223,6 +223,16 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
     while(!query->Eof)
     {
         Customer_ID                    =    query->FieldByName("CUSTOMER_ID")->AsString;
+
+        //Check if membership not applied then initialize with default value
+        if(Customer_ID == "")
+        {            
+           Customer_ID = "001";
+        }
+
+		//Adding Non Breaking Space After constant string
+        Customer_ID += "\u00A0";
+
         Invoice_CM                     =    "REF#" + query->FieldByName("invoice_number")->AsString;
         Apply_to_Invoice_Number        =    "";
         Credit_Memo                    =    "FALSE";
@@ -241,14 +251,15 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         Ship_to_Zipcode                =    "";
         Ship_to_Country                =    "";
         Customer_PO                    =    "";
-        Ship_Via                       =    "";
+        Ship_Via                       =    "Airborne";
         Ship_Date                      =    "";
         Date_Due                       =    dueDate.FormatString("mm-dd-yyyy");
-        Discount_Amount                =    query->FieldByName("Discount")->AsInteger;
+        Discount_Amount                =  query->FieldByName("Discount")->AsCurrency;
 
-        if(Discount_Amount != 0)
-            Discount_Date                  =     date.FormatString("mm-dd-yyyy");
+        if(Discount_Amount == 0)
+            Discount_Amount = "";
 
+        Discount_Date                  =     date.FormatString("mm-dd-yyyy");
         Displayed_Terms                =    "Due at end of Month";
         Sales_Representative_ID        =    "";
         Accounts_Receivable_Account    =    "105-00";
@@ -286,11 +297,11 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         GL_Account                     =    query->FieldByName("GL_CODE")->AsString;
         Unit_Price                     =    query->FieldByName("SalesIncl")->AsCurrency;
 
-        Tax_Type                       =    CombinedTaxTypeString(query->FieldByName("VAT")->AsCurrency,
-                                                                query->FieldByName("ServiceCharge")->AsCurrency,
-                                                                query->FieldByName("ServiceChargeTax")->AsCurrency,
-                                                                query->FieldByName("LocalTax")->AsCurrency,
-                                                                query->FieldByName("ProfitTax")->AsCurrency);
+        Tax_Type                       =    GetTaxType(query->FieldByName("VAT")->AsCurrency,
+                                                        query->FieldByName("ServiceCharge")->AsCurrency,
+                                                        query->FieldByName("ServiceChargeTax")->AsCurrency,
+                                                        query->FieldByName("LocalTax")->AsCurrency,
+                                                        query->FieldByName("ProfitTax")->AsCurrency);
         UPC_SKU                        =    query->FieldByName("UPC_SKU")->AsString;
         qty                            =    query->FieldByName("Qty")->AsCurrency;
         if(query->FieldByName("WEIGHTED_SIZE")->AsString == 'T')
@@ -366,41 +377,12 @@ void TExportCSV::MoveCSVFile( AnsiString inFileName, AnsiString inDestPath )
 	}
 }
 //---------------------------------------------------------------------------------------------
-UnicodeString TExportCSV::CombinedTaxTypeString(Currency vat, Currency serviceCharge, Currency serviceChargeTax, Currency localTax, Currency profitTax)
+UnicodeString TExportCSV::GetTaxType(Currency vat, Currency serviceCharge, Currency serviceChargeTax, Currency localTax, Currency profitTax)
 {
-    UnicodeString taxType          =    "";
+    UnicodeString taxType  = "";
 
-    if(vat !=0)
-    {
-        taxType = 0;
-    }
-    if(serviceCharge !=0)
-    {
-        if(taxType != "")
-            taxType = taxType + "||" + 2;
-        else
-            taxType = 2;
-    }
-    if(serviceChargeTax !=0)
-    {
-        if(taxType != "")
-            taxType = taxType + "||" + 3;
-        else
-            taxType = 3;
-    }
-    if(localTax !=0)
-    {
-        if(taxType != "")
-            taxType = taxType + "||" + 4;
-        else
-            taxType = 4;
-    }
-    if(profitTax !=0)
-    {
-        if(taxType != "")
-            taxType = taxType + "||" + 5;
-        else
-            taxType = 5;
-    }
+    //Get Tax Type o is for sales tax, 2 for service Cahrge, 3 for ServiceCahrge Tax, 4 for local Tax, 5 for profit tax
+    taxType = (vat != 0 ? 1 : (serviceCharge != 0 ? 2 : (serviceChargeTax != 0 ? 3 : (localTax != 0 ? 4 : (profitTax != 0 ? 5 : 1))) ));
+
     return taxType;
 }
