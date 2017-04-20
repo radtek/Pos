@@ -4465,10 +4465,11 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 
 	//MM-1649, If the sale type is of table then the patron count has already been asked for while selecting the table.
 	//Adding the condition for allowing this only if sale type is not table seat.
-	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && TGlobalSettings::Instance().PromptForPatronCount;
+    //MM-1225 Adding the condition for allowing this not for cash type of sale stype . For this type of sale code alredy called from SelectDish Screen.
+   	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && PaymentTransaction.SalesType != eCash && TGlobalSettings::Instance().PromptForPatronCount;
 
-        //In case of quich payment check only once
-        int QuickTransactionCounter = 0;
+    //In case of quich payment check only once
+    int QuickTransactionCounter = 0;
 
 	while (!PaymentComplete && !PaymentAborted &&
            (!PaymentTransaction.IsQuickPayTransaction || (PaymentTransaction.IsQuickPayTransaction && QuickTransactionCounter < 1)))
