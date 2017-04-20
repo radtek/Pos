@@ -623,7 +623,7 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
                 grossPrice += fabs(order->CancelledBillCalcResult.GrossPrice);
             }
 
-            if(order->BillCalcResult.FinalPrice > 0)
+            if(order->BillCalcResult.FinalPrice >= 0)
             {
                grossPrice += fabs(order->BillCalcResult.TotalDiscount);
             }
