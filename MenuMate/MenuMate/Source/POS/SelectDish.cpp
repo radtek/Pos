@@ -3600,7 +3600,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 }
 
 				// ask for patron count if this is a quick sale
-				if(Sender == tbtnCashSale && TGlobalSettings::Instance().PromptForPatronCount)
+				if((Sender == tbtnCashSale || Sender == tbtnTender) && TGlobalSettings::Instance().PromptForPatronCount)
 				{
 					if (TManagerPatron::Instance().GetCount(PaymentTransaction.DBTransaction) > 0)
 					{
