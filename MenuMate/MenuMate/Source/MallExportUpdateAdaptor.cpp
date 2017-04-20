@@ -601,6 +601,7 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
 
     for( ; it != flatternedOrdersList.end(); it++ )
     {
+        bool isrefundItem = false;
         order = *it;
         grossPrice = 0;
         SalesTax = getTotalTaxFromResult( order->BillCalcResult, TTaxType::ttSale );
@@ -617,6 +618,7 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
             if( isRefundedOrder( order ) )
             {
                 grossPrice += fabs(order->BillCalcResult.FinalPrice);
+                isrefundItem = true;
             }
             else if( order->OrderType == CanceledOrder )
             {
@@ -625,7 +627,8 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
 
             if(order->BillCalcResult.FinalPrice >= 0)
             {
-               grossPrice += fabs(order->BillCalcResult.TotalDiscount);
+               if(!isrefundItem)
+                  grossPrice += fabs(order->BillCalcResult.TotalDiscount);
             }
         }
         else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
