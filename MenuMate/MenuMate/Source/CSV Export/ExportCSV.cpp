@@ -95,12 +95,12 @@ void TExportCSV::CreateHeaderFormat(UnicodeString MallPathFileName, std::vector<
                     "Quote,Quote #,Quote Good Thru Date,DropShip,Ship To Name,Ship to Address-Line One" + Format +
                     "Ship to Address-Line Two,Ship to City,Ship to State,Ship to Zipcode" + Format +
                     "Ship to Country,Customer PO,Ship Via,Ship Date,Date Due,Discount Amount" + Format +
-                    "Discount Date,Displayed Terms,Sales Representative ID,	Accounts Receivable Account" + Format +
+                    "Discount Date,Displayed Terms,Sales Representative ID,Accounts Receivable Account" + Format +
                     "Sales Tax ID,Invoice Note,Note Prints After Line Items" + Format +
                     "Statement Note,Stmt Note Prints Before Ref,Internal Note,Beginning Balance Transaction" + Format +
                     "Number of Distributions,Invoice/CM Distribution,Apply to Invoice Distribution" + Format +
                     "Apply To Sales Order,Quantity,SO/Proposal Number,item ID,SO/Proposal Distribution" + Format +
-                    "Description,G/L Account,Unit Price,Tax Type,UPC / SKU,Weight,Amount,Job ID" + Format +
+                    "Description,G/L Account,Unit Price,Tax Type,UPC/SKU,Weight,Amount,Job ID" + Format +
                     "Sales Tax Agency ID,Transaction Period,Transaction Number,Return Authorization" + Format +
                     "Voided by Transaction,Recur Number" + "\n";
               DataToWrite.push_back(Store.t_str());
@@ -231,7 +231,7 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         }
 
 		//Adding Non Breaking Space After constant string
-        Customer_ID += "\u00A0";
+        //Customer_ID += "\u00A0";
 
         Invoice_CM                     =    "REF#" + query->FieldByName("invoice_number")->AsString;
         Apply_to_Invoice_Number        =    "";
