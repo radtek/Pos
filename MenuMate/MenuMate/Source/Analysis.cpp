@@ -3170,19 +3170,11 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         std::vector<TXeroInvoiceDetail> XeroInvoiceDetails;
         TDateTime preZTime = GetPrevZedTime(DBTransaction);
         TDateTime currentDate = Now();
-        TDateTime nextDay = IncDay(GetMinDayArchiveTime(DBTransaction, preZTime),1);
+        TDateTime nextDay = Now();                                                //IncDay(GetMinDayArchiveTime(DBTransaction, preZTime),1);
         AnsiString CompanyName = GetCompanyName(DBTransaction);
         AnsiString TerminalName = GetTerminalName();
         AnsiString terminalNamePredicate = "";
         double cashWithdrawal = 0;
-        if(TGlobalSettings::Instance().EndOfDay > 0)
-        {
-           nextDay =   RecodeTime(nextDay,TGlobalSettings::Instance().EndOfDay,0,0,0);
-        }
-        else
-        {
-           nextDay =   RecodeTime(nextDay,23,59,59,999);
-        }
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBInternalQueryTotal = DBTransaction.Query(DBTransaction.AddQuery());
          TIBSQL *IBInternalQueryTabRefundCredit = DBTransaction.Query(DBTransaction.AddQuery());
@@ -3218,211 +3210,233 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 
         bool canContinue = true;
 
-        while(canContinue)
+        double TabCreditReceived = 0;
+        double TabRefundReceived = 0;
+        double catTotal = 0;
+        double payTotal = 0;
+        double floatAmount = 0;
+        double PurchasedPoints = 0;
+        double PurchasedVoucher = 0;
+        double TipAmount = 0;
+        double tip = 0.0;
+        UnicodeString floatGlCode = "";
+        UnicodeString tabCreditReceivedGLCode = "200";
+        UnicodeString tabCreditRefundGlCode = "200";
+
+        TXeroInvoiceDetail XeroInvoiceDetail;
+        IBInternalQuery->Close();
+        IBInternalQueryTotal->Close();
+        IBInternalQueryTabRefundCredit->Close();
+        IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = preZTime;
+        IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = nextDay;
+        IBInternalQueryTotal->ParamByName("STARTTIME")->AsDateTime = preZTime;
+        IBInternalQueryTotal->ParamByName("ENDTIME")->AsDateTime = nextDay;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
-          double TabCreditReceived = 0;
-          double TabRefundReceived = 0;
-          double catTotal = 0;
-          double payTotal = 0;
-          double floatAmount = 0;
-          double PurchasedPoints = 0;
-          double PurchasedVoucher = 0;
-          double TipAmount = 0;
-          UnicodeString floatGlCode = "";
-          UnicodeString tabCreditReceivedGLCode = "200";
-          UnicodeString tabCreditRefundGlCode = "200";
+            IBInternalQueryTotal->ParamByName("TERMINAL_NAME")->AsString = TerminalName;  // add terminal param..
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
+        }
+        IBInternalQueryTotal->ExecQuery();
 
-          TXeroInvoiceDetail XeroInvoiceDetail;
-          IBInternalQuery->Close();
-          IBInternalQueryTotal->Close();
-          IBInternalQueryTabRefundCredit->Close();
-          IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = preZTime;
-          IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = nextDay;
-          IBInternalQueryTotal->ParamByName("STARTTIME")->AsDateTime = preZTime;
-          IBInternalQueryTotal->ParamByName("ENDTIME")->AsDateTime = nextDay;
-          if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
-          {
-             IBInternalQueryTotal->ParamByName("TERMINAL_NAME")->AsString = TerminalName;  // add terminal param..
-             IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
-          }
-          IBInternalQueryTotal->ExecQuery();
+        for (; !IBInternalQueryTotal->Eof; IBInternalQueryTotal->Next())
+        {
+          AnsiString AccountCode = "200";
+          if(IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != NULL && IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != "")
+            AccountCode = IBInternalQueryTotal->FieldByName("GL_CODE")->AsString;
+          catTotal += IBInternalQueryTotal->FieldByName("PRICE")->AsFloat;
+          if(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat != 0)
+           {
+             double price = RoundTo(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat, -4) - RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4);
+             AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, price, AccountCode, RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4));
+           }
+        }
 
-          for (; !IBInternalQueryTotal->Eof; IBInternalQueryTotal->Next())
-            {
-              AnsiString AccountCode = "200";
-              if(IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != NULL && IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != "")
-                AccountCode = IBInternalQueryTotal->FieldByName("GL_CODE")->AsString;
-              catTotal += IBInternalQueryTotal->FieldByName("PRICE")->AsFloat;
-              if(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat != 0)
-               {
-                 double price = RoundTo(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat, -4) - RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4);
-                 AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, price, AccountCode, RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4));
-               }
-            }
+        GetTabCreditReceivedRefunded(DBTransaction, TabCreditReceived, TabRefundReceived, preZTime, nextDay);
 
-          GetTabCreditReceivedRefunded(DBTransaction, TabCreditReceived, TabRefundReceived, preZTime, nextDay);
+        TabCreditReceived = RoundTo(TabCreditReceived, -4);
+        TabRefundReceived = RoundTo(TabRefundReceived, -4);
 
-          TabCreditReceived = RoundTo(TabCreditReceived, -4);
-          TabRefundReceived = RoundTo(TabRefundReceived, -4);
-
-          if(TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != "")
-          {
-                tabCreditRefundGlCode = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
-          }
-          if(TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != "")
-          {
-                tabCreditReceivedGLCode = TGlobalSettings::Instance().TabDepositCreditReceivedGLCode;
-          }
-          if(TabRefundReceived!= 0)
-          {
+        if(TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != "")
+        {
+            tabCreditRefundGlCode = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
+        }
+        if(TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != "")
+        {
+            tabCreditReceivedGLCode = TGlobalSettings::Instance().TabDepositCreditReceivedGLCode;
+        }
+        if(TabRefundReceived!= 0)
+        {
             catTotal -= TabRefundReceived;
             AddInvoiceItem(XeroInvoiceDetail,"Tab Deposit/Credit  Refunded", -1 * TabRefundReceived,tabCreditRefundGlCode,0);
-         }
-          if(TabCreditReceived != 0)
-          {
-             catTotal -= TabCreditReceived;
-             AddInvoiceItem(XeroInvoiceDetail,"Tab Deposit/Credit Received", -1 * TabCreditReceived,tabCreditReceivedGLCode,0);
-          }
+        }
+        if(TabCreditReceived != 0)
+        {
+            catTotal -= TabCreditReceived;
+            AddInvoiceItem(XeroInvoiceDetail,"Tab Deposit/Credit Received", -1 * TabCreditReceived,tabCreditReceivedGLCode,0);
+        }
 
-          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
-          if(PurchasedPoints != 0)
-           {
-              catTotal += PurchasedPoints;
-              AddInvoiceItem(XeroInvoiceDetail,"Points Purchased", PurchasedPoints,TGlobalSettings::Instance().PointsPurchasedGLCode,0);
-           }
-          if(PurchasedVoucher != 0)
-           {
-              catTotal += PurchasedVoucher;
-              AddInvoiceItem(XeroInvoiceDetail,"Voucher Purchased", PurchasedVoucher,TGlobalSettings::Instance().VoucherPurchasedGLCode,0);
-           }
+        GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+        if(PurchasedPoints != 0)
+        {
+          catTotal += PurchasedPoints;
+          AddInvoiceItem(XeroInvoiceDetail,"Points Purchased", PurchasedPoints,TGlobalSettings::Instance().PointsPurchasedGLCode,0);
+        }
+        if(PurchasedVoucher != 0)
+        {
+          catTotal += PurchasedVoucher;
+          AddInvoiceItem(XeroInvoiceDetail,"Voucher Purchased", PurchasedVoucher,TGlobalSettings::Instance().VoucherPurchasedGLCode,0);
+        }
 
-           bool addFloatAdjustmentToPayments = false;
-           bool addEachPaymentNode = true;
-          // get the final float amount (Float Deposit - float withdrwal)
-           GetFloatAmounts(DBTransaction, floatAmount,terminalNamePredicate);
-           AnsiString cashGlCode= GetCashGlCode(DBTransaction);
-           floatGlCode = TGlobalSettings::Instance().FloatGLCode;
+        bool addFloatAdjustmentToPayments = false;
+        bool addEachPaymentNode = true;
+        // get the final float amount (Float Deposit - float withdrwal)
+        GetFloatAmounts(DBTransaction, floatAmount,terminalNamePredicate);
+        AnsiString cashGlCode= GetCashGlCode(DBTransaction);
+        floatGlCode = TGlobalSettings::Instance().FloatGLCode;
 
-           floatAmount = RoundTo(floatAmount, -4);
-           catTotal = RoundTo(catTotal, -4);
+        floatAmount = RoundTo(floatAmount, -4);
+        catTotal = RoundTo(catTotal, -4);
 
-            if(floatGlCode != "" && floatGlCode != NULL && floatAmount != 0)
-            {
-                 if(floatAmount<0)
-                 {
-                        AddInvoiceItem(XeroInvoiceDetail,"Float WithDrawal", floatAmount, floatGlCode, 0);
-                 }
-                 else
-                      AddInvoiceItem(XeroInvoiceDetail,"Float Deposit", floatAmount, floatGlCode, 0);
+        if(floatGlCode != "" && floatGlCode != NULL && floatAmount != 0)
+        {
+             if(floatAmount<0)
+             {
+                    AddInvoiceItem(XeroInvoiceDetail,"Float WithDrawal", floatAmount, floatGlCode, 0);
+             }
+             else
+                  AddInvoiceItem(XeroInvoiceDetail,"Float Deposit", floatAmount, floatGlCode, 0);
 
-                 if(TGlobalSettings::Instance().PostMoneyAsPayment)
-                 {
-                        // if cash withdrawn is greator than all categories total then add one node in item having value equal to difference btw them
-                        if((floatAmount + catTotal ) < 0)
-                        {
-                                AddInvoiceItem(XeroInvoiceDetail,"Float Adjustment",(-1)* (floatAmount + catTotal ), cashGlCode, 0);
-                                addEachPaymentNode = false;
-                        }
-                        else
-                        {
-                           addFloatAdjustmentToPayments = true;
-                        }
-                  }
-                 else
-                  {
-                         // in case of when payment is post to glcodes and if float amount is not equal to zero then make float adjustment against it
-                          AddInvoiceItem(XeroInvoiceDetail,"Float Adjustment",-1 * floatAmount, cashGlCode, 0);
-                  }
-           }
-           if(TGlobalSettings::Instance().FloatWithdrawFromCash && !TGlobalSettings::Instance().PostMoneyAsPayment)
-           {
-              cashWithdrawal = 0;
-              cashWithdrawal = GetCashWithdrawal(DBTransaction);
-              UnicodeString glCodecashWithdrawal = "";
-                if(TGlobalSettings::Instance().CashWithdrawalGLCode.Trim().Length() == 0 || TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
-                    glCodecashWithdrawal = "416";
-              else
-                    glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
-
-              if(cashWithdrawal != 0)
+             if(TGlobalSettings::Instance().PostMoneyAsPayment)
+             {
+                    // if cash withdrawn is greator than all categories total then add one node in item having value equal to difference btw them
+                    if((floatAmount + catTotal ) < 0)
+                    {
+                       AddInvoiceItem(XeroInvoiceDetail,"Float Adjustment",(-1)* (floatAmount + catTotal ), cashGlCode, 0);
+                       addEachPaymentNode = false;
+                    }
+                    else
+                    {
+                       addFloatAdjustmentToPayments = true;
+                       addEachPaymentNode = true;
+                    }
+              }
+             else
               {
+                     // in case of when payment is post to glcodes and if float amount is not equal to zero then make float adjustment against it
+                   AddInvoiceItem(XeroInvoiceDetail,"Float Adjustment",-1 * floatAmount, cashGlCode, 0);
+              }
+        }
+        if(TGlobalSettings::Instance().FloatWithdrawFromCash && !TGlobalSettings::Instance().PostMoneyAsPayment)
+        {
+            cashWithdrawal = 0;
+            cashWithdrawal = GetCashWithdrawal(DBTransaction);
+            UnicodeString glCodecashWithdrawal = "";
+            if(TGlobalSettings::Instance().CashWithdrawalGLCode.Trim().Length() == 0 || TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
+                glCodecashWithdrawal = "416";
+            else
+                glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+
+            if(cashWithdrawal != 0)
+            {
                 AddInvoiceItem(XeroInvoiceDetail,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),glCodecashWithdrawal, 0);
+            }
+        }
+
+        IBInternalQuery->ExecQuery();
+        double cashAmount = 0.0;
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          if(IBInternalQuery->FieldByName("Amount")->AsFloat != 0)
+           {
+              AnsiString AccountCode = cashGlCode;
+              TPayment payment;
+              if(IBInternalQuery->FieldByName("GL_CODE")->AsString != NULL && IBInternalQuery->FieldByName("GL_CODE")->AsString != "")
+                AccountCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
+              if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Points")
+                 AccountCode = TGlobalSettings::Instance().PointsSpentGLCode;
+              payment.SetPaymentAttribute(ePayTypeCash);
+              payTotal += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+
+              if( TGlobalSettings::Instance().PostMoneyAsPayment)
+              {
+                 if(addFloatAdjustmentToPayments && addEachPaymentNode)
+                 {
+                    if(IBInternalQuery->FieldByName("PROPERTIES")->AsString.Pos(payment.GetPropertyString()) != 0)
+                        cashAmount += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+                    else
+                        AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
+                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4) ,AccountCode,0);
+                 }
+                 else if(!addFloatAdjustmentToPayments && addEachPaymentNode)
+                 {
+                        AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
+                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4) ,AccountCode,0);
+                 }
+
+              }
+              else
+              {
+                double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+                if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash" && TGlobalSettings::Instance().FloatWithdrawFromCash &&
+                   cashWithdrawal != 0)
+                {
+                    paymentAmount = paymentAmount + cashWithdrawal;
+                }
+                AddInvoiceItem(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
+                             -1 * paymentAmount, AccountCode,0);
               }
            }
 
-         IBInternalQuery->ExecQuery();
-         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-          {
-              if(IBInternalQuery->FieldByName("Amount")->AsFloat != 0)
-               {
-                  AnsiString AccountCode = cashGlCode;
-                  if(IBInternalQuery->FieldByName("GL_CODE")->AsString != NULL && IBInternalQuery->FieldByName("GL_CODE")->AsString != "")
-                    AccountCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
-                  if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Points")
-                     AccountCode = TGlobalSettings::Instance().PointsSpentGLCode;
-                  payTotal += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+           if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
+            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -4);
+        }
 
-                  if( TGlobalSettings::Instance().PostMoneyAsPayment)
-                  {
-                     if(!addFloatAdjustmentToPayments && addEachPaymentNode)
-                     {
-                        AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString, RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4) ,AccountCode,0);
-                     }
-                  }
-                  else
-                  {
-                    double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
-                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash" && TGlobalSettings::Instance().FloatWithdrawFromCash &&
-                       cashWithdrawal != 0)
-                    {
-                        paymentAmount = paymentAmount + cashWithdrawal;
-                    }
-                    AddInvoiceItem(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                                 -1 * paymentAmount, AccountCode,0);
-                  }
-               }
+        //Add payment Tip for DPS EftPOS
+        if(TipAmount != 0)
+        {
+            AddInvoiceItem(XeroInvoiceDetail,"EftPos Tip",TipAmount,TGlobalSettings::Instance().EftPosTipGLCode,0);
+            catTotal += TipAmount;
+        }
+        // Get tips through paymnt type as Tip
+        UnicodeString tipGLCode = "";
+        tip = GetTipAmount(DBTransaction,preZTime,tipGLCode);
+        if(tip > 0.0)
+        {
+            catTotal += tip;
+            AddInvoiceItem(XeroInvoiceDetail,"TIP", RoundTo(tip, -4), tipGLCode,0);
+        }
+        if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
+             AddInvoicePayment(XeroInvoiceDetail,"Cash", ( cashAmount + floatAmount) , cashGlCode,0);
+        else if(!addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment && cashAmount > 0.0)
+             AddInvoicePayment(XeroInvoiceDetail,"Cash", ( cashAmount) , cashGlCode,0);
 
-               if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
-                TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -4);
-          }
 
-         //Add payment Tip for DPS EftPOS
-         if(TipAmount != 0)
-         {
-           AddInvoiceItem(XeroInvoiceDetail,"EftPos Tip",TipAmount,TGlobalSettings::Instance().EftPosTipGLCode,0);
-           catTotal += TipAmount;
-         }
+        if(catTotal - payTotal)
+        {
+          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -4),TGlobalSettings::Instance().RoundingGLCode,0);
+        }
 
-         if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
-             AddInvoicePayment(XeroInvoiceDetail,"Cash", ( payTotal + floatAmount) , cashGlCode,0);
+        AnsiString daystr = Now().FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
+        AnsiString refName = TGlobalSettings::Instance().EnableDepositBagNum ? CompanyName : TerminalName ;
+        XeroInvoiceDetail.InvoiceReference = refName +" Sales";
+        XeroInvoiceDetail.InvoiceNumber = refName + " " + daystr;
+        XeroInvoiceDetail.InvoiceDate = GetMaxDayArchiveTime(DBTransaction);//preZTime;
+        if(TerminalName != "")
+            XeroInvoiceDetail.ContactName = TerminalName;
+        else
+            XeroInvoiceDetail.ContactName = TDeviceRealTerminal::Instance().User.Name + " " + TDeviceRealTerminal::Instance().User.Surname;
 
-         if(catTotal - payTotal)
-           {
-              AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -4),TGlobalSettings::Instance().RoundingGLCode,0);
-           }
+        if(XeroInvoiceDetail.XeroCategoryDetails.size() > 0 || XeroInvoiceDetail.XeroPayTypeDetails.size() > 0)
+            XeroInvoiceDetails.push_back(XeroInvoiceDetail);
 
-           AnsiString daystr = preZTime.FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
-           AnsiString refName = TGlobalSettings::Instance().EnableDepositBagNum ? CompanyName : TerminalName ;
-           XeroInvoiceDetail.InvoiceReference = refName +" Sales";
-           XeroInvoiceDetail.InvoiceNumber = refName + " " + daystr;
-           XeroInvoiceDetail.InvoiceDate = preZTime;
-           if(TerminalName != "")
-             XeroInvoiceDetail.ContactName = TerminalName;
-           else
-             XeroInvoiceDetail.ContactName = TDeviceRealTerminal::Instance().User.Name + " " + TDeviceRealTerminal::Instance().User.Surname;
-
-           if(XeroInvoiceDetail.XeroCategoryDetails.size() > 0 || XeroInvoiceDetail.XeroPayTypeDetails.size() > 0)
-             XeroInvoiceDetails.push_back(XeroInvoiceDetail);
-
-          if(double(nextDay) >= double(currentDate))
-           {
-             canContinue = false;
-           }
-          else
-           {
-             preZTime = nextDay;
-             nextDay =  IncDay(nextDay,1);
-           }
+        if(double(nextDay) >= double(currentDate))
+        {
+            canContinue = false;
+        }
+        else
+        {
+            preZTime = nextDay;
+            nextDay =  IncDay(nextDay,1);
         }
         return XeroInvoiceDetails;
     }
@@ -3466,7 +3480,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
     try
     {
         AnsiString paymentDetailsPrimitive =
-             " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,4)) Tip,c.GL_CODE  From DAYARCBILL a "
+             " SELECT  b.PAY_TYPE,c.PROPERTIES,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,4)) Tip,c.GL_CODE  From DAYARCBILL a "
              " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
              " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
              " where "
@@ -3476,7 +3490,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
         AnsiString optionalXero = " and b.CHARGED_TO_XERO <> 'T'" ;
         AnsiString paymentDetailsFinal = ""
               + terminalNamePredicate +
-             " group by b.PAY_TYPE,c.GL_CODE ";
+             " group by b.PAY_TYPE,c.PROPERTIES ,c.GL_CODE ";
         if(TGlobalSettings::Instance().IsXeroEnabled)
           paymentDetails = paymentDetailsPrimitive + optionalXero + paymentDetailsFinal;
         else if(TGlobalSettings::Instance().IsMYOBEnabled)
@@ -8077,6 +8091,109 @@ TDateTime TfrmAnalysis::GetMinDayArchiveTime(Database::TDBTransaction &DBTransac
     }
 	return _dayArchivetime;
 }
+//-----------------------------------------------------------------------------
+double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode)
+{
+    double amount = 0.0;
+    UnicodeString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        terminalNamePredicate = " b.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+    }
+    try
+    {
+        TPayment payment;
+        payment.SetPaymentAttribute(ePayTypeCustomSurcharge);
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " SELECT c.PROPERTIES,a.SUBTOTAL FROM DAYARCSURCHARGE a LEFT JOIN "
+                                     " DAYARCBILL b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                     " LEFT JOIN PAYMENTTYPES c on c.PAYMENT_NAME = a.PAY_TYPE "
+                                     " WHERE b.TIME_STAMP > :STARTTIME AND b.TIME_STAMP <= :ENDTIME AND "
+                                     " c.PROPERTIES = :PROPERTIES AND "
+                                     + terminalNamePredicate;
+        IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
+        IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = Now();
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+        {
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();  // add terminal param..
+            IBInternalQuery->ParamByName("PROPERTIES")->AsString = payment.GetPropertyString();
+        }
+        IBInternalQuery->ExecQuery();
+        if (IBInternalQuery->RecordCount)
+        {
+            amount += RoundTo(IBInternalQuery->FieldByName("SUBTOTAL")->AsFloat, -4);
+        }
+        tipGLCode = GetGLCodeTip(DBTransaction);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return amount;
+}
+//-----------------------------------------------------------------------------
+UnicodeString TfrmAnalysis::GetGLCodeTip(Database::TDBTransaction &DBTransaction)
+{
+    UnicodeString glCode = "";
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " SELECT a.GL_CODE FROM PAYMENTTYPES a WHERE  a.PROPERTIES = :PROPERTIES ";
+        TPayment payment;
+        payment.SetPaymentAttribute(ePayTypeCustomSurcharge);
+        IBInternalQuery->ParamByName("PROPERTIES")->AsString = payment.GetPropertyString();
+        IBInternalQuery->ExecQuery();
+        if (IBInternalQuery->RecordCount)
+        {
+            glCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return glCode;
+}
+//-----------------------------------------------------------------------------
+TDateTime TfrmAnalysis::GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction)
+{
+    TDateTime _dayArchivetime;
+    UnicodeString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        terminalNamePredicate = " WHERE TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+    }
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " SELECT MAX(TIME_STAMP) TIME_STAMP FROM DAYARCBILL " + terminalNamePredicate;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+        {
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();  // add terminal param..
+        }
+        IBInternalQuery->ExecQuery();
+        if (IBInternalQuery->RecordCount)
+        {
+            _dayArchivetime = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+        }
+        if(_dayArchivetime.Val == 0)
+        {
+           _dayArchivetime = TDateTime::CurrentDateTime();
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+	return _dayArchivetime;
+}
+//-------------------------------------------------------------------------------
 
 void TfrmAnalysis::SyncCompanyDetails()
 {
