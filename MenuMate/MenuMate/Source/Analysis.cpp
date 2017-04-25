@@ -8106,12 +8106,13 @@ double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateT
         payment.SetPaymentAttribute(ePayTypeCustomSurcharge);
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " SELECT c.PROPERTIES,a.SUBTOTAL FROM DAYARCSURCHARGE a LEFT JOIN "
+        IBInternalQuery->SQL->Text = " SELECT c.PROPERTIES,SUM(a.SUBTOTAL) as SUBTOTAL,c.GL_CODE FROM DAYARCSURCHARGE a LEFT JOIN "
                                      " DAYARCBILL b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                      " LEFT JOIN PAYMENTTYPES c on c.PAYMENT_NAME = a.PAY_TYPE "
                                      " WHERE b.TIME_STAMP > :STARTTIME AND b.TIME_STAMP <= :ENDTIME AND "
                                      " c.PROPERTIES = :PROPERTIES AND "
-                                     + terminalNamePredicate;
+                                     + terminalNamePredicate +
+                                     " GROUP BY 1,3 ";
         IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
         IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = Now();
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
@@ -8124,7 +8125,8 @@ double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateT
         {
             amount += RoundTo(IBInternalQuery->FieldByName("SUBTOTAL")->AsFloat, -4);
         }
-        tipGLCode = GetGLCodeTip(DBTransaction);
+//        tipGLCode = GetGLCodeTip(DBTransaction);
+        tipGLCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
     }
     catch(Exception &E)
     {
@@ -8132,31 +8134,6 @@ double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateT
         throw;
     }
     return amount;
-}
-//-----------------------------------------------------------------------------
-UnicodeString TfrmAnalysis::GetGLCodeTip(Database::TDBTransaction &DBTransaction)
-{
-    UnicodeString glCode = "";
-    try
-    {
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " SELECT a.GL_CODE FROM PAYMENTTYPES a WHERE  a.PROPERTIES = :PROPERTIES ";
-        TPayment payment;
-        payment.SetPaymentAttribute(ePayTypeCustomSurcharge);
-        IBInternalQuery->ParamByName("PROPERTIES")->AsString = payment.GetPropertyString();
-        IBInternalQuery->ExecQuery();
-        if (IBInternalQuery->RecordCount)
-        {
-            glCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
-        }
-    }
-    catch(Exception &E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-    }
-    return glCode;
 }
 //-----------------------------------------------------------------------------
 TDateTime TfrmAnalysis::GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction)
