@@ -225,7 +225,6 @@ private:	// User declarations
     double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
     double GetCashBlindBalance(TBlindBalances Balances);
     TDateTime GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction);
-    UnicodeString GetGLCodeTip(Database::TDBTransaction &DBTransaction);
     double GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode);
 public:		// User declarations
 	bool ZedCancel;

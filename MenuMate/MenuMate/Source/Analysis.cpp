@@ -8091,14 +8091,12 @@ TDateTime TfrmAnalysis::GetMinDayArchiveTime(Database::TDBTransaction &DBTransac
     }
 	return _dayArchivetime;
 }
-//-----------------------------------------------------------------------------
-double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode)
-{
+//-----------------------------------------------------------------------------double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode){
     double amount = 0.0;
     UnicodeString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
     {
-        terminalNamePredicate = " b.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+        terminalNamePredicate = " AND b.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
     }
     try
     {
@@ -8110,15 +8108,15 @@ double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateT
                                      " DAYARCBILL b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                      " LEFT JOIN PAYMENTTYPES c on c.PAYMENT_NAME = a.PAY_TYPE "
                                      " WHERE b.TIME_STAMP > :STARTTIME AND b.TIME_STAMP <= :ENDTIME AND "
-                                     " c.PROPERTIES = :PROPERTIES AND "
+                                     " c.PROPERTIES = :PROPERTIES "
                                      + terminalNamePredicate +
                                      " GROUP BY 1,3 ";
         IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
         IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = Now();
+        IBInternalQuery->ParamByName("PROPERTIES")->AsString = payment.GetPropertyString();
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
             IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();  // add terminal param..
-            IBInternalQuery->ParamByName("PROPERTIES")->AsString = payment.GetPropertyString();
         }
         IBInternalQuery->ExecQuery();
         if (IBInternalQuery->RecordCount)
@@ -8134,7 +8132,7 @@ double TfrmAnalysis::GetTipAmount(Database::TDBTransaction &DBTransaction,TDateT
         throw;
     }
     return amount;
-}
+}
 //-----------------------------------------------------------------------------
 TDateTime TfrmAnalysis::GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction)
 {
