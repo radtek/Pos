@@ -1973,8 +1973,8 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 			if (SubPayment->GetPay() != 0)
 			{
                 paymentCounter++;
-                if(!changeIsChargerToXero)
-                  changeIsChargerToXero =  SubPayment->GetPaymentAttribute(ePayTypeChargeToXero);
+                //if(!changeIsChargerToXero)
+                changeIsChargerToXero = SubPayment->GetPaymentAttribute(ePayTypeChargeToXero);
 
                 IBInternalQuery2->Close();
 				IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCBILLPAY, 1) FROM RDB$DATABASE";
