@@ -848,13 +848,13 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                      "FROM MALLEXPORT_SALES a "
                      "WHERE a.FIELD_INDEX  = 5  "
                      "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
-                            "(SELECT MAX(AB.ARCBILL_KEY) FROM (SELECT MAX(ARCBILL_KEY) ARCBILL_KEY FROM MALLEXPORT_SALES A "
+                            "(SELECT ARCBILL_KEY FROM MALLEXPORT_SALES a where a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  "
                                  "WHERE (a.Z_KEY = :MAX_ZKEY ";
 
         if(!zKey)
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ))AB )GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ))  )GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA  "
             "GROUP BY 1,2,4 "
 
