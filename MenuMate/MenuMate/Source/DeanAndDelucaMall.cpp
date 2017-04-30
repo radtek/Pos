@@ -230,7 +230,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->ZKey = 0;
         fieldData->SalesCount =  1;
 
-        if(fieldData->TotalVoidAmount > 0)
+        if(fieldData->TotalVoidAmount > 0 && fieldData->TotalNetSaleAmount == 0)
         {
             fieldData->CustomerCount = 0;
             fieldData->SalesCount = 0;
@@ -811,7 +811,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                              " CAST( case when (DAILYDATA.FIELD_INDEX = 18 OR DAILYDATA.FIELD_INDEX = 20)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
                                              "DAILYDATA.VALUE_TYPE "
                                       "FROM "
-                                            "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
+                                            "(SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ")  "
                                              "AND a.MALL_KEY = :MALL_KEY AND (a.Z_KEY = :MAX_ZKEY ";
@@ -819,7 +819,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                                              " ) GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
+                                              " ) GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4 "
 
