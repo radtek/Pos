@@ -5267,7 +5267,8 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED, "
             "cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) Qty, "
-            "cast( (ARCHIVE.PRICE *(ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total)))as numeric(17, 4)) PRICE "
+            //"cast( (ARCHIVE.PRICE *(ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total)))as numeric(17, 4)) PRICE "
+            " cast((ARCHIVE.PRICE *cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) PRICE "
 
 
         "from ARCBILL "
@@ -5312,7 +5313,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "contacts.member_number, "
             "INVOICES.CLOSED, "                                                                     
             "cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) Qty, "
-            "cast((dayARCHIVE.PRICE *(dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total)))as numeric(17, 4)) PRICE "
+            " cast((dayARCHIVE.PRICE *cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) PRICE "
         "from dayARCBILL "
             "left join dayARCHIVE on dayARCBILL.ARCBILL_KEY = dayARCHIVE.ARCBILL_KEY "
             "left join INVOICES on dayARCBILL.INVOICE_KEY = INVOICES.INVOICE_KEY "
