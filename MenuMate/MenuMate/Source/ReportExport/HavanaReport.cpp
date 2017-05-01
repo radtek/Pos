@@ -267,6 +267,13 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 //Select all payment types according to days
                 paymentTypeQuery->Close();
                 paymentTypeQuery->SQL->Text =
+                     "SELECT "
+                            "PAYTYPE.Bill_Day, "
+                            "PAYTYPE.Bill_Month, "
+                            "PAYTYPE.Bill_Year , "
+                            "PAYTYPE.PAY_TYPE, "
+                            "SUM(PAYTYPE.TOTAL)TOTAL "
+                    "FROM ( "
                         "SELECT "
                                 "EXTRACT (DAY FROM  AB.TIME_STAMP) Bill_Day,  "
                                 "EXTRACT (MONTH FROM  AB.TIME_STAMP) Bill_Month, "
@@ -314,7 +321,8 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 "WHERE pt.ADJUSTMENT_TYPE = 1 and ARCBILLPAY.SUBTOTAL <> 0  AND EXTRACT (DAY FROM  ARCBILL.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  ARCBILL.TIME_STAMP) = :MONTH "
                                     "AND EXTRACT (YEAR FROM  ARCBILL.TIME_STAMP) = :YEAR AND ARCBILL.Time_Stamp >= :START_TIME and ARCBILL.Time_Stamp < :END_TIME "
                 "GROUP BY Bill_Year, Bill_Month, Bill_Day,ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY,pt.ADJUSTMENT,ARCBILL.TOTAL, ARCBILLPAY.SUBTOTAL "
-                "ORDER BY 4 ASC ";
+                "ORDER BY 4 ASC )PAYTYPE "
+        " GROUP BY Bill_Year, Bill_Month, Bill_Day, PAY_TYPE ";
 
                 paymentTypeQuery->ParamByName("DAY")->AsInteger = StrToInt(day);
                 paymentTypeQuery->ParamByName("MONTH")->AsInteger = month;
