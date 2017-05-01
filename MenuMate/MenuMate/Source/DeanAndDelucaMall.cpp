@@ -1223,7 +1223,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     }
     else
     {
-       fieldData.NonTaxableSaleAmount += (grossAmount - taxes.serviceCharge);
+       fieldData.NonTaxableSaleAmount += (salesBySalesType - taxes.serviceCharge);
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";
@@ -1297,6 +1297,7 @@ bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDeluca
                 break;
             case TTaxType::ttLocal:
                  taxes.localTax += (double)itTaxes->Value;
+                 isVatable = true;
                  break;
         }
     }
@@ -1308,7 +1309,7 @@ bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDeluca
             taxes.serviceChargeTax += (double)order->BillCalcResult.ServiceCharge.TaxValue;
         }
     }
-    if(taxes.salesTax == 0.00)
+    if(taxes.salesTax == 0.00 && taxes.localTax == 0.00)
         isVatable = false;
 
     return isVatable;
