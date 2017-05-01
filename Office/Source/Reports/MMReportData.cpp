@@ -4978,7 +4978,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 			"Archive.Size_Name, " 
 		" cast(cast(abs(Archive.Qty )* Archive.BASE_PRICE as numeric(17, 4)) +COALESCE(ARCHIVE.DISCOUNT_WITHOUT_TAX,0) + COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price, "
 
-			"Archive.Table_Number, "
+			"Archive.Table_Number,CASE WHEN Archive.Table_Number <> 0 THEN Archive.TABLE_NAME END as TABLE_NAME, "
 			"Cast(Archive.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
 			"Security.Terminal_Name, "
@@ -5039,7 +5039,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 			"DayArchive.Size_Name,"
 			"cast(cast(abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  as numeric(17, 4)) +coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ coalesce(AOT.VAT,0) + coalesce(AOT.ServiceCharge,0) + coalesce(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price,  "		 //sales Incl
 
-			"DayArchive.Table_Number,"
+			"DayArchive.Table_Number,CASE WHEN DayArchive.Table_Number <> 0 THEN DayArchive.TABLE_NAME END as TABLE_NAME, "
 			"Cast(DayArchive.Tab_Name as VarChar(32)) Tab_Name,"
 			"Security.From_Val User_Name,"
 			"Security.Terminal_Name,"
@@ -5103,7 +5103,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
             "(cast((((Orders.Qty *        Orders.BASE_PRICE+ COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(AOT.ServiceCharge,0)/100)*COALESCE(STAX.ServiceChargeTax,0)/100 as numeric(17, 4)))+  "
             "  ( COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)) "
             "  ) as Numeric(17,4)) Price   ,           "
-			"Orders.Table_Number, "
+			"Orders.Table_Number,CASE WHEN Orders.Table_Number <> 0 THEN Orders.TABLE_NAME END as TABLE_NAME, "
 			"Cast(Orders.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
 			"Security.Terminal_Name, "
