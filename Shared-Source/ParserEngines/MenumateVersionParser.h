@@ -30,7 +30,7 @@ namespace MenumateVersionParser
             pv6_00,pv6_01,pv6_02,pv6_03,pv6_04,pv6_05,pv6_06,pv6_07,pv6_08,pv6_09,pv6_10,
             pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
             pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
-            pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,
+            pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,
     };
 
     class TApplyParser
@@ -115,6 +115,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_37( TDBControl* const inDBControl );
         PARSER_ERROR apply6_38( TDBControl* const inDBControl );
         PARSER_ERROR apply6_39( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_40( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -831,6 +832,14 @@ namespace MenumateVersionParser
         void InsertInTo_MallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex);
         int GetMallExportSettingsMappingIndex(TDBControl* const inDBControl);
 		void Create6_39SiHotTransNumberGenerator(TDBControl* const inDBControl);
+
+        //6.40
+        void upgrade6_40Tables();
+        void update6_40Tables();
+        void UpdateChargeToAccount(TDBControl* const inDBControl);
+        void UpdatePaymentTypesTable(TDBControl* const inDBControl, AnsiString newProperty, int chargeToAccount);
+        void UpdatePaymentAttributesTable(TDBControl* const inDBControl, int key, int chargeToAccount, int invoiceInterace);
+        void DelFromPaymentAttributesTable(TDBControl* const inDBControl, int property, int key);
     }; // class
 } // namespace
 
