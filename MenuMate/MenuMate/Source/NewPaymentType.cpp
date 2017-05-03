@@ -338,13 +338,14 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             {
                 tbChargeToXero->Checked = false;
             }
-
-
         }
         else
         {
-            tbChargeToXero->Enabled = false;
-            tbChargeToXero->Checked = false;
+            if(!TGlobalSettings::Instance().IsXeroEnabled || !CheckBoxExport->Checked)
+            {
+                tbChargeToXero->Enabled = false;
+                tbChargeToXero->Checked = false;
+            }
         }
         cbWalletPayments->Checked = Payment.GetPaymentAttribute(ePayTypeWallet);
         btnWalletType->Enabled = cbWalletPayments->Checked;
@@ -721,8 +722,8 @@ void __fastcall TfrmNewPaymentType::cbElectronicTransactionClick(TObject *Sender
    }
   else
    {
-     CheckBoxExport->Enabled = TGlobalSettings::Instance().IsXeroEnabled;
-     tbChargeToXero->Enabled = true;
+     CheckBoxExport->Enabled = true;
+     tbChargeToXero->Enabled = CheckBoxExport->Checked && TGlobalSettings::Instance().IsXeroEnabled;
    }
 }
 // ---------------------------------------------------------------------------
@@ -927,12 +928,13 @@ void __fastcall TfrmNewPaymentType::ExportMouseClick(TObject *Sender)
 	  {
 		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
 	  }
-      tbChargeToXero->Enabled = true;
+      if(TGlobalSettings::Instance().IsXeroEnabled)
+        tbChargeToXero->Enabled = true;
    }
    else
    {
-     tbChargeToXero->Checked = false;
-     tbChargeToXero->Enabled = false;
+      tbChargeToXero->Checked = false;
+      tbChargeToXero->Enabled = false;
    }
 }
 //---------------------------------------------------------------------------
