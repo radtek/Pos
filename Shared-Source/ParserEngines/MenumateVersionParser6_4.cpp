@@ -49,7 +49,7 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
             AnsiString properties = FetchQuery->FieldByName("PROPERTIES")->AsString;
             AnsiString newProperty = "-";
             int paymentkey = FetchQuery->FieldByName("PAYMENT_KEY")->AsInteger;
-            if(properties.Pos("-25-") != 0 && properties.Pos("-29-") == 0)
+            if(properties.Pos(invoiceInterfaceString) != 0 && properties.Pos(chargeToAccountString) == 0)
             {
                 // loop for total number of payment properties
                 for(int i = 1 ; i < 34 ; i++)
@@ -60,7 +60,7 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
                    literal += "-";
                    if(properties.Pos(literal) != 0)
                    {
-                      if(i != 25)
+                      if(i != invoiceInterface)
                          newProperty += i + "-";
                       else
                       {
@@ -80,7 +80,7 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
                 // Update property in paymenttypes
                 UpdatePaymentTypesTable(_dbControl, newProperty, paymentkey);
             }
-            else if(properties.Pos("-25-") != 0 && properties.Pos("-29-") != 0)
+            else if(properties.Pos(invoiceInterfaceString) != 0 && properties.Pos(chargeToAccountString) != 0)
             {
                 newProperty = "-";
                 for(int i = 1 ; i < 34 ; i++)
@@ -91,7 +91,7 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
                    literal += "-";
                    if(properties.Pos(literal) != 0)
                    {
-                      if(i != 25)
+                      if(i != invoiceInterface)
                       {
                          if(newProperty.Pos(chargeToAccountString) != 0 && i == chargeToAccount)
                              newProperty += "";
