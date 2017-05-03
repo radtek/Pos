@@ -5190,7 +5190,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join DAYARCBILL on DAYARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
         "where "
-            " DAYARCBILLPAY.CHARGED_TO_XERO = 'T' and DAYARCBILLPAY.SUBTOTAL != 0 and "
+            " DAYARCBILLPAY.PROPERTIES containing '29' and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime ";
 
@@ -5222,7 +5222,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join ARCBILL on ARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "where "
-            " ARCBILLPAY.CHARGED_TO_XERO = 'T' and ARCBILLPAY.SUBTOTAL != 0 and "
+            " ARCBILLPAY.PROPERTIES containing '29' and ARCBILLPAY.SUBTOTAL != 0 and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime ";
 
@@ -5266,10 +5266,6 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "contacts.member_number, "
             "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED, "
-            //"cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) Qty, "
-            //"cast( (ARCHIVE.PRICE *(ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total)))as numeric(17, 4)) PRICE "
-            //" cast((ARCHIVE.PRICE *cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) PRICE "
-
             "case when(ARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
             "then cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)) "
             "else "
@@ -5310,7 +5306,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-            "ARCBILLPAY.CHARGED_TO_XERO = 'T' and ARCBILLPAY.SUBTOTAL != 0  and "
+            " ARCBILLPAY.PROPERTIES containing '29'and ARCBILLPAY.SUBTOTAL != 0  and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime   ";
 
@@ -5332,8 +5328,6 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED, "
-            //"cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) Qty, "
-            //" cast((dayARCHIVE.PRICE *cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) PRICE "
             "case when(DAYARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
             "then cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)) "
             "else "
@@ -5371,7 +5365,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-              "DAYARCBILLPAY.CHARGED_TO_XERO = 'T' and DAYARCBILLPAY.SUBTOTAL != 0 and "
+              " DAYARCBILLPAY.PROPERTIES containing '29' and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime   " ;
 
