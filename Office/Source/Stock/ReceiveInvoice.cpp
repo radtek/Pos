@@ -957,7 +957,7 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
 				Currency totalEnteredGST = invoiceSummary.TotalGST;
 				if (rbExcludingGST->Checked)
 				{
-					// Totals entered don't include gst. Adding a random amount of gst won't effect the total excl.
+					// Totals entered don't include gst. Adding a random amount of gst won't effect the total excl..............
 					for (unsigned i = 0; i < InvoiceItems.size(); i++)
 					{
 						if (i < InvoiceItems.size()-1)

@@ -202,7 +202,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
 			if (SubPayment->GetPay() != 0)
 			{
-                amount = (double)(SubPayment->GetPayTendered() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
+                amount = (double)(SubPayment->GetPayTendered() - SubPayment->GetChange() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
 
                 if(SubPayment->GetPaymentAttribute(ePayTypeElectronicTransaction))
                 {

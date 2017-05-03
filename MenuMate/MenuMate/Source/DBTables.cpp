@@ -721,13 +721,21 @@ Currency TDBTables::GetTableTotal(Database::TDBTransaction &DBTransaction,int Ta
 Currency TDBTables::GetTableBalance(Database::TDBTransaction &DBTransaction,int TableNo)
 {
    Currency Total = 0;
-   std::set<__int64> SelectedTabs;
-   GetTabKeys(DBTransaction,TableNo,SelectedTabs);
-   for(std::set<__int64>::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end();
-       advance(itTabs,1))
+   try
    {
-	  Total += TDBTab::GetTabBalance(DBTransaction,*itTabs);
+       std::set<__int64> SelectedTabs;
+       GetTabKeys(DBTransaction,TableNo,SelectedTabs);
+       for(std::set<__int64>::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end();
+           advance(itTabs,1))
+       {
+          Total += TDBTab::GetTabBalance(DBTransaction,*itTabs);
+       }
    }
+    catch(Exception &Err)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+        throw;
+    }
    return Total;
 }
 
@@ -1092,40 +1100,46 @@ bool TDBTables::GetTableExists(Database::TDBTransaction &DBTransaction,int Table
 std::vector<TPatronType> TDBTables::GetPatronCount(Database::TDBTransaction &DBTransaction, int tableNo)
 {
     std::vector<TPatronType> patronTypes;
+    try
+	{
+        TManagerPatron::Instance().GetPatronTypes(DBTransaction, patronTypes);
 
-    TManagerPatron::Instance().GetPatronTypes(DBTransaction, patronTypes);
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
 
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT "
+                                        "TPC.PATRONCOUNT_KEY, "
+                                        "TPC.PATRON_COUNT, "
+                                        "TPC.PATRON_TYPE, "
+                                        "TPC.TABLE_KEY, "
+                                        "T.TABLE_NAME, "
+                                        "T.TABLE_NUMBER  "
+                                    "FROM TABLEPATRONCOUNT TPC "
+                                    "INNER JOIN TABLES T ON TPC.TABLE_KEY = T.TABLE_KEY "
+                                    "WHERE T.TABLE_NUMBER = :TABLE_NUMBER ";
 
-    IBInternalQuery->SQL->Text = "SELECT "
-                                    "TPC.PATRONCOUNT_KEY, "
-                                    "TPC.PATRON_COUNT, "
-                                    "TPC.PATRON_TYPE, "
-                                    "TPC.TABLE_KEY, "
-                                    "T.TABLE_NAME, "
-                                    "T.TABLE_NUMBER  "
-                                "FROM TABLEPATRONCOUNT TPC "
-                                "INNER JOIN TABLES T ON TPC.TABLE_KEY = T.TABLE_KEY "
-                                "WHERE T.TABLE_NUMBER = :TABLE_NUMBER ";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNo;
+        IBInternalQuery->ExecQuery();
 
-    IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNo;
-    IBInternalQuery->ExecQuery();
-
-    if(IBInternalQuery->RecordCount)
-    {
-        for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
+        if(IBInternalQuery->RecordCount)
         {
-            for (std::vector<TPatronType>::iterator ptrPatron = patronTypes.begin(); ptrPatron != patronTypes.end(); ptrPatron++)
+            for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
             {
-                if(ptrPatron->Name == IBInternalQuery->FieldByName("PATRON_TYPE")->AsString)
+                for (std::vector<TPatronType>::iterator ptrPatron = patronTypes.begin(); ptrPatron != patronTypes.end(); ptrPatron++)
                 {
-                    ptrPatron->Count = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
+                    if(ptrPatron->Name == IBInternalQuery->FieldByName("PATRON_TYPE")->AsString)
+                    {
+                        ptrPatron->Count = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
+                    }
                 }
             }
         }
     }
-
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
     return patronTypes;
 }
 
@@ -1422,28 +1436,36 @@ bool TDBTables::GetSeatExists(Database::TDBTransaction &DBTransaction,int inTabl
 
 void TDBTables::SetTableBillingStatus(Database::TDBTransaction &DBTransaction,int TableNo ,TOrderBillingStatus status)
 {
-  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-  IBInternalQuery->Close();
-  IBInternalQuery->SQL->Text = "Select * from TABLESSTATUS where TABLE_NUMBER = :TABLE_NUMBER ;";
-  IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
-  IBInternalQuery->ExecQuery();
-  if(!IBInternalQuery->Eof)
+  try
   {
-    IBInternalQuery->SQL->Text =" UPDATE TABLESSTATUS  "
-   " SET TABLE_STATUS = :TABLE_STATUS "
-   " WHERE "
-   " TABLE_NUMBER = :TABLE_NUMBER ";
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "Select * from TABLESSTATUS where TABLE_NUMBER = :TABLE_NUMBER ;";
+    IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
+    IBInternalQuery->ExecQuery();
+    if(!IBInternalQuery->Eof)
+    {
+        IBInternalQuery->SQL->Text =" UPDATE TABLESSTATUS  "
+        " SET TABLE_STATUS = :TABLE_STATUS "
+        " WHERE "
+        " TABLE_NUMBER = :TABLE_NUMBER ";
+    }
+    else
+    {
+        IBInternalQuery->SQL->Text ="INSERT INTO TABLESSTATUS "
+                                     "(TABLE_NUMBER,TABLE_STATUS ) "
+                                     "VALUES (:TABLE_NUMBER, :TABLE_STATUS );";
+    }
+    IBInternalQuery->Close();
+    IBInternalQuery->ParamByName("TABLE_STATUS")->AsInteger = status;
+    IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
+    IBInternalQuery->ExecQuery();
   }
-  else
-  {
-    IBInternalQuery->SQL->Text ="INSERT INTO TABLESSTATUS "
-                                 "(TABLE_NUMBER,TABLE_STATUS ) "
-                                 "VALUES (:TABLE_NUMBER, :TABLE_STATUS );";
-  }
-  IBInternalQuery->Close();
-  IBInternalQuery->ParamByName("TABLE_STATUS")->AsInteger = status;
-  IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
-  IBInternalQuery->ExecQuery();
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
 }
 
 int TDBTables::GetTableBillingStatus(Database::TDBTransaction &DBTransaction,int TableNo)

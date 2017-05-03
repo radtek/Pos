@@ -23,23 +23,30 @@ TManagerDelayedPayment::TManagerDelayedPayment()
 
 void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer)
 {
-	AnsiString InvoiceNumber = Invoice->GetNextInvoiceNumber(DBTransaction,RegularSale);;
-	AnsiString TabName = TGlobalSettings::Instance().ReceiptNumberLabel + InvoiceNumber;
-	//Create Tab
-	int TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
-	TDBTab::SetTabType(DBTransaction, TabKey, TabDelayedPayment);
-	TDBTab::SetTabName(DBTransaction, TabKey, TabName);
-	//Code here
-	inOrderContainer.Location["TabKey"] = TabKey;
-	inOrderContainer.Location["TMMTabType"] = TabDelayedPayment;
-	inOrderContainer.Location["TMMDisplayMode"] = eTabs;
-	inOrderContainer.Location["ContainerName"] = TabName;
-	inOrderContainer.Location["TabName"] = TabName;
-	inOrderContainer.Location["PartyName"] = "";
-	inOrderContainer.Location["SelectedSeat"] = 0;
-	inOrderContainer.Location["SelectedTable"] = 0;
-	inOrderContainer.Location["RoomNumber"] = 0;
-	inOrderContainer.Location["DelayedInvoiceNumber"] = InvoiceNumber;
+    try
+    {
+        AnsiString InvoiceNumber = Invoice->GetNextInvoiceNumber(DBTransaction,RegularSale);;
+        AnsiString TabName = TGlobalSettings::Instance().ReceiptNumberLabel + InvoiceNumber;
+        //Create Tab
+        int TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+        TDBTab::SetTabType(DBTransaction, TabKey, TabDelayedPayment);
+        TDBTab::SetTabName(DBTransaction, TabKey, TabName);
+        //Code here
+        inOrderContainer.Location["TabKey"] = TabKey;
+        inOrderContainer.Location["TMMTabType"] = TabDelayedPayment;
+        inOrderContainer.Location["TMMDisplayMode"] = eTabs;
+        inOrderContainer.Location["ContainerName"] = TabName;
+        inOrderContainer.Location["TabName"] = TabName;
+        inOrderContainer.Location["PartyName"] = "";
+        inOrderContainer.Location["SelectedSeat"] = 0;
+        inOrderContainer.Location["SelectedTable"] = 0;
+        inOrderContainer.Location["RoomNumber"] = 0;
+        inOrderContainer.Location["DelayedInvoiceNumber"] = InvoiceNumber;
+    }
+    catch(Exception & E)
+    {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 // ---------------------------------------------------------------------------

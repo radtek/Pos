@@ -1732,8 +1732,8 @@ bool TdmStockData::Update3_0()
 				"Contact.MYOB2,"
 				"Contact.MYOB3,"
 				// trouble hot spot - had to cast them all as Double Precision to avoid integer overflow
-				"Cast(Sum( cast(StockTrans.Unit_Cost as Double Precision) * cast(StockTrans.Qty as Double Precision ) ) as Numeric(15, 4)) Total_Cost,"
-				"cast(Sum( cast(StockTrans.Unit_Cost as Double Precision) * cast(StockTrans.Qty as Double Precision) * cast(StockTrans.GST_Percent as Double Precision) / 100 ) as numeric(15,4) ) Total_GST "
+				"Cast(Sum( cast(StockTrans.Unit_Cost as Double Precision) * cast(StockTrans.Qty) as Double Precision ) ) as Numeric(15, 4)) Total_Cost,"
+				"cast(Sum( cast(StockTrans.Unit_Cost as Double Precision) * cast(StockTrans.Qty) as Double Precision) * cast(StockTrans.GST_Percent as Double Precision) / 100 ) as numeric(15,4) ) Total_GST "
 			"From "
 				"StockTrans Left Join Contact On "
 					"StockTrans.Supplier_Key = Contact.Contact_LK "

@@ -264,6 +264,7 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TClientDataSet *cdsReceipt;
     TRvDataSetConnection *ravSubsReport;
     TIBQuery *qrSubsReport;
+    TIBQuery *qrTurnAroundExcel;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
