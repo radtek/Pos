@@ -3431,6 +3431,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     bool PaymentComplete = false;
     TPaymentTransaction PaymentTransaction(DBTransaction);
     PaymentTransaction.PartyName = PartyName;
+
+     //To check whether payment done is by linking the fast tenderkey with payment
+    bool isProcessedQuickPayment = false;
+
 	try
 	{
         PaymentTransaction.TypeOfSale = TypeOfSale;
@@ -3439,6 +3443,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
           PaymentTransaction.IsQuickPayTransaction = true;
           PaymentTransaction.QuickPaymentName = GetQuickPaymentName(Sender);
           Sender = tbtnTender;
+          isProcessedQuickPayment = true;
         }
         if(ChitNumber.IsNonChargableChit)
            {
@@ -3616,13 +3621,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			{
 				TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, PaymentTransaction.Patrons, 1);
 
-				if((Sender == tbtnCashSale || ((Sender == tbtnTender)&& CurrentTender != 0)) && TGlobalSettings::Instance().EnableMenuPatronCount)
+				if((Sender == tbtnCashSale || ((Sender == tbtnTender)&& CurrentTender != 0) || isProcessedQuickPayment) && TGlobalSettings::Instance().EnableMenuPatronCount)
 				{
                    PaymentTransaction.CalculatePatronCountFromMenu();
                 }
 
 				// ask for patron count if this is a quick sale
-				if((Sender == tbtnCashSale || Sender == tbtnTender) && TGlobalSettings::Instance().PromptForPatronCount)
+				if((Sender == tbtnCashSale ||  ( Sender == tbtnTender && CurrentTender != 0) || isProcessedQuickPayment) && TGlobalSettings::Instance().PromptForPatronCount)
 				{
 					if (TManagerPatron::Instance().GetCount(PaymentTransaction.DBTransaction) > 0)
 					{
@@ -3632,7 +3637,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 					{
                         MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                     }
-               }
+                }
 
 				PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
                 customerDisp.TierLevel = TGlobalSettings::Instance().TierLevelChange ;
@@ -10959,7 +10964,17 @@ __int32 TfrmSelectDish::getPatronCount()
 // ---------------------------------------------------------------------------
 std::vector<TPatronType> TfrmSelectDish::QueryForPatronCount(TPaymentTransaction &PaymentTransaction)
 {
-	return GetPatronCount(PaymentTransaction.DBTransaction);
+    std::vector<TPatronType> patrons;
+
+	if (TManagerPatron::Instance().GetCount(PaymentTransaction.DBTransaction) > 0)
+	{
+		std::auto_ptr <TfrmPatronCount> frmPatronCount(TfrmPatronCount::Create <TfrmPatronCount> (this, TDeviceRealTerminal::Instance().DBControl));
+        frmPatronCount->InitPatrons = PaymentTransaction.Patrons;
+        frmPatronCount->ShowModal();
+		patrons = frmPatronCount->Patrons;
+	}
+
+	return patrons;
 }
 // ---------------------------------------------------------------------------
 std::vector<TPatronType> TfrmSelectDish::GetPatronCount(Database::TDBTransaction &dbTransaction)
