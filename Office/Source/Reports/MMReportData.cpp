@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "SqlViewer.h"
+#define PAYMENT_PROPERTIES "29"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "RpCon"
@@ -22,7 +23,7 @@ __fastcall TdmMMReportData::TdmMMReportData(TComponent* Owner)
 	: TDataModule(Owner)
 {
     _taxJoins =  "left join  "
-            "(SELECT  cast(1 as int) keyvalue , "                                                                                                                                                                                                          
+            "(SELECT  cast(1 as int) keyvalue , "
             "TAXPROFILE.ORDER_KEY,  "                                                                                                                                                                                                              
                     "sum(CASE WHEN TAXPROFILE.TYPE = 0 THEN TAXPROFILE.TAX_RATE END) AS VAT ,            "                                                                                                                                                
                     "sum(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,   "                                                                                                                                                
@@ -5190,7 +5191,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join DAYARCBILL on DAYARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
         "where "
-            " DAYARCBILLPAY.PROPERTIES containing '29' and DAYARCBILLPAY.SUBTOTAL != 0 and "
+            " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime ";
 
@@ -5222,7 +5223,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join ARCBILL on ARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "where "
-            " ARCBILLPAY.PROPERTIES containing '29' and ARCBILLPAY.SUBTOTAL != 0 and "
+            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0 and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime ";
 
@@ -5250,6 +5251,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	}
 	qrInvoice->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoice->ParamByName("EndTime")->AsDateTime		= EndTime;
+    qrInvoice->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
@@ -5306,7 +5308,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-            " ARCBILLPAY.PROPERTIES containing '29'and ARCBILLPAY.SUBTOTAL != 0  and "
+            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0  and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime   ";
 
@@ -5365,7 +5367,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-              " DAYARCBILLPAY.PROPERTIES containing '29' and DAYARCBILLPAY.SUBTOTAL != 0 and "
+              " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime   " ;
 
@@ -5386,6 +5388,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 
 	qrInvoiceDetailed->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoiceDetailed->ParamByName("EndTime")->AsDateTime		= EndTime;
+    qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
