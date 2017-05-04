@@ -1771,6 +1771,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     else
                     {
                         GuestMasterOk = false;
+                        //Make select member false because Cancel is Pressed
                         if(CurrentTransaction.IsQuickPayTransaction)
                             IsMemberSelected = false;
                     }
