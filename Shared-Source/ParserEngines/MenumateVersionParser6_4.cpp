@@ -61,7 +61,10 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
                    if(properties.Pos(literal) != 0)
                    {
                       if(i != invoiceInterface)
-                         newProperty += i + "-";
+                      {
+                         newProperty += i;
+                         newProperty += "-";
+                      }
                       else
                       {
                          if(properties.Pos(chargeToAccountString) == 0)
@@ -96,7 +99,10 @@ void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
                          if(newProperty.Pos(chargeToAccountString) != 0 && i == chargeToAccount)
                              newProperty += "";
                          else
-                             newProperty += i + "-";
+                         {
+                             newProperty += i ;
+                             newProperty += "-";
+                         }
                       }
                       else
                       {
