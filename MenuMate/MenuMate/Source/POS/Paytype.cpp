@@ -1780,6 +1780,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
                     MB_OK + MB_ICONINFORMATION);
                     GuestMasterOk = false;
+
+                    //Make select member false because PMS is not enabled
+                    if(CurrentTransaction.IsQuickPayTransaction )
+                            IsMemberSelected = false;
                 }
             }
 
