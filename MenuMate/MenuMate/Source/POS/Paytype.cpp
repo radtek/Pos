@@ -200,6 +200,10 @@ TModalResult TfrmPaymentType::Execute()
                 {
                    ModalResult = mrOk;
                 }
+                else
+                {
+                   ModalResult = mrCancel;
+                }
            }
            else
              ModalResult = ShowModal();
@@ -1767,6 +1771,8 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     else
                     {
                         GuestMasterOk = false;
+                        if(CurrentTransaction.IsQuickPayTransaction)
+                            IsMemberSelected = false;
                     }
                 }
                 else
@@ -1882,7 +1888,8 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
-        btnCancel->SetFocus();
+       if(!CurrentTransaction.IsQuickPayTransaction)
+            btnCancel->SetFocus();
     }
 }
 // ---------------------------------------------------------------------------

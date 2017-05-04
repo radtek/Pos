@@ -173,7 +173,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
             PMSPort = Payment->SecondaryPMSPortNumber;
 			}
          
-			TotalRounding += Payment->GetRoundingTotal();
+			TotalRounding += RoundToNearest(Payment->GetRoundingTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
 		}
 	}
 
