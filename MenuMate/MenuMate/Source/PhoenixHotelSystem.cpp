@@ -84,11 +84,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 			TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Sub Item : " + SubOrder->Item + " " +
 			SubOrderThirdPartyCode +
 			" Item Purchase " + CurrToStrF(SubOrder->TotalPriceAdjustment(), ffCurrency, 2));
-
-			//Total += SubOrder->TotalPriceAdjustment();
 		}
-
-		//Total += Order->TotalPriceAdjustment();
 	}
 
      //Iterate from Room charge categories map and add all type of category sales to total
