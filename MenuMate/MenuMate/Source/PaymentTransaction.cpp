@@ -355,7 +355,7 @@ bool TPaymentTransaction::TransInvoicePayment()
 	for ( int i = 0 ; i < PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->GetPaymentAttribute(ePayTypeInvoiceExport) || Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
+		if(( Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
           && (Payment->GetCashOut() != 0|| Payment->GetPay() != 0))
 		{
 			return true;

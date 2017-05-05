@@ -3704,7 +3704,7 @@ bool TListPaymentSystem::ProcessInvoicePayment(TPaymentTransaction &PaymentTrans
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount)))
+			if (((Payment->GetPaymentAttribute(ePayTypeChargeToAccount)))
                  && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted))
 			{
 				TransRetriveInvoiceResult(PaymentTransaction, Payment);

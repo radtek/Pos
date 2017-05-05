@@ -855,7 +855,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           Left = 260
           Top = 48
           Width = 240
-          Height = 296
+          Height = 249
           Caption = 'Payment Exporting'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText
@@ -887,26 +887,9 @@ object frmNewPaymentType: TfrmNewPaymentType
             ParentFont = False
             TabOrder = 0
           end
-          object tbInvoiceInterface: TCheckBox
-            Left = 10
-            Top = 70
-            Width = 220
-            Height = 40
-            Caption = 'Invoice Interface'
-            Color = clNavy
-            Font.Charset = ANSI_CHARSET
-            Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentColor = False
-            ParentFont = False
-            TabOrder = 1
-            OnClick = tbInvoiceInterfaceClick
-          end
           object CheckBoxExport: TCheckBox
             Left = 10
-            Top = 116
+            Top = 71
             Width = 220
             Height = 40
             Caption = 'Charge To Account'
@@ -923,7 +906,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbChargeToXero: TCheckBox
             Left = 10
-            Top = 168
+            Top = 118
             Width = 220
             Height = 51
             Caption = 'Charge To Accounting System'
@@ -941,7 +924,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbGLCode: TTouchBtn
             Left = 10
-            Top = 225
+            Top = 175
             Width = 220
             Height = 60
             Font.Charset = ANSI_CHARSET
@@ -961,7 +944,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         end
         object GroupBox9: TGroupBox
           Left = 260
-          Top = 350
+          Top = 305
           Width = 240
           Height = 286
           Caption = 'PMS System'
