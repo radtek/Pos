@@ -66,7 +66,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbCheckSig;
         TGroupBox *GroupBox2;
         TCheckBox *cbCSVPaymentType;
-        TCheckBox *tbInvoiceInterface;
+//        TCheckBox *tbInvoiceInterface;
         TTouchBtn *TouchBtn2;
         TGroupBox *GroupBox1;
         TCheckBox *cbSec1;
@@ -123,7 +123,7 @@ __published:	// IDE-managed Components
         void __fastcall tbThirdPartyIDClick(TObject *Sender);
         void __fastcall tbSurchargeTaxRateClick(TObject *Sender);
         void __fastcall tbRoundingMouseClick(TObject *Sender);
-        void __fastcall tbInvoiceInterfaceClick(TObject *Sender);
+//        void __fastcall tbInvoiceInterfaceClick(TObject *Sender);
         void __fastcall tbPaymentMouseClick(TObject *Sender);
         void __fastcall tbSecurityMouseClick(TObject *Sender);
         void __fastcall tbInterfacesMouseClick(TObject *Sender);

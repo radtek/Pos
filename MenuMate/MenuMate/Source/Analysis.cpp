@@ -3902,6 +3902,11 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
                                  TDateTime startTime,TDateTime endTime)
 {
+    UnicodeString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        terminalNamePredicate = " AND a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
     try
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -3909,12 +3914,16 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                                         "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
                                         "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                         "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
-                                        "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
+                                        "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " ) e "
                                         "left join "
                                         "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
                                         "c.PAY_TYPE = 'Points') f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
         IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
         IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+        {
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+        }
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
@@ -3931,13 +3940,17 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                                                     "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
                                                     "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                                     "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
-                                                    "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
+                                                    "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " ) e "
                                                     "left join "
                                                     "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
                                                     "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
                     IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
                     IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
                     IBInternalQuery->ParamByName("PAYTYPE")->AsString = ptrPayment->Name;
+                    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+                    {
+                        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+                    }
                     IBInternalQuery->ExecQuery();
                     if(!IBInternalQuery->Eof)
                     {
@@ -7940,6 +7953,11 @@ TMemoryStream* TfrmAnalysis::FormattedZed(TMemoryStream *ZedToArchive)
 void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTransaction,double &TabCreditReceived, double &TabRefundReceived,
                                  TDateTime startTime,TDateTime endTime)
 {
+    UnicodeString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        terminalNamePredicate = " AND a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
     try
     {
        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -7954,12 +7972,16 @@ void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTran
                                                     "WHERE "
                                                          " b.ARCBILL_KEY not in ( SELECT distinct a.ARCBILL_KEY FROM DAYARCBILLPAY a where a.CHARGED_TO_XERO = 'T' ) and "
                                                          " b.PAY_TYPE = 'Credit' AND "
-                                                         " a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME "
-                                                    "GROUP BY  "
+                                                         " a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate +
+                                                    " GROUP BY  "
                                                         "b.PAY_TYPE,c.GL_CODE, b.SUBTOTAL ";
 
         IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
         IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+        {
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+        }
         IBInternalQuery->ExecQuery();
 
            if(IBInternalQuery->RecordCount > 0)
