@@ -85,11 +85,19 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 			SubOrderThirdPartyCode +
 			" Item Purchase " + CurrToStrF(SubOrder->TotalPriceAdjustment(), ffCurrency, 2));
 
-			Total += SubOrder->TotalPriceAdjustment();
+			//Total += SubOrder->TotalPriceAdjustment();
 		}
 
-		Total += Order->TotalPriceAdjustment();
+		//Total += Order->TotalPriceAdjustment();
 	}
+
+     //Iterate from Room charge categories map and add all type of category sales to total
+     std::map <AnsiString,Currency>::iterator iterCategories;
+
+     for (iterCategories = RoomCharge.Categories.begin(); iterCategories != RoomCharge.Categories.end(); ++iterCategories)
+     {
+        Total += RoundToNearest(iterCategories->second, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+     }
 
 	for ( int i = 0 ; i <  PaymentTransaction.PaymentsCount(); i++ )
 	{
@@ -172,8 +180,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
             PMSIPAddress = Payment->SecondaryPMSIPAddress;
             PMSPort = Payment->SecondaryPMSPortNumber;
 			}
-         
-			TotalRounding += RoundToNearest(Payment->GetRoundingTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
+
+            TotalRounding += RoundToNearest(Payment->GetRoundingTotal(), MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
 		}
 	}
 
