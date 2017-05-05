@@ -112,7 +112,6 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeAllowMANPAN,cbAllowManPan->Checked);
         Payment.SetPaymentAttribute(ePayTypeCheckSignature,cbCheckSig->Checked);
         Payment.SetPaymentAttribute(ePayTypeChequeVerify,tbChequeVerify->Checked);
-        Payment.SetPaymentAttribute(ePayTypeInvoiceExport,tbInvoiceInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeSecondaryPMSExport,SecondaryPMSIPAddress != "");
         Payment.SetPaymentAttribute(ePayTypePocketVoucher,cbPocketVoucher->Checked);
         Payment.SetPaymentAttribute(ePayTypeDispPVMsg,cbPVAcceptedMsg->Checked);
@@ -237,7 +236,6 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         tbPosition->Caption = "Position  \r" + IntToStr(PaymentPos);
         tbGroupNumber->Caption = "Group Number\r" + IntToStr(PaymentGroup);
         tbThirdPartyID->Caption = "Third Party Payment ID\r" + PaymentThirdPartyID;
-        //tbtnFixedVoucherCode->Caption = "Fixed Voucher Code\r" + FixedVoucherCode;
         tbtnVoucherMerchant->Caption = "Voucher Merchant ID\r" + VoucherMerchantID;
         tbtnSecondaryIPAddress->Caption = "Seconday PMS IP Address\r" + SecondaryPMSIPAddress;
         tbtnSecondaryPMSPort->Caption = "Secondary PMS Port\r" + IntToStr(SecondaryPMSPortNumber);
@@ -319,21 +317,19 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbAllowManPan->Checked = Payment.GetPaymentAttribute(ePayTypeAllowMANPAN);
         cbCheckSig->Checked = Payment.GetPaymentAttribute(ePayTypeCheckSignature);
         tbChequeVerify->Checked = Payment.GetPaymentAttribute(ePayTypeChequeVerify);
-        tbInvoiceInterface->Checked = Payment.GetPaymentAttribute(ePayTypeInvoiceExport);
         cbPVAcceptedMsg->Checked = Payment.GetPaymentAttribute(ePayTypeDispPVMsg);
         cbRMSInterface->Checked = Payment.GetPaymentAttribute(ePayTypeRMSInterface);
         cbAllowTips->Checked = Payment.GetPaymentAttribute(ePayTypeAllowTips);
-        if(TGlobalSettings::Instance().IsXeroEnabled)
+        if (Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
         {
-            if (Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
-            {
-                CheckBoxExport->Checked = true;
-            }
-            else
-            {
-                CheckBoxExport->Checked = false;
-            }
-
+            CheckBoxExport->Checked = true;
+        }
+        else
+        {
+            CheckBoxExport->Checked = false;
+        }
+        if(TGlobalSettings::Instance().IsXeroEnabled && Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
+        {
             if(Payment.GetPaymentAttribute(ePayTypeChargeToXero))
             {
                 tbChargeToXero->Checked = true;
@@ -342,15 +338,14 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             {
                 tbChargeToXero->Checked = false;
             }
-
-
         }
         else
         {
-            CheckBoxExport->Enabled = false;
-            CheckBoxExport->Checked = false;
-            tbChargeToXero->Enabled = false;
-            tbChargeToXero->Checked = false;
+            if(!TGlobalSettings::Instance().IsXeroEnabled || !CheckBoxExport->Checked)
+            {
+                tbChargeToXero->Enabled = false;
+                tbChargeToXero->Checked = false;
+            }
         }
         cbWalletPayments->Checked = Payment.GetPaymentAttribute(ePayTypeWallet);
         btnWalletType->Enabled = cbWalletPayments->Checked;
@@ -368,8 +363,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 	  cbCashOut->Checked = false;
 	  RoundTo = MIN_CURRENCY_VALUE;
 	  tbRounding->Caption = "Round To\r" + FormatFloat("$0.00", RoundTo);
-      tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
-      CheckBoxExport->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
+      tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled && Payment.GetPaymentAttribute(ePayTypeChargeToAccount);
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
    }
@@ -728,8 +722,8 @@ void __fastcall TfrmNewPaymentType::cbElectronicTransactionClick(TObject *Sender
    }
   else
    {
-     CheckBoxExport->Enabled = TGlobalSettings::Instance().IsXeroEnabled;
-     tbChargeToXero->Enabled = true;
+     CheckBoxExport->Enabled = true;
+     tbChargeToXero->Enabled = CheckBoxExport->Checked && TGlobalSettings::Instance().IsXeroEnabled;
    }
 }
 // ---------------------------------------------------------------------------
@@ -798,16 +792,16 @@ void __fastcall TfrmNewPaymentType::tbRoundingMouseClick(TObject *Sender)
 
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmNewPaymentType::tbInvoiceInterfaceClick(TObject *Sender)
-{
-   if (tbInvoiceInterface->Checked)
-   {
-	  if (!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	  {
-		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
-	  }
-   }
-}
+//void __fastcall TfrmNewPaymentType::tbInvoiceInterfaceClick(TObject *Sender)
+//{
+//   if (tbInvoiceInterface->Checked)
+//   {
+//	  if (!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	  {
+//		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
+//	  }
+//   }
+//}
 // ---------------------------------------------------------------------------
 void TfrmNewPaymentType::RedrawButtons(TObject * Sender)
 {
@@ -841,6 +835,7 @@ void __fastcall TfrmNewPaymentType::tbInterfacesMouseClick(TObject *Sender)
    Pages->ActivePage = tsInterfaces;
    RedrawButtons(Sender);
 }
+
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::tbtnSecondaryIPAddressClick(TObject *Sender)
 {
@@ -933,12 +928,13 @@ void __fastcall TfrmNewPaymentType::ExportMouseClick(TObject *Sender)
 	  {
 		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
 	  }
-      tbChargeToXero->Enabled = true;
+      if(TGlobalSettings::Instance().IsXeroEnabled)
+        tbChargeToXero->Enabled = true;
    }
    else
    {
-     tbChargeToXero->Checked = false;
-     tbChargeToXero->Enabled = false;
+      tbChargeToXero->Checked = false;
+      tbChargeToXero->Enabled = false;
    }
 }
 //---------------------------------------------------------------------------

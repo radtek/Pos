@@ -4,6 +4,7 @@
 #include <tchar.h>
 
 //---------------------------------------------------------------------------
+
 USEFORM("..\..\..\Shared-Source\Touch Utils\MMMessageBox.cpp", frmMessageBox);
 USEFORM("main.cpp", frmMain);
 //---------------------------------------------------------------------------
