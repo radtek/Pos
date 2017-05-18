@@ -115,13 +115,13 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
     {
 
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, true);
     }
     else
     {
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, false);
         AddDiscountPart = (double)itemComplete->BillCalcResult.TotalDiscount != 0.0 ? true : false;
