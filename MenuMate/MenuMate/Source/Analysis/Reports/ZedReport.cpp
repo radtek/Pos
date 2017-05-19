@@ -35,6 +35,9 @@ int ZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
             if (TGlobalSettings::Instance().EnableBlindBalances)
             {
                 frmShowPrintout->btnCancel->Visible = false;
+                TBorderIcons tempBI = frmShowPrintout->BorderIcons;
+                tempBI >> biSystemMenu;
+                frmShowPrintout->BorderIcons = tempBI;
             }
             else
             {
@@ -43,7 +46,6 @@ int ZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
             }
             frmShowPrintout->btnClose->Caption = "Close Till";
             frmShowPrintout->btnClosePrint->Caption = "Close Till and Print Zed";
-
             frmShowPrintout->Execute();
 
             if(memoryStream)

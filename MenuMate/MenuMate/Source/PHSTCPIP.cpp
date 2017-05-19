@@ -141,7 +141,7 @@ AnsiString TPhoenixRoomCharge::SerializeOut()
 	for (; Cats != Categories.end(); Cats++)
 	{
 		// this needs to round to the nearest cent.
-		Currency Value = RoundToNearest(Cats->second, MIN_CURRENCY_VALUE, true) * 100;
+		Currency Value = RoundToNearest(Cats->second, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown) * 100;
 
 		/* TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Cat Out :" + Cats->first +
 		"Float : " + FormatFloat("0000.0000",Cats->second) +

@@ -200,6 +200,10 @@ TModalResult TfrmPaymentType::Execute()
                 {
                    ModalResult = mrOk;
                 }
+                else
+                {
+                   ModalResult = mrCancel;
+                }
            }
            else
              ModalResult = ShowModal();
@@ -1116,7 +1120,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 	{
 
 		bool proceed = true;
-		if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount) && TGlobalSettings::Instance().IsXeroEnabled)))
+		if (Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
 		{
 			TDBContacts DBContacts;
 			std::auto_ptr <TfrmSelectMember> (frmSelectMember)(TfrmSelectMember::Create <TfrmSelectMember> (this));
@@ -1767,6 +1771,9 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     else
                     {
                         GuestMasterOk = false;
+                        //Make select member false because Cancel is Pressed
+                        if(CurrentTransaction.IsQuickPayTransaction)
+                            IsMemberSelected = false;
                     }
                 }
                 else
@@ -1774,6 +1781,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
                     MB_OK + MB_ICONINFORMATION);
                     GuestMasterOk = false;
+
+                    //Make select member false because PMS is not enabled
+                    if(CurrentTransaction.IsQuickPayTransaction )
+                            IsMemberSelected = false;
                 }
             }
 
@@ -1882,7 +1893,8 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
-        btnCancel->SetFocus();
+       if(!CurrentTransaction.IsQuickPayTransaction)
+            btnCancel->SetFocus();
     }
 }
 // ---------------------------------------------------------------------------
