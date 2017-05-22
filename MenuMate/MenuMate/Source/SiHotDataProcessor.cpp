@@ -72,7 +72,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     }
 
     // Add ServiceCharge as service to SiHot
-    if(_paymentTransaction.Money.ServiceCharge != 0)
+    if(_paymentTransaction.Money.ServiceCharge != 0 && !TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
     {
         AddServiceChargeAsService(_roomCharge, billNo, _paymentTransaction);
     }
@@ -107,7 +107,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = categoryCode;
-    siHotService.MiddleCategory_Desc = "";
+    siHotService.MiddleCategory_Desc = itemComplete->MenuName;
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;
@@ -141,16 +141,31 @@ double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool reca
      Currency price = 0;
      if(recalculateTax)
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                -(double)(itemComplete->BillCalcResult.ServiceCharge.TaxValue));
+        if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+        {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                    -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
+                    -(double)(itemComplete->BillCalcResult.ServiceCharge.TaxValue));
+        }
+        else
+        {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+        }
      }
      else
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                 -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                 -((double)itemComplete->BillCalcResult.TotalDiscount)
-                 -(double)itemComplete->BillCalcResult.ServiceCharge.TaxValue);
+        if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+        {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                     -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
+                     -((double)itemComplete->BillCalcResult.TotalDiscount)
+                     -(double)itemComplete->BillCalcResult.ServiceCharge.TaxValue);
+        }
+        else
+        {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                     -(double)itemComplete->BillCalcResult.TotalDiscount);
+        }
      }
      return price;
 }
@@ -194,7 +209,7 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.SuperCategory = categoryCode;
         siHotService.SuperCategory_Desc = "";
         siHotService.MiddleCategory = categoryCode;
-        siHotService.MiddleCategory_Desc = "";
+        siHotService.MiddleCategory_Desc = itemComplete->MenuName;
         siHotService.ArticleCategory = categoryCode;
         siHotService.ArticleCategory_Desc = "";
         siHotService.ArticleNo = categoryCode;
@@ -283,10 +298,26 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
 double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
 {
     double percentage = 0.0;
-    for(std::vector<BillCalculator::TTaxResult>::iterator i = itemComplete->BillCalcResult.Tax.begin();
-          i != itemComplete->BillCalcResult.Tax.end() ; ++i)
+    int taxIndex = 0;
+    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
+          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
     {
-        percentage += (double)i->Percentage;
+        if(tax->Value != 0)
+            percentage += (double)tax->Percentage;
+    }
+    if((TGlobalSettings::Instance().ItemPriceIncludeServiceCharge) &&
+        (itemComplete->BillCalcResult.ServiceCharge.Value != 0.0))
+    {
+        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
+        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
+        {
+            taxIndex = 0;
+            if(((serviceCharge->taxProfileType == ServiceCharge))
+               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
+            {
+                percentage += (double)serviceCharge->taxPercentage;
+            }
+        }
     }
     return percentage;
 }
