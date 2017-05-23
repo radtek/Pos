@@ -790,7 +790,8 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		// Retrive this Receipts Security Ref.
 		Security->SetSecurityRefNumber(TDBSecurity::GetNextSecurityRef(PaymentTransaction.DBTransaction));
-
+        if(!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            PaymentTransaction.Customer = TCustomer(0,0,"");
 		switch (PaymentTransaction.Type)
 		{
 		case eTransOrderSet:
