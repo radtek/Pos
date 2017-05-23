@@ -143,6 +143,7 @@ bool TManagerMembershipGUI::AddGiftCard(Database::TDBTransaction &tr,TMMContactI
 
 TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarcodeCard,const bool triggered_by_preloaded_card)
 {
+   Info.MemberType = 1;
    AnsiString cardCode = Info.MemberCode;
    MembershipSystem->ResetPoints();
    TModalResult Result = mrCancel;

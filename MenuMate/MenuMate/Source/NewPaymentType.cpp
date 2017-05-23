@@ -285,9 +285,6 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 
 
         cbOpendrawer->Checked = Payment.GetPaymentAttribute(ePayTypeOpensCashDrawer);
-        cbIsTip->OnClick = NULL;
-        cbIsTip->Checked = Payment.GetPaymentAttribute(ePayTypeCustomSurcharge);
-        cbIsTip->OnClick = cbIsTipClick;
         cbCashOut->Checked = Payment.GetPaymentAttribute(ePayTypeAllowCashOut);
 
         if (Payment.GetPaymentAttribute(ePayTypeCash))
@@ -350,7 +347,9 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbWalletPayments->Checked = Payment.GetPaymentAttribute(ePayTypeWallet);
         btnWalletType->Enabled = cbWalletPayments->Checked;
         btnWalletConfig->Enabled = cbWalletPayments->Checked;
-
+        cbIsTip->OnClick = NULL;
+        cbIsTip->Checked = Payment.GetPaymentAttribute(ePayTypeCustomSurcharge);
+        cbIsTip->OnClick = cbIsTipClick;
 
 	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
 	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;

@@ -1164,7 +1164,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 		{
 			if (CurrentTransaction.CreditTransaction)
 			{
-               ProcessCreditPayment(Payment);
+                  ProcessCreditPayment(Payment);
 			}
 			else
 			{
@@ -1195,6 +1195,11 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
         Surcharge = RoundToNearest(wrkPayAmount * (Payment->TaxRate / 100), MIN_CURRENCY_VALUE,
                 TGlobalSettings::Instance().MidPointRoundsDown);
         Payment->AdjustmentReason = Payment->Name + " Surcharge";
+
+        AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+        + " will be incurred by using this method of payment";
+        MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+
         Payment->SetAdjustment(Surcharge);
         wrkPayAmount -= Surcharge;
     }
@@ -1505,6 +1510,19 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         Surcharge = RoundToNearest(wrkPayAmount * -(Payment->TaxRate / 100), MIN_CURRENCY_VALUE,
                 TGlobalSettings::Instance().MidPointRoundsDown);
         Payment->AdjustmentReason = Payment->Name + " Surcharge";
+        if (Surcharge > 0)
+        {
+            AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+            + " will be incurred by using this method of payment";
+            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            AnsiString SurchargeMsg = "A Discount of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+            + " will be incurred by using this method of payment";
+            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+        }
+
         Payment->SetAdjustment(Surcharge);
         wrkPayAmount += Surcharge;
     }

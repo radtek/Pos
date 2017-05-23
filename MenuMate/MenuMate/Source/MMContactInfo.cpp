@@ -62,7 +62,7 @@ TMMContactInfo::TMMContactInfo()
     ActivationToken="";
     TierLevel = 0;
     ActivationDate = 0;
-    MemberType =0;
+    MemberType = 1;
     PreviousYearPoint = 0;
     CurrentYearPoint = 0;
     AvailableBDPoint = 0;
