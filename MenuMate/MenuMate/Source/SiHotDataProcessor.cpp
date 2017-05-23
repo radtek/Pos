@@ -32,7 +32,11 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
     if(_roomCharge.AccountNumber == "")
+    {
         _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+        _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+        _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    }
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
     // Iterate pyamentTransaction orders loop and identify the same III party codes
@@ -70,18 +74,6 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     {
        _roomCharge.SiHotServices.push_back(serviceItDisc->second);
     }
-
-    // Add ServiceCharge as service to SiHot
-    if(_paymentTransaction.Money.ServiceCharge != 0 && !TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-    {
-        AddServiceChargeAsService(_roomCharge, billNo, _paymentTransaction);
-    }
-
-    // Add Rounding as service to SiHot
-//    if(RoundTo((double)(_paymentTransaction.Money.PaymentRounding),-2) != 0.00)
-//    {
-//        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
-//    }
 
     // Adding payment types
     AddPaymentMethods(_roomCharge, billNo, _paymentTransaction);
@@ -141,31 +133,12 @@ double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool reca
      Currency price = 0;
      if(recalculateTax)
      {
-        if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-        {
-             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                    -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                    -(double)(itemComplete->BillCalcResult.ServiceCharge.TaxValue));
-        }
-        else
-        {
-             price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
-        }
+         price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
      }
      else
      {
-        if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-        {
-             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                     -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                     -((double)itemComplete->BillCalcResult.TotalDiscount)
-                     -(double)itemComplete->BillCalcResult.ServiceCharge.TaxValue);
-        }
-        else
-        {
-             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                     -(double)itemComplete->BillCalcResult.TotalDiscount);
-        }
+         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                 -(double)itemComplete->BillCalcResult.TotalDiscount);
      }
      return price;
 }
@@ -305,8 +278,7 @@ double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
         if(tax->Value != 0)
             percentage += (double)tax->Percentage;
     }
-    if((TGlobalSettings::Instance().ItemPriceIncludeServiceCharge) &&
-        (itemComplete->BillCalcResult.ServiceCharge.Value != 0.0))
+    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
     {
         for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
         serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
@@ -566,6 +538,8 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
             try
             {
                 TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransaction,roomresponse.GuestsInformation[0].AccountNumber);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransactionName,roomresponse.GuestsInformation[0].FirstName + " " +
+                                                          roomresponse.GuestsInformation[0].LastName);
                 DBTransaction.Commit();
                 return true;
             }

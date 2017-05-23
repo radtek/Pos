@@ -677,6 +677,11 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
 		Receipt->AccountInvoiceNumber = Invoice->GetInvoiceNumber(CurrentTransaction.DBTransaction, CurrentTransaction.InvoiceKey);
 		Receipt->Transaction->Customer = TDBContacts::GetCustomerAndRoomNumber( CurrentTransaction.DBTransaction, CurrentTransaction.InvoiceKey );
 	}
+    else
+    {
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled &&  CurrentTransaction.Phoenix.AccountNumber == "")
+            CurrentTransaction.Customer = TCustomer( 0,0,"" );
+    }
 
 	Receipt->WaitTime = TDBSaleTimes::GetAverageWaitTimeMins(CurrentTransaction.DBTransaction);
 
@@ -773,7 +778,6 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
            }
         }
    }
-
 
 	Receipt->MiscData = CurrentTransaction.MiscPrintData;
 	Receipt->PaymentType = ptPreliminary;
@@ -1758,14 +1762,23 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         }
                         if(GuestMasterOk)
                         {
-                        CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
-                        [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-                        CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-                        CurrentTransaction.SalesType = eRoomSale;
-                        TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+                            [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+                            CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+                            CurrentTransaction.SalesType = eRoomSale;
+                            RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                            CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            }
+                            else
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
                         }
                     }
                     else

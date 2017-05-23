@@ -118,7 +118,11 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
     Processing->Close();
     if(roomResponse.IsSuccessful)
+    {
+        _paymentTransaction.Customer.Name = _paymentTransaction.Phoenix.AccountName;
+        _paymentTransaction.Customer.RoomNumber = atoi(_paymentTransaction.Phoenix.RoomNumber.t_str());
       return true;
+    }
     else
     {
       MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR);
