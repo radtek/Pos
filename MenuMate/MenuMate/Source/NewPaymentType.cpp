@@ -516,6 +516,7 @@ void __fastcall TfrmNewPaymentType::cbSurchargeClick(TObject *Sender)
 
 	  std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
       frmDiscount->ForceType(avtSurcharge);
+      frmDiscount->IsPaymentSurcharge = true;
 	  // Get the surcharge amount.
 	  if (SurchargeIsAPercentAdjust)
 	  {

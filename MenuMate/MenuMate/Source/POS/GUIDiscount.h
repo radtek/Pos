@@ -58,28 +58,26 @@ protected:
      MESSAGE_HANDLER(WM_DISPLAYCHANGE, TWMDisplayChange, WMDisplayChange)
    END_MESSAGE_MAP(TComponent)
 private:	// User declarations
-	__fastcall TfrmDiscount(TComponent* Owner);
-
-	Currency wrkCurAmount;
+   __fastcall TfrmDiscount(TComponent* Owner);
+   Currency wrkCurAmount;
    double wrkPercAmount;
    bool PercentDecimal;
    TAdjustmentValueType ForcedType;
+   void HandlePaymnetSurcharge();
+   void HandleNormalDiscount();
 public:		// User declarations
-
-	TDiscountMode Mode;
+   TDiscountMode Mode;
    Currency CURInitial;
    double PERCInitial;
-   
    Currency TotalValue;		// To calculate percentage
-
    Currency CURResult;
    double PERCResult;
-
    TAdjustmentValueType ValueType;
    TAdjustmentValueType ValueTypeBeforeSetPrice;
    void ForceType(TAdjustmentValueType inValueType);
    bool IsNewDiscount;
    bool IsComboDiscount;
+   bool IsPaymentSurcharge;
 };
 //---------------------------------------------------------------------------
 #endif
