@@ -3593,7 +3593,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
-     "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+     "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
 		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
 	   "	from (  "
 		"Select "
@@ -3660,7 +3660,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null ) "
 
 		"Union All "
-             "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+             "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
 		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
 	   "	from (  "
 		"Select "
@@ -3730,7 +3730,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null ) "
 
 		"Union All "
-         "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+         "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
 		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
 	   "	from (  "
         "Select  "
@@ -3768,7 +3768,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
        " WRITEOFF.THIRD_PARTY_CODE ) "
 
        "Union All "
-            "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+            "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
 		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
 	   "	from (  "
 		"Select "
