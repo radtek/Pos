@@ -95,6 +95,7 @@ class TXeroInvoiceBuilder
     private:
         void AddItemToCollection(NodeItem xeroNodeItem, std::vector<NodeItem> &nodeItems);
         void AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems);
+        void AdjustRoundingToCategoriesTotal(TXeroInvoiceDetail& XeroInvoiceDetail, double roundingAmount);
 };
 
 #endif

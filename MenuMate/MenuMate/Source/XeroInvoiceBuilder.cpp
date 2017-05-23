@@ -347,6 +347,9 @@ void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDet
                 if((unitamount <= -0.0000 && unitamount > -0.0200))
                 {
                     roundAmount = it->UnitAmount;
+
+                    AdjustRoundingToCategoriesTotal(XeroInvoiceDetail, roundAmount);
+
                     XeroInvoiceDetail.XeroCategoryDetails.erase(it);
                     break;
                 }
@@ -357,6 +360,9 @@ void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDet
                 if(unitamount >= 0.0000 && unitamount < 0.0200)
                 {
                     roundAmount = it->UnitAmount;
+
+                    AdjustRoundingToCategoriesTotal(XeroInvoiceDetail, roundAmount);
+
                     XeroInvoiceDetail.XeroCategoryDetails.erase(it);
                     break;
                 }
@@ -427,6 +433,17 @@ void TXeroInvoiceBuilder::AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::v
         // Items are added to Invoice XML
         FXeroInvoice->AddItem( it->ItemCode, it->ItemName, it->UnitAmount.ToDouble(), it->TaxAmount.ToDouble(), it->Qty.ToDouble() );
     }
+}
+
+//----------------------------------------------------------------------------------------------------------
+void TXeroInvoiceBuilder::AdjustRoundingToCategoriesTotal(TXeroInvoiceDetail& XeroInvoiceDetail, double roundingAmount)
+{
+     for (std::vector<TXeroCategoryDetail>::iterator it = XeroInvoiceDetail.XeroCategoryDetails.begin() ;
+          it != XeroInvoiceDetail.XeroCategoryDetails.end(); ++it)
+     {
+        it->UnitAmount += roundAmount;
+        break;
+     }
 }
 
 
