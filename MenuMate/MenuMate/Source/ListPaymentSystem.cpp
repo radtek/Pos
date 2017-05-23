@@ -5784,9 +5784,9 @@ void TListPaymentSystem::GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTran
 {
     try
     {
-        Currency sd= paymentTransaction.Money.TotalGSTContent  ;
+      Currency sd= paymentTransaction.Money.TotalGSTContent  ;
         AnsiString cmd_code= "121";
-        AnsiString  sales         =paymentTransaction.Money.ProductAmount; ;              //length 11
+        AnsiString  sales         =paymentTransaction.Money.Total-paymentTransaction.Money.Discount  ;              //length 11
         AnsiString  discount      =-1*paymentTransaction.Money.ProductDiscount;              //length 11
         AnsiString  cess          ="";              //length 11
         AnsiString  charges       = paymentTransaction.Money.ServiceCharge;
