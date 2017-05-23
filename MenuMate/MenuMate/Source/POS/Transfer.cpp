@@ -1687,6 +1687,8 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
                      {
                          TransferTotal(source_key, dest_tabkey, false,  isTabSelected);
                      }
+                     if(CheckToOverwriteSourceStatus(*DBTransaction,true))
+                        TDBTables::SetTableBillingStatus(*DBTransaction,CurrentSourceTable,eNoneStatus);
                  }
 
               }
@@ -1823,6 +1825,8 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
                      {
                         ReverseTransferTotal(tab_key, dest_tabkey, true,  isTabSelected);
                      }
+                    if(CheckToOverwriteSourceStatus(*DBTransaction,false))
+                        TDBTables::SetTableBillingStatus(*DBTransaction,CurrentDestTable,eNoneStatus);
                  }
               }
               delete frmTransferItemOrGuest;
@@ -2580,6 +2584,8 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
            return ;
          }
            TransferTotal(sourcekey, dest_key, false, isTabSelected);
+           if(CheckToOverwriteSourceStatus(DBTransaction,true))
+              TDBTables::SetTableBillingStatus(DBTransaction,CurrentSourceTable,eNoneStatus);
        }
 
 
@@ -2677,6 +2683,8 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
              }
 
             ReverseTransferTotal(sourcekey, dest_key, true, isTabSelected);
+            if(CheckToOverwriteSourceStatus(DBTransaction,false))
+                TDBTables::SetTableBillingStatus(DBTransaction,CurrentDestTable,eNoneStatus);
        }
 }
 
@@ -3041,6 +3049,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
 void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransaction)
 {
     TTransferComplete *TransferComplete = new TTransferComplete();
+    bool isTableTransferred = false;
 	  try
 	  {
     	 switch(CurrentDestDisplayMode)
@@ -3407,6 +3416,8 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 				  }
 			}
 		 }
+        if(CheckToOverwriteSourceStatus(DBTransaction,true))
+            TDBTables::SetTableBillingStatus(DBTransaction,CurrentSourceTable,eNoneStatus);
 	  }
 	  catch(Exception & E)
 	  {
@@ -4678,6 +4689,22 @@ void TfrmTransfer::SetPartyNameForSourceTable(Database::TDBTransaction &DBTransa
 
     }
 }
+//------------------------------------------------------------------------------
+bool TfrmTransfer::CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTransaction,bool checkSourceTable)
+{
+    bool retValue = false;
+    if(checkSourceTable)
+        retValue =  TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus &&
+                    (CurrentSourceDisplayMode == eTables)                   &&
+                    TDBTables::IsEmpty(DBTransaction,CurrentSourceTable)    &&
+                    TGlobalSettings::Instance().ReservationsEnabled;
+    else
+        retValue =  TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus &&
+                    (CurrentDestDisplayMode == eTables)                     &&
+                    TDBTables::IsEmpty(DBTransaction,CurrentDestTable)      &&
+                    TGlobalSettings::Instance().ReservationsEnabled;
 
+    return retValue;
+}
 
 
