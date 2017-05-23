@@ -115,13 +115,13 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
     {
 
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, true);
     }
     else
     {
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, false);
         AddDiscountPart = (double)itemComplete->BillCalcResult.TotalDiscount != 0.0 ? true : false;
@@ -469,7 +469,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                siHotPayment.Amount = -(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
+                siHotPayment.Amount = (payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description = payment->Name;
                 siHotPayment.Billno = billNo;
                 siHotPayment.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
@@ -479,7 +479,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount = StrToCurr(iter->second.Amount) + (-(payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
+                double amount = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
                 iter->second.Amount = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))

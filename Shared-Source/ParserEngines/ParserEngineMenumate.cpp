@@ -75,6 +75,7 @@ PARSER_ERROR apply6_36( TDBControl* inDBControl );
 PARSER_ERROR apply6_37( TDBControl* inDBControl );
 PARSER_ERROR apply6_38( TDBControl* inDBControl );
 PARSER_ERROR apply6_39( TDBControl* inDBControl );
+PARSER_ERROR apply6_40( TDBControl* inDBControl );
 //::::::::::::::::::::::::::::::::::::::::::::::::::
 //  TParserEngineMenumate
 //::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -164,6 +165,7 @@ void TParserEngineMenumate::populateVersionList( PARSER_FUNCTION_MAP& outVersion
     outVersions["6.37"] = apply6_37;
     outVersions["6.38"] = apply6_38;
     outVersions["6.39"] = apply6_39;
+    outVersions["6.40"] = apply6_40;
 }
 // ---------------------------------------------------------------------------
 int TParserEngineMenumate::VersionCount()
@@ -477,6 +479,11 @@ PARSER_ERROR apply6_38( TDBControl* inDBControl )
 PARSER_ERROR apply6_39( TDBControl* inDBControl )
 {
 	return TApplyParser::Instance()->Apply( MenumateVersionParser::pv6_39,  inDBControl );
+}
+//---------------------------------
+PARSER_ERROR apply6_40( TDBControl* inDBControl )
+{
+	return TApplyParser::Instance()->Apply( MenumateVersionParser::pv6_40,  inDBControl );
 }
 //---------------------------------
 

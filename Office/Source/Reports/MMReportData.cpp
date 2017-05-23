@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "SqlViewer.h"
+#define PAYMENT_PROPERTIES "29"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "RpCon"
@@ -22,7 +23,7 @@ __fastcall TdmMMReportData::TdmMMReportData(TComponent* Owner)
 	: TDataModule(Owner)
 {
     _taxJoins =  "left join  "
-            "(SELECT  cast(1 as int) keyvalue , "                                                                                                                                                                                                          
+            "(SELECT  cast(1 as int) keyvalue , "
             "TAXPROFILE.ORDER_KEY,  "                                                                                                                                                                                                              
                     "sum(CASE WHEN TAXPROFILE.TYPE = 0 THEN TAXPROFILE.TAX_RATE END) AS VAT ,            "                                                                                                                                                
                     "sum(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,   "                                                                                                                                                
@@ -4978,7 +4979,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 			"Archive.Size_Name, " 
 		" cast(cast(abs(Archive.Qty )* Archive.BASE_PRICE as numeric(17, 4)) +COALESCE(ARCHIVE.DISCOUNT_WITHOUT_TAX,0) + COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price, "
 
-			"Archive.Table_Number, "
+			"Archive.Table_Number,CASE WHEN Archive.Table_Number <> 0 THEN Archive.TABLE_NAME END as TABLE_NAME, "
 			"Cast(Archive.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
 			"Security.Terminal_Name, "
@@ -5039,7 +5040,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 			"DayArchive.Size_Name,"
 			"cast(cast(abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  as numeric(17, 4)) +coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ coalesce(AOT.VAT,0) + coalesce(AOT.ServiceCharge,0) + coalesce(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price,  "		 //sales Incl
 
-			"DayArchive.Table_Number,"
+			"DayArchive.Table_Number,CASE WHEN DayArchive.Table_Number <> 0 THEN DayArchive.TABLE_NAME END as TABLE_NAME, "
 			"Cast(DayArchive.Tab_Name as VarChar(32)) Tab_Name,"
 			"Security.From_Val User_Name,"
 			"Security.Terminal_Name,"
@@ -5103,7 +5104,7 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
             "(cast((((Orders.Qty *        Orders.BASE_PRICE+ COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(AOT.ServiceCharge,0)/100)*COALESCE(STAX.ServiceChargeTax,0)/100 as numeric(17, 4)))+  "
             "  ( COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)) "
             "  ) as Numeric(17,4)) Price   ,           "
-			"Orders.Table_Number, "
+			"Orders.Table_Number,CASE WHEN Orders.Table_Number <> 0 THEN Orders.TABLE_NAME END as TABLE_NAME, "
 			"Cast(Orders.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
 			"Security.Terminal_Name, "
@@ -5179,7 +5180,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
         "select "
             "groups.name Name, "
             "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
-            "invoices.TOTAL_INC, "
+            "DAYARCBILLPAY.SUBTOTAL TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, DAYARCBILL.TIME_STAMP, DAYARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5188,7 +5189,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join contacts on contactgroups.CONTACTS_KEY = contacts.CONTACTS_KEY "
             "left join invoices on invoices.CONTACTS_KEY = contacts.CONTACTS_KEY "
             "left join DAYARCBILL on DAYARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
+            "Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
         "where "
+            " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime ";
 
@@ -5209,7 +5212,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
         "select "
             "groups.name Name, "
              "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
-            "invoices.TOTAL_INC, "
+            " ARCBILLPAY.SUBTOTAL TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, ARCBILL.TIME_STAMP, ARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -5218,7 +5221,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join contacts on contactgroups.CONTACTS_KEY = contacts.CONTACTS_KEY "
             "left join invoices on invoices.CONTACTS_KEY = contacts.CONTACTS_KEY "
             "left join ARCBILL on ARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
+            "Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "where "
+            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0 and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime ";
 
@@ -5246,6 +5251,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	}
 	qrInvoice->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoice->ParamByName("EndTime")->AsDateTime		= EndTime;
+    qrInvoice->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
@@ -5255,95 +5261,125 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
         "select "
             "arcbill.Staff_Name, "
             "arcbill.time_stamp, "
-            "INVOICES.TOTAL_INC, "
+            "ARCBILLPAY.SUBTOTAL TOTAL_INC, "
             "ARCHIVE.ITEM_NAME, "
-            "cast(ARCHIVE.QTY * ARCHIVE.PRICE_LEVEL0  as numeric(17, 4)) PRICE, "
-            "ARCHIVE.QTY, "
+
+             "case when(ARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
+             "then cast((ARCHIVE.PRICE *cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)))as numeric(17, 4)) "
+             "else "
+             "cast((ARCHIVE.PRICE *cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) end PRICE, "    
+
+            "case when(ARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
+            "then cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)) "
+            "else "
+            "cast((ARCHIVE.QTY *(ARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) end Qty, "
+
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
             "contacts.member_number, "
             "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED "
+
         "from ARCBILL "
             "left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
             "left join INVOICES on ARCBILL.INVOICE_KEY = INVOICES.INVOICE_KEY "
             "left join CONTACTS on INVOICES.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
         " Left join ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+        " Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+
+                "LEFT JOIN ( "
+                " SELECT "
+                " sum(ARCBILLPAY.SUBTOTAL) Inc_Total, "
+                " ARCBILLPAY.ARCBILL_KEY "
+                " FROM ARCBILLPAY "
+                " group by ARCBILLPAY.ARCBILL_KEY "
+                ") "
+                "AMTTotal ON Archive.ARCBILL_KEY = AMTTotal.ARCBILL_KEY "
+
+                 "LEFT JOIN ( "
+                "SELECT "
+                "sum(ARCSURCHARGE.SUBTOTAL) PointsInc_Total, "
+                "ARCSURCHARGE.ARCBILL_KEY "
+                "FROM ARCSURCHARGE "
+                "group by ARCSURCHARGE.ARCBILL_KEY "
+                ") "
+                "PointAMTTotal ON Archive.ARCBILL_KEY = PointAMTTotal.ARCBILL_KEY "
+
+
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
+            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0  and "
             "arcbill.time_stamp >= :StartTime and "
-            "arcbill.time_stamp < :EndTime   " ;
+            "arcbill.time_stamp < :EndTime   ";
 
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
 											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
-	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
-
-
+	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +   
 
             "union all "
         "select "
             "dayarcbill.Staff_Name, "
             "dayarcbill.time_stamp, "
-            "INVOICES.TOTAL_INC, "
+            "DAYARCBILLPAY.SUBTOTAL TOTAL_INC, "
             "dayARCHIVE.ITEM_NAME, "
-            "cast(dayARCHIVE.QTY * dayARCHIVE.PRICE_LEVEL0   as  numeric(17, 4)) PRICE, "
-            "dayARCHIVE.QTY, "
+
+             "case when(DAYARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
+             "then cast((dayARCHIVE.PRICE *cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)))as numeric(17, 4)) "
+             "else "
+             "cast((dayARCHIVE.PRICE *cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)))as numeric(17, 4)) end PRICE, "
+
+            "case when(DAYARCBILLPAY.SUBTOTAL != AMTTotal.Inc_Total) "
+            "then cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/(AMTTotal.Inc_Total- COALESCE(PointsInc_Total, 0))))as numeric(17, 4)) "
+            "else "
+            "cast((dayARCHIVE.QTY *(DAYARCBILLPAY.SUBTOTAL/AMTTotal.Inc_Total))as numeric(17, 4)) end Qty, "
+
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "contacts.member_number, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "  
             "INVOICES.CLOSED "
+
         "from dayARCBILL "
             "left join dayARCHIVE on dayARCBILL.ARCBILL_KEY = dayARCHIVE.ARCBILL_KEY "
             "left join INVOICES on dayARCBILL.INVOICE_KEY = INVOICES.INVOICE_KEY "
             "left join CONTACTS on INVOICES.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
 			" Left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+            " Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY  "
+
+            "LEFT JOIN ( "
+                " SELECT "
+                " sum(DAYARCBILLPAY.SUBTOTAL) Inc_Total, "
+                " DAYARCBILLPAY.ARCBILL_KEY "
+                " FROM DAYARCBILLPAY "
+                " group by DAYARCBILLPAY.ARCBILL_KEY "
+                ") "
+                "AMTTotal ON dayArchive.ARCBILL_KEY = AMTTotal.ARCBILL_KEY "
+
+                "LEFT JOIN ( "
+                "SELECT "
+                "sum(DAYARCSURCHARGE.SUBTOTAL) PointsInc_Total, "
+                "DAYARCSURCHARGE.ARCBILL_KEY "
+                "FROM DAYARCSURCHARGE "
+                "group by DAYARCSURCHARGE.ARCBILL_KEY "
+                ") "
+                "PointAMTTotal ON dayArchive.ARCBILL_KEY = PointAMTTotal.ARCBILL_KEY "
+
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
+              " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
-            "dayarcbill.time_stamp < :EndTime   ";
+            "dayarcbill.time_stamp < :EndTime   " ;
 
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
 											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
-	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
-
-
-            "union all "
-        "select "
-            "Orders.Server_Name, "
-            "orders.TIME_STAMP, "
-            "INVOICES.TOTAL_INC, "
-            "orders.ITEM_NAME, "
-            "cast(ORDERS.QTY * ORDERS.PRICE_LEVEL0   as numeric(17,4)) PRICE, "
-            "ORDERS.QTY, "
-            "INVOICES.INVOICE_NUMBER, "
-            "INVOICES.CONTACTS_KEY, "
-            "(CONTACTS.Name ||'  '|| CONTACTS.LAST_NAME) name, "
-            "contacts.member_number, "
-            "INVOICES.CLOSED "
-        "from INVOICES "
-            "left join TAB on INVOICES.INVOICE_KEY = TAB.INVOICE_KEY "
-            "left join ORDERS on TAB.TAB_KEY = ORDERS.TAB_KEY "
-            "left join CONTACTS on INVOICES.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-        "where "
-            "orders.time_stamp >= :StartTime and "
-            "orders.time_stamp < :EndTime and "
-            "INVOICES.CLOSED = 'F' ";
-
-	if (Members->Count)
-	{
-		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
-	}
-
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
 		"Order By "
@@ -5356,9 +5392,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 
 	qrInvoiceDetailed->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoiceDetailed->ParamByName("EndTime")->AsDateTime		= EndTime;
-
-
-
+    qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
