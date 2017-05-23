@@ -3941,6 +3941,12 @@ bool TListPaymentSystem::SplitPayment(TPaymentTransaction &PaymentTransaction, T
 
 		Retval = true;
 	}
+    else
+    {
+		//change the transaction type because no split payment is done and table's color changed if transaction type is eTransPSplit
+        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+            PaymentTransaction.Type = eTransUnknown;
+    }
 	return Retval;
 }
 
@@ -4729,6 +4735,10 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         frmSplitPayment->DivisionsLeft = 0;
                         PaymentAborted = true;
                         isPaymentProcessed = false;
+
+                          //change the transaction type because no split payment is done and table's color changed if transaction type is eTransSplit
+                        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+                            PaymentTransaction.Type = eTransUnknown;
                 }
             }
 	}
@@ -4866,6 +4876,10 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                 PaymentComplete = false;
 				PaymentAborted = true;
                 isPaymentProcessed = false;
+
+                 //change the transaction type because no partial payment is done and table's color changed if transaction type is eTransPartialPayment
+                if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+                    PaymentTransaction.Type = eTransUnknown;
 			}
 		}
 

@@ -272,6 +272,7 @@ private:	// User declarations
     void SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, UnicodeString tabName);
     void SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
     void SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
+    bool CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTransaction,bool checkSourceTable);
 
 
 public:		// User declarations
