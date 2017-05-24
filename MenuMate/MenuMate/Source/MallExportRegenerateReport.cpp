@@ -3556,7 +3556,7 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFourthCode(Database::TDBTra
                                     "SELECT AB.ARCBILL_KEY,                                                   "
                                         "    CAST (AB.TOTAL-AB.DISCOUNT AS NUMERIC (17,4)) SALES,                 "
                                         "    CAST (AB.TOTAL AS NUMERIC (17,4)) TOTAL_SALES,                       "
-                                        "    AB.DISCOUNT,                                                         "
+                                        "   -1*AB.DISCOUNT DISCOUNT,                                                         "
                                         "    CAST(Sum( COALESCE( AOT.ServiceCharge,0))AS NUMERIC(17,4)) CHARGES,  "
                                         "    CAST(Sum(COALESCE(AOT.VAT,0) ) + Sum( COALESCE( AOT.ServiceCharge,0)) + Sum( COALESCE( AOT.OtherServiceCharge,0)) AS NUMERIC(17,4)) TAX, "
                                         "    AB.ROUNDING_ADJUSTMENT ROUNDING_AMT  "
