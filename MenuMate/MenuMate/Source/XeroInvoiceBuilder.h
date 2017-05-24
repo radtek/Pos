@@ -71,7 +71,6 @@ class TXeroInvoiceBuilder
         bool BuildXeroInvoice( TXeroInvoiceDetail&  XeroInvoiceDetails);
         std::vector<TItemComplete *> itemComplete;
         void CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail);
-        double roundAmount;
         bool CheckInvoiceTotal(double invoiceTotal);
 
 	protected:
@@ -85,7 +84,7 @@ class TXeroInvoiceBuilder
 		bool CreateXeroInvoice( TPaymentTransaction& inPaymentTransaction );
         bool CreateXeroInvoice(TXeroInvoiceDetail &XeroInvoiceDetail);
 		void AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TItemMinorComplete* inOrder );
-        void AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroCategoryDetail& PayTypeDetail , bool isAddRounding = false);
+        void AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroCategoryDetail& PayTypeDetail);
 		AnsiString CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax );
 		double GetTotalAmountToXero( TPayment* inXeroPayment );
 		double GetTotalAmount( TPaymentTransaction& inPaymentTransaction );
