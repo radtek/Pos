@@ -3831,6 +3831,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 							Kitchen->Initialise(DBTransaction);
                             PrintTransaction->TypeOfSale = PaymentTransaction.TypeOfSale;
                             PrintTransaction->ChitNumber = ChitNumber;
+                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                            {
+                                PrintTransaction->Customer.RoomNumber = PaymentTransaction.Customer.RoomNumber;
+                                PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                            }
                             Request->Transaction->TypeOfSale = PaymentTransaction.TypeOfSale;
                               //MM-4563
                             std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
