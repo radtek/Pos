@@ -146,7 +146,7 @@ _dayArcBillSubQuery =  	" Select "
                                         "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayArchive a "
                                         "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
                                      "Where "
-                                        "Security.Security_Event = 'Billed By' And (coalesce(DayArcBillPay.TIP_AMOUNT,0) > 0 or DAYARCBILL.TOTAL <= 0) and DAYARCBILLPAY.NOTE != 'Total Change.' ";
+                                        "Security.Security_Event = 'Billed By' And (coalesce(DayArcBillPay.TIP_AMOUNT,0) > 0 or DAYARCBILL.TOTAL < 0) and DAYARCBILLPAY.NOTE != 'Total Change.' ";
 
 
 
@@ -182,7 +182,7 @@ _arcBillSubQuery =      " Select   "
                                                 "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
                                                 "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
                                       "Where "
-                                                "Security.Security_Event = 'Billed By'  And (coalesce(ArcBillPay.TIP_AMOUNT,0) > 0 or ARCBILL.TOTAL <= 0) and ARCBILLPAY.NOTE != 'Total Change.' ";
+                                                "Security.Security_Event = 'Billed By'  And (coalesce(ArcBillPay.TIP_AMOUNT,0) > 0 or ARCBILL.TOTAL < 0) and ARCBILLPAY.NOTE != 'Total Change.' ";
 
 _groupingForArcbill =
                                               "  GROUP BY ArcBill.ARCBILL_KEY, ArcBill.Time_Stamp,  "
@@ -199,6 +199,67 @@ _groupingForArcbill =
 _pointsTransactionQuery =       "Inner join(SELECT  SUM(ADJUSTMENT) TOTAL, a.CONTACTS_KEY "
                                 "FROM POINTSTRANSACTIONS a  "
                                 "GROUP BY CONTACTS_KEY)PT ON CONTACTS.CONTACTS_KEY = PT.CONTACTS_KEY ";
+
+AnsiString cashOut = " || '-CASHOUT' ";
+_arcBillCashOutQuery =  "SELECT "                                                                                                           
+                            "ArcBill.ArcBill_Key,    "
+                            "ArcBill.Time_Stamp,     "
+                            "ArcBill.Invoice_Number, "
+                            "ArcBill.Total,          "
+                            "ArcBill.Patron_Count,   "
+                            "ArcBill.TERMINAL_NAME,  "
+                            "ArcBill.STAFF_NAME,     "
+                            "ArcBillPay.Note, "
+                            "Cast('' As VarChar(25))  TABLE_NUMBER, "
+                            "ArcBill.Total price, "
+                            "ArcBillPay.PAY_TYPE " + cashOut + "PAY_TYPE, "
+                            "ABS(ArcBillPAY.SUBTOTAL) price , "
+                            "Cast('' As VarChar(50)) billed_to  "
+                        "FROM ArcBillPAY "
+                            "LEFT JOIN ArcBill on ArcBill.ARCBILL_KEY=ArcBillPAY.ARCBILL_KEY "
+                        "WHERE ArcBill.TOTAL = 0 AND ARCBILLPAY.CASH_OUT = 'T'  " ;
+
+_arcBillCashOutGrouping  =
+                         "GROUP BY ArcBill.ArcBill_Key, "
+                            "ArcBill.Time_Stamp,        "
+                            "ArcBill.Invoice_Number,    "
+                            "ArcBill.Total,             "
+                            "ArcBill.Patron_Count,      "
+                            "ArcBill.Terminal_Name,     "
+                            "ArcBill.STAFF_NAME  ,      "
+                            "ArcBillPay.Note,           "
+                            "ArcBillPAY.SUBTOTAL ,      "
+                            "ArcBillPAY.PAY_TYPE        ";
+
+_dayArcBillCashOutQuery =  "SELECT "
+                                "DayArcBill.ArcBill_Key,    "
+                                "DayArcBill.Time_Stamp,     "
+                                "DayArcBill.Invoice_Number, "
+                                "DayArcBill.Total,          "
+                                "DayArcBill.Patron_Count,   "
+                                "DAYARCBILL.TERMINAL_NAME,  "
+                                "DAYARCBILL.STAFF_NAME,     "
+                                "DayArcBillPay.Note, "
+                                "Cast('' As VarChar(25))  TABLE_NUMBER, "
+                                "DayArcBill.Total price, "
+                                "DayArcBillPay.PAY_TYPE " + cashOut + "PAY_TYPE, "
+                                "ABS(DAYARCBILLPAY.SUBTOTAL) price , "
+                                "Cast('' As VarChar(50)) billed_to  "
+                            "FROM DAYARCBILLPAY "
+                                "LEFT JOIN DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY "
+                            "WHERE DAYARCBILL.TOTAL = 0 AND DAYARCBILLPAY.CASH_OUT = 'T'  " ;
+
+_dayArcBillCashOutGrouping =
+                             "GROUP BY DayArcBill.ArcBill_Key, "
+                                "DayArcBill.Time_Stamp,        "
+                                "DayArcBill.Invoice_Number,    "
+                                "DayArcBill.Total,             "
+                                "DayArcBill.Patron_Count,      "
+                                "DayArcBill.Terminal_Name,     "
+                                "DAYARCBILL.STAFF_NAME  ,      "
+                                "DayArcBillPay.Note,           "
+                                "DAYARCBILLPAY.SUBTOTAL ,      "
+                                "DAYARCBILLPAY.PAY_TYPE        ";
 
 }
 //---------------------------------------------------------------------------
@@ -5449,6 +5510,12 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "        ab.TABLE_NAME,                                                                                                            "
     "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE                                                            "
 
+    "UNION ALL  "
+
+   +  _arcBillCashOutQuery +
+    " AND ArcBill.Invoice_Number = :Invoice_Number  "
+    +  _arcBillCashOutGrouping +
+
     " UNION ALL "
 
     ///Query for adding Tip_Amount
@@ -5506,6 +5573,13 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
 	"		DayArcBillPay.Note,                                                           "
     "        ab.TABLE_NAME,                                                               "
     "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE               "
+
+    "UNION ALL  "
+
+    + _dayArcBillCashOutQuery +
+    " AND DayArcBill.Invoice_Number = :Invoice_Number  "
+    +  _dayArcBillCashOutGrouping +
+
     "UNION ALL "
 
      ///Query for adding Tip_Amount
@@ -5547,19 +5621,20 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
     qrBillTenders->SQL->Text =
       " select                                        "
 "            qpa.arcbill_key,                   "
-"           coalesce(paymentPercent.pay_type,'Cash') pay_type,          "
+"           coalesce(UPPER(paymentPercent.pay_type),'CASH') pay_type,          "
 "            qpa.terminal_name,                 "
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-"            CASE WHEN paymentPercent.pay_type = 'Voucher' THEN qpa.voucher_number WHEN(paymentPercent.pay_type = 'Gift Card') then qpa.GiftCard_number else '' END voucher_number, "
- "     CASE WHEN (paymentPercent.pay_type = 'Cash') THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (paymentPercent.pay_type = 'Eftpos' )THEN ABS(coalesce(aChange.CASHOUT,0))  "
-            "  else 0 END change_recv,   "
+"            CASE WHEN UPPER(paymentPercent.pay_type) = 'VOUCHER' THEN qpa.voucher_number WHEN(UPPER(paymentPercent.pay_type) = 'GIFT CARD') then qpa.GiftCard_number else '' END voucher_number, "
+            " CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type) = 'EFTPOS' )THEN ABS(coalesce(aChange.CASHOUT,0))  "
+            " WHEN (UPPER(paymentPercent.pay_type) = 'CASH' ) THEN (coalesce(aChange.CASHOUT,0)) "
+            "  ELSE 0 END change_recv,   "
 "            qpa.note ,                         "
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
-"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
+"            CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
           "   else ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100)-coalesce(paymentPercent.tip,0) as numeric(17,4))) END price, "
-"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
+"            CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
           "   else ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100) as numeric(17,4))) / 100) as numeric(17,4))) END paid_Excl_Change, "
           "cast(paymentPercent.tip as numeric(17,4)) tip "
 
@@ -5571,8 +5646,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 	"ab.time_stamp billed_at, "
 	"ab.invoice_number receipt_no, "
 	"billpay.SUBTOTAL total_paid,  "
-	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'Voucher' THEN VoucherQuery.voucher_number END) AS voucher_number, "
-	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'Gift Card' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
+	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'VOUCHER' THEN VoucherQuery.voucher_number END) AS voucher_number, "
+	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
 	"abp.note note ,       "
 	"tn.TABLE_NAME,    "
 	"ab.total price,      "
@@ -5606,11 +5681,11 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "tn.price,            "
 "abp.CASH_OUT ,ab.total  ) qpa   "
 "inner join (SELECT  a.ARCBILL_KEY,  "
-"sum(CASE WHEN (a.pay_type = 'Eftpos') THEN 1 else 0 END )Iseftpos,sum(CASE WHEN (a.pay_type = 'Cash') THEN 1 else 0 END )IsCash   "
+"sum(CASE WHEN (UPPER(a.pay_type) = 'EFTPOS') THEN 1 else 0 END )Iseftpos,sum(CASE WHEN (UPPER(a.pay_type) = 'CASH') THEN 1 else 0 END )IsCash   "
 "FROM ARCBILLPAY a group by 1  ) chkeftpos on  chkeftpos.ARCBILL_KEY = qpa.arcbill_key "
 "inner join (SELECT A.ARCBILL_KEY, MIN(CASE WHEN a.CASH_OUT = 'T' THEN COALESCE(a.SUBTOTAL,0) END) AS Cashout, "
 "MIN(CASE WHEN ( a.NOTE='Total Change.') THEN coalesce(a.SUBTOTAL,0) END) AS CHANGE  FROM ARCBILLPAY a  group BY 1)aChange on  aChange.ARCBILL_KEY = qpa.arcbill_key "
-"           left join    (SELECT                                                                                             "
+"           left join    (SELECT   "
 "        abp.ARCBILL_KEY,                                                                                              "
 "        abp.PAY_TYPE,                                                                                                 "
 "       cast((((100* COALESCE(sum(abp.SUBTOTAL),0))/ Sum(ARCBILL.TOTAL))) as numeric(17, 4)) AS PayTypeTotal,   "
@@ -5619,10 +5694,24 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "        left join ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where  abp.SUBTOTAL > 0 and abp.CASH_OUT<>'T'      "
  + selected_tenders +
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT "
+
+//Union for adding only cash out entries means bill total is 0 and cash out is done
+ "UNION ALL "
+                "SELECT "
+                "abp.ARCBILL_KEY, "
+                "abp.PAY_TYPE,    "
+                "abp.SUBTOTAL AS PayTypeTotal, "
+                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip "
+                "FROM ARCBILLPAY abp "
+                "LEFT JOIN ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY "
+                "WHERE ARCBILL.TOTAL = 0  AND ABP.CASH_OUT = 'T' "
+        + selected_tenders +
+                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL "
+
+")paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
 "                                                                                                                                                 "
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
-"                                                                                                                                                 "
-"inner join  (select count(*) TabCount,a.ARCBILL_key                                                                                              "
+"LEFT JOIN  (select count(*) TabCount,a.ARCBILL_key                                                                                              "
 "                             from                                                                                                                "
 "                             (select a.TABLE_NAME, a.ARCBILL_KEY from                                                                            "
 "                            ARCHIVE a)a                                                                                                          "
@@ -5647,17 +5736,18 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 
       " select                                        "
 "            qpa.arcbill_key,                   "
-"             coalesce(paymentPercent.pay_type,'Cash') pay_type,             "
+"             coalesce(UPPER(paymentPercent.pay_type),'CASH') pay_type,             "
 "            qpa.terminal_name,                 "
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-"            CASE WHEN paymentPercent.pay_type = 'Voucher' THEN qpa.voucher_number WHEN(paymentPercent.pay_type = 'Gift Card') then qpa.GiftCard_number else '' END voucher_number, "
- "     CASE WHEN (paymentPercent.pay_type = 'Cash') THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (paymentPercent.pay_type = 'Eftpos' )THEN abs(coalesce(aChange.CASHOUT,0))  "
+"            CASE WHEN UPPER(paymentPercent.pay_type) = 'VOUCHER' THEN qpa.voucher_number WHEN(UPPER(paymentPercent.pay_type) = 'GIFT CARD') then qpa.GiftCard_number else '' END voucher_number, "
+ "          CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type)= 'EFTPOS' )THEN abs(coalesce(aChange.CASHOUT,0))  "
+            " WHEN (UPPER(paymentPercent.pay_type) = 'CASH'  ) THEN (coalesce(aChange.CASHOUT,0)) "
             "  else 0 END change_recv,   "
 "            qpa.note ,                         "
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
-"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100)  as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
+"            CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100)  as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
           "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)-coalesce(paymentPercent.tip,0) as numeric(17,4))) END price, "
           "            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100)  as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
           "   else ( cast(((cast (qpa.price* coalesce(paymentPercent.PayTypeTotal,100)  as numeric(17,4))) / 100) as numeric(17,4))) END paid_Excl_Change, "
@@ -5671,8 +5761,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 	"ab.time_stamp billed_at, "
 	"ab.invoice_number receipt_no, "
 	"billpay.SUBTOTAL total_paid,  "
-	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'Voucher' THEN VoucherQuery.voucher_number END) AS voucher_number, "
-	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'Gift Card' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
+	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'VOUCHER' THEN VoucherQuery.voucher_number END) AS voucher_number, "
+	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
 	"abp.note note ,       "
 	"tn.TABLE_NAME,    "
 	"ab.total price,      "
@@ -5707,7 +5797,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "tn.price,            "
 "abp.CASH_OUT  ,ab.total       ) qpa "
 "inner join (SELECT  a.ARCBILL_KEY,  "
-"sum(CASE WHEN (a.pay_type = 'Eftpos') THEN 1 else 0 END )Iseftpos,sum(CASE WHEN (a.pay_type = 'Cash') THEN 1 else 0 END )IsCash   "
+"sum(CASE WHEN (UPPER(a.pay_type) = 'EFTPOS') THEN 1 else 0 END )Iseftpos,sum(CASE WHEN (UPPER(a.pay_type) = 'CASH') THEN 1 else 0 END )IsCash   "
 "FROM DAYARCBILLPAY a group by 1  ) chkeftpos on  chkeftpos.ARCBILL_KEY = qpa.arcbill_key "
 "inner join (SELECT A.ARCBILL_KEY, MIN(CASE WHEN a.CASH_OUT = 'T' THEN COALESCE(a.SUBTOTAL,0) END) AS Cashout, "
 "MIN(CASE WHEN ( a.NOTE='Total Change.') THEN coalesce(a.SUBTOTAL,0) END) AS CHANGE  FROM DAYARCBILLPAY a  group BY 1)aChange on  aChange.ARCBILL_KEY = qpa.arcbill_key "
@@ -5720,7 +5810,22 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "        left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where abp.SUBTOTAL > 0 and   abp.CASH_OUT<>'T'   "
 + selected_tenders +
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT "
+
+//Union for adding only cash out entries means bill total is 0 and cash out is done
+        "UNION ALL "
+                "SELECT "
+                "abp.ARCBILL_KEY, "
+                "abp.PAY_TYPE,    "
+                "abp.SUBTOTAL AS PayTypeTotal, "
+                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip "
+                "FROM DAYARCBILLPAY abp "
+                "LEFT JOIN DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY "
+                "WHERE DAYARCBILL.TOTAL = 0  AND ABP.CASH_OUT = 'T' "
+        + selected_tenders +
+                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL "
+
+")paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
 "                  inner join (select abp.arcbill_key,                                                             "
 "                                     abp.voucher_number,                                                          "
 "                                     abp.subtotal   change_recv                                                   "
@@ -5917,6 +6022,23 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
         _groupingForArcbill +
 
+     " Union All " +
+     _arcBillCashOutQuery +
+     "and ArcBill.Time_Stamp >= :StartTime And "
+	"	ArcBill.Time_Stamp < :EndTime    ";
+     if (Invoices->Count)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Invoices->Count, "ArcBill.Invoice_Number", "InvoiceParam") + ")";
+	}
+	if (Terminals->Count > 0)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
+	}
+	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
+        _arcBillCashOutGrouping +
+
 	" Union All "
     " Select                                       "
 	"		DayArcBill.ArcBill_Key,               "
@@ -5997,6 +6119,23 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	}
 	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
       _groupingForDayArcbill +
+
+        " Union All " +
+     _dayArcBillCashOutQuery +
+     "and DayArcBill.Time_Stamp >= :StartTime And "
+	"	DayArcBill.Time_Stamp < :EndTime    ";
+     if (Invoices->Count)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Invoices->Count, "DayArcBill.Invoice_Number", "InvoiceParam") + ")";
+	}
+	if (Terminals->Count > 0)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Terminals->Count, "DayArcBill.Terminal_Name", "TerminalParam") + ")";
+	}
+	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
+        _dayArcBillCashOutGrouping +
 
     " ORDER BY 1 asc, 11,12 DESC ";
 
