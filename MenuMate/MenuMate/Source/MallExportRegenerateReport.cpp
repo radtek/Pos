@@ -3364,6 +3364,15 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFirstCode(Database::TDBTran
 
     IBInternalQuery->ExecQuery();
 
+
+        TIBSQL* IBInternalQueryInvNumber = dbTransaction->Query(dbTransaction->AddQuery());
+        IBInternalQueryInvNumber->Close();
+        IBInternalQueryInvNumber->SQL->Text =  "select INVOICE_NUMBER from ARCBILL where ARCBILL.ARCBILL_KEY= :ARCBILL_KEY "  ;
+        IBInternalQueryInvNumber->ParamByName("ARCBILL_KEY")->AsString =IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger-1 ;
+        IBInternalQueryInvNumber->ExecQuery();
+        AnsiString Receipt_No = IBInternalQueryInvNumber->FieldByName("INVOICE_NUMBER")->AsString == "" ?
+                                        IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString : IBInternalQueryInvNumber->FieldByName("INVOICE_NUMBER")->AsString;
+
     AnsiString invoiceNumber = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
     AnsiString staffName = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
     terminal_Name = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
@@ -3373,7 +3382,7 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFirstCode(Database::TDBTran
     AnsiString file_stat = "OPENED";
     AnsiString tenant_No = TGlobalSettings::Instance().TenantNo;
     AnsiString pos_No = terminal_Name;
-    AnsiString Receipt_No = invoiceNumber-1;
+  //  AnsiString Receipt_No = invoiceNumber-1;
     int Tran_File_No =TGlobalSettings::Instance().BatchNo;
     AnsiString date = date_Time.FormatString("yyyymmdd");
     AnsiString time = date_Time.FormatString("hh:mm:ss");
@@ -3554,11 +3563,11 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFourthCode(Database::TDBTra
     IBInternalQuery2->Close();
     IBInternalQuery2->SQL->Text =
                                     "SELECT AB.ARCBILL_KEY,                                                   "
-                                        "    CAST (AB.TOTAL-AB.DISCOUNT AS NUMERIC (17,4)) SALES,                 "
+                                        "     CAST (AB.TOTAL-AB.DISCOUNT-(Sum(COALESCE(AOT.VAT,0) ) + Sum( COALESCE( AOT.ServiceCharge,0)) + Sum( COALESCE( AOT.OtherServiceCharge,0))) AS NUMERIC (17,4)) SALES,                 "
                                         "    CAST (AB.TOTAL AS NUMERIC (17,4)) TOTAL_SALES,                       "
-                                        "    AB.DISCOUNT,                                                         "
+                                        "   -1*AB.DISCOUNT DISCOUNT,                                                         "
                                         "    CAST(Sum( COALESCE( AOT.ServiceCharge,0))AS NUMERIC(17,4)) CHARGES,  "
-                                        "    CAST(Sum(COALESCE(AOT.VAT,0) ) + Sum( COALESCE( AOT.ServiceCharge,0)) + Sum( COALESCE( AOT.OtherServiceCharge,0)) AS NUMERIC(17,4)) TAX, "
+                                        "    CAST(Sum(COALESCE(AOT.VAT,0) ) + Sum( COALESCE( AOT.OtherServiceCharge,0)) AS NUMERIC(17,4)) TAX, "
                                         "    AB.ROUNDING_ADJUSTMENT ROUNDING_AMT  "
                                     "FROM ARCBILL AB                          "
                                     "LEFT JOIN (                              "
