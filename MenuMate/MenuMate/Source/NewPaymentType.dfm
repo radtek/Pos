@@ -138,7 +138,7 @@ object frmNewPaymentType: TfrmNewPaymentType
     Top = 0
     Width = 884
     Height = 748
-    ActivePage = tsInterfaces
+    ActivePage = tsPayment
     Align = alLeft
     TabOrder = 1
     object tsPayment: TTabSheet
@@ -255,7 +255,7 @@ object frmNewPaymentType: TfrmNewPaymentType
             Top = 26
             Width = 200
             Height = 51
-            Caption = 'Custom Surcharge'
+            Caption = 'Custom Tip'
             Color = clGreen
             Font.Charset = ANSI_CHARSET
             Font.Color = clWhite

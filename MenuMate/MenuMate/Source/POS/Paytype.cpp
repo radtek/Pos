@@ -1181,308 +1181,303 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 {
     Payment->CreditTransaction = true;
-    GetPaymentNote(Payment);
-    Payment->Result = eProcessing;
-
-    if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
-    {
-        if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
-        {
-           wrkPayAmount = CurrentTransaction.Money.PaymentDue;
-        }
-    }
-    // Warn user about Payment Surcharge.
-    Currency Surcharge = 0;
-
     if (Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
     {
-        Surcharge = RoundToNearest(wrkPayAmount * (Payment->TaxRate / 100), MIN_CURRENCY_VALUE,
-                TGlobalSettings::Instance().MidPointRoundsDown);
-        Payment->AdjustmentReason = Payment->Name + " Surcharge";
-
-        AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-        + " will be incurred by using this method of payment";
-        MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-
-        Payment->SetAdjustment(Surcharge);
-        wrkPayAmount -= Surcharge;
-    }
-    else if ((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
-    {
-        if (Payment->PercentAdjust != 0)
-        {
-            Surcharge = wrkPayAmount * (Payment->PercentAdjust / 100);
-        }
-        else
-        {
-            Surcharge = Payment->AmountAdjust;
-        }
-
-        AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-        + " will be incurred by using this method of payment";
-        MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-
-        Payment->SetAdjustment(Surcharge);
-        wrkPayAmount -= Surcharge;
+        Payment->AdjustmentReason = Payment->Name;
+        Payment->SetAdjustment(-wrkPayAmount);
+        ShowPaymentTotals();
     }
     else
     {
-        Payment->SetAdjustment(0);
-    }
-
-    if (Payment->GetPaymentAttribute(ePayTypeCredit))
-    {
-        TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
-        if (wrkPayAmount > Credit.CurrentCredit)
+        GetPaymentNote(Payment);
+        Payment->Result = eProcessing;
+        if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
         {
-            MessageBox(AnsiString("Only " + CurrToStrF(Credit.CurrentCredit, ffNumber,
-            CurrencyDecimals) + " of credit can be applied to the purchases.").c_str(), "Warning",
-            MB_OK + MB_ICONINFORMATION);
-            Payment->SetPay(Credit.CurrentCredit);
-            Credit.CreditRedeemed = Credit.CurrentCredit;
-        }
-        else
-        {
-            Payment->SetPay(wrkPayAmount);
-            Credit.CreditRedeemed = wrkPayAmount;
-        }
-        CurrentTransaction.TabCredit[Payment->TabCreditKey] = Credit;
-    }
-    else if (fabs(wrkPayAmount) > fabs(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()))
-    {
-        if (!Payment->GetPaymentAttribute(ePayTypeCash)) // Change not allowed
-        {
-            if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
-                                ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
-                        MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
             {
-                Payment->SetPay(-CurrentTransaction.Money.PaymentDue);
-                wrkPayAmount = wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
+               wrkPayAmount = CurrentTransaction.Money.PaymentDue;
             }
         }
-        else if (wrkPayAmount == 0)
+        // Warn user about Payment Surcharge.
+        Currency Surcharge = 0;
+        if ((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
         {
-            Payment->SetPay(0);
-        }
-        else
-        {
-            MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(), ffNumber,
-            CurrencyDecimals) + " of refunds can be applied.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-            Payment->SetPay(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
-        }
-    }
-    else if ((Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport)) && fabs(wrkPayAmount) != fabs
-            (CurrentTransaction.Money.GrandTotal))
-    {
-        MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
-        MB_OK + MB_ICONINFORMATION);
-    }
-    else
-    {
-        Payment->SetPay(-wrkPayAmount);
-        if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
-        {
-            TGlobalSettings::Instance().RefundingItems = true;
-        }
-    }
-    //Voucher
-    if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails)))
-    {
-        if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
-        {
-           ProcessLoyaltyVoucher(Payment);
-        }
-        else
-        {
-            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-            frmTouchKeyboard->MaxLength = 50;
-            frmTouchKeyboard->AllowCarriageReturn = false;
-            frmTouchKeyboard->StartWithShiftDown = false;
-            frmTouchKeyboard->MustHaveValue = true;
-            frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
-            frmTouchKeyboard->Caption = "Enter Voucher Number";
-            if (frmTouchKeyboard->ShowModal() == mrOk)
+            bool IsPercent = false;
+            if (Payment->PercentAdjust != 0)
             {
-                Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
-            }
-            Payment->SysNameOveride = Payment->Name;
-        }
-    }
-    //Pocket Voucher
-    if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypePocketVoucher)))
-    {
-        std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
-        if (frmPocketVoucher->ShowModal() == mrOk)
-        {
-            Payment->VoucherCode = frmPocketVoucher->VoucherCode();
-        }
-        else
-        {
-            Payment->SetPay(0);
-            Payment->VoucherCode = "";
-        }
-        // Set the System name in case it has been set by a Voucher Purchase attempt.
-        Payment->SysNameOveride = Payment->Name;
-    }
-    if (Payment->GetPaymentAttribute(ePayTypePoints))
-    {
-        if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
-        {
-            MessageBox(AnsiString("You cannot refund points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
-            return;
-        }
-    }
-    if (Payment->GetPaymentAttribute(ePayTypeCSV))
-    {
-        Payment->CSVNumber = 0;
-        do
-        {
-            std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
-            frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
-            frmTouchNumpad->btnSurcharge->Caption = "Ok";
-            frmTouchNumpad->btnSurcharge->Visible = true;
-            frmTouchNumpad->btnDiscount->Visible = false;
-            frmTouchNumpad->Mode = pmNumber;
-            frmTouchNumpad->INTInitial = 0;
-            if (frmTouchNumpad->ShowModal() == mrOk)
-            {
-                Payment->CSVNumber = frmTouchNumpad->INTResult;
-            }
-        }
-        while (Payment->CSVNumber == 0);
-    }
-
-    if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
-    {
-        bool GuestMasterOk = true;
-        AnsiString TabName = "";
-        int RoomNumber = 0;
-        if (CurrentTransaction.RoomNumber == 0)
-        {
-            if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
-            {
-                if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
-                {
-                    CurrentTransaction.RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
-                    CurrentTransaction.BookingID = TRooms::Instance().SelectedRoom->BookingID;
-                    CurrentTransaction.SalesType = eRoomSale;
-                    TabName = TRooms::Instance().SelectedRoom->Name;
-                    RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
-                }
-                else
-                {
-                    GuestMasterOk = false;
-                }
-            }
-            else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
-            {
-                // Override the ipaddress and port.
-                AnsiString PMSIPAddress;
-                int PMSPort;
-                if (Payment->SecondaryPMSIPAddress != "")
-                {
-                    PMSIPAddress = Payment->SecondaryPMSIPAddress;
-                    PMSPort = Payment->SecondaryPMSPortNumber;
-                }
-                else
-                {
-                    PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-                    PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
-                }
-                std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
-                if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
-                {
-                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                    CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
-                    [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-                    CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-                    CurrentTransaction.SalesType = eRoomSale;
-                    RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-                    CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-                    if(TGlobalSettings::Instance().PMSType != SiHot)
-                    {
-                        CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
-                        TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                    }
-                    else
-                    {
-                        CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
-                        TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-                    }
-                }
-                else
-                {
-                    GuestMasterOk = false;
-                }
+                IsPercent = true;
+                Surcharge = wrkPayAmount * (Payment->PercentAdjust / 100);
             }
             else
             {
-                MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
-                MB_OK + MB_ICONINFORMATION);
-                GuestMasterOk = false;
+                Surcharge = Payment->AmountAdjust;
             }
-        }
 
-        if (!GuestMasterOk)
-        {
-            Payment->SetPay(0);
-            Payment->SetAdjustment(0);
-            Payment->SetCashOut(0);
-            Payment->Result = eFailed;
-            CurrentTransaction.BookingID = 0;
-            CurrentTransaction.RoomNumber = 0;
+            AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+            + " will be incurred by using this method of payment";
+            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+
+            Payment->SetAdjustment(Surcharge);
+            wrkPayAmount -= Surcharge;
         }
         else
         {
-            if (CurrentTransaction.Orders != NULL)
+            Payment->SetAdjustment(0);
+        }
+
+        if (Payment->GetPaymentAttribute(ePayTypeCredit))
+        {
+            TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
+            if (wrkPayAmount > Credit.CurrentCredit)
             {
-                for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+                MessageBox(AnsiString("Only " + CurrToStrF(Credit.CurrentCredit, ffNumber,
+                CurrencyDecimals) + " of credit can be applied to the purchases.").c_str(), "Warning",
+                MB_OK + MB_ICONINFORMATION);
+                Payment->SetPay(Credit.CurrentCredit);
+                Credit.CreditRedeemed = Credit.CurrentCredit;
+            }
+            else
+            {
+                Payment->SetPay(wrkPayAmount);
+                Credit.CreditRedeemed = wrkPayAmount;
+            }
+            CurrentTransaction.TabCredit[Payment->TabCreditKey] = Credit;
+        }
+        else if (fabs(wrkPayAmount) > fabs(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()))
+        {
+            if (!Payment->GetPaymentAttribute(ePayTypeCash)) // Change not allowed
+            {
+                if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
+                                    ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
+                            MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
                 {
-                    TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-                    Order->TabContainerName = TabName;
-                    Order->TabName = TabName;
-                    Order->TabType = TabRoom;
-                    Order->RoomNo = RoomNumber;
+                    Payment->SetPay(-CurrentTransaction.Money.PaymentDue);
+                    wrkPayAmount = wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
+                }
+            }
+            else if (wrkPayAmount == 0)
+            {
+                Payment->SetPay(0);
+            }
+            else
+            {
+                MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(), ffNumber,
+                CurrencyDecimals) + " of refunds can be applied.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+                Payment->SetPay(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
+            }
+        }
+        else if ((Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport)) && fabs(wrkPayAmount) != fabs
+                (CurrentTransaction.Money.GrandTotal))
+        {
+            MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
+            MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            Payment->SetPay(-wrkPayAmount);
+            if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
+            {
+                TGlobalSettings::Instance().RefundingItems = true;
+            }
+        }
+        //Voucher
+        if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails)))
+        {
+            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
+            {
+               ProcessLoyaltyVoucher(Payment);
+            }
+            else
+            {
+                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                frmTouchKeyboard->MaxLength = 50;
+                frmTouchKeyboard->AllowCarriageReturn = false;
+                frmTouchKeyboard->StartWithShiftDown = false;
+                frmTouchKeyboard->MustHaveValue = true;
+                frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
+                frmTouchKeyboard->Caption = "Enter Voucher Number";
+                if (frmTouchKeyboard->ShowModal() == mrOk)
+                {
+                    Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
+                }
+                Payment->SysNameOveride = Payment->Name;
+            }
+        }
+        //Pocket Voucher
+        if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypePocketVoucher)))
+        {
+            std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
+            if (frmPocketVoucher->ShowModal() == mrOk)
+            {
+                Payment->VoucherCode = frmPocketVoucher->VoucherCode();
+            }
+            else
+            {
+                Payment->SetPay(0);
+                Payment->VoucherCode = "";
+            }
+            // Set the System name in case it has been set by a Voucher Purchase attempt.
+            Payment->SysNameOveride = Payment->Name;
+        }
+        if (Payment->GetPaymentAttribute(ePayTypePoints))
+        {
+            if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
+            {
+                MessageBox(AnsiString("You cannot refund points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
+                return;
+            }
+        }
+        if (Payment->GetPaymentAttribute(ePayTypeCSV))
+        {
+            Payment->CSVNumber = 0;
+            do
+            {
+                std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+                frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
+                frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                frmTouchNumpad->btnSurcharge->Visible = true;
+                frmTouchNumpad->btnDiscount->Visible = false;
+                frmTouchNumpad->Mode = pmNumber;
+                frmTouchNumpad->INTInitial = 0;
+                if (frmTouchNumpad->ShowModal() == mrOk)
+                {
+                    Payment->CSVNumber = frmTouchNumpad->INTResult;
+                }
+            }
+            while (Payment->CSVNumber == 0);
+        }
+
+        if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
+        {
+            bool GuestMasterOk = true;
+            AnsiString TabName = "";
+            int RoomNumber = 0;
+            if (CurrentTransaction.RoomNumber == 0)
+            {
+                if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                {
+                    if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
+                    {
+                        CurrentTransaction.RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
+                        CurrentTransaction.BookingID = TRooms::Instance().SelectedRoom->BookingID;
+                        CurrentTransaction.SalesType = eRoomSale;
+                        TabName = TRooms::Instance().SelectedRoom->Name;
+                        RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
+                    }
+                    else
+                    {
+                        GuestMasterOk = false;
+                    }
+                }
+                else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                {
+                    // Override the ipaddress and port.
+                    AnsiString PMSIPAddress;
+                    int PMSPort;
+                    if (Payment->SecondaryPMSIPAddress != "")
+                    {
+                        PMSIPAddress = Payment->SecondaryPMSIPAddress;
+                        PMSPort = Payment->SecondaryPMSPortNumber;
+                    }
+                    else
+                    {
+                        PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+                        PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+                    }
+                    std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
+                    if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
+                    {
+                        CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                        CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+                        [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+                        CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+                        CurrentTransaction.SalesType = eRoomSale;
+                        RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                        if(TGlobalSettings::Instance().PMSType != SiHot)
+                        {
+                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                            TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                        }
+                        else
+                        {
+                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                            TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                        }
+                    }
+                    else
+                    {
+                        GuestMasterOk = false;
+                    }
+                }
+                else
+                {
+                    MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
+                    MB_OK + MB_ICONINFORMATION);
+                    GuestMasterOk = false;
+                }
+            }
+
+            if (!GuestMasterOk)
+            {
+                Payment->SetPay(0);
+                Payment->SetAdjustment(0);
+                Payment->SetCashOut(0);
+                Payment->Result = eFailed;
+                CurrentTransaction.BookingID = 0;
+                CurrentTransaction.RoomNumber = 0;
+            }
+            else
+            {
+                if (CurrentTransaction.Orders != NULL)
+                {
+                    for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+                    {
+                        TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+                        Order->TabContainerName = TabName;
+                        Order->TabName = TabName;
+                        Order->TabType = TabRoom;
+                        Order->RoomNo = RoomNumber;
+                    }
                 }
             }
         }
-    }
 
-    if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
-    {
-        std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
-        if (frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
+        if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
         {
-            Payment->RMSRoom = frmRoom->SelectedRoom;
-            CurrentTransaction.SalesType = eRoomSale;
+            std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
+            if (frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
+            {
+                Payment->RMSRoom = frmRoom->SelectedRoom;
+                CurrentTransaction.SalesType = eRoomSale;
+            }
+            else
+            {
+                Payment->RMSRoom.Clear();
+                Payment->SetPay(0);
+                Payment->SetAdjustment(0);
+                Payment->SetCashOut(0);
+                Payment->Result = eFailed;
+            }
+        }
+
+        if ((Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS)) && EftPos->CheckOverLimitExceeded
+                (Payment->GetPayTendered() + Payment->GetCashOutTotal()))
+        {
+            MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
+            Payment->SetPay(0);
+        }
+
+        ShowPaymentTotals();
+        if (NoElectronicPayments())
+        {
+            EnableElectronicPayments();
         }
         else
         {
-            Payment->RMSRoom.Clear();
-            Payment->SetPay(0);
-            Payment->SetAdjustment(0);
-            Payment->SetCashOut(0);
-            Payment->Result = eFailed;
+            DisableOtherElectronicPayments(Payment);
         }
     }
-
-    if ((Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS)) && EftPos->CheckOverLimitExceeded
-            (Payment->GetPayTendered() + Payment->GetCashOutTotal()))
-    {
-        MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
-        Payment->SetPay(0);
-    }
-
-    ShowPaymentTotals();
-    if (NoElectronicPayments())
-    {
-        EnableElectronicPayments();
-    }
-    else
-    {
-        DisableOtherElectronicPayments(Payment);
-    }
-
 
     if (CurrentTransaction.Money.PaymentDue == 0)
     {
@@ -1506,405 +1501,394 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 {
     Payment->CreditTransaction = false;
-    GetPaymentNote(Payment);
-    Payment->Result = eProcessing;
-
-    if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender  && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
-    {
-        if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
-        {
-            wrkPayAmount = CurrentTransaction.Money.PaymentDue;
-        }
-    }
-    // Warn user about Payment Surcharge.
-    Currency Surcharge = 0;
     if (Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
     {
-        Surcharge = RoundToNearest(wrkPayAmount * -(Payment->TaxRate / 100), MIN_CURRENCY_VALUE,
+        Payment->AdjustmentReason = Payment->Name;
+        Payment->SetAdjustment(wrkPayAmount);
+        ShowPaymentTotals();
+    }
+    else
+    {
+        GetPaymentNote(Payment);
+        Payment->Result = eProcessing;
+
+        if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender  && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
+        {
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
+            {
+                wrkPayAmount = CurrentTransaction.Money.PaymentDue;
+            }
+        }
+        // Warn user about Payment Surcharge.
+        Currency Surcharge = 0;
+        if ((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
+        {
+            bool IsPercent = false;
+            if (Payment->PercentAdjust != 0)
+            {
+                IsPercent = true;
+                Surcharge = RoundToNearest(wrkPayAmount*-(Payment->PercentAdjust / 100), MIN_CURRENCY_VALUE,
                 TGlobalSettings::Instance().MidPointRoundsDown);
-        Payment->AdjustmentReason = Payment->Name + " Surcharge";
-        if (Surcharge > 0)
-        {
-            AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-            + " will be incurred by using this method of payment";
-            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-        }
-        else
-        {
-            AnsiString SurchargeMsg = "A Discount of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-            + " will be incurred by using this method of payment";
-            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-        }
-
-        Payment->SetAdjustment(Surcharge);
-        wrkPayAmount += Surcharge;
-    }
-    else if((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
-    {
-        if (Payment->PercentAdjust != 0)
-        {
-            Surcharge = RoundToNearest(wrkPayAmount*-(Payment->PercentAdjust / 100), MIN_CURRENCY_VALUE,
-            TGlobalSettings::Instance().MidPointRoundsDown);
-        }
-        else
-        {
-            Surcharge = RoundToNearest(-Payment->AmountAdjust, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-        }
-
-        if (Surcharge > 0)
-        {
-            AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-            + " will be incurred by using this method of payment";
-            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-        }
-        else
-        {
-            AnsiString SurchargeMsg = "A Discount of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
-            + " will be incurred by using this method of payment";
-            MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
-        }
-
-        Payment->SetAdjustment(Surcharge);
-        wrkPayAmount += Surcharge;
-
-    }
-    else
-    {
-        Payment->SetAdjustment(0);
-    }
-
-    Currency tempPaymentDue;
-
-    if (Payment->GetPaymentAttribute(ePayTypePoints))
-    {
-
-        if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
-        {
-            MessageBox(AnsiString("You cannot redeem points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
-            return;
-        }
-
-        if(TGlobalSettings::Instance().ShowScreenToSelectItemForPoint && !TGlobalSettings::Instance().UseTierLevels &&
-           !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
-        {
-            ShowFormToSelectItems(Payment);
-        }
-        else
-        {
-           ProcessPointPayment(Payment);
-        }
-        PayNotCash = true;  // add method for member's types...
-    }
-    else if (Payment->GetPaymentAttribute(ePayTypeCredit))
-    {
-        TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
-        if (wrkPayAmount > Credit.CurrentCredit)
-        {
-            MessageBox(AnsiString("Only " + CurrToStrF(Credit.CurrentCredit, ffNumber,
-            CurrencyDecimals) + " of credit can be applied to the purchases.").c_str(), "Warning",
-            MB_OK + MB_ICONINFORMATION);
-            Payment->SetPay(Credit.CurrentCredit);
-            Credit.CreditRedeemed = Credit.CurrentCredit;
-        }
-        else
-        {
-            Payment->SetPay(wrkPayAmount);
-            Credit.CreditRedeemed = wrkPayAmount;
-        }
-        CurrentTransaction.TabCredit[Payment->TabCreditKey] = Credit;
-    }
-    else if (wrkPayAmount > CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment())
-    {
-        if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
-        {
-            if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
-                                ffNumber, CurrencyDecimals) +
-                            " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
-                        MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
-            {
-                Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
-                Payment->SetPay(CurrentTransaction.Money.PaymentDue);
             }
             else
             {
-                Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                Surcharge = RoundToNearest(-Payment->AmountAdjust, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
             }
-        }
-        else if (!Payment->GetPaymentAttribute(ePayTypeCash) && !Payment->GetPaymentAttribute(ePayTypeCredit))
-        {
-            if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
-                                ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
-                        MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
-            {
 
-                Payment->SetPay(CurrentTransaction.Money.PaymentDue);
-                wrkPayAmount = wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
-            }
-        }
-        else
-        {
-            if(Payment->GetFirstAssignedGroup().Name == "Gift Card")
+            if (Surcharge > 0)
             {
-                Currency Amount = wrkPayAmount - CurrentTransaction.Money.PaymentDue;
-                Payment->SetPay(wrkPayAmount);
-                Payment->SetAdjustment(Amount);
-                Payment->AdjustmentReason = "Gift Card Surcharges";
+                AnsiString SurchargeMsg = "A Surcharge of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+                + " will be incurred by using this method of payment";
+                MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
             }
             else
             {
-                Payment->SetPay(wrkPayAmount);
+                AnsiString SurchargeMsg = "A Discount of " + CurrToStrF(Surcharge, ffNumber, CurrencyDecimals)
+                + " will be incurred by using this method of payment";
+                MessageBox(SurchargeMsg.c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
             }
-        }
-    }
-    else if (Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport) && wrkPayAmount != CurrentTransaction.Money.GrandTotal)
-    {
-        MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
-        MB_OK + MB_ICONINFORMATION);
-    }
-    else
-    {
-        tempPaymentDue = CurrentTransaction.Money.PaymentDue;
-        Payment->SetPay(wrkPayAmount);
-    }
 
-    if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
-    {
-        if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
-        {
-           ProcessLoyaltyVoucher(Payment);
+            Payment->SetAdjustment(Surcharge);
+            wrkPayAmount += Surcharge;
         }
         else
         {
-            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-            frmTouchKeyboard->MaxLength = 50;
-            frmTouchKeyboard->AllowCarriageReturn = false;
-            frmTouchKeyboard->StartWithShiftDown = false;
-            frmTouchKeyboard->MustHaveValue = true;
-            frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
-            frmTouchKeyboard->Caption = "Enter Voucher Number";
-            if (frmTouchKeyboard->ShowModal() == mrOk)
+            Payment->SetAdjustment(0);
+        }
+
+		Currency tempPaymentDue;
+
+        if (Payment->GetPaymentAttribute(ePayTypePoints))
+        {
+
+            if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
             {
-                Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
-            }
-            else
-            {
-                CurrentTransaction.Money.PaymentDue = tempPaymentDue;
-                Payment->Reset();
+                MessageBox(AnsiString("You cannot redeem points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
                 return;
             }
-            // Set the System name in case it has been set by a Voucher Purchase attempt.
-            Payment->SysNameOveride = Payment->Name;
-        }
-    }
 
-    if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypePocketVoucher))
-    {
-        std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
-
-        //frmPocketVoucher->SetFixedVoucherCode(Payment->FixedVoucherCode);
-        if (frmPocketVoucher->ShowModal() == mrOk)
-        {
-            Payment->VoucherCode = frmPocketVoucher->VoucherCode();
-        }
-        else
-        {
-            Payment->SetPay(0);
-            Payment->VoucherCode = "";
-        }
-
-        // Set the System name in case it has been set by a Voucher Purchase attempt.
-        //Payment->SysNameOveride = "Redeemed " + Payment->Name;
-        Payment->SysNameOveride = Payment->Name;
-    }
-
-    if (Payment->GetPaymentAttribute(ePayTypeCSV))
-    {
-        Payment->CSVNumber = 0;
-        do
-        {
-            std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
-            frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
-            frmTouchNumpad->btnSurcharge->Caption = "Ok";
-            frmTouchNumpad->btnSurcharge->Visible = true;
-            frmTouchNumpad->btnDiscount->Visible = false;
-            frmTouchNumpad->Mode = pmNumber;
-            frmTouchNumpad->INTInitial = 0;
-            if (frmTouchNumpad->ShowModal() == mrOk)
+            if(TGlobalSettings::Instance().ShowScreenToSelectItemForPoint && !TGlobalSettings::Instance().UseTierLevels &&
+               !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
             {
-                Payment->CSVNumber = frmTouchNumpad->INTResult;
+                ShowFormToSelectItems(Payment);
             }
-        }
-        while (Payment->CSVNumber == 0);
-    }
-
-    if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
-    {
-        bool GuestMasterOk = true;
-        AnsiString TabName = "";
-        int RoomNumber = 0;
-        if (CurrentTransaction.RoomNumber == 0)
-        {
-            if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            else
             {
-                if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
+               ProcessPointPayment(Payment);
+            }
+            PayNotCash = true;  // add method for member's types...
+        }
+        else if (Payment->GetPaymentAttribute(ePayTypeCredit))
+        {
+            TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
+            if (wrkPayAmount > Credit.CurrentCredit)
+            {
+                MessageBox(AnsiString("Only " + CurrToStrF(Credit.CurrentCredit, ffNumber,
+                CurrencyDecimals) + " of credit can be applied to the purchases.").c_str(), "Warning",
+                MB_OK + MB_ICONINFORMATION);
+                Payment->SetPay(Credit.CurrentCredit);
+                Credit.CreditRedeemed = Credit.CurrentCredit;
+            }
+            else
+            {
+                Payment->SetPay(wrkPayAmount);
+                Credit.CreditRedeemed = wrkPayAmount;
+            }
+            CurrentTransaction.TabCredit[Payment->TabCreditKey] = Credit;
+        }
+        else if (wrkPayAmount > CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment())
+        {
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
+            {
+                if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
+                                    ffNumber, CurrencyDecimals) +
+                                " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
+                            MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
                 {
-                    CurrentTransaction.RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
-                    CurrentTransaction.BookingID = TRooms::Instance().SelectedRoom->BookingID;
-                    CurrentTransaction.SalesType = eRoomSale;
-                    TabName = TRooms::Instance().SelectedRoom->Name;
-                    RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
+                    Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
+                    Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }
                 else
                 {
-                    GuestMasterOk = false;
+                    Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }
             }
-            else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            else if (!Payment->GetPaymentAttribute(ePayTypeCash) && !Payment->GetPaymentAttribute(ePayTypeCredit))
             {
-                // Override the ipaddress and port.
-                AnsiString PMSIPAddress;
-                int PMSPort;
-                if (Payment->SecondaryPMSIPAddress != "")
+                if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
+                                    ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
+                            MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
                 {
-                    PMSIPAddress = Payment->SecondaryPMSIPAddress;
-                    PMSPort = Payment->SecondaryPMSPortNumber;
-                }
-                else
-                {
-                    PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-                    PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
-                }
 
-                std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
-                if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
-                {
-                    if(TGlobalSettings::Instance().PMSType == SiHot)
-                    {
-                        if(((double)Payment->GetPay() > frmPhoenixRoom->LimitSiHot) && (frmPhoenixRoom->LimitSiHot != 0.0))
-                        {
-                            GuestMasterOk = false;
-                            MessageBox("Credit Limit Exceeded","Info",MB_OK);
-                        }
-                    }
-                    if(GuestMasterOk)
-                    {
-                        CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
-                        [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-                        CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-                        CurrentTransaction.SalesType = eRoomSale;
-                        RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-                        if(TGlobalSettings::Instance().PMSType != SiHot)
-                        {
-                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
-                            TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        }
-                        else
-                        {
-                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
-                            TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-                        }
-                    }
-                }
-                else
-                {
-                    GuestMasterOk = false;
-                    //Make select member false because Cancel is Pressed
-                    if(CurrentTransaction.IsQuickPayTransaction)
-                        IsMemberSelected = false;
+                    Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    wrkPayAmount = wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
                 }
             }
             else
             {
-                MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
-                MB_OK + MB_ICONINFORMATION);
-                GuestMasterOk = false;
-
-                //Make select member false because PMS is not enabled
-                if(CurrentTransaction.IsQuickPayTransaction )
-                        IsMemberSelected = false;
-            }
-        }
-
-        if (!GuestMasterOk)
-        {
-            Payment->SetPay(0);
-            Payment->SetAdjustment(0);
-            Payment->SetCashOut(0);
-            // Payment->GrandTotal = 0;
-            Payment->Result = eFailed;
-            CurrentTransaction.BookingID = 0;
-            CurrentTransaction.RoomNumber = 0;
-        }
-        else
-        {
-            if (CurrentTransaction.Orders != NULL)
-            {
-                for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+                if(Payment->GetFirstAssignedGroup().Name == "Gift Card")
                 {
-                    TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-                    Order->TabContainerName = TabName;
-                    Order->TabName = TabName;
-                    Order->TabType = TabRoom;
-                    Order->RoomNo = RoomNumber;
+                    Currency Amount = wrkPayAmount - CurrentTransaction.Money.PaymentDue;
+                    Payment->SetPay(wrkPayAmount);
+                    Payment->SetAdjustment(Amount);
+                    Payment->AdjustmentReason = "Gift Card Surcharges";
+                }
+                else
+                {
+                    Payment->SetPay(wrkPayAmount);
                 }
             }
         }
-    }
-
-    if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
-    {
-        std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
-        if ( (TGlobalSettings::Instance().NewBook!=2)&&frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
+        else if (Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport) && wrkPayAmount != CurrentTransaction.Money.GrandTotal)
         {
-            Payment->RMSRoom = frmRoom->SelectedRoom;
-            CurrentTransaction.SalesType = eRoomSale;
-        }
-        else if (TDeviceRealTerminal::Instance().BasePMS->Registered&&(TGlobalSettings::Instance().NewBook==2)&&frmRoom->SelectNewBookRoom(Payment->CVSReadLocation) == mrOk)
-        {
-            Payment->NewBookRoom = frmRoom-> NewBookSelectedRoom;
-            CurrentTransaction.RoomNumber=StrToInt(frmRoom-> NewBookSelectedRoom.RoomNo);
-            CurrentTransaction.SalesType = eRoomSale;
+            MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
+            MB_OK + MB_ICONINFORMATION);
         }
         else
         {
-            Payment->SetPay(0);
-            Payment->SetAdjustment(0);
-            Payment->SetCashOut(0);
-            Payment->Result = eFailed;
+            tempPaymentDue = CurrentTransaction.Money.PaymentDue;
+            Payment->SetPay(wrkPayAmount);
         }
-    }
 
-    if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) &&
-       EftPos->CheckOverLimitExceeded(Payment->GetPayTendered() + Payment->GetCashOutTotal()))
-    {
-        MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
-        Payment->SetPay(0);
-    }
+        if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
+        {
+            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
+            {
+               ProcessLoyaltyVoucher(Payment);
+            }
+            else
+            {
+                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                frmTouchKeyboard->MaxLength = 50;
+                frmTouchKeyboard->AllowCarriageReturn = false;
+                frmTouchKeyboard->StartWithShiftDown = false;
+                frmTouchKeyboard->MustHaveValue = true;
+                frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
+                frmTouchKeyboard->Caption = "Enter Voucher Number";
+                if (frmTouchKeyboard->ShowModal() == mrOk)
+                {
+                    Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
+                }
+                else
+                {
+                    CurrentTransaction.Money.PaymentDue = tempPaymentDue;
+                    Payment->Reset();
+                    return;
+                }
+                // Set the System name in case it has been set by a Voucher Purchase attempt.
+                Payment->SysNameOveride = Payment->Name;
+            }
+        }
 
-    if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
-    {
-       ProcessWalletTransaction(Payment);
-    }
+        if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypePocketVoucher))
+        {
+            std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
 
-    //apply changes here..
-    if(CheckOnlinePaidOrNot())
-    {
-        ShowWebOrderMembersPayment();
-    }
-    else
-    {
-        ShowPaymentTotals(false);
-    }
+            //frmPocketVoucher->SetFixedVoucherCode(Payment->FixedVoucherCode);
+            if (frmPocketVoucher->ShowModal() == mrOk)
+            {
+                Payment->VoucherCode = frmPocketVoucher->VoucherCode();
+            }
+            else
+            {
+                Payment->SetPay(0);
+                Payment->VoucherCode = "";
+            }
 
-    if (NoElectronicPayments())
-    {
-        EnableElectronicPayments();
-    }
-    else
-    {
-        DisableOtherElectronicPayments(Payment);
+            // Set the System name in case it has been set by a Voucher Purchase attempt.
+            //Payment->SysNameOveride = "Redeemed " + Payment->Name;
+            Payment->SysNameOveride = Payment->Name;
+        }
+
+        if (Payment->GetPaymentAttribute(ePayTypeCSV))
+        {
+            Payment->CSVNumber = 0;
+            do
+            {
+                std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+                frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
+                frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                frmTouchNumpad->btnSurcharge->Visible = true;
+                frmTouchNumpad->btnDiscount->Visible = false;
+                frmTouchNumpad->Mode = pmNumber;
+                frmTouchNumpad->INTInitial = 0;
+                if (frmTouchNumpad->ShowModal() == mrOk)
+                {
+                    Payment->CSVNumber = frmTouchNumpad->INTResult;
+                }
+            }
+            while (Payment->CSVNumber == 0);
+        }
+
+        if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
+        {
+            bool GuestMasterOk = true;
+            AnsiString TabName = "";
+            int RoomNumber = 0;
+            if (CurrentTransaction.RoomNumber == 0)
+            {
+                if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                {
+                    if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
+                    {
+                        CurrentTransaction.RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
+                        CurrentTransaction.BookingID = TRooms::Instance().SelectedRoom->BookingID;
+                        CurrentTransaction.SalesType = eRoomSale;
+                        TabName = TRooms::Instance().SelectedRoom->Name;
+                        RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
+                    }
+                    else
+                    {
+                        GuestMasterOk = false;
+                    }
+                }
+                else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                {
+                    // Override the ipaddress and port.
+                    AnsiString PMSIPAddress;
+                    int PMSPort;
+                    if (Payment->SecondaryPMSIPAddress != "")
+                    {
+                        PMSIPAddress = Payment->SecondaryPMSIPAddress;
+                        PMSPort = Payment->SecondaryPMSPortNumber;
+                    }
+                    else
+                    {
+                        PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+                        PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+                    }
+
+                    std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
+                    if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
+                    {
+                        if(TGlobalSettings::Instance().PMSType == SiHot)
+                        {
+                            if(((double)Payment->GetPay() > frmPhoenixRoom->LimitSiHot) && (frmPhoenixRoom->LimitSiHot != 0.0))
+                            {
+                                GuestMasterOk = false;
+                                MessageBox("Credit Limit Exceeded","Info",MB_OK);
+                            }
+                        }
+                        if(GuestMasterOk)
+                        {
+                            CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+                            [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+                            CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+                            CurrentTransaction.SalesType = eRoomSale;
+                            RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                            CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            }
+                            else
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        GuestMasterOk = false;
+                        //Make select member false because Cancel is Pressed
+                        if(CurrentTransaction.IsQuickPayTransaction)
+                            IsMemberSelected = false;
+                    }
+                }
+                else
+                {
+                    MessageBox("Neither Rooms nor Total Hospitality System interfaces are enabled.", "Error",
+                    MB_OK + MB_ICONINFORMATION);
+                    GuestMasterOk = false;
+
+                    //Make select member false because PMS is not enabled
+                    if(CurrentTransaction.IsQuickPayTransaction )
+                            IsMemberSelected = false;
+                }
+            }
+
+            if (!GuestMasterOk)
+            {
+                Payment->SetPay(0);
+                Payment->SetAdjustment(0);
+                Payment->SetCashOut(0);
+                // Payment->GrandTotal = 0;
+                Payment->Result = eFailed;
+                CurrentTransaction.BookingID = 0;
+                CurrentTransaction.RoomNumber = 0;
+            }
+            else
+            {
+                if (CurrentTransaction.Orders != NULL)
+                {
+                    for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+                    {
+                        TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+                        Order->TabContainerName = TabName;
+                        Order->TabName = TabName;
+                        Order->TabType = TabRoom;
+                        Order->RoomNo = RoomNumber;
+                    }
+                }
+            }
+        }
+
+        if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
+        {
+            std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
+            if ( (TGlobalSettings::Instance().NewBook!=2)&&frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
+            {
+                Payment->RMSRoom = frmRoom->SelectedRoom;
+                CurrentTransaction.SalesType = eRoomSale;
+            }
+            else if (TDeviceRealTerminal::Instance().BasePMS->Registered&&(TGlobalSettings::Instance().NewBook==2)&&frmRoom->SelectNewBookRoom(Payment->CVSReadLocation) == mrOk)
+            {
+                Payment->NewBookRoom = frmRoom-> NewBookSelectedRoom;
+                CurrentTransaction.RoomNumber=StrToInt(frmRoom-> NewBookSelectedRoom.RoomNo);
+                CurrentTransaction.SalesType = eRoomSale;
+            }
+            else
+            {
+                Payment->SetPay(0);
+                Payment->SetAdjustment(0);
+                Payment->SetCashOut(0);
+                Payment->Result = eFailed;
+            }
+        }
+
+        if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) &&
+           EftPos->CheckOverLimitExceeded(Payment->GetPayTendered() + Payment->GetCashOutTotal()))
+        {
+            MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
+            Payment->SetPay(0);
+        }
+
+        if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
+        {
+           ProcessWalletTransaction(Payment);
+        }
+
+        //apply changes here..
+        if(CheckOnlinePaidOrNot())
+        {
+            ShowWebOrderMembersPayment();
+        }
+        else
+        {
+            ShowPaymentTotals(false);
+        }
+
+        if (NoElectronicPayments())
+        {
+            EnableElectronicPayments();
+        }
+        else
+        {
+            DisableOtherElectronicPayments(Payment);
+        }
     }
 
     if (CurrentTransaction.Money.PaymentDue <= 0.01)
@@ -1934,7 +1918,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
        if(!CurrentTransaction.IsQuickPayTransaction)
             btnCancel->SetFocus();
     }
-}
+}// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {
@@ -2404,7 +2388,6 @@ bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
         retVal = retVal && Payment->MerchentId != "" && Payment->TerminalId != "";
     return retVal;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {
