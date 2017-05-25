@@ -3831,10 +3831,18 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 							Kitchen->Initialise(DBTransaction);
                             PrintTransaction->TypeOfSale = PaymentTransaction.TypeOfSale;
                             PrintTransaction->ChitNumber = ChitNumber;
-                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+
+                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled )
                             {
-                                PrintTransaction->Customer.RoomNumber = PaymentTransaction.Customer.RoomNumber;
-                                PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                                if(PaymentTransaction.Phoenix.AccountName != "")
+                                {
+                                    PrintTransaction->Customer.RoomNumber = PaymentTransaction.Customer.RoomNumber;
+                                    PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                                }
+                                else
+                                {
+                                    PrintTransaction->Customer = TCustomer(0,0,"");
+                                }
                             }
                             Request->Transaction->TypeOfSale = PaymentTransaction.TypeOfSale;
                               //MM-4563
@@ -5220,6 +5228,8 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 	std::auto_ptr<TList>OldOrdersList(new TList);
     PrintTransaction.ChitNumber = ChitNumber;
 	TDateTime OrderedTimeStamp = Now();
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+        PrintTransaction.Customer = TCustomer(0,0,"");
     PrintTransaction.Membership.Assign(Membership);
 	for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 	{

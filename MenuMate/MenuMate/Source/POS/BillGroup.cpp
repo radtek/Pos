@@ -3395,6 +3395,8 @@ void TfrmBillGroup::ShowReceipt()
 		{
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                ReceiptTransaction.Customer = TCustomer(0,0,"");
 			ReceiptTransaction.ApplyMembership(Membership);
 			TempReceipt->Transaction = &ReceiptTransaction;
 			std::set <__int64> ReceiptItemKeys;
