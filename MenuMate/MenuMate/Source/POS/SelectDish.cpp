@@ -7944,18 +7944,8 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
             {
                 if(frmPOSMain->MenuEdited)
                 {
-
-                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                     RedrawMenu();
-                    std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
-                    Request->Broadcast         = true;
-                    Request->CompareToDataBase = true;
-                    for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
-                    {
-                        TListMenu *Menu = TDeviceRealTerminal::Instance().Menus->Current->MenuGet(i);
-                        Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
-                    }
-                    TDeviceRealTerminal::Instance().ManagerNet->SendToAll(Request.get());
+                    UpdateMenuItemsAfterLoginScreen();
                 }
             }
 		else if (frmPOSMain->SendHeldOrders)
@@ -12600,27 +12590,6 @@ void TfrmSelectDish::UpdateValue()
     DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::WriteMenuUpdateSetting(bool retVal)
-{
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text ="UPDATE VARSPROFILE a SET a.INTEGER_VAL =:INTEGER_VAL "
-        " where a.VARIABLES_KEY = 4135 "  ;
-        IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
-        IBInternalQuery->ExecQuery();
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
 // ---------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------
 bool  TfrmSelectDish::CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction, int tabKey)
@@ -12897,18 +12866,12 @@ TItemComplete * TfrmSelectDish::createItemComplete(
         dBTransaction.StartTransaction();
 
      bool isItemUsingPCD = TDBOrder::IsItemUsingPCD(dBTransaction, Item->ItemKey, itemSize->Name);
-     //dBTransaction.Commit();
      if(isItemUsingPCD)
      {
 		itemComplete->ClaimAvailability();
         
      }
-    //int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
-    dBTransaction.Commit();
-    /*if(item_avilability == 0)
-    {
-        WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
-    }*/
+     dBTransaction.Commit();
 
 	itemComplete->SizeKitchenName = itemSize->SizeKitchenName;
     itemComplete->GSTPercent = itemSize->GSTPercent;

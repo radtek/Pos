@@ -459,7 +459,6 @@ private: // User declarations
     bool NotifyLastWebOrder(Database::TDBTransaction &DBTransaction);
     bool GetValue(Database::TDBTransaction &DBTransaction);
     void UpdateValue();
-    void WriteMenuUpdateSetting(bool retVal);
     bool CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction,int tabKey);
     bool CheckTabIsInUse(Database::TDBTransaction &dBTransaction, int tabKey);
     bool ShowTabLockedMessage(AnsiString creditMessage);
