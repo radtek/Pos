@@ -3618,8 +3618,7 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFourthCode(Database::TDBTra
 	AnsiString cmd_code= "121";
 	AnsiString  sales         = IBInternalQuery2->FieldByName("SALES")->AsCurrency;
 	AnsiString  discount      = IBInternalQuery2->FieldByName("DISCOUNT")->AsCurrency;
-	if(discount!="0")
-	{discount="$"+discount;}
+
 	AnsiString  cess          ="";              //length 11
 	AnsiString  charges       = IBInternalQuery2->FieldByName("CHARGES")->AsCurrency;
 	AnsiString  tax           = IBInternalQuery2->FieldByName("TAX")->AsCurrency;          //length 11
@@ -3629,7 +3628,8 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFourthCode(Database::TDBTra
 	AnsiString  exempt_Gst    ="Y";
 	AnsiString discount_Code = "";
 	AnsiString  other_chg     ="";
-	AnsiString  discount_Per  = IBInternalQuery2->FieldByName("DISCOUNT")->AsCurrency;
+	AnsiString  discount_Per  = "$";//IBInternalQuery2->FieldByName("DISCOUNT")->AsCurrency;
+    
 	AnsiString  rounding_Amt  = IBInternalQuery2->FieldByName("ROUNDING_AMT")->AsCurrency;
 
 	AnsiString finalValue= cmd_code+"|" +sales+"|"+discount+"|"+cess+"|"+charges+"|"+ tax+ "|" +
