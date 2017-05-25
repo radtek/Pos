@@ -36,7 +36,18 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
         _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
         _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        _paymentTransaction.SalesType = eRoomSale;
+
+        for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
+        {
+            TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
+            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabType = TabRoom;
+            Order->RoomNo = atoi(_paymentTransaction.Phoenix.AccountNumber.t_str());
+        }
     }
+
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
     // Iterate pyamentTransaction orders loop and identify the same III party codes
