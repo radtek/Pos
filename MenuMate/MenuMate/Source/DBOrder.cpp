@@ -685,7 +685,7 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
 				IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = destTimeKey;
 				IBInternalQuery->ParamByName("SEATNO")->AsInteger = SeatNo;
-				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName;
+				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName == "" ? TabName : TableName;
 				IBInternalQuery->ParamByName("PARTY_NAME")->AsString = PartyName;
 				IBInternalQuery->ParamByName("TAB_NAME")->AsString = TabName;
 				IBInternalQuery->ExecQuery();
@@ -746,7 +746,7 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 						IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNo;
 						IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = destTimeKey;
 						IBInternalQuery->ParamByName("SEATNO")->AsInteger = SeatNo;
-						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName;
+						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName == "" ? TabName : TableName;
 						IBInternalQuery->ParamByName("PARTY_NAME")->AsString = PartyName;
 						IBInternalQuery->ParamByName("TAB_NAME")->AsString = TabName;
 						IBInternalQuery->ExecQuery();

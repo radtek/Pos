@@ -5799,17 +5799,18 @@ void TListPaymentSystem::GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTran
 {
     try
     {
-        Currency sd= paymentTransaction.Money.TotalGSTContent  ;
+      Currency sd= paymentTransaction.Money.TotalGSTContent  ;
         AnsiString cmd_code= "121";
-        AnsiString  sales         =paymentTransaction.Money.ProductAmount; ;              //length 11
-        AnsiString  discount      =-1*paymentTransaction.Money.ProductDiscount;              //length 11
+            AnsiString  sales         =paymentTransaction.Money.Total ;              //length 11
+                  AnsiString  discount      =-1*paymentTransaction.Money.ProductDiscount;              //length 11
         AnsiString  cess          ="";              //length 11
         AnsiString  charges       = paymentTransaction.Money.ServiceCharge;
         AnsiString  tax           =paymentTransaction.Money.TotalGSTContent;              //length 11
         AnsiString  tax_Type      ="";
-        if(paymentTransaction.Money.ProductAmount==paymentTransaction.Money.GrandTotal)        //length 11
+        if(TGlobalSettings::Instance().ItemPriceIncludeTax&&TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)        //length 11
         {
             tax_Type="I";
+          //sales=  salesincl ;
         }
         else
         {
