@@ -704,6 +704,9 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 					Request->Waiter = CancelUserInfo.Name;
 					Request->Transaction->Money.Recalc(*Request->Transaction);
 
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                       (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                        Request->Transaction->Customer = TCustomer(0,0,"");
                     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
 					Kitchen->Initialise(DBTransaction);
 					Kitchen->GetPrintouts(DBTransaction, Request.get());
@@ -3400,11 +3403,10 @@ void TfrmBillGroup::ShowReceipt()
 		{
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                ReceiptTransaction.Customer = TCustomer(0,0,"");
+
 			ReceiptTransaction.ApplyMembership(Membership);
 			TempReceipt->Transaction = &ReceiptTransaction;
+
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
@@ -3535,6 +3537,9 @@ void TfrmBillGroup::ShowReceipt()
 				TempReceipt->Transaction->Customer = TDBContacts::GetCustomerAndRoomNumber( DBTransaction, CurrentInvoiceKey );
 			}
 
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
 			TPrinterPhysical DefaultScreenPrinter;
 			DefaultScreenPrinter.NormalCharPerLine = 30;
 			DefaultScreenPrinter.BoldCharPerLine = 30;
@@ -3554,7 +3559,7 @@ void TfrmBillGroup::ShowReceipt()
 
             if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
                (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                ReceiptTransaction.Customer = TCustomer(0,0,"");
+                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
 
 			ReceiptTransaction.Money.CreditAvailable = TDBOrder::LoadCreditFromOrders(DBTransaction, ReceiptTransaction.Orders);
 			ReceiptTransaction.Money.Recalc(ReceiptTransaction);
