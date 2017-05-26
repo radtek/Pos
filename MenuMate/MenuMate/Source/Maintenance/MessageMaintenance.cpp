@@ -64,7 +64,7 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
         }
         case eWriteOff:
         {
-            pnlLabel->Caption = "Wastage Reasons";
+            pnlLabel->Caption = "Writeoff Reasons";
             break;
         }
         case eCustomerTypes:

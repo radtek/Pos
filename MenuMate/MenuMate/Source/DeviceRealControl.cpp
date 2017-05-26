@@ -337,6 +337,7 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 					"ACCOUNT_NAME       = :ACCOUNT_NAME,"
 					"ACCOUNT_ID         = :ACCOUNT_ID,"
 					"LOCATION_ADDRESS   = :LOCATION_ADDRESS, "
+                    "MEMBER_TYPE        = 1, "
                     "POINTS_RULES       = :POINTS_RULES ";
 
 					if (Csv.Cells[TOTAL_SPENT][i] != "")

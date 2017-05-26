@@ -1573,7 +1573,7 @@ TCustomer TDBContacts::GetCustomerAndRoomNumber( Database::TDBTransaction &DBTra
 		"SELECT * FROM HOTELCUSTOMER WHERE INVOICE_KEY = :INVOICE_KEY;";
 	  IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = InvoiceKey;
 	  IBInternalQuery->ExecQuery();
-	  return TCustomer( IBInternalQuery->FieldByName("ROOM_NUMBER")->AsInteger,
+      return TCustomer( IBInternalQuery->FieldByName("ROOM_NUMBER")->AsInteger,
 						IBInternalQuery->FieldByName("INVOICE_KEY")->AsInteger,
 						IBInternalQuery->FieldByName("CUSTOMER_NAME")->AsString );
    }

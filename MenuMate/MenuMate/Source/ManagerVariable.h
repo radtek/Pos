@@ -58,7 +58,7 @@ enum vmVariables
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
    vmIntaMateTerminalID, vmIntaMateIPTimeOut, vmPocketVoucherURL, vmMembershipTillID,
    vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,vmPMSTipAccount,vmPMSExpensesAccount,vmPMSServiceChargeAccount,
-   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,
+   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName,
 
 	// Stock Master ----------------------------------------------------------------
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,

@@ -25,7 +25,6 @@ __fastcall TfrmDiscount::TfrmDiscount(TComponent* Owner)
     IsComboDiscount = false;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscount::FormCreate(TObject *Sender)
 {
 	Left = (Screen->Width - Width) / 2;
@@ -426,7 +425,78 @@ void __fastcall TfrmDiscount::pnlOkClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
 {
-	if (Mode == DiscModeCurrency)
+   if(IsPaymentSurcharge)
+   {
+      HandlePaymnetSurcharge();
+   }
+   else
+   {
+      HandleNormalDiscount();
+   }
+   lbeEnteredValue->Color = clHighlight;
+   lbeEnteredValue->Font->Color = clHighlightText;
+}
+//---------------------------------------------------------------------------
+void TfrmDiscount::ForceType(TAdjustmentValueType inValueType)
+{
+	ForcedType = inValueType;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmDiscount::tbToggleAmountClick(TObject *Sender)
+{
+   if(ValueType ==  avtDiscount)
+   {
+      ValueType = avtSurcharge;
+      tbToggleAmount->Caption = "Applying Surcharge";
+   }
+   else if(ValueType ==  avtSurcharge)
+   {
+      ValueType = avtDiscount;
+   	tbToggleAmount->Caption = "Applying Discount";
+   }
+
+   if (Mode == DiscModeCurrency)
+   {
+      lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
+   }
+  else  if (Mode == DiscModeItem)
+   {
+      lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
+   }
+   else if (Mode == DiscModePercent)
+   {
+      lbeEnteredValue->Caption = FloatToStr(fabs(wrkPercAmount)) + " %";
+   }
+}
+//---------------------------------------------------------------------------
+void TfrmDiscount::HandlePaymnetSurcharge()
+{
+    if (Mode == DiscModeCurrency)
+	{
+        Mode = DiscModePercent;
+        PercentDecimal = false;
+        pnl00->Caption = ".";
+        if (TotalValue != 0)
+        {
+            wrkPercAmount = double(int(1000 * wrkCurAmount / TotalValue)) / 10;
+        }
+        lbeEnteredValue->Caption = FloatToStr(wrkPercAmount) + " %";
+        pnlToggle->Caption = "% Mode";
+        ValueType = avtSurcharge;
+    }
+	else if (Mode == DiscModePercent)
+	{
+        Mode = DiscModeCurrency;
+		pnl00->Caption = "00";
+		lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
+		pnlToggle->Caption = "$ Mode";
+        ValueType = avtSurcharge;
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmDiscount::HandleNormalDiscount()
+{
+    if (Mode == DiscModeCurrency)
 	{
         if(IsNewDiscount)
         {
@@ -518,58 +588,22 @@ void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
         ValueType = ValueTypeBeforeSetPrice;
     }
 
-       if(ValueType == avtDiscount)
-       {
-        tbToggleAmount->Caption = "Applying Discount";
-       }
-       else if(ValueType == avtSurcharge)
-       {
-          tbToggleAmount->Caption = "Applying Surcharge";
-       }
-       else if(ValueType == avtPoints)
-       {
-         tbToggleAmount->Caption = "Set Points";
-       }
-       else
-       {
-          tbToggleAmount->Caption = "Set Price";
-       }
-
-	lbeEnteredValue->Color = clHighlight;
-	lbeEnteredValue->Font->Color = clHighlightText;
-}
-//---------------------------------------------------------------------------
-void TfrmDiscount::ForceType(TAdjustmentValueType inValueType)
-{
-	ForcedType = inValueType;
-}
-
-void __fastcall TfrmDiscount::tbToggleAmountClick(TObject *Sender)
-{
-   if(ValueType ==  avtDiscount)
+   if(ValueType == avtDiscount)
    {
-      ValueType = avtSurcharge;
+    tbToggleAmount->Caption = "Applying Discount";
+   }
+   else if(ValueType == avtSurcharge)
+   {
       tbToggleAmount->Caption = "Applying Surcharge";
    }
-   else if(ValueType ==  avtSurcharge)
+   else if(ValueType == avtPoints)
    {
-      ValueType = avtDiscount;
-   	tbToggleAmount->Caption = "Applying Discount";
+     tbToggleAmount->Caption = "Set Points";
+   }
+   else
+   {
+      tbToggleAmount->Caption = "Set Price";
    }
 
-   if (Mode == DiscModeCurrency)
-   {
-      lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
-   }
-  else  if (Mode == DiscModeItem)
-   {
-      lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
-   }
-   else if (Mode == DiscModePercent)
-   {
-      lbeEnteredValue->Caption = FloatToStr(fabs(wrkPercAmount)) + " %";
-   }
 }
 //---------------------------------------------------------------------------
-
-
