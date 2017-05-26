@@ -401,7 +401,8 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
 			ReceiptTransaction.ApplyMembership(Membership);
 			TempReceipt->Transaction = &ReceiptTransaction;
-
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
@@ -3395,6 +3396,8 @@ void TfrmBillGroup::ShowReceipt()
 		{
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                ReceiptTransaction.Customer = TCustomer(0,0,"");
 			ReceiptTransaction.ApplyMembership(Membership);
 			TempReceipt->Transaction = &ReceiptTransaction;
 			std::set <__int64> ReceiptItemKeys;
