@@ -3947,6 +3947,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						// Print Invoice.
 
 						TempReceipt->Transaction = &InvoiceTransaction;
+                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                            TempReceipt->Transaction->Customer = TCustomer(0,0,"");
 						TempReceipt->SignReceipt = true;
 						TempReceipt->SenderType = devPC;
 						TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
