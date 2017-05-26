@@ -1033,8 +1033,8 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
            " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
 		     ") ) and "
-			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
+			"Archive.TIME_STAMP >= :StartTime and "
+			"Archive.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (Locations && Locations->Count > 0)
 	{
@@ -1090,8 +1090,8 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
            " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
 		     "  )  ) and "
-			"DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
-			"DAYARCHIVE.TIME_STAMP_BILLED < :EndTime and "
+			"DAYARCHIVE.TIME_STAMP >= :StartTime and "
+			"DAYARCHIVE.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (Locations && Locations->Count > 0)
 	{
@@ -1185,8 +1185,8 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		    " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		    " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'    "
 		    "  )  ) and  "
-			"ARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
-			"ARCHIVE.TIME_STAMP_BILLED < :EndTime and "
+			"ARCHIVE.TIME_STAMP >= :StartTime and "
+			"ARCHIVE.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (GroupByLocation)
 	{
@@ -1221,8 +1221,8 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		    " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		    " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ,0)<> 'Non-Chargeable'    "
 		    "  )  ) and  "
-			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
-			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
+			"DayArchive.TIME_STAMP >= :StartTime and "
+			"DayArchive.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (GroupByLocation)
 	{
@@ -1277,298 +1277,6 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 
 
 }
-/*void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation)
-{
-	qrCategoryAnalysis->Close();
-	qrCategoryAnalysis->SQL->Text =
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Archive.Order_Location Location,";
-	}
-	else
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name Category_Group,"
-			"ArcCategories.Category,"
-			" cast(SUM (Archive.QTY) as numeric(17,4)) Item_Count,"
-
-	    	"Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) )+Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"      //sales excl
-			"CAST(Sum((abs(Archive.Qty) * Archive.Price  ))+Sum(Archive.Discount) AS NUMERIC(17,4)) PriceInc,"
-			"CAST(Sum(abs(Archive.Qty) * Archive.Cost) AS NUMERIC(17,4)) Cost,"
-
-            "CAST(Sum(((cast(Archive.Qty * Archive.Price AS NUMERIC(17,4))) + Archive.Discount)) AS NUMERIC(17,4)) - Sum(Archive.Cost) Profit   "
-		"From "
-			"Security Left Join Archive on "
-				"Security.Security_Ref = Archive.Security_Ref "
-			"Left Join ArcCategories on "
-				"Archive.Category_Key = ArcCategories.Category_Key "
-			"Left Join CategoryGroups on "
-				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
-         " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM ARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
-           " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
-		     " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
-		     ") ) and "
-		 //" ARCHIVE.PRICE<>0 and "
-			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (Locations && Locations->Count > 0)
-	{
-		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
-													ParamString(Locations->Count, "Archive.Order_Location", "LocationParam") + ")";
-	}
-	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
-		"Group By ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Archive.Order_Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name,"
-			"ArcCategories.Category "
-
-		"Union All "
-
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"DayArchive.Order_Location Location,";
-	}
-	else
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name Category_Group,"
-			"ArcCategories.Category,"
-			"cast(SUM (DayArchive.QTY) as numeric(17,4)) Item_Count,"
-           	"Cast(Sum((abs(DayArchive.Qty )* DAYARCHIVE.BASE_PRICE  )  ) +Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
-			"CAST(Sum((DayArchive.Qty * DayArchive.Price)  )+Sum(DayArchive.Discount) AS NUMERIC(17,4)) PriceInc,"
-			"CAST(Sum(abs(DayArchive.Qty) * DayArchive.Cost) AS NUMERIC(17,4)) Cost,"
-
-            "CAST(Sum(((CAST(DayArchive.Qty * DayArchive.Price as Numeric(17,4))) + DayArchive.Discount) ) AS NUMERIC(17,4)) - Sum(DayArchive.Cost) Profit "
-
-		"From "
-			"Security Left Join DayArchive on "
-				"Security.Security_Ref = DayArchive.Security_Ref "
-			"Left Join ArcCategories on "
-				"DayArchive.Category_Key = ArcCategories.Category_Key "
-			"Left Join CategoryGroups on "
-				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
-		          "Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM DAYARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and "
-           " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
-		     " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
-		     "  )  ) and "
-		// "DAYARCHIVE.PRICE<>0 and "
-			"DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
-			"DAYARCHIVE.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (Locations && Locations->Count > 0)
-	{
-		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
-		"Group By ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"DayArchive.Order_Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name,"
-			"ArcCategories.Category "
-
-		"Union All "
-
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Orders.Order_Location Location,";
-	}
-	else
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name Category_Group,"
-			"ArcCategories.Category,"
-			" cast(SUM (Orders.QTY) as numeric(17,4)) Item_Count,"
-
-       " Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) ) +Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc ,    "
-			"CAST(Sum((Orders.Qty * Orders.Price)  )+Sum(Orders.Discount) AS NUMERIC(17,4)) PriceInc,"
-			"CAST(Sum(abs(Orders.Qty) * Orders.Cost) AS NUMERIC(17,4)) Cost,"
-
-                "CAST (CAST(Sum(caST(((CAST(Orders.Qty * Orders.Price AS NUMERIC(17,4))) + Orders.Discount) AS NUMERIC(17,4))) AS NUMERIC(17,4)) - Sum(Orders.Cost) AS NUMERIC(17,4) ) Profit 	 "
-		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
-			"Left Join ArcCategories on "
-				"Orders.Category_Key = ArcCategories.Category_Key "
-			"Left Join CategoryGroups on "
-				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
-		"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
-		   	//"(Orders.Order_Type = 3 or "
-			//"Orders.Order_Type = 0) and "
-			"Orders.Time_Stamp >= :StartTime and "
-			"Orders.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (Locations && Locations->Count > 0)
-	{
-		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
-													ParamString(Locations->Count, "Orders.Order_Location", "LocationParam") + ")";
-	}
-	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
-		"Group By ";
-	if (GroupByLocation)
-	{
-		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"Orders.Order_Location,";
-	}
-	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
-			"CategoryGroups.Name,"
-			"ArcCategories.Category "
-
-		"Order By "
-			"1, 2, 3";
-
-	qrCatLocTotal->Close();
-	qrCatLocTotal->SQL->Text =
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"Archive.Order_Location Location,";
-	}
-	else
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"CAST(Sum((Archive.Qty * Archive.Price) + Archive.Discount) AS NUMERIC(17,4)) PriceInc "
-		"From "
-			"Security Left Join Archive on "
-				"Security.Security_Ref = Archive.Security_Ref "
-		      "left join ARCORDERDISCOUNTS on ARCORDERDISCOUNTS.ARCHIVE_KEY = Archive.ARCHIVE_KEY "
-		"Where  ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
-		    " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
-		    " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'    "
-		    "  )  ) and  "
-		 //" ARCHIVE.PRICE<>0 and "
-			"ARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
-			"ARCHIVE.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Group By "
-			"Archive.Order_Location ";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Union All "
-
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"DayArchive.Order_Location Location,";
-	}
-	else
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"CAST(Sum((abs(DayArchive.Qty) * DayArchive.Price) + DayArchive.Discount) AS NUMERIC(17,4)) PriceInc "
-		"From "
-			"Security Left Join DayArchive on "
-				"Security.Security_Ref = DayArchive.Security_Ref "
-		    "Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM DAYARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and "
-		    " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
-		    " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ,0)<> 'Non-Chargeable'    "
-		    "  )  ) and  "
-			 //"DAYARCHIVE.PRICE<>0 and "
-			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
-			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location ";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Union All "
-
-		"Select ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"Orders.Order_Location Location,";
-	}
-	else
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"Cast('All Locations' As Varchar(25)) Location,";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-			"CAST(Sum((Orders.Qty * Orders.Price) + Orders.Discount) AS NUMERIC(17,4)) PriceInc "
-		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
-		"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
-			//"(Orders.Order_Type = 3 or "
-			//"Orders.Order_Type = 0) and "
-			"Orders.Time_Stamp >= :StartTime and "
-			"Orders.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Ordered By' ";
-	if (GroupByLocation)
-	{
-		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Group By "
-			"Orders.Order_Location ";
-	}
-	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
-		"Order By "
-			"1 ";
-
-	qrCategoryAnalysis->ParamByName("StartTime")->AsDateTime	= StartTime;
-	qrCategoryAnalysis->ParamByName("EndTime")->AsDateTime	= EndTime;
-	qrCatLocTotal->ParamByName("StartTime")->AsDateTime		= StartTime;
-	qrCatLocTotal->ParamByName("EndTime")->AsDateTime			= EndTime;
-	if (Locations)
-	{
-		for (int i=0; i<Locations->Count; i++)
-		{
-			qrCategoryAnalysis->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
-		}
-	}
-
-
-}*/
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupCategoryBreakdown(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation)
 {
