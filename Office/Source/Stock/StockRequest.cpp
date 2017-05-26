@@ -999,7 +999,7 @@ void TfrmStockRequest::PopulateStock()
 	bool CategoryCheckEnable=false;
     if(stockReqAutoKey==1)
     {
-	bool canAdd = (Application->MessageBox("Add stock items for the current selected location", "Cancel?", MB_ICONQUESTION + MB_OKCANCEL) == ID_OK);
+	bool canAdd = (Application->MessageBox("Add stock items for the current selected location ?", "Cancel ?", MB_ICONQUESTION + MB_OKCANCEL) == ID_OK);
 	if(!canAdd)
 	return;
     }
