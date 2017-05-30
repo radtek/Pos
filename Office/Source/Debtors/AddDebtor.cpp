@@ -362,17 +362,17 @@ bool TfrmAddDebtor::CheckLocalMembership()
         "where "
             "INTEGER_VAL = :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
 
-    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
+    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger != 0;
     IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2001;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
     {
-        if(CheckLoyaltymateEnabled())
-            retValue = false;
+        retValue = false;
     }
     else
     {
-        retValue = false;
+        if(CheckLoyaltymateEnabled())
+            retValue = false;
     }
     return retValue;
 }
@@ -390,14 +390,22 @@ bool TfrmAddDebtor::CheckLoyaltymateEnabled()
         "from "
             "VARSPROFILE "
         "where "
-            "INTEGER_VAL = :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
+            " VARIABLES_KEY = :VARIABLES_KEY ";
 
-    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
+    //IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
     IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7038;
-    IBInternalQuery->ExecQuery();
-    if(IBInternalQuery->RecordCount > 0)
+    //IBInternalQuery->ExecQuery();
+    /*if(IBInternalQuery->RecordCount > 0)
     {
        retValue = true;
+    }  */
+    for(IBInternalQuery->ExecQuery(); !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+        if(IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger == 1)
+        {
+            retValue = true;
+            break;
+        }
     }
     return retValue;
 }
