@@ -11,7 +11,7 @@
 
 #pragma package(smart_init)
 
-bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime)
 {
     bool retVal = false;
     try
@@ -20,7 +20,7 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
         TMallExportSalesWrapper salesData;
 
         ///Prepare Data For Inserting Data Into DataBase
-        salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
+        salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey, currentTime);
 
         //Insert Prepared Data into DataBase
         retVal = InsertInToMallExport_Sales(paymentTransaction.DBTransaction, salesData);
@@ -67,6 +67,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
     {
         std::list<TMallExportSalesData>::iterator it;
         int arcBillKey;
+        TDateTime billedTime;
         //Iterate mallExport Sales data for inserting into DB
         for(it = mallExportSalesData.SalesData.begin(); it != mallExportSalesData.SalesData.end(); it++)
         {
@@ -112,13 +113,14 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             arcBillKey = it->ArcBillKey;
+            billedTime = it->DateCreated;
             IBInternalQuery->ExecQuery();
         }
 
         //Insert sales total amount according to sales type.
         if(mallExportSalesData.SaleBySalsType.size())
         {
-            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey);
+            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey, billedTime);
         }
 
         isInserted = true;
@@ -239,7 +241,8 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------
-void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey)
+void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey,
+                                                    TDateTime billedTime)
 {
     TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
@@ -260,14 +263,16 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     "ARCBILL_KEY, "
                     "SALES_TYPE_ID, "
                     "SUBTOTAL, "
-                    "DEVICE_KEY "
+                    "DEVICE_KEY, "
+                    "DATE_CREATED "
                      ") "
             "VALUES ( "
                     ":SALES_ID, "
                     ":ARCBILL_KEY, "
                     ":SALES_TYPE_ID, "
                     ":SUBTOTAL, "
-                    ":DEVICE_KEY "
+                    ":DEVICE_KEY, "
+                    ":DATE_CREATED "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
@@ -275,6 +280,7 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
             ibInternalQuery->ParamByName("SALES_TYPE_ID")->AsInteger = itSalesBySalesTypes->first;
             ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            ibInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = billedTime;
             ibInternalQuery->ExecQuery();
         }
     }

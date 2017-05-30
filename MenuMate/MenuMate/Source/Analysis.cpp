@@ -1889,11 +1889,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             {
                 IBMallQuery->Close();
                 IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                         "AND A.DEVICE_KEY = :DEVICE_KEY "    ;
+                                         "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
 
                 IBMallSalesTypeQuery->Close();
                 IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                                  "AND A.DEVICE_KEY = :DEVICE_KEY "  ;
+                                                  "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
             }
 
          	IBDayArcBill->ExecQuery();
@@ -2191,12 +2191,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                     IBMallQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                    IBMallQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
                     IBMallQuery->ExecQuery();
 
                     IBMallSalesTypeQuery->Close();
                     IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                     IBMallSalesTypeQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                    IBMallSalesTypeQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
                     IBMallSalesTypeQuery->ExecQuery();
                 }
 			}
@@ -3004,13 +3006,10 @@ Zed:
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
 
-                    if(TGlobalSettings::Instance().mallInfo.MallId)
-                    {
-                        //Instantiation is happenning in a factory based on the active mall in database
-                        TMallExport* mallExport = TMallFactory::GetMallType();
-                        mallExport->Export();
-                        delete mallExport;
-                    }
+                    //Instantiation is happenning in a factory based on the active mall in database
+                    TMallExport* mallExport = TMallFactory::GetMallType();
+                    mallExport->Export();
+                    delete mallExport;
                 }
             }
       }

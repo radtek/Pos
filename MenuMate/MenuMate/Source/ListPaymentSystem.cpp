@@ -1523,7 +1523,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     {
         //Instantiation is happenning in a factory based on the active mall in database
         TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey);
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
         delete mall;
     }
 }
@@ -1915,6 +1915,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
 		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+        currentTime = IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime;
 		IBInternalQuery->ParamByName("TOTAL")->AsCurrency = Total;
 		IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Discount;
         IBInternalQuery->ParamByName("ROUNDING_ADJUSTMENT")->AsCurrency = RoundToNearest(

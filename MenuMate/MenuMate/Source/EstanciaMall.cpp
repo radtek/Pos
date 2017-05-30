@@ -340,7 +340,7 @@ TEstanciaMall::TEstanciaMall()
     deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //-------------------------------------------------------------------------------------------------------------
-TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime)
 {
     TMallExportSalesWrapper mallExportSalesWrapper;
     std::list<TMallExportSalesData> mallExportSalesData;

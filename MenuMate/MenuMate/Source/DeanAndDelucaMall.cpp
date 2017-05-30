@@ -150,7 +150,7 @@ TDeanAndDelucaMall::TDeanAndDelucaMall()
     deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //--------------------------------------------------------------------------------------------
-TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime)
 {
     TMallExportSalesWrapper salesWrapper;
     std::list<TMallExportSalesData> mallExportSalesData;
@@ -161,6 +161,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         UnicodeString tenantCode;
         Currency taxRate = 0.00;
         double amount = 0;
+        billedTime = currentTime;
         std::list<TMallExportSettings>::iterator it;
 
         for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
@@ -303,7 +304,7 @@ void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransact
         salesData.Field = field;
         salesData.DataValueType = dataType;
         salesData.FieldIndex = fieldIndex;
-        salesData.DateCreated = Now();
+        salesData.DateCreated = billedTime;
         salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
         salesData.ArcBillKey = arcBillKey;
         salesData.ZKey = 0;
@@ -808,7 +809,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         //Query for fetching data for writing into daily sales file.
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
-                                             " CAST( case when (DAILYDATA.FIELD_INDEX = 18 OR DAILYDATA.FIELD_INDEX = 20)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
+                                             " CAST( case when (DAILYDATA.FIELD_INDEX = 18 OR DAILYDATA.FIELD_INDEX = 20)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS BIGINT) FIELD_VALUE, "
                                              "DAILYDATA.VALUE_TYPE "
                                       "FROM "
                                             "(SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
@@ -825,7 +826,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
 
          "UNION ALL "
 
-            "SELECT  LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, "
+            "SELECT  LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS BIGINT) FIELD_VALUE, "
                      "a.VALUE_TYPE "
              "FROM MALLEXPORT_SALES a "
              "WHERE a.FIELD_INDEX  = 19  AND a.MALL_KEY = :MALL_KEY "
@@ -840,7 +841,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         "UNION ALL "
 
             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
-                      "CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
+                      "CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS BIGINT) FIELD_VALUE, "
                      "DAILYDATA.VALUE_TYPE "
             "FROM "
                     "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, "
@@ -864,7 +865,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
-                                      "CAST( case when (DAILYDATA.FIELD_INDEX = 4)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
+                                      "CAST( case when (DAILYDATA.FIELD_INDEX = 4)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS BIGINT) FIELD_VALUE, "
                                      "DAILYDATA.VALUE_TYPE "
                               "FROM "
                                     "(SELECT a.ARCBILL_KEY, CAST('Old Accumulated Total' as varchar(25)) FIELD, LPAD(4,2,0) FIELD_INDEX, "
@@ -884,7 +885,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, DAILYDATA.FIELD_VALUE, "
                                     "DAILYDATA.VALUE_TYPE "
                               "FROM "
-                                    "(SELECT a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST(0  AS INT ) FIELD_VALUE, a.VALUE_TYPE, A.Z_KEY "
+                                    "(SELECT a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST(0  AS BIGINT ) FIELD_VALUE, a.VALUE_TYPE, A.Z_KEY "
                                      "FROM MALLEXPORT_SALES a "
                                      "WHERE a.FIELD_INDEX  = 4 "
                                      "AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :MAX_ZKEY "
@@ -921,7 +922,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
        IBInternalQuery->Close();
        IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
                                     "FROM "
-                                        "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS INT) FIELD_VALUE, "
+                                        "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS BIGINT) FIELD_VALUE, "
                                                     "A.Z_KEY, MS.SALES_TYPE_CODE "
                                          "FROM MALLEXPORT_SALES a "
                                          "INNER JOIN MALL_SALES_BY_SALES_TYPE MST ON A.ARCBILL_KEY = MST.ARCBILL_KEY "
