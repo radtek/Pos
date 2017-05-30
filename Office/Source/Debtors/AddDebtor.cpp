@@ -360,9 +360,9 @@ bool TfrmAddDebtor::CheckLocalMembership()
         "from "
             "VARSPROFILE "
         "where "
-            "INTEGER_VAL = :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
+            "INTEGER_VAL <> :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
 
-    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger != 0;
+    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
     IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2001;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
