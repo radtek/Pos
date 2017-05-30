@@ -848,8 +848,8 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                     "a.VALUE_TYPE, A.Z_KEY "
                      "FROM MALLEXPORT_SALES a "
                      "WHERE a.FIELD_INDEX  = 5  "
-                     "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
-                            "(SELECT ARCBILL_KEY FROM MALLEXPORT_SALES a where a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  "
+                     "AND a.MALL_KEY = :MALL_KEY AND a.DATE_CREATED = "
+                            "(SELECT a.DATE_CREATED FROM MALLEXPORT_SALES a where a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  "
                                  "WHERE (a.Z_KEY = :MAX_ZKEY ";
 
         if(!zKey)
