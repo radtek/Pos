@@ -9,7 +9,7 @@ public class TRegInfo
 {
 
     public String Server = "localhost";
-    public String Database = @"C:\Databases\DougnutKing\MenuMate.fdb";
+    public String Database = @"C:\Program Files (x86)\MenuMate\MenuMate.fdb";
     public FbConnectionStringBuilder cs = new FbConnectionStringBuilder();
 
     bool Register(TMachineInfo Info)
