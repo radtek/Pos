@@ -151,7 +151,7 @@ void TfrmDebtors::LoadTree()
 		"From "
 			"Contacts "
 		"Where "
-			"Contact_Type = 2 "
+			"Contact_Type = 2 and member_type = 1 "
 		"Order By Name";
 
 	for (qrDebtors->Open(); !qrDebtors->Eof; qrDebtors->Next())

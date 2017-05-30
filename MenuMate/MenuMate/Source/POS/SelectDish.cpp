@@ -503,28 +503,22 @@ void TfrmSelectDish::ChangeMenuToChitDefault()
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
-{    IsTabBillProcessed=false;
-	SyncGridFontSizes();
+{
+
+     IsTabBillProcessed=false;
+     SyncGridFontSizes();
      IsSubSidizeProfileExist=false;
      IsSubSidizeProcessed =false;
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-    startCustomerDisplayServer();
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-	// Serving Course Display Options may have changed.
-	RedrawServingCourses();
-
-	//FormResize(Sender);
-	ResetPOS();
+     startCustomerDisplayServer();
+	 // Serving Course Display Options may have changed.
+	 RedrawServingCourses();
+	 ResetPOS();
 
 	TSeatOrders *Temp = SeatOrders[0];
 	Temp->Orders->HideServingCourseLabels = TGlobalSettings::Instance().HideServingCourseLabels;
 	SeatOrders[0] = Temp;
 
     unsigned __int32 maxSeatCount = getMaxSeatCount();
-
 	for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
 	{
 		TSeatOrders *Temp = SeatOrders[i];
@@ -534,25 +528,14 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 
 	tbtnSelectTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
 	tbtnSelectTable->Visible = TGlobalSettings::Instance().TablesEnabled;
-
-	//FormResize(Sender);
-
 	tiClock->Enabled = true;
-
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TManagerChitNumber::Instance().Load(DBTransaction);
 
 	tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
 	tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
 	tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
 	tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
 	tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
-
-	DBTransaction.Commit();
-
-        setParkedSalesBtnColor();
-
+    setParkedSalesBtnColor();
 	SetGridColors(tgridOrderCourse);
     SetGridColors(tgridServingCourse);
 	SetGridColors(tgridItemSideCourses);
@@ -565,40 +548,29 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 
     if(TGlobalSettings::Instance().ShowLargeFonts )
     {
-        tgridOrderCourse->Font->Size = 18;
+      tgridOrderCourse->Font->Size = 18;
     }
     else
     {
-     tgridOrderCourse->Font->Size = 12;
+      tgridOrderCourse->Font->Size = 12;
     }
 
     ProcessWebOrders(false);
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
 	InitXeroIntegration();
-	//OpenTPConnector(); // Open TablePicker's connector.
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-   //	initChefMate(); // Open Chefmate's Client
-
-    //::::::::::::::::::::::::::::::::::::::::::::
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+	TManagerChitNumber::Instance().Load(DBTransaction);
+    DBTransaction.Commit();
 
     tbtnChitNumber->Caption = "Chit";
     ChitNumber = TChitNumber();
-
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
-    //AdjustScreenSize();
-
     FormResize(Sender);
     if(TGlobalSettings::Instance().EnableTableDisplayMode)
-       {
+    {
           showTablePicker();
-       }
-
-    //::::::::::::::::::::::::::::::::::::::::::::
+    }
 
     setParkedSaleBtnStatus();
     CheckDiscountPoints = false;
@@ -610,17 +582,14 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     {
       lbeTotal->Caption = "Total";
     }
-    //::::::::::::::::::::::::::::::::::::::::::::
-     resetTransactionAuditScreen();
-     sec_ref = 0;
+    resetTransactionAuditScreen();
+    sec_ref = 0;
 
 	DBTransaction.StartTransaction();
     std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-   //   TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckPaymentAccess);
     stHappyHour->Visible = false;
     UserForceHappyHourRight=false;
     UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
-
     DBTransaction.Commit();
     IsParkSalesEnable = false;
     if(TGlobalSettings::Instance().ItemSearch )
@@ -764,6 +733,10 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
         {
             MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
         }
+    }
+    else
+    {
+       DBTransaction.Commit();
     }
 }
 // ---------------------------------------------------------------------------
