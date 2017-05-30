@@ -329,26 +329,19 @@ ChitResult TfrmSelectDish::InitializeChit()
 {
     ChitResult result;
     Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
-
     transaction.StartTransaction();
-
+    TChitNumberController controller(this, transaction);
+    result = controller.GetDefaultChitNumber(ChitNumber);
+    tbtnChitNumber->Visible = result != ChitDisabled;
+    if (tbtnChitNumber->Visible)
     {
-        TChitNumberController controller(this, transaction);
-
-        result = controller.GetDefaultChitNumber(ChitNumber);
-        tbtnChitNumber->Visible = result != ChitDisabled;
-        if (tbtnChitNumber->Visible)
-        {
-            tbtnChitNumber->Caption = ChitNumber.Name;
-
-        }
-        if (ChitNumber.Valid())
-        {
-            GetChitDiscountList(transaction, ChitNumber.DiscountList);
-        }
-        transaction.Commit();
+        tbtnChitNumber->Caption = ChitNumber.Name;
     }
-
+    if(ChitNumber.Valid())
+    {
+        GetChitDiscountList(transaction, ChitNumber.DiscountList);
+    }
+    transaction.Commit();
     return result;
 }
 // ---------------------------------------------------------------------------
@@ -723,7 +716,6 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
     if(!NotifyLastWebOrder(DBTransaction))
     {
         bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
-        DBTransaction.Commit();
         if (WebOrdersPending)
         {
             frmProcessWebOrder->Execute();
@@ -733,6 +725,9 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
         {
             MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
         }
+        //after processing web order again load chit specific to terminal
+        TManagerChitNumber::Instance().Load(DBTransaction);
+        DBTransaction.Commit();
     }
     else
     {
@@ -4808,7 +4803,6 @@ void TfrmSelectDish::SetSelectedServingCourse(int SelectedServingCourse)
 void TfrmSelectDish::OnAfterSaleProcessed(TSystemEvents *Sender)
 {
     ResetChit();
-
 	CloseSidePanel();
 	RedrawServingCourses();
 	if (TGlobalSettings::Instance().RememberLastServingCourse)
@@ -8862,36 +8856,23 @@ void TfrmSelectDish::ResetPOS()
 	LastSale = 0;
     TypeOfSale = RegularSale;
 	RefreshSeats();
-
-	//::::::::::::::::::::::::::::::::::::::::::
-
 	setPatronCount( 1 );
-
-    //::::::::::::::::::::::::::::::::::::::::::
-
 	SetSelectedSeat();
-
 	btnRemove->Enabled = false;
-
 	CurrentTimeKey = 0;
 
 	if (!OrderOnHold)
 	{
 		ChitNumber.Clear();
 	}
-
 	tbtnUserName->Caption = TDeviceRealTerminal::Instance().User.Name;
-
 	tbtnMembership->Caption = "Membership";
 	WaitingForSwipe = false;
 	Panel1->Enabled = true;
-
 	tbtnTender->Enabled = true;
 	tbtnSave->Enabled = true;
 	tbtnCashSale->Enabled = true;
-
 	lbDisplay->Clear();
-
 	tbtnTender->Visible = true;
 	tbtnSave->Visible = true;
 	if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender)
@@ -8910,12 +8891,9 @@ void TfrmSelectDish::ResetPOS()
 	tbtnDollar3->Visible = true;
 	tbtnDollar4->Visible = true;
 	tbtnDollar5->Visible = true;
-
 	CurrentTender = 0;
 	tbtnTender->Caption = "Tender";
-
     InitializeQuickPaymentOptions();
-    //InitializeWaiterOptions();
 	UpdateExternalDevices();
 
 	if (TGlobalSettings::Instance().RevertToFirstCourse)
