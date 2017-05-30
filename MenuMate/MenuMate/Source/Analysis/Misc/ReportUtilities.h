@@ -184,6 +184,17 @@ public:
     int CashWithdrawlCount;
 };
 
+class TDiscountDetail : public TObject
+{
+public:
+   UnicodeString Description;
+   UnicodeString Name;
+   int Quantity;
+   Currency Total;
+   UnicodeString TimeStamp;
+};
+
+
 class TCurrencyTotal : public TObject
 {
 public:
