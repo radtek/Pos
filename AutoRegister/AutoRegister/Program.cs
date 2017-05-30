@@ -10,7 +10,7 @@ namespace AutoRegister
         static void Main(string[] args)
         {
             String Server = "localhost";
-            String Database = @"C:\Program Files (x86)\MenuMate\MenuMate.fdb";
+            String Database = @"C:\Databases\DougnutKing\MenuMate.fdb";
 
             //if (args.Length > 0)
             //{

@@ -401,7 +401,7 @@ bool TfrmAddDebtor::CheckLoyaltymateEnabled()
     }  */
     for(IBInternalQuery->ExecQuery(); !IBInternalQuery->Eof; IBInternalQuery->Next())
     {
-        if(IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger == 1)
+        if(IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 1)
         {
             retValue = true;
             break;
