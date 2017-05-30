@@ -97,7 +97,7 @@ void __fastcall TfrmStockGroup::btnOkClick(TObject *Sender)
   }
   else
    {
-      Application->MessageBox("Please select atleast one Stock Category.", "Error", MB_ICONERROR + MB_OK);
+      Application->MessageBox("Please select at least one Stock Category.", "Error", MB_ICONERROR + MB_OK);
       return;
    }
 

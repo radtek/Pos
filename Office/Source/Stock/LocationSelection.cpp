@@ -73,7 +73,7 @@ SelectedLocationList =new TStringList;
   }
   else
    {
-      Application->MessageBox("Please select atleast one Stock Location.", "Error", MB_ICONERROR + MB_OK);
+      Application->MessageBox("Please select at least one Stock Location.", "Error", MB_ICONERROR + MB_OK);
       return;
    }  */
 }

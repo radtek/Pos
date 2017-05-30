@@ -677,6 +677,11 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
 		Receipt->AccountInvoiceNumber = Invoice->GetInvoiceNumber(CurrentTransaction.DBTransaction, CurrentTransaction.InvoiceKey);
 		Receipt->Transaction->Customer = TDBContacts::GetCustomerAndRoomNumber( CurrentTransaction.DBTransaction, CurrentTransaction.InvoiceKey );
 	}
+    else
+    {
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled &&  CurrentTransaction.Phoenix.AccountNumber == "")
+            CurrentTransaction.Customer = TCustomer( 0,0,"" );
+    }
 
 	Receipt->WaitTime = TDBSaleTimes::GetAverageWaitTimeMins(CurrentTransaction.DBTransaction);
 
@@ -773,7 +778,6 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
            }
         }
    }
-
 
 	Receipt->MiscData = CurrentTransaction.MiscPrintData;
 	Receipt->PaymentType = ptPreliminary;
@@ -1164,7 +1168,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 		{
 			if (CurrentTransaction.CreditTransaction)
 			{
-               ProcessCreditPayment(Payment);
+                  ProcessCreditPayment(Payment);
 			}
 			else
 			{
@@ -1388,9 +1392,18 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
                         CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
                         CurrentTransaction.SalesType = eRoomSale;
-                        TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
                         CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                        if(TGlobalSettings::Instance().PMSType != SiHot)
+                        {
+                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                            TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                        }
+                        else
+                        {
+                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                            TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                        }
                     }
                     else
                     {
@@ -1758,14 +1771,23 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         }
                         if(GuestMasterOk)
                         {
-                        CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
-                        [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-                        CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-                        CurrentTransaction.SalesType = eRoomSale;
-                        TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+                            [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+                            CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+                            CurrentTransaction.SalesType = eRoomSale;
+                            RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                            CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            }
+                            else
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
                         }
                     }
                     else
@@ -1896,7 +1918,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
        if(!CurrentTransaction.IsQuickPayTransaction)
             btnCancel->SetFocus();
     }
-}
+}// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {
@@ -1977,14 +1999,19 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
          {
            return;
          }
+
         TRedeemPointsInformation *RedeemPointsInformation = new TRedeemPointsInformation;
+
         if ((TGlobalSettings::Instance().UseTierLevels && PointsTransaction.Membership.Member.MemberType == 1)||
             PointsTransaction.Membership.Member.MemberType == 2)
         {
             RedeemPointsInformation->RemainingPoints = TotalPoints > RoundedPoints ? RoundedPoints :TotalPoints;
+
             if(!IsWrkPayAmountChanged)
               RedeemPointsInformation->RemainingPoints = RoundedPoints;
+
             Currency AmountToPay = PointsTransaction.Money.PaymentDue + Payment->GetAdjustment();
+
             if(!isPaymentByWeight &&  IsWrkPayAmountChanged)
                AmountToPay = wrkPayAmount;
 
@@ -2125,6 +2152,7 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
             {
                 AmountPtsToUse = wrkPayAmount;
                 redeemedPoint =  AmountPtsToUse;
+
             }
             if(TGlobalSettings::Instance().PontsSpentCountedAsRevenue)
             {
@@ -2360,7 +2388,6 @@ bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
         retVal = retVal && Payment->MerchentId != "" && Payment->TerminalId != "";
     return retVal;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {

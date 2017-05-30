@@ -230,8 +230,8 @@ void __fastcall TfrmDiscounts::tgListOrderMouseClick(TObject *Sender,
    LoadDiscountList();
    if(ListOrder == edloPriority)
    {
-      tgMove->Buttons[0][0]->Caption = "Increase Priorty";
-      tgMove->Buttons[1][0]->Caption = "Decrease Priorty";
+      tgMove->Buttons[0][0]->Caption = "Increase Priority";
+      tgMove->Buttons[1][0]->Caption = "Decrease Priority";
    }
    else
    {

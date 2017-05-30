@@ -790,7 +790,8 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		// Retrive this Receipts Security Ref.
 		Security->SetSecurityRefNumber(TDBSecurity::GetNextSecurityRef(PaymentTransaction.DBTransaction));
-
+        if(!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            PaymentTransaction.Customer = TCustomer(0,0,"");
 		switch (PaymentTransaction.Type)
 		{
 		case eTransOrderSet:
@@ -3942,6 +3943,12 @@ bool TListPaymentSystem::SplitPayment(TPaymentTransaction &PaymentTransaction, T
 
 		Retval = true;
 	}
+    else
+    {
+		//change the transaction type because no split payment is done and table's color changed if transaction type is eTransPSplit
+        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+            PaymentTransaction.Type = eTransUnknown;
+    }
 	return Retval;
 }
 
@@ -4730,6 +4737,10 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         frmSplitPayment->DivisionsLeft = 0;
                         PaymentAborted = true;
                         isPaymentProcessed = false;
+
+                          //change the transaction type because no split payment is done and table's color changed if transaction type is eTransSplit
+                        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+                            PaymentTransaction.Type = eTransUnknown;
                 }
             }
 	}
@@ -4867,6 +4878,10 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                 PaymentComplete = false;
 				PaymentAborted = true;
                 isPaymentProcessed = false;
+
+                 //change the transaction type because no partial payment is done and table's color changed if transaction type is eTransPartialPayment
+                if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+                    PaymentTransaction.Type = eTransUnknown;
 			}
 		}
 
@@ -5785,17 +5800,18 @@ void TListPaymentSystem::GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTran
 {
     try
     {
-        Currency sd= paymentTransaction.Money.TotalGSTContent  ;
+      Currency sd= paymentTransaction.Money.TotalGSTContent  ;
         AnsiString cmd_code= "121";
-        AnsiString  sales         =paymentTransaction.Money.ProductAmount; ;              //length 11
-        AnsiString  discount      =-1*paymentTransaction.Money.ProductDiscount;              //length 11
+            AnsiString  sales         =paymentTransaction.Money.Total ;              //length 11
+                  AnsiString  discount      =-1*paymentTransaction.Money.ProductDiscount;              //length 11
         AnsiString  cess          ="";              //length 11
         AnsiString  charges       = paymentTransaction.Money.ServiceCharge;
         AnsiString  tax           =paymentTransaction.Money.TotalGSTContent;              //length 11
         AnsiString  tax_Type      ="";
-        if(paymentTransaction.Money.ProductAmount==paymentTransaction.Money.GrandTotal)        //length 11
+        if(TGlobalSettings::Instance().ItemPriceIncludeTax&&TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)        //length 11
         {
             tax_Type="I";
+          //sales=  salesincl ;
         }
         else
         {

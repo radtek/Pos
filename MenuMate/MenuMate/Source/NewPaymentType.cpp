@@ -283,11 +283,11 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
             cbSurcharge->Checked = false;
         }
 
-
-        cbOpendrawer->Checked = Payment.GetPaymentAttribute(ePayTypeOpensCashDrawer);
         cbIsTip->OnClick = NULL;
         cbIsTip->Checked = Payment.GetPaymentAttribute(ePayTypeCustomSurcharge);
         cbIsTip->OnClick = cbIsTipClick;
+
+        cbOpendrawer->Checked = Payment.GetPaymentAttribute(ePayTypeOpensCashDrawer);
         cbCashOut->Checked = Payment.GetPaymentAttribute(ePayTypeAllowCashOut);
 
         if (Payment.GetPaymentAttribute(ePayTypeCash))
@@ -516,6 +516,7 @@ void __fastcall TfrmNewPaymentType::cbSurchargeClick(TObject *Sender)
 
 	  std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
       frmDiscount->ForceType(avtSurcharge);
+      frmDiscount->IsPaymentSurcharge = true;
 	  // Get the surcharge amount.
 	  if (SurchargeIsAPercentAdjust)
 	  {
@@ -601,7 +602,7 @@ void __fastcall TfrmNewPaymentType::cbIsTipClick(TObject *Sender)
 		 cbSurcharge->Checked = false;
 	  }
 
-	  std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
+	  /*std::auto_ptr <TfrmDiscount> frmDiscount(TfrmDiscount::Create <TfrmDiscount> (this));
       frmDiscount->ForceType(avtSurcharge);
 	  frmDiscount->Caption = "Surcharge Tax rate";
 	  frmDiscount->tbToggleAmount->Visible = false;
@@ -621,7 +622,7 @@ void __fastcall TfrmNewPaymentType::cbIsTipClick(TObject *Sender)
 	  {
 		 TaxRate = frmDiscount->PERCResult;
 		 tbSurchargeTaxRate->Caption = "Surcharge Tax Rate \r" + FloatToStrF(fabs(TaxRate), ffGeneral, 15, 2) + "%";
-	  }
+	  }*/
 
    }
 }

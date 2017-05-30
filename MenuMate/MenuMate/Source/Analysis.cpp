@@ -2690,8 +2690,8 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 
 	if (!PrinterExists)
 	{
-		MessageBox("A printer has not been selected. " "Choose a receipt printer from [Maintenance][Printer Maintenance] \r"
-		"[Setup Receipt Docket Format]\r" "This terminal is NOT closed!", "Error", MB_OK + MB_ICONWARNING);
+		MessageBox("A printer has not been selected. " "Choose a receipt printer from [Maintenance][Interfaces] \r"
+		"[Printer Maintenance][Setup Receipt Docket Format] \r" "This terminal is NOT closed!", "Error", MB_OK + MB_ICONWARNING);
 	}
 	else
 	{

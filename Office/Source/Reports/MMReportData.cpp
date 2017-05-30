@@ -2267,6 +2267,10 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 {
 	qrDayConsumption->Close();
 	qrDayConsumption->SQL->Text =
+    	   "select Time_Stamp,Order_Minute,Order_Hour,Order_Day,Order_Month,Order_Year,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+		"from (      "
+
 		"Select "
             "Archive.Time_Stamp, "
             "Extract (Minute From Archive.Time_Stamp) Order_Minute, "
@@ -2314,9 +2318,12 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 		"Group By "
             "Archive.Time_Stamp "
 		"Having "
-			"Count(Archive.Archive_Key) > 0 "
+			"Count(Archive.Archive_Key) > 0 ) "
 
         "Union All "
+         	   "select Time_Stamp,Order_Minute,Order_Hour,Order_Day,Order_Month,Order_Year,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+		"from (      "
         "Select "
            " writeoff.Time_Stamp, "
             "Extract (Minute From writeoff.Time_Stamp) Order_Minute,  "
@@ -2338,10 +2345,12 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"WRITEOFF.Time_Stamp < :EndTime "
         "Group By   "    
 
-			"WRITEOFF.TIME_STAMP "
+			"WRITEOFF.TIME_STAMP) "
 
 		"Union All "
-
+           	   "select Time_Stamp,Order_Minute,Order_Hour,Order_Day,Order_Month,Order_Year,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+		"from (      "
 		"select "
             "ORDERS.TIME_STAMP, "
             "Extract (Minute From ORDERS.Time_Stamp) Order_Minute, "
@@ -2370,9 +2379,11 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
         "Group By "
             "ORDERS.Time_Stamp, "
             +  _groupByClause + ///group by taxes
-
+          ") "
         "Union All "
-
+             	   "select Time_Stamp,Order_Minute,Order_Hour,Order_Day,Order_Month,Order_Year,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+		"from (      "
 		"Select "
             "DayArchive.Time_Stamp, "
             "Extract (Minute From DayArchive.Time_Stamp) Order_Minute, "
@@ -2422,7 +2433,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 		"Group By "
             "DayArchive.Time_Stamp "
 		"Having "
-			"Count(DayArchive.Archive_Key) > 0 "
+			"Count(DayArchive.Archive_Key) > 0) "
 		"Order By "
 			"1,2,3,4";
 
@@ -2435,6 +2446,10 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
+       "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl   "
+		"from ( "
+
 		"Select "
 			"CategoryGroups.Name Group_Name,"
 			"ArcCategories.Category Course_Name,"
@@ -2444,7 +2459,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Cast(Sum(Archive.Qty * Archive.Price )+ Sum(Archive.Discount) as Numeric(17,4)) Price,"
 			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
 			"Cast(Sum(abs(Archive.Cost)* Archive.Qty) as Numeric(17,4)) Cost, "
-            "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
+            " Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4))SalesIncl "
 		"From "
 			"Security Left Join Archive on "
 				"Security.Security_Ref = Archive.Security_Ref "
@@ -2493,9 +2508,12 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Item_Name,"
 			"Archive.Size_Name   "
 		"Having "
-			"Count(Archive.Archive_Key) > 0 "
+			"Count(Archive.Archive_Key) > 0 ) "
 
 		"Union All "
+            "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl   "
+		"from ( "
 
 		"Select "
 			"CategoryGroups.Name Group_Name,"
@@ -2555,9 +2573,12 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Item_Name,"
 			"DayArchive.Size_Name  "
 		"Having "
-			"Count(DayArchive.Archive_Key) > 0 "
+			"Count(DayArchive.Archive_Key) > 0 ) "
 
          "Union All "
+             "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl   "
+		"from ( "
 
          "Select "
 			"CategoryGroups.Name Group_Name,  "
@@ -2588,9 +2609,12 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"CategoryGroups.Name,   "
 			"ArcCategories.Category,  "
 			"WRITEOFF.ITEM,   "
-			"WRITEOFF.SIZE_NAME  "
+			"WRITEOFF.SIZE_NAME  ) "
 
 		"Union All "
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,  "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl   "
+		"from ( "
 
 		"Select "
 			"CategoryGroups.Name Group_Name,"
@@ -2627,7 +2651,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Orders.Size_Name, "
             +  _groupByClause +
 		"Having "
-			"Count(Orders.Order_Key) > 0 "
+			"Count(Orders.Order_Key) > 0 ) "
 
 		"Order By "
 			"1,2,3,4";
@@ -2644,6 +2668,10 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
+
 	"Select "
 			"CategoryGroups.Name Group_Name,"
 			"ArcCategories.Category Course_Name,"
@@ -2680,7 +2708,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
           "LEFT JOIN ( "
                  "SELECT "
                         "ARCORDERTAXES.ARCHIVE_KEY, "
-                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT,               "
+                        " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT,                    "
                         "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge,     "
                         "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
                   "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
@@ -2717,10 +2745,12 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"Archive.Size_Name, "
             "Discounts_.DISCOUNT_WITHOUT_TAX ,Discounts_.TAX_ON_DISCOUNT "
 		"Having "
-			"Count(Archive.Archive_Key) > 0 "
+			"Count(Archive.Archive_Key) > 0) "
 
 		"Union All "
-
+                  "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 			"Select "
 			"CategoryGroups.Name Group_Name,"
 			"ArcCategories.Category Course_Name,"
@@ -2793,10 +2823,12 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"DayArchive.Size_Name, "
             "Discounts_.DISCOUNT_WITHOUT_TAX ,Discounts_.TAX_ON_DISCOUNT "
 		"Having "
-			"Count(DayArchive.Archive_Key) > 0 "
+			"Count(DayArchive.Archive_Key) > 0 ) "
 
              "Union All "
-
+              "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
          "Select "
 			"CategoryGroups.Name Group_Name,  "
 			"ArcCategories.Category Course_Name, "
@@ -2826,12 +2858,14 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"CategoryGroups.Name,   "
 			"ArcCategories.Category,  "
 			"WRITEOFF.ITEM,   "
-			"WRITEOFF.SIZE_NAME  "
+			"WRITEOFF.SIZE_NAME )  "
 
 
 		"Union All "
 
-
+            "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"CategoryGroups.Name Group_Name,"
 			"ArcCategories.Category Course_Name,"
@@ -2944,7 +2978,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"Orders.Size_Name, "
              +  _groupByClause + ///group by taxes
 		"Having "
-			"Count(Orders.Order_Key) > 0 "
+			"Count(Orders.Order_Key) > 0 ) "
 
 		"Order By "
 			"1,2,3,4";
@@ -3110,6 +3144,9 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
+       "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Archive.Menu_Name Group_Name,"
 			"Archive.Course_Name,"
@@ -3161,10 +3198,12 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Archive.Item_Name,"
 			"Archive.Size_Name "
 		"Having "
-			"Count(Archive.Archive_Key) > 0 "
+			"Count(Archive.Archive_Key) > 0 ) "
 
 		"Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"DayArchive.Menu_Name Group_Name,"
 			"DayArchive.Course_Name,"
@@ -3217,10 +3256,12 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"DayArchive.Item_Name,"
 			"DayArchive.Size_Name "
 		"Having "
-			"Count(DayArchive.Archive_Key) > 0 "
+			"Count(DayArchive.Archive_Key) > 0 ) "
 
         "Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
           "Select  "
            " writeoff.MENU_NAME Group_Name, "
            " WRITEOFF.COURSE_NAME Course_Name, "
@@ -3246,10 +3287,12 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
        " WRITEOFF.MENU_NAME,  "
        " WRITEOFF.COURSE_NAME, "
         "WRITEOFF.ITEM,   "
-       " WRITEOFF.SIZE_NAME "
+       " WRITEOFF.SIZE_NAME ) "
 
 		"Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Orders.Menu_Name Group_Name,"
 			"Orders.Course_Name,"
@@ -3282,7 +3325,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Orders.Size_Name, "
              +  _groupByClause + ///group by taxes
 		"Having "
-			"Count(Orders.Order_Key) > 0 "
+			"Count(Orders.Order_Key) > 0) "
 
 		"Order By "
 			"1,2,3,4";
@@ -3299,6 +3342,9 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
+     "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Archive.Order_Location Group_Name,"
 			"Archive.Course_Name,"
@@ -3350,10 +3396,12 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Item_Name,"
 			"Archive.Size_Name "
 		"Having "
-			"Count(Archive.Archive_Key) > 0 "
+			"Count(Archive.Archive_Key) > 0  ) "
 
 		"Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"DayArchive.Order_Location Group_Name,"
 			"DayArchive.Course_Name,"
@@ -3406,10 +3454,12 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Item_Name,"
 			"DayArchive.Size_Name "
 		"Having "
-			"Count(DayArchive.Archive_Key) > 0 "
+			"Count(DayArchive.Archive_Key) > 0 ) "
 
          "Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
         "Select  "
            " WRITEOFF.ORDER_LOCATION Group_Name,  "
            " WRITEOFF.COURSE_NAME Course_Name,  "
@@ -3436,11 +3486,13 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
         "WRITEOFF.ORDER_LOCATION ,  "
         "WRITEOFF.COURSE_NAME,   "
         "WRITEOFF.ITEM,  "
-        "WRITEOFF.SIZE_NAME  "
+        "WRITEOFF.SIZE_NAME ) "
 
 
 		"Union All "
-
+           "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Orders.Order_Location Group_Name,"
 			"Orders.Course_Name,"
@@ -3472,7 +3524,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Orders.Size_Name, "
             +  _groupByClause + ///group by taxes
 		"Having "
-			"Count(Orders.Order_Key) > 0 "
+			"Count(Orders.Order_Key) > 0) "
 
 		"Order By "
 			"1,2,3,4";
@@ -3541,6 +3593,9 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
+     "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Archive.Order_Location Group_Name,"
 			"Archive.Course_Name,"
@@ -3602,10 +3657,12 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"ThirdPartyCodes.Code, ThirdPartyCodes.ThirdPartyCodes_Key "
 		"Having "
 			"Count(Archive.Archive_Key) > 0 "
-			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null "
+			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null ) "
 
 		"Union All "
-
+             "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"DayArchive.Order_Location Group_Name,"
 			"DayArchive.Course_Name,"
@@ -3670,10 +3727,12 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"ThirdPartyCodes.ThirdPartyCodes_Key "
 		"Having "
 			"Count(DayArchive.Archive_Key) > 0 "
-			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null "
+			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null ) "
 
 		"Union All "
-
+         "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
         "Select  "
            " WRITEOFF.ORDER_LOCATION Group_Name,  "
            " WRITEOFF.COURSE_NAME Course_Name,  "
@@ -3706,10 +3765,12 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
         "WRITEOFF.COURSE_NAME,   "
         "WRITEOFF.ITEM,  "
         "WRITEOFF.SIZE_NAME , "
-       " WRITEOFF.THIRD_PARTY_CODE  "
+       " WRITEOFF.THIRD_PARTY_CODE ) "
 
        "Union All "
-
+            "select Group_Name,Course_Name , Item_Name,Size_Name,Item_Count ,Price,round(PriceExc,2) PriceExc,Cost,Code, "
+		 		 "CASE WHEN (round(SalesIncl,2)-round(SalesIncl,1))= 0.01 or (round(SalesIncl,2)-round(SalesIncl,1))= -0.01 THEN round(SalesIncl,1) else round(SalesIncl,2)  END AS SalesIncl  "
+	   "	from (  "
 		"Select "
 			"Orders.Order_Location Group_Name,"
 			"Orders.Course_Name,"
@@ -3752,7 +3813,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
             +  _groupByClause + ///group by taxes
 		"Having "
 			"Count(Orders.Order_Key) > 0 "
-			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null "
+			"And ThirdPartyCodes.ThirdPartyCodes_Key is not null ) "
 
 		"Order By "
 			"1,2,3,4";

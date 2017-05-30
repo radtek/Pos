@@ -557,8 +557,10 @@ void TPaymentTransaction::SetRedeemPoints(Currency PointsRedeemed)
     {
       PointsRedeemed = RedeemPointsInformation->TotalPoints + RedeemWeightInformation->TotalPoints ;
     }
+
     SetRedeemBDayPoints(PointsRedeemed);
     SetRedeemFVPoints(PointsRedeemed);
+
     if( PointsRedeemed > 0)
      {
         TPointsTransactionAccountType AccountType = ptstLoyalty;
@@ -584,12 +586,15 @@ void TPaymentTransaction::SetRedeemBDayPoints(Currency &PointsRedeemed)
    {
      birthDayPoints = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint;
    }
-   redeemedBirthDayPoints = PointsRedeemed <= birthDayPoints ? PointsRedeemed :birthDayPoints;
-   PointsRedeemed -= redeemedBirthDayPoints;
-   TPointsTypePair Pair(pttRedeemedBD,ptstLoyalty);
-   TPointsType Type(pasUser,Pair,pesNone);
-   if(redeemedBirthDayPoints > 0)
-      Membership.Member.Points.Load(Type, redeemedBirthDayPoints);
+
+   if(birthDayPoints > 0)
+   {
+       redeemedBirthDayPoints = PointsRedeemed <= birthDayPoints ? PointsRedeemed :birthDayPoints;
+       PointsRedeemed -= redeemedBirthDayPoints;
+       TPointsTypePair Pair(pttRedeemedBD,ptstLoyalty);
+       TPointsType Type(pasUser,Pair,pesNone);
+       Membership.Member.Points.Load(Type, redeemedBirthDayPoints);
+   }
 }
 
 void TPaymentTransaction::SetRedeemFVPoints(Currency &PointsRedeemed)
@@ -606,14 +611,17 @@ void TPaymentTransaction::SetRedeemFVPoints(Currency &PointsRedeemed)
        {
            firstVisitPoints = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
        }
-       redeemedFirstVisitPoints = PointsRedeemed <= firstVisitPoints ? PointsRedeemed :firstVisitPoints;
-       PointsRedeemed -= redeemedFirstVisitPoints;
-       TPointsTypePair Pair(pttRedeemedFV,ptstLoyalty);
-       TPointsType Type(pasUser,Pair,pesNone);
        if(firstVisitPoints > 0)
-       Membership.Member.Points.Load(Type, redeemedFirstVisitPoints);
+       {
+            redeemedFirstVisitPoints = PointsRedeemed <= firstVisitPoints ? PointsRedeemed :firstVisitPoints;
+            PointsRedeemed -= redeemedFirstVisitPoints;
+            TPointsTypePair Pair(pttRedeemedFV,ptstLoyalty);
+            TPointsType Type(pasUser,Pair,pesNone);
+            Membership.Member.Points.Load(Type, redeemedFirstVisitPoints);
+       }
    }
 }
+
 void TPaymentTransaction::Recalc()
 {
    if(Orders != NULL)
