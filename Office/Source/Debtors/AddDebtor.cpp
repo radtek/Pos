@@ -140,9 +140,13 @@ void __fastcall TfrmAddDebtor::btnOkClick(TObject *Sender)
 	dtDebtorEdit->Post();
 
 	DebtorKey		= dtDebtorEdit->FieldByName("Contacts_Key")->AsInteger;
-	CompanyKey		= dtDebtorEdit->FieldByName("Company_Key")->AsInteger;
+	CompanyKey		= dtDebtorEdit->FieldByName("Company_Key")->AsInteger;        
+	Transaction->Commit();    
 
-	Transaction->Commit();
+	if (Mode == amAddDebtor)
+	{
+        UpdateMembershipSubsDetails(DebtorKey);
+    }
 	ModalResult = mrOk;
 }
 //---------------------------------------------------------------------------
@@ -254,6 +258,156 @@ void __fastcall TfrmAddDebtor::btnCopyCompanyClick(TObject *Sender)
 			dtDebtorEdit->FieldByName("Mailing_Address")->AsString	= qrCompanies->FieldByName("Mailing_Address")->AsString;
 		}
 	}
+}
+//---------------------------------------------------------------------------
+void TfrmAddDebtor::UpdateMembershipSubsDetails(int debtorKey)
+{
+    Database::TDBTransaction transaction(dmMMData->dbMenuMate);
+    transaction.Start();
+
+    int useMemberSubs = 9066;
+    int pointsRulesSubs = 192;
+    int pointsRules = 0;
+
+    TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+    IBInternalQuery->SQL->Text =
+        "Select "
+            "INTEGER_VAL "
+        "from "
+            "VARSPROFILE "
+        "where "
+            "INTEGER_VAL = :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
+    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
+    IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = useMemberSubs;
+    IBInternalQuery->ExecQuery();
+
+
+    int subsKey = 0;
+    TIBSQL *IBInternalQuery1 = transaction.Query(transaction.AddQuery());
+    IBInternalQuery1->SQL->Text = "SELECT GEN_ID(GEN_MEMBERSHIP_SUBS_KEY, 1) FROM RDB$DATABASE";
+    IBInternalQuery1->ExecQuery();
+    subsKey = IBInternalQuery1->Fields[0]->AsInteger;
+    TIBSQL *IBInternalQuery2 = transaction.Query(transaction.AddQuery());
+    IBInternalQuery2->SQL->Text = "INSERT INTO MEMBERSHIP_SUBS_DETAILS   "
+    "(" " MEMBERSHIP_SUBS_KEY, SUBS_PAID_DATE, SUBS_EXPIRY_DATE,SUBS_PAID_AMOUNT, SUBS_PAID_RECEIPT_NO ,SUBS_TYPE, "
+                             " SUBS_PAID,POINTS_RULES_SUBS,CONTACTS_KEY,ISLOCAL_MEMBER ) "
+                 " VALUES "
+                 "(" " :MEMBERSHIP_SUBS_KEY, :SUBS_PAID_DATE, :SUBS_EXPIRY_DATE,:SUBS_PAID_AMOUNT, :SUBS_PAID_RECEIPT_NO ,:SUBS_TYPE, "
+                             ":SUBS_PAID,:POINTS_RULES_SUBS,:CONTACTS_KEY,:ISLOCAL_MEMBER ) ";
+    if(IBInternalQuery->RecordCount == 0)
+    {
+        IBInternalQuery2->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = subsKey;
+        IBInternalQuery2->ParamByName("POINTS_RULES_SUBS")->AsInteger = pointsRulesSubs;
+        IBInternalQuery2->ParamByName("SUBS_PAID")->AsString = "T";
+        IBInternalQuery2->ParamByName("ISLOCAL_MEMBER")->AsString = "T";
+        IBInternalQuery2->ParamByName("SUBS_TYPE")->AsString = "AUTO";
+        IBInternalQuery2->ParamByName("CONTACTS_KEY")->AsInteger = debtorKey;
+        pointsRules = 0;
+    }
+    else
+    {
+        if(CheckLocalMembership())
+        {
+            IBInternalQuery2->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = subsKey;
+            IBInternalQuery2->ParamByName("POINTS_RULES_SUBS")->AsInteger = 50;
+            IBInternalQuery2->ParamByName("SUBS_PAID")->AsString = "F";
+            IBInternalQuery2->ParamByName("ISLOCAL_MEMBER")->AsString = "T";
+            IBInternalQuery2->ParamByName("SUBS_TYPE")->AsString = "";
+            IBInternalQuery2->ParamByName("CONTACTS_KEY")->AsInteger = debtorKey;
+            pointsRules = 50;
+        }
+        else
+        {
+            IBInternalQuery2->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = subsKey;
+            IBInternalQuery2->ParamByName("POINTS_RULES_SUBS")->AsInteger = 192;
+            IBInternalQuery2->ParamByName("SUBS_PAID")->AsString = "F";
+            IBInternalQuery2->ParamByName("ISLOCAL_MEMBER")->AsString = "F";
+            IBInternalQuery2->ParamByName("SUBS_TYPE")->AsString = "";
+            IBInternalQuery2->ParamByName("CONTACTS_KEY")->AsInteger = debtorKey;
+            pointsRules = 0;
+        }
+    }
+    IBInternalQuery2->ExecQuery();
+    transaction.Commit();
+    UpdateContactsPointsRules(pointsRules,debtorKey);
+}
+//---------------------------------------------------------------------------
+void TfrmAddDebtor::UpdateContactsPointsRules(int pointsRules,int debtorKey)
+{
+    Database::TDBTransaction transaction(dmMMData->dbMenuMate);
+    transaction.Start();
+
+    TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+    IBInternalQuery->SQL->Text =
+        "UPDATE "
+            "CONTACTS SET POINTS_RULES = :POINTS_RULES WHERE CONTACTS_KEY = :CONTACTS_KEY ";
+    IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = debtorKey;
+    IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = pointsRules;
+    IBInternalQuery->ExecQuery();
+    transaction.Commit();
+}
+//---------------------------------------------------------------------------
+bool TfrmAddDebtor::CheckLocalMembership()
+{
+    bool retValue = true;
+    Database::TDBTransaction transaction(dmMMData->dbMenuMate);
+    transaction.Start();
+
+    TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+    IBInternalQuery->SQL->Text =
+        "Select "
+            "INTEGER_VAL "
+        "from "
+            "VARSPROFILE "
+        "where "
+            "INTEGER_VAL = :INTEGER_VAL and VARIABLES_KEY = :VARIABLES_KEY ";
+
+    IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger != 0;
+    IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2001;
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount > 0)
+    {
+        retValue = false;
+    }
+    else
+    {
+        if(CheckLoyaltymateEnabled())
+            retValue = false;
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TfrmAddDebtor::CheckLoyaltymateEnabled()
+{
+    bool retValue = false;
+    Database::TDBTransaction transaction(dmMMData->dbMenuMate);
+    transaction.Start();
+
+    TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+    IBInternalQuery->SQL->Text =
+        "Select "
+            "INTEGER_VAL "
+        "from "
+            "VARSPROFILE "
+        "where "
+            " VARIABLES_KEY = :VARIABLES_KEY ";
+
+    //IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
+    IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7038;
+    //IBInternalQuery->ExecQuery();
+    /*if(IBInternalQuery->RecordCount > 0)
+    {
+       retValue = true;
+    }  */
+    for(IBInternalQuery->ExecQuery(); !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+        if(IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger == 1)
+        {
+            retValue = true;
+            break;
+        }
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 
