@@ -453,6 +453,7 @@ class TfrmMenuEdit : public TForm
     TLabel *lblPriceForPoint;
     TNumericEdit *nePriceForPoint;
     TIBSQL *qrGetTaxSettings;
+    TComboBox *cbRevenueGroupCode;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -717,6 +718,7 @@ class TfrmMenuEdit : public TForm
     void __fastcall nePriceForPointExit(TObject *Sender);
     void __fastcall nePriceForPointChange(TObject *Sender);
     void __fastcall nePriceForPointEnter(TObject *Sender);
+    void __fastcall cbRevenueGroupCodeChange(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);

@@ -1,7 +1,7 @@
 object frmMenuEdit: TfrmMenuEdit
   Tag = 1023
-  Left = 380
-  Top = 100
+  Left = 335
+  Top = 89
   Width = 675
   Height = 625
   HorzScrollBar.Visible = False
@@ -1381,9 +1381,9 @@ object frmMenuEdit: TfrmMenuEdit
                 Top = 0
                 Width = 338
                 Height = 450
-                ActivePage = tsItemSizePrice
+                ActivePage = tsSizeCategories
                 Align = alClient
-                TabIndex = 0
+                TabIndex = 2
                 TabOrder = 0
                 object tsItemSizePrice: TTabSheet
                   Caption = 'Price / Cost'
@@ -1831,10 +1831,12 @@ object frmMenuEdit: TfrmMenuEdit
                   object Label35: TLabel
                     Left = 8
                     Top = 289
-                    Width = 121
+                    Width = 307
                     Height = 13
                     Anchors = [akLeft, akBottom]
-                    Caption = '3rd Party Group Code'
+                    Caption = 
+                      '3rd Party Group Code                                   Revenue C' +
+                      'ode'
                     Font.Charset = DEFAULT_CHARSET
                     Font.Color = clWindowText
                     Font.Height = -11
@@ -1988,7 +1990,7 @@ object frmMenuEdit: TfrmMenuEdit
                   object cb3rdPartyGroupCode: TComboBox
                     Left = 8
                     Top = 321
-                    Width = 313
+                    Width = 140
                     Height = 21
                     Anchors = [akLeft, akBottom]
                     Color = clInfoBk
@@ -1997,7 +1999,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     Sorted = True
                     TabOrder = 6
@@ -2067,6 +2069,25 @@ object frmMenuEdit: TfrmMenuEdit
                     ParentFont = False
                     TabOrder = 10
                     OnClick = Button1Click
+                  end
+                  object cbRevenueGroupCode: TComboBox
+                    Left = 160
+                    Top = 320
+                    Width = 161
+                    Height = 21
+                    Anchors = [akLeft, akBottom]
+                    Color = clInfoBk
+                    Font.Charset = ANSI_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ItemHeight = 13
+                    ParentFont = False
+                    Sorted = True
+                    TabOrder = 11
+                    Text = 'cbRevenueGroupCode'
+                    OnChange = cbRevenueGroupCodeChange
                   end
                 end
                 object TabSheet3: TTabSheet

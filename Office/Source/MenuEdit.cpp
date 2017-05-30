@@ -2486,6 +2486,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		}
 
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
+        cbRevenueGroupCode->Text = "";
         if(ItemSizeData->CanBePaidForUsingPoints)
         {
            nePriceForPoint->Enabled = true;
@@ -13686,4 +13687,10 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
     return priceExcl;
 }
 
+
+void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
+{
+    int i = 0;    
+}
+//---------------------------------------------------------------------------
 
