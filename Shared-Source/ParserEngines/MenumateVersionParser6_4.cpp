@@ -17,6 +17,11 @@ void TApplyParser::upgrade6_40Tables()
 {
     update6_40Tables();
 }
+//6.41
+void TApplyParser::upgrade6_41Tables()
+{
+    update6_41Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()

@@ -513,3 +513,15 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
+{
+    int i = 0;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::tbTaxCodesClick(TObject *Sender)
+{
+    int i = 0;
+}
+//---------------------------------------------------------------------------
+

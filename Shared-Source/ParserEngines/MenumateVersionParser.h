@@ -116,6 +116,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_38( TDBControl* const inDBControl );
         PARSER_ERROR apply6_39( TDBControl* const inDBControl );
         PARSER_ERROR apply6_40( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_41( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -840,6 +841,10 @@ namespace MenumateVersionParser
         void UpdatePaymentTypesTable(TDBControl* const inDBControl, AnsiString newProperty, int chargeToAccount);
         void UpdatePaymentAttributesTable(TDBControl* const inDBControl, int key, int chargeToAccount, int invoiceInterace);
         void DelFromPaymentAttributesTable(TDBControl* const inDBControl, int property, int key);
+
+        //6.41
+        void upgrade6_41Tables();
+        void update6_41Tables();
     }; // class
 } // namespace
 
