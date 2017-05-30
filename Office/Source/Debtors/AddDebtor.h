@@ -73,6 +73,10 @@ __published:	// IDE-managed Components
 private:	// User declarations
 	AnsiString GetMemberNumber();
 	int GetSiteID();
+    void UpdateMembershipSubsDetails(int debtorKey);
+    bool CheckLocalMembership();
+    bool CheckLoyaltymateEnabled();
+    void UpdateContactsPointsRules(int pointsRules,int debtorKey);   
 public:		// User declarations
 	__fastcall TfrmAddDebtor(TComponent* Owner);
 	TAdjustMode Mode;
