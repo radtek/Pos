@@ -3817,6 +3817,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                     PrintTransaction->Customer = TCustomer(0,0,"");
                                 }
                             }
+                            else if(!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                                PrintTransaction->Customer = TCustomer(0,0,"");
                             Request->Transaction->TypeOfSale = PaymentTransaction.TypeOfSale;
                               //MM-4563
                             std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
@@ -3920,7 +3922,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						// Print Invoice.
 
 						TempReceipt->Transaction = &InvoiceTransaction;
-                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                           (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                             TempReceipt->Transaction->Customer = TCustomer(0,0,"");
 						TempReceipt->SignReceipt = true;
 						TempReceipt->SenderType = devPC;
@@ -5203,7 +5206,8 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 	std::auto_ptr<TList>OldOrdersList(new TList);
     PrintTransaction.ChitNumber = ChitNumber;
 	TDateTime OrderedTimeStamp = Now();
-    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+       !TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
         PrintTransaction.Customer = TCustomer(0,0,"");
     PrintTransaction.Membership.Assign(Membership);
 	for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
