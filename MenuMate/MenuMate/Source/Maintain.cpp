@@ -3956,7 +3956,6 @@ void TfrmMaintain::SelectPMSType()
     Item2.Properties["Action"] = IntToStr(2);
     Item2.Properties["Color"] = IntToStr(clNavy);
     Item2.CloseSelection = true;
-    Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item2);
 
     SelectionForm->ShowModal();

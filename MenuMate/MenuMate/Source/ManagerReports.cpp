@@ -287,13 +287,14 @@ void TManagerReports::PrintConsumption(Database::TDBTransaction &DBTransaction)
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-		TDateTime StartTime = Date() + EncodeTime(5,0,0,0); // Today 5am.
-		TDateTime EndTime = (Date()+1) + EncodeTime(5,0,0,0); // Tommorow 5am.
+        int sessionDateCode = TGlobalSettings::Instance().EndOfDay;
+		TDateTime StartTime = Date() + EncodeTime(sessionDateCode,0,0,0); // According to session start time
+		TDateTime EndTime = (Date()+1) + EncodeTime(sessionDateCode,0,0,0); // Tommorow  session start time
 
 		if(Now() < StartTime) // We are between Midnight and 5am
 		{
-			StartTime = (Date()-1) + EncodeTime(5,0,0,0); // Yesterday 5am.
-			EndTime = Date() + EncodeTime(5,0,0,0); // Today 5am.
+			StartTime = (Date()-1) + EncodeTime(sessionDateCode,0,0,0); 
+			EndTime = Date() + EncodeTime(sessionDateCode,0,0,0); //  
 		}
 
 		Printout->PrintFormat->DocumentName					= "Consumption Report";
@@ -630,13 +631,14 @@ void TManagerReports::PrintConsumptionByMenu(Database::TDBTransaction &DBTransac
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-		TDateTime StartTime = Date() + EncodeTime(5,0,0,0); // Today 5am.
-		TDateTime EndTime = (Date()+1) + EncodeTime(5,0,0,0); // Tommorow 5am.
+        int sessionDateCode = TGlobalSettings::Instance().EndOfDay;
+		TDateTime StartTime = Date() + EncodeTime(sessionDateCode,0,0,0); // Today 5am.
+		TDateTime EndTime = (Date()+1) + EncodeTime(sessionDateCode,0,0,0); // Tommorow 5am.
 
 		if(Now() < StartTime) // We are between Midnight and 5am
 		{
-			StartTime = (Date()-1) + EncodeTime(5,0,0,0); // Yesterday 5am.
-			EndTime = Date() + EncodeTime(5,0,0,0); // Today 5am.
+			StartTime = (Date()-1) + EncodeTime(sessionDateCode,0,0,0); // Yesterday 5am.
+			EndTime = Date() + EncodeTime(sessionDateCode,0,0,0); // Today 5am.
 		}
 
 		Printout->PrintFormat->DocumentName						= "Consumption Report";
