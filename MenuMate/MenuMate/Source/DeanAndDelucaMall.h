@@ -42,9 +42,6 @@ private:
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
 
-    //Get OldAccumulated Sale
-    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
-
     //Generate SalesKey for MallExport_sales Table
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
 

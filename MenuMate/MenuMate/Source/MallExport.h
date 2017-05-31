@@ -13,6 +13,9 @@ private:
     //Check whether transaction is done before zed
     bool CheckTransactionDoneBeforeZed();
 
+    //Get OldAccumulated Sale
+    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
+
 protected:
 
     //Prepare data for inserting into database according to mall type. child class will override it.

@@ -221,7 +221,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         }
 
         fieldData->TotalNetSaleAmount =  fieldData->TotalGCSales + fieldData->TotalChargedSales + fieldData->TotalCashSales;
-        fieldData->OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        fieldData->OldAccSalesTotal = 0;//GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData->NewAccSalesTotal = fieldData->OldAccSalesTotal + fieldData->TotalNetSaleAmount;
         fieldData->GrossSaleAmount =  fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales +
                                         fieldData->TotalChargedSales + fieldData->TotalGCSales;
@@ -351,50 +351,6 @@ int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount != 0 ? totalPatronCount : 1;
 }
 //---------------------------------------------------------------------------------
-double TDeanAndDelucaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    double oldAccumulatedSales = 0.00;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY GROUP BY 1";
-        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-
-        IBInternalQuery->ExecQuery();
-        bool  recordPresent = false;
-
-        if(IBInternalQuery->RecordCount )
-           recordPresent = true;
-
-        if(recordPresent)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
-                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ) ";
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
-            IBInternalQuery->ExecQuery();
-
-            if(IBInternalQuery->RecordCount)
-                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
-        }
-        else
-        {
-            oldAccumulatedSales = 0;
-        }
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return oldAccumulatedSales;
-}
-//----------------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
 {
     //Create TMallExportPrepareData  for returning prepared data
@@ -923,7 +879,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
        IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
                                     "FROM "
                                         "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS BIGINT) FIELD_VALUE, "
-                                                    "A.Z_KEY, MS.SALES_TYPE_CODE, MST.DEVICE_KEY "
+                                                    "A.Z_KEY, MS.SALES_TYPE_CODE, MST.SALES_ID "
                                          "FROM MALLEXPORT_SALES a "
                                          "INNER JOIN MALL_SALES_BY_SALES_TYPE MST ON A.ARCBILL_KEY = MST.ARCBILL_KEY "
                                          "LEFT JOIN MALL_SALES_TYPE_ITEMS_RELATION MSIT ON MST.SALES_TYPE_ID = MSIT.STI_ID "
@@ -934,7 +890,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, MST.DEVICE_KEY "
+                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, MST.SALES_ID "
                                          "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
                                     "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE ";
 
