@@ -923,7 +923,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
        IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
                                     "FROM "
                                         "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS BIGINT) FIELD_VALUE, "
-                                                    "A.Z_KEY, MS.SALES_TYPE_CODE, A.DEVICE_KEY "
+                                                    "A.Z_KEY, MS.SALES_TYPE_CODE, MST.DEVICE_KEY "
                                          "FROM MALLEXPORT_SALES a "
                                          "INNER JOIN MALL_SALES_BY_SALES_TYPE MST ON A.ARCBILL_KEY = MST.ARCBILL_KEY "
                                          "LEFT JOIN MALL_SALES_TYPE_ITEMS_RELATION MSIT ON MST.SALES_TYPE_ID = MSIT.STI_ID "
@@ -934,7 +934,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, A.DEVICE_KEY "
+                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, MST.DEVICE_KEY "
                                          "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
                                     "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE ";
 
