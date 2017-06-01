@@ -1473,17 +1473,6 @@ void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransactio
         std::auto_ptr<TList> itemList(new TList());
         itemList->Add(Order);
         AddDiscount(itemList.get(),CurrentDiscount);
-
- 	   /*	if(!Order->DiscountApplied(*ptrDiscountKey) )
-		{
-
-            if(CurrentDiscount.Mode == DiscModeItem)
-            {
-              CurrentDiscount.Mode = DiscModeCurrency;
-            }
-            if(CurrentDiscount.MinItemRequired <= 1)
-			   Order->DiscountAddIncSides(CurrentDiscount);
-		}*/
 	}
 }
 //---------------------------------------------------------------------------
