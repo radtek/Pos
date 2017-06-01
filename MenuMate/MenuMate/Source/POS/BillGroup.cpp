@@ -2373,12 +2373,12 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateItemListDisplay(DBTransaction);
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
-         if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+        if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
            RemoveMembershipDiscounts(DBTransaction);
         }
 
-         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+        if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
         {
             CheckingClipItemsInSelectedList(DBTransaction);
         }
@@ -2630,7 +2630,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
 	// Reset the Split Payment Form.
 
-	if (SelectedItems.size() == 0 /*&& Discounts.size() > 0*/)
+	if (SelectedItems.size() == 0)
 	{
 		if (MessageBox("Remove all Membership & Discounts from the bill?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
 		{
@@ -4772,8 +4772,8 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   if(SelectedItems.size() > 0 && (!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+     (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)))
    {
       allow = true;
    }
