@@ -13416,7 +13416,6 @@ void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransactio
                         {
                             CurrentDiscount.PercentAmount = CurrentDiscount.OriginalAmount;
                             CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
-                            CurrentDiscount.OriginalAmount = CurrentDiscount.OriginalAmount;
                             OpenDiscountAmount[ptrDiscount->DiscountKey].Discount = CurrentDiscount;
                             OpenDiscountAmount[ptrDiscount->DiscountKey].IsApplied = false;
                         }
