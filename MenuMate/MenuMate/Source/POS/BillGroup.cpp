@@ -4784,26 +4784,17 @@ void TfrmBillGroup::CheckLoyalty()
         DBTransaction.StartTransaction();
         RemoveMembership(DBTransaction);
         DBTransaction.Commit();
-
    }
-   if (allow && !MembershipConfirmed)
+
+
+   if (allow)
 	{
-		if (SelectedItems.size() == 0)
-		{
-			Membership.Clear();
-			lbeMembership->Visible = false;
-			lbeMembership->Caption = "";
-			ShowReceipt();
-		}
-		else
-		{
-            std::set <__int64> ReceiptItemKeys;
-            for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-            {
-                ReceiptItemKeys.insert(itItem->first);
-            }
-            CheckLoyalty(ReceiptItemKeys);
-		}
+        std::set <__int64> ReceiptItemKeys;
+        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+        {
+            ReceiptItemKeys.insert(itItem->first);
+        }
+        CheckLoyalty(ReceiptItemKeys);
 	}
 }
 // ---------------------------------------------------------------------------
@@ -4815,70 +4806,75 @@ void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
     DBTransaction.StartTransaction();
     TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
 
-    if (PossiableMembers.size() > 1)
+    if(PossiableMembers.size() == 0)
     {
-        // Display Reports List
-        std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
-        for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
-            advance(pMembersKey, 1))
+        RemoveMembership(DBTransaction);
+    }
+    else if(!MembershipConfirmed)
+    {
+        if (PossiableMembers.size() > 1)
         {
-            TMMContactInfo TempUserInfo;
-            eMemberSource MemberSource;
-            TempUserInfo.ContactKey = *pMembersKey;
-
-            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-                MemberSource);
-            if (Result != lsUserNotFound)
+            // Display Reports List
+            std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
+            for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
+                advance(pMembersKey, 1))
             {
-                TVerticalSelection Item;
-                Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
-                Item.Properties["Color"] = IntToStr(clNavy);
-                Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
-                Item.CloseSelection = true;
-                SelectionForm->Items.push_back(Item);
-            }
-        }
+                TMMContactInfo TempUserInfo;
+                eMemberSource MemberSource;
+                TempUserInfo.ContactKey = *pMembersKey;
 
-        if (SelectionForm->Items.size() > 0)
-        {
-            SelectionForm->ShowModal();
-            TVerticalSelection SelectedItem;
-            if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
-            {
-                int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
-                if (MemberKey != 0)
+                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
+                    MemberSource);
+                if (Result != lsUserNotFound)
                 {
-                    TMMContactInfo TempUserInfo;
-                    eMemberSource MemberSource;
-                    TempUserInfo.ContactKey = MemberKey;
-                    TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-                        MemberSource);
+                    TVerticalSelection Item;
+                    Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
+                    Item.Properties["Color"] = IntToStr(clNavy);
+                    Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
+                    Item.CloseSelection = true;
+                    SelectionForm->Items.push_back(Item);
+                }
+            }
 
-                    if (Result == lsAccepted)
+            if (SelectionForm->Items.size() > 0)
+            {
+                SelectionForm->ShowModal();
+                TVerticalSelection SelectedItem;
+                if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
+                {
+                    int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
+                    if (MemberKey != 0)
                     {
-                        ApplyMembership(DBTransaction, TempUserInfo);
-                    }
-                    else if (Result == lsAccountBlocked)
-                    {
-                        MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-                            MB_OK + MB_ICONINFORMATION);
+                        TMMContactInfo TempUserInfo;
+                        eMemberSource MemberSource;
+                        TempUserInfo.ContactKey = MemberKey;
+                        TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo, MemberSource);
+                        if (Result == lsAccepted)
+                        {
+                            ApplyMembership(DBTransaction, TempUserInfo);
+                        }
+                        else if (Result == lsAccountBlocked)
+                        {
+                            MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
+                                MB_OK + MB_ICONINFORMATION);
+                        }
                     }
                 }
             }
         }
-    }
-    else
-    {
-        std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
-        if (pMemberKey != PossiableMembers.end())
+        else
         {
-            TMMContactInfo MembershipInfo;
-            eMemberSource MemberSource;
-            MembershipInfo.ContactKey = *pMemberKey;
-            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
-            if (Result == lsAccepted)
+            std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
+            if (pMemberKey != PossiableMembers.end())
             {
-              ApplyMembership(DBTransaction, MembershipInfo);
+                TMMContactInfo MembershipInfo;
+                eMemberSource MemberSource;
+                MembershipInfo.ContactKey = *pMemberKey;
+                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
+                if (Result == lsAccepted)
+                {
+                  ApplyMembership(DBTransaction, MembershipInfo);
+                }
             }
         }
     }
