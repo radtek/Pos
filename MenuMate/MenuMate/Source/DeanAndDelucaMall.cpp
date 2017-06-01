@@ -223,6 +223,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->TotalNetSaleAmount =  fieldData->TotalGCSales + fieldData->TotalChargedSales + fieldData->TotalCashSales;
         fieldData->OldAccSalesTotal = 0;//GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData->NewAccSalesTotal = fieldData->OldAccSalesTotal + fieldData->TotalNetSaleAmount;
+
         fieldData->GrossSaleAmount =  fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales +
                                         fieldData->TotalChargedSales + fieldData->TotalGCSales;
          
@@ -274,7 +275,7 @@ void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransac
     PushFieldsInToList(dbTransaction, mallExportSalesData, "POS Terminal Number", "int", fieldData.TerminalNumber, 2, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Accumulated Total", "double", fabs(fieldData.OldAccSalesTotal), 4, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "New Accumulated Total", "double", fabs(fieldData.NewAccSalesTotal), 5, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "New Accumulated Total", "double", fieldData.NewAccSalesTotal, 5, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Gross Sales Amount", "double", fieldData.GrossSaleAmount, 6, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Non-Taxable Sales Amount", "double", fieldData.NonTaxableSaleAmount, 7, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Senior Citizen Discount", "double", fieldData.TotalSCDAndPWDAmount, 8, arcBillKey);
@@ -368,11 +369,11 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
         std::set<int> keyToCheck2;
 
         //Indexes for which data will not selected
-        int dailySalekeys[12] = {1, 2, 3,4, 5, 19, 21};
+        int dailySalekeys[7] = {1, 2, 3,4, 5, 19, 21};
         int dailySalekeys2 = 19;
 
         //insert these indexes into set.
-        keyToCheck = InsertInToSet(dailySalekeys, 12);
+        keyToCheck = InsertInToSet(dailySalekeys, 7);
 
         //Prepare Data For Daily Sales File
         PrepareDataForDailySalesFile(dbTransaction, keyToCheck, dailySalekeys2, preparedData, 1, zKey);
@@ -725,6 +726,9 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        Database::TcpIBSQL SelectTime(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(SelectTime);
+
         //Declare Set For storing index
         std::set<int>keysToSelect;
 
@@ -804,14 +808,14 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                     "a.VALUE_TYPE, A.Z_KEY "
                      "FROM MALLEXPORT_SALES a "
                      "WHERE a.FIELD_INDEX  = 5  "
-                     "AND a.MALL_KEY = :MALL_KEY AND a.DATE_CREATED = "
-                            "(SELECT a.DATE_CREATED FROM MALLEXPORT_SALES a where a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  "
-                                 "WHERE (a.Z_KEY = :MAX_ZKEY ";
+                     "AND a.MALL_KEY = :MALL_KEY AND a.MALLEXPORT_SALE_KEY = "
+                            "(SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  "
+                                 "WHERE a.FIELD_INDEX  = 5 and (a.Z_KEY = :MAX_ZKEY ";
 
         if(!zKey)
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ))  )GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ))  GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA  "
             "GROUP BY 1,2,4 "
 
@@ -828,9 +832,8 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                             "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, A.Z_KEY "
                                      "FROM MALLEXPORT_SALES a  "
                                      "WHERE a.FIELD_INDEX  = 5 "
-                                     "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
-                                                "(SELECT ARCBILL_KEY FROM MALLEXPORT_SALES a WHERE a.MALLEXPORT_SALE_KEY = "
-                                                        " (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  WHERE a.Z_KEY = :MAX_ZKEY2 ) ) "
+                                     "AND a.MALL_KEY = :MALL_KEY AND a.MALLEXPORT_SALE_KEY = "
+                                                        " (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A  WHERE a.Z_KEY = :MAX_ZKEY2 and a.FIELD_INDEX = 5)  "
                                       "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                                                     "GROUP BY 1,2,4";
@@ -874,6 +877,32 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
           prepareListForDSF.push_back(salesData);
        }
 
+       TDateTime sDate,eDate;
+
+       //SELECT MAX TIME FOR THAT ZED KEY.
+       SelectTime->Close();
+       SelectTime->SQL->Text = "SELECT MAX(A.DATE_CREATED) DATE_CREATED  "
+                                "FROM MALLEXPORT_SALES a "
+                                "WHERE a.Z_KEY = :MAX_ZKEY ";
+
+        SelectTime->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
+        SelectTime->ExecQuery();
+
+        if(SelectTime->RecordCount)
+            eDate = SelectTime->Fields[0]->AsDateTime;
+
+       //Select minimum time for that zed key.
+       SelectTime->Close();
+       SelectTime->SQL->Text = "SELECT MIN(A.DATE_CREATED) DATE_CREATED  "
+                                "FROM MALLEXPORT_SALES a "
+                                "WHERE a.Z_KEY = :MAX_ZKEY ";
+
+        SelectTime->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
+        SelectTime->ExecQuery();
+
+        if(SelectTime->RecordCount)
+            sDate = SelectTime->Fields[0]->AsDateTime;
+
        // Now Fetch data Sales by Sales Type
        IBInternalQuery->Close();
        IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
@@ -890,11 +919,14 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, MST.SALES_ID "
+                                         ") and MST.DATE_CREATED >= :START_TIME and MST.DATE_CREATED <= :END_TIME "
+                                         "GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE, MST.SALES_ID "
                                          "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
                                     "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
+        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
         IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
         if(!zKey)
             IBInternalQuery->ParamByName("MIN_ZKEY")->AsInteger = zKey;

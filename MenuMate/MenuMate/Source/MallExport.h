@@ -14,7 +14,7 @@ private:
     bool CheckTransactionDoneBeforeZed();
 
     //Get OldAccumulated Sale
-    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
+    double GetOldAccumulatedSales(int fieldIndex);
 
 protected:
 

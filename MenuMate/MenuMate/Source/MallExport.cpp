@@ -113,16 +113,16 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = it->FieldIndex;
             IBInternalQuery->ParamByName("FIELD")->AsString = it->Field;
 
-            if((it->FieldIndex == 5 || it->FieldIndex == 6 ) && (it->MallKey == 2))
-            {
-                oldAccumulatedSales = GetOldAccumulatedSales(dbTransaction, 5);
-                oldAccumulatedSales += StrToCurr(it->DataValue);
-                IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = CurrToStr(oldAccumulatedSales);
-            }
-            else
-            {
+//            if((it->FieldIndex == 4 || it->FieldIndex == 5 ) && (it->MallKey == 2))
+//            {
+//                oldAccumulatedSales = GetOldAccumulatedSales(5);
+//                oldAccumulatedSales += StrToCurr(it->DataValue);
+//                IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = CurrToStr(oldAccumulatedSales);
+//            }
+//            else
+//            {
                 IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->DataValue;
-            }
+      //      }
 
             IBInternalQuery->ParamByName("VALUE_TYPE")->AsString = it->DataValueType;
             IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = it->DateCreated;
@@ -309,8 +309,12 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
 	}
 }
 //----------------------------------------------------------------------------------------------
-double TMallExport::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
+double TMallExport::GetOldAccumulatedSales(int fieldIndex)
 {
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
     double oldAccumulatedSales = 0.00;
@@ -340,6 +344,7 @@ double TMallExport::GetOldAccumulatedSales(Database::TDBTransaction &dbTransacti
             if(IBInternalQuery->RecordCount)
                 oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
         }
+        dbTransaction.Commit();
     }
      catch(Exception &E)
 	{
