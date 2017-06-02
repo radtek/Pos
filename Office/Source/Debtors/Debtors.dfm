@@ -775,7 +775,7 @@ object frmDebtors: TfrmDebtors
       '   Contacts Left Join Companies On'
       '      Contacts.Company_Key = Companies.Company_Key'
       'Where'
-      '   Contact_Type = 2'
+      '   Contact_Type = 2 and member_type = 1 '
       'Order By'
       '   Company_Name,'
       '   Name')
