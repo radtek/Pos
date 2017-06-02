@@ -179,6 +179,7 @@ public:		// User declarations
 	TStringList* TabList;
     std::vector<TPatronType> PatronTypes;
     void CheckLoyalty();
+    void CheckLoyalty(std::set <__int64> ReceiptItemKeys);
     bool IsWaiterLogged;
     bool MembershipConfirmed; // Membership has been confimed by user.
     TContactMemberApplied Membership;

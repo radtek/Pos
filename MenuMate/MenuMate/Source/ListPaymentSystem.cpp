@@ -5821,7 +5821,7 @@ void TListPaymentSystem::GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTran
         AnsiString  exempt_Gst    ="Y";              //length 1
         AnsiString  discount_Code ="";              //length 2
         AnsiString  other_chg     ="";              //length 7
-        AnsiString  discount_Per  =-1*paymentTransaction.Money.ProductDiscount;              //length 6
+        AnsiString  discount_Per  =RoundAt((((-1*paymentTransaction.Money.ProductDiscount)*100)/paymentTransaction.Money.Total),1);              //length 6
         AnsiString  rounding_Amt  =paymentTransaction.Money.PaymentRounding;              //length 7
 
         AnsiString  finalValue= cmd_code+"|" +sales+"|"+discount+"|"+cess+"|"+charges+"|"+ tax+ "|" +

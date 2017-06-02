@@ -3375,11 +3375,11 @@ void __fastcall TfrmGeneralMaintenance::cbEnableTierLevelsClick(TObject *Sender)
 void __fastcall TfrmGeneralMaintenance::tbBirthdayBufferClick(TObject *Sender)
 {
 	std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-	frmTouchNumpad->Caption = "Enter Days between 1 to 10.";
+	frmTouchNumpad->Caption = "Enter Days between 0 to 10.";
 	frmTouchNumpad->btnOk->Visible = true;
 	frmTouchNumpad->Mode = pmNumber;
 	frmTouchNumpad->INTInitial = TGlobalSettings::Instance().BirthdayBuffer;
-	if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0
+	if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult >= 0
 			&& frmTouchNumpad->INTResult < 11)
 	{
 		tbBirthdayBuffer->Caption = IntToStr(frmTouchNumpad->INTResult);
