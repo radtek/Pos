@@ -32,7 +32,22 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
     if(_roomCharge.AccountNumber == "")
+    {
         _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+        _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+        _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        _paymentTransaction.SalesType = eRoomSale;
+
+        for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
+        {
+            TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
+            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabType = TabRoom;
+            Order->RoomNo = atoi(_paymentTransaction.Phoenix.AccountNumber.t_str());
+        }
+    }
+
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
     // Iterate pyamentTransaction orders loop and identify the same III party codes
@@ -71,18 +86,6 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
        _roomCharge.SiHotServices.push_back(serviceItDisc->second);
     }
 
-    // Add ServiceCharge as service to SiHot
-    if(_paymentTransaction.Money.ServiceCharge != 0)
-    {
-        AddServiceChargeAsService(_roomCharge, billNo, _paymentTransaction);
-    }
-
-    // Add Rounding as service to SiHot
-//    if(RoundTo((double)(_paymentTransaction.Money.PaymentRounding),-2) != 0.00)
-//    {
-//        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
-//    }
-
     // Adding payment types
     AddPaymentMethods(_roomCharge, billNo, _paymentTransaction);
     for(std::map <UnicodeString,TSiHotPayments>::iterator paymentIt = paymentSiHot.begin(); paymentIt != paymentSiHot.end(); ++paymentIt)
@@ -107,7 +110,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = categoryCode;
-    siHotService.MiddleCategory_Desc = "";
+    siHotService.MiddleCategory_Desc = itemComplete->MenuName;
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;
@@ -115,13 +118,13 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
     {
 
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, true);
     }
     else
     {
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/(double)itemComplete->GetQty();
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/fabs((double)itemComplete->GetQty());
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, false);
         AddDiscountPart = (double)itemComplete->BillCalcResult.TotalDiscount != 0.0 ? true : false;
@@ -141,16 +144,12 @@ double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool reca
      Currency price = 0;
      if(recalculateTax)
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                -(double)(itemComplete->BillCalcResult.ServiceCharge.TaxValue));
+         price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
      }
      else
      {
          price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                 -((double)itemComplete->BillCalcResult.ServiceCharge.Value)
-                 -((double)itemComplete->BillCalcResult.TotalDiscount)
-                 -(double)itemComplete->BillCalcResult.ServiceCharge.TaxValue);
+                 -(double)itemComplete->BillCalcResult.TotalDiscount);
      }
      return price;
 }
@@ -194,7 +193,7 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.SuperCategory = categoryCode;
         siHotService.SuperCategory_Desc = "";
         siHotService.MiddleCategory = categoryCode;
-        siHotService.MiddleCategory_Desc = "";
+        siHotService.MiddleCategory_Desc = itemComplete->MenuName;
         siHotService.ArticleCategory = categoryCode;
         siHotService.ArticleCategory_Desc = "";
         siHotService.ArticleNo = categoryCode;
@@ -283,10 +282,25 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
 double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
 {
     double percentage = 0.0;
-    for(std::vector<BillCalculator::TTaxResult>::iterator i = itemComplete->BillCalcResult.Tax.begin();
-          i != itemComplete->BillCalcResult.Tax.end() ; ++i)
+    int taxIndex = 0;
+    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
+          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
     {
-        percentage += (double)i->Percentage;
+        if(tax->Value != 0)
+            percentage += (double)tax->Percentage;
+    }
+    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
+    {
+        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
+        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
+        {
+            taxIndex = 0;
+            if(((serviceCharge->taxProfileType == ServiceCharge))
+               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
+            {
+                percentage += (double)serviceCharge->taxPercentage;
+            }
+        }
     }
     return percentage;
 }
@@ -469,7 +483,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                siHotPayment.Amount = -(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
+                siHotPayment.Amount = (payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description = payment->Name;
                 siHotPayment.Billno = billNo;
                 siHotPayment.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
@@ -479,7 +493,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount = StrToCurr(iter->second.Amount) + (-(payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
+                double amount = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
                 iter->second.Amount = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))
@@ -535,6 +549,8 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
             try
             {
                 TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransaction,roomresponse.GuestsInformation[0].AccountNumber);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransactionName,roomresponse.GuestsInformation[0].FirstName + " " +
+                                                          roomresponse.GuestsInformation[0].LastName);
                 DBTransaction.Commit();
                 return true;
             }

@@ -1116,15 +1116,22 @@ void TPrintSection::PrintHotelCustomerName(TReqPrintJob *PrintJob)
 /************MM-5048***************************/
 
 
-	AnsiString CustomerName = PrintJob->Transaction->Customer.Name;
-	pPrinter->Line->ColCount = 1;
-	pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
-	pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-	pPrinter->Line->Columns[0]->Alignment = taCenter;
-    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + CustomerName;
-	pPrinter->AddLine();
-
-
+    AnsiString CustomerName = "";
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+    {
+        CustomerName = PrintJob->Transaction->Phoenix.AccountName;
+    }
+    else
+	    CustomerName = PrintJob->Transaction->Customer.Name;
+    if(CustomerName != "")
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + CustomerName;
+        pPrinter->AddLine();
+    }
 }
 
 void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
@@ -1153,11 +1160,12 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 
 	if( PrintJob->Transaction->Customer.RoomNumber != 0 )
 	{
-		AnsiString RoomNumber= PrintJob->Transaction->Customer.RoomNumber;
+        AnsiString RoomNumber = "";
+		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
 		pPrinter->Line->ColCount = 1;
 		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
 		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-		pPrinter->Line->Columns[0]->Alignment = taCenter;
+		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}

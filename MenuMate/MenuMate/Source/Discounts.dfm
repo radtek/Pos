@@ -12,7 +12,7 @@ object frmDiscounts: TfrmDiscounts
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
@@ -71,7 +71,7 @@ object frmDiscounts: TfrmDiscounts
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
         Font.Height = -17
-        Font.Name = 'Arial'
+        Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         Color = 14342874
         ParentFont = False
@@ -336,13 +336,13 @@ object frmDiscounts: TfrmDiscounts
         ScrollBtnDown.Font.Charset = DEFAULT_CHARSET
         ScrollBtnDown.Font.Color = clWindowText
         ScrollBtnDown.Font.Height = -11
-        ScrollBtnDown.Font.Name = 'MS Sans Serif'
+        ScrollBtnDown.Font.Name = 'Tahoma'
         ScrollBtnDown.Font.Style = []
         ScrollBtnDown.ParentFont = False
         ScrollBtnDown.LatchedFont.Charset = DEFAULT_CHARSET
         ScrollBtnDown.LatchedFont.Color = clWindowText
         ScrollBtnDown.LatchedFont.Height = -11
-        ScrollBtnDown.LatchedFont.Name = 'MS Sans Serif'
+        ScrollBtnDown.LatchedFont.Name = 'Tahoma'
         ScrollBtnDown.LatchedFont.Style = []
         ScrollBtnDown.ParentLatchedFontColor = False
         ScrollBtnDown.GlyphAlpha = 255
@@ -354,13 +354,13 @@ object frmDiscounts: TfrmDiscounts
         ScrollBtnLeft.Font.Charset = DEFAULT_CHARSET
         ScrollBtnLeft.Font.Color = clWindowText
         ScrollBtnLeft.Font.Height = -11
-        ScrollBtnLeft.Font.Name = 'MS Sans Serif'
+        ScrollBtnLeft.Font.Name = 'Tahoma'
         ScrollBtnLeft.Font.Style = []
         ScrollBtnLeft.ParentFont = False
         ScrollBtnLeft.LatchedFont.Charset = DEFAULT_CHARSET
         ScrollBtnLeft.LatchedFont.Color = clWindowText
         ScrollBtnLeft.LatchedFont.Height = -11
-        ScrollBtnLeft.LatchedFont.Name = 'MS Sans Serif'
+        ScrollBtnLeft.LatchedFont.Name = 'Tahoma'
         ScrollBtnLeft.LatchedFont.Style = []
         ScrollBtnLeft.ParentLatchedFontColor = False
         ScrollBtnLeft.GlyphAlpha = 255
@@ -392,14 +392,14 @@ object frmDiscounts: TfrmDiscounts
           D400000000000000000000000000929497000F0000800F000080060000005400
           61006800FFFFFF000D00000000000000000000000000000000000000FFFFFF00
           06000000540061006800FFFFFF000D0000000000000000000000000000000000
-          0000FFFFFF0010000000496E637265617365205072696F727479010000000100
-          000001000000010000000100000001000000FF00000064000000010000000000
-          0000010000000000000000000000929497000F0000800F000080060000005400
-          61006800FFFFFF000D00000000000000000000000000000000000000FFFFFF00
-          06000000540061006800FFFFFF000D0000000000000000000000000000000000
-          0000FFFFFF00100000004465637265617365205072696F727479010000000100
-          000001000000010000000100000001000000FF00000064000000010000000000
-          0000010000000000000000000000}
+          0000FFFFFF0011000000496E637265617365205072696F726974790100000001
+          00000001000000010000000100000001000000FF000000640000000100000000
+          000000010000000000000000000000929497000F0000800F0000800600000054
+          0061006800FFFFFF000D00000000000000000000000000000000000000FFFFFF
+          0006000000540061006800FFFFFF000D00000000000000000000000000000000
+          000000FFFFFF00110000004465637265617365205072696F7269747901000000
+          0100000001000000010000000100000001000000FF0000006400000001000000
+          00000000010000000000000000000000}
       end
     end
   end

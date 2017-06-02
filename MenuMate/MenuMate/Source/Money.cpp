@@ -232,7 +232,7 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     }
 
     //GrandTotal = TotalOwing + TotalRounding;
-    GrandTotal =  (TGlobalSettings::Instance().RoundOnBilling && isBilling)? TotalOwing : TotalOwing + TotalRounding;
+    GrandTotal =  (TGlobalSettings::Instance().RoundOnBilling && isBilling)? TotalOwing : TotalOwing + TotalRounding - CreditRedeemed;
     GrandTotalGSTContent = ProductGSTContent + PaymentSurchargesGSTContent + PaymentDiscountsGSTContent;
     Round();
 

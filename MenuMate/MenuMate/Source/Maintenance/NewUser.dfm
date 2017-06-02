@@ -162,6 +162,7 @@ object frmNewUser: TfrmNewUser
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Visible = False
       Caption = 'Points Profile'
       ButtonColor = 6052441
       LatchedColor = clBtnFace

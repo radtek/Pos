@@ -1126,7 +1126,9 @@ object frmStockRequest: TfrmStockRequest
         'N.LOCATION = :Location'
       'AND STOCKCATEGORY.STOCK_CATEGORY=:STOCK_CATEGORY'
       'ORDER BY '
-      '    STOCK.DESCRIPTION ASC,STOCKGROUP.STOCK_GROUP')
+      
+        '    STOCKCATEGORY.SORT_ORDER ASC, STOCKGROUP.SORT_ORDER ASC, STO' +
+        'CK.DESCRIPTION ASC,    STOCKGROUP.STOCK_GROUP')
     Left = 328
     Top = 128
     ParamData = <

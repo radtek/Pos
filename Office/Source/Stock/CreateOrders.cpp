@@ -451,7 +451,7 @@ void __fastcall TfrmCreateOrders::btnCommitClick(TObject *Sender)
 			}
 			if(noOfStockItems == 0)
 			{
-				Application->MessageBox("Please select atleast one stock item with a valid quantity.", "Error", MB_ICONERROR + MB_OK);
+				Application->MessageBox("Please select at least one stock item with a valid quantity.", "Error", MB_ICONERROR + MB_OK);
 				return;
 			}
 			Node = vtvStockQty->GetFirst();

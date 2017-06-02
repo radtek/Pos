@@ -1036,10 +1036,10 @@ void  TManagerDiscount::AddPercentageModeDiscount(TList *DiscountItems,TDiscount
 
     TDiscount scaled_discount;
     CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
-    Currency  discount = RoundToNearest(DiscountToBeApplied.PercentAmount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+    Currency  discount = DiscountToBeApplied.PercentAmount;
     Currency order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
     //calculate discount amount
-    Currency discountedAmount = (order_total * fabs(discount))/100;
+    Currency discountedAmount = RoundToNearest((order_total * fabs(discount))/100, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
     bool isSurcharge =  discount < 0;
     //if discount amount is greater than max value then apply discount as curreny mode
     //with max value as discount amount
@@ -1084,6 +1084,7 @@ void  TManagerDiscount::AddCurrencyModeDiscount(TList *DiscountItems,TDiscount D
                               ? orderQty : DiscountToBeApplied.MaxItemAffected;
     Currency order_total = 0;
     Currency discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+
     order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
 
     if(order_total <= 0)
@@ -1396,6 +1397,8 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.MembersExempt = source.MembersExempt;
     destination.OriginalAmount = source.OriginalAmount;
     destination.DiscountAppliedTime = source.DiscountAppliedTime;
+    destination.Rounding = source.Rounding;
+    destination.CategoryFilterKeys = source.CategoryFilterKeys;
 }
 //---------------------------------------------------------------------------
 Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)
@@ -1470,17 +1473,6 @@ void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransactio
         std::auto_ptr<TList> itemList(new TList());
         itemList->Add(Order);
         AddDiscount(itemList.get(),CurrentDiscount);
-
- 	   /*	if(!Order->DiscountApplied(*ptrDiscountKey) )
-		{
-
-            if(CurrentDiscount.Mode == DiscModeItem)
-            {
-              CurrentDiscount.Mode = DiscModeCurrency;
-            }
-            if(CurrentDiscount.MinItemRequired <= 1)
-			   Order->DiscountAddIncSides(CurrentDiscount);
-		}*/
 	}
 }
 //---------------------------------------------------------------------------
