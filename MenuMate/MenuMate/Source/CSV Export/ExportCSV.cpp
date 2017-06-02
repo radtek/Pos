@@ -99,8 +99,8 @@ void TExportCSV::CreateHeaderFormat(UnicodeString MallPathFileName, std::vector<
                     "Sales Tax ID,Invoice Note,Note Prints After Line Items" + Format +
                     "Statement Note,Stmt Note Prints Before Ref,Internal Note,Beginning Balance Transaction" + Format +
                     "Number of Distributions,Invoice/CM Distribution,Apply to Invoice Distribution" + Format +
-                    "Apply To Sales Order,Quantity,SO/Proposal Number,item ID,SO/Proposal Distribution" + Format +
-                    "Description,G/L Account,Unit Price,Tax Type,UPC/SKU,Weight,Amount,Job ID" + Format +
+                    "Apply To Sales Order,Quantity,Sales Order Number,item ID,Sales Order Distribution" + Format +
+                    "Description,G/L Account,Unit Price,Tax Type,UPC / SKU,Weight,Amount,Job ID" + Format +
                     "Sales Tax Agency ID,Transaction Period,Transaction Number,Return Authorization" + Format +
                     "Voided by Transaction,Recur Number" + "\n";
               DataToWrite.push_back(Store.t_str());
@@ -237,7 +237,7 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         Apply_to_Invoice_Number        =    "";
         Credit_Memo                    =    "FALSE";
         date                           =    query->FieldByName("time_stamp")->AsDateTime;
-        Date                           =    date.FormatString("mm-dd-yyyy");
+        Date                           =    date.FormatString("mm/dd/yyyy");
         Ship_By                        =    "";
         Quote                          =    "";
         Quote_                         =    "FALSE";
@@ -253,7 +253,7 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         Customer_PO                    =    "";
         Ship_Via                       =    "Airborne";
         Ship_Date                      =    "";
-        Date_Due                       =    dueDate.FormatString("mm-dd-yyyy");
+        Date_Due                       =    dueDate.FormatString("mm/dd/yyyy");
         Discount_Amount                =  query->FieldByName("Discount")->AsCurrency;
 
         if(Discount_Amount == 0)
