@@ -12,7 +12,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 //---------------------------------------------------------------------------
-enum ePMS { phoenix = 1, siHot};
+enum ePMS { phoenix = 1, siHot, oracle};
 class TfrmPHSConfiguration : public TZForm
 {
 	friend TZForm;

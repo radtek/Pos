@@ -14,6 +14,7 @@
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
+#include "ManagerPMSCodes.h"
 //---------------------------------------------------------------------------
 
 
@@ -55,6 +56,11 @@ private:	// User declarations
     Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
     void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
     void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
+    void LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
+    void AddMessage(TObject *Sender);
+    void AddRevenueCode(TObject *Sender);
+    void UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key);
+    TManagerPMSCodes* managerPMSCodes;
 public:		// User declarations
 
 	eMessageType MessageType;

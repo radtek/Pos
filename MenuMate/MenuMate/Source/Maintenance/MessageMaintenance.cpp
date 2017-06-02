@@ -82,6 +82,12 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
             pnlLabel->Caption = "Cash Denomination";
             break;
         }
+        case eRevenueCodes:
+        {
+            managerPMSCodes = new TManagerPMSCodes();
+            pnlLabel->Caption = "Revenue Codes";
+            break;
+        }
     }
 
 	this->Caption = pnlLabel->Caption;
@@ -126,6 +132,13 @@ void TfrmMessageMaintenance::ShowMessages()
         LoadDenominations(DBTransaction);
         break;
       }
+      case eRevenueCodes:
+      {
+        sgDisplay->Cols[0]->Add("Code");
+        sgDisplay->Cols[1]->Add("Description");
+        LoadRevenueCodes(DBTransaction);
+        break;
+      }
       default:
       {
          ManagerMessage->LoadMessages(DBTransaction,sgDisplay,MessageType);
@@ -141,12 +154,31 @@ void TfrmMessageMaintenance::ShowMessages()
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
 {
+    delete managerPMSCodes;
 	Close();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 {
 
+    switch(MessageType)
+    {
+        case eRevenueCodes:
+        {
+            AddRevenueCode(Sender);
+            break;
+        }
+        default:
+        {
+            AddMessage(Sender);
+            break;
+        }
+
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmMessageMaintenance::AddMessage(TObject *Sender)
+{
     try
     {
         AnsiString CurrentCaption = "Enter Button Title";
@@ -191,6 +223,7 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
                    frmTouchKeyboard->MaxLength = 39;
                 }
                 frmTouchKeyboard->Caption = CurrentMessage;
+                frmTouchKeyboard->Caption = CurrentMessage;
                 if(MessageType != eCashDenomination)
                 {
                     if (frmTouchKeyboard->ShowModal() == mrOk)
@@ -223,6 +256,7 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
 }
+
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
 {
@@ -265,6 +299,11 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
 					TManagerPatron::Instance().SetPatronType(DBTransaction,Key,PatronType);
 				}
 			}
+            else if(MessageType == eRevenueCodes)
+            {
+                int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
+                UpdateRevenueCode(DBTransaction,key);
+            }
 			else
 			{
 				TManagerInterface *Manager = NULL;
@@ -344,6 +383,8 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
     }
     else if(MessageBox("Are you sure wish to delete this Option?", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
 	{
+        AnsiString val = (int)sgDisplay->Objects[0][sgDisplay->Row];
+//        MessageBox(val,"value to be deleted",MB_OK);
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 
@@ -351,6 +392,10 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
 		{
 			TManagerPatron::Instance().Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 		}
+        else if(MessageType == eRevenueCodes)
+        {
+            managerPMSCodes->DeleteRevenueCode(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+        }
 		else
 		{
 			TManagerInterface *Manager = NULL;
@@ -412,7 +457,6 @@ Currency TfrmMessageMaintenance::LoadDenominations(Database::TDBTransaction &DBT
     sgDisplay->Cols[1]->Clear();
     sgDisplay->Cols[0]->Add("Button Title");
     sgDisplay->Cols[1]->Add("Denomination");
-
     for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
     {
          int Index = sgDisplay->Cols[0]->Add(it->Title);
@@ -488,6 +532,12 @@ void TfrmMessageMaintenance::GetHeaders(AnsiString& CurrentCaption, AnsiString& 
             CurrentMessage = "Enter Cash Denomination";
             break;
         }
+        case eRevenueCodes:
+        {
+            CurrentCaption = "Enter Revenue Code";
+            CurrentMessage = "Enter Revenue Description";
+            break;
+        }
     }
 }
 //---------------------------------------------------------------------------
@@ -554,10 +604,6 @@ void __fastcall TfrmMessageMaintenance::sgDisplayDrawCell(TObject *Sender, int A
   }
 }
 //---------------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmMessageMaintenance::sgDisplaySelectCell(TObject *Sender, int ACol,
           int ARow, bool &CanSelect)
 {
@@ -566,9 +612,99 @@ void __fastcall TfrmMessageMaintenance::sgDisplaySelectCell(TObject *Sender, int
         SelectedRow = ARow;
     }
 }
+//----------------------------------------------------------------------------
+void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->Caption = "Enter Revenue Code";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->INTInitial = 0;
 
+    std::map<int, AnsiString>::iterator iter;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+    {
+        iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
+        if(iter == managerPMSCodes->RevenueCodesMap.end())
+        {
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
 
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = true;
+            frmTouchKeyboard->KeyboardText = "";
+            frmTouchKeyboard->Caption = "Enter Revenue Code Description";
 
+            if(frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
+                std::map<int,AnsiString> localMap;
+                localMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
+                managerPMSCodes->SaveRevenueCodesToDB(DBTransaction,localMap);
+            }
+            DBTransaction.Commit();
+            ShowMessages();
+        }
+        else
+        {
+            MessageBox("Please Select a different Revenue Code","WARNING",MB_ICONWARNING + MB_OK);
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
+{
+    sgDisplay->Cols[0]->Clear();
+    sgDisplay->Cols[1]->Clear();
+    sgDisplay->Cols[0]->Add("Code");
+    sgDisplay->Cols[1]->Add("Decription");
+    managerPMSCodes->GetRevenueCodesDetails(DBTransaction,sgDisplay,managerPMSCodes->RevenueCodesMap);
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key)
+{
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->Caption = "Enter Revenue Code";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->INTInitial = key;
 
+    std::map<int, AnsiString>::iterator iter;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+    {
+        iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
+        if(iter == managerPMSCodes->RevenueCodesMap.end() || (frmTouchNumpad->INTResult == key))
+        {
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
+
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = true;
+            frmTouchKeyboard->KeyboardText = managerPMSCodes->RevenueCodesMap[key];
+            frmTouchKeyboard->Caption = "Enter Revenue Code Description";
+
+            if(frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
+                managerPMSCodes->EditRevenueCode(DBTransaction,key,frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText);
+            }
+            DBTransaction.Commit();
+            ShowMessages();
+        }
+        else
+        {
+            MessageBox("Please Select a different Revenue Code. This Revenue code already exists.",
+                        "WARNING",MB_ICONWARNING + MB_OK);
+        }
+    }
+}
 //---------------------------------------------------------------------------
 

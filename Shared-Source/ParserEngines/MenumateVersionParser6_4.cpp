@@ -191,5 +191,60 @@ void TApplyParser::DelFromPaymentAttributesTable(TDBControl* const inDBControl, 
         transaction.Rollback();
     }
 }
-
+//::::::::::::::::::::::::Version 6.41:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_41Tables()
+{
+//   Create6_41Generators(_dbControl);
+   UpdateTaxCodes(_dbControl);
+   UpdateRevenueCodes(_dbControl);
+}
+//void TApplyParser::Create6_41Generators(TDBControl* const inDBControl)
+//{
+//    if(!generatorExists("GEN_TAXCODESNUMBER", _dbControl))
+//    {
+//        executeQuery(
+//            "CREATE GENERATOR GEN_TAXCODESNUMBER;", inDBControl
+//        );
+//        executeQuery(
+//            "SET GENERATOR GEN_TAXCODESNUMBER TO 0;", inDBControl
+//        );
+//    }
+//    if(!generatorExists("GEN_REVENUECODESNUMBER", _dbControl))
+//    {
+//        executeQuery(
+//            "CREATE GENERATOR GEN_REVENUECODESNUMBER;", inDBControl
+//        );
+//        executeQuery(
+//            "SET GENERATOR GEN_REVENUECODESNUMBER TO 0;", inDBControl
+//        );
+//    }
+//}
+void TApplyParser::UpdateTaxCodes(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "TAXCODESDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE TAXCODESDETAILS "
+		"( "
+        "   TAXCODE INT NOT NULL PRIMARY KEY, "
+		"   VAT_PERCENTAGE NUMERIC(15,4), "
+		"   SERVICECHARGE_PERCENTAGE NUMERIC(15,4), "
+		"   TAXONSERVICECHARGE_PERCENTAGE NUMERIC(15,4) "
+		");",
+		inDBControl );
+    }
+}
+void TApplyParser::UpdateRevenueCodes(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "REVENUECODEDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE REVENUECODEDETAILS "
+		"( "
+        "   REVENUECODE INT NOT NULL PRIMARY KEY, "
+		"   REVENUECODE_DESCRIPTION varchar(50)"
+		");",
+		inDBControl );
+    }
+}
 }

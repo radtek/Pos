@@ -8,6 +8,8 @@
 #include "MMMessageBox.h"
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
+#include "MessageMaintenance.h"
+#include "PMSTaxCodes.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -515,13 +517,20 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 
 void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
 {
-    int i = 0;
+   std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                 (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                              (this,TDeviceRealTerminal::Instance().DBControl));
+   frmMessageMaintenance->MessageType = eRevenueCodes;
+   frmMessageMaintenance->ShowModal();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmPHSConfiguration::tbTaxCodesClick(TObject *Sender)
 {
-    int i = 0;
+   std::auto_ptr<TfrmTaxCodes>(frmTaxCodes)
+                 (TfrmTaxCodes::Create<TfrmTaxCodes>
+                              (this,TDeviceRealTerminal::Instance().DBControl));
+   frmTaxCodes->ShowModal();
 }
 //---------------------------------------------------------------------------
 

@@ -18,7 +18,7 @@ enum eMessageType
 {
    eMessage, eCancelReason, eCreditReason, eDiscountReason,
    eRunProgram, eCallAway, ePatronTypes, eSkimRefloat, eWriteOff, eCustomerTypes,ePaymentTypeDisplay,eHHProfile,eThorDiscountReason,
-   eCashDrawer, eCashDenomination
+   eCashDrawer, eCashDenomination, eRevenueCodes
 };
 
 enum eBtnControlType
