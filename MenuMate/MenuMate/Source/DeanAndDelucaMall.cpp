@@ -434,6 +434,13 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         //Get file name according to field index.
         fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
 
+         //Get Max Z key;
+        int maxZedKey;
+        if(!zKey)
+            maxZedKey = GetMaxZedKey(dBTransaction);
+        else
+            maxZedKey = zKey;
+
         //Query for selecting data for hourly file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -448,20 +455,13 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                     "INNER JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
                     "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
                     "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
-                    "WHERE A.MALL_KEY = :MALL_KEY AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ";
-        if(zKey)
-        {
-             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
-        }
-        else
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY ) ";
-        }
+                    "WHERE A.MALL_KEY = :MALL_KEY AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' "
+                    "AND ARCHIVE.TIME_STAMP_BILLED >=  (SELECT MIN(A.DATE_CREATED) DATE_CREATED FROM MALLEXPORT_SALES a WHERE a.Z_KEY = :MAX_ZKEY ) "
+                    "AND ARCHIVE.TIME_STAMP_BILLED <=  (SELECT MAX(A.DATE_CREATED) DATE_CREATED FROM MALLEXPORT_SALES a WHERE a.Z_KEY = :MAX_ZKEY ) "
+                    "AND a.Z_KEY = :MAX_ZKEY "
+                    "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
 
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
-
-         "UNION "
+                "UNION "
                             "SELECT A.ARCBILL_KEY, CASE WHEN AOD.NAME = 'Member Reward' THEN 'LP' "
                                                 "WHEN AOD.NAME = 'Location Reward' THEN 'PC' "
                                                 "ELSE  DISCOUNTS.DISCOUNT_ID END DISCOUNT_ID, "
@@ -470,24 +470,16 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                     "INNER JOIN DAYARCHIVE ON DAYARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
                     "INNER JOIN DAYARCORDERDISCOUNTS AOD ON DAYARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
                     "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
-                    "WHERE A.MALL_KEY = 2 AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ";
-
-        if(zKey)
-        {
-             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
-        }
-        else
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY ) ";
-        }
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, DAYARCHIVE.ARCHIVE_KEY "
+                    "WHERE A.MALL_KEY = 2 AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' "
+                    "AND DAYARCHIVE.TIME_STAMP_BILLED >=  (SELECT MIN(A.DATE_CREATED) DATE_CREATED FROM MALLEXPORT_SALES a WHERE a.Z_KEY = :MAX_ZKEY ) "
+                    "AND DAYARCHIVE.TIME_STAMP_BILLED <=  (SELECT MAX(A.DATE_CREATED) DATE_CREATED FROM MALLEXPORT_SALES a WHERE a.Z_KEY = :MAX_ZKEY ) "
+                    "AND a.Z_KEY = :MAX_ZKEY "
+                    "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, DAYARCHIVE.ARCHIVE_KEY "
                         ") DISCOUNT_BREAKUP "
                 "GROUP BY 1,2 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+        IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
 
         IBInternalQuery->ExecQuery();
 
