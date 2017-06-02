@@ -807,7 +807,11 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                    }
                    if (PatronCount <= 0)
                          PatronCount = 1;
-			         BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
+                   if(!TGlobalSettings::Instance().IsThorlinkSelected)
+                   {
+                      CheckLoyalty(ItemsToBill);
+                   }
+                   BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
 				}
 
 
@@ -2369,12 +2373,12 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateItemListDisplay(DBTransaction);
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
-         if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+        if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
            RemoveMembershipDiscounts(DBTransaction);
         }
 
-         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+        if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
         {
             CheckingClipItemsInSelectedList(DBTransaction);
         }
@@ -2480,12 +2484,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
     {
 	    CheckLoyalty();
     }
-    else
-    {
-
-    }
 	ShowReceipt();
-
 
     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
     {
@@ -2631,7 +2630,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
 	// Reset the Split Payment Form.
 
-	if (SelectedItems.size() == 0 /*&& Discounts.size() > 0*/)
+	if (SelectedItems.size() == 0)
 	{
 		if (MessageBox("Remove all Membership & Discounts from the bill?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
 		{
@@ -2648,10 +2647,6 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     if(!TGlobalSettings::Instance().IsThorlinkSelected)
     {
 	    CheckLoyalty();
-    }
-    else
-    {
-
     }
 	ShowReceipt();
 
@@ -4777,8 +4772,8 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   if(SelectedItems.size() > 0 && (!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+     (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)))
    {
       allow = true;
    }
@@ -4789,101 +4784,101 @@ void TfrmBillGroup::CheckLoyalty()
         DBTransaction.StartTransaction();
         RemoveMembership(DBTransaction);
         DBTransaction.Commit();
-
    }
-   if (allow && !MembershipConfirmed)
+
+
+   if (allow)
 	{
-		if (SelectedItems.size() == 0)
-		{
-			Membership.Clear();
-			lbeMembership->Visible = false;
-			lbeMembership->Caption = "";
-			ShowReceipt();
-		}
-		else
-		{
-			std::set <__int64> PossiableMembers;
-			std::set <__int64> ReceiptItemKeys;
-			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-			{
-				ReceiptItemKeys.insert(itItem->first);
-			}
-
-			Database::TDBTransaction DBTransaction(DBControl);
-			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-			DBTransaction.StartTransaction();
-			TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
-
-			if (PossiableMembers.size() > 1)
-			{
-				// Display Reports List
-				std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
-				for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
-					advance(pMembersKey, 1))
-				{
-					TMMContactInfo TempUserInfo;
-					eMemberSource MemberSource;
-					TempUserInfo.ContactKey = *pMembersKey;
-
-					TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-						MemberSource);
-					if (Result != lsUserNotFound)
-					{
-						TVerticalSelection Item;
-						Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
-						Item.Properties["Color"] = IntToStr(clNavy);
-						Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
-						Item.CloseSelection = true;
-						SelectionForm->Items.push_back(Item);
-					}
-				}
-
-				if (SelectionForm->Items.size() > 0)
-				{
-					SelectionForm->ShowModal();
-					TVerticalSelection SelectedItem;
-					if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
-					{
-						int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
-						if (MemberKey != 0)
-						{
-							TMMContactInfo TempUserInfo;
-							eMemberSource MemberSource;
-							TempUserInfo.ContactKey = MemberKey;
-							TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-								MemberSource);
-
-							if (Result == lsAccepted)
-							{
-								ApplyMembership(DBTransaction, TempUserInfo);
-							}
-							else if (Result == lsAccountBlocked)
-							{
-								MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-									MB_OK + MB_ICONINFORMATION);
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
-				if (pMemberKey != PossiableMembers.end())
-				{
-					TMMContactInfo MembershipInfo;
-					eMemberSource MemberSource;
-					MembershipInfo.ContactKey = *pMemberKey;
-					TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
-					if (Result == lsAccepted)
-					{
-                      ApplyMembership(DBTransaction, MembershipInfo);
-					}
-				}
-			}
-			DBTransaction.Commit();
-		}
+        std::set <__int64> ReceiptItemKeys;
+        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+        {
+            ReceiptItemKeys.insert(itItem->first);
+        }
+        CheckLoyalty(ReceiptItemKeys);
 	}
+}
+// ---------------------------------------------------------------------------
+void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
+{
+    std::set <__int64> PossiableMembers;
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
+
+    if(PossiableMembers.size() == 0)
+    {
+        RemoveMembership(DBTransaction);
+    }
+    else if(!MembershipConfirmed)
+    {
+        if (PossiableMembers.size() > 1)
+        {
+            // Display Reports List
+            std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
+            for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
+                advance(pMembersKey, 1))
+            {
+                TMMContactInfo TempUserInfo;
+                eMemberSource MemberSource;
+                TempUserInfo.ContactKey = *pMembersKey;
+
+                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
+                    MemberSource);
+                if (Result != lsUserNotFound)
+                {
+                    TVerticalSelection Item;
+                    Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
+                    Item.Properties["Color"] = IntToStr(clNavy);
+                    Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
+                    Item.CloseSelection = true;
+                    SelectionForm->Items.push_back(Item);
+                }
+            }
+
+            if (SelectionForm->Items.size() > 0)
+            {
+                SelectionForm->ShowModal();
+                TVerticalSelection SelectedItem;
+                if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
+                {
+                    int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
+                    if (MemberKey != 0)
+                    {
+                        TMMContactInfo TempUserInfo;
+                        eMemberSource MemberSource;
+                        TempUserInfo.ContactKey = MemberKey;
+                        TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo, MemberSource);
+                        if (Result == lsAccepted)
+                        {
+                            ApplyMembership(DBTransaction, TempUserInfo);
+                        }
+                        else if (Result == lsAccountBlocked)
+                        {
+                            MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
+                                MB_OK + MB_ICONINFORMATION);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
+            if (pMemberKey != PossiableMembers.end())
+            {
+                TMMContactInfo MembershipInfo;
+                eMemberSource MemberSource;
+                MembershipInfo.ContactKey = *pMemberKey;
+                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
+                if (Result == lsAccepted)
+                {
+                  ApplyMembership(DBTransaction, MembershipInfo);
+                }
+            }
+        }
+    }
+    DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)

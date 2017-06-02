@@ -1398,6 +1398,7 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.OriginalAmount = source.OriginalAmount;
     destination.DiscountAppliedTime = source.DiscountAppliedTime;
     destination.Rounding = source.Rounding;
+    destination.CategoryFilterKeys = source.CategoryFilterKeys;
 }
 //---------------------------------------------------------------------------
 Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)
@@ -1472,17 +1473,6 @@ void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransactio
         std::auto_ptr<TList> itemList(new TList());
         itemList->Add(Order);
         AddDiscount(itemList.get(),CurrentDiscount);
-
- 	   /*	if(!Order->DiscountApplied(*ptrDiscountKey) )
-		{
-
-            if(CurrentDiscount.Mode == DiscModeItem)
-            {
-              CurrentDiscount.Mode = DiscModeCurrency;
-            }
-            if(CurrentDiscount.MinItemRequired <= 1)
-			   Order->DiscountAddIncSides(CurrentDiscount);
-		}*/
 	}
 }
 //---------------------------------------------------------------------------
