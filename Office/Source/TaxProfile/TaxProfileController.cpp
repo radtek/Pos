@@ -103,6 +103,7 @@ void TaxProfileController::UpdateTaxProfile(TaxProfile* guiTaxProfile)
       selectedTaxProfile->taxProfileName  = guiTaxProfile->taxProfileName;
       selectedTaxProfile->taxPercentage   = guiTaxProfile->taxPercentage;
       selectedTaxProfile->taxProfileType  = guiTaxProfile->taxProfileType;
+      selectedTaxProfile->taxCode         = guiTaxProfile->taxCode;
       selectedTaxProfile->taxPriority     = guiTaxProfile->taxPriority;
    }
 }

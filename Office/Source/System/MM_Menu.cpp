@@ -573,6 +573,8 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 
             ItemSizeInfo->PLU = sqlMenu->FieldByName("PLU")->AsInteger;
             ItemSizeInfo->PriceForPoints = sqlMenu->FieldByName("PRICE_FOR_POINTS")->AsInteger;
+            ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
+            ItemSizeInfo->RevenueCodeDescription = sqlMenu->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
 
 				ItemSizeInfo->Categories.clear();
 				ItemSizeInfo->Recipes.clear();

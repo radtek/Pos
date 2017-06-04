@@ -195,7 +195,8 @@ void TApplyParser::DelFromPaymentAttributesTable(TDBControl* const inDBControl, 
 void TApplyParser::update6_41Tables()
 {
 //   Create6_41Generators(_dbControl);
-   UpdateTaxCodes(_dbControl);
+   UpdateTaxProfiles(_dbControl);
+   UpdateItemSize(_dbControl);
    UpdateRevenueCodes(_dbControl);
 }
 //void TApplyParser::Create6_41Generators(TDBControl* const inDBControl)
@@ -219,22 +220,29 @@ void TApplyParser::update6_41Tables()
 //        );
 //    }
 //}
-void TApplyParser::UpdateTaxCodes(TDBControl* const inDBControl)
-{
-    if ( !tableExists( "TAXCODESDETAILS", _dbControl ) )
-	{
-		executeQuery(
-		"CREATE TABLE TAXCODESDETAILS "
-		"( "
-        "   TAXCODE INT NOT NULL PRIMARY KEY, "
-		"   VAT_PERCENTAGE NUMERIC(15,4), "
-		"   SERVICECHARGE_PERCENTAGE NUMERIC(15,4), "
-		"   TAXONSERVICECHARGE_PERCENTAGE NUMERIC(15,4) "
-		");",
-		inDBControl );
-    }
-}
-void TApplyParser::UpdateRevenueCodes(TDBControl* const inDBControl)
+//void TApplyParser::UpdateTaxCodes(TDBControl* const inDBControl)
+//{
+//    if ( !tableExists( "TAXCODESDETAILS", _dbControl ) )
+//	{
+//		executeQuery(
+//		"CREATE TABLE TAXCODESDETAILS "
+//		"( "
+//        "   TAXCODE INT NOT NULL PRIMARY KEY, "
+//		"   VAT_PERCENTAGE NUMERIC(15,4), "
+//		"   SERVICECHARGE_PERCENTAGE NUMERIC(15,4), "
+//		"   TAXONSERVICECHARGE_PERCENTAGE NUMERIC(15,4) "
+//		");",
+//		inDBControl );
+//    }
+//}void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !fieldExists("TAXPROFILES", "TAX_CODE", inDBControl ) )    {
+        executeQuery(
+        "ALTER TABLE TAXPROFILES ADD TAX_CODE INT;",
+        inDBControl );
+    }}void TApplyParser::UpdateItemSize(TDBControl* const inDBControl){    if ( !fieldExists("ITEMSIZE", "REVENUECODE", inDBControl ) )    {
+        executeQuery(
+        "ALTER TABLE ITEMSIZE ADD REVENUECODE INT;",
+        inDBControl );
+    }}void TApplyParser::UpdateRevenueCodes(TDBControl* const inDBControl)
 {
     if ( !tableExists( "REVENUECODEDETAILS", _dbControl ) )
 	{

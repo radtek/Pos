@@ -88,6 +88,9 @@ const AnsiString MenuSQL =
       "ItemSize.PLU,"
       "ItemSize.PLU, "
       "ItemSize.PRICE_FOR_POINTS, " // add line for price for points..
+      "ItemSize.REVENUECODE, "
+      "REVENUECODEDETAILS.REVENUECODE_DESCRIPTION,"
+
 		"ArcCategories.Category_Key,"
       "ArcCategories.Category,"
 		"CategoryGroups.CategoryGroups_key Category_Group_Key,"
@@ -129,6 +132,8 @@ const AnsiString MenuSQL =
 			"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
 		"Left Join ServingCourses On "
 			"Course.ServingCourses_Key = ServingCourses.ServingCourses_Key "
+		"Left Join REVENUECODEDETAILS On "
+			"ITEMSIZE.REVENUECODE = REVENUECODEDETAILS.REVENUECODE "
 
 	"Where "
 		"Menu.Menu_Key = :Menu_Key "
@@ -450,6 +455,9 @@ public:
 	WideString	Category_Group_Name;
 	int			ThirdPartyCodes_Key;
 	WideString	Third_Party_Code;
+
+    int         RevenueCode;
+    AnsiString  RevenueCodeDescription;
 
     __int32     PLU;
 

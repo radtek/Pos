@@ -2478,15 +2478,25 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		cbCategory->DropDownCount = 16;
 
 		cb3rdPartyGroupCode->Items->Clear();
+        cbRevenueGroupCode->Items->Clear();
 		std::auto_ptr<TStringList> ThirdPartyGroups(new TStringList());
-		GetAll3rdPartyGroups(ThirdPartyGroups.get());
+        std::auto_ptr<TStringList> revenueCodesList(new TStringList());
+		GetAll3rdPartyGroups(ThirdPartyGroups.get(), revenueCodesList.get());
 		for (int i=0; i<ThirdPartyGroups->Count; i+=2)
 		{
 			cb3rdPartyGroupCode->Items->Add(ThirdPartyGroups->Strings[i]);
 		}
+		for (int i=0; i<revenueCodesList->Count; i+=2)
+		{
+			cbRevenueGroupCode->Items->Add(revenueCodesList->Strings[i]);
+		}
 
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
-        cbRevenueGroupCode->Text = "";
+        AnsiString revenueCodeText = ItemSizeData->RevenueCode;
+        revenueCodeText += "(";
+        revenueCodeText += ItemSizeData->RevenueCodeDescription;
+        revenueCodeText += ")";
+        cbRevenueGroupCode->Text =  revenueCodeText;
         if(ItemSizeData->CanBePaidForUsingPoints)
         {
            nePriceForPoint->Enabled = true;
@@ -2858,7 +2868,7 @@ void TfrmMenuEdit::GetAllCategoriesWithKeys(std::vector<Menu::TNameAndKey> *AllC
 }
 
 //---------------------------------------------------------------------------
-void TfrmMenuEdit::GetAll3rdPartyGroups(TStrings *ThirdPartyGroups)
+void TfrmMenuEdit::GetAll3rdPartyGroups(TStrings *ThirdPartyGroups, TStrings *revenueCodesList)
 {
 	TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
 	for (int i = FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
@@ -2883,6 +2893,16 @@ void TfrmMenuEdit::GetAll3rdPartyGroups(TStrings *ThirdPartyGroups)
 							{
 								ThirdPartyGroups->Add(ItemSizeData->ThirdPartyCode);
 								ThirdPartyGroups->Add("");
+							}
+							if (revenueCodesList->IndexOf(ItemSizeData->RevenueCode+"("+ItemSizeData->RevenueCodeDescription+")") == -1
+                                && ItemSizeData->RevenueCodeDescription != WideString(""))
+							{
+                                AnsiString revenueCodeDetails = ItemSizeData->RevenueCode;
+                                revenueCodeDetails += "(";
+                                revenueCodeDetails += ItemSizeData->RevenueCodeDescription;
+                                revenueCodeDetails += ")";
+								revenueCodesList->Add(revenueCodeDetails);
+								revenueCodesList->Add("");
 							}
 						}
 					}
@@ -11448,6 +11468,8 @@ TTreeNode *TfrmMenuEdit::AddMenuSize(TTreeNode *ItemNode, Menu::TItemSizeInfo *I
 	ItemSizeInfo->CanBePaidForUsingPoints;
 	ItemSizeData->DefaultPatronCount = 	ItemSizeInfo->DefaultPatronCount;
     ItemSizeData->CostForPoints = ItemSizeInfo->PriceForPoints;
+    ItemSizeData->RevenueCode = ItemSizeInfo->RevenueCode;
+    ItemSizeData->RevenueCodeDescription = ItemSizeInfo->RevenueCodeDescription;
 
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeInfo->ItemSizePriceLevels.begin();
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeInfo->ItemSizePriceLevels.end();
@@ -12185,7 +12207,9 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 			itemSizeInfo.DisableWhenCountReachesZero,
 			itemSizeInfo.CanBePaidForUsingPoints,
 			itemSizeInfo.DefaultPatronCount,
-            itemSizeInfo.PriceForPoints);
+            itemSizeInfo.PriceForPoints,
+            itemSizeInfo.RevenueCode,
+            itemSizeInfo.RevenueCodeDescription);
 
 			itemSizeInfo.Third_Party_Code = GetThirdPartyCodeFromKeyFromFile(&thirdPartyCodes, itemSizeInfo.ThirdPartyCodes_Key);
 			itemSizeInfo.Size_Name = itemSizeName;

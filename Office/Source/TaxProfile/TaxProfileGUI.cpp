@@ -95,9 +95,10 @@ void TfrmTaxProfile::AddTaxProfileToGrid(TaxProfile &taxProfile)
    PVirtualNode newNode       = vtvProfiles->AddChild(NULL);
    TaxProfile* NodeData       = (TaxProfile*)vtvProfiles->GetNodeData( newNode );
 
-   NodeData->taxProfileName	= taxProfile.taxProfileName;
+   NodeData->taxProfileName	  = taxProfile.taxProfileName;
    NodeData->taxPercentage    = taxProfile.taxPercentage;
    NodeData->taxProfileType   = taxProfile.taxProfileType;
+   NodeData->taxCode          = taxProfile.taxCode;   
    NodeData->taxPriority      = taxProfile.taxPriority;
    NodeData->SetTaxProfileDBKey(taxProfile.GetTaxProfileDBKey());
 
@@ -118,16 +119,19 @@ void __fastcall TfrmTaxProfile::vtvProfilesGetText(
 		switch (Column)
 		{
 			case TP_Column_Name:
-            CellText = NodeData->taxProfileName;
+                CellText = NodeData->taxProfileName;
 				break;
 			case TP_Column_Rate:
-            CellText = (AnsiString)NodeData->taxPercentage + '%';
+                CellText = (AnsiString)NodeData->taxPercentage + '%';
 				break;
 			case TP_Column_Type:
-            CellText = TaxProfile::Convert(NodeData->taxProfileType);
+                CellText = TaxProfile::Convert(NodeData->taxProfileType);
+				break;
+			case TP_Column_TaxCode:
+                CellText = NodeData->taxCode;
 				break;
 			case TP_Column_Priority:
-            CellText = (AnsiString)NodeData->taxPriority;
+                CellText = (AnsiString)NodeData->taxPriority;
 				break;
 		}
 	}
@@ -184,6 +188,7 @@ void __fastcall TfrmTaxProfile::vtvProfilesCreateEditor(
    {
       case TP_Column_Name:
       case TP_Column_Rate:
+      case TP_Column_TaxCode:
       case TP_Column_Priority:
          createEditorText(EditLink);
          break;
@@ -287,7 +292,16 @@ void TfrmTaxProfile::shiftEditingToNextColumn(PVirtualNode* currentNode, TColumn
 
       if(currentColumn < TP_Column_Priority)
       {
-         nextColumn = currentColumn + 1;
+         if(currentColumn == TP_Column_Priority - 2)
+         {
+             TaxProfile* nodeTaxProfile = (TaxProfile*)vtvProfiles->GetNodeData(*currentNode);
+             if(nodeTaxProfile->taxProfileType != SalesTax)
+                nextColumn = currentColumn + 2;
+             else
+                nextColumn = currentColumn + 1;
+         }
+         else
+            nextColumn = currentColumn + 1;
 
          vtvProfiles->SetFocus();
          vtvProfiles->FocusedNode = *currentNode;
@@ -318,7 +332,8 @@ bool TfrmTaxProfile::isValidGrid()
          status = checkTaxProfileName( profileData->taxProfileName )
                      && checkTaxProfileRate( profileData->taxPercentage )
                      && checkTaxProfilePriority( profileData->taxPriority )
-                     && checkTaxProfileType( profileData->taxProfileType);
+                     && checkTaxProfileType( profileData->taxProfileType)
+                     && checkTaxProfileCode(profileData->taxCode);
 
          node = vtvProfiles->GetNextSibling(node);
       }
@@ -341,6 +356,9 @@ AnsiString TfrmTaxProfile::getTaxProfilePropertyFromNode(int column, PVirtualNod
          break;
       case TP_Column_Rate:
          propertyValue = nodeTaxProfile->taxPercentage;
+         break;
+      case TP_Column_TaxCode:
+         propertyValue = nodeTaxProfile->taxCode;
          break;
       case TP_Column_Priority:
          propertyValue = nodeTaxProfile->taxPriority;
@@ -366,6 +384,9 @@ void TfrmTaxProfile::setTaxProfilePropertyFromNode(int column, PVirtualNode* nod
          break;
       case TP_Column_Rate:
          nodeTaxProfile->taxPercentage = Currency(newColumnText);
+         break;
+      case TP_Column_TaxCode:
+         nodeTaxProfile->taxCode = StrToInt(newColumnText);
          break;
       case TP_Column_Priority:
          nodeTaxProfile->taxPriority = StrToInt(newColumnText);
@@ -393,6 +414,9 @@ bool TfrmTaxProfile::validateTaxProfileProperty(int column, AnsiString newColumn
          break;
       case TP_Column_Rate:
          status = validateTaxProfileRate( newColumnText );
+         break;
+      case TP_Column_TaxCode:
+         status = validateTaxProfileCode( newColumnText );
          break;
       case TP_Column_Priority:
          status = validateTaxProfilePriority( newColumnText );
@@ -501,6 +525,27 @@ bool TfrmTaxProfile::validateTaxProfileType(AnsiString typeStr)
    return isValid;
 }
 //---------------------------------------------------------------------------
+bool TfrmTaxProfile::validateTaxProfileCode(AnsiString code)
+{
+   bool isValid = false;
+   AnsiString message = "Tax Code must have a value";
+   try
+   {
+      int value = StrToInt(code);
+      isValid  = checkTaxProfileCode(value);
+   }
+   catch(...)
+   {
+       message = "Invalid Tax Code";
+   }
+
+   if(!isValid)
+   {
+      Message(message, "Tax profile code");
+   }
+   return isValid;
+}
+//---------------------------------------------------------------------------
 
 bool TfrmTaxProfile::checkTaxProfileName(AnsiString name)
 {
@@ -523,6 +568,11 @@ bool TfrmTaxProfile::checkTaxProfilePriority(int priority)
 bool TfrmTaxProfile::checkTaxProfileType(TaxType type)
 {
    return type != DefaultNULLTax;
+}
+//---------------------------------------------------------------------------
+bool TfrmTaxProfile::checkTaxProfileCode(int code)
+{
+    return code >= 0;
 }
 //---------------------------------------------------------------------------
 
@@ -571,7 +621,6 @@ void __fastcall TfrmTaxProfile::vtvProfilesColumnDblClick(
    {
       finishedEditing = vtvProfiles->EndEditNode();
    }
-
    if( finishedEditing )
       editSelectedNode(Column);
 }
@@ -582,7 +631,22 @@ void TfrmTaxProfile::editSelectedNode(int columnIndex)
 {
    if( vtvProfiles->FocusedNode != 0 )
    {
-      vtvProfiles->EditNode( vtvProfiles->FocusedNode, columnIndex );
+      /*if(columnIndex == TP_Column_TaxCode)
+      {
+         PVirtualNode* node = new PVirtualNode();
+         if(true)
+         {
+            vtvProfiles->EditNode( vtvProfiles->FocusedNode, columnIndex );
+            if(((TaxProfile*)vtvProfiles->FocusedNode)->taxProfileType == SalesTax)
+            {
+               vtvProfiles->EndEditNode();
+            }
+         }
+      }
+      else
+      { */
+        vtvProfiles->EditNode( vtvProfiles->FocusedNode, columnIndex );
+      //}
    }
 }
 //---------------------------------------------------------------------------
@@ -643,6 +707,9 @@ void __fastcall TfrmTaxProfile::vtvProfilesCompareNodes(
          break;
       case TP_Column_Type:
          result = lhs->taxProfileType > rhs->taxProfileType ? -1 : 1;
+         break;
+      case TP_Column_TaxCode:
+         result = lhs->taxCode > rhs->taxCode ? -1 : 1;
          break;
       case TP_Column_Priority:
          result = StrToInt(lhs->taxPriority) > StrToInt(rhs->taxPriority) ? 1 : -1;
@@ -788,7 +855,8 @@ bool __stdcall TCustomNodeEditorText::PrepareEdit(TBaseVirtualTree* Tree, PVirtu
    // init text editor
    textEditor->Parent = tree;
    textEditor->Text = getNodeProp != 0 ? getNodeProp(Column,&Node) : AnsiString("");
-
+   if(Column == TP_Column_TaxCode && ((TaxProfile*)nodeData)->taxProfileType != SalesTax)
+      return false;
    return true;
 }
 

@@ -847,7 +847,8 @@ namespace MenumateVersionParser
         void upgrade6_41Tables();
         void update6_41Tables();
         void Create6_41Generators(TDBControl* const _dbControl);
-        void UpdateTaxCodes(TDBControl* const _dbControl);
+        void UpdateTaxProfiles(TDBControl* const _dbControl);
+        void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
     }; // class
 } // namespace

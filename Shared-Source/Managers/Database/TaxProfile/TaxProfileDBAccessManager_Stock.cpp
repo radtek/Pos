@@ -188,6 +188,7 @@ void TTaxProfileDBAccessManager_Stock::getTaxProfileFromQuery(TIBSQL* query, Tax
    taxProfile->taxPercentage  = query->FieldByName("RATE")->AsDouble;
    taxProfile->taxProfileType = query->FieldByName("TYPE")->AsInteger;
    taxProfile->taxPriority    = query->FieldByName("PRIORITY")->AsInteger;
+//   taxProfile->taxCode        = query->FieldByName("TAXCODE")->AsInteger;
    taxProfile->taxSelectable  = query->FieldByName("SELECTABLE")->AsString == "T" ? true : false;
 }
 

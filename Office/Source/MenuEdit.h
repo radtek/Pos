@@ -780,7 +780,7 @@ private:
 	void GetAllSizes(TStringList *AllSizes);
 	void GetAllCategories(TStringList *AllCategories);
 	void GetAllCategoriesWithKeys(std::vector<Menu::TNameAndKey> *AllCategoriesWithKeys); 
-	void GetAll3rdPartyGroups(TStrings *ThirdPartyGroups);
+	void GetAll3rdPartyGroups(TStrings *ThirdPartyGroups, TStrings *revenueCodesList);
 	void GetAllServingCourses(TStringList *AllServingCourses);
 	void LoadServingCoursesPrior3Point4(TMenuNode *MenuData);
 	void GetThirdPartyCodesListFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, TLoadMenu *inLoadMenu);
@@ -1419,6 +1419,9 @@ public:
 	bool DisableWhenCountReachesZero;
 
 	int DefaultPatronCount;
+
+    int RevenueCode;
+    AnsiString RevenueCodeDescription;
 
 	std::set<__int32> TaxProfileKeys;
 	AnsiString KitchenName;   
