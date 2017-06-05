@@ -674,7 +674,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 
                     TItemComplete *order1 = ( TItemComplete* )TempTransaction->Orders->Items[0];
 
-                    
+
 
                     AnsiString tabTableName =  order1->TabContainerName + " : " + order1->TabName;
                    if(order1->TabType == TabWeb)
@@ -689,7 +689,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     {
                        tabTableName =  order1->TabName + " : " + order1->TabName;
                     }
- 
+
                     for( ; it != itemGroupsToCancel.end() ; it++ )
                     {
                         _onItemsCanceled( it->second,tabTableName);
@@ -2373,12 +2373,12 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateItemListDisplay(DBTransaction);
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
-        if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+         if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
            RemoveMembershipDiscounts(DBTransaction);
         }
 
-        if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
         {
             CheckingClipItemsInSelectedList(DBTransaction);
         }
@@ -2630,7 +2630,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
 	// Reset the Split Payment Form.
 
-	if (SelectedItems.size() == 0)
+	if (SelectedItems.size() == 0 /*&& Discounts.size() > 0*/)
 	{
 		if (MessageBox("Remove all Membership & Discounts from the bill?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
 		{
@@ -4772,8 +4772,8 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-   if(SelectedItems.size() > 0 && (!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-     (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)))
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
    {
       allow = true;
    }
@@ -4784,17 +4784,26 @@ void TfrmBillGroup::CheckLoyalty()
         DBTransaction.StartTransaction();
         RemoveMembership(DBTransaction);
         DBTransaction.Commit();
+
    }
-
-
-   if (allow)
+   if (allow && !MembershipConfirmed)
 	{
-        std::set <__int64> ReceiptItemKeys;
-        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-        {
-            ReceiptItemKeys.insert(itItem->first);
-        }
-        CheckLoyalty(ReceiptItemKeys);
+		if (SelectedItems.size() == 0)
+		{
+			Membership.Clear();
+			lbeMembership->Visible = false;
+			lbeMembership->Caption = "";
+			ShowReceipt();
+		}
+		else
+		{
+            std::set <__int64> ReceiptItemKeys;
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+            {
+                ReceiptItemKeys.insert(itItem->first);
+            }
+            CheckLoyalty(ReceiptItemKeys);
+		}
 	}
 }
 // ---------------------------------------------------------------------------
@@ -4806,75 +4815,70 @@ void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
     DBTransaction.StartTransaction();
     TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
 
-    if(PossiableMembers.size() == 0)
+    if (PossiableMembers.size() > 1)
     {
-        RemoveMembership(DBTransaction);
-    }
-    else if(!MembershipConfirmed)
-    {
-        if (PossiableMembers.size() > 1)
+        // Display Reports List
+        std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
+        for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
+            advance(pMembersKey, 1))
         {
-            // Display Reports List
-            std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
-            for (std::set <__int64> ::iterator pMembersKey = PossiableMembers.begin(); pMembersKey != PossiableMembers.end();
-                advance(pMembersKey, 1))
-            {
-                TMMContactInfo TempUserInfo;
-                eMemberSource MemberSource;
-                TempUserInfo.ContactKey = *pMembersKey;
+            TMMContactInfo TempUserInfo;
+            eMemberSource MemberSource;
+            TempUserInfo.ContactKey = *pMembersKey;
 
-                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-                    MemberSource);
-                if (Result != lsUserNotFound)
-                {
-                    TVerticalSelection Item;
-                    Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
-                    Item.Properties["Color"] = IntToStr(clNavy);
-                    Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
-                    Item.CloseSelection = true;
-                    SelectionForm->Items.push_back(Item);
-                }
+            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
+                MemberSource);
+            if (Result != lsUserNotFound)
+            {
+                TVerticalSelection Item;
+                Item.Title = TempUserInfo.Name + " " + TempUserInfo.MembershipNumber;
+                Item.Properties["Color"] = IntToStr(clNavy);
+                Item.Properties["Member"] = IntToStr(TempUserInfo.ContactKey);
+                Item.CloseSelection = true;
+                SelectionForm->Items.push_back(Item);
             }
+        }
 
-            if (SelectionForm->Items.size() > 0)
+        if (SelectionForm->Items.size() > 0)
+        {
+            SelectionForm->ShowModal();
+            TVerticalSelection SelectedItem;
+            if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
             {
-                SelectionForm->ShowModal();
-                TVerticalSelection SelectedItem;
-                if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
+                int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
+                if (MemberKey != 0)
                 {
-                    int MemberKey = StrToIntDef(SelectedItem.Properties["Member"], 0);
-                    if (MemberKey != 0)
+                    TMMContactInfo TempUserInfo;
+                    eMemberSource MemberSource;
+                    TempUserInfo.ContactKey = MemberKey;
+                    TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
+                        MemberSource);
+
+                    if (Result == lsAccepted)
                     {
-                        TMMContactInfo TempUserInfo;
-                        eMemberSource MemberSource;
-                        TempUserInfo.ContactKey = MemberKey;
-                        TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo, MemberSource);
-                        if (Result == lsAccepted)
-                        {
-                            ApplyMembership(DBTransaction, TempUserInfo);
-                        }
-                        else if (Result == lsAccountBlocked)
-                        {
-                            MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-                                MB_OK + MB_ICONINFORMATION);
-                        }
+                        ApplyMembership(DBTransaction, TempUserInfo);
+                    }
+                    else if (Result == lsAccountBlocked)
+                    {
+                        MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
+                            MB_OK + MB_ICONINFORMATION);
                     }
                 }
             }
         }
-        else
+    }
+    else
+    {
+        std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
+        if (pMemberKey != PossiableMembers.end())
         {
-            std::set <__int64> ::iterator pMemberKey = PossiableMembers.begin();
-            if (pMemberKey != PossiableMembers.end())
+            TMMContactInfo MembershipInfo;
+            eMemberSource MemberSource;
+            MembershipInfo.ContactKey = *pMemberKey;
+            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
+            if (Result == lsAccepted)
             {
-                TMMContactInfo MembershipInfo;
-                eMemberSource MemberSource;
-                MembershipInfo.ContactKey = *pMemberKey;
-                TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo,MemberSource);
-                if (Result == lsAccepted)
-                {
-                  ApplyMembership(DBTransaction, MembershipInfo);
-                }
+              ApplyMembership(DBTransaction, MembershipInfo);
             }
         }
     }
@@ -4956,5 +4960,6 @@ void TfrmBillGroup::UpdateContainerList()
     TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
     DBTransaction.Commit();
 }
+
 
 
