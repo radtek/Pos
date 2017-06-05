@@ -74,7 +74,7 @@ class TExportCSV
         void CreateHeaderFormat(UnicodeString MallPathFileName, std::vector<UnicodeString> &DataToWrite);
         std::vector<UnicodeString> DataToWrite;
         void LoadDataFromDB(std::vector<UnicodeString> &DataToWrite);
-        UnicodeString CombinedTaxTypeString(Currency vat, Currency serviceCharge, Currency serviceChargeTax, Currency localTax, Currency profitTax);
+        UnicodeString GetTaxType(Currency vat, Currency serviceCharge, Currency serviceChargeTax, Currency localTax, Currency profitTax);
 
    public:
         void PostDateToCSV();
