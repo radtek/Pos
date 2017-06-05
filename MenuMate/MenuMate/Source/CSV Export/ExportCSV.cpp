@@ -259,7 +259,7 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
         if(Discount_Amount == 0)
             Discount_Amount = "";
 
-        Discount_Date                  =     date.FormatString("mm-dd-yyyy");
+        Discount_Date                  =     date.FormatString("mm/dd/yyyy");
         Displayed_Terms                =    "Due at end of Month";
         Sales_Representative_ID        =    "";
         Accounts_Receivable_Account    =    "105-00";
