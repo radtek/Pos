@@ -1221,7 +1221,6 @@ void TManagerMenusPOS::UpdateMenuChanged(Database::TDBControl &DBControl, TNetMe
 		 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
 		 DBTransaction1.StartTransaction();
 		 Initialise(DBTransaction1);
-         UpdateMenuEditSetting();
 		 DBTransaction1.Commit();
 	  }
    }
@@ -1529,33 +1528,5 @@ TListMenu * __fastcall TManagerMenusPOS::GetVisibleMenu()
    return FVisibleMenu;
 }
 // ---------------------------------------------------------------------------
-
-/*void TManagerMenusPOS::RemoveEntryFromDevicesMenusTable(UnicodeString inMenuName)
-{
-	//
-}*/
 // ---------------------------------------------------------------------------
-void TManagerMenusPOS::UpdateMenuEditSetting()
-{
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text ="UPDATE VARSPROFILE a SET a.INTEGER_VAL =:INTEGER_VAL "
-        " where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY "  ;
-        IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
-        IBInternalQuery->ExecQuery();
-        DBTransaction.Commit();
-        //MessageBox(TDeviceRealTerminal::Instance().ID.ProfileKey, "Profile Key..", MB_OK + MB_ICONERROR);
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
 // ---------------------------------------------------------------------------

@@ -292,6 +292,11 @@ private:	// User declarations
     AnsiString _arcBillSubQuery;
     AnsiString _groupingForArcbill;
     AnsiString _pointsTransactionQuery;
+    AnsiString _arcBillCashOutQuery;
+    AnsiString _dayArcBillCashOutQuery;
+    AnsiString _arcBillCashOutGrouping;
+    AnsiString _dayArcBillCashOutGrouping;
+
 
 public:		// User declarations
 	__fastcall TdmMMReportData(TComponent* Owner);

@@ -63,7 +63,6 @@ private:
 	TListMenu   * FVisibleMenu;
 	void __fastcall SetVisibleMenu(TListMenu   * value);
 	TListMenu   * __fastcall GetVisibleMenu();
-    void UpdateMenuEditSetting();
 };
 
 #endif
