@@ -329,26 +329,19 @@ ChitResult TfrmSelectDish::InitializeChit()
 {
     ChitResult result;
     Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
-
     transaction.StartTransaction();
-
+    TChitNumberController controller(this, transaction);
+    result = controller.GetDefaultChitNumber(ChitNumber);
+    tbtnChitNumber->Visible = result != ChitDisabled;
+    if (tbtnChitNumber->Visible)
     {
-        TChitNumberController controller(this, transaction);
-
-        result = controller.GetDefaultChitNumber(ChitNumber);
-        tbtnChitNumber->Visible = result != ChitDisabled;
-        if (tbtnChitNumber->Visible)
-        {
-            tbtnChitNumber->Caption = ChitNumber.Name;
-
-        }
-        if (ChitNumber.Valid())
-        {
-            GetChitDiscountList(transaction, ChitNumber.DiscountList);
-        }
-        transaction.Commit();
+        tbtnChitNumber->Caption = ChitNumber.Name;
     }
-
+    if(ChitNumber.Valid())
+    {
+        GetChitDiscountList(transaction, ChitNumber.DiscountList);
+    }
+    transaction.Commit();
     return result;
 }
 // ---------------------------------------------------------------------------
@@ -503,28 +496,22 @@ void TfrmSelectDish::ChangeMenuToChitDefault()
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
-{    IsTabBillProcessed=false;
-	SyncGridFontSizes();
+{
+
+     IsTabBillProcessed=false;
+     SyncGridFontSizes();
      IsSubSidizeProfileExist=false;
      IsSubSidizeProcessed =false;
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-    startCustomerDisplayServer();
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-	// Serving Course Display Options may have changed.
-	RedrawServingCourses();
-
-	//FormResize(Sender);
-	ResetPOS();
+     startCustomerDisplayServer();
+	 // Serving Course Display Options may have changed.
+	 RedrawServingCourses();
+	 ResetPOS();
 
 	TSeatOrders *Temp = SeatOrders[0];
 	Temp->Orders->HideServingCourseLabels = TGlobalSettings::Instance().HideServingCourseLabels;
 	SeatOrders[0] = Temp;
 
     unsigned __int32 maxSeatCount = getMaxSeatCount();
-
 	for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
 	{
 		TSeatOrders *Temp = SeatOrders[i];
@@ -534,25 +521,14 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 
 	tbtnSelectTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
 	tbtnSelectTable->Visible = TGlobalSettings::Instance().TablesEnabled;
-
-	//FormResize(Sender);
-
 	tiClock->Enabled = true;
-
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TManagerChitNumber::Instance().Load(DBTransaction);
 
 	tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
 	tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
 	tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
 	tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
 	tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
-
-	DBTransaction.Commit();
-
-        setParkedSalesBtnColor();
-
+    setParkedSalesBtnColor();
 	SetGridColors(tgridOrderCourse);
     SetGridColors(tgridServingCourse);
 	SetGridColors(tgridItemSideCourses);
@@ -565,40 +541,29 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 
     if(TGlobalSettings::Instance().ShowLargeFonts )
     {
-        tgridOrderCourse->Font->Size = 18;
+      tgridOrderCourse->Font->Size = 18;
     }
     else
     {
-     tgridOrderCourse->Font->Size = 12;
+      tgridOrderCourse->Font->Size = 12;
     }
 
     ProcessWebOrders(false);
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
 	InitXeroIntegration();
-	//OpenTPConnector(); // Open TablePicker's connector.
-
-    //::::::::::::::::::::::::::::::::::::::::::::
-
-   //	initChefMate(); // Open Chefmate's Client
-
-    //::::::::::::::::::::::::::::::::::::::::::::
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+	TManagerChitNumber::Instance().Load(DBTransaction);
+    DBTransaction.Commit();
 
     tbtnChitNumber->Caption = "Chit";
     ChitNumber = TChitNumber();
-
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
-    //AdjustScreenSize();
-
     FormResize(Sender);
     if(TGlobalSettings::Instance().EnableTableDisplayMode)
-       {
+    {
           showTablePicker();
-       }
-
-    //::::::::::::::::::::::::::::::::::::::::::::
+    }
 
     setParkedSaleBtnStatus();
     CheckDiscountPoints = false;
@@ -610,17 +575,14 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     {
       lbeTotal->Caption = "Total";
     }
-    //::::::::::::::::::::::::::::::::::::::::::::
-     resetTransactionAuditScreen();
-     sec_ref = 0;
+    resetTransactionAuditScreen();
+    sec_ref = 0;
 
 	DBTransaction.StartTransaction();
     std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-   //   TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckPaymentAccess);
     stHappyHour->Visible = false;
     UserForceHappyHourRight=false;
     UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
-
     DBTransaction.Commit();
     IsParkSalesEnable = false;
     if(TGlobalSettings::Instance().ItemSearch )
@@ -754,7 +716,6 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
     if(!NotifyLastWebOrder(DBTransaction))
     {
         bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
-        DBTransaction.Commit();
         if (WebOrdersPending)
         {
             frmProcessWebOrder->Execute();
@@ -764,6 +725,13 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
         {
             MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
         }
+        //after processing web order again load chit specific to terminal
+        TManagerChitNumber::Instance().Load(DBTransaction);
+        DBTransaction.Commit();
+    }
+    else
+    {
+       DBTransaction.Commit();
     }
 }
 // ---------------------------------------------------------------------------
@@ -4835,7 +4803,6 @@ void TfrmSelectDish::SetSelectedServingCourse(int SelectedServingCourse)
 void TfrmSelectDish::OnAfterSaleProcessed(TSystemEvents *Sender)
 {
     ResetChit();
-
 	CloseSidePanel();
 	RedrawServingCourses();
 	if (TGlobalSettings::Instance().RememberLastServingCourse)
@@ -7965,18 +7932,8 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
             {
                 if(frmPOSMain->MenuEdited)
                 {
-
-                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                     RedrawMenu();
-                    std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
-                    Request->Broadcast         = true;
-                    Request->CompareToDataBase = true;
-                    for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
-                    {
-                        TListMenu *Menu = TDeviceRealTerminal::Instance().Menus->Current->MenuGet(i);
-                        Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
-                    }
-                    TDeviceRealTerminal::Instance().ManagerNet->SendToAll(Request.get());
+                    UpdateMenuItemsAfterLoginScreen();
                 }
             }
 		else if (frmPOSMain->SendHeldOrders)
@@ -8889,36 +8846,23 @@ void TfrmSelectDish::ResetPOS()
 	LastSale = 0;
     TypeOfSale = RegularSale;
 	RefreshSeats();
-
-	//::::::::::::::::::::::::::::::::::::::::::
-
 	setPatronCount( 1 );
-
-    //::::::::::::::::::::::::::::::::::::::::::
-
 	SetSelectedSeat();
-
 	btnRemove->Enabled = false;
-
 	CurrentTimeKey = 0;
 
 	if (!OrderOnHold)
 	{
 		ChitNumber.Clear();
 	}
-
 	tbtnUserName->Caption = TDeviceRealTerminal::Instance().User.Name;
-
 	tbtnMembership->Caption = "Membership";
 	WaitingForSwipe = false;
 	Panel1->Enabled = true;
-
 	tbtnTender->Enabled = true;
 	tbtnSave->Enabled = true;
 	tbtnCashSale->Enabled = true;
-
 	lbDisplay->Clear();
-
 	tbtnTender->Visible = true;
 	tbtnSave->Visible = true;
 	if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender)
@@ -8937,12 +8881,9 @@ void TfrmSelectDish::ResetPOS()
 	tbtnDollar3->Visible = true;
 	tbtnDollar4->Visible = true;
 	tbtnDollar5->Visible = true;
-
 	CurrentTender = 0;
 	tbtnTender->Caption = "Tender";
-
     InitializeQuickPaymentOptions();
-    //InitializeWaiterOptions();
 	UpdateExternalDevices();
 
 	if (TGlobalSettings::Instance().RevertToFirstCourse)
@@ -12621,27 +12562,6 @@ void TfrmSelectDish::UpdateValue()
     DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::WriteMenuUpdateSetting(bool retVal)
-{
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text ="UPDATE VARSPROFILE a SET a.INTEGER_VAL =:INTEGER_VAL "
-        " where a.VARIABLES_KEY = 4135 "  ;
-        IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 1;
-        IBInternalQuery->ExecQuery();
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
 // ---------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------
 bool  TfrmSelectDish::CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction, int tabKey)
@@ -12918,18 +12838,12 @@ TItemComplete * TfrmSelectDish::createItemComplete(
         dBTransaction.StartTransaction();
 
      bool isItemUsingPCD = TDBOrder::IsItemUsingPCD(dBTransaction, Item->ItemKey, itemSize->Name);
-     //dBTransaction.Commit();
      if(isItemUsingPCD)
      {
 		itemComplete->ClaimAvailability();
         
      }
-    //int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
-    dBTransaction.Commit();
-    /*if(item_avilability == 0)
-    {
-        WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
-    }*/
+     dBTransaction.Commit();
 
 	itemComplete->SizeKitchenName = itemSize->SizeKitchenName;
     itemComplete->GSTPercent = itemSize->GSTPercent;
@@ -13465,7 +13379,6 @@ void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransactio
                         {
                             CurrentDiscount.PercentAmount = CurrentDiscount.OriginalAmount;
                             CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
-                            CurrentDiscount.OriginalAmount = CurrentDiscount.OriginalAmount;
                             OpenDiscountAmount[ptrDiscount->DiscountKey].Discount = CurrentDiscount;
                             OpenDiscountAmount[ptrDiscount->DiscountKey].IsApplied = false;
                         }

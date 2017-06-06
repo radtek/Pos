@@ -622,7 +622,7 @@ object frmAddDebtor: TfrmAddDebtor
       
         '   MEMBER_NUMBER, MIDDLE_NAME, MOBILE, NAME, PHONE, PHONE_EXTENS' +
         'ION, PIN, '
-      '   SEX, SITE_ID, TAB_ENALBED, TITLE, TOTAL_SPENT)'
+      '   SEX, SITE_ID, TAB_ENALBED, TITLE, TOTAL_SPENT,MEMBER_TYPE)'
       'values'
       
         '  (:COMPANY_KEY, :CONTACT_TYPE, :CONTACTS_3RDPARTY_KEY, :CONTACT' +
@@ -635,7 +635,7 @@ object frmAddDebtor: TfrmAddDebtor
         'E, :PHONE, '
       
         '   :PHONE_EXTENSION, :PIN, :SEX, :SITE_ID, :TAB_ENALBED, :TITLE,' +
-        ' :TOTAL_SPENT)')
+        ' :TOTAL_SPENT,1)')
     RefreshSQL.Strings = (
       'Select '
       '  CONTACTS_KEY,'
@@ -689,7 +689,7 @@ object frmAddDebtor: TfrmAddDebtor
       '  NOTE'
       'from CONTACTS '
       'where'
-      '  CONTACTS_KEY = :CONTACTS_KEY')
+      '  CONTACTS_KEY = :CONTACTS_KEY AND MEMBER_TYPE = 1')
     SelectSQL.Strings = (
       'Select'
       '   CONTACTS_KEY,'
@@ -718,7 +718,8 @@ object frmAddDebtor: TfrmAddDebtor
       'From'
       '   CONTACTS'
       'Where'
-      '   CONTACTS_KEY = :CONTACTS_KEY')
+      '   CONTACTS_KEY = :CONTACTS_KEY AND MEMBER_TYPE = 1'
+      '')
     ModifySQL.Strings = (
       'update CONTACTS'
       'set'
@@ -743,7 +744,8 @@ object frmAddDebtor: TfrmAddDebtor
       '  SEX = :SEX,'
       '  SITE_ID = :SITE_ID,'
       '  TAB_ENALBED = :TAB_ENALBED,'
-      '  TITLE = :TITLE'
+      '  TITLE = :TITLE,'
+      '  MEMBER_TYPE = 1'
       'where'
       '  CONTACTS_KEY = :OLD_CONTACTS_KEY')
     GeneratorField.Field = 'CONTACTS_KEY'

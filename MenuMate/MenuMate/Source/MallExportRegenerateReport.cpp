@@ -15,6 +15,7 @@
 #include "MallExportDefines.h"
 #include "Analysis.h"
 #include "ManagerVariable.h"
+#include <math.h>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -3628,8 +3629,8 @@ void TfrmMallExportRegenerateReport::WriteInToFileForFourthCode(Database::TDBTra
 	AnsiString  exempt_Gst    ="Y";
 	AnsiString discount_Code = "";
 	AnsiString  other_chg     ="";
-	AnsiString  discount_Per  = "$";//IBInternalQuery2->FieldByName("DISCOUNT")->AsCurrency;
-    
+ AnsiString  discount_Per  = RoundAt(((IBInternalQuery2->FieldByName("DISCOUNT")->AsCurrency*100)/(IBInternalQuery2->FieldByName("SALES")->AsCurrency)),1);
+
 	AnsiString  rounding_Amt  = IBInternalQuery2->FieldByName("ROUNDING_AMT")->AsCurrency;
 
 	AnsiString finalValue= cmd_code+"|" +sales+"|"+discount+"|"+cess+"|"+charges+"|"+ tax+ "|" +
