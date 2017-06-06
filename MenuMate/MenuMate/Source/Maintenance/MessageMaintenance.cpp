@@ -589,7 +589,7 @@ bool TfrmMessageMaintenance::CheckDefaultPatronTypes()
         }
         DBTransaction.Commit();
     }
-    return retVal;
+    return  retVal;
 }
 //---------------------------------------------------------------------------
 
