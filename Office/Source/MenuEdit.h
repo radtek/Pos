@@ -780,10 +780,12 @@ private:
 	void GetAllSizes(TStringList *AllSizes);
 	void GetAllCategories(TStringList *AllCategories);
 	void GetAllCategoriesWithKeys(std::vector<Menu::TNameAndKey> *AllCategoriesWithKeys); 
-	void GetAll3rdPartyGroups(TStrings *ThirdPartyGroups, TStrings *revenueCodesList);
+	void GetAll3rdPartyGroups(TStrings *ThirdPartyGroups);
 	void GetAllServingCourses(TStringList *AllServingCourses);
 	void LoadServingCoursesPrior3Point4(TMenuNode *MenuData);
 	void GetThirdPartyCodesListFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, TLoadMenu *inLoadMenu);
+    void GetRevenueCodesListFromFile(std::map<int,AnsiString> &revenueCodesMap, TLoadMenu *inLoadMenu);
+    AnsiString GetRevenueDecriptionFromCode(int code);
 	AnsiString  GetThirdPartyCodeFromKeyFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, __int32 tpcKey);
 
 	int InsertCategory(TCategoryGroupNode *CategoryGroup, AnsiString CategoryName, AnsiString GlCode);
@@ -988,6 +990,8 @@ private:
     Currency GetPriceExclusiveAmount(Currency menuPrice, Currency saleTaxPercentage, Currency serviceChargePercentage);
     bool isItemPriceIncludedTax;
     bool isItemPriceIncludeServiceCharge;
+    std::map<int,AnsiString> revenueCodesMap;
+    void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);

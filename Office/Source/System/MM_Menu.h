@@ -333,6 +333,11 @@ const AnsiString ThirdPartyCodesSQL =
 			"THIRDPARTYCODES_KEY as KEY, CODE, CODETYPE, VISIBLE, DESCRIPTION "
 		"FROM "
 			"THIRDPARTYCODES";
+const AnsiString RevenueCodesSQL =
+		"SELECT "
+			"REVENUECODE , REVENUECODE_DESCRIPTION "
+		"FROM "
+			"REVENUECODEDETAILS ORDER BY REVENUECODE";
 
 const AnsiString TaxProfileKeysSQL =
 		"SELECT "
@@ -686,6 +691,13 @@ public:
     WideString Description;
 };
 //---------------------------------------------------------------------------
+class TRevenueCodesInfo : public TDBKey
+{
+public:
+    int code;
+    WideString codeDescription;
+};
+//---------------------------------------------------------------------------
 class TMenuLoad
 {
 protected:
@@ -783,6 +795,7 @@ public:
                                   std::vector<TNameAndKey> &inForcedItemOptions );
 
     bool GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes );
+    void GetAllRevenueCodesFromDB(std::map<int,AnsiString> &revenueCodesMap);
     void GeTItemSizePriceLevels(int inItemSizeKey, std::map<int,TItemSizePriceLevel>* ItemSizePriceLevels );
     void GeTItemSizeTaxPercentage(int inItemSizeKey, std::vector<TItemSizeTaxesPercentage> &itemSizeTaxPercentage);
 };

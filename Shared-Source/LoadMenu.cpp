@@ -203,7 +203,7 @@ __int32 TLoadMenu::AllTaxProfilesCount()
 //---------------------------------------------------------------------------
 
 __int32 TLoadMenu::TaxProfileAtIndex( __int32 inIndex,  __int32& outKey, WideString& outName, Currency& outRate,
-__int32& outType, __int32& outPriority )
+__int32& outType, __int32& outPriority, __int32& taxCode )
 {
 	__int32 result = 0;
 
@@ -225,6 +225,7 @@ __int32& outType, __int32& outPriority )
 					outRate     = StrToCurr(  AnsiString( itPtr->Attribute( "rate" ) ) );
 					outType     = StrToInt(   AnsiString( itPtr->Attribute( "type" ) ) );
 					outPriority = StrToInt(   AnsiString( itPtr->Attribute( "priority" ) ) );
+                    taxCode     = itPtr->Attribute("taxcode") == NULL ? 0: StrToInt(AnsiString(itPtr->Attribute( "taxcode" )));
 
 					result = ( __int32 )itPtr;
 
@@ -303,6 +304,11 @@ __int32 TLoadMenu::ThirdPartyCodeCount()
 	return childCount( _TPCsElem );
 }
 //---------------------------------------------------------------------------
+__int32 TLoadMenu::RevenueCodesCount()
+{
+    return childCount(_revenueElem);
+}
+//---------------------------------------------------------------------------
 
 __int32 TLoadMenu::ThirdPartyCodeAtIndex( __int32 inIndex, __int32& outKey, WideString& outCode, WideString& outDescription, bool& outVisible,
 __int32& outCodeType )
@@ -327,6 +333,46 @@ __int32& outCodeType )
 					outDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outVisible     = StrToInt(itPtr->Attribute( "visible" )) == 1 ? true : false;
 					outCodeType    = StrToInt( AnsiString( itPtr->Attribute( "codeType" ) ) );
+
+					result = ( __int32 )itPtr;
+
+					break;
+				}
+
+				itPtr = itPtr->NextSiblingElement();
+				it++;
+			}
+		}
+	}
+	catch( ... )
+	{
+	}
+
+	//:::::::::::::::::::::::::::::::::::::
+
+	return result;
+}
+//---------------------------------------------------------------------------
+
+__int32 TLoadMenu::RevenueCodeAtIndex( __int32 inIndex, __int32& code, WideString& codeDescription)
+{
+	__int32 result = 0;
+
+	//:::::::::::::::::::::::::::::::::::::
+
+	try
+	{
+		if( inIndex >= 0 )
+		{
+			__int32       it    = 0;
+			TiXmlElement *itPtr = _revenueElem->FirstChildElement();
+
+			while( ( itPtr != NULL ) && ( it <= inIndex ) )
+			{
+				if( it == inIndex )
+				{
+					code         = StrToInt( AnsiString( itPtr->Attribute( "code" ) ) );
+					codeDescription        = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 
 					result = ( __int32 )itPtr;
 
@@ -686,7 +732,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
-                                    Currency& outPriceForPoints,int &revenueCode,AnsiString &revenueCodedescription)
+                                    Currency& outPriceForPoints,int &revenueCode)
 {
 	__int32 result = 0;
 
@@ -736,7 +782,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 					outCanBePaidForUsingPoints = AnsiString(itPtr->Attribute("canBePaidForUsingPoints")).UpperCase() == "TRUE";
 					outDefaultPatronCount = StrToIntDef(AnsiString(itPtr->Attribute("defaultPatronCount")).Trim(), 0);
                     outPriceForPoints = itPtr->Attribute( "priceforpoints" ) == NULL ? 0.0 : StrToCurr(AnsiString(itPtr->Attribute( "priceforpoints" ))); // changes for read null value from xml
-
+                    revenueCode       = itPtr->Attribute("revenueCode") == NULL ? 0: StrToInt(AnsiString(itPtr->Attribute( "revenueCode" )));
 					result = ( __int32 )itPtr;
 					break;
 				}
@@ -1043,6 +1089,7 @@ void TLoadMenu::loadMainElements()
 		_servingCoursesElem = loadServiceCoursesElement( _rootElem );
 		_coursesElem        = loadCoursesElement(        _rootElem );
 		_TPCsElem           = loadTPCsElement(           _rootElem );
+        _revenueElem        = loadRevenueCodeElement(    _rootElem );
 	}
 	catch( Exception &e )
 	{
@@ -1093,6 +1140,13 @@ TiXmlElement* TLoadMenu::loadCoursesElement( TiXmlElement* inRootElement )
 TiXmlElement* TLoadMenu::loadTPCsElement( TiXmlElement* inRootElement )
 {
 	return loadElement( "ThirdPartyCodes", inRootElement );
+
+	//return inRootElement->FirstChildElement()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement();
+}
+//---------------------------------------------------------------------------
+TiXmlElement* TLoadMenu::loadRevenueCodeElement( TiXmlElement* inRootElement )
+{
+	return loadElement( "RevenueCodes", inRootElement );
 
 	//return inRootElement->FirstChildElement()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement();
 }

@@ -106,7 +106,16 @@ void TSaveMenu::SaveThirdPartyCode( __int32 inKey, AnsiString inCode, AnsiString
     setNodeAttr( tpcElem, "description", inDescription );
 }
 //---------------------------------------------------------------------------
-void TSaveMenu::SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTaxRate, __int32 inTaxType, __int32 inPriority )
+void TSaveMenu::SaveRevenueCodes(__int32 code, AnsiString description)
+{
+    TiXmlElement *tpcElem;
+
+    addElement( _revenueElem, "RevenueCode", tpcElem );
+    setNodeAttr( tpcElem, "code",          IntToStr( code ) );
+    setNodeAttr( tpcElem, "description",   description );
+}
+//---------------------------------------------------------------------------
+void TSaveMenu::SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTaxRate, __int32 inTaxType, __int32 inPriority, __int32 inTaxCode )
 {
     TiXmlElement *taxProfileElem;
 
@@ -116,6 +125,7 @@ void TSaveMenu::SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTax
     setNodeAttr( taxProfileElem, "rate",     CurrToStr( inTaxRate ) );
     setNodeAttr( taxProfileElem, "type",     IntToStr( inTaxType ) );
     setNodeAttr( taxProfileElem, "priority", IntToStr( inPriority ) );
+    setNodeAttr( taxProfileElem, "taxcode",  IntToStr( inTaxCode ) );
 }
 //---------------------------------------------------------------------------
 __int32 TSaveMenu::SaveMenuCourse( __int32 inKey, AnsiString inLongDescription, AnsiString inKitchenName,
@@ -328,7 +338,7 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
                                  bool inDisableWhenCountReachesZero,
                                  bool inCanBePaidForUsingPoints,
                                  const int inDefaultPatronCount,
-                                 Currency inPriceForPoints)
+                                 Currency inPriceForPoints, int revenueCode)
 {
     try
     {
@@ -340,7 +350,7 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
 
         //:::::::::::::::::::::::::::::::::
         //sizeElem->Clear();
-        
+
         addElement(  sizesElem, "ItemSize",                 sizeElem );
         setNodeAttr( sizeElem,  "key",                      IntToStr( inKey ) );
         setNodeAttr( sizeElem,  "sizeFKey",                 IntToStr( inSizeFKey ) );
@@ -387,6 +397,8 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
                     "defaultPatronCount",
                     IntToStr(inDefaultPatronCount));
         setNodeAttr( sizeElem,  "priceforpoints",    CurrToStr( inPriceForPoints ) ); // add price for points..
+        setNodeAttr( sizeElem,  "revenueCode", IntToStr(revenueCode));
+        //setNodeAttr( sizeElem,  "revenueCodeDescription", IntToStr(""));
 
         //:::::::::::::::::::::::::::::::::
 
@@ -493,7 +505,7 @@ TiXmlDocument* TSaveMenu::createXMLMenuDoc( __int32 inKey, AnsiString inMenuVers
 
     // add declaration
 	TiXmlDeclaration *decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-	result->LinkEndChild( decl );               
+	result->LinkEndChild( decl );
     //::::::::::::::::::::::::::::::  
     return result;
 }
@@ -507,6 +519,7 @@ void TSaveMenu::addMainElements()
     addElement( _rootElem,   "ServiceCourses",  _serviceCoursesElem );
     addElement( _rootElem,   "Courses",         _coursesElem );
     addElement( _rootElem,   "ThirdPartyCodes", _TPCsElem );
+    addElement( _rootElem,   "RevenueCodes", _revenueElem );
 }
 //---------------------------------------------------------------------------
 void TSaveMenu::addElement( TiXmlElement* inParentElem, AnsiString inName, TiXmlElement* &inElem )

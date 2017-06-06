@@ -612,7 +612,7 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 			       AsInteger);
 			ItemSizeInfo->PriceForPoints = QFBN(sqlMenu, "PRICE_FOR_POINTS", AsCurrency);
 #undef QFBN
-
+            ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
 			ItemSizeInfo->Categories.clear();
 			ItemSizeInfo->Recipes.clear();
             ItemSizeInfo->TaxProfiles.clear();

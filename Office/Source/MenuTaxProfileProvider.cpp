@@ -128,6 +128,7 @@ TaxProfile* TMenuTaxProfileProvider::createTaxProfileAtIndex( __int32 inIndex, T
    Currency   tpRate;
    __int32    tpType;
    __int32    tpPriority;
+   __int32    tpTaxCode;
 
    __int32 tpHandle = inLoadMenu->TaxProfileAtIndex(
                                     inIndex,
@@ -135,7 +136,8 @@ TaxProfile* TMenuTaxProfileProvider::createTaxProfileAtIndex( __int32 inIndex, T
                                     tpName,
                                     tpRate,
                                     tpType,
-                                    tpPriority );
+                                    tpPriority,
+                                    tpTaxCode );
 
    if( tpHandle == 0 )
    {

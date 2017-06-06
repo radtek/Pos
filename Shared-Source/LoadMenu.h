@@ -42,6 +42,7 @@ protected:
     TiXmlElement *_servingCoursesElem;
     TiXmlElement *_coursesElem;
     TiXmlElement *_TPCsElem;   // Third Party Codes
+    TiXmlElement *_revenueElem;   // Revenue Codes
 
     AnsiString GetMenuVersion();
     void SetMenuVersion( AnsiString inVersion );
@@ -80,7 +81,7 @@ public:
 
     __int32 AllTaxProfilesCount();
     __int32 TaxProfileAtIndex( __int32 inIndex,  __int32& outKey, WideString& outName, Currency& outRate,
-                               __int32& outType, __int32& outPriority );
+                               __int32& outType, __int32& outPriority, __int32& taxCode );
 
     __int32 ServingCourseCount();
     __int32 ServingCourseAtIndex( __int32 inIndex, __int32& outKey, WideString& outLongDescription, WideString& outKitchenName,
@@ -101,6 +102,10 @@ public:
                          TColor& outColor, bool& outDisplaySizes, bool& outEnabled, bool& outItemOnlySide,
                          bool& outPrintUnderlined,  bool& outPrintBold, TColor& outPrintColor, __int32& outPrintFont,
                          bool& outPrintDoubleWidth, bool& outPrintDoubleHeight );
+
+    __int32 RevenueCodesCount();
+    __int32 RevenueCodeAtIndex( __int32 inIndex, __int32& code, WideString& codeDescription);
+
 
     void DisassembleOptionMask( const __int32 inFlags,
                                 int& outGroupNumber,
@@ -139,7 +144,7 @@ public:
 									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
-                                    Currency& outPriceForPoints,int &revenueCode,AnsiString &revenueCodedescription);  // add price for points 
+                                    Currency& outPriceForPoints,int &revenueCode);  // add price for points
 
     __int32 BCategoryCount(   __int32 inItemSizeHandle );
     __int32 BCategoryAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, WideString& outDescription );
@@ -167,6 +172,7 @@ private:
     TiXmlElement* loadCoursesElement( TiXmlElement* inRootElement );
     TiXmlElement* loadTPCsElement(    TiXmlElement* inRootElement );
     TiXmlElement* loadElement( AnsiString inElemName, TiXmlElement* inParentElement );
+    TiXmlElement* loadRevenueCodeElement( TiXmlElement* inRootElement );
 
     __int32 childCount( TiXmlElement* inElem );
     WideString convertUTF8CharToWideString( const char* pchars );

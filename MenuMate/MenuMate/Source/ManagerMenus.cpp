@@ -1021,6 +1021,8 @@ TListMenu *TManagerMenus::LoadMenuFromDB(Database::TDBControl &DBControl, const 
                              Size->Categories->FinancialCategoryGroup = ItemSizeInfo.Category_Group_Name;
 
                              Size->PriceLevels = ItemSizeInfo.PriceLevels;
+                             Size->RevenueCode = ItemSizeInfo.RevenueCode;
+
 
 
                              if (Size->Categories->FinancialCategory == "")

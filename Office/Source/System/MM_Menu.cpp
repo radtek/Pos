@@ -752,6 +752,38 @@ bool TMenuLoadDB::GetForcedItemOptionKeys( unsigned int inItemKey, std::vector<T
 
 	return Success;
 }
+//----------------------------------------------------------------------------
+void TMenuLoadDB::GetAllRevenueCodesFromDB(std::map<int,AnsiString> &revenueCodesMap)
+{
+
+	Database::TcpIBSQL tpcOptions( new TIBSQL( NULL ) );
+
+	this->dbTransaction.RegisterQuery( tpcOptions );
+
+	tpcOptions->SQL->Text = RevenueCodesSQL;
+    this->dbTransaction.StartTransaction();
+
+    tpcOptions->ExecQuery();
+
+    while( !tpcOptions->Eof )
+    {
+        TRevenueCodesInfo tpcInfo;
+
+        tpcInfo.code            = tpcOptions->FieldByName( "REVENUECODE"         )->AsInteger;
+        tpcInfo.codeDescription = tpcOptions->FieldByName( "REVENUECODE_DESCRIPTION"        )->AsString;
+
+        /*AnsiString revenueCodeDetails = tpcInfo.code;
+        revenueCodeDetails += "(";
+        revenueCodeDetails += tpcInfo.codeDescription;
+        revenueCodeDetails += ")";
+        revenueCodes->Add(revenueCodeDetails);
+        revenueCodes->Add(""); */
+
+        revenueCodesMap.insert(std::pair<int,AnsiString>(tpcInfo.code,tpcInfo.codeDescription));
+        tpcOptions->Next();
+    }
+    tpcOptions->Close();
+}
 // ---------------------------------------------------------------------------
 bool TMenuLoadDB::GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes )
 {
