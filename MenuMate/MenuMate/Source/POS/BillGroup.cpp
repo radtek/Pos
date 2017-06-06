@@ -674,7 +674,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 
                     TItemComplete *order1 = ( TItemComplete* )TempTransaction->Orders->Items[0];
 
-                    
+
 
                     AnsiString tabTableName =  order1->TabContainerName + " : " + order1->TabName;
                    if(order1->TabType == TabWeb)
@@ -689,7 +689,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     {
                        tabTableName =  order1->TabName + " : " + order1->TabName;
                     }
- 
+
                     for( ; it != itemGroupsToCancel.end() ; it++ )
                     {
                         _onItemsCanceled( it->second,tabTableName);
@@ -2373,12 +2373,12 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateItemListDisplay(DBTransaction);
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
-        if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+         if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
            RemoveMembershipDiscounts(DBTransaction);
         }
 
-        if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
         {
             CheckingClipItemsInSelectedList(DBTransaction);
         }
@@ -2630,7 +2630,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
 	// Reset the Split Payment Form.
 
-	if (SelectedItems.size() == 0)
+	if (SelectedItems.size() == 0 /*&& Discounts.size() > 0*/)
 	{
 		if (MessageBox("Remove all Membership & Discounts from the bill?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
 		{
@@ -4772,8 +4772,8 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-   if(SelectedItems.size() > 0 && (!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-     (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)))
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
    {
       allow = true;
    }
@@ -4784,10 +4784,10 @@ void TfrmBillGroup::CheckLoyalty()
         DBTransaction.StartTransaction();
         RemoveMembership(DBTransaction);
         DBTransaction.Commit();
+
    }
 
-
-   if (allow)
+    if (allow)
 	{
         std::set <__int64> ReceiptItemKeys;
         for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
@@ -4806,9 +4806,12 @@ void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
     DBTransaction.StartTransaction();
     TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
 
-    if(PossiableMembers.size() == 0)
+    if(PossiableMembers.size() == 0 && CurrentTabType != TabMember)
     {
-        RemoveMembership(DBTransaction);
+        Membership.Clear();
+        MembershipConfirmed = false;
+        lbeMembership->Visible = false;
+        lbeMembership->Caption = "";
     }
     else if(!MembershipConfirmed)
     {
@@ -4956,5 +4959,6 @@ void TfrmBillGroup::UpdateContainerList()
     TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
     DBTransaction.Commit();
 }
+
 
 
