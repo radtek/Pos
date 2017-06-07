@@ -6494,17 +6494,15 @@ void TfrmReports::GetBillPaymentsReceiptFilter(TReportFilter *ReportFilter)
 		"Select Distinct "
 			"ArcBill.Invoice_Number "
 		"From "
-			"Security Inner Join ArcBill on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
+			"ArcBill "
           "left join ARCHIVE  on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
           "left join ARCORDERDISCOUNTS  on ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
 		"Where "
          "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' and "
-         " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(ARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or ARCHIVE.DISCOUNT = 0 ) and "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
-	AddFilterStringParams(SQL, TerminalFilter->Selection, "Security.Terminal_Name");
+         " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(ARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or ArcBill.DISCOUNT = 0 ) and "
+			"ArcBill.Time_Stamp >= :StartTime and "
+			"ArcBill.Time_Stamp < :EndTime ";
+	AddFilterStringParams(SQL, TerminalFilter->Selection, " ArcBill.Terminal_Name");
 
 	SQL->Text = SQL->Text +
 
@@ -6513,17 +6511,15 @@ void TfrmReports::GetBillPaymentsReceiptFilter(TReportFilter *ReportFilter)
 		"Select Distinct "
 			"DayArcBill.Invoice_Number "
 		"From "
-			"Security Inner Join DayArcBill on "
-				"Security.Security_Ref = DayArcBill.Security_Ref "
+			"DayArcBill "
            "left join DAYARCHIVE  on DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
           "left join DAYARCORDERDISCOUNTS  on DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
 		"Where "
          "((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' and "
-         " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or DAYARCHIVE.DISCOUNT = 0 ) and "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
-	AddFilterStringParams(SQL, TerminalFilter->Selection, "Security.Terminal_Name");
+         " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or DayArcBill.DISCOUNT = 0 ) and "
+			"DayArcBill.Time_Stamp >= :StartTime and "
+			"DayArcBill.Time_Stamp < :EndTime  ";
+	AddFilterStringParams(SQL, TerminalFilter->Selection, " DayArcBill.Terminal_Name");
 
 	SQL->Text = SQL->Text +
 
