@@ -5,7 +5,6 @@
 #pragma hdrstop
 
 #include "MMBillCalculator.h"
-
 #include <math.h>
 #include "Math.hpp"
 
@@ -41,7 +40,7 @@ TTaxInfo::TTaxInfo()
     TaxType    = ttSale;
     Name       = "";
     Percentage = 0.0;
-
+    TaxCode    = 0;
     Priority   = 0;
 }
 
@@ -410,6 +409,7 @@ void TMMBillCalculator::ExecuteWithTaxRemoval( const TPriceInfo* const inPriceIn
             taxInfo.TaxType    = taxInfoIT->TaxType;
             taxInfo.Name       = taxInfoIT->Name;
             taxInfo.Percentage = taxInfoIT->Percentage;
+            taxInfo.TaxCode    = taxInfoIT->TaxCode;
             taxInfo.Priority   = taxInfoIT->Priority;
             taxRemovedPriceInfo->TaxInfoList.push_back( taxInfo );
         }
@@ -576,7 +576,7 @@ TPriceInfo* TMMBillCalculator::CreatePriceInfoWithPriceInfo( const TPriceInfo* c
         taxInfo.TaxType    = taxInfoIT->TaxType;
         taxInfo.Name       = taxInfoIT->Name;
         taxInfo.Percentage = taxInfoIT->Percentage;
-
+        taxInfo.TaxCode    = taxInfoIT->TaxCode;
         taxInfo.Priority   = taxInfoIT->Priority;
 
         result->TaxInfoList.push_back( taxInfo );
@@ -594,7 +594,7 @@ TPriceInfo* TMMBillCalculator::CreatePriceInfoWithPriceInfo( const TPriceInfo* c
         taxInfo.TaxType    = removedTaxInfoIT->TaxType;
         taxInfo.Name       = removedTaxInfoIT->Name;
         taxInfo.Percentage = removedTaxInfoIT->Percentage;
-
+        taxInfo.TaxCode    = taxInfoIT->TaxCode;
         taxInfo.Priority   = removedTaxInfoIT->Priority;
 
         result->RemovedTaxInfoList.push_back( taxInfo );
@@ -1806,6 +1806,7 @@ void TMMBillCalculator::calcEachActualTaxContent(
     taxResult.TaxType    = inTaxInfo->TaxType;
     taxResult.Name       = inTaxInfo->Name;
     taxResult.Percentage = inTaxInfo->Percentage;
+    taxResult.TaxCode    = inTaxInfo->TaxCode;
     taxResult.Priority   = inTaxInfo->Priority;
 
     if( inTaxExemptPrice )
@@ -2321,6 +2322,7 @@ void TMMBillCalculator::putFinalTaxInTheResult(
     finalTaxResult.Name       = finalTaxInfo->Name;
     finalTaxResult.Percentage = finalTaxInfo->Percentage;
     finalTaxResult.Priority   = finalTaxInfo->Priority;
+    finalTaxResult.TaxCode    = finalTaxInfo->TaxCode;
     finalTaxResult.Value      = finalTaxContent;
 
     outCalcResult->Tax.push_back( finalTaxResult );
@@ -2456,6 +2458,7 @@ void TMMBillCalculator::reCalculateTaxContentsOnBasePrice(
         taxResult.Percentage = taxInfo.Percentage;
         taxResult.Value      = taxContent;
         taxResult.Priority   = taxInfo.Priority;
+        taxResult.TaxCode    = taxInfo.TaxCode;
         taxResult.TaxType    = ttSale;
 
         outResult->Tax.push_back( taxResult );

@@ -12854,6 +12854,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->SetMenuMaster = itemSize->SetMenuMaster;
 	itemComplete->ThirdPartyKey = itemSize->ThirdPartyKey;
 	itemComplete->ThirdPartyCode = itemSize->ThirdPartyCode;
+    itemComplete->RevenueCode = itemSize->RevenueCode;
 	itemComplete->PLU = itemSize->PLU;
 
 	itemComplete->MemberFreeSaleCount = itemSize->MemberFreeSaleCount;

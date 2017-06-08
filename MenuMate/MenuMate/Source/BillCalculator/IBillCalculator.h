@@ -25,7 +25,7 @@ struct TTaxInfo
     TTaxType TaxType;
     string   Name;
     Currency Percentage;
-
+    int TaxCode;
 	int Priority;
 };
 
@@ -114,6 +114,7 @@ struct TTaxResult
     Currency Percentage;
     Currency Value; // Tax Content
 	int  Priority;
+    int TaxCode;
 };
 
 struct TDiscountResult

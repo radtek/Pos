@@ -144,6 +144,8 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	{
         if(TGlobalSettings::Instance().PMSType == SiHot)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
+        else if(TGlobalSettings::Instance().PMSType == Oracle)
+            tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
         else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
@@ -3958,6 +3960,13 @@ void TfrmMaintain::SelectPMSType()
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
+    TVerticalSelection Item3;
+    Item3.Title = "Oracle";
+    Item3.Properties["Action"] = IntToStr(3);
+    Item3.Properties["Color"] = IntToStr(clNavy);
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
+
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -3973,6 +3982,11 @@ void TfrmMaintain::SelectPMSType()
 			case 2 :
 			{
                SetUpSiHot();
+               break;
+            }
+            case 3 :
+            {
+               SetUpOracle();
                break;
             }
         }
@@ -4026,6 +4040,27 @@ bool TfrmMaintain::SetUpPhoenix()
         tbPHSInterface->ButtonColor = clRed;
     }
     return keepFormAlive;
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::SetUpOracle()
+{
+    bool keepFormAlive = false;
+    std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
+    frmPHSConfiguration->PMSType = 3;
+    frmPHSConfiguration->ShowModal();
+
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+    {
+        tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
+        tbPHSInterface->ButtonColor = clGreen;
+    }
+    else
+    {
+        tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
+        tbPHSInterface->ButtonColor = clRed;
+    }
+    return keepFormAlive;
+    return true;
 }
 //---------------------------------------------------------------------------
 

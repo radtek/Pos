@@ -220,6 +220,9 @@ private:	// User declarations
 	int  SetSelectedFolder(int FolderNumber);
 	bool SelectionVisible;
 	void RefreshList();
+    void SearchPhoenix(TPhoenixRoomStatusExt SelectedRoom);
+    void SearchSiHot(TPhoenixRoomStatusExt SelectedRoom);
+    void SearchOracle(TPhoenixRoomStatusExt SelectedRoom);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);

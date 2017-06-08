@@ -56,7 +56,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     {
 
         TItemComplete *itemComplete = ((TItemComplete*)_paymentTransaction.Orders->Items[i]);
-        double currentVAT = GetVATpercentage(itemComplete);
+//        double currentVAT = GetVATpercentage(itemComplete);
 
         // Cancelled orders should not get posted
         if(itemComplete->OrderType == CanceledOrder)
@@ -103,9 +103,18 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
-    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
+    AnsiString categoryCode = itemComplete->RevenueCode;
     if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+       categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    AnsiString catDescription = "Default";
+    //UnicodeString categoryCode = itemComplete->ThirdPartyCode;
+    std::map<int,AnsiString>::iterator itRev =
+                    TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.find(atoi(categoryCode.c_str()));
+
+    if(itRev != TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end())
+    {
+        catDescription = itRev->second;
+    }
     TSiHotService siHotService;
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
@@ -282,24 +291,42 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
 double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
 {
     double percentage = 0.0;
-    int taxIndex = 0;
+//    int taxIndex = 0;
+//    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
+//          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
+//    {
+//        if(tax->Value != 0)
+//            percentage += (double)tax->Percentage;
+////        MessageBox(tax->TaxCode,"tax code",MB_OK);
+//    }
+//    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
+//    {
+//        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
+//        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
+//        {
+//            taxIndex = 0;
+//            if(((serviceCharge->taxProfileType == ServiceCharge))
+//               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
+//            {
+//                percentage += (double)serviceCharge->taxPercentage;
+//            }
+//        }
+//    }
+     MessageBox(percentage,"getting code",MB_OK);
     for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
-          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
+          tax != itemComplete->BillCalcResult.Tax.end() ; advance(tax,1))
     {
-        if(tax->Value != 0)
-            percentage += (double)tax->Percentage;
-    }
-    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
-    {
-        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
-        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
+            MessageBox(tax->Name,"tax name",MB_OK);
+            MessageBox(tax->Percentage,"tax percentage",MB_OK);
+            MessageBox(tax->TaxCode,"tax code",MB_OK);
+            MessageBox(tax->Value,"tax value",MB_OK);
+
+        if(tax->Value != 0 && tax->TaxType == SalesTax && tax->TaxCode != 0)
         {
-            taxIndex = 0;
-            if(((serviceCharge->taxProfileType == ServiceCharge))
-               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
-            {
-                percentage += (double)serviceCharge->taxPercentage;
-            }
+            percentage = tax->TaxCode;
+            MessageBox(tax->Name,"tax codname 2",MB_OK);
+            MessageBox(percentage,"tax code",MB_OK);
+            break;
         }
     }
     return percentage;

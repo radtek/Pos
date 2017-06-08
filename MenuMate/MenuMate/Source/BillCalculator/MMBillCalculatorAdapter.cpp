@@ -135,6 +135,7 @@ TTaxInfo TMMBillCalculatorAdapter::ConvertTaxProfileToTaxInfo( TaxProfile* inTax
     taxInfo.Name       = inTaxProfile->taxProfileName;
     taxInfo.Percentage = inTaxProfile->taxPercentage;
     taxInfo.Priority   = inTaxProfile->taxPriority;
+    taxInfo.TaxCode    = inTaxProfile->taxCode;
     switch( inTaxProfile->taxProfileType )
     {
         case SalesTax:

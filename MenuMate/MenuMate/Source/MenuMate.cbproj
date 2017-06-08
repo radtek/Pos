@@ -3390,6 +3390,23 @@
 				<DependentOn>ManagerMallSetup.h</DependentOn>
 				<BuildOrder>737</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="ManagerOraclePMS.cpp">
+				<DependentOn>ManagerOraclePMS.h</DependentOn>
+				<BuildOrder>772</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ServingTime.cpp">
+				<Form>frmServingTime</Form>
+				<DependentOn>ServingTime.h</DependentOn>
+				<BuildOrder>773</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="OracleDataBuilder.cpp">
+				<DependentOn>OracleDataBuilder.h</DependentOn>
+				<BuildOrder>774</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="OracleDataIntegration.cpp">
+				<DependentOn>OracleDataIntegration.h</DependentOn>
+				<BuildOrder>775</BuildOrder>
+			</CppCompile>
 			<FormResources Include="Maintenance\PaymentMaintenance.dfm"/>
 			<FormResources Include="POS\MenuManagerItemSizeSelection.dfm"/>
 			<FormResources Include="DiscountTimes.dfm"/>
@@ -3520,6 +3537,7 @@
 			<FormResources Include="ProductSearch\ProductSearch.dfm"/>
 			<FormResources Include="Maintenance\WalletConfiguration.dfm"/>
 			<FormResources Include="RegenerateMallReport.dfm"/>
+			<FormResources Include="ServingTime.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

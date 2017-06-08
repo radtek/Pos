@@ -304,7 +304,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbRevenueCodesClick
     end
-    object tbTaxCodes: TTouchBtn
+    object tbServingTime: TTouchBtn
       Left = 16
       Top = 423
       Width = 266
@@ -316,12 +316,12 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Style = [fsBold]
       ParentFont = False
       ParentColor = True
-      Caption = 'Tax Codes'
+      Caption = 'Serving Time'
       ButtonColor = clGreen
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = tbTaxCodesClick
+      OnMouseClick = tbServingTimeMouseClick
     end
   end
   object Panel2: TPanel

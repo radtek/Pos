@@ -39,8 +39,6 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIPAddressClick(TObject *Sender)
 		frmTouchKeyboard->Caption = "Enter the IP Address of the PMS Hotel System.";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
-//			PhoenixHM->TCPIPAddress = frmTouchKeyboard->KeyboardText;
-//			tbPhoenixIPAddress->Caption = "Server TCP IP Address\r" + PhoenixHM->TCPIPAddress;
 			TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress = frmTouchKeyboard->KeyboardText;
 			tbPhoenixIPAddress->Caption = "Server TCP IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
@@ -143,12 +141,29 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbExpensesAccount-> Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
+        tbServingTime->Enabled = false;
+    }
+    else if(PMSType == oracle)
+    {
+        tbTipAccount->Enabled = false;
+        tbExpensesAccount->Enabled = false;
+        tbServiceCharge->Enabled = false;
+        TouchBtn1->Enabled = false;
+        tbRoundingCategory->Enabled = false;
+        tbPointCat->Enabled = false;
+        tbCreditCat->Enabled = false;
+        tbPaymentDefCat->Enabled = false;
+        tbItemDefCat->Enabled = false;
+        tbDefTransAccount->Enabled = false;
+        tbSurchargeCat->Enabled = false;
     }
     else
     {
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
+        tbServingTime->Enabled = false;
+        tbRevenueCodes->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -296,10 +311,7 @@ void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        //if(PMSType == SiHot)
-    	 //	frmTouchKeyboard->Caption = "Enter the Service Charge Account.";
-       /// else
-            frmTouchKeyboard->Caption = "Enter the Default Transaction Account.";
+        frmTouchKeyboard->Caption = "Enter the Default Transaction Account.";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount = frmTouchKeyboard->KeyboardText;
@@ -461,32 +473,6 @@ void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 		}
 	}
 }
-//----------------------------------------------------------------------------
-//void __fastcall TfrmPHSConfiguration::tbRoundingAccountClick(TObject *Sender)
-//{
-//    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
-//	{
-//		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
-//	}
-//	else
-//	{
-//	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-//		frmTouchKeyboard->MaxLength = 255;
-//		frmTouchKeyboard->AllowCarriageReturn = false;
-//		frmTouchKeyboard->StartWithShiftDown = false;
-//		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
-//		frmTouchKeyboard->Caption = "Enter the Default Transaction Account";
-//		if (frmTouchKeyboard->ShowModal() == mrOk)
-//		{
-//            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-//            DBTransaction1.StartTransaction();
-//			TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot = frmTouchKeyboard->KeyboardText;
-//			tbRoundingAccount->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
-//            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSRoundingAccountSiHot,TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot);
-//            DBTransaction1.Commit();
-//		}
-//	}
-//}
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 {
@@ -524,13 +510,13 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
    frmMessageMaintenance->ShowModal();
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TfrmPHSConfiguration::tbTaxCodesClick(TObject *Sender)
+void __fastcall TfrmPHSConfiguration::tbServingTimeMouseClick(TObject *Sender)
 {
-   std::auto_ptr<TfrmTaxCodes>(frmTaxCodes)
-                 (TfrmTaxCodes::Create<TfrmTaxCodes>
+   std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                 (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
                               (this,TDeviceRealTerminal::Instance().DBControl));
-   frmTaxCodes->ShowModal();
+   frmMessageMaintenance->MessageType = eServingTimes;
+   frmMessageMaintenance->ShowModal();
 }
 //---------------------------------------------------------------------------
 

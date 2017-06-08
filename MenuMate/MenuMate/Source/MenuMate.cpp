@@ -143,6 +143,7 @@ USEFORM("POS\TaxRemoval.cpp", frmTaxRemoval);
 USEFORM("ProductSearch\ProductSearch.cpp", frmProductSearch);
 USEFORM("Maintenance\WalletConfiguration.cpp", frmWalletConfiguration);
 USEFORM("RegenerateMallReport.cpp", frmRegenerateMallReport);
+USEFORM("ServingTime.cpp", frmServingTime);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 
@@ -194,6 +195,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
          Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
          Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
          Application->CreateForm(__classid(TfrmTaxCodes), &frmTaxCodes);
+         Application->CreateForm(__classid(TfrmServingTime), &frmServingTime);
          Application->Run();
 		}
 		__finally

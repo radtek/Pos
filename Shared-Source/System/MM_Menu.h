@@ -207,6 +207,7 @@ const UnicodeString ItemSizeTaxProfilesSQL =
 		"Name, "
 		"Rate, "
 		"Type, "
+        "TAX_CODE,"
         "Priority "
 	"From "
 		"TaxProfiles Inner Join TaxProfiles_ItemSize "

@@ -92,7 +92,7 @@ object frmTaxProfile: TfrmTaxProfile
           end
           item
             Position = 4
-            Width = 87
+            Width = 60
             WideText = 'Priority'
           end>
       end

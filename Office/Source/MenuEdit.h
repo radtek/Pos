@@ -839,7 +839,7 @@ private:
 
 	void ShowHideMaxRetailPrice(bool displayFlag);
 	bool IsProfitTaxAssigned(TaxProfileKeyList taxProfileKeys);
-	
+
 	void initMenuTaxProfileProvider();
 
 	void resetMenuTaxProfileProvider( TIBDatabase* inDatabase );
@@ -930,6 +930,14 @@ private:
     void ReadItemSizePriceLevel( TLoadMenu *inLoadMenu, __int32 inItemSizeID, Menu::TItemSizeInfo& inItemSizeInfo );
 
 	void StartStockTransaction();
+    bool SyncRevenueCodeItem(TTreeNode *CurrentTreeNode, int revenueCode,AnsiString revenueDescription);
+    bool Sync3rdPartyGroupItem(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool SyncRevenueCodeForCourse(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);
+    bool Sync3rdPartyCodeForCourse(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool Sync3rdPartyCodeForMenu(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool SyncRevenueCodeForMenu(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);
+
+
 
 	//::::::::::::::::::::::::::::::::::::::::::
 	//   Save Menu to a XML file

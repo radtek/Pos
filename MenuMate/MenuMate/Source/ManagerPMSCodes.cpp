@@ -145,5 +145,108 @@ void TManagerPMSCodes::EditRevenueCode(Database::TDBTransaction &DBTransaction,i
     }
 }
 //-----------------------------------------------------------------------------
+void TManagerPMSCodes::InsertTimeSlots(Database::TDBTransaction &DBTransaction,TTimeSlots mealDetails)
+{
+    try
+    {
+        int mealKey = 0;
+        TIBSQL *GenQuery =  DBTransaction.Query(DBTransaction.AddQuery());
+        GenQuery->Close();
+        GenQuery->SQL->Text = "SELECT GEN_ID(GEN_RUNPROGRAMS, 1) FROM RDB$DATABASE";
+        GenQuery->ExecQuery();
+        mealKey = GenQuery->Fields[0]->AsInteger;
+
+        TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        InsertQuery->SQL->Text =
+                   " INSERT INTO SERVINGTIMESDETAILS ( SERVINGTIMES_KEY, MEALNAME, STARTTIME, ENDTIME) "
+                   " VALUES ( :SERVINGTIMES_KEY, :MEALNAME, :STARTTIME, :ENDTIME ) " ;
+        InsertQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = mealKey;
+        InsertQuery->ParamByName("MEALNAME")->AsString = mealDetails.MealName;
+        InsertQuery->ParamByName("STARTTIME")->AsDateTime = mealDetails.StartTime;
+        InsertQuery->ParamByName("ENDTIME")->AsDateTime = mealDetails.EndTime;
+        InsertQuery->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TManagerPMSCodes::GetMealDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::vector<TTimeSlots> &TimeSlots)
+{
+    try
+    {
+        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->SQL->Text =
+                   " Select SERVINGTIMES_KEY,MEALNAME,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS " ;
+
+        SelectQuery->ExecQuery();
+        TimeSlots.clear();
+        for(;!SelectQuery->Eof; SelectQuery->Next())
+        {
+           TTimeSlots meals;
+           meals.key = SelectQuery->FieldByName("SERVINGTIMES_KEY")->AsInteger;
+           meals.MealName = SelectQuery->FieldByName("MEALNAME")->AsString;
+           meals.StartTime = SelectQuery->FieldByName("STARTTIME")->AsDateTime;
+           meals.EndTime = SelectQuery->FieldByName("ENDTIME")->AsDateTime;
+           TimeSlots.push_back(meals);
+        }
+        PopulateMealsToGrid(StringGrid, TimeSlots);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TManagerPMSCodes::PopulateMealsToGrid(TStringGrid * StringGrid,std::vector<TTimeSlots> TimeSlots)
+{
+   if(TimeSlots.size() < 2)
+   {
+	   StringGrid->RowCount = 2;
+   }
+   else
+   {
+		StringGrid->RowCount = TimeSlots.size() + 1;
+   }
+    std::map<int,AnsiString>::iterator it;
+    int i = 0;
+    int Index = 0;
+    for(std::vector<TTimeSlots>::iterator iter = TimeSlots.begin(); iter != TimeSlots.end(); ++iter)
+    {
+        Index = StringGrid->Cols[0]->Add(iter->MealName);
+        StringGrid->Cols[0]->Objects[Index] = (TObject*)iter->key;
+        AnsiString value = iter->StartTime.TimeString();
+        value += " to ";
+        value += iter->EndTime.TimeString();
+        Index = StringGrid->Cols[1]->Add(value);
+        StringGrid->Cols[1]->Objects[Index] = (TObject*)iter->key;
+    }
+
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::DeleteMealDetails(Database::TDBTransaction &DBTransaction,int key)
+{
+    TIBSQL *DeleteQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    DeleteQuery->SQL->Text =
+               " DELETE FROM SERVINGTIMESDETAILS WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
+    DeleteQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = key;
+    DeleteQuery->ExecQuery();
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlots slots)
+{
+    TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    UpdateQuery->SQL->Text =
+               " UPDATE SERVINGTIMESDETAILS SET MEALNAME = :MEALNAME, STARTTIME = :STARTTIME, ENDTIME = :ENDTIME "
+               " WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
+    UpdateQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = slots.key;
+    UpdateQuery->ParamByName("MEALNAME")->AsString = slots.MealName;
+    UpdateQuery->ParamByName("STARTTIME")->AsDateTime = slots.StartTime;
+    UpdateQuery->ParamByName("ENDTIME")->AsDateTime = slots.EndTime;
+    UpdateQuery->ExecQuery();
+}
+//----------------------------------------------------------------------------
+
 
 

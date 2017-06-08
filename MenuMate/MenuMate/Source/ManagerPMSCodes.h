@@ -17,6 +17,13 @@ struct TaxCodesDetails
     double ServiceChargePercentage;
     double TaxOnServiceChargePercentage;
 };
+struct TTimeSlots
+{
+    int key;
+    AnsiString MealName;
+    TDateTime StartTime;
+    TDateTime EndTime;
+};
 class TManagerPMSCodes
 {
     private:
@@ -38,5 +45,11 @@ class TManagerPMSCodes
         void SaveRevenueCodesToDB(Database::TDBTransaction &DBTransaction,std::map<int,AnsiString> &RevenueCodeMap);
         void DeleteRevenueCode(Database::TDBTransaction &DBTransaction, int key);
         void EditRevenueCode(Database::TDBTransaction &DBTransaction,int key, int newCode, AnsiString newDescription);
+        void InsertTimeSlots(Database::TDBTransaction &DBTransaction,TTimeSlots mealDetails);
+        std::vector<TTimeSlots> TimeSlots;
+        void GetMealDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::vector<TTimeSlots> &TimeSlots);
+        void PopulateMealsToGrid(TStringGrid * StringGrid,std::vector<TTimeSlots> TimeSlots);
+        void EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlots slots);
+        void DeleteMealDetails(Database::TDBTransaction &DBTransaction,int key);
 };
 #endif

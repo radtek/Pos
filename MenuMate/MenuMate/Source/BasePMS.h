@@ -5,6 +5,7 @@
 #include "MM_DBCore.h"
 #include "PHSTCPIP.h"
 #include "SiHotDataObjects.h"
+#include "ManagerPMSCodes.h"
 //---------------------------------------------------------------------------
 class TBasePMS
 {
@@ -35,6 +36,8 @@ class TBasePMS
 
 
         std::set<AnsiString> CodesTestedOk;
+        std::vector<TTimeSlots> Slots;
+        std::map<int,AnsiString> RevenueCodesMap;
         public :
         bool Registered;
         bool nabled;

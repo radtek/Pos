@@ -61,6 +61,11 @@ private:	// User declarations
     void AddRevenueCode(TObject *Sender);
     void UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key);
     TManagerPMSCodes* managerPMSCodes;
+    void AddServingTime(TObject *Sender);
+    bool ValidateTimeSlot(TDateTime time, int key);
+    void LoadServingDetails(Database::TDBTransaction &DBTransaction);
+    void InsertMealSlotToDB(TTimeSlots slots);
+    void UpdateMealDetails(Database::TDBTransaction &DBTransaction, int key);
 public:		// User declarations
 
 	eMessageType MessageType;

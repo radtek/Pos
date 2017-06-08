@@ -198,43 +198,10 @@ void TApplyParser::update6_41Tables()
    UpdateTaxProfiles(_dbControl);
    UpdateItemSize(_dbControl);
    UpdateRevenueCodes(_dbControl);
+   Create6_41ServingTimesGenerator(_dbControl);
+   UpdateServingTimes(_dbControl);
 }
-//void TApplyParser::Create6_41Generators(TDBControl* const inDBControl)
-//{
-//    if(!generatorExists("GEN_TAXCODESNUMBER", _dbControl))
-//    {
-//        executeQuery(
-//            "CREATE GENERATOR GEN_TAXCODESNUMBER;", inDBControl
-//        );
-//        executeQuery(
-//            "SET GENERATOR GEN_TAXCODESNUMBER TO 0;", inDBControl
-//        );
-//    }
-//    if(!generatorExists("GEN_REVENUECODESNUMBER", _dbControl))
-//    {
-//        executeQuery(
-//            "CREATE GENERATOR GEN_REVENUECODESNUMBER;", inDBControl
-//        );
-//        executeQuery(
-//            "SET GENERATOR GEN_REVENUECODESNUMBER TO 0;", inDBControl
-//        );
-//    }
-//}
-//void TApplyParser::UpdateTaxCodes(TDBControl* const inDBControl)
-//{
-//    if ( !tableExists( "TAXCODESDETAILS", _dbControl ) )
-//	{
-//		executeQuery(
-//		"CREATE TABLE TAXCODESDETAILS "
-//		"( "
-//        "   TAXCODE INT NOT NULL PRIMARY KEY, "
-//		"   VAT_PERCENTAGE NUMERIC(15,4), "
-//		"   SERVICECHARGE_PERCENTAGE NUMERIC(15,4), "
-//		"   TAXONSERVICECHARGE_PERCENTAGE NUMERIC(15,4) "
-//		");",
-//		inDBControl );
-//    }
-//}void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !fieldExists("TAXPROFILES", "TAX_CODE", inDBControl ) )    {
+void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !fieldExists("TAXPROFILES", "TAX_CODE", inDBControl ) )    {
         executeQuery(
         "ALTER TABLE TAXPROFILES ADD TAX_CODE INT;",
         inDBControl );
@@ -250,9 +217,38 @@ void TApplyParser::update6_41Tables()
 		"CREATE TABLE REVENUECODEDETAILS "
 		"( "
         "   REVENUECODE INT NOT NULL PRIMARY KEY, "
-		"   REVENUECODE_DESCRIPTION varchar(50)"
+		"   REVENUECODE_DESCRIPTION VARCHAR(50)"
 		");",
 		inDBControl );
     }
 }
+void TApplyParser::Create6_41ServingTimesGenerator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_SERVINGTIMES", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_SERVINGTIMES;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_SERVINGTIMES TO 0;", inDBControl
+        );
+    }
+}
+void TApplyParser::UpdateServingTimes(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SERVINGTIMESDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SERVINGTIMESDETAILS "
+		"( "
+        "   SERVINGTIMES_KEY INT NOT NULL PRIMARY KEY, "
+        "   MEALNAME VARCHAR(50),"
+		"   STARTTIME TIMESTAMP,"
+        "   ENDTIME   TIMESTAMP "
+		");",
+		inDBControl );
+    }
+}
+
 }

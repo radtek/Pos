@@ -15,6 +15,7 @@
 #include "ManagerFloat.h"
 #include "MMTouchNumpad.h"
 #include "DBDenominations.h"
+#include "ServingTime.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -88,6 +89,13 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
             pnlLabel->Caption = "Revenue Codes";
             break;
         }
+        case eServingTimes:
+        {
+            managerPMSCodes = new TManagerPMSCodes();
+            managerPMSCodes->TimeSlots.clear();
+            pnlLabel->Caption = "Serving Times";
+            break;
+        }
     }
 
 	this->Caption = pnlLabel->Caption;
@@ -139,6 +147,13 @@ void TfrmMessageMaintenance::ShowMessages()
         LoadRevenueCodes(DBTransaction);
         break;
       }
+      case eServingTimes:
+      {
+        sgDisplay->Cols[0]->Add("Meal Name");
+        sgDisplay->Cols[1]->Add("Timing");
+        LoadServingDetails(DBTransaction);
+        break;
+      }
       default:
       {
          ManagerMessage->LoadMessages(DBTransaction,sgDisplay,MessageType);
@@ -154,7 +169,8 @@ void TfrmMessageMaintenance::ShowMessages()
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
 {
-    delete managerPMSCodes;
+    if(MessageType == eServingTimes || MessageType == eRevenueCodes)
+        delete managerPMSCodes;
 	Close();
 }
 //---------------------------------------------------------------------------
@@ -166,6 +182,11 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
         case eRevenueCodes:
         {
             AddRevenueCode(Sender);
+            break;
+        }
+        case eServingTimes:
+        {
+            AddServingTime(Sender);
             break;
         }
         default:
@@ -302,7 +323,12 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
             else if(MessageType == eRevenueCodes)
             {
                 int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
-                UpdateRevenueCode(DBTransaction,key);
+                UpdateMealDetails(DBTransaction,key);
+            }
+            else if(MessageType == eServingTimes)
+            {
+                int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
+                UpdateMealDetails(DBTransaction,key);
             }
 			else
 			{
@@ -395,6 +421,10 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
         else if(MessageType == eRevenueCodes)
         {
             managerPMSCodes->DeleteRevenueCode(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+        }
+        else if(MessageType == eServingTimes)
+        {
+            managerPMSCodes->DeleteMealDetails(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
         }
 		else
 		{
@@ -707,4 +737,167 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
     }
 }
 //---------------------------------------------------------------------------
-
+void TfrmMessageMaintenance::AddServingTime(TObject *Sender)
+{
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+    frmTouchKeyboard->MaxLength = 15;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = true;
+    frmTouchKeyboard->MustHaveValue = true;
+    frmTouchKeyboard->KeyboardText = "";
+    frmTouchKeyboard->Caption = "Enter Meal Name";
+    AnsiString mealName = "";
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+        mealName = frmTouchKeyboard->KeyboardText;
+        TTimeSlots slots;
+        std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
+        frmServingTime->Caption = "Meal Start Time";
+        frmServingTime->TimeType = startTime;
+        frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
+        frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
+        if(frmServingTime->ShowModal() == mrOk)
+        {
+            if(frmServingTime->Time1 == "00:00:00")
+            {
+                MessageBox("Invalid Start Time","",MB_OK);
+                return;
+            }
+            if(ValidateTimeSlot(frmServingTime->Time1, 0))
+            {
+                frmServingTime->TimeType = endTime;
+                frmServingTime->Caption = "Meal End Time";
+                if(frmServingTime->ShowModal() == mrOk)
+                {
+                    if(frmServingTime->Time2 == "00:00:00")
+                    {
+                        MessageBox("Invalid End Time","",MB_OK);
+                        return;
+                    }
+                    if(ValidateTimeSlot(frmServingTime->Time2, 0))
+                    {
+                        slots.MealName = mealName;
+                        slots.StartTime = frmServingTime->Time1;
+                        slots.EndTime  =  frmServingTime->Time2;
+                        managerPMSCodes->TimeSlots.push_back(slots);
+                        InsertMealSlotToDB(slots);
+                    }
+                    else
+                      MessageBox("End Time falls under already configured time slots","",MB_OK);
+                }
+             }
+             else
+                MessageBox("Start Time falls under already configured time slots","",MB_OK);
+        }
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmMessageMaintenance::InsertMealSlotToDB(TTimeSlots slots)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    managerPMSCodes->InsertTimeSlots(DBTransaction,slots);
+    DBTransaction.Commit();
+    ShowMessages();
+}
+//----------------------------------------------------------------------------
+bool TfrmMessageMaintenance::ValidateTimeSlot(TDateTime time, int key)
+{
+    bool retValue = true;
+    if(managerPMSCodes->TimeSlots.size() > 0)
+    {
+        std::vector<TTimeSlots>::iterator slotsIT = managerPMSCodes->TimeSlots.begin();
+        for(;slotsIT != managerPMSCodes->TimeSlots.end(); ++slotsIT)
+        {
+            if(time >= slotsIT->StartTime && time <= slotsIT->EndTime)
+            {
+                MessageBox(key,slotsIT->key,MB_OK);
+                if(key == 0)
+                {
+                    retValue = false;
+                    break;
+                }
+                else
+                {
+                    if(key == slotsIT->key)
+                        retValue = true;
+                    else
+                    {
+                        retValue = false;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+               retValue = true;
+            }
+        }
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::LoadServingDetails(Database::TDBTransaction &DBTransaction)
+{
+    sgDisplay->Cols[0]->Clear();
+    sgDisplay->Cols[1]->Clear();
+    sgDisplay->Cols[0]->Add("Meal Name");
+    sgDisplay->Cols[1]->Add("Timing");
+    managerPMSCodes->GetMealDetails(DBTransaction,sgDisplay,managerPMSCodes->TimeSlots);
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::UpdateMealDetails(Database::TDBTransaction &DBTransaction, int key)
+{
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+    frmTouchKeyboard->MaxLength =15;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = true;
+    frmTouchKeyboard->MustHaveValue = true;
+    frmTouchKeyboard->KeyboardText = "";
+    frmTouchKeyboard->Caption = "Enter Meal Name";
+    AnsiString mealName = "";
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+        mealName = frmTouchKeyboard->KeyboardText;
+        TTimeSlots slots;
+        std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
+        frmServingTime->Caption = "Meal Start Time";
+        frmServingTime->TimeType = startTime;
+        frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
+        frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
+        if(frmServingTime->ShowModal() == mrOk)
+        {
+            if(frmServingTime->Time1 == "00:00:00")
+            {
+                MessageBox("Invalid Start Time","",MB_OK);
+                return;
+            }
+            if(ValidateTimeSlot(frmServingTime->Time1,key))
+            {
+                frmServingTime->TimeType = endTime;
+                frmServingTime->Caption = "Meal End Time";
+                if(frmServingTime->ShowModal() == mrOk)
+                {
+                    if(frmServingTime->Time2 == "00:00:00")
+                    {
+                        MessageBox("Invalid End Time","",MB_OK);
+                        return;
+                    }
+                    if(ValidateTimeSlot(frmServingTime->Time2,key))
+                    {
+                        slots.key = key;
+                        slots.MealName = mealName;
+                        slots.StartTime = frmServingTime->Time1;
+                        slots.EndTime  =  frmServingTime->Time2;
+                        managerPMSCodes->EditMeal(DBTransaction,slots);
+                    }
+                    else
+                      MessageBox("End Time falls under already configured time slots","",MB_OK);
+                }
+             }
+             else
+                MessageBox("Start Time falls under already configured time slots","",MB_OK);
+        }
+    }
+}
+//---------------------------------------------------------------------------

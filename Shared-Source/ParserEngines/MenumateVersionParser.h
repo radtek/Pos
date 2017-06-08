@@ -850,6 +850,8 @@ namespace MenumateVersionParser
         void UpdateTaxProfiles(TDBControl* const _dbControl);
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
+        void Create6_41ServingTimesGenerator(TDBControl* const _dbControl);
+        void UpdateServingTimes(TDBControl* const _dbControl);
     }; // class
 } // namespace
 

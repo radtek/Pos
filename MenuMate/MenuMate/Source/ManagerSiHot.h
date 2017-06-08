@@ -15,6 +15,7 @@ class TManagerSiHot : public TBasePMS
        void GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString PMSIPAddress,int PMSPort);
        void Initialise();
        bool ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
+       bool LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
     private :
        bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);

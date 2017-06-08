@@ -9,6 +9,7 @@
 #include "GlobalSettings.h"
 #include "PhoenixHotelSystem.h"
 #include "ManagerSiHot.h"
+#include "ManagerOraclePMS.h"
 
 //---------------------------------------------------------------------------
 
@@ -32,6 +33,12 @@ void TManagerPMS::Initialize(Database::TDBControl &inDBControl, int pmsIdentifie
         default:
         {
              TDeviceRealTerminal::Instance().BasePMS.reset(new TPhoenixHM());
+             break;
+        }
+        case 3:
+        {
+
+             TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerOraclePMS());
              break;
         }
     }
