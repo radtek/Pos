@@ -11,7 +11,7 @@
 
 #pragma package(smart_init)
 
-bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime)
 {
     bool retVal = false;
     try
@@ -20,7 +20,7 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
         TMallExportSalesWrapper salesData;
 
         ///Prepare Data For Inserting Data Into DataBase
-        salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
+        salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey, currentTime);
 
         //Insert Prepared Data into DataBase
         retVal = InsertInToMallExport_Sales(paymentTransaction.DBTransaction, salesData);
@@ -62,14 +62,22 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
 {
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
+
+    Database::TcpIBSQL IBInternalQuery1(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery1);
+
     bool isInserted = false;
     try
     {
         std::list<TMallExportSalesData>::iterator it;
         int arcBillKey;
+        TDateTime billedTime;
+        Currency oldAccumulatedSales;
         //Iterate mallExport Sales data for inserting into DB
         for(it = mallExportSalesData.SalesData.begin(); it != mallExportSalesData.SalesData.end(); it++)
         {
+            oldAccumulatedSales = 0;
+
             // Inserting Each field of nall into Table
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Text =
@@ -104,7 +112,18 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = it->MallKey;
             IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = it->FieldIndex;
             IBInternalQuery->ParamByName("FIELD")->AsString = it->Field;
-            IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->DataValue;
+
+//            if((it->FieldIndex == 4 || it->FieldIndex == 5 ) && (it->MallKey == 2))
+//            {
+//                oldAccumulatedSales = GetOldAccumulatedSales(5);
+//                oldAccumulatedSales += StrToCurr(it->DataValue);
+//                IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = CurrToStr(oldAccumulatedSales);
+//            }
+//            else
+//            {
+                IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->DataValue;
+      //      }
+
             IBInternalQuery->ParamByName("VALUE_TYPE")->AsString = it->DataValueType;
             IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = it->DateCreated;
             IBInternalQuery->ParamByName("CREATED_BY")->AsString = it->CreatedBy;
@@ -112,13 +131,14 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             arcBillKey = it->ArcBillKey;
+            billedTime = it->DateCreated;
             IBInternalQuery->ExecQuery();
         }
 
         //Insert sales total amount according to sales type.
         if(mallExportSalesData.SaleBySalsType.size())
         {
-            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey);
+            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey, billedTime);
         }
 
         isInserted = true;
@@ -239,7 +259,8 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 	}
 }
 //---------------------------------------------------------------------------------------------------------------------
-void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey)
+void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey,
+                                                    TDateTime billedTime)
 {
     TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
@@ -260,14 +281,16 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     "ARCBILL_KEY, "
                     "SALES_TYPE_ID, "
                     "SUBTOTAL, "
-                    "DEVICE_KEY "
+                    "DEVICE_KEY, "
+                    "DATE_CREATED "
                      ") "
             "VALUES ( "
                     ":SALES_ID, "
                     ":ARCBILL_KEY, "
                     ":SALES_TYPE_ID, "
                     ":SUBTOTAL, "
-                    ":DEVICE_KEY "
+                    ":DEVICE_KEY, "
+                    ":DATE_CREATED "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
@@ -275,6 +298,7 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
             ibInternalQuery->ParamByName("SALES_TYPE_ID")->AsInteger = itSalesBySalesTypes->first;
             ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            ibInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = billedTime;
             ibInternalQuery->ExecQuery();
         }
     }
@@ -284,4 +308,50 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
 		throw;
 	}
 }
+//----------------------------------------------------------------------------------------------
+double TMallExport::GetOldAccumulatedSales(int fieldIndex)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
+
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
+                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ) ";
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        dbTransaction.Commit();
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
+}
+//----------------------------------------------------------------------------------------------------------------
 

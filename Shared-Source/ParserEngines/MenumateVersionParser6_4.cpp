@@ -17,6 +17,11 @@ void TApplyParser::upgrade6_40Tables()
 {
     update6_40Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_41Tables()
+{
+    update6_41Tables();
+}
 //6.42
 void TApplyParser::upgrade6_42Tables()
 {
@@ -27,6 +32,12 @@ void TApplyParser::upgrade6_42Tables()
 void TApplyParser::update6_40Tables()
 {
    UpdateChargeToAccount(_dbControl);
+}
+//--------------------------------------------------------------------
+void TApplyParser::update6_41Tables()
+{
+    AlterTable6_41(_dbControl);
+    UpdateMallSalesBySalesType(_dbControl);
 }
 
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -174,7 +185,6 @@ void TApplyParser::DelFromPaymentAttributesTable(TDBControl* const inDBControl, 
     TDBTransaction transaction( *inDBControl );
     transaction.StartTransaction();
 
-
     try
     {
         TIBSQL *DeleteQuery    = transaction.Query(transaction.AddQuery());
@@ -190,6 +200,54 @@ void TApplyParser::DelFromPaymentAttributesTable(TDBControl* const inDBControl, 
     {
         transaction.Rollback();
     }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_41(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "MALL_SALES_BY_SALES_TYPE", "DATE_CREATED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE MALL_SALES_BY_SALES_TYPE "
+        "ADD DATE_CREATED TIMESTAMP ",
+        inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::UpdateMallSalesBySalesType(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT a.ARCBILL_KEY, a.DATE_CREATED, a.DEVICE_KEY "
+                                 "FROM MALLEXPORT_SALES a "
+                                 "WHERE a.FIELD_INDEX = :FIELD_INDEX "
+                                 "GROUP BY 1,2,3 "
+                                 "ORDER BY 1 ASC ";
+        SelectQuery->ParamByName("FIELD_INDEX")->AsInteger = 1;
+        SelectQuery->ExecQuery();
+
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {
+            UpdateQuery->Close();
+            UpdateQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE MSST SET MSST.DATE_CREATED = :DATE_CREATED "
+                                     "WHERE MSST.ARCBILL_KEY = :ARCBILL_KEY AND "
+                                     "MSST.DEVICE_KEY = :DEVICE_KEY ";
+            UpdateQuery->ParamByName("DATE_CREATED")->AsDateTime =  SelectQuery->FieldByName("DATE_CREATED")->AsDateTime;
+            UpdateQuery->ParamByName("ARCBILL_KEY")->AsInteger =  SelectQuery->FieldByName("ARCBILL_KEY")->AsInteger;
+            UpdateQuery->ParamByName("DEVICE_KEY")->AsInteger =  SelectQuery->FieldByName("DEVICE_KEY")->AsInteger;
+            UpdateQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+
 }
 //::::::::::::::::::::::::Version 6.42:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_42Tables()
@@ -249,5 +307,5 @@ void TApplyParser::UpdateServingTimes(TDBControl* const inDBControl)
 		inDBControl );
     }
 }
-
+//------------------------------------------------------------------------
 }

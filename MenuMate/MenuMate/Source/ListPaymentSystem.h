@@ -201,6 +201,7 @@ protected:
      bool skipPaymentFormDeletion;
      bool isSCDOrPWDApplied;
      TModalResult modalResult;
+     TDateTime currentTime;
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);

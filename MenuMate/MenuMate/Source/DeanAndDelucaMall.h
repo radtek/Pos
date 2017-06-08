@@ -36,11 +36,11 @@ private:
     //Store device key
     int deviceKey;
 
+    //For storing bill time.
+    TDateTime billedTime;
+
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
-
-    //Get OldAccumulated Sale
-    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
 
     //Generate SalesKey for MallExport_sales Table
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
@@ -84,7 +84,7 @@ private:
     protected:
 
     //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
-    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
 
     //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
     TMallExportPrepareData PrepareDataForExport(int zKey = 0);

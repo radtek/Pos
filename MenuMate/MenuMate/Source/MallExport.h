@@ -13,10 +13,13 @@ private:
     //Check whether transaction is done before zed
     bool CheckTransactionDoneBeforeZed();
 
+    //Get OldAccumulated Sale
+    double GetOldAccumulatedSales(int fieldIndex);
+
 protected:
 
     //Prepare data for inserting into database according to mall type. child class will override it.
-    virtual TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
+    virtual TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime) = 0;
 
     //Prepare Data For Export it will be overriden by child class.
     virtual TMallExportPrepareData PrepareDataForExport(int zKey = 0) = 0;
@@ -28,12 +31,13 @@ protected:
     virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportSalesWrapper mallExportSalesData);
 
     //if sales type is assigned to items then sales total according to sales type will get stored in new table
-    virtual void InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey);
+    virtual void InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey,
+                                                TDateTime billedTime);
 
 public:
 
     //Overriden functions from TMallExportInterface all overrided.
-    bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+    bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
     bool Export();
     void RegenerateMallReport(TDateTime sDate, TDateTime eDate);
 };

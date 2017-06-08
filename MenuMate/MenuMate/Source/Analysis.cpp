@@ -1889,11 +1889,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             {
                 IBMallQuery->Close();
                 IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                         "AND A.DEVICE_KEY = :DEVICE_KEY "    ;
+                                         "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
 
                 IBMallSalesTypeQuery->Close();
                 IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
-                                                  "AND A.DEVICE_KEY = :DEVICE_KEY "  ;
+                                                  "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
             }
 
          	IBDayArcBill->ExecQuery();
@@ -2191,12 +2191,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                     IBMallQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                    IBMallQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
                     IBMallQuery->ExecQuery();
 
                     IBMallSalesTypeQuery->Close();
                     IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                     IBMallSalesTypeQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                    IBMallSalesTypeQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
                     IBMallSalesTypeQuery->ExecQuery();
                 }
 			}
@@ -2999,18 +3001,15 @@ Zed:
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
                     else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
-                    {     
+                    {
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
 
-                    if(TGlobalSettings::Instance().mallInfo.MallId)
-                    {
-                        //Instantiation is happenning in a factory based on the active mall in database
-                        TMallExport* mallExport = TMallFactory::GetMallType();
-                        mallExport->Export();
-                        delete mallExport;
-                    }
+                    //Instantiation is happenning in a factory based on the active mall in database
+                    TMallExport* mallExport = TMallFactory::GetMallType();
+                    mallExport->Export();
+                    delete mallExport;
                 }
             }
       }
@@ -8546,8 +8545,12 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int field
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
+
     try
     {
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+            UpdateAccumulatedSales(DBTransaction);
+
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
@@ -8595,6 +8598,8 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int field
         }
 
         IBInternalQuery->ExecQuery();
+
+
 
         DBTransaction.Commit();
     }
@@ -8685,4 +8690,99 @@ double TfrmAnalysis::GetCashBlindBalance(TBlindBalances Balances)
             cashBlineBalance += (double)itBlindBalances->second.BlindBalance;
     }
     return cashBlineBalance;
+}
+//-------------------------------------------------------------------------------------------------------
+double TfrmAnalysis::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
+{
+//    //Register the database transaction..
+//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+//    dbTransaction.StartTransaction();
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    int zKey = 0;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY  ";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount )
+           zKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        if(zKey)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, CAST(A.FIELD_VALUE AS NUMERIC(17,4))FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
+                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX "
+                                                " AND a.Z_KEY = :Z_KEY ) ";
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger =  zKey;
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        //dbTransaction.Commit();
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
+    return oldAccumulatedSales;
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransaction)
+{
+    try
+    {
+        double oldAccumulatedSales = GetOldAccumulatedSales(dbTransaction, 5);
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
+
+        Database::TcpIBSQL UpdateQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(UpdateQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT A.MALLEXPORT_SALE_KEY, A.FIELD_INDEX, CAST(A.FIELD_VALUE AS NUMERIC(17,2))FIELD_VALUE "
+                                     " FROM MALLEXPORT_SALES A "
+                                     " WHERE (A.FIELD_INDEX = :FIELD_INDEX1 OR  A.FIELD_INDEX = :FIELD_INDEX2) AND A.Z_KEY = :Z_KEY "
+                                     "ORDER BY 1 ASC ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX1")->AsInteger = 4;
+        IBInternalQuery->ParamByName("FIELD_INDEX2")->AsInteger = 5;
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger =  0;
+        IBInternalQuery->ExecQuery();
+
+        UpdateQuery->Close();
+        UpdateQuery->SQL->Text = "UPDATE MALLEXPORT_SALES A SET A.FIELD_VALUE = :FIELD_VALUE "
+                                     "WHERE (A.FIELD_INDEX = :FIELD_INDEX ) AND A.Z_KEY = :Z_KEY AND A.MALLEXPORT_SALE_KEY = :MALLEXPORT_SALE_KEY ";
+
+        for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            int index = IBInternalQuery->FieldByName("FIELD_INDEX")->AsInteger;
+            if(index == 5)
+            {
+                oldAccumulatedSales += IBInternalQuery->Fields[2]->AsDouble;
+            }
+            UpdateQuery->ParamByName("FIELD_INDEX")->AsInteger = index;
+            UpdateQuery->ParamByName("FIELD_VALUE")->AsString =  oldAccumulatedSales;
+            UpdateQuery->ParamByName("Z_KEY")->AsInteger =  0;
+            UpdateQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger =  IBInternalQuery->Fields[0]->AsInteger;
+            UpdateQuery->ExecQuery();
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }

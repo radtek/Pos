@@ -226,6 +226,8 @@ private:	// User declarations
     double GetCashBlindBalance(TBlindBalances Balances);
     TDateTime GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction);
     double GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode);
+    double GetOldAccumulatedSales(Database::TDBTransaction &DBTransaction, int fieldIndex);
+    void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;
