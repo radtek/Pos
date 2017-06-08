@@ -119,7 +119,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = categoryCode;
-    siHotService.MiddleCategory_Desc = itemComplete->MenuName;
+    siHotService.MiddleCategory_Desc = catDescription;//itemComplete->MenuName;
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;

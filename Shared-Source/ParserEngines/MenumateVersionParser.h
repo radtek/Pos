@@ -31,7 +31,7 @@ namespace MenumateVersionParser
             pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
             pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
             pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,
-            pv6_41
+            pv6_42
     };
 
     class TApplyParser
@@ -117,7 +117,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_38( TDBControl* const inDBControl );
         PARSER_ERROR apply6_39( TDBControl* const inDBControl );
         PARSER_ERROR apply6_40( TDBControl* const inDBControl );
-        PARSER_ERROR apply6_41( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_42( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -843,14 +843,14 @@ namespace MenumateVersionParser
         void UpdatePaymentAttributesTable(TDBControl* const inDBControl, int key, int chargeToAccount, int invoiceInterace);
         void DelFromPaymentAttributesTable(TDBControl* const inDBControl, int property, int key);
 
-        //6.41
-        void upgrade6_41Tables();
-        void update6_41Tables();
-        void Create6_41Generators(TDBControl* const _dbControl);
+        //6.42
+        void upgrade6_42Tables();
+        void update6_42Tables();
+        void Create6_42Generators(TDBControl* const _dbControl);
         void UpdateTaxProfiles(TDBControl* const _dbControl);
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
-        void Create6_41ServingTimesGenerator(TDBControl* const _dbControl);
+        void Create6_42ServingTimesGenerator(TDBControl* const _dbControl);
         void UpdateServingTimes(TDBControl* const _dbControl);
     }; // class
 } // namespace

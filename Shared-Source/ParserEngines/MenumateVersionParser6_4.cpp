@@ -17,10 +17,10 @@ void TApplyParser::upgrade6_40Tables()
 {
     update6_40Tables();
 }
-//6.41
-void TApplyParser::upgrade6_41Tables()
+//6.42
+void TApplyParser::upgrade6_42Tables()
 {
-    update6_41Tables();
+    update6_42Tables();
 }
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
@@ -191,14 +191,13 @@ void TApplyParser::DelFromPaymentAttributesTable(TDBControl* const inDBControl, 
         transaction.Rollback();
     }
 }
-//::::::::::::::::::::::::Version 6.41:::::::::::::::::::::::::::::::::::::::::
-void TApplyParser::update6_41Tables()
+//::::::::::::::::::::::::Version 6.42:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_42Tables()
 {
-//   Create6_41Generators(_dbControl);
    UpdateTaxProfiles(_dbControl);
    UpdateItemSize(_dbControl);
    UpdateRevenueCodes(_dbControl);
-   Create6_41ServingTimesGenerator(_dbControl);
+   Create6_42ServingTimesGenerator(_dbControl);
    UpdateServingTimes(_dbControl);
 }
 void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !fieldExists("TAXPROFILES", "TAX_CODE", inDBControl ) )    {
@@ -222,7 +221,7 @@ void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !
 		inDBControl );
     }
 }
-void TApplyParser::Create6_41ServingTimesGenerator(TDBControl* const inDBControl)
+void TApplyParser::Create6_42ServingTimesGenerator(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_SERVINGTIMES", _dbControl))
     {
