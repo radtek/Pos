@@ -12219,15 +12219,15 @@ void TfrmMenuEdit::ReadItemSizePriceLevel( TLoadMenu *inLoadMenu, __int32 inItem
     for (int index = 0; index < maxPriceLevel; index++)
     {
         Menu::TItemSizePriceLevel itemSizePriceLevel;
+        itemSizePriceLevel.PriceLevelKey = index + 1;
 
         if(index < minPriceLevel)
         {
-            inLoadMenu->ItemSizePriceLevelAtIndex( index, inItemSizeID, itemSizePriceLevel);
+            inLoadMenu->ItemSizePriceLevelAtIndex( index, inItemSizeID, itemSizePriceLevel.PriceLevelKey, itemSizePriceLevel.Price, itemSizePriceLevel.PriceLevelName); 
             inItemSizeInfo.ItemSizePriceLevels.insert ( std::pair<int,Menu::TItemSizePriceLevel> (  itemSizePriceLevel.PriceLevelKey,itemSizePriceLevel ) );
         }
         else
         {
-            itemSizePriceLevel.PriceLevelKey = index + 1;
             itemSizePriceLevel.Price = inItemSizeInfo.Price;
             itemSizePriceLevel.PriceLevelName = priceLevelName + ""+ index + 1;
             inItemSizeInfo.ItemSizePriceLevels.insert ( std::pair<int,Menu::TItemSizePriceLevel> (  itemSizePriceLevel.PriceLevelKey,itemSizePriceLevel ) );

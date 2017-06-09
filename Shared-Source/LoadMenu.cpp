@@ -770,7 +770,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
   //	return childCount( loadElement( "PriceLevels", itemSizeElem ) );
 }
 ///--------------------------------------------------
-__int32 TLoadMenu::ItemSizePriceLevelAtIndex( __int32 inIndex, __int32 inItemSizeHandle, Menu::TItemSizePriceLevel &itemSizePriceLevel)
+__int32 TLoadMenu::ItemSizePriceLevelAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey,Currency& Price,AnsiString& Name )
 {
 	__int32 result = 0;
 
@@ -789,9 +789,11 @@ __int32 TLoadMenu::ItemSizePriceLevelAtIndex( __int32 inIndex, __int32 inItemSiz
 			{
 				if( it == inIndex )
 				{
-					itemSizePriceLevel.PriceLevelKey = StrToInt( AnsiString( itPtr->Attribute( "PriceLevelKey" ) ) );
-                   	itemSizePriceLevel.Price = StrToCurr( itPtr->Attribute( "Price" )) ;
-                    itemSizePriceLevel.PriceLevelName = AnsiString( itPtr->Attribute( "Name" ) );
+					outKey         = StrToInt( AnsiString( itPtr->Attribute( "PriceLevelKey" ) ) );
+				   //	Price = AnsiString( itPtr->Attribute( "Price" ) );
+                   	Price = StrToCurr( itPtr->Attribute( "Price" )) ;
+
+                    Name = AnsiString( itPtr->Attribute( "Name" ) );
 
 					result = ( __int32 )itPtr;
 
