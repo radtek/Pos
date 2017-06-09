@@ -454,6 +454,11 @@ class TfrmMenuEdit : public TForm
     TNumericEdit *nePriceForPoint;
     TIBSQL *qrGetTaxSettings;
     TComboBox *cbRevenueGroupCode;
+    TBevel *Bevel10;
+    TButton *btnSyncRevenueCodeItem;
+    TButton *btnSyncRevenueCodeCourse;
+    TButton *btnSyncRevenueCodeMenu;
+    TLabel *Label3;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -719,6 +724,9 @@ class TfrmMenuEdit : public TForm
     void __fastcall nePriceForPointChange(TObject *Sender);
     void __fastcall nePriceForPointEnter(TObject *Sender);
     void __fastcall cbRevenueGroupCodeChange(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeItemClick(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeCourseClick(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeMenuClick(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);
@@ -930,12 +938,12 @@ private:
     void ReadItemSizePriceLevel( TLoadMenu *inLoadMenu, __int32 inItemSizeID, Menu::TItemSizeInfo& inItemSizeInfo );
 
 	void StartStockTransaction();
-    bool SyncRevenueCodeItem(TTreeNode *CurrentTreeNode, int revenueCode,AnsiString revenueDescription);
+    /*bool SyncRevenueCodeItem(TTreeNode *CurrentTreeNode, int revenueCode,AnsiString revenueDescription);
     bool Sync3rdPartyGroupItem(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
     bool SyncRevenueCodeForCourse(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);
     bool Sync3rdPartyCodeForCourse(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
     bool Sync3rdPartyCodeForMenu(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
-    bool SyncRevenueCodeForMenu(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);
+    bool SyncRevenueCodeForMenu(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);*/
 
 
 

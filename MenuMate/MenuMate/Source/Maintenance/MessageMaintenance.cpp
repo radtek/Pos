@@ -323,7 +323,7 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
             else if(MessageType == eRevenueCodes)
             {
                 int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
-                UpdateMealDetails(DBTransaction,key);
+                UpdateRevenueCode(DBTransaction,key);
             }
             else if(MessageType == eServingTimes)
             {

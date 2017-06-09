@@ -2501,7 +2501,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
         {
             AnsiString revenueCodeText = ItemSizeData->RevenueCode;
             revenueCodeText += "(";
-            revenueCodeText += ItemSizeData->RevenueCodeDescription;
+            revenueCodeText += revenueCodesMap[ItemSizeData->RevenueCode];//ItemSizeData->RevenueCodeDescription;
             revenueCodeText += ")";
             cbRevenueGroupCode->Text =  revenueCodeText;
         }
@@ -9643,83 +9643,33 @@ void __fastcall TfrmMenuEdit::cb3rdPartyGroupCodeChange(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupItemClick(
-TObject *Sender)
+void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupItemClick(TObject *Sender)
 {
-    bool retValue1 = false;
-    bool retValue2 = false;
 	TTreeNode *CurrentTreeNode = tvMenu->Selected;
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
 	{
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
-        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
-        AnsiString revenueDescription = "";
-        if(revenueCode != 0)
-        {
-            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
-            if(ITRev != revenueCodesMap.end())
-                 revenueDescription = ITRev->second;
-        }
 		if(MasterThirdPartyCode != "")
 		{
-            retValue1 = Sync3rdPartyGroupItem(CurrentTreeNode,MasterThirdPartyCode);
-		}
-        if(revenueCode != 0)
-        {
-            retValue2 = SyncRevenueCodeItem(CurrentTreeNode,revenueCode,revenueDescription) ;
-        }
-        if(retValue1 || retValue2)
+            if (Application->MessageBox(AnsiString("3rd Party codes of all sizes in this item will be set to '" +
+                                    MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
+                                "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
+            {
+                TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
+                TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
+
+                if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
+                {
+                    CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                }
+            }
             MenuEdited = true;
+		}
 	}
-}
-//---------------------------------------------------------------------------
-bool TfrmMenuEdit::SyncRevenueCodeItem(TTreeNode *CurrentTreeNode, int revenueCode,AnsiString revenueDescription)
-{
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("All sizes in this item will be set to '" +
-							revenueDescription + "'.\rDo you wish to continue?").c_str(),
-						"Warning",
-						MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
-    {
-        TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
-        TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
-
-        if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
-        {
-            CurrentItemSizeData->RevenueCode = revenueCode;
-            CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
-        }
-    }
-	retValue = true;
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TfrmMenuEdit::Sync3rdPartyGroupItem(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode)
-{
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("All sizes in this item will be set to '" +
-							MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
-						"Warning",
-						MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
-    {
-        TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
-        TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
-
-        if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
-        {
-            CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-        }
-
-    }
-	return retValue;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupCourseClick(
@@ -9731,196 +9681,77 @@ TObject *Sender)
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
 	{
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
-        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
-        AnsiString revenueDescription = "";
-        if(revenueCode != 0)
-        {
-            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
-            if(ITRev != revenueCodesMap.end())
-                 revenueDescription = ITRev->second;
-        }
 		if(MasterThirdPartyCode != "")
 		{
-            retValue1 = Sync3rdPartyCodeForCourse(CurrentTreeNode, MasterThirdPartyCode);
-		}
-        else
-        {
-            retValue2 = SyncRevenueCodeForCourse(CurrentTreeNode,revenueCode,revenueDescription);
-        }
-        if(retValue1 || retValue2)
+            if (Application->MessageBox(AnsiString("WARNING!\r\r 3rd Party codes of all items in this course will be set to '" +
+                            MasterThirdPartyCode  + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
+            {
+                TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
+                if (CurrentItemNode->NodeType == ITEM_NODE)
+                {
+                    for (int i=0; i<CurrentItemNode->Owner->Count; i++)
+                    {
+                        TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
+                        if (CurrentItemSizeData != tvMenu->Selected->Data)
+                        {
+                            CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                        }
+                    }
+                }
+            }
             MenuEdited = true;
+		}
 	}
 }
 //---------------------------------------------------------------------------
-bool TfrmMenuEdit::Sync3rdPartyCodeForCourse(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode)
+void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupMenuClick(TObject *Sender)
 {
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this course will be set to '" +
-                    MasterThirdPartyCode  + "'.\rDo you wish to continue?").c_str(),
-                "Warning",
-                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
-    {
-        TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
-        if (CurrentItemNode->NodeType == ITEM_NODE)
-        {
-            for (int i=0; i<CurrentItemNode->Owner->Count; i++)
-            {
-                TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
-                if (CurrentItemSizeData != tvMenu->Selected->Data)
-                {
-                    CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-                }
-            }
-        }
-    }
-    retValue = true;
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TfrmMenuEdit::SyncRevenueCodeForCourse(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription)
-{
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this course will be set to '" +
-                    revenueDescription + "'.\rDo you wish to continue?").c_str(),
-                "Warning",
-                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
-    {
-        TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
-        if (CurrentItemNode->NodeType == ITEM_NODE)
-        {
-            for (int i=0; i<CurrentItemNode->Owner->Count; i++)
-            {
-                TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
-                if (CurrentItemSizeData != tvMenu->Selected->Data)
-                {
-                    CurrentItemSizeData->RevenueCode = revenueCode;
-                    CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
-                }
-            }
-        }
-    }
-    retValue = true;
-    return retValue;
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupMenuClick(
-TObject *Sender)
-{
-    bool retValue1 = false;
-    bool retValue2 = false;
 	TTreeNode *CurrentTreeNode = tvMenu->Selected;
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
 	{
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
-        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
-        AnsiString revenueDescription = "";
-        if(revenueCode != 0)
-        {
-            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
-            if(ITRev != revenueCodesMap.end())
-                 revenueDescription = ITRev->second;
-        }
-
 		if(MasterThirdPartyCode != "")
 		{
-            Sync3rdPartyCodeForMenu(CurrentTreeNode,MasterThirdPartyCode);
-		}
-        if(revenueCode != 0)
-        {
-            SyncRevenueCodeForMenu(CurrentTreeNode,revenueCode,revenueDescription);
-        }
-        if(retValue1 || retValue2)
+            if (Application->MessageBox(AnsiString("WARNING!\r\r3rd Party codes of all items in this menu will be set to '" +
+                            MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
+
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            for (int k=0; k<ItemNode->Count; k++)
+                            {
+                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                                {
+                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                                    ItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             MenuEdited = true;
+		}
 	}
-}
-//---------------------------------------------------------------------------
-bool TfrmMenuEdit::Sync3rdPartyCodeForMenu(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode)
-{
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this menu will be set to '" +
-                    MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
-                "Warning",
-                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
-    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
-    {
-        TTreeNode *CourseNode = MenuNode->Item[i];
-        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
-        {
-            for (int j=0; j<CourseNode->Count; j++)
-            {
-                TTreeNode *ItemNode = CourseNode->Item[j];
-
-                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
-                {
-                    for (int k=0; k<ItemNode->Count; k++)
-                    {
-                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
-                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
-                        {
-                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
-
-                            ItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    retValue = true;
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TfrmMenuEdit::SyncRevenueCodeForMenu(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription)
-{
-    bool retValue = false;
-    if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this menu will be set to '" +
-                    revenueDescription + "'.\rDo you wish to continue?").c_str(),
-                "Warning",
-                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-    {
-        return retValue;
-    }
-    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
-    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
-    {
-        TTreeNode *CourseNode = MenuNode->Item[i];
-        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
-        {
-            for (int j=0; j<CourseNode->Count; j++)
-            {
-                TTreeNode *ItemNode = CourseNode->Item[j];
-
-                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
-                {
-                    for (int k=0; k<ItemNode->Count; k++)
-                    {
-                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
-                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
-                        {
-                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
-
-                            ItemSizeData->RevenueCode = revenueCode;
-                            ItemSizeData->RevenueCodeDescription = revenueDescription;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    retValue = true;
-    return retValue;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::chbAvailableOnPalmKeyPress(TObject *Sender,
@@ -13932,6 +13763,7 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
 
 void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
 {
+    int codeAlready = 0;
 	if (tvMenu->Selected)
 	{
         if(cbRevenueGroupCode->Text.Length() > 0)
@@ -13939,10 +13771,13 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
             if (((TEditorNode *)tvMenu->Selected->Data)->NodeType == ITEM_SIZE_NODE)
             {
                 TItemSizeNode *ItemSizeData = (TItemSizeNode *)tvMenu->Selected->Data;
+                if(codeAlready == 0 && ItemSizeData->RevenueCode)
+                {
+                    codeAlready = ItemSizeData->RevenueCode;
+                }
                 bool correctData = false;
                 for(int i = 0; i < cbRevenueGroupCode->Items->Count; i += 1)
                 {
-//                    if((cbRevenueGroupCode->Items->IndexOf(cbRevenueGroupCode->Text) == -1) && (i%2 == 0))
                     if(cbRevenueGroupCode->Items->Strings[i] == cbRevenueGroupCode->Text)
                     {
                         correctData = true;
@@ -13953,11 +13788,18 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
                 {
                     AnsiString stringVal = cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1);
                     ItemSizeData->RevenueCode = StrToInt(cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
-                   // ItemSizeData->RevenueCodeDescription = cbRevenueGroupCode->Text.SubString(cbRevenueGroupCode->Text.Pos("(")+1,cbRevenueGroupCode->Text.Pos(")")-1)
+                    //ItemSizeData->RevenueCodeDescription = revenueCodesMap[ItemSizeData->RevenueCode];
                 }
                 else
+                {
                     Application->MessageBox("Please select Revenue Codes from drop down list only.", "Error", MB_OK + MB_ICONWARNING);
-
+                    AnsiString revenueCodeOld = "";
+                    revenueCodeOld = ItemSizeData->RevenueCode;
+                    revenueCodeOld += "(";
+                    revenueCodeOld += revenueCodesMap[codeAlready];
+                    revenueCodeOld += ")";
+                    cbRevenueGroupCode->Text = revenueCodeOld;
+                }
             }
         }
 	}
@@ -13974,6 +13816,130 @@ void TfrmMenuEdit::SaveMenuRevenueCodes(TSaveMenu* inSaveMenu, TTreeNode* inMenu
 
 		inSaveMenu->SaveRevenueCodes( revenueIT->first, revenueIT->second);
 	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeItemClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+    {
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("Revenue codes of all sizes in this item will be set to '" +
+                                    revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                                "Warning",
+                                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
+            {
+                TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
+                TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
+
+                if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
+                {
+                    CurrentItemSizeData->RevenueCode = revenueCode;
+                    CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
+                }
+            }
+            MenuEdited = true;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeCourseClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+	{
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("WARNING!\r\rRevenue code of all items in this course will be set to '" +
+                            revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
+            {
+                TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
+                if (CurrentItemNode->NodeType == ITEM_NODE)
+                {
+                    for (int i=0; i<CurrentItemNode->Owner->Count; i++)
+                    {
+                        TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
+                        if (CurrentItemSizeData != tvMenu->Selected->Data)
+                        {
+                            CurrentItemSizeData->RevenueCode = revenueCode;
+                            CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeMenuClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+	{
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("WARNING!\r\rRevenue codes of all items in this menu will be set to '" +
+                            revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                            "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
+
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            for (int k=0; k<ItemNode->Count; k++)
+                            {
+                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                                {
+                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                                    ItemSizeData->RevenueCode = revenueCode;
+                                    ItemSizeData->RevenueCodeDescription = revenueDescription;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
