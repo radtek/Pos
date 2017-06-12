@@ -1505,14 +1505,15 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"ArcBill.ArcBill_Key Is Not Null and "
 			"ArcBill.Time_Stamp >= :StartTime and "
 			"ArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 ";
+			"Security.Security_Event = 'Billed By' ";
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
 												ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
+    " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 "
+    
 		"Union All "
 
 		"Select "
@@ -1550,14 +1551,14 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"DayArcBill.ArcBill_Key Is Not Null and "
 			"DayArcBill.Time_Stamp >= :StartTime and "
 			"DayArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 " ;
+			"Security.Security_Event = 'Billed By' " ;
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
 												ParamString(Terminals->Count, "DayArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
+     " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 "
 
 		"Order By "
 			"2,3";
