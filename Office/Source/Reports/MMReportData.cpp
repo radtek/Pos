@@ -7844,13 +7844,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		    "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "ARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level0 and "
-			"Archive.Order_Type = 0 and Archive.HAPPY_HOUR = 'F' ";
+			//"Archive.Order_Type = 0 and
+            "Archive.HAPPY_HOUR = 'F' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -7881,8 +7881,8 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 			"Cast(Archive.Item_Name as Varchar(50)) Item_Name,"
 			"Archive.Order_Type,"
 			"cast(Archive.BASE_PRICE * Archive.Qty as numeric(17, 4)) Price,"
-			"cast(  Archive.BASE_PRICE * Archive.Qty - Archive.Price_Level0 * Archive.Qty  as numeric(17, 4)) as Total,"
-            "cast(Archive.Price_Level0 * Archive.Qty as  numeric(17, 4)) as Price_Level,"
+			"cast(  Archive.BASE_PRICE * Archive.Qty - Archive.Price_Level1 * Archive.Qty  as numeric(17, 4)) as Total,"
+            "cast(Archive.Price_Level1 * Archive.Qty as  numeric(17, 4)) as Price_Level,"
 			"SecAdjust.Time_Stamp Date_Adjusted,"
 			"SecAdjust.Time_Stamp Time_Adjusted,"
 			"Extract(Day From SecAdjust.Time_Stamp) Adjust_Day,"
@@ -7905,13 +7905,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		     "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and  "
 
- "ARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level1 and "
-			"Archive.Order_Type = 0  and Archive.HAPPY_HOUR = 'T' ";
+			///"Archive.Order_Type = 0  and
+            "Archive.HAPPY_HOUR = 'T' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -7966,15 +7966,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		            "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "DAYARCHIVE.PRICE<>0 and "
-
-
 			"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"DayArchive.Price <> DayArchive.Price_Level0 and "
-			"DayArchive.Order_Type = 0 and DayArchive.HAPPY_HOUR = 'F' ";
+			//"DayArchive.Order_Type = 0 and
+            "DayArchive.HAPPY_HOUR = 'F' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -8002,8 +8000,8 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 			"Cast(DayArchive.Item_Name as Varchar(50)) Item_Name,"
 			"DayArchive.Order_Type,"
 	"cast(DayArchive.BASE_PRICE * DayArchive.Qty as numeric(17, 4)) Price,"
-			"cast( DayArchive.BASE_PRICE * DayArchive.Qty - DayArchive.Price_Level0 * DayArchive.Qty as numeric(17, 4)) as Total,"
-            "cast(DayArchive.Price_Level0 * DayArchive.Qty as  numeric(17, 4)) as Price_Level,"
+			"cast( DayArchive.BASE_PRICE * DayArchive.Qty - DayArchive.Price_Level1 * DayArchive.Qty as numeric(17, 4)) as Total,"
+            "cast(DayArchive.Price_Level1 * DayArchive.Qty as  numeric(17, 4)) as Price_Level,"
 
 			"SecAdjust.Time_Stamp Date_Adjusted,"
 			"SecAdjust.Time_Stamp Time_Adjusted,"
@@ -8027,13 +8025,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		         "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "DAYARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"DayArchive.Price <> DayArchive.Price_Level1 and "
-			"DayArchive.Order_Type = 0 and DayArchive.HAPPY_HOUR = 'T' ";
+			//"DayArchive.Order_Type = 0 and
+            "DayArchive.HAPPY_HOUR = 'T' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
