@@ -6,6 +6,7 @@
 #include "PHSTCPIP.h"
 #include "SiHotDataObjects.h"
 #include "ManagerPMSCodes.h"
+#include "OracleDataObjects.h"
 //---------------------------------------------------------------------------
 class TBasePMS
 {
@@ -33,6 +34,7 @@ class TBasePMS
         AnsiString RoundingAccountSiHot;
         AnsiString DefaultAccountNumber;
         AnsiString RoundingAccountNumber;
+        AnsiString RevenueCentre;
 
 
         std::set<AnsiString> CodesTestedOk;
@@ -42,14 +44,11 @@ class TBasePMS
         bool Registered;
         bool nabled;
         TPhoenixHM(Database::TDBControl &inDBControl);
-        void virtual GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
-        bool virtual ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
+        std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
 
         AnsiString virtual GetLastTransactionRef();
 
         void virtual Initialise();
-
-        std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
         bool virtual TestCode(AnsiString CodeToTest);
         void virtual ClearCodesTestedOk();
         bool virtual TestDefaultCodes();
@@ -57,6 +56,9 @@ class TBasePMS
         void virtual CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort);
         void virtual ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort);
         void virtual GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort);
+        void virtual GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
+        bool virtual ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
+        void virtual GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> _roomResult);
 };
 //extern TBasePMS *BasePMS;
 #endif

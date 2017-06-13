@@ -2,8 +2,11 @@
 
 #ifndef OracleDataBuilderH
 #define OracleDataBuilderH
-#include "OracleDataIntegration.h"
+#include "PaymentTransaction.h"
+#include "DeviceRealTerminal.h"
+#include "OracleDataObjects.h"
 #include "ManagerPMSCodes.h"
+#include "OracleManagerDB.h"
 #include <vcl.h>
 #include <iostream.h>
 
@@ -32,12 +35,20 @@ class TOracleDataBuilder
         TPostRequest PostRequest;
 		void ClearPostRoomInquiry(TPaymentTransaction &paymentTransaction);
 //
-        bool CreatePostRoomInquiry(TPaymentTransaction &paymentTransaction);
-        bool CreatePost(TPaymentTransaction &paymentTransaction);
-        void AddInvoiceAttrs(TiXmlElement *rootNode);
-        void CreateXML();
+        void CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry);
+        void CreatePost(TPaymentTransaction &paymentTransaction, TPostRequest &postRequest);
+        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest);
+        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRoomInquiry);
+        TiXmlDocument CreatePostXML(TPostRequest &postRequest);
+        TiXmlDocument CreateRoomInquiryXML(TPostRoomInquiry &postRoomInquiry);
         void SetNodeAttr(TiXmlElement *inNode, AnsiString inAttrName, AnsiString inAttrValue);
-        //void AddItemToMYOBInvoice( TMYOBInvoice* inMYOBInvoice, TMYOBCategoryDetail& PayTypeDetail );
-//		AnsiString CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax );
+        TRoomInquiryResult createXMLInquiryDoc();
+//        void createXMLInquiryDoc(TiXmlDocument *result);
+        TiXmlElement *_rootElem;
+        TiXmlElement *_itemsElem;
+        TiXmlElement* loaditemsElem(TiXmlElement* _rootElem);
+        void ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult);
+        __int32 ChildCount( TiXmlElement* inElem );
+        void LoadCustomerDetails(int _index,TRoomInquiryResult &roomInquiryResult);
 };
 #endif

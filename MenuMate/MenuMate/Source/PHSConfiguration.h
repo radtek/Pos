@@ -37,6 +37,7 @@ __published:	// IDE-managed Components
    TTouchBtn *tbServiceCharge;
     TTouchBtn *tbRevenueCodes;
     TTouchBtn *tbServingTime;
+    TTouchBtn *tbRevenueCentre;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -55,6 +56,7 @@ __published:	// IDE-managed Components
     void __fastcall tbServiceChargeMouseClick(TObject *Sender);
     void __fastcall tbRevenueCodesClick(TObject *Sender);
     void __fastcall tbServingTimeMouseClick(TObject *Sender);
+    void __fastcall tbRevenueCentreMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();

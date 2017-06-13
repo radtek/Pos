@@ -17,6 +17,7 @@
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
+#include "OracleDataObjects.h"
 //---------------------------------------------------------------------------
 
 class TfrmPhoenixRoom : public TZForm
@@ -245,6 +246,9 @@ public:		// User declarations
 	void UpdateInterface();
     std::vector<TSiHotAccounts> SiHotAccounts;
     double LimitSiHot;
+//    std::auto_ptr<TRoomInquiryResult*> roomResult;
+    TRoomInquiryResult roomResult;
+    int OracleRoomIndex;
 };
 //---------------------------------------------------------------------------
 

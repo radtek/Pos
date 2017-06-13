@@ -37,7 +37,6 @@ void TManagerPMS::Initialize(Database::TDBControl &inDBControl, int pmsIdentifie
         }
         case 3:
         {
-
              TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerOraclePMS());
              break;
         }

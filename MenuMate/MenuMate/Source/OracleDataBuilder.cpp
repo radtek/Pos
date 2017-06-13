@@ -17,176 +17,232 @@ TOracleDataBuilder::TOracleDataBuilder()
 TOracleDataBuilder::~TOracleDataBuilder()
 {
 }
-bool TOracleDataBuilder::CreatePostRoomInquiry(TPaymentTransaction &paymentTransaction)
+void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry)
 {
-    PostRoomInquiry.InquiryInformation = "123";
-    PostRoomInquiry.MaximumReturnedMatches = "16";
-    PostRoomInquiry.SequenceNumber = "1";
-    PostRoomInquiry.RequestType = "";
-    PostRoomInquiry.PaymentMethod = "123";
-    PostRoomInquiry.Date = Now().FormatString( "YYMMDD");
-    PostRoomInquiry.Time = Now().FormatString( "HHMMSS");
-    PostRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
-    PostRoomInquiry.WaiterId = paymentTransaction.StaffMember.Name;
-    PostRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+    try
+    {
+        std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+        postRoomInquiry.SequenceNumber = managerDB->GetSequenceNumber(DBTransaction);
+        postRoomInquiry.MaximumReturnedMatches = "16";
+        postRoomInquiry.RequestType = "4";
+        postRoomInquiry.PaymentMethod = "";
+        postRoomInquiry.Date = Now().FormatString( "YYMMDD");
+        postRoomInquiry.Time = Now().FormatString( "HHMMSS");
+        postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        postRoomInquiry.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
+                                   TDeviceRealTerminal::Instance().User.Surname;
+        postRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
+        DBTransaction.Commit();
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
 }
-bool TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction)
+void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPostRequest &postRequest)
 {
-    Currency priceExclusive = 0;
-    Currency tax = 0;
-    Currency serviceCharge = 0;
-    Currency discount = 0;
-
-    for(int i = 0; i < paymentTransaction.Orders->Count; i++)
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+    try
     {
-        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
-        priceExclusive += itemComplete->BillCalcResult.FinalPrice -
-                         itemComplete->BillCalcResult.ServiceCharge.Value -
-                         itemComplete->BillCalcResult.TotalDiscount -
-                         itemComplete->BillCalcResult.TotalTax;
-        tax += itemComplete->BillCalcResult.TotalTax;
-        serviceCharge += itemComplete->BillCalcResult.ServiceCharge.Value;
-        discount += itemComplete->BillCalcResult.TotalDiscount;
-    }
-    Currency total = priceExclusive + tax + serviceCharge + discount;
-    AnsiString paymentMethod = "";
+        Currency priceExclusive = 0;
+        Currency tax = 0;
+        Currency serviceCharge = 0;
+        Currency discount = 0;
 
-    for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
-    {
-        TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange() != 0)
+        for(int i = 0; i < paymentTransaction.Orders->Count; i++)
         {
-           paymentMethod = payment->PaymentThirdPartyID;
-           break;
+            TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
+            priceExclusive += itemComplete->BillCalcResult.FinalPrice -
+                             itemComplete->BillCalcResult.ServiceCharge.Value -
+                             itemComplete->BillCalcResult.TotalDiscount -
+                             itemComplete->BillCalcResult.TotalTax;
+            tax += itemComplete->BillCalcResult.TotalTax;
+            serviceCharge += itemComplete->BillCalcResult.ServiceCharge.Value;
+            discount += itemComplete->BillCalcResult.TotalDiscount;
         }
-    }
+        Currency total = priceExclusive + tax + serviceCharge + discount;
+        AnsiString paymentMethod = "";
 
-    Currency tip = 0;
-    for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
-    {
-        TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
-           tip += payment->GetAdjustment();
-        tip += payment->TipAmount;
-    }
-
-    Currency patronCount = 0;
-    std::vector<TPatronType>::iterator itPatron = paymentTransaction.Patrons.begin();
-    for(;itPatron != paymentTransaction.Patrons.end(); ++itPatron)
-    {
-        patronCount += itPatron->Count;
-    }
-    AnsiString mealName = "Default";
-    std::vector<TTimeSlots>::iterator it = TDeviceRealTerminal::Instance().BasePMS->Slots.begin();
-    for(;it !=TDeviceRealTerminal::Instance().BasePMS->Slots.end(); ++it)
-    {
-        TDateTime date = EncodeDate(1899,12,30) + Now().CurrentTime();
-        if(date >= it->StartTime &&
-           date <= it->EndTime)
+        for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
         {
-            mealName = it->MealName;
-            break;
+            TPayment *payment = paymentTransaction.PaymentGet(i);
+            if(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange() != 0)
+            {
+               paymentMethod = payment->PaymentThirdPartyID;
+               break;
+            }
         }
-    }
-    PostRequest.RoomNumber = "123";
-    PostRequest.ReservationId = 101;
-    PostRequest.ProfileId = "121";
-    PostRequest.LastName = "Sharma";
-    PostRequest.HotelId = "1";
-    PostRequest.RequestType = "2";
-    PostRequest.InquiryInformation = "test";
-    PostRequest.MatchfromPostList = "1";
-    PostRequest.SequenceNumber = "1";
-    double totalValue = RoundTo((double)total,-2);
-    totalValue = totalValue * 100;
-    PostRequest.TotalAmount = totalValue;
-    PostRequest.CreditLimitOverride = "N";
-    PostRequest.PaymentMethod = paymentMethod;
-    PostRequest.Covers = CurrToStrF(patronCount,ffFixed,0);
-    PostRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
-    PostRequest.ServingTime = mealName;//"BreakFast";
-    PostRequest.CheckNumber = 3;
-    double data = RoundTo((double)priceExclusive, -2);
-    data = data * 100;
-    PostRequest.Subtotal1.push_back(data);
-    data = RoundTo((double)discount, -2);
-    data = data * 100;
-    PostRequest.Discount.push_back(data);
-    data = RoundTo((double)tip, -2);
-    data = data * 100;
-	PostRequest.Tip = data;
-    data = RoundTo((double)serviceCharge, -2);
-    data = data * 100;
-    PostRequest.ServiceCharge.push_back(data);
-    data = RoundTo((double)tax, -2);
-    data = data * 100;
-	PostRequest.Tax.push_back(data);
-    PostRequest.Date = Now().FormatString( "YYMMDD");
-    PostRequest.Time = Now().FormatString( "HHMMSS");
-    PostRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
-                           TDeviceRealTerminal::Instance().User.Surname;
-    PostRequest.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
 
-    CreateXML();
-    return true;
-}
-//---------------------------------------------------------------------------------
-void TOracleDataBuilder::CreateXML()
-{
-//	TiXmlDocument doc;
-//
-//	// add declaration
-//	TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-//	doc.LinkEndChild( decl );
-//
-//	// add root node ( Oracle )
-//	TiXmlElement *rootNode = new TiXmlElement("PostRequest");
-//	doc.LinkEndChild( rootNode );
-//	AddInvoiceAttrs( rootNode);
-//
-//	//........................
-//	if( true)
-//	{
-//		try
-//		{
-//		   AnsiString fileName = ExtractFilePath(Application->ExeName) + Now().FormatString("HHMMSS") + ".txt";
-//           result = doc.SaveFile( fileName.c_str() );
-//           if(result)
-//             MessageBox("File exported","",MB_OK);
-//           else
-//             MessageBox("File not exported","",MB_OK);
-//		}
-//		catch( Exception &exc )
-//		{
-//            MessageBox(exc.Message,"",MB_OK);
-//		}
-//	}
-//	else
-//	{
-//    }
+        Currency tip = 0;
+        for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+        {
+            TPayment *payment = paymentTransaction.PaymentGet(i);
+            if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+               tip += payment->GetAdjustment();
+            tip += payment->TipAmount;
+        }
+
+        Currency patronCount = 0;
+        std::vector<TPatronType>::iterator itPatron = paymentTransaction.Patrons.begin();
+        for(;itPatron != paymentTransaction.Patrons.end(); ++itPatron)
+        {
+            patronCount += itPatron->Count;
+        }
+        AnsiString mealName = "1";
+        std::vector<TTimeSlots>::iterator it = TDeviceRealTerminal::Instance().BasePMS->Slots.begin();
+        for(;it !=TDeviceRealTerminal::Instance().BasePMS->Slots.end(); ++it)
+        {
+            TDateTime date = EncodeDate(1899,12,30) + Now().CurrentTime();
+            if(date >= it->StartTime &&
+               date <= it->EndTime)
+            {
+                mealName = it->MealName;
+                break;
+            }
+        }
+        postRequest.RoomNumber = paymentTransaction.PMSClientDetails.RoomNumber;
+        postRequest.ReservationId = paymentTransaction.PMSClientDetails.ReservationID;
+        postRequest.ProfileId = paymentTransaction.PMSClientDetails.ProfileID;
+        postRequest.LastName = paymentTransaction.PMSClientDetails.LastName;
+        postRequest.HotelId = paymentTransaction.PMSClientDetails.HotelID;
+        postRequest.RequestType = "4";
+        postRequest.InquiryInformation = paymentTransaction.PMSClientDetails.RoomNumber;
+        postRequest.MatchfromPostList = paymentTransaction.PMSClientDetails.MatchIdentifier;
+        std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+        postRequest.SequenceNumber = paymentTransaction.PMSClientDetails.SequenceNumber;
+        DBTransaction.Commit();
+        double totalValue = RoundTo((double)total,-2);
+        totalValue = totalValue * 100;
+        postRequest.TotalAmount = totalValue;
+        postRequest.CreditLimitOverride = "N";
+        postRequest.PaymentMethod = paymentMethod;
+        postRequest.Covers = CurrToStrF(patronCount,ffFixed,0);
+        postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        postRequest.ServingTime = mealName;//"BreakFast";
+        postRequest.CheckNumber = "HardCoded";
+        double data = RoundTo((double)priceExclusive, -2);
+        data = data * 100;
+        postRequest.Subtotal1.push_back(data);
+        data = RoundTo((double)discount, -2);
+        data = data * 100;
+        postRequest.Discount.push_back(data);
+        data = RoundTo((double)tip, -2);
+        data = data * 100;
+        postRequest.Tip = data;
+        data = RoundTo((double)serviceCharge, -2);
+        data = data * 100;
+        postRequest.ServiceCharge.push_back(data);
+        data = RoundTo((double)tax, -2);
+        data = data * 100;
+        postRequest.Tax.push_back(data);
+        postRequest.Date = Now().FormatString( "YYMMDD");
+        postRequest.Time = Now().FormatString( "HHMMSS");
+        postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
+                               TDeviceRealTerminal::Instance().User.Surname;
+        postRequest.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
 }
 //----------------------------------------------------------------------------
-void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode)
+TiXmlDocument TOracleDataBuilder::CreateRoomInquiryXML(TPostRoomInquiry &postRequest)
 {
-    SetNodeAttr( rootNode, "RoomNumber",            PostRequest.RoomNumber.c_str() );
-    SetNodeAttr( rootNode, "ReservationId",         PostRequest.ReservationId.c_str() );
-    SetNodeAttr( rootNode, "ProfileId",             PostRequest.ProfileId.c_str() );
-    SetNodeAttr( rootNode, "LastName",             	PostRequest.LastName.c_str() );
-    SetNodeAttr( rootNode, "HotelId",             	PostRequest.HotelId.c_str() );
-    SetNodeAttr( rootNode, "RequestType",           PostRequest.RequestType.c_str() );
-    SetNodeAttr( rootNode, "InquiryInformation",    PostRequest.InquiryInformation.c_str() );
-    SetNodeAttr( rootNode, "MatchfromPostList",     PostRequest.MatchfromPostList.c_str() );
-    SetNodeAttr( rootNode, "SequenceNumber",        PostRequest.SequenceNumber.c_str() );
-    SetNodeAttr( rootNode, "TotalAmount",           PostRequest.TotalAmount.c_str() );
-    SetNodeAttr( rootNode, "CreditLimitOverride",   PostRequest.CreditLimitOverride.c_str() );
-    SetNodeAttr( rootNode, "PaymentMethod",         PostRequest.PaymentMethod.c_str() );
-    SetNodeAttr( rootNode, "Covers",             	PostRequest.Covers.c_str() );
-    SetNodeAttr( rootNode, "RevenueCenter",         PostRequest.RevenueCenter.c_str() );
-    SetNodeAttr( rootNode, "ServingTime",           PostRequest.ServingTime.c_str() );
-    SetNodeAttr( rootNode, "CheckNumber",           PostRequest.CheckNumber.c_str() );
+	TiXmlDocument doc;
 
-    std::vector<AnsiString>::iterator itsubtotal =  PostRequest.Subtotal1.begin();
-    if(PostRequest.Subtotal1.size() == 0)
+	// add declaration
+	TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+	doc.LinkEndChild( decl );
+
+	// add root node ( Oracle )
+	TiXmlElement *rootNode = new TiXmlElement("PostRequest");
+	doc.LinkEndChild( rootNode );
+	AddInvoiceAttrs( rootNode,postRequest);
+//
+//	//........................
+    try
+    {
+       AnsiString fileName = ExtractFilePath(Application->ExeName) +"\\"+ "Oracle Room Inquiry\\" + "RoomInquiry@"+Now().FormatString("HHMMSS") + ".txt";
+       bool result = doc.SaveFile( fileName.c_str() );
+    }
+    catch( Exception &exc )
+    {
+        MessageBox(exc.Message,"",MB_OK);
+    }
+    return doc;
+}
+//----------------------------------------------------------------------------
+TiXmlDocument TOracleDataBuilder::CreatePostXML(TPostRequest &postRequest)
+{
+	TiXmlDocument doc;
+
+	// add declaration
+	TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+	doc.LinkEndChild( decl );
+
+	// add root node ( Oracle )
+	TiXmlElement *rootNode = new TiXmlElement("PostRequest");
+	doc.LinkEndChild( rootNode );
+	AddInvoiceAttrs( rootNode,postRequest);
+
+//	//........................
+    try
+    {
+       AnsiString fileName = ExtractFilePath(Application->ExeName) + "\\" + "Oracle Room Post\\" +Now().FormatString("HHMMSS") + ".txt";
+       bool result = doc.SaveFile( fileName.c_str() );
+//       if(result)
+//         MessageBox("File exported","",MB_OK);
+//       else
+//         MessageBox("File not exported","",MB_OK);
+    }
+    catch( Exception &exc )
+    {
+        MessageBox(exc.Message,"",MB_OK);
+    }
+    return doc;
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRequest)
+{
+     SetNodeAttr( rootNode, "InquiryInformation",      postRequest.InquiryInformation );
+     SetNodeAttr( rootNode, "MaximumReturnedMatches",  postRequest.MaximumReturnedMatches );
+     SetNodeAttr( rootNode, "SequenceNumber",          postRequest.SequenceNumber );
+     SetNodeAttr( rootNode, "RequestType",             postRequest.RequestType );
+     SetNodeAttr( rootNode, "PaymentMethod",           postRequest.PaymentMethod );
+     SetNodeAttr( rootNode, "Date",                    postRequest.Date );
+     SetNodeAttr( rootNode, "Time",                    postRequest.Time );
+     SetNodeAttr( rootNode, "RevenueCenter",           postRequest.RevenueCenter );
+     SetNodeAttr( rootNode, "WaiterId",                postRequest.WaiterId );
+     SetNodeAttr( rootNode, "WorkstationId",           postRequest.WorkstationId );
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest)
+{
+    SetNodeAttr( rootNode, "RoomNumber",            postRequest.RoomNumber.c_str() );
+    SetNodeAttr( rootNode, "ReservationId",         postRequest.ReservationId.c_str() );
+    SetNodeAttr( rootNode, "ProfileId",             postRequest.ProfileId.c_str() );
+    SetNodeAttr( rootNode, "LastName",             	postRequest.LastName.c_str() );
+    SetNodeAttr( rootNode, "HotelId",             	postRequest.HotelId.c_str() );
+    SetNodeAttr( rootNode, "RequestType",           postRequest.RequestType.c_str() );
+    SetNodeAttr( rootNode, "InquiryInformation",    postRequest.InquiryInformation.c_str() );
+    SetNodeAttr( rootNode, "MatchfromPostList",     postRequest.MatchfromPostList.c_str() );
+    SetNodeAttr( rootNode, "SequenceNumber",        postRequest.SequenceNumber.c_str() );
+    SetNodeAttr( rootNode, "TotalAmount",           postRequest.TotalAmount.c_str() );
+    SetNodeAttr( rootNode, "CreditLimitOverride",   postRequest.CreditLimitOverride.c_str() );
+    SetNodeAttr( rootNode, "PaymentMethod",         postRequest.PaymentMethod.c_str() );
+    SetNodeAttr( rootNode, "Covers",             	postRequest.Covers.c_str() );
+    SetNodeAttr( rootNode, "RevenueCenter",         postRequest.RevenueCenter.c_str() );
+    SetNodeAttr( rootNode, "ServingTime",           postRequest.ServingTime.c_str() );
+    SetNodeAttr( rootNode, "CheckNumber",           postRequest.CheckNumber.c_str() );
+
+    std::vector<AnsiString>::iterator itsubtotal =  postRequest.Subtotal1.begin();
+    if(postRequest.Subtotal1.size() == 0)
     {
        SetNodeAttr( rootNode, "Subtotal1",             0 );
     }
@@ -200,10 +256,10 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode)
 //            SetNodeAttr( rootNode, nodeName,             PostRequest.Subtotal1.c_str() );
 //            j += 1;
 //        }
-       SetNodeAttr( rootNode, "Subtotal1",             PostRequest.Subtotal1[0].c_str() );
+       SetNodeAttr( rootNode, "Subtotal1",             postRequest.Subtotal1[0].c_str() );
     }
-    std::vector<AnsiString>::iterator itdiscount =  PostRequest.Discount.begin();
-    if(PostRequest.Discount.size() == 0)
+    std::vector<AnsiString>::iterator itdiscount =  postRequest.Discount.begin();
+    if(postRequest.Discount.size() == 0)
     {
        SetNodeAttr( rootNode, "Discount1",             0 );
     }
@@ -217,13 +273,13 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode)
 //            SetNodeAttr( rootNode, nodeName,             PostRequest.Discount[0] );
 //            j += 1;
 //        }
-        SetNodeAttr( rootNode, "Discount1",            PostRequest.Discount[0].c_str() );
+        SetNodeAttr( rootNode, "Discount1",            postRequest.Discount[0].c_str() );
     }
 
-    SetNodeAttr( rootNode, "Tip",         			PostRequest.Tip.c_str() );
+    SetNodeAttr( rootNode, "Tip",         			postRequest.Tip.c_str() );
 
-    std::vector<AnsiString>::iterator itservicecharge =  PostRequest.ServiceCharge.begin();
-    if(PostRequest.ServiceCharge.size() == 0)
+    std::vector<AnsiString>::iterator itservicecharge =  postRequest.ServiceCharge.begin();
+    if(postRequest.ServiceCharge.size() == 0)
     {
        SetNodeAttr( rootNode, "ServiceCharge1",             0 );
     }
@@ -237,11 +293,11 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode)
 //            SetNodeAttr( rootNode, nodeName,             PostRequest.Tip[0] );
 //            j += 1;
 //        }
-        SetNodeAttr( rootNode, "ServiceCharge1",             PostRequest.ServiceCharge[0].c_str() );
+        SetNodeAttr( rootNode, "ServiceCharge1",             postRequest.ServiceCharge[0].c_str() );
     }
 
-    std::vector<AnsiString>::iterator itTax =  PostRequest.Tax.begin();
-    if(PostRequest.Tax.size() == 0)
+    std::vector<AnsiString>::iterator itTax =  postRequest.Tax.begin();
+    if(postRequest.Tax.size() == 0)
     {
        SetNodeAttr( rootNode, "Tax1",            0 );
     }
@@ -255,16 +311,178 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode)
 //            SetNodeAttr( rootNode, nodeName,             PostRequest.Tax[0] );
 //            j += 1;
 //        }
-       SetNodeAttr( rootNode, "Tax1",            PostRequest.Tax[0].c_str()  );
+       SetNodeAttr( rootNode, "Tax1",            postRequest.Tax[0].c_str()  );
     }
 
-    SetNodeAttr( rootNode, "Date",              	PostRequest.Date.c_str() );
-    SetNodeAttr( rootNode, "Time",              	PostRequest.Time.c_str() );
-    SetNodeAttr( rootNode, "WaiterId",             	PostRequest.WaiterId.c_str() );
-    SetNodeAttr( rootNode, "WorkstationId",         PostRequest.WorkstationId.c_str() );
+    SetNodeAttr( rootNode, "Date",              	postRequest.Date.c_str() );
+    SetNodeAttr( rootNode, "Time",              	postRequest.Time.c_str() );
+    SetNodeAttr( rootNode, "WaiterId",             	postRequest.WaiterId.c_str() );
+    SetNodeAttr( rootNode, "WorkstationId",         postRequest.WorkstationId.c_str() );
 }
 //----------------------------------------------------------------------------
 void TOracleDataBuilder::SetNodeAttr(TiXmlElement *inNode, AnsiString inAttrName, AnsiString inAttrValue)
 {
     inNode->SetAttribute( inAttrName.c_str(), inAttrValue.c_str() );
 }
+//----------------------------------------------------------------------------
+TRoomInquiryResult TOracleDataBuilder::createXMLInquiryDoc()
+{
+	TiXmlDocument* result = new TiXmlDocument();
+    TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+	result->LinkEndChild( decl );
+	//::::::::::::::::::::::::::::::
+    //std::auto_ptr<TRoomInquiryResult> roomInquiryResult (new TRoomInquiryResult());
+    TRoomInquiryResult roomInquiryResult;
+	try
+	{
+		result->LoadFile( (ExtractFilePath(Application->ExeName) + "\\"+ "Oracle Room Inquiry\\" + "roomInquiry" + ".txt").t_str() );
+        ReadXML(result,roomInquiryResult);
+	}
+	catch( ... )
+	{
+		delete result;
+		result = NULL;
+	}
+	//::::::::::::::::::::::::::::::
+
+	return roomInquiryResult;
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult)
+{
+    _rootElem           = result->RootElement();
+    AnsiString value = _rootElem->Value();
+    if(value == "PostList")
+    {
+        roomInquiryResult.SequenceNumber = _rootElem->Attribute("SequenceNumber");
+        roomInquiryResult.HotelId = _rootElem->Attribute("HotelId");
+        roomInquiryResult.PaymentMethod = _rootElem->Attribute("PaymentMethod");
+        roomInquiryResult.RevenueCenter = _rootElem->Attribute("PaymentMethod");
+        roomInquiryResult.WaiterId = _rootElem->Attribute("WaiterId");
+        roomInquiryResult.WorkstationId = _rootElem->Attribute("WorkstationId");
+        roomInquiryResult.Date = _rootElem->Attribute("Date");
+        roomInquiryResult.Time = _rootElem->Attribute("Time");
+
+        int countOfGuest = ChildCount(_rootElem);
+        if(countOfGuest > 0)
+        {
+            _itemsElem = loaditemsElem(_rootElem);
+            for(int index = 0; index < countOfGuest; index++)
+            {
+                LoadCustomerDetails(index,roomInquiryResult);
+                roomInquiryResult.IsSuccessful = true;
+            }
+        }
+//        TiXmlElement *itPtr = _itemsElem->FirstChildElement();
+//        for(int i = 1; i < countOfGuest; i++)
+//        {
+//            TRoomInquiryItem inquiryItems;
+//            inquiryItems.RoomNumber = itPtr->Attribute("RoomNumber");
+//            inquiryItems.ReservationId = itPtr->Attribute("ReservationId");
+//            inquiryItems.LastName = itPtr->Attribute("LastName");
+//            inquiryItems.FirstName = itPtr->Attribute("FirstName");
+//            inquiryItems.Title = itPtr->Attribute("Title");
+//            inquiryItems.NoPost = itPtr->Attribute("NoPost");
+//            inquiryItems.CreditLimit = itPtr->Attribute("CreditLimit");
+//            inquiryItems.ProfileId = itPtr->Attribute("ProfileId");
+//            inquiryItems.HotelId = itPtr->Attribute("HotelId");
+//            MessageBox(inquiryItems.FirstName,"Element",MB_OK);
+//            roomInquiryResult->RoomInquiryItem.push_back(inquiryItems);
+//            itPtr = itPtr->NextSiblingElement();
+//        }
+    }
+    else if(value == "PostAnswer")
+    {
+        roomInquiryResult.IsSuccessful = false;
+        roomInquiryResult.resultText = _rootElem->Attribute("ResponseText");
+    }
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::LoadCustomerDetails(int _index,TRoomInquiryResult &roomInquiryResult)
+{
+    try
+    {
+        if( _index >= 0 )
+        {
+            int it = 0;
+			TiXmlElement *itPtr = _rootElem->FirstChildElement();
+			while( ( itPtr != NULL ) && ( it <= _index ) )
+			{
+				if( it == _index )
+				{
+                    TRoomInquiryItem inquiryItems;
+                    inquiryItems.RoomNumber = itPtr->Attribute("RoomNumber");
+                    inquiryItems.ReservationId = itPtr->Attribute("ReservationId");
+                    inquiryItems.LastName = itPtr->Attribute("LastName");
+                    inquiryItems.FirstName = itPtr->Attribute("FirstName");
+                    inquiryItems.Title = itPtr->Attribute("Title");
+                    inquiryItems.NoPost = itPtr->Attribute("NoPost");
+                    inquiryItems.CreditLimit = itPtr->Attribute("CreditLimit");
+                    inquiryItems.ProfileId = itPtr->Attribute("ProfileId");
+                    inquiryItems.HotelId = itPtr->Attribute("HotelId");
+                    roomInquiryResult.RoomInquiryItem.push_back(inquiryItems);
+                    break;
+                }
+                itPtr = itPtr->NextSiblingElement();
+                it++;
+            }
+        }
+
+	}
+	catch( ... )
+	{
+	}
+}
+//----------------------------------------------------------------------------
+TiXmlElement* TOracleDataBuilder::loaditemsElem(TiXmlElement* _rootElem)
+{
+	try
+	{
+		TiXmlElement *element = _rootElem->FirstChildElement();
+
+		while( element != NULL )
+		{
+			if( AnsiString( element->Value() ) == "PostListItem" )
+			{
+				return element;
+			}
+			element = element->NextSiblingElement();
+		}
+	}
+	catch( ... )
+	{
+		//throw Exception( "Invalid menu version: " + VERSION + " Element not found: " + "root" );
+	}
+
+	//throw Exception( "Invalid menu version: " + VERSION + ". Element not found: " + inElemName );
+
+    return 0;
+}
+//----------------------------------------------------------------------------
+__int32 TOracleDataBuilder::ChildCount( TiXmlElement* inElem )
+{
+	__int32 result = 0;
+
+	//::::::::::::::::::::::::::::::::
+
+	try
+	{
+		if(inElem)
+		{
+			TiXmlElement *child = inElem->FirstChildElement();
+			while( child != NULL )
+			{
+				result++;
+				child = child->NextSiblingElement();
+			}
+		}
+	}
+	catch( ... )
+	{
+	}
+
+	//::::::::::::::::::::::::::::::::
+
+	return result;
+}
+//----------------------------------------------------------------------------

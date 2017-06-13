@@ -142,6 +142,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
         tbServingTime->Enabled = false;
+        tbRevenueCentre->Enabled = false;
     }
     else if(PMSType == oracle)
     {
@@ -164,11 +165,13 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbServiceCharge->Enabled = false;
         tbServingTime->Enabled = false;
         tbRevenueCodes->Enabled = false;
+        tbRevenueCentre->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;;
 }
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
@@ -517,6 +520,32 @@ void __fastcall TfrmPHSConfiguration::tbServingTimeMouseClick(TObject *Sender)
                               (this,TDeviceRealTerminal::Instance().DBControl));
    frmMessageMaintenance->MessageType = eServingTimes;
    frmMessageMaintenance->ShowModal();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+		frmTouchKeyboard->MaxLength = 5;
+		frmTouchKeyboard->AllowCarriageReturn = false;
+		frmTouchKeyboard->StartWithShiftDown = false;
+		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+		frmTouchKeyboard->Caption = "Enter the Revenue Centre";
+		if (frmTouchKeyboard->ShowModal() == mrOk)
+		{
+			TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchKeyboard->KeyboardText;
+			tbServiceCharge->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCentre,TDeviceRealTerminal::Instance().BasePMS->RevenueCentre);
+            DBTransaction1.Commit();
+		}
+	}
 }
 //---------------------------------------------------------------------------
 
