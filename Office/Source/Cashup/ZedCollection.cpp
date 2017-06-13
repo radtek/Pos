@@ -29,7 +29,7 @@ void ZedCollection::BeginLoad(const TDateTime& startDateTimeFilter,
 			"Zeds.Time_Stamp,"
 			"Zeds.Terminal_Name,"
 			"Security.From_Val as Cashier,"
-			"Sum(BlindBalance.System_Balance - BlindBalance.Office_Balance) as Total_Variance "
+			"Sum(BlindBalance.Office_Balance - BlindBalance.System_Balance) as Total_Variance "
 		"From "
 			"Zeds Inner Join Security on "
 				"Zeds.Security_Ref = Security.Security_Ref "
