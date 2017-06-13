@@ -739,17 +739,17 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::AddServingTime(TObject *Sender)
 {
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-    frmTouchKeyboard->MaxLength = 15;
-    frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = true;
-    frmTouchKeyboard->MustHaveValue = true;
-    frmTouchKeyboard->KeyboardText = "";
-    frmTouchKeyboard->Caption = "Enter Meal Name";
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->Caption = "Enter Meal Code";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->INTInitial = 0;
     AnsiString mealName = "";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
+    if (frmTouchNumpad->ShowModal() == mrOk)
     {
-        mealName = frmTouchKeyboard->KeyboardText;
+        mealName = frmTouchNumpad->INTResult;
         TTimeSlots slots;
         std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
         frmServingTime->Caption = "Meal Start Time";
@@ -848,17 +848,17 @@ void TfrmMessageMaintenance::LoadServingDetails(Database::TDBTransaction &DBTran
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::UpdateMealDetails(Database::TDBTransaction &DBTransaction, int key)
 {
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-    frmTouchKeyboard->MaxLength =15;
-    frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = true;
-    frmTouchKeyboard->MustHaveValue = true;
-    frmTouchKeyboard->KeyboardText = "";
-    frmTouchKeyboard->Caption = "Enter Meal Name";
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->Caption = "Enter Meal Code";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->INTInitial = 0;
     AnsiString mealName = "";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
+    if (frmTouchNumpad->ShowModal() == mrOk)
     {
-        mealName = frmTouchKeyboard->KeyboardText;
+        mealName = frmTouchNumpad->INTResult;
         TTimeSlots slots;
         std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
         frmServingTime->Caption = "Meal Start Time";

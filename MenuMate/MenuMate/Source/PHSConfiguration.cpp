@@ -157,6 +157,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;
+        tbRevenueCodes->Enabled = false;
     }
     else
     {
@@ -534,7 +535,7 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
 		frmTouchKeyboard->MaxLength = 5;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 		frmTouchKeyboard->Caption = "Enter the Revenue Centre";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{

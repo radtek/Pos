@@ -802,7 +802,7 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
         if(TGlobalSettings::Instance().PMSType == Oracle)
         {
             LimitSiHot = (double)((StrToCurr)(roomResult.RoomInquiryItem[FolderNumber-1].CreditLimit));
-            memText->Lines->Add("Room Number : " + edSearch->Text);
+            memText->Lines->Add("Room Number : " + roomResult.RoomInquiryItem[FolderNumber-1].RoomNumber);
             memText->Lines->Add("Balance   : " + Balance);
             memText->Lines->Add("Credit Limit : " + roomResult.RoomInquiryItem[FolderNumber-1].CreditLimit);
             SelectedRoom.SiHotRoom = "";

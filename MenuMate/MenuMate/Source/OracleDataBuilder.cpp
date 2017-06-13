@@ -30,10 +30,10 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         postRoomInquiry.PaymentMethod = "";
         postRoomInquiry.Date = Now().FormatString( "YYMMDD");
         postRoomInquiry.Time = Now().FormatString( "HHMMSS");
-        postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         postRoomInquiry.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                    TDeviceRealTerminal::Instance().User.Surname;
-        postRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
+        postRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().BasePMS->POSID;
         DBTransaction.Commit();
     }
 	catch(Exception &E)
@@ -121,7 +121,7 @@ void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPo
         postRequest.CreditLimitOverride = "N";
         postRequest.PaymentMethod = paymentMethod;
         postRequest.Covers = CurrToStrF(patronCount,ffFixed,0);
-        postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         postRequest.ServingTime = mealName;//"BreakFast";
         postRequest.CheckNumber = "HardCoded";
         double data = RoundTo((double)priceExclusive, -2);
@@ -143,7 +143,7 @@ void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPo
         postRequest.Time = Now().FormatString( "HHMMSS");
         postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                TDeviceRealTerminal::Instance().User.Surname;
-        postRequest.WorkstationId = TDeviceRealTerminal::Instance().ID.ComputerName;
+        postRequest.WorkstationId = TDeviceRealTerminal::Instance().BasePMS->POSID;
     }
 	catch(Exception &E)
 	{
@@ -168,7 +168,7 @@ TiXmlDocument TOracleDataBuilder::CreateRoomInquiryXML(TPostRoomInquiry &postReq
 //	//........................
     try
     {
-       AnsiString fileName = ExtractFilePath(Application->ExeName) +"\\"+ "Oracle Room Inquiry\\" + "RoomInquiry@"+Now().FormatString("HHMMSS") + ".txt";
+       AnsiString fileName = ExtractFilePath(Application->ExeName) +"\\"+ "Oracle Room Inquiry\\" + "RoomInquiry@ "+Now().FormatString("HHMMSS") + ".txt";
        bool result = doc.SaveFile( fileName.c_str() );
     }
     catch( Exception &exc )
@@ -194,7 +194,7 @@ TiXmlDocument TOracleDataBuilder::CreatePostXML(TPostRequest &postRequest)
 //	//........................
     try
     {
-       AnsiString fileName = ExtractFilePath(Application->ExeName) + "\\" + "Oracle Room Post\\" +Now().FormatString("HHMMSS") + ".txt";
+       AnsiString fileName = ExtractFilePath(Application->ExeName) + "\\" + "Oracle Room Post\\" + "Room Post@ "+Now().FormatString("HHMMSS") + ".txt";
        bool result = doc.SaveFile( fileName.c_str() );
 //       if(result)
 //         MessageBox("File exported","",MB_OK);
