@@ -381,20 +381,14 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                     if (itCurrentPayment->second.GetPaymentAttribute(ePayTypeGetVoucherDetails) &&
                         !itCurrentPayment->second.IsLoyaltyVoucher())
                     {
-                        if (itCurrentPayment->second.Surcharge == 0)
+                        VoucherRedeemed += itCurrentPayment->second.Total;
+                        if (itCurrentPayment->second.Surcharge > 0)
                         {
-                            VoucherRedeemed += itCurrentPayment->second.Total;
+                            VoucherPurchased += itCurrentPayment->second.Surcharge;
                         }
                         else
                         {
-                            if (itCurrentPayment->second.Surcharge > 0)
-                            {
-                                VoucherPurchased += itCurrentPayment->second.Surcharge;
-                            }
-                            else
-                            {
-                                VoucherCredited += itCurrentPayment->second.Surcharge;
-                            }
+                            VoucherCredited += itCurrentPayment->second.Surcharge;
                         }
                     }
 

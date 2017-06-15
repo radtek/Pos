@@ -152,7 +152,7 @@ public:
 	 __int32 ItemSizeTaxProfileAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey );
 
      __int32 PriceLevelCount( __int32 inItemSizeHandle );
-	 __int32 ItemSizePriceLevelAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey,Currency& Price,AnsiString& Name );
+     __int32 ItemSizePriceLevelAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey,Currency& Price,AnsiString& Name );
 
 
 private:

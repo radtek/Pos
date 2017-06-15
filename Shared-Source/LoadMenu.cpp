@@ -686,7 +686,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
-                                    Currency& outPriceForPoints)
+                                    Currency& outPriceForPoints )
 {
 	__int32 result = 0;
 

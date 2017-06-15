@@ -59,7 +59,7 @@ const Currency& Payment::GetCountedValue() const
 //---------------------------------------------------------------------------
 Currency Payment::GetVariance() const
 {
-	return _calculated - _counted;
+	return _counted - _calculated;
 }
 //---------------------------------------------------------------------------
 void Payment::SetCountedValue(const Currency& value)
