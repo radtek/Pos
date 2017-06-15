@@ -6808,11 +6808,38 @@ void TfrmReports::GetPriceAdjustmentsReceiptFilter(TReportFilter *ReportFilter)
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level0 and "
-			"Archive.Order_Type = 0 ";
+			//"Archive.Order_Type = 0 and
+            "Archive.HAPPY_HOUR = 'F' ";
+
+	AddFilterStringParams(SQL, UserFilter->Selection, "ConAdjust.Name");
+	AddFilterStringParams(SQL, LocationFilter->Selection, "Archive.Order_Location");
+ 	SQL->Text = SQL->Text +
+		"Union all "
+
+        "Select Distinct "
+        "ArcBill.Invoice_Number "
+        "From "
+        "Security SecOrder Left Join Archive On SecOrder.Security_Ref = Archive.Security_Ref "
+        "Left Join Contacts ConOrder On ConOrder.Contacts_Key = SecOrder.User_Key "
+        "Left Join ArcBill On Archive.ArcBill_Key = ArcBill.ArcBill_Key "
+        "Left Join Security SecAdjust On Archive.Security_Ref = SecAdjust.Security_Ref "
+        "Left Join Contacts ConAdjust On ConAdjust.Contacts_Key = SecAdjust.User_Key "
+        "left join ARCORDERDISCOUNTS  on ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
+        "Where "
+        "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' and "
+        " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(ARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or ARCHIVE.DISCOUNT = 0 ) and "
+        "SecOrder.Time_Stamp >= :StartTime and "
+        "SecOrder.Time_Stamp <  :EndTime and "
+        "SecOrder.Security_Event = 'Ordered By' and "
+        "SecAdjust.Security_Event = 'Price Adjust' and "
+        "Archive.Price <> Archive.Price_Level1 and "
+        //"Archive.Order_Type = 0 and
+        "Archive.HAPPY_HOUR = 'T' ";
+
 	AddFilterStringParams(SQL, UserFilter->Selection, "ConAdjust.Name");
 	AddFilterStringParams(SQL, LocationFilter->Selection, "Archive.Order_Location");
 	SQL->Text = SQL->Text +
-		"Union "
+		"Union all "
 
 		"Select Distinct "
 			"DayArcBill.Invoice_Number "
@@ -6831,9 +6858,37 @@ void TfrmReports::GetPriceAdjustmentsReceiptFilter(TReportFilter *ReportFilter)
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"DayArchive.Price <> DayArchive.Price_Level0 and "
-			"DayArchive.Order_Type = 0 ";
+			//"DayArchive.Order_Type = 0  and
+            "DayArchive.HAPPY_HOUR = 'F' ";
+
 	AddFilterStringParams(SQL, UserFilter->Selection, "ConAdjust.Name");
 	AddFilterStringParams(SQL, LocationFilter->Selection, "DayArchive.Order_Location");
+ 	SQL->Text = SQL->Text +
+		"Union all "
+
+    "Select Distinct "
+                "DayArcBill.Invoice_Number "
+            "From "
+                "Security SecOrder Left Join DayArchive On SecOrder.Security_Ref = DayArchive.Security_Ref "
+                "Left Join Contacts ConOrder On ConOrder.Contacts_Key = SecOrder.User_Key "
+                "Left Join DayArcBill On DayArchive.ArcBill_Key = DayArcBill.ArcBill_Key "
+                "Left Join Security SecAdjust On DayArchive.Security_Ref = SecAdjust.Security_Ref "
+                "Left Join Contacts ConAdjust On ConAdjust.Contacts_Key = SecAdjust.User_Key "
+                "left join DAYARCORDERDISCOUNTS  on DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
+            "Where "
+             "((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' and "
+             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or DAYARCHIVE.DISCOUNT = 0 ) and "
+                "SecOrder.Time_Stamp >= :StartTime and "
+                "SecOrder.Time_Stamp <  :EndTime and "
+                "SecOrder.Security_Event = 'Ordered By' and "
+                "SecAdjust.Security_Event = 'Price Adjust' and "
+                "DayArchive.Price <> DayArchive.Price_Level1 and "
+                //"DayArchive.Order_Type = 0 and
+                "DayArchive.HAPPY_HOUR = 'T' ";
+
+  	AddFilterStringParams(SQL, UserFilter->Selection, "ConAdjust.Name");
+	AddFilterStringParams(SQL, LocationFilter->Selection, "Archive.Order_Location");
+
 	SQL->Text = SQL->Text +
 		"Order By "
 			"1";
