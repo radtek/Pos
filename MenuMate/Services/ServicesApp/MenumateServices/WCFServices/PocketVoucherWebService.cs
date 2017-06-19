@@ -42,6 +42,7 @@ namespace MenumateServices.WCFServices
             {
                 //We need to login to sales force to initiate the process..
                 //Get the credentials for logging into sales force..
+                accountName = "Dillingers Manilla";
                 var credentials = _salesForceCredentialFactory.Create();
 
                 if (_salesForceInterface.Login(credentials))
