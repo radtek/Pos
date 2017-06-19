@@ -6314,13 +6314,12 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 {
-
 	qrTabSummary->Close();
 	qrTabSummary->SQL->Text =
 	"Select   "
 	"Tab.Tab_Key,  "
 	"Tab.Tab_Name,  "
-	"Tab.Credit Credit,  "
+	"COALESCE(Tab.Credit,0) Credit,  "
 	"Extract(Day From Orders.Time_Stamp) Trans_Day,  "
 	"Extract(Month From Orders.Time_Stamp) Trans_Month, " 
 	"Extract(Year From Orders.Time_Stamp) Trans_Year,  "
@@ -6329,31 +6328,16 @@ void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 	"Orders.Course_Name, "  
 	"Orders.Item_Name,  "
 	"Orders.Size_Name, "
-	"cast(Sum(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX) as numeric(17, 4)) Total_Price ,  "
-	"cast((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.VAT/100 as numeric(17, 4)) VAT,  "
-	"cast((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100 as numeric(17, 4)) ServiceCharge ,  "
-	"cast(((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100)*STAX.ServiceChargeTax/100 as numeric(17, 4))  ServiceChargeTax "
+	"CAST(Sum(COALESCE(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX,0)) as numeric(17, 4)) Total_Price , "
+	"CAST((Sum(COALESCE(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(TaxDetails.VAT,0)/100 as numeric(17, 4)) VAT, "
+	"CAST((Sum(COALESCE(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(TaxDetails.ServiceCharge,0)/100 as numeric(17, 4)) ServiceCharge , "
+	"CAST(((Sum(COALESCE(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(TaxDetails.ServiceCharge,0)/100)*COALESCE(STAX.ServiceChargeTax,0)/100 as numeric(17, 4))  ServiceChargeTax, "
+    +  _selectSalesIncl + //For Selecting salesIncl column
 	"From  "
 	"Tab Left Join Orders On  "
 	"Tab.Tab_Key = Orders.Tab_Key  "
+     + _taxJoins + ///For selecting tax
 
-	"left join  "
-	"(SELECT  cast(1 as int) keyvalue   ,  "
-	"TAXPROFILE.ORDER_KEY,   "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 0 THEN TAXPROFILE.TAX_RATE END) AS VAT, "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,   "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 3 THEN TAXPROFILE.TAX_RATE END) AS OtherServiceCharge    "
-	"FROM (SELECT "
-	"TFO.ORDER_KEY,  TAXPROFILES.TYPE,  "
-	"Cast(Sum(COALESCE(TAXPROFILES.RATE,0) ) as Numeric(17,4)) TAX_RATE  "
-	"FROM TAXPROFILES_ORDERS TFO       "
-	"left join TAXPROFILES on TAXPROFILES.PROFILE_KEY=TFO.PROFILE_KEY  "
-	"group by TFO.ORDER_KEY,TAXPROFILES.TYPE     "
-	")  TAXPROFILE   "
-	"GROUP BY TAXPROFILE.ORDER_KEY  "
-	") Tax on Tax.ORDER_KEY=Orders.ORDER_KEY "
-	"left join (SELECT      cast(1 as int) keyvalue   , "
-	"MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8007 THEN VARSPROFILE.NUMERIC_VAL END) AS ServiceChargeTax      FROM VARSPROFILE    ) STAX on  STAX.keyvalue=Tax.keyvalue "
 	"Where  "
 		"(Orders.Order_Type = 3 Or  "
 		"Orders.Order_Type = 0 Or  "
@@ -6384,7 +6368,8 @@ void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 		"Orders.Time_Stamp,  "
 		"Orders.Course_Name, " 
 		"Orders.Item_Name,  "
-		"Orders.Size_Name ,Tax.VAT ,Tax.ServiceCharge ,Tax.OtherServiceCharge ,STAX.ServiceChargeTax "
+		"Orders.Size_Name , "
+         +  _groupByClause + ///group by taxes
 		"Having  "
 		"Sum(Orders.Qty) <> 0 " 
 		"Order By  "
