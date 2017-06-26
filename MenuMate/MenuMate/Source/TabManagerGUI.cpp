@@ -955,23 +955,43 @@ void __fastcall TfrmTabManager::btnRefundCreditToTabClick()
 
 		if (Proceed)
 		{
-			TPaymentTransaction CreditTransaction(DBTransaction);
-			CreditTransaction.Type = eTransCreditPurchase;
-			CreditTransaction.SalesType = eCreditPurchase;
-			CreditTransaction.Money.Change = 0;
-			CreditTransaction.Money.CreditAvailable = 0;
-			CreditTransaction.Money.PaymentAmount = 0;
-			CreditTransaction.Money.GrandTotal = 0;
-			CreditTransaction.Money.PaymentDue = 0;
-			TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, CreditTransaction.Patrons, 1);
+            std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+			frmTouchNumpad->Caption = "Enter the amount of credit to Add/Deduct";
+			frmTouchNumpad->CURInitial = 0;
+			frmTouchNumpad->btnSurcharge->Caption = "Deduct Credit";
+			frmTouchNumpad->btnDiscount->Visible = false;
+			frmTouchNumpad->btnSurcharge->Visible = true;
+			frmTouchNumpad->Mode = pmCurrency;
+			if (frmTouchNumpad->ShowModal() == mrOk)
+			{
+				if (frmTouchNumpad->CURResult != 0)
+				{
+                    TPaymentTransaction CreditTransaction(DBTransaction);
+                    CreditTransaction.Type = eTransCreditPurchase;
+                    CreditTransaction.SalesType = eCreditPurchase;
+                    CreditTransaction.Money.Change = 0;
+                    CreditTransaction.Money.CreditAvailable = 0;
+                    CreditTransaction.Money.PaymentAmount = 0;
+                    CreditTransaction.Money.GrandTotal = frmTouchNumpad->CURResult;
+                    CreditTransaction.Money.PaymentDue = frmTouchNumpad->CURResult;
 
-			TTabCredit Credit = CreditTransaction.TabCredit[SelectedTab];
-			Credit.CurrentCredit = TDBTab::GetTabCredit(DBTransaction, SelectedTab);
-			Credit.CreditRedeemed = Credit.CurrentCredit;
-			CreditTransaction.TabCredit[SelectedTab] = Credit;
+                    TTabCredit Credit = CreditTransaction.TabCredit[SelectedTab];
+                    Credit.CurrentCredit = TDBTab::GetTabCredit(DBTransaction, SelectedTab);
+                    Credit.CreditRedeemed = frmTouchNumpad->CURResult;
+                    CreditTransaction.TabCredit[SelectedTab] = Credit;
 
-			TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
-			TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, -1);
+                    if(Credit.CurrentCredit >= Credit.CreditRedeemed)
+                    {
+                        TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, CreditTransaction.Patrons, 1);
+                        TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
+                        TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, (Credit.CurrentCredit + Credit.CreditRedeemed));
+                    }
+                    else
+                    {
+                        MessageBox("Credit entered is greater than available credit.", "Error", MB_OK + MB_ICONERROR);
+                    }
+                }
+            }
 		}
 		DBTransaction.Commit();
 		RefreshTabDetails();

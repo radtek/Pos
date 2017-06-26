@@ -116,6 +116,7 @@ private:
 
    i_item_manager &itemManager_;
    i_item_definition &itemDefinition_;
+   void checkItemAvailable();
 
 public:
    __fastcall TfrmItemSizeSelection(TComponent *owner, const UnicodeString &itemName, item_key_type itemID, bool itemAvailable);

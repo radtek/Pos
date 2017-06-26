@@ -12277,24 +12277,30 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 ///--------------------------------------------------------
 void TfrmMenuEdit::ReadItemSizePriceLevel( TLoadMenu *inLoadMenu, __int32 inItemSizeID, Menu::TItemSizeInfo& inItemSizeInfo )
 {
-   	__int32 pricelevelCount = inLoadMenu->PriceLevelCount( inItemSizeID );
+    __int32 pricelevelCount = inLoadMenu->PriceLevelCount( inItemSizeID );
 
-      inItemSizeInfo.ItemSizePriceLevels.clear();
+    inItemSizeInfo.ItemSizePriceLevels.clear();
+    AnsiString priceLevelName = "Price Level ";
+    int maxPriceLevel = noOfPriceLevels <= pricelevelCount ? pricelevelCount : noOfPriceLevels;
+    int minPriceLevel = noOfPriceLevels >= pricelevelCount ? pricelevelCount : noOfPriceLevels;
 
-   //   if(pricelevelCount ==0)
-   //   {
-          AnsiString priceLevelName = "Price Level ";
-          for (int index =1;index<=noOfPriceLevels;index++)
-         {
-              Menu::TItemSizePriceLevel itemSizePriceLevel;
+    for (int index = 0; index < maxPriceLevel; index++)
+    {
+        Menu::TItemSizePriceLevel itemSizePriceLevel;
+        itemSizePriceLevel.PriceLevelKey = index + 1;
 
-              itemSizePriceLevel.PriceLevelKey=index;
-              itemSizePriceLevel.Price=inItemSizeInfo.Price;
-              itemSizePriceLevel.PriceLevelName= priceLevelName + ""+ index;
-          inItemSizeInfo.ItemSizePriceLevels.insert ( std::pair<int,Menu::TItemSizePriceLevel> (  itemSizePriceLevel.PriceLevelKey,itemSizePriceLevel ) );
-         }
-
-    //  }
+        if(index < minPriceLevel)
+        {
+            inLoadMenu->ItemSizePriceLevelAtIndex( index, inItemSizeID, itemSizePriceLevel.PriceLevelKey, itemSizePriceLevel.Price, itemSizePriceLevel.PriceLevelName); 
+            inItemSizeInfo.ItemSizePriceLevels.insert ( std::pair<int,Menu::TItemSizePriceLevel> (  itemSizePriceLevel.PriceLevelKey,itemSizePriceLevel ) );
+        }
+        else
+        {
+            itemSizePriceLevel.Price = inItemSizeInfo.Price;
+            itemSizePriceLevel.PriceLevelName = priceLevelName + ""+ index + 1;
+            inItemSizeInfo.ItemSizePriceLevels.insert ( std::pair<int,Menu::TItemSizePriceLevel> (  itemSizePriceLevel.PriceLevelKey,itemSizePriceLevel ) );
+        }
+    }  
 }
 __int32 TLoadMenu::PriceLevelCount( __int32 inItemSizeHandle )
 {

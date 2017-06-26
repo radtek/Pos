@@ -959,8 +959,8 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
             "cast(BlindBalance.Blind_Balance as numeric(15, 2)) Blind_Balance, "
 			"cast(BlindBalance.System_Balance as numeric(15, 2)) System_Balance,"
 			"cast(BlindBalance.Office_Balance as numeric(15, 2)) Office_Balance,"
-			"cast((BlindBalance.System_Balance "
-            "      - BlindBalance.Office_Balance) as numeric(15, 2)) as Variance "
+			"cast((BlindBalance.Office_Balance  "
+            "      - BlindBalance.System_Balance) as numeric(15, 2)) as Variance "
 		"From "
 			"Zeds Inner Join Security on "
 				"Zeds.Security_Ref = Security.Security_Ref "
@@ -1505,14 +1505,15 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"ArcBill.ArcBill_Key Is Not Null and "
 			"ArcBill.Time_Stamp >= :StartTime and "
 			"ArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 ";
+			"Security.Security_Event = 'Billed By' ";
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
 												ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
+    " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 "
+    
 		"Union All "
 
 		"Select "
@@ -1550,14 +1551,14 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"DayArcBill.ArcBill_Key Is Not Null and "
 			"DayArcBill.Time_Stamp >= :StartTime and "
 			"DayArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 " ;
+			"Security.Security_Event = 'Billed By' " ;
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
 												ParamString(Terminals->Count, "DayArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
+     " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 "
 
 		"Order By "
 			"2,3";
@@ -4932,11 +4933,11 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 			"Cast(Orders.Item_Name as VarChar(50)) Item_Name, "
 			"Orders.Qty, "
 			"Orders.Size_Name, "
-           " Cast((( CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,4)) ) +((cast(( (CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,4))+ CAST(COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)AS NUMERIC(17,4))))* CAST(CAST(COALESCE( AOT.VAT,0)AS Numeric(17,4))/100 as Numeric(17,4))as numeric(17, 4))  ) )+  "
-            " ( cast(( (CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,4)) + CAST(COALESCE( Orders.DISCOUNT_WITHOUT_TAX,0)AS NUMERIC(17,4))))*CAST(CAST(COALESCE( AOT.ServiceCharge,0)AS Numeric(17,4))/100 as Numeric(17,4)) as numeric(17, 4)) ) +  "
-            "(cast(CAST(((CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,4))+ COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)))*CAST(CAST(COALESCE(AOT.ServiceCharge,0)AS Numeric(17,4))/100 AS Numeric(17,4))AS Numeric(17,4))* CAST(CAST(COALESCE(STAX.ServiceChargeTax,0)AS Numeric(17,4))/100 as Numeric(17,4)) as numeric(17, 4)))+  "
+            "  Cast((( CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,4)) ) +((cast(( (CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,2))+ CAST(COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)AS NUMERIC(17,2))))* CAST(CAST(COALESCE( AOT.VAT,0)AS Numeric(17,2))/100 as Numeric(17,2))as numeric(17, 4))  ) )+  "
+            " ( cast(( (CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,2)) + CAST(COALESCE( Orders.DISCOUNT_WITHOUT_TAX,0)AS NUMERIC(17,2))))*CAST(CAST(COALESCE( AOT.ServiceCharge,0)AS Numeric(17,2))/100 as Numeric(17,2)) as numeric(17, 4)) ) +   "
+           " (cast(CAST(((CAST(CAST(Orders.QTY AS NUMERIC(17,2)) *  CAST(Orders.BASE_PRICE AS NUMERIC(17,2))as Numeric(17,2))+  CAST(COALESCE( Orders.DISCOUNT_WITHOUT_TAX,0)AS NUMERIC(17,2))))*CAST(CAST(COALESCE(AOT.ServiceCharge,0)AS Numeric(17,2))/100 AS Numeric(17,2))AS Numeric(17,2))* CAST(CAST(COALESCE(STAX.ServiceChargeTax,0)AS Numeric(17,2))/100 as Numeric(17,2)) as numeric(17, 4)))+  "
             "  ( COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0))  "
-            "  ) as Numeric(17,4)) Price   ,   "
+            "  ) as Numeric(17,4)) Price   , "  
 			"Orders.Table_Number,CASE WHEN Orders.Table_Number <> 0 THEN Orders.TABLE_NAME END as TABLE_NAME, "
 			"Cast(Orders.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
@@ -7844,13 +7845,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		    "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "ARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level0 and "
-			"Archive.Order_Type = 0 and Archive.HAPPY_HOUR = 'F' ";
+			//"Archive.Order_Type = 0 and
+            "Archive.HAPPY_HOUR = 'F' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -7881,8 +7882,8 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 			"Cast(Archive.Item_Name as Varchar(50)) Item_Name,"
 			"Archive.Order_Type,"
 			"cast(Archive.BASE_PRICE * Archive.Qty as numeric(17, 4)) Price,"
-			"cast(  Archive.BASE_PRICE * Archive.Qty - Archive.Price_Level0 * Archive.Qty  as numeric(17, 4)) as Total,"
-            "cast(Archive.Price_Level0 * Archive.Qty as  numeric(17, 4)) as Price_Level,"
+			"cast(  Archive.BASE_PRICE * Archive.Qty - Archive.Price_Level1 * Archive.Qty  as numeric(17, 4)) as Total,"
+            "cast(Archive.Price_Level1 * Archive.Qty as  numeric(17, 4)) as Price_Level,"
 			"SecAdjust.Time_Stamp Date_Adjusted,"
 			"SecAdjust.Time_Stamp Time_Adjusted,"
 			"Extract(Day From SecAdjust.Time_Stamp) Adjust_Day,"
@@ -7905,13 +7906,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		     "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and  "
 
- "ARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level1 and "
-			"Archive.Order_Type = 0  and Archive.HAPPY_HOUR = 'T' ";
+			///"Archive.Order_Type = 0  and
+            "Archive.HAPPY_HOUR = 'T' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -7966,15 +7967,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		            "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "DAYARCHIVE.PRICE<>0 and "
-
-
 			"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"DayArchive.Price <> DayArchive.Price_Level0 and "
-			"DayArchive.Order_Type = 0 and DayArchive.HAPPY_HOUR = 'F' ";
+			//"DayArchive.Order_Type = 0 and
+            "DayArchive.HAPPY_HOUR = 'F' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +
@@ -8002,8 +8001,8 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 			"Cast(DayArchive.Item_Name as Varchar(50)) Item_Name,"
 			"DayArchive.Order_Type,"
 	"cast(DayArchive.BASE_PRICE * DayArchive.Qty as numeric(17, 4)) Price,"
-			"cast( DayArchive.BASE_PRICE * DayArchive.Qty - DayArchive.Price_Level0 * DayArchive.Qty as numeric(17, 4)) as Total,"
-            "cast(DayArchive.Price_Level0 * DayArchive.Qty as  numeric(17, 4)) as Price_Level,"
+			"cast( DayArchive.BASE_PRICE * DayArchive.Qty - DayArchive.Price_Level1 * DayArchive.Qty as numeric(17, 4)) as Total,"
+            "cast(DayArchive.Price_Level1 * DayArchive.Qty as  numeric(17, 4)) as Price_Level,"
 
 			"SecAdjust.Time_Stamp Date_Adjusted,"
 			"SecAdjust.Time_Stamp Time_Adjusted,"
@@ -8027,13 +8026,13 @@ void TdmMMReportData::SetupPriceAdjustments(TDateTime StartTime, TDateTime EndTi
 		         "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 
- "DAYARCHIVE.PRICE<>0 and "
 	"SecOrder.Time_Stamp >= :StartTime and "
 			"SecOrder.Time_Stamp < :EndTime and "
 			"SecOrder.Security_Event = 'Ordered By' and "
 			"SecAdjust.Security_Event = 'Price Adjust' and "
 			"DayArchive.Price <> DayArchive.Price_Level1 and "
-			"DayArchive.Order_Type = 0 and DayArchive.HAPPY_HOUR = 'T' ";
+			//"DayArchive.Order_Type = 0 and
+            "DayArchive.HAPPY_HOUR = 'T' ";
 	if (Locations->Count > 0)
 	{
 		qrPriceAdjust->SQL->Text	=	qrPriceAdjust->SQL->Text + "and (" +

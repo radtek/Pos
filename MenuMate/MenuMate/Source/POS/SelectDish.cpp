@@ -12097,7 +12097,6 @@ bool TfrmSelectDish::ParkSaletemp(int tabkey)
 			   //		ParkedSales->Delete(DBTransaction, tabkey-1);
 					ParkedSales->Delete(DBTransaction, tabkey);
 					ParkedSales->Delete(DBTransaction, tabkey+1);
-					ParkedSales->Delete(DBTransaction, tabkey+2);
 					SelectedSeat = Sale->SelectedSeat;
 					SelectedTable = Sale->SelectedTable;
 					SelectedTabContainerName = Sale->SelectedTabContainerName;
