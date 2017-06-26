@@ -485,5 +485,63 @@ void TManagerPanasonic::TriggerTransactionSync()
     InitiatePanasonicThread();
     StartPanasonicThread();
 }
+//---------------------------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::PrepareTenderTypes()
+{
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    try
+    {
+        bool isRowExist = false;
+        UnicodeString payType = "";
+        std::vector <UnicodeString> PayTypes;
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text = "SELECT a.PAYMENT_NAME FROM PAYMENTTYPES a GROUP BY 1 ";
+        IBInternalQuery->ExecQuery();
+
+        for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            payType = "*" + IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString.SubString(0,47) + "*" ;
+            MessageBox(payType, "Pay type 1 ", MB_OK + MB_ICONINFORMATION);
+            PayTypes.push_back(payType);
+        }
+        dbPanasonic->InsertTenderTypes(PayTypes);
+
+        dbPanasonic->UniDataBaseConnection->Commit();
+        dbPanasonic->UniDataBaseConnection->Close();
+    }
+    catch(Exception &E)
+	{
+        dbPanasonic->UniDataBaseConnection->Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//---------------------------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::PrepareTransactionTypes()
+{
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    try
+    {
+        dbPanasonic->InsertTransactionTypes();
+        dbPanasonic->UniDataBaseConnection->Commit();
+        dbPanasonic->UniDataBaseConnection->Close();
+    }
+     catch(Exception &E)
+	{
+        dbPanasonic->UniDataBaseConnection->Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
 
 

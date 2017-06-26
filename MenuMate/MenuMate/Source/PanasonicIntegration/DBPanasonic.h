@@ -13,6 +13,7 @@
 #include <DB.hpp>
 #include "MemDS.hpp"
 #include "PanasonicModels.h"
+#include <vector>
 //---------------------------------------------------------------------------
 class TDBPanasonic
 {
@@ -28,6 +29,8 @@ public:		// User declarations
     void InsertItemsToTItemList(TPanasonicItemList &itemList);
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);
     void InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo);
+    void InsertTransactionTypes();
+    void InsertTenderTypes(std::vector <UnicodeString> PayTypes);
 };
 
 //---------------------------------------------------------------------------

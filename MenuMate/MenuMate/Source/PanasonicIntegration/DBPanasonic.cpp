@@ -6,6 +6,7 @@
 #include "DBPanasonic.h"
 #include "MMLogging.h"
 #include "GlobalSettings.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "DBAccess"
@@ -190,3 +191,71 @@ void TDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransactionDBS
 		throw;
 	}
 }
+//-------------------------------------------------------------------------------------------------------------------------------
+void TDBPanasonic::InsertTenderTypes(std::vector <UnicodeString> PayTypes)
+{
+    try
+    {
+        UniInsertQuery->Connection = UniDataBaseConnection;
+        UniInsertQuery->Close();
+        UniInsertQuery->SQL->Clear();
+        int index = 1;
+
+        UniInsertQuery->SQL->Text = "SELECT MAX(ListOfOrder) ListOfOrder FROM TTenderType ";
+        UniInsertQuery->Execute();
+
+        if(UniInsertQuery->RecordCount)
+            index = UniInsertQuery->FieldByName("ListOfOrder")->AsInteger;
+
+        for (std::vector <UnicodeString> ::iterator payType = PayTypes.begin(); payType != PayTypes.end(); payType++)
+        {
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text = "SELECT ListOfOrder, TenderType FROM TTenderType WHERE TTenderType.TenderType = :TENDER_TYPE ";
+            UniInsertQuery->ParamByName("TENDER_TYPE")->AsAnsiString = *payType;
+            UniInsertQuery->Execute();
+
+            if(UniInsertQuery->Eof)
+            {   MessageBox(*payType, "Pay type 2 ", MB_OK + MB_ICONINFORMATION);
+                UniInsertQuery->Close();
+                UniInsertQuery->SQL->Clear();
+                UniInsertQuery->SQL->Text =  "INSERT INTO TTenderType (ListOfOrder, TenderType) VALUES (:ListOfOrder, :TENDER_TYPE) ";
+                UniInsertQuery->ParamByName("ListOfOrder")->AsInteger =  index++;
+                UniInsertQuery->ParamByName("TENDER_TYPE")->AsAnsiString = *payType;
+                UniInsertQuery->Execute();
+            }
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------------------
+void TDBPanasonic::InsertTransactionTypes()
+{
+    try
+    {
+        UniInsertQuery->Connection = UniDataBaseConnection;
+        UniInsertQuery->Close();
+        UniInsertQuery->SQL->Clear();
+        int a = 1;
+        UniInsertQuery->SQL->Text = "SELECT * FROM TTransactionType ";
+        UniInsertQuery->Execute();
+
+        if(UniInsertQuery->Eof)
+        {   MessageBox("Transaction Type ", "Transaction ", MB_OK + MB_ICONINFORMATION);
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "INSERT INTO TTransactionType (ListOfOrder, TransactionType) VALUES (1, '*Purchased*' ) ";
+            UniInsertQuery->Execute();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
