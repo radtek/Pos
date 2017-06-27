@@ -524,8 +524,8 @@ void TManagerPanasonic::PrepareTenderTypes()
             payType = "*" + IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString.SubString(0,47) + "*" ;
             PayTypes.push_back(payType);
         }
-        PayTypes.push_back("Points");
-        PayTypes.push_back("Credit");
+        PayTypes.push_back("*Points*");
+        PayTypes.push_back("*Credit*");
         dbPanasonic->InsertTenderTypes(PayTypes);
 
         dbPanasonic->UniDataBaseConnection->Commit();
