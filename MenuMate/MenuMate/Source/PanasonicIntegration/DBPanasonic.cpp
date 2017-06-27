@@ -247,7 +247,7 @@ void TDBPanasonic::PrepareTransactionTypes()
         if(UniInsertQuery->Eof)
         {
             int index = 0;
-            InsertTransactionTypeRecords(++index, "*Purchase*");
+            InsertTransactionTypeRecords(++index, "*Sale*");
             InsertTransactionTypeRecords(++index, "*Refund*");
             InsertTransactionTypeRecords(++index, "*Cancelled Order*");
         }
