@@ -22,6 +22,7 @@ private:	// User declarations
     TDataSource *DataSource;
     TUniQuery *UniInsertQuery;
     TComponent *Owner;
+    void InsertTransactionTypeRecords(int index, UnicodeString transactionType);
 public:		// User declarations
     TDBPanasonic();
     TUniConnection *UniDataBaseConnection;
@@ -29,7 +30,7 @@ public:		// User declarations
     void InsertItemsToTItemList(TPanasonicItemList &itemList);
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);
     void InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo);
-    void InsertTransactionTypes();
+    void PrepareTransactionTypes();
     void InsertTenderTypes(std::vector <UnicodeString> PayTypes);
 };
 

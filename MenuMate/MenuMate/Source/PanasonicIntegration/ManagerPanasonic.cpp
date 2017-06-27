@@ -510,7 +510,6 @@ void TManagerPanasonic::PrepareTenderTypes()
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             payType = "*" + IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString.SubString(0,47) + "*" ;
-            MessageBox(payType, "Pay type 1 ", MB_OK + MB_ICONINFORMATION);
             PayTypes.push_back(payType);
         }
         dbPanasonic->InsertTenderTypes(PayTypes);
@@ -533,7 +532,7 @@ void TManagerPanasonic::PrepareTransactionTypes()
 
     try
     {
-        dbPanasonic->InsertTransactionTypes();
+        dbPanasonic->PrepareTransactionTypes();
         dbPanasonic->UniDataBaseConnection->Commit();
         dbPanasonic->UniDataBaseConnection->Close();
     }
