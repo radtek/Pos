@@ -22,7 +22,7 @@ private:	// User declarations
     TDataSource *DataSource;
     TUniQuery *UniInsertQuery;
     TComponent *Owner;
-    void InsertTransactionTypeRecords(int index, UnicodeString transactionType);
+    void InsertTransactionTypeRecords(UnicodeString transactionType);
 public:		// User declarations
     TDBPanasonic();
     TUniConnection *UniDataBaseConnection;

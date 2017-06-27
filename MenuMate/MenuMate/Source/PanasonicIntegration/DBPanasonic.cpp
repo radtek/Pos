@@ -237,20 +237,9 @@ void TDBPanasonic::PrepareTransactionTypes()
 {
     try
     {
-        UniInsertQuery->Connection = UniDataBaseConnection;
-        UniInsertQuery->Close();
-        UniInsertQuery->SQL->Clear();
-
-        UniInsertQuery->SQL->Text = "SELECT * FROM TTransactionType ";
-        UniInsertQuery->Execute();
-
-        if(UniInsertQuery->Eof)
-        {
-            int index = 0;
-            InsertTransactionTypeRecords(++index, "*Sale*");
-            InsertTransactionTypeRecords(++index, "*Refund*");
-            InsertTransactionTypeRecords(++index, "*Cancelled Order*");
-        }
+        InsertTransactionTypeRecords("*Sale*");
+        InsertTransactionTypeRecords("*Refund*");
+        InsertTransactionTypeRecords("*Cancelled Order*");
     }
     catch(Exception &E)
 	{
@@ -259,16 +248,35 @@ void TDBPanasonic::PrepareTransactionTypes()
 	}
 }
 //-------------------------------------------------------------------------------
-void TDBPanasonic::InsertTransactionTypeRecords(int index, UnicodeString transactionType)
+void TDBPanasonic::InsertTransactionTypeRecords(UnicodeString transactionType)
 {
     try
     {
+        UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
-        UniInsertQuery->SQL->Text =  "INSERT INTO TTransactionType (ListOfOrder, TransactionType) VALUES (:ListOfOrder, :TransactionType ) ";
-        UniInsertQuery->ParamByName("ListOfOrder")->AsInteger =  index;
+        UniInsertQuery->SQL->Text =  "SELECT * FROM TTransactionType WHERE TTransactionType.TransactionType = :TransactionType ";
         UniInsertQuery->ParamByName("TransactionType")->AsString =  transactionType;
         UniInsertQuery->Execute();
+         
+        if(UniInsertQuery->Eof)
+        {
+            int index = 0;
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "SELECT MAX(ListOfOrder) ListOfOrder FROM TTransactionType ";
+            UniInsertQuery->Execute();
+
+            if(!UniInsertQuery->Eof)
+                index = UniInsertQuery->FieldByName("ListOfOrder")->AsInteger;
+
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "INSERT INTO TTransactionType (ListOfOrder, TransactionType) VALUES (:ListOfOrder, :TransactionType ) ";
+            UniInsertQuery->ParamByName("ListOfOrder")->AsInteger =  ++index;
+            UniInsertQuery->ParamByName("TransactionType")->AsString =  transactionType;
+            UniInsertQuery->Execute();
+        }
     }
     catch(Exception &E)
 	{
