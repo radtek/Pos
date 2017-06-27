@@ -217,7 +217,19 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             GetMemberNameAndCustomerID(dbTransaction, panasonicModel->TransactionId, customerID, memberName);
             panasonicModel->CustomerId            = customerID;
             panasonicModel->CustomerName          = memberName;
-            panasonicModel->TransactionType       = appendString + panasonicModel->OperatorName + appendString;
+
+            if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency > 0)
+            {
+                panasonicModel->TransactionType       = "*Sale*";
+            }
+            else if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency < 0)
+            {
+                panasonicModel->TransactionType       = "*Refund*";
+            }
+            else
+            {
+                panasonicModel->TransactionType       = "*Cancelled Order*";
+            }
             panasonicModel->ProductListId         = arcBillKey;
             panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
             panasonicModel->AgeRestricted         = false;
