@@ -3226,6 +3226,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"The Category Menu Items will add against in the PMS system/r"
 		"Default is ",
 		vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction, vmIsAutoLoggedOut, "Is user auto logged out",
+                 "If this setting is on means user is auto logged out "
+                 "Default is True.",
+                  vmgPOS, true);
 	}
 	catch(Exception &E)
 	{
