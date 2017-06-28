@@ -157,7 +157,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;
-        tbRevenueCodes->Enabled = false;
+//        tbRevenueCodes->Enabled = false;
     }
     else
     {

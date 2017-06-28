@@ -291,6 +291,26 @@ void TApplyParser::Create6_42ServingTimesGenerator(TDBControl* const inDBControl
             "SET GENERATOR GEN_SERVINGTIMES TO 0;", inDBControl
         );
     }
+    if(!generatorExists("GEN_ORACLESEQNUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_ORACLESEQNUMBER;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_ORACLESEQNUMBER TO 0;", inDBControl
+        );
+    }
+    if(!generatorExists("GEN_ORACLECHECKNUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_ORACLECHECKNUMBER;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_ORACLECHECKNUMBER TO 0;", inDBControl
+        );
+    }
 }
 void TApplyParser::UpdateServingTimes(TDBControl* const inDBControl)
 {
@@ -300,7 +320,7 @@ void TApplyParser::UpdateServingTimes(TDBControl* const inDBControl)
 		"CREATE TABLE SERVINGTIMESDETAILS "
 		"( "
         "   SERVINGTIMES_KEY INT NOT NULL PRIMARY KEY, "
-        "   MEALNAME VARCHAR(50),"
+        "   MEALIDENTIFIER INT,"
 		"   STARTTIME TIMESTAMP,"
         "   ENDTIME   TIMESTAMP "
 		");",

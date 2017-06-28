@@ -50,5 +50,10 @@ class TOracleDataBuilder
         void ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult);
         __int32 ChildCount( TiXmlElement* inElem );
         void LoadCustomerDetails(int _index,TRoomInquiryResult &roomInquiryResult);
+    private:
+        void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete);
+        void ExtractSubTotal();
+        void ExtractTaxes(std::vector<TTax> &taxVector, TItemComplete *itemComplete);
+        void ExtractServiceCharge();
 };
 #endif

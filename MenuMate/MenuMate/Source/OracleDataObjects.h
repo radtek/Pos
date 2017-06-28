@@ -5,6 +5,7 @@
 #include <system.hpp>
 #include <vector>
 #include "OracleDataObjects.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 ///////////////  Room Request /////////////////////////////////
 class TRoomInquiryItem;
@@ -130,5 +131,21 @@ class TPostRequestAnswer
     AnsiString RevenueCenter;
     AnsiString WaiterId;
     AnsiString WorkstationId;
+};
+class TTax
+{
+  public:
+    int Type;
+    AnsiString Name;
+    Currency Percentage;
+    double Value;
+    TTax(const TTax &tax);
+    ~TTax();
+    TTax();
+};
+class TServiceCharge
+{
+    AnsiString Name;
+    double Value;
 };
 #endif

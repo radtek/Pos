@@ -10,6 +10,6 @@ class TOracleManagerDB
         TOracleManagerDB();
         ~TOracleManagerDB();
         int GetSequenceNumber(Database::TDBTransaction &DBTransaction);
-
+        int GetCheckNumber(Database::TDBTransaction &DBTransaction);
 };
 #endif

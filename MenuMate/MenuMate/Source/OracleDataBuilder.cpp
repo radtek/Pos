@@ -52,18 +52,41 @@ void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPo
         Currency tax = 0;
         Currency serviceCharge = 0;
         Currency discount = 0;
-
+        std::map<int, double> discMap;
+        discMap.clear();
+        std::vector<TTax> taxVector;
+        taxVector.clear();
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
         {
             TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
+
             priceExclusive += itemComplete->BillCalcResult.FinalPrice -
                              itemComplete->BillCalcResult.ServiceCharge.Value -
                              itemComplete->BillCalcResult.TotalDiscount -
                              itemComplete->BillCalcResult.TotalTax;
             tax += itemComplete->BillCalcResult.TotalTax;
             serviceCharge += itemComplete->BillCalcResult.ServiceCharge.Value;
+
             discount += itemComplete->BillCalcResult.TotalDiscount;
+            // calculation of taxes
+            ExtractTaxes(taxVector,itemComplete);
+
+            // calculation for discount
+            ExtractDiscount(discMap,itemComplete);
         }
+        MessageBox(taxVector.size(),"size of taxes",MB_OK);
+        for(int i = 0; i < taxVector.size(); i++)
+        {
+            double value = taxVector[i].Value * 100;
+            postRequest.Tax.push_back(value);
+            MessageBox(taxVector[i].Value,"Value in Tax Vector",MB_OK);
+        }
+//        std::map<int,double>::iterator itDisc =  discMap.begin();
+//        for(;itDisc != discMap.end(); advance(itDisc,1))
+//        {
+//           double value = RoundTo((double)itDisc->second, -2) * 100;
+//           postRequest.Discount.push_back(value);
+//        }
         Currency total = priceExclusive + tax + serviceCharge + discount;
         AnsiString paymentMethod = "";
 
@@ -92,7 +115,7 @@ void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPo
         {
             patronCount += itPatron->Count;
         }
-        AnsiString mealName = "1";
+        AnsiString mealName = "Default";
         std::vector<TTimeSlots>::iterator it = TDeviceRealTerminal::Instance().BasePMS->Slots.begin();
         for(;it !=TDeviceRealTerminal::Instance().BasePMS->Slots.end(); ++it)
         {
@@ -138,7 +161,7 @@ void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPo
         postRequest.ServiceCharge.push_back(data);
         data = RoundTo((double)tax, -2);
         data = data * 100;
-        postRequest.Tax.push_back(data);
+//        postRequest.Tax.push_back(data);
         postRequest.Date = Now().FormatString( "YYMMDD");
         postRequest.Time = Now().FormatString( "HHMMSS");
         postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
@@ -303,15 +326,17 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &po
     }
     else
     {
-//        int j = 1;
-//        for(; itTax != PostRequest.Tax.end(); ++itTax)
-//        {
-//            AnsiString nodeName = "Tax";
-//            nodeName += j;
-//            SetNodeAttr( rootNode, nodeName,             PostRequest.Tax[0] );
-//            j += 1;
-//        }
-       SetNodeAttr( rootNode, "Tax1",            postRequest.Tax[0].c_str()  );
+        int j = 1;
+        int i = 0;
+        for(; itTax != PostRequest.Tax.end(); ++itTax)
+        {
+            AnsiString nodeName = "Tax";
+            nodeName += j;
+            SetNodeAttr( rootNode, nodeName,             PostRequest.Tax[i].c_str());
+            j += 1;
+            i += 1;
+        }
+//       SetNodeAttr( rootNode, "Tax1",            postRequest.Tax[0].c_str()  );
     }
 
     SetNodeAttr( rootNode, "Date",              	postRequest.Date.c_str() );
@@ -484,5 +509,84 @@ __int32 TOracleDataBuilder::ChildCount( TiXmlElement* inElem )
 	//::::::::::::::::::::::::::::::::
 
 	return result;
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete)
+{
+    for(int i = 0; i < itemComplete->BillCalcResult.Discount.size(); i++)
+    {
+        if(discMap.size() == 0)
+        {
+            discMap.insert(std::pair<int,double>(itemComplete->BillCalcResult.Discount[i].DiscountKey,
+                                                 itemComplete->BillCalcResult.Discount[i].Value));
+        }
+        else
+        {
+            std::map<int,double>::iterator itDisc = discMap.find(itemComplete->BillCalcResult.Discount[i].DiscountKey);
+            if(itDisc != discMap.end())
+            {
+                double newValue = itDisc->second + double(itemComplete->BillCalcResult.Discount[i].Value);
+                discMap.insert(std::pair<int,double>(itemComplete->BillCalcResult.Discount[i].DiscountKey,newValue));
+            }
+            else
+                discMap.insert(std::pair<int,double>(itemComplete->BillCalcResult.Discount[i].DiscountKey,
+                             itemComplete->BillCalcResult.Discount[i].Value));
+        }
+    }
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::ExtractSubTotal()
+{
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::ExtractTaxes(std::vector<TTax> &taxVector, TItemComplete *itemComplete)
+{
+//    MessageBox(itemComplete->BillCalcResult.Tax.size(),"Tax BillCalc Size",MB_OK);
+    for(int i = 0; i < itemComplete->BillCalcResult.Tax.size(); i++)
+    {
+        if(taxVector.size() == 0)
+        {
+            TTax tax;
+            tax.Name = itemComplete->BillCalcResult.Tax[i].Name;
+            tax.Type = (int)itemComplete->BillCalcResult.Tax[i].TaxType;
+            tax.Percentage = itemComplete->BillCalcResult.Tax[i].Percentage;
+            tax.Value = itemComplete->BillCalcResult.Tax[i].Value;
+            taxVector.push_back(tax);
+            MessageBox(tax.Name,"Tax Inserted",MB_OK);
+        }
+        else
+        {
+//            MessageBox(itemComplete->BillCalcResult.Tax[i].Name,"Value not equal to 0",MB_OK);
+            std::vector<TTax>::iterator taxIT = taxVector.begin();
+            int j = 0;
+            for(;taxIT != taxVector.end(); advance(taxIT,1))
+            {
+                if(taxIT->Name != itemComplete->BillCalcResult.Tax[i].Name ||
+                   taxIT->Percentage != itemComplete->BillCalcResult.Tax[i].Percentage ||
+                   taxIT->Type != (int)itemComplete->BillCalcResult.Tax[i].TaxType)
+                {
+//                     MessageBox(itemComplete->BillCalcResult.Tax[i].Name,"Different Tax",MB_OK);
+                    TTax tax;
+                    tax.Name = itemComplete->BillCalcResult.Tax[i].Name;
+                    tax.Type = (int)itemComplete->BillCalcResult.Tax[i].TaxType;
+                    tax.Percentage = itemComplete->BillCalcResult.Tax[i].Percentage;
+                    tax.Value = itemComplete->BillCalcResult.Tax[i].Value;
+                    taxVector.push_back(tax);
+                }
+                else
+                {
+//                    MessageBox(itemComplete->BillCalcResult.Tax[i].Name,"Same Tax",MB_OK);
+                    double taxValue = taxVector[i].Value;
+                    taxValue += (double)itemComplete->BillCalcResult.Tax[i].Value;
+                    taxVector[j].Value = taxValue;
+                }
+                j++;
+            }
+        }
+    }
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::ExtractServiceCharge()
+{
 }
 //----------------------------------------------------------------------------

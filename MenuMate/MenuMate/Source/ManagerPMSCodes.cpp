@@ -158,10 +158,10 @@ void TManagerPMSCodes::InsertTimeSlots(Database::TDBTransaction &DBTransaction,T
 
         TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
         InsertQuery->SQL->Text =
-                   " INSERT INTO SERVINGTIMESDETAILS ( SERVINGTIMES_KEY, MEALNAME, STARTTIME, ENDTIME) "
-                   " VALUES ( :SERVINGTIMES_KEY, :MEALNAME, :STARTTIME, :ENDTIME ) " ;
+                   " INSERT INTO SERVINGTIMESDETAILS ( SERVINGTIMES_KEY, MEALIDENTIFIER, STARTTIME, ENDTIME) "
+                   " VALUES ( :SERVINGTIMES_KEY, :MEALIDENTIFIER, :STARTTIME, :ENDTIME ) " ;
         InsertQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = mealKey;
-        InsertQuery->ParamByName("MEALNAME")->AsString = mealDetails.MealName;
+        InsertQuery->ParamByName("MEALIDENTIFIER")->AsInteger = atoi(mealDetails.MealName.c_str());
         InsertQuery->ParamByName("STARTTIME")->AsDateTime = mealDetails.StartTime;
         InsertQuery->ParamByName("ENDTIME")->AsDateTime = mealDetails.EndTime;
         InsertQuery->ExecQuery();
@@ -178,7 +178,7 @@ void TManagerPMSCodes::GetMealDetails(Database::TDBTransaction &DBTransaction,TS
     {
         TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
         SelectQuery->SQL->Text =
-                   " Select SERVINGTIMES_KEY,MEALNAME,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS " ;
+                   " Select SERVINGTIMES_KEY,MEALIDENTIFIER,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS " ;
 
         SelectQuery->ExecQuery();
         TimeSlots.clear();
@@ -186,7 +186,7 @@ void TManagerPMSCodes::GetMealDetails(Database::TDBTransaction &DBTransaction,TS
         {
            TTimeSlots meals;
            meals.key = SelectQuery->FieldByName("SERVINGTIMES_KEY")->AsInteger;
-           meals.MealName = SelectQuery->FieldByName("MEALNAME")->AsString;
+           meals.MealName = SelectQuery->FieldByName("MEALIDENTIFIER")->AsInteger;
            meals.StartTime = SelectQuery->FieldByName("STARTTIME")->AsDateTime;
            meals.EndTime = SelectQuery->FieldByName("ENDTIME")->AsDateTime;
            TimeSlots.push_back(meals);
@@ -238,10 +238,10 @@ void TManagerPMSCodes::EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlo
 {
     TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
     UpdateQuery->SQL->Text =
-               " UPDATE SERVINGTIMESDETAILS SET MEALNAME = :MEALNAME, STARTTIME = :STARTTIME, ENDTIME = :ENDTIME "
+               " UPDATE SERVINGTIMESDETAILS SET MEALIDENTIFIER = :MEALIDENTIFIER, STARTTIME = :STARTTIME, ENDTIME = :ENDTIME "
                " WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
     UpdateQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = slots.key;
-    UpdateQuery->ParamByName("MEALNAME")->AsString = slots.MealName;
+    UpdateQuery->ParamByName("MEALIDENTIFIER")->AsInteger = atoi(slots.MealName.c_str());
     UpdateQuery->ParamByName("STARTTIME")->AsDateTime = slots.StartTime;
     UpdateQuery->ParamByName("ENDTIME")->AsDateTime = slots.EndTime;
     UpdateQuery->ExecQuery();

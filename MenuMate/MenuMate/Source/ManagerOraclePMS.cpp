@@ -70,12 +70,12 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
     TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
     Slots.clear();
     SelectQuery->Close();
-    SelectQuery->SQL->Text = "SELECT MEALNAME,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS";
+    SelectQuery->SQL->Text = "SELECT MEALIDENTIFIER,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS";
     SelectQuery->ExecQuery();
     for(;!SelectQuery->Eof;SelectQuery->Next())
     {
         TTimeSlots slots;
-        slots.MealName = SelectQuery->FieldByName("MEALNAME")->AsString;
+        slots.MealName = SelectQuery->FieldByName("MEALIDENTIFIER")->AsInteger;
         slots.StartTime = SelectQuery->FieldByName("STARTTIME")->AsTime;
         slots.EndTime   = SelectQuery->FieldByName("ENDTIME")->AsDateTime;
         Slots.push_back(slots);
