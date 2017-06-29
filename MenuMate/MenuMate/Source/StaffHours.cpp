@@ -21,13 +21,16 @@ TStaffHoursController::TStaffHoursController(TForm *inDisplayOwner, Database::TD
 	DisplayOwner = inDisplayOwner;
 }
 
-void TStaffHoursController::Run(void)
+void TStaffHoursController::Run(bool isStaffHoursEditable)
 {
 	frmListManager->btnClose->Caption = "Save";
 	frmListManager->tbtnAdd->Caption = "Add Another Payment Type";
 	frmListManager->tbtnAdd->Height = 80;
 	frmListManager->Close.RegisterForEvent(OnClose);
-	frmListManager->Select.RegisterForEvent(OnSelect);
+
+    if(isStaffHoursEditable)
+   	    frmListManager->Select.RegisterForEvent(OnSelect);
+
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Hide();
 	frmListManager->tbtnAdd->Hide();
@@ -37,7 +40,9 @@ void TStaffHoursController::Run(void)
 	frmListManager->ShowModal();
 
 	frmListManager->Close.DeregisterForEvent(OnClose);
-	frmListManager->Select.DeregisterForEvent(OnSelect);
+
+    if(isStaffHoursEditable)
+ 	    frmListManager->Select.DeregisterForEvent(OnSelect);
 }
 
 void TStaffHoursController::OnClose(int Index, int ColIndex)

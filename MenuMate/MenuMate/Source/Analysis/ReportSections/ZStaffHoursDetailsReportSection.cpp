@@ -32,7 +32,7 @@ void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut)
         TForm* currentForm = Screen->ActiveForm;
 
         TStaffHoursController StaffHoursController(currentForm, *_dbTransaction);
-        StaffHoursController.Run();
+        StaffHoursController.Run(true);
         TStaffHoursInterface StaffHours = StaffHoursController.Get();
 
         AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
