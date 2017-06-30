@@ -7451,7 +7451,12 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	else
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
-		if (Item)
+        bool isSameMenuTypeItemExist = true;
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+            isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+		if (Item && isSameMenuTypeItemExist)
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -14606,8 +14611,12 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
     TItemSize *ItemSize = itemAndSize.second;
 
     bool ItemFound = Item != NULL && ItemSize != NULL;
+    bool isSameMenuTypeItemExist = true;
 
-    if (ItemFound && Item->Enabled)
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+    if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
     {
         Always_Prompt = CheckForServingCoursePrompt(Item->ItemKey);
         BeforeItemOrdered.Occured();
@@ -14743,3 +14752,18 @@ bool TfrmSelectDish::CheckForServingCoursePrompt(int item_key)
    return retVal;
 }
 //-----------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::CheckItemCanBeAddedToSeat(TItem *item)
+{
+    bool isMenuTypeSame = true;
+
+    if(SeatOrders[SelectedSeat]->Orders->Count && !SelectedTable)
+    {
+        if(item->ItemType != SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType)
+        {
+            isMenuTypeSame = false;
+            MessageBox("Items with different menu types can't be ordered at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+    }
+
+    return isMenuTypeSame;
+}
