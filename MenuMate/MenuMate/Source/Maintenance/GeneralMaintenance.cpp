@@ -450,6 +450,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
     cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
     cbFloatWithdrawFromCash->Checked = TGlobalSettings::Instance().FloatWithdrawFromCash;
+    cbSplitBillByMenuType->Checked = TGlobalSettings::Instance().IsBillSplittedByMenuType;
     FormResize(this);
 }
 
@@ -4382,5 +4383,11 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmFloatWithdrawFromCash, TGlobalSettings::Instance().FloatWithdrawFromCash);
+	DBTransaction.Commit();
+}//--------------------------------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbSplitBillByMenuTypeClick(TObject *Sender){
+    TGlobalSettings::Instance().IsBillSplittedByMenuType = cbSplitBillByMenuType->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+  	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsBillSplittedByMenuType, TGlobalSettings::Instance().IsBillSplittedByMenuType);
 	DBTransaction.Commit();
 }
