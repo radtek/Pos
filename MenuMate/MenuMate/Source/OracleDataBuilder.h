@@ -53,7 +53,7 @@ class TOracleDataBuilder
     private:
         void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete);
         void ExtractSubTotal();
-        void ExtractTaxes(std::vector<TTax> &taxVector, TItemComplete *itemComplete);
+        void ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector);
         void ExtractServiceCharge();
 };
 #endif

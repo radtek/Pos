@@ -8,6 +8,7 @@
 #include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 ///////////////  Room Request /////////////////////////////////
+enum OracleRequestType {eRoomInquiry = 1, eRoomPost};
 class TRoomInquiryItem;
 class TPostRoomInquiry
 {
@@ -75,6 +76,8 @@ class TRoomInquiryAnswer
     AnsiString RevenueCenter;
     AnsiString WaiterId;
     AnsiString WorkstationId;
+    bool IsSuccessful;
+    AnsiString resultText;
 };
 
 
@@ -110,6 +113,8 @@ class TPostRequest
     AnsiString Time;
     AnsiString WaiterId;
     AnsiString WorkstationId;
+    bool IsSuccessful;
+    AnsiString resultText;
 };
 
 class TPostRequestAnswer
@@ -131,6 +136,8 @@ class TPostRequestAnswer
     AnsiString RevenueCenter;
     AnsiString WaiterId;
     AnsiString WorkstationId;
+    bool IsSuccessful;
+    AnsiString resultText;
 };
 class TTax
 {
@@ -148,4 +155,8 @@ class TServiceCharge
     AnsiString Name;
     double Value;
 };
+class TLinkDescription
+{
+};
+class T
 #endif

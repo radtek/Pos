@@ -62,7 +62,6 @@ TTax::TTax()
 }
 TTax::TTax(const TTax &tax)
 {
-    MessageBox("In Copy Constructor","",MB_OK);
     Type       = tax.Type;
     Name       = tax.Name;
     Value      = tax.Value;
