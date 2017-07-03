@@ -78,6 +78,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *tbtnMove;
 	TTouchBtn *tbtnSelectZone;
     TTimer *SplitTimer;
+    TTouchBtn *tbtnToggleGST;
 
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
@@ -112,6 +113,7 @@ __published:	// IDE-managed Components
           TShiftState Shift, TGridButton *GridButton, int X, int Y);
     void __fastcall tgridItemListMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           TGridButton *GridButton, int X, int Y);
+    void __fastcall tbtnToggleGSTMouseClick(TObject *Sender);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);

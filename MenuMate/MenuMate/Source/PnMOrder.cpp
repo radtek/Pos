@@ -27,6 +27,7 @@ TPnMOrder::TPnMOrder( const TPnMOrder& inOther )
 	TimeStamp = inOther.TimeStamp;
     TimeKey   = inOther.TimeKey;
     PatronCount = inOther.PatronCount;
+    ItemType = inOther.ItemType;
 }
 //---------------------------------------------------------------------------
 

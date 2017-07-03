@@ -2543,8 +2543,10 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
     DBTransaction.StartTransaction();
 
     std::set <__int64> SelectedItemKeys;
+    TItemType itemType;
     for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
     {
+        itemType = itItem->second.ItemType;
         SelectedItemKeys.insert(itItem->first);
     }
 
@@ -2553,7 +2555,16 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {
-        SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        if((!TGlobalSettings::Instance().IsBillSplittedByMenuType) ||
+                ((itemType == VisibleItems[GridButton->Tag].ItemType) && (SelectedItemKeys.size())) ||(!SelectedItemKeys.size())  )
+        {
+            SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        }
+        else
+        {
+             MessageBox("Items with different menu types can't be selected at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+
         if (CurrentDisplayMode == eInvoices)
         { // Must selected the Entire Invoice.
             SelectedItems.clear();
@@ -4958,6 +4969,36 @@ void TfrmBillGroup::UpdateContainerList()
     TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
     TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
     DBTransaction.Commit();
+}
+//------------------------------------------------------------------------------------------------------
+void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
+{
+        TItemType itemType;
+
+        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+        {
+            itemType = itItem->second.ItemType;
+            break;
+        }
+        if(!SelectedItems.size())
+            itemType = eDrinksItem;
+
+         SelectedItems.clear();
+
+        for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+		{  
+           TPnMOrder ptrSelectItem = VisibleItems[itItem->first];
+		   if(itItem->second.ItemType != itemType)
+                SelectedItems[itItem->first] = ptrSelectItem;
+		}
+
+        Database::TDBTransaction DBTransaction(DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+        UpdateItemListDisplay(DBTransaction);
+        UpdateContainerListColourDisplay();
+        DBTransaction.Commit();
+
 }
 
 

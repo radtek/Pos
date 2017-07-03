@@ -107,6 +107,27 @@ object frmBillGroup: TfrmBillGroup
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnReprintReceiptsMouseClick
       end
+      object tbtnToggleGST: TTouchBtn
+        Left = 0
+        Top = 584
+        Width = 138
+        Height = 65
+        Align = alTop
+        BorderWidth = 3
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -17
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ParentColor = True
+        Caption = 'Toggle GST'
+        ButtonColor = 6052441
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = tbtnToggleGSTMouseClick
+      end
       object btnBillTable: TTouchBtn
         Left = 0
         Top = 65
