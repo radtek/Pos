@@ -2342,8 +2342,9 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                     for (int i = 0; i < TabList->Count; i++)
                     {
                         const int tab_key =reinterpret_cast<int>(TabList->Objects[i]);
+
                         if (AddToSelectedTabs(DBTransaction,tab_key)== true )
-                        {
+                        {    
                             SplitItemsInSet(DBTransaction,tab_key);
                             ItemSetAddItems(DBTransaction,tab_key);
                         }
@@ -2859,6 +2860,17 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
+
+
+        if(((VisibleItems.size() != SelectedItems.size()) || ((VisibleItems.size() == SelectedItems.size()) && SelectedItems.size() > 0 ))
+                && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        {
+            tbtnToggleGST->Visible = true;
+        }
+        else
+        {
+            tbtnToggleGST->Visible = false;
+        }
 
 		for (int i = 0; i < SortingList->Count; i++)
 		{
@@ -4973,31 +4985,33 @@ void TfrmBillGroup::UpdateContainerList()
 //------------------------------------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
 {
-        TItemType itemType;
+    TItemType itemType;
 
-        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-        {
-            itemType = itItem->second.ItemType;
-            break;
-        }
-        if(!SelectedItems.size())
-            itemType = eDrinksItem;
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        itemType = eDrinksItem;
+    }
 
-         SelectedItems.clear();
+     SelectedItems.clear();
 
-        for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
-		{  
-           TPnMOrder ptrSelectItem = VisibleItems[itItem->first];
-		   if(itItem->second.ItemType != itemType)
-                SelectedItems[itItem->first] = ptrSelectItem;
-		}
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+       TPnMOrder ptrSelectItem = VisibleItems[itItem->first];
+       if(itItem->second.ItemType != itemType)
+            SelectedItems[itItem->first] = ptrSelectItem;
+    }
 
-        Database::TDBTransaction DBTransaction(DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-        DBTransaction.StartTransaction();
-        UpdateItemListDisplay(DBTransaction);
-        UpdateContainerListColourDisplay();
-        DBTransaction.Commit();
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    UpdateItemListDisplay(DBTransaction);
+    UpdateContainerListColourDisplay();
+    DBTransaction.Commit();
 
 }
 

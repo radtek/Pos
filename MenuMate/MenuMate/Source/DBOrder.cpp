@@ -2487,8 +2487,15 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                     Order.IsSide = false;
                 }
 
-                if(!Orders.size())
+                if(Orders.size())
+                {
+                    std::map <__int64, TPnMOrder> ::iterator itItem = Orders.begin();
+                    itemType = itItem->second.ItemType;
+                }
+                else
+                {
                     itemType = Order.ItemType;
+                }
 
                 if(SelectingItems && TGlobalSettings::Instance().IsBillSplittedByMenuType)
                 {
