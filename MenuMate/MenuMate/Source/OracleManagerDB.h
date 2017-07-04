@@ -11,5 +11,6 @@ class TOracleManagerDB
         ~TOracleManagerDB();
         int GetSequenceNumber(Database::TDBTransaction &DBTransaction);
         int GetCheckNumber(Database::TDBTransaction &DBTransaction);
+        AnsiString GetVersionNumber(Database::TDBTransaction &DBTransaction);
 };
 #endif

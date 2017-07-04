@@ -17,6 +17,7 @@ TOracleDataBuilder::TOracleDataBuilder()
 TOracleDataBuilder::~TOracleDataBuilder()
 {
 }
+//---------------------------------------------------------------------------
 void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry)
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -42,7 +43,9 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         DBTransaction.Rollback();
 	}
 }
-void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, TPostRequest &postRequest)
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction,
+                                    TPostRequest &postRequest)
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
@@ -409,23 +412,6 @@ void TOracleDataBuilder::ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomI
                 roomInquiryResult.IsSuccessful = true;
             }
         }
-//        TiXmlElement *itPtr = _itemsElem->FirstChildElement();
-//        for(int i = 1; i < countOfGuest; i++)
-//        {
-//            TRoomInquiryItem inquiryItems;
-//            inquiryItems.RoomNumber = itPtr->Attribute("RoomNumber");
-//            inquiryItems.ReservationId = itPtr->Attribute("ReservationId");
-//            inquiryItems.LastName = itPtr->Attribute("LastName");
-//            inquiryItems.FirstName = itPtr->Attribute("FirstName");
-//            inquiryItems.Title = itPtr->Attribute("Title");
-//            inquiryItems.NoPost = itPtr->Attribute("NoPost");
-//            inquiryItems.CreditLimit = itPtr->Attribute("CreditLimit");
-//            inquiryItems.ProfileId = itPtr->Attribute("ProfileId");
-//            inquiryItems.HotelId = itPtr->Attribute("HotelId");
-//            MessageBox(inquiryItems.FirstName,"Element",MB_OK);
-//            roomInquiryResult->RoomInquiryItem.push_back(inquiryItems);
-//            itPtr = itPtr->NextSiblingElement();
-//        }
     }
     else if(value == "PostAnswer")
     {
@@ -463,7 +449,6 @@ void TOracleDataBuilder::LoadCustomerDetails(int _index,TRoomInquiryResult &room
                 it++;
             }
         }
-
 	}
 	catch( ... )
 	{
@@ -489,9 +474,6 @@ TiXmlElement* TOracleDataBuilder::loaditemsElem(TiXmlElement* _rootElem)
 	{
 		//throw Exception( "Invalid menu version: " + VERSION + " Element not found: " + "root" );
 	}
-
-	//throw Exception( "Invalid menu version: " + VERSION + ". Element not found: " + inElemName );
-
     return 0;
 }
 //----------------------------------------------------------------------------
@@ -552,7 +534,8 @@ void TOracleDataBuilder::ExtractSubTotal()
 {
 }
 //----------------------------------------------------------------------------
-void TOracleDataBuilder::ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector)
+void TOracleDataBuilder::ExtractTaxes(TItemComplete *itemComplete,
+                                                   std::vector<TTax> &taxVector)
 {
     for(int j = 0; j < itemComplete->BillCalcResult.Tax.size(); j++)
     {
@@ -602,10 +585,30 @@ void TOracleDataBuilder::ExtractTaxes(TItemComplete *itemComplete,std::vector<TT
             }
         }
     }
-//    return taxVector;
 }
 //----------------------------------------------------------------------------
 void TOracleDataBuilder::ExtractServiceCharge()
 {
+}
+//----------------------------------------------------------------------------
+TLinkDescription TOracleDataBuilder::CreateLinkDescription()
+{
+    TLinkDescription linkDesc;
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+    try
+    {
+        linkDesc.Date = Now().FormatString("YYMMDD");
+        linkDesc.Time = Now().FormatString("HHMMSS");
+        std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+        linkDesc.VerNum = managerDB->GetVersionNumber(DBTransaction);
+        DBTransaction.Commit();
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
+    return linkDesc;
 }
 //----------------------------------------------------------------------------

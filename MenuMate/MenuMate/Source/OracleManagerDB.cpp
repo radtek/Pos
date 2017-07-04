@@ -36,3 +36,12 @@ int TOracleManagerDB::GetCheckNumber(Database::TDBTransaction &DBTransaction)
     return GeneratorQuery->Fields[0]->AsInteger;
 }
 //---------------------------------------------------------------------------
+AnsiString TOracleManagerDB::GetVersionNumber(Database::TDBTransaction &DBTransaction)
+{
+    TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    SelectQuery->Close();
+    SelectQuery->SQL->Text = "SELECT VERSION_NUMBER FROM VERSIONHISTORY ORDER BY VERSION_NUMBER DESC";
+    SelectQuery->ExecQuery();
+    return SelectQuery->FieldByName("VERSION_NUMBER")->AsString;
+}
+//---------------------------------------------------------------------------

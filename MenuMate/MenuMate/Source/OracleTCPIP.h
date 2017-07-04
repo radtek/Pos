@@ -27,9 +27,11 @@ class TOracleTCP
 
         AnsiString SerializeOut(TPostRoomInquiry roomInquiry);
         AnsiString SerializeOut(TPostRequest postRequest);
+        AnsiString SerializeOut(TLinkDescription linkDes);
 
         TRoomInquiryItem SerializeIn(AnsiString data, TRoomInquiryAnswer roomAnswer);
         TPostRequestAnswer SerializeIn(AnsiString data);
+        TLinkAlive SerializeIn(AnsiString data, int i);
 
         OracleRequestType oracleRequestType;
 };

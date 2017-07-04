@@ -16,41 +16,30 @@
 class TOracleDataBuilder
 {
 	public:
-//		static TOracleDataBuilder& Instance()
-//		{
-//			static TOracleDataBuilder singleton;
-//			return singleton;
-//		}
 
 		TOracleDataBuilder();
 		~TOracleDataBuilder();
 
-//		__property TMYOBInvoice* MYOBInvoice = { read = FMYOBInvoice };
-//
-//        bool BuildMYOBInvoice( TMYOBInvoiceDetail&  MYOBInvoiceDetails);
-//        std::vector<TItemComplete *> itemComplete;
-//
-//	protected:
 		TPostRoomInquiry PostRoomInquiry;
         TPostRequest PostRequest;
 		void ClearPostRoomInquiry(TPaymentTransaction &paymentTransaction);
-//
         void CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry);
         void CreatePost(TPaymentTransaction &paymentTransaction, TPostRequest &postRequest);
-        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest);
-        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRoomInquiry);
         TiXmlDocument CreatePostXML(TPostRequest &postRequest);
         TiXmlDocument CreateRoomInquiryXML(TPostRoomInquiry &postRoomInquiry);
-        void SetNodeAttr(TiXmlElement *inNode, AnsiString inAttrName, AnsiString inAttrValue);
         TRoomInquiryResult createXMLInquiryDoc();
-//        void createXMLInquiryDoc(TiXmlDocument *result);
+        TLinkDescription CreateLinkDescription();
+
+    private:
         TiXmlElement *_rootElem;
         TiXmlElement *_itemsElem;
-        TiXmlElement* loaditemsElem(TiXmlElement* _rootElem);
-        void ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult);
         __int32 ChildCount( TiXmlElement* inElem );
+        TiXmlElement* loaditemsElem(TiXmlElement* _rootElem);
+        void SetNodeAttr(TiXmlElement *inNode, AnsiString inAttrName, AnsiString inAttrValue);
         void LoadCustomerDetails(int _index,TRoomInquiryResult &roomInquiryResult);
-    private:
+        void ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult);
+        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest);
+        void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRoomInquiry);
         void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete);
         void ExtractSubTotal();
         void ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector);

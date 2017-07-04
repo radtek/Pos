@@ -91,3 +91,11 @@ TPostRequestAnswer TOracleTCP::SerializeIn(AnsiString data)
 {
 }
 //---------------------------------------------------------------------------
+TLinkAlive TOracleTCP::SerializeIn(AnsiString data,int i)
+{
+}
+//---------------------------------------------------------------------------
+AnsiString TOracleTCP::SerializeOut(TLinkDescription linkDes)
+{
+}
+//---------------------------------------------------------------------------

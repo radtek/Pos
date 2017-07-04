@@ -141,22 +141,32 @@ class TPostRequestAnswer
 };
 class TTax
 {
-  public:
-    int Type;
-    AnsiString Name;
-    Currency Percentage;
-    double Value;
-    TTax(const TTax &tax);
-    ~TTax();
-    TTax();
+    public:
+        int Type;
+        AnsiString Name;
+        Currency Percentage;
+        double Value;
+        TTax(const TTax &tax);
+        ~TTax();
+        TTax();
 };
 class TServiceCharge
 {
-    AnsiString Name;
-    double Value;
+    public:
+        AnsiString Name;
+        double Value;
 };
 class TLinkDescription
 {
+    public:
+        AnsiString Date;
+        AnsiString Time;
+        AnsiString VerNum;
 };
-class T
+class TLinkAlive
+{
+    public:
+        AnsiString Date;
+        AnsiString Time;
+};
 #endif

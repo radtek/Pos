@@ -56,13 +56,23 @@ void TManagerOraclePMS::Initialise()
 	DBTransaction.Commit();
 	if(Registered && TCPIPAddress != "")
 	{
-		Enabled = true;
+		Enabled = GetLinkStatus();
        // Enabled = GetRoundingandDefaultAccount();
 	}
 	else
 	{
     	Enabled = false;
 	}
+}
+//---------------------------------------------------------------------------
+bool TManagerOraclePMS::GetLinkStatus()
+{
+    bool retValue = false;
+    std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
+    TLinkDescription linkDescription = oracledata->CreateLinkDescription();
+    // Call for sending Link Description and receiving Link Alive
+    retValue = true;
+    return retValue;
 }
 //---------------------------------------------------------------------------
 void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
