@@ -2851,6 +2851,12 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		{
 			TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
 		}
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
+
 		std::auto_ptr <TList> SortingList(new TList);
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
 		{
@@ -2860,10 +2866,9 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
-
-
-        if(((VisibleItems.size() != SelectedItems.size()) || ((VisibleItems.size() == SelectedItems.size()) && SelectedItems.size() > 0 ))
-                && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        
+        if(VisibleItems.size() && SelectedItems.size()
+                && TGlobalSettings::Instance().IsBillSplittedByMenuType && VisibleItems.size() > 1 )
         {
             tbtnToggleGST->Visible = true;
         }
@@ -5012,7 +5017,26 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
     UpdateItemListDisplay(DBTransaction);
     UpdateContainerListColourDisplay();
     DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
+{
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
+    }
 
+    std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+    TItemType itemType = itItem->second.ItemType;
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+        if(itemType !=  itItem->second.ItemType)
+        {
+            btnBillTable->Enabled = false;
+            break;
+        }
+    }
 }
 
 
