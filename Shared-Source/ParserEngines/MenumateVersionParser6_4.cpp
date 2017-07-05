@@ -22,6 +22,11 @@ void TApplyParser::upgrade6_41Tables()
 {
     update6_41Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_42Tables()
+{
+    update6_42Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -34,7 +39,12 @@ void TApplyParser::update6_41Tables()
     AlterTable6_41(_dbControl);
     UpdateMallSalesBySalesType(_dbControl);
 }
-
+//--------------------------------------------------------------------
+void TApplyParser::update6_42Tables()
+{
+    Create6_42Generator(_dbControl);
+}
+//----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
     int invoiceInterface = 25;
@@ -246,4 +256,17 @@ void TApplyParser::UpdateMallSalesBySalesType(TDBControl* const inDBControl)
 
 }
 //--------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_BEVERAGEINVOICENUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_BEVERAGEINVOICENUMBER;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_BEVERAGEINVOICENUMBER TO 0;", inDBControl
+        );
+    }
+}
 }
