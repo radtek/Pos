@@ -3399,6 +3399,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     bool PaymentComplete = false;
     TPaymentTransaction PaymentTransaction(DBTransaction);
     PaymentTransaction.PartyName = PartyName;
+    AnsiString BeveragesInvoiceNumber = "";
+     bool isBeveragesInvGenerated = false;
 
      //To check whether payment done is by linking the fast tenderkey with payment
     bool isProcessedQuickPayment = false;
@@ -3432,10 +3434,23 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		TDateTime OrderedTimeStamp = Now();
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
+            AnsiString BevTabName = "";
+            int BevTabKey;
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
 
+                if(Order->ItemType && !isBeveragesInvGenerated && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                {
+                    isBeveragesInvGenerated = true;
+                    BeveragesInvoiceNumber = "L-" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
+                    BevTabName = TGlobalSettings::Instance().ReceiptNumberLabel + BeveragesInvoiceNumber;
+                    //Create Tab
+                    BevTabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+                    TDBTab::SetTabType(DBTransaction, BevTabKey, TabDelayedPayment);
+                    TDBTab::SetTabName(DBTransaction, BevTabKey, BevTabName);
+
+                }
 				Order->TabKey = SelectedTab;
 				if (TabContainerName == "" && TabType == TabTableSeat)
 				{
@@ -3463,6 +3478,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
+
+                if(Order->ItemType && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                {
+                    Order->TabKey = BevTabKey;
+				    Order->TabName = BevTabName;
+                    Order->TabContainerName = BevTabName;
+                }
 
 				OrdersList->Add(Order);
 
@@ -3691,7 +3713,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     {
                         SeatCounter.insert(Order->SeatNo);
                     }
-                    Order->DelayedInvoiceNumber = DelayedInvoiceNumber;
+
+                    if(Order->ItemType && DelayedInvoiceNumber != "" && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                    {
+                        Order->DelayedInvoiceNumber = BeveragesInvoiceNumber;
+                    }
+                    else
+                    {
+                        Order->DelayedInvoiceNumber = DelayedInvoiceNumber;
+                    }
                     Order->OrderIdentificationNo = identificationNumber;
  					if (Order->ServingCourse.ServingCourseKey < 1)
 					{
@@ -3701,7 +3731,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                    for (int j = 0; j < Order->SubOrders->Count; j++)
 					{
                        TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
-                       SubOrder->DelayedInvoiceNumber = DelayedInvoiceNumber;
+                       SubOrder->DelayedInvoiceNumber = Order->DelayedInvoiceNumber;
                        SubOrder->OrderIdentificationNo = identificationNumber;
                     }
 				}
@@ -9803,7 +9833,18 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                       isItemSelected = true;
                       SelectedTabKey = frmDelayedPaymentTabs->SelectedTabKey;
                       SelectedTabName = frmDelayedPaymentTabs->SelectedTabName;
-                      OrderContainer.Location["DelayedInvoiceNumber"] = frmDelayedPaymentTabs->DelayedInvoiceNumber;
+                      
+                      if(!TGlobalSettings::Instance().IsBillSplittedByMenuType ||
+                        (SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L-") != 0))
+                        || (!SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L-") == 0)))
+                        {
+                            OrderContainer.Location["DelayedInvoiceNumber"] = frmDelayedPaymentTabs->DelayedInvoiceNumber;
+                        }
+                        else
+                        {
+                            MessageBox("You can't save different menu types items together.", "Error", MB_OK + MB_ICONERROR);
+					        return mrAbort;
+                        }
                     }
                 }
                 else
