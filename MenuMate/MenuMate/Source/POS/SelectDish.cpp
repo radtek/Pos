@@ -12422,7 +12422,18 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
    }
    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
-// ---------------------------------------------------------------------------void TfrmSelectDish::OnItemDetailsReceived(TSystemEvents *Sender){      PaintItemToDisplay(Sender->ItemKey, Sender->ItemSizeKey , Sender->QtyValue , Sender->BillValue);}// ---------------------------------------------------------------------------void TfrmSelectDish::RefreshMenu(){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)    {        for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)        {
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::OnItemDetailsReceived(TSystemEvents *Sender)
+{
+      PaintItemToDisplay(Sender->ItemKey, Sender->ItemSizeKey , Sender->QtyValue , Sender->BillValue);
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::RefreshMenu()
+{
+    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)
+    {
+        for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
+        {
             std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
             Request->Broadcast         = true;
             Request->CompareToDataBase = false;
@@ -12432,7 +12443,12 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
         }
         TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
     }
-}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList)
+{
+    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)
+         {
             for (int i = 0; i < OrdersList->Count; i++)
             {
                 TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -12463,7 +12479,17 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
                 IBInsertQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
                 IBInsertQuery->ExecQuery();
             }
-         }}// ---------------------------------------------------------------------------Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTransaction,int itemSizeKey,Currency Price){    try    {         int noOfPriceLevelInDataBase;         TIBSQL *IBInternalQuery2   = DBTransaction.Query( DBTransaction.AddQuery() );         IBInternalQuery2->Close();
+         }
+}
+// ---------------------------------------------------------------------------
+Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTransaction,int itemSizeKey,Currency Price)
+{
+    try
+    {
+
+         int noOfPriceLevelInDataBase;
+         TIBSQL *IBInternalQuery2   = DBTransaction.Query( DBTransaction.AddQuery() );
+         IBInternalQuery2->Close();
          IBInternalQuery2->SQL->Text =
                                          "SELECT "
                                              "INTEGER_VAL "
@@ -12472,7 +12498,15 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
                                         "WHERE "
                                               "VARIABLES_KEY = 5014; ";
            IBInternalQuery2->ExecQuery();
-           noOfPriceLevelInDataBase= IBInternalQuery2->Fields[0]->AsInteger;           if (noOfPriceLevelInDataBase==0)noOfPriceLevelInDataBase=2;     if ( StrToInt(stHappyHour->Tag)>  noOfPriceLevelInDataBase  )       {            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());            IBInternalQuery->Close();            IBInternalQuery->SQL->Text =
+           noOfPriceLevelInDataBase= IBInternalQuery2->Fields[0]->AsInteger;
+
+           if (noOfPriceLevelInDataBase==0)noOfPriceLevelInDataBase=2;
+
+     if ( StrToInt(stHappyHour->Tag)>  noOfPriceLevelInDataBase  )
+       {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
                       "Select PRICELEVEL_KEY,PRICE from PRICELEVELITEMSIZE pls where "
                       " pls.ITEMSIZE_KEY = :ITEMSIZE_KEY and pls.PRICELEVEL_KEY = :PRICELEVEL_KEY ";
 
@@ -12480,7 +12514,18 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
             IBInternalQuery->ParamByName("PRICELEVEL_KEY")->AsInteger = 1;
             IBInternalQuery->ExecQuery();
 
-            if(!IBInternalQuery->Eof)            {                  Price= IBInternalQuery->FieldByName("PRICE")->AsCurrency;            }       }else       {           TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());            IBInternalQuery->Close();            IBInternalQuery->SQL->Text =
+            if(!IBInternalQuery->Eof)
+            {
+                  Price= IBInternalQuery->FieldByName("PRICE")->AsCurrency;
+
+            }
+
+       }else
+       {
+
+           TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
                       "Select PRICELEVEL_KEY,PRICE from PRICELEVELITEMSIZE pls where "
                       " pls.ITEMSIZE_KEY = :ITEMSIZE_KEY and pls.PRICELEVEL_KEY = :PRICELEVEL_KEY ";
 
@@ -12488,11 +12533,28 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
             IBInternalQuery->ParamByName("PRICELEVEL_KEY")->AsInteger = stHappyHour->Tag;
             IBInternalQuery->ExecQuery();
 
-            if(!IBInternalQuery->Eof)            {                  Currency fetchPrice= IBInternalQuery->FieldByName("PRICE")->AsCurrency;                  if (fetchPrice != Price)                  {                    Price=  fetchPrice;                  }            }       }        return  Price;        }        catch(Exception & E)
+            if(!IBInternalQuery->Eof)
+            {
+                  Currency fetchPrice= IBInternalQuery->FieldByName("PRICE")->AsCurrency;
+                  if (fetchPrice != Price)
+                  {
+                    Price=  fetchPrice;
+                  }
+            }
+       }
+
+        return  Price;
+
+
+        }
+        catch(Exception & E)
         {
             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
             throw;
-        }}// ---------------------------------------------------------------------------void  TfrmSelectDish::CheckLastAddedItem()
+        }
+}
+// ---------------------------------------------------------------------------
+void  TfrmSelectDish::CheckLastAddedItem()
 {
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{

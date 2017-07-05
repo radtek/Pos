@@ -41,7 +41,7 @@ private:	// User declarations
     void SetTablesColor(Database::TDBTransaction &DBTransaction);
     void SetColorAsPerNoServiceTime(TGridButton *GridButton,TDateTime OrderTime);
     void UpdateFloorPlanSheet();
-    TfrmSelectTable *frmSelectTable;
+//    TfrmSelectTable *frmSelectTable;
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	BEGIN_MESSAGE_MAP
