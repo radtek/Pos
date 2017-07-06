@@ -3360,6 +3360,11 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
                  ClipTabInTable=true;
             }
 		}
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+        {
+              DisableBillEntireTable(DBTransaction);
+        }
+
 	}
 	else if (CurrentDisplayMode == eRooms)
 	{
@@ -5021,13 +5026,22 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
 //-------------------------------------------------------------------------------------------------
 void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
 {
+    TItemType itemType;
     for (int i = 0; i < TabList->Count; i++)
     {
         TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
     }
 
-    std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
-    TItemType itemType = itItem->second.ItemType;
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin();
+        itemType = itItem->second.ItemType;
+    }
 
     for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
     {
