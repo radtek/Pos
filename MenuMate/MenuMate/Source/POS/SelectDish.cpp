@@ -3440,7 +3440,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
 
-                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && Order->ItemType && !isBeveragesInvGenerated && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated && TGlobalSettings::Instance().IsBillSplittedByMenuType)
                 {
                     isBeveragesInvGenerated = true;
                     BeveragesInvoiceNumber = "L-" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
@@ -3479,7 +3479,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
 
-                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && Order->ItemType && TGlobalSettings::Instance().IsBillSplittedByMenuType )
+                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
+                            TGlobalSettings::Instance().IsBillSplittedByMenuType )
                 {
                     Order->TabKey = BevTabKey;
 				    Order->TabName = BevTabName;
