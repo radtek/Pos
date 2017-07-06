@@ -1128,7 +1128,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
         {
            ItemFound = true;
         }
-
+        bool isSameMenuTypeItemExist ;
 		if (IsPricedBarcode(Barcode))
 		{
 			AnsiString ProductCode = Barcode.SubString(3, 5);
@@ -1140,8 +1140,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			TItemSize *ItemSize = ItemInfo.second;
 
 			ItemFound = Item != NULL && ItemSize != NULL;
+            isSameMenuTypeItemExist = true;
 
-			if (ItemFound && Item->Enabled)
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
                //Check for weighed and priced barcode
                  if(TGlobalSettings::Instance().BarcodeFormat == 4)
@@ -1188,7 +1192,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			TItem *Item = ItemInfo.first;
 			TItemSize *ItemSize = ItemInfo.second;
 			ItemFound = Item != NULL && ItemSize != NULL;
-			if (ItemFound && Item->Enabled)
+
+            isSameMenuTypeItemExist = true;
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
                 Item->ItemWeight.SetWeightIn_g(Currency(Barcode.SubString(8,6)));
 				BeforeItemOrdered.Occured();
@@ -1224,7 +1233,11 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 
 			ItemFound = Item != NULL && ItemSize != NULL;
 
-			if (ItemFound && Item->Enabled)
+            isSameMenuTypeItemExist = true;
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
 				BeforeItemOrdered.Occured();
 				if (BeforeItemOrdered.EventsFailed)
@@ -6408,53 +6421,62 @@ void __fastcall TfrmSelectDish::tgridItemSideItemsMouseClick(TObject *Sender, TM
 
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
 
+         bool isSameMenuTypeItemExist = true;
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+            isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
-		TItemCompleteSub *SubItem =
-        AddSubItemToItem(DBTransaction, Item, MasterOrder);
-        if (SubItem == NULL)
-           return;
 
-		if (SubItem->PriceEach() == -999.99)
-		{
-			std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-			frmTouchNumpad->Caption = "Enter Amount";
-			frmTouchNumpad->btnSurcharge->Caption = "Ok";
-			frmTouchNumpad->btnDiscount->Visible = false;
-			frmTouchNumpad->btnSurcharge->Visible = true;
-			frmTouchNumpad->Mode = pmCurrency;
-			frmTouchNumpad->CURInitial = 0;
-			if (frmTouchNumpad->ShowModal() == mrOk)
-			{
-				SubItem->SetPriceLevelCustom(frmTouchNumpad->CURResult);
-				SubItem->PriceLevel0 = frmTouchNumpad->CURResult;
-				SubItem->PriceLevel1 = frmTouchNumpad->CURResult;
-			}
-			else
-			{
-				SubItem->SetPriceLevelCustom(0);
-				SubItem->PriceLevel0 = 0;
-				SubItem->PriceLevel1 = 0;
-			}
-            if(TGlobalSettings::Instance().UseMemberSubs)
-               SubItem->wasOpenItem = true;
-		}
-		// Apply Member Specific Discounts.
-		std::auto_ptr<TList>OrdersList(new TList);
-        for(int totalItems = 0 ; totalItems < SeatOrders[SelectedSeat]->Orders->Count ; totalItems++)
+        if(isSameMenuTypeItemExist)
         {
-             OrdersList->Add((TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[totalItems]);
-        }
+            TItemCompleteSub *SubItem =
+            AddSubItemToItem(DBTransaction, Item, MasterOrder);
+            if (SubItem == NULL)
+               return;
 
-		DBTransaction.Commit();
-		ItemRedirector->CompressedContainer->Container->LastItemSelected = SubItem;
-        ManageDiscounts();
-        CheckDeals(DBTransaction); // a sub item is added to the orders list. check for possible deals here
-		RedrawSeatOrders();
-		HighlightSelectedItem();
-		RefreshModifyGui(NULL);
-		TotalCosts();
-		UpdateExternalDevices();
+            if (SubItem->PriceEach() == -999.99)
+            {
+                std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+                frmTouchNumpad->Caption = "Enter Amount";
+                frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                frmTouchNumpad->btnDiscount->Visible = false;
+                frmTouchNumpad->btnSurcharge->Visible = true;
+                frmTouchNumpad->Mode = pmCurrency;
+                frmTouchNumpad->CURInitial = 0;
+                if (frmTouchNumpad->ShowModal() == mrOk)
+                {
+                    SubItem->SetPriceLevelCustom(frmTouchNumpad->CURResult);
+                    SubItem->PriceLevel0 = frmTouchNumpad->CURResult;
+                    SubItem->PriceLevel1 = frmTouchNumpad->CURResult;
+                }
+                else
+                {
+                    SubItem->SetPriceLevelCustom(0);
+                    SubItem->PriceLevel0 = 0;
+                    SubItem->PriceLevel1 = 0;
+                }
+                if(TGlobalSettings::Instance().UseMemberSubs)
+                   SubItem->wasOpenItem = true;
+            }
+		// Apply Member Specific Discounts.
+            std::auto_ptr<TList>OrdersList(new TList);
+            for(int totalItems = 0 ; totalItems < SeatOrders[SelectedSeat]->Orders->Count ; totalItems++)
+            {
+                 OrdersList->Add((TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[totalItems]);
+            }
+
+            DBTransaction.Commit();
+            ItemRedirector->CompressedContainer->Container->LastItemSelected = SubItem;
+            ManageDiscounts();
+            CheckDeals(DBTransaction); // a sub item is added to the orders list. check for possible deals here
+            RedrawSeatOrders();
+            HighlightSelectedItem();
+            RefreshModifyGui(NULL);
+            TotalCosts();
+            UpdateExternalDevices();
+        }
 	}
 	UpdateTableButton();
 }
