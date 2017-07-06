@@ -274,7 +274,6 @@ private:	// User declarations
     void SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
     bool CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTransaction,bool checkSourceTable);
 
-
 public:		// User declarations
     __fastcall TfrmTransfer(TComponent* Owner,Database::TDBControl &inDBControl);
 	int CurrentSourceTable,CurrentDestTable, CurrentSourceRoom,CurrentDestRoom;
