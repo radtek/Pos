@@ -3179,7 +3179,11 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
-            TItemComplete *Order = (TItemComplete *)PaymentTransaction.Orders->Items[0];
+            TItemComplete *Order = new TItemComplete();
+
+            if(PaymentTransaction.Orders->Count)
+                Order = (TItemComplete *)PaymentTransaction.Orders->Items[0];
+
             if(TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction) &&
                TGlobalSettings::Instance().CaptureRefundRefNo)
             {
