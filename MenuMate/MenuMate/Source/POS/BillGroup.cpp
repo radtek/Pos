@@ -266,6 +266,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
       //mm-5145
       delivery_time = 0;
       PatronCountForMallExport = 0;
+      tbtnToggleGST->Visible = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormResize(TObject *Sender)
@@ -3402,7 +3403,6 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
         {
               DisableBillEntireTable(DBTransaction);
-              tbtnToggleGST->Visible = false;
         }
 
 	}
