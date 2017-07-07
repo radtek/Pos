@@ -217,7 +217,19 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             GetMemberNameAndCustomerID(dbTransaction, panasonicModel->TransactionId, customerID, memberName);
             panasonicModel->CustomerId            = customerID;
             panasonicModel->CustomerName          = memberName;
-            panasonicModel->TransactionType       = appendString + panasonicModel->OperatorName + appendString;
+
+            if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency > 0)
+            {
+                panasonicModel->TransactionType       = "*Sale*";
+            }
+            else if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency < 0)
+            {
+                panasonicModel->TransactionType       = "*Refund*";
+            }
+            else
+            {
+                panasonicModel->TransactionType       = "*Cancelled Order*";
+            }
             panasonicModel->ProductListId         = arcBillKey;
             panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
             panasonicModel->AgeRestricted         = false;
@@ -484,6 +496,65 @@ void TManagerPanasonic::TriggerTransactionSync()
 {
     InitiatePanasonicThread();
     StartPanasonicThread();
+}
+//---------------------------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::PrepareTenderTypes()
+{
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    try
+    {
+        bool isRowExist = false;
+        UnicodeString payType = "";
+        std::vector <UnicodeString> PayTypes;
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text = "SELECT a.PAYMENT_NAME FROM PAYMENTTYPES a GROUP BY 1 ";
+        IBInternalQuery->ExecQuery();
+
+        for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            payType = "*" + IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString.SubString(0,47) + "*" ;
+            PayTypes.push_back(payType);
+        }
+        PayTypes.push_back("*Points*");
+        PayTypes.push_back("*Credit*");
+        dbPanasonic->InsertTenderTypes(PayTypes);
+
+        dbPanasonic->UniDataBaseConnection->Commit();
+        dbPanasonic->UniDataBaseConnection->Close();
+    }
+    catch(Exception &E)
+	{
+        dbPanasonic->UniDataBaseConnection->Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//---------------------------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::PrepareTransactionTypes()
+{
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    try
+    {
+        dbPanasonic->PrepareTransactionTypes();
+        dbPanasonic->UniDataBaseConnection->Commit();
+        dbPanasonic->UniDataBaseConnection->Close();
+    }
+     catch(Exception &E)
+	{
+        dbPanasonic->UniDataBaseConnection->Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
 }
 
 
