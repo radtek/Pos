@@ -3883,107 +3883,152 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 					{
 						bool OrdersLoadedFromTabs = false;
 						TMMContactInfo InvoiceOwnerInfo;
-						TPaymentTransaction InvoiceTransaction(DBTransaction);
-						InvoiceTransaction.Membership.Assign(Membership);
-						TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-                        if(TGlobalSettings::Instance().CaptureCustomerName)
+
+						///Delayed Print prelimn receipt in case of GST
+                        std::auto_ptr<TList>FoodOrdersList(new TList);
+                        std::auto_ptr<TList>BevOrdersList(new TList);
+
+                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                    TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
-                            InvoiceTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
+                            for(int index = 0; index < OrdersList->Count; index++)
+                            {
+                                TItemComplete *Order = (TItemComplete*)OrdersList->Items[index];
+                                if(Order->ItemType)
+                                    BevOrdersList->Add(Order);
+                                else
+                                    FoodOrdersList->Add(Order);
+                            }
                         }
-						std::auto_ptr<TReqPrintJob>TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+						int Size = 1;
 
-						if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabCashAccount)
-						{
-							if (OrdersList->Count != 0)
-							{
-								InvoiceTransaction.Orders->Assign(OrdersList.get());
-								std::set<__int64>SelectedTabs;
-								TDBOrder::GetTabKeysFromOrders(OrdersList.get(), SelectedTabs);
-								InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
-								InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-							}
-						}
-						else
-						{
-							std::set<__int64>InvoiceTabs;
-							if (TabType == TabTableSeat)
-							{ // Retrive the Tab Key for this Table/Seat.
-								TDBTables::GetTabKeys(DBTransaction, TableNo, InvoiceTabs);
-							}
-							else if (TabType == TabRoom)
-							{ // Retrive the Tab Key for this Table/Seat.
-								SelectedTab = TDBRooms::GetRoomTab(DBTransaction, RoomNo);
-								InvoiceTabs.insert(SelectedTab);
-							}
-							else
-							{
-								InvoiceTabs.insert(SelectedTab);
-							}
+						if(BevOrdersList->Count && FoodOrdersList->Count)
+                            Size = 2;
 
-							TDBOrder::GetOrdersFromTabKeys(DBTransaction, InvoiceTransaction.Orders, InvoiceTabs);
-							InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, InvoiceTabs);
-							InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-							OrdersLoadedFromTabs = true;
-						}
+						for(int index = 0; index < Size; index++)
+                        {
+                            TPaymentTransaction InvoiceTransaction(DBTransaction);
+                            InvoiceTransaction.Membership.Assign(Membership);
+                            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+                            if(TGlobalSettings::Instance().CaptureCustomerName)
+                            {
+                                InvoiceTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
+                            }
+                            std::auto_ptr<TReqPrintJob>TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 
-						if (TGlobalSettings::Instance().EnableMenuPatronCount)
-						{
-							InvoiceTransaction.CalculatePatronCountFromMenu();
-						}
+                            if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabCashAccount)
+                            {
+                                if (OrdersList->Count != 0)
+                                {
+                                    std::set<__int64>SelectedTabs;
 
-						if (InvoiceTransaction.Money.TotalAdjustment != 0)
-						{
-							InvoiceTransaction.TotalAdjustment = InvoiceTransaction.Money.TotalAdjustment;
-							InvoiceTransaction.DiscountReason = InvoiceTransaction.TotalAdjustment < 0 ? "Discount " : "Surcharge";
-						}
+                                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim)
+                                    {
+                                        if(index)
+                                        {
+                                            InvoiceTransaction.Orders->Assign(BevOrdersList.get());
+                                            TDBOrder::GetTabKeysFromOrders(BevOrdersList.get(), SelectedTabs);
+                                        }
+                                        else
+                                        {
+                                            InvoiceTransaction.Orders->Assign(FoodOrdersList.get());
+                                            TDBOrder::GetTabKeysFromOrders(FoodOrdersList.get(), SelectedTabs);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        InvoiceTransaction.Orders->Assign(OrdersList.get());
+                                        std::set<__int64>SelectedTabs;
+                                        TDBOrder::GetTabKeysFromOrders(OrdersList.get(), SelectedTabs);
+                                    }
 
-						TempReceipt->JobType = pjReceiptReceipt;
-						TempReceipt->PaymentType = ptPreliminary;
+                                    InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
+                                    InvoiceTransaction.Money.Recalc(InvoiceTransaction);
+                                }
+                            }
+                            else
+                            {
+                                std::set<__int64>InvoiceTabs;
+                                if (TabType == TabTableSeat)
+                                { // Retrive the Tab Key for this Table/Seat.
+                                    TDBTables::GetTabKeys(DBTransaction, TableNo, InvoiceTabs);
+                                }
+                                else if (TabType == TabRoom)
+                                { // Retrive the Tab Key for this Table/Seat.
+                                    SelectedTab = TDBRooms::GetRoomTab(DBTransaction, RoomNo);
+                                    InvoiceTabs.insert(SelectedTab);
+                                }
+                                else
+                                {
+                                    InvoiceTabs.insert(SelectedTab);
+                                }
 
-						if (TabType == TabInvoice)
-						{
-							TempReceipt->JobType = pjReceiptInvoice;
-							TempReceipt->PaymentType = ptFinal;
+                                TDBOrder::GetOrdersFromTabKeys(DBTransaction, InvoiceTransaction.Orders, InvoiceTabs);
+                                InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, InvoiceTabs);
+                                InvoiceTransaction.Money.Recalc(InvoiceTransaction);
+                                OrdersLoadedFromTabs = true;
+                            }
 
-							int InvoiceKey = TDBTab::GetTabInvoice(DBTransaction, SelectedTab);
-							InvoiceTransaction.InvoiceNumber = Invoice->GetInvoiceNumber(DBTransaction, InvoiceKey);
-							int ContactKey = Invoice->GetInvoiceOwner(DBTransaction, InvoiceKey);
-							TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, ContactKey, InvoiceOwnerInfo);
-							TempReceipt->ExtraInfo->Add("Name: " + InvoiceOwnerInfo.Name);
-							TempReceipt->ExtraInfo->Add("Member No. " + InvoiceOwnerInfo.MembershipNumber);
-						}
-						else if (TabType == TabRoom)
-						{
-							TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
-							TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(DBTransaction, RoomNo));
-						}
+                            if (TGlobalSettings::Instance().EnableMenuPatronCount)
+                            {
+                                InvoiceTransaction.CalculatePatronCountFromMenu();
+                            }
 
-						// Print Invoice.
+                            if (InvoiceTransaction.Money.TotalAdjustment != 0)
+                            {
+                                InvoiceTransaction.TotalAdjustment = InvoiceTransaction.Money.TotalAdjustment;
+                                InvoiceTransaction.DiscountReason = InvoiceTransaction.TotalAdjustment < 0 ? "Discount " : "Surcharge";
+                            }
 
-						TempReceipt->Transaction = &InvoiceTransaction;
-                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-                           (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                            TempReceipt->Transaction->Customer = TCustomer(0,0,"");
-						TempReceipt->SignReceipt = true;
-						TempReceipt->SenderType = devPC;
-						TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-						TempReceipt->MiscData["PartyName"] = PartyName;
+                            TempReceipt->JobType = pjReceiptReceipt;
+                            TempReceipt->PaymentType = ptPreliminary;
 
-						Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-						TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-						if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
-						{
-							TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-						}
+                            if (TabType == TabInvoice)
+                            {
+                                TempReceipt->JobType = pjReceiptInvoice;
+                                TempReceipt->PaymentType = ptFinal;
 
-						if (OrdersLoadedFromTabs)
-						{
-							while (InvoiceTransaction.Orders->Count != 0)
-							{
-								delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
-								InvoiceTransaction.Orders->Delete(0);
-							}
-						}
+                                int InvoiceKey = TDBTab::GetTabInvoice(DBTransaction, SelectedTab);
+                                InvoiceTransaction.InvoiceNumber = Invoice->GetInvoiceNumber(DBTransaction, InvoiceKey);
+                                int ContactKey = Invoice->GetInvoiceOwner(DBTransaction, InvoiceKey);
+                                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, ContactKey, InvoiceOwnerInfo);
+                                TempReceipt->ExtraInfo->Add("Name: " + InvoiceOwnerInfo.Name);
+                                TempReceipt->ExtraInfo->Add("Member No. " + InvoiceOwnerInfo.MembershipNumber);
+                            }
+                            else if (TabType == TabRoom)
+                            {
+                                TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
+                                TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(DBTransaction, RoomNo));
+                            }
+
+                            // Print Invoice.
+
+                            TempReceipt->Transaction = &InvoiceTransaction;
+                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+                            TempReceipt->SignReceipt = true;
+                            TempReceipt->SenderType = devPC;
+                            TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
+                            TempReceipt->MiscData["PartyName"] = PartyName;
+
+                            Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
+                            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                            if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
+                            {
+                                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                            }
+
+                            if (OrdersLoadedFromTabs)
+                            {
+                                while (InvoiceTransaction.Orders->Count != 0)
+                                {
+                                    delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
+                                    InvoiceTransaction.Orders->Delete(0);
+                                }
+                            }
+                        }
 					}
 				}
 
