@@ -51,9 +51,15 @@ void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransact
 
 // ---------------------------------------------------------------------------
 
-void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable)
+void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder)
 {
-	AnsiString InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,RegularSale);
+	AnsiString InvoiceNumber = "";
+
+    if(isMixedMenuOrder)
+        InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,RegularSale);
+    else
+        InvoiceNumber = "L-" + Invoice->GetBeveragesInvoiceNumber(PaymentTransaction.DBTransaction);
+
     PaymentTransaction.InvoiceNumber =  InvoiceNumber;
 	AnsiString TabName = TGlobalSettings::Instance().ReceiptNumberLabel + InvoiceNumber;
 	//Create Tab

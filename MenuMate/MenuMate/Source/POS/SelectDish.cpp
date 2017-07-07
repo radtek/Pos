@@ -3923,8 +3923,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                     std::set<__int64>SelectedTabs;
 
                                     if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
-                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim)
-                                    {
+                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim && Size == 2)
+                                    {   
                                         if(index)
                                         {
                                             InvoiceTransaction.Orders->Assign(BevOrdersList.get());
@@ -3939,7 +3939,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                     else
                                     {
                                         InvoiceTransaction.Orders->Assign(OrdersList.get());
-                                        std::set<__int64>SelectedTabs;
                                         TDBOrder::GetTabKeysFromOrders(OrdersList.get(), SelectedTabs);
                                     }
 

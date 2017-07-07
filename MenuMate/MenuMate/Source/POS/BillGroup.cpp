@@ -512,29 +512,76 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                         bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                         if(allowed)
                         {
-                            std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                            TPaymentTransaction ReceiptTransaction(DBTransaction);
-                            ReceiptTransaction.ApplyMembership(Membership);
-                            TempReceipt->Transaction = &ReceiptTransaction;
-                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-                               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
                             std::set <__int64> ReceiptItemKeys;
+                            std::auto_ptr<TList>OrdersList(new TList);
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+                            bool isMixedMenuOrder = true;
+
                             TDBTables::GetOrderKeys(DBTransaction, CurrentTable, ReceiptItemKeys);
-                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
-                            if(ReceiptTransaction.Orders->Count > 0)
+                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ReceiptItemKeys);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                             {
-                                ReceiptTransaction.Recalc();
-                                TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
-                                OrderMoved = true;
-                                TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
-                                TempReceipt->JobType = pjReceiptReceipt;
-                                TempReceipt->SenderType = devPC;
-                                TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-                                TempReceipt->PaymentType = ptPreliminary;
-                                Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-                                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-                                ReceiptTransaction.DeleteOrders();
+                                for(int index = 0; index < OrdersList->Count; index++)
+                                {
+                                    TItemComplete *Order = (TItemComplete*)OrdersList->Items[index];
+                                    if(Order->ItemType)
+                                        BevOrdersList->Add(Order);
+                                    else
+                                        FoodOrdersList->Add(Order);
+                                }
+                            }
+
+                            int Size = 1;
+
+                            if(BevOrdersList->Count && FoodOrdersList->Count)
+                                Size = 2;
+
+                            for(int index = 0; index < Size; index++)
+                            {
+                                std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+                                TPaymentTransaction ReceiptTransaction(DBTransaction);
+                                ReceiptTransaction.ApplyMembership(Membership);
+
+                                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Size == 2)
+                                {
+                                    if(index )
+                                        ReceiptTransaction.Orders->Assign(BevOrdersList.get());
+                                    else
+                                        ReceiptTransaction.Orders->Assign(FoodOrdersList.get());
+                                }
+                                else
+                                {
+                                    ReceiptTransaction.Orders->Assign(OrdersList.get());
+                                }
+
+                                TempReceipt->Transaction = &ReceiptTransaction;
+                                if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                                   (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                                    TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+                                if(ReceiptTransaction.Orders->Count > 0)
+                                {
+                                    ReceiptTransaction.Recalc();
+
+                                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                                    {
+                                        TItemComplete *Order = (TItemComplete*)ReceiptTransaction.Orders->Items[0];
+                                        isMixedMenuOrder = Order->ItemType == 1 ? false : true;
+                                    }
+
+                                    TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, isMixedMenuOrder);
+                                    OrderMoved = true;
+                                    TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
+                                    TempReceipt->JobType = pjReceiptReceipt;
+                                    TempReceipt->SenderType = devPC;
+                                    TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
+                                    TempReceipt->PaymentType = ptPreliminary;
+                                    Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
+                                    TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                                    ReceiptTransaction.DeleteOrders();
+                                }
                             }
                         }
 			            DBTransaction.Commit();
@@ -3363,6 +3410,7 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
         {
               DisableBillEntireTable(DBTransaction);
+              tbtnToggleGST->Visible = false;
         }
 
 	}
