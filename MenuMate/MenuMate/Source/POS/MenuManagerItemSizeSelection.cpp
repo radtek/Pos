@@ -272,7 +272,7 @@ TfrmItemSizeSelection::saveChangesClicked(TObject *sender)
             itemDefinition_.update_size_definition(*updatedSizeDefinition);
         }
     }
-
+    checkItemAvailable(); // check item avalibility..
     itemDefinition_.set_enabled(cbItemAvailable->Checked);
 
     frmSelectDish->RedrawCourses();
@@ -343,6 +343,28 @@ TfrmItemSizeSelection::populateSizeSelectionData()
                           size_definition.get_warning_quantity(),
                           size_definition.get_enabled())));
    }
+}
+
+void
+TfrmItemSizeSelection::checkItemAvailable()
+{
+    bool IsItemAvailable = true;
+    for (TSizePropertiesMap::iterator i = properties_.begin(); i != properties_.end(); ++i)
+    {
+        if(i->second.GetAvailableQuantity() == 0)
+        {
+            IsItemAvailable = false;
+        }
+        else
+        {
+            IsItemAvailable = true;
+            break;
+        }
+    }
+    if(!IsItemAvailable)
+    {
+        cbItemAvailable->Checked = false;
+    }
 }
 
 } /* item_management */

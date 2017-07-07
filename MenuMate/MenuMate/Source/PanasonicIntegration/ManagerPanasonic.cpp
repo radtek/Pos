@@ -195,6 +195,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 
         int contactKey = 0, customerID = 0;
         UnicodeString memberName = "";
+        UnicodeString appendString = "*";
         int siteId = GetSiteId(dbTransaction);
 
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -216,7 +217,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             GetMemberNameAndCustomerID(dbTransaction, panasonicModel->TransactionId, customerID, memberName);
             panasonicModel->CustomerId            = customerID;
             panasonicModel->CustomerName          = memberName;
-            panasonicModel->TransactionType       = "Billed By";
+            panasonicModel->TransactionType       = appendString + panasonicModel->OperatorName + appendString;
             panasonicModel->ProductListId         = arcBillKey;
             panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
             panasonicModel->AgeRestricted         = false;
@@ -258,6 +259,8 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             selectPaymentType->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
             selectPaymentType->ParamByName("NOTE")->AsString = "Total Change.";
             selectPaymentType->ExecQuery();
+
+            panasonicModel->TenderType = appendString + selectPaymentType->FieldByName("PAY_TYPE")->AsString + appendString;
 
              for(; !selectPaymentType->Eof; selectPaymentType->Next())
              {
