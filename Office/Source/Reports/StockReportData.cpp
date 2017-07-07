@@ -749,7 +749,7 @@ void TdmStockReportData::SetupWriteOffLocation(TDateTime StartTime, TDateTime En
  		"Where "
  			"StockTrans.Created >= :StartTime and "
  			"StockTrans.Created < :EndTime and "
-            "StockTrans.Transaction_Type = 'Writeoff' ";
+            "(StockTrans.Transaction_Type = 'Writeoff'OR StockTrans.Transaction_Type = 'WriteOff') ";
 	if (Locations->Count)
 	{
 		qrStockWriteOff->SQL->Text	=	qrStockWriteOff->SQL->Text + "And (" +
