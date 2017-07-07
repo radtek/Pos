@@ -2908,7 +2908,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = VisibleItems.size();
         
         if(VisibleItems.size() && SelectedItems.size()
-                && TGlobalSettings::Instance().IsBillSplittedByMenuType && VisibleItems.size() > 1 )
+                && TGlobalSettings::Instance().IsBillSplittedByMenuType && VisibleItems.size() > 1 && VisibleItems.size() != SelectedItems.size())
         {
             tbtnToggleGST->Visible = true;
         }
@@ -3423,6 +3423,8 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 			tgridContainerList->RowCount = 0;
 		}
 	}
+
+     tbtnToggleGST->Visible = false;
 
 	IgnoreItemThreshhold = false;
 
