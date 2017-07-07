@@ -3887,21 +3887,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						///Delayed Print prelimn receipt in case of GST
                         std::auto_ptr<TList>FoodOrdersList(new TList);
                         std::auto_ptr<TList>BevOrdersList(new TList);
+                        int Size = 1;
 
                         if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
                                     TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
-                            for(int index = 0; index < OrdersList->Count; index++)
-                            {
-                                TItemComplete *Order = (TItemComplete*)OrdersList->Items[index];
-                                if(Order->ItemType)
-                                    BevOrdersList->Add(Order);
-                                else
-                                    FoodOrdersList->Add(Order);
-                            }
+                            TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(OrdersList.get(), FoodOrdersList.get(), BevOrdersList.get());
                         }
-						int Size = 1;
-
 						if(BevOrdersList->Count && FoodOrdersList->Count)
                             Size = 2;
 

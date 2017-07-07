@@ -112,3 +112,15 @@ bool TManagerDelayedPayment::IsDelayedPayment(TPaymentTransaction &PaymentTransa
     else
        return true;
 }
+//-------------------------------------------------------------------
+void TManagerDelayedPayment::SplitDelayedPaymentOrderByMenuType(TList *orderList, TList *foodOrdersList, TList *bevOrdersList)
+{
+    for(int index = 0; index < orderList->Count; index++)
+    {
+        TItemComplete *Order = (TItemComplete*)orderList->Items[index];
+        if(Order->ItemType)
+            bevOrdersList->Add(Order);
+        else
+            foodOrdersList->Add(Order);
+    }
+}

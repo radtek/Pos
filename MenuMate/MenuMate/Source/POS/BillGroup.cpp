@@ -517,23 +517,15 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                             std::auto_ptr<TList>FoodOrdersList(new TList);
                             std::auto_ptr<TList>BevOrdersList(new TList);
                             bool isMixedMenuOrder = true;
+                            int Size = 1;
 
                             TDBTables::GetOrderKeys(DBTransaction, CurrentTable, ReceiptItemKeys);
                             TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ReceiptItemKeys);
 
                             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                             {
-                                for(int index = 0; index < OrdersList->Count; index++)
-                                {
-                                    TItemComplete *Order = (TItemComplete*)OrdersList->Items[index];
-                                    if(Order->ItemType)
-                                        BevOrdersList->Add(Order);
-                                    else
-                                        FoodOrdersList->Add(Order);
-                                }
+                                TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(OrdersList.get(), FoodOrdersList.get(), BevOrdersList.get());
                             }
-
-                            int Size = 1;
 
                             if(BevOrdersList->Count && FoodOrdersList->Count)
                                 Size = 2;
@@ -5100,6 +5092,7 @@ void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransacti
         }
     }
 }
+
 
 
 
