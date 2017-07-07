@@ -512,29 +512,68 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                         bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                         if(allowed)
                         {
-                            std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                            TPaymentTransaction ReceiptTransaction(DBTransaction);
-                            ReceiptTransaction.ApplyMembership(Membership);
-                            TempReceipt->Transaction = &ReceiptTransaction;
-                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-                               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
                             std::set <__int64> ReceiptItemKeys;
+                            std::auto_ptr<TList>OrdersList(new TList);
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+                            bool isMixedMenuOrder = true;
+                            int Size = 1;
+
                             TDBTables::GetOrderKeys(DBTransaction, CurrentTable, ReceiptItemKeys);
-                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
-                            if(ReceiptTransaction.Orders->Count > 0)
+                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ReceiptItemKeys);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                             {
-                                ReceiptTransaction.Recalc();
-                                TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
-                                OrderMoved = true;
-                                TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
-                                TempReceipt->JobType = pjReceiptReceipt;
-                                TempReceipt->SenderType = devPC;
-                                TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-                                TempReceipt->PaymentType = ptPreliminary;
-                                Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-                                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-                                ReceiptTransaction.DeleteOrders();
+                                TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(OrdersList.get(), FoodOrdersList.get(), BevOrdersList.get());
+                            }
+
+                            if(BevOrdersList->Count && FoodOrdersList->Count)
+                                Size = 2;
+
+                            for(int index = 0; index < Size; index++)
+                            {
+                                std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+                                TPaymentTransaction ReceiptTransaction(DBTransaction);
+                                ReceiptTransaction.ApplyMembership(Membership);
+
+                                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Size == 2)
+                                {
+                                    if(index )
+                                        ReceiptTransaction.Orders->Assign(BevOrdersList.get());
+                                    else
+                                        ReceiptTransaction.Orders->Assign(FoodOrdersList.get());
+                                }
+                                else
+                                {
+                                    ReceiptTransaction.Orders->Assign(OrdersList.get());
+                                }
+
+                                TempReceipt->Transaction = &ReceiptTransaction;
+                                if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                                   (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                                    TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+                                if(ReceiptTransaction.Orders->Count > 0)
+                                {
+                                    ReceiptTransaction.Recalc();
+
+                                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                                    {
+                                        TItemComplete *Order = (TItemComplete*)ReceiptTransaction.Orders->Items[0];
+                                        isMixedMenuOrder = Order->ItemType == 1 ? false : true;
+                                    }
+
+                                    TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, isMixedMenuOrder);
+                                    OrderMoved = true;
+                                    TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
+                                    TempReceipt->JobType = pjReceiptReceipt;
+                                    TempReceipt->SenderType = devPC;
+                                    TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
+                                    TempReceipt->PaymentType = ptPreliminary;
+                                    Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
+                                    TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                                    ReceiptTransaction.DeleteOrders();
+                                }
                             }
                         }
 			            DBTransaction.Commit();
@@ -2342,8 +2381,9 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                     for (int i = 0; i < TabList->Count; i++)
                     {
                         const int tab_key =reinterpret_cast<int>(TabList->Objects[i]);
+
                         if (AddToSelectedTabs(DBTransaction,tab_key)== true )
-                        {
+                        {    
                             SplitItemsInSet(DBTransaction,tab_key);
                             ItemSetAddItems(DBTransaction,tab_key);
                         }
@@ -2543,8 +2583,10 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
     DBTransaction.StartTransaction();
 
     std::set <__int64> SelectedItemKeys;
+    TItemType itemType;
     for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
     {
+        itemType = itItem->second.ItemType;
         SelectedItemKeys.insert(itItem->first);
     }
 
@@ -2553,7 +2595,16 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {
-        SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        if((!TGlobalSettings::Instance().IsBillSplittedByMenuType) ||
+                ((itemType == VisibleItems[GridButton->Tag].ItemType) && (SelectedItemKeys.size())) ||(!SelectedItemKeys.size())  )
+        {
+            SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        }
+        else
+        {
+             MessageBox("Items with different menu types can't be selected at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+
         if (CurrentDisplayMode == eInvoices)
         { // Must selected the Entire Invoice.
             SelectedItems.clear();
@@ -2839,6 +2890,12 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		{
 			TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
 		}
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
+
 		std::auto_ptr <TList> SortingList(new TList);
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
 		{
@@ -2848,6 +2905,16 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
+        
+        if(VisibleItems.size() && SelectedItems.size()
+                && TGlobalSettings::Instance().IsBillSplittedByMenuType && VisibleItems.size() > 1 )
+        {
+            tbtnToggleGST->Visible = true;
+        }
+        else
+        {
+            tbtnToggleGST->Visible = false;
+        }
 
 		for (int i = 0; i < SortingList->Count; i++)
 		{
@@ -3332,6 +3399,12 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
                  ClipTabInTable=true;
             }
 		}
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+        {
+              DisableBillEntireTable(DBTransaction);
+              tbtnToggleGST->Visible = false;
+        }
+
 	}
 	else if (CurrentDisplayMode == eRooms)
 	{
@@ -4959,6 +5032,67 @@ void TfrmBillGroup::UpdateContainerList()
     TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
     DBTransaction.Commit();
 }
+//------------------------------------------------------------------------------------------------------
+void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
+{
+    TItemType itemType;
+
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        itemType = eDrinksItem;
+    }
+
+     SelectedItems.clear();
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+       TPnMOrder ptrSelectItem = VisibleItems[itItem->first];
+       if(itItem->second.ItemType != itemType)
+            SelectedItems[itItem->first] = ptrSelectItem;
+    }
+
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    UpdateItemListDisplay(DBTransaction);
+    UpdateContainerListColourDisplay();
+    DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
+{
+    TItemType itemType;
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
+    }
+
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+        if(itemType !=  itItem->second.ItemType)
+        {
+            btnBillTable->Enabled = false;
+            break;
+        }
+    }
+}
+
 
 
 

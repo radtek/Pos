@@ -1373,6 +1373,8 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
    Currency TotalCost;
    Currency TotalCostExcl;
    Currency TotalCredit;
+   TItemType SourceItemType, DestItemType;
+   bool isFirstItem = true;
 
    std::auto_ptr <TList> OrdersList(new TList);
    std::set <__int64> SelectedTabs;
@@ -1391,9 +1393,26 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
           TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
           TotalCost += Order->TotalPriceAdjustmentSides();
           TotalCostExcl += Order->TotalPriceAdjustmentSidesExclGST();
+          SourceItemType = Order->ItemType;
        }
    }
    int OwnerKey = TempDestUserInfo.ContactKey;
+
+   if(NewInvoiceKey && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+   {
+       std::auto_ptr <TList> TabItemList(new TList);
+       std::set <__int64> SelectedTabs;
+       SelectedTabs.insert(NewInvoiceKey);
+       TDBOrder::GetOrdersFromTabKeys(DBTransaction, TabItemList.get(), SelectedTabs);
+
+       if(TabItemList->Count)
+       {
+          TItemComplete *item = (TItemComplete*)TabItemList->Items[0];
+          DestItemType = item->ItemType;
+          isFirstItem = false;
+       }
+    }
+
    if(!(NewInvoiceKey > 0))
    {
       InvoiceTabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
@@ -1405,12 +1424,26 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
 
    if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), InvoiceTabKey))
    {
-       TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), InvoiceTabKey,TDeviceRealTerminal::Instance().User.ContactKey, key, true);
-       if (cmClientManager->ChefMateEnabled())
+        bool isNonGSTTransfer = true;
+
+       if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !isFirstItem)
        {
-         int invoiceNo=TDBTab::GetInvoiceNo(DBTransaction, InvoiceKey);
-         CollectDataForChefmateTransfer(invoiceNo, OrdersList.get(), lbDisplayTransferfrom);
+           isNonGSTTransfer = SourceItemType == DestItemType ? true : false;
        }
+
+       if(isNonGSTTransfer)
+       {
+           TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), InvoiceTabKey,TDeviceRealTerminal::Instance().User.ContactKey, key, true);
+           if (cmClientManager->ChefMateEnabled())
+           {
+             int invoiceNo=TDBTab::GetInvoiceNo(DBTransaction, InvoiceKey);
+             CollectDataForChefmateTransfer(invoiceNo, OrdersList.get(), lbDisplayTransferfrom);
+           }
+        }
+        else
+        {
+            MessageBox("Items with different menu types can't be transferred.", "Warning", MB_OK + MB_ICONWARNING);
+        }
    }
    else
    {
@@ -3365,12 +3398,44 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 
 				  if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), InvoiceTabKey))
 				  {
-					 TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), InvoiceTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key);
-                      if (cmClientManager->ChefMateEnabled())
-                       {
-                         int invoiceNo=TDBTab::GetInvoiceNo(DBTransaction, InvoiceKey);
-                         CollectDataForChefmateTransfer(invoiceNo, OrdersList.get(), lbDisplayTransferfrom);
-                       }
+                        bool canTransfer = true;
+
+                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                        {
+                            PrepareItemList(DBTransaction, source_key,false, OrdersList.get());
+                            TItemType itemType;
+
+                            if(OrdersList->Count)
+                            {
+                                TItemComplete *Order = (TItemComplete*)OrdersList->Items[0];
+                                itemType = Order->ItemType;
+                            }
+
+                            for (int i = 0; i < OrdersList->Count; i++)
+                            {
+                                TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
+
+                                if(itemType != Order->ItemType)
+                                {
+                                    canTransfer = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(canTransfer)
+                        {
+                              TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), InvoiceTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key);
+                              if (cmClientManager->ChefMateEnabled())
+                               {
+                                 int invoiceNo=TDBTab::GetInvoiceNo(DBTransaction, InvoiceKey);
+                                 CollectDataForChefmateTransfer(invoiceNo, OrdersList.get(), lbDisplayTransferfrom);
+                               }
+                        }
+                        else
+                        {
+                             MessageBox("Items with different menu types can't be transferred.", "Warning", MB_OK + MB_ICONWARNING);
+                        }
         		  }
 				  else
 				  {
@@ -4706,5 +4771,3 @@ bool TfrmTransfer::CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTran
 
     return retValue;
 }
-
-

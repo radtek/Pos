@@ -390,9 +390,9 @@ UnicodeString TInvoice::GetNextInvoiceNumber(Database::TDBTransaction &DBTransac
 		    InvoiceNumber = "NC " + IntToStr(IBInternalQuery->Fields[0]->AsInteger);
           }
          else
-           {
+         {
             InvoiceNumber = IntToStr(IBInternalQuery->Fields[0]->AsInteger);
-           }
+         }
 	}
 	catch(Exception &Err)
 	{
@@ -412,6 +412,29 @@ UnicodeString TInvoice::GetVoidInvoiceNumber(Database::TDBTransaction &DBTransac
 		IBInternalQuery->Close();
 
         IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_VOIDINVOICENUMBER, 1) FROM RDB$DATABASE";
+
+        IBInternalQuery->ExecQuery();
+        InvoiceNumber = IntToStr(IBInternalQuery->Fields[0]->AsInteger);
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+	return InvoiceNumber;
+}
+//---------------------------------------------------------------------------------
+UnicodeString TInvoice::GetBeveragesInvoiceNumber(Database::TDBTransaction &DBTransaction)
+{
+   if( !fEnabled )return "";
+	InvoiceNumber = "";
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_BEVERAGEINVOICENUMBER, 1) FROM RDB$DATABASE";
 
         IBInternalQuery->ExecQuery();
         InvoiceNumber = IntToStr(IBInternalQuery->Fields[0]->AsInteger);

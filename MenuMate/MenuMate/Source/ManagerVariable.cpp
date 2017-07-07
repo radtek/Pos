@@ -3226,6 +3226,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"The Category Menu Items will add against in the PMS system/r"
 		"Default is ",
 		vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction, vmIsBillSplittedByMenuType, "Split Bill By Menu",
+                 "Split Bill on Menu type basis"
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
