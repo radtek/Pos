@@ -1633,7 +1633,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = CurrentSubOrder->BillCalcResult.BasePrice;
 				IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
 				IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-				IBInternalQuery->ParamByName("ITEM_TYPE")->AsInteger = Order->ItemType;
+				IBInternalQuery->ParamByName("ITEM_TYPE")->AsInteger = CurrentSubOrder->SubItemType;
 				IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = CurrentSubOrder->ServingCourse.ServingCourseKey;
 				IBInternalQuery->ParamByName("MENU_ITEM_KEY")->Clear();
 				IBInternalQuery->ParamByName("PLU")->AsInteger = CurrentSubOrder->PLU;

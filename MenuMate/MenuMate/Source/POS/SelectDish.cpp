@@ -13250,6 +13250,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(SelectedSize)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(SelectedSize)->CanBePaidForUsingPoints;
         //check item is can be paid by points..
+        NewSubOrder->SubItemType = Item->ItemType;
 
         if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
             || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
@@ -13322,7 +13323,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPoints = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(0)->CanBePaidForUsingPoints;
-
+        NewSubOrder->SubItemType = Item->ItemType;
 
     if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
          || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
