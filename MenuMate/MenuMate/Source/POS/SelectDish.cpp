@@ -3456,7 +3456,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated && TGlobalSettings::Instance().IsBillSplittedByMenuType)
                 {
                     isBeveragesInvGenerated = true;
-                    BeveragesInvoiceNumber = "L-" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
+                    BeveragesInvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
                     BevTabName = TGlobalSettings::Instance().ReceiptNumberLabel + BeveragesInvoiceNumber;
                     //Create Tab
                     BevTabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
@@ -9894,8 +9894,8 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                       SelectedTabName = frmDelayedPaymentTabs->SelectedTabName;
                       
                       if(!TGlobalSettings::Instance().IsBillSplittedByMenuType ||
-                        (SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L-") != 0))
-                        || (!SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L-") == 0)))
+                        (SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L") != 0))
+                        || (!SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L") == 0)))
                         {
                             OrderContainer.Location["DelayedInvoiceNumber"] = frmDelayedPaymentTabs->DelayedInvoiceNumber;
                         }

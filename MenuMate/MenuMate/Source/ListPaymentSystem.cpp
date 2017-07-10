@@ -3191,7 +3191,7 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
             }
             else if(TGlobalSettings::Instance().IsBillSplittedByMenuType && PaymentTransaction.TypeOfSale == RegularSale && Order->ItemType == eDrinksItem)
             {
-                PaymentTransaction.InvoiceNumber = "L-" + Invoice->GetBeveragesInvoiceNumber(PaymentTransaction.DBTransaction);
+                PaymentTransaction.InvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(PaymentTransaction.DBTransaction);
             }
             else
             {

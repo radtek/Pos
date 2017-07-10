@@ -73,10 +73,10 @@ AnsiString TReceiptUtility::ExtractInvoiceNumber(AnsiString &invoiceNumber)
         invoiceNumber = invoiceNumber.SubString(6,invoiceNumber.Length()-5);
         prefix = "Comp ";
     }
-    else if(invoiceNumber.Pos("L-") != 0)
+    else if(invoiceNumber.Pos("L") != 0)
     {
-        invoiceNumber = invoiceNumber.SubString(3,invoiceNumber.Length()-2);
-        prefix = "L-";
+        invoiceNumber = invoiceNumber.SubString(2,invoiceNumber.Length()-1);
+        prefix = "L";
     }
     return prefix;
 }
