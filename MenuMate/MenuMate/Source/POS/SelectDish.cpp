@@ -3728,7 +3728,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                         SeatCounter.insert(Order->SeatNo);
                     }
 
-                    if(Order->ItemType && DelayedInvoiceNumber != "" && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Order->ItemType && DelayedInvoiceNumber != "" )
                     {
                         Order->DelayedInvoiceNumber = BeveragesInvoiceNumber;
                     }
@@ -3745,6 +3745,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                    for (int j = 0; j < Order->SubOrders->Count; j++)
 					{
                        TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
+
+                       if(TGlobalSettings::Instance().IsBillSplittedByMenuType && SubOrder->SubItemType && DelayedInvoiceNumber != "" )
+                       {
+                            SubOrder->DelayedInvoiceNumber = BeveragesInvoiceNumber;
+                       }
+                       else
+                       {
+                            SubOrder->DelayedInvoiceNumber = DelayedInvoiceNumber;
+                       }
                        SubOrder->DelayedInvoiceNumber = Order->DelayedInvoiceNumber;
                        SubOrder->OrderIdentificationNo = identificationNumber;
                     }
