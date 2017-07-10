@@ -121,7 +121,7 @@ object frmBillGroup: TfrmBillGroup
         Font.Style = [fsBold]
         ParentFont = False
         ParentColor = True
-        Caption = 'Toggle GST'
+        Caption = 'Toggle Menu Items'
         ButtonColor = 6052441
         LatchedColor = clBtnFace
         DisabledButtonColor = clBtnFace
