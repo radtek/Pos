@@ -487,6 +487,7 @@ public:
     UnicodeString CashVarianceGLCode;
     UnicodeString ReportExportPath;
     ePMSType PMSType;
+    UnicodeString CustomerId;
 };
 
 #endif

@@ -3226,6 +3226,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"The Category Menu Items will add against in the PMS system/r"
 		"Default is ",
 		vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmCustomerId, "Customer ID", "Customer ID.\r"
+            "Default is null", vmg3rdPartyInterface, "" );
 	}
 	catch(Exception &E)
 	{
