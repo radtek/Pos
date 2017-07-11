@@ -1142,7 +1142,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			ItemFound = Item != NULL && ItemSize != NULL;
             isSameMenuTypeItemExist = true;
 
-            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
                 isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
 			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
@@ -1194,7 +1194,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			ItemFound = Item != NULL && ItemSize != NULL;
 
             isSameMenuTypeItemExist = true;
-             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
                 isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
 			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
@@ -1234,7 +1234,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			ItemFound = Item != NULL && ItemSize != NULL;
 
             isSameMenuTypeItemExist = true;
-             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
                 isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
 			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
@@ -6468,7 +6468,7 @@ void __fastcall TfrmSelectDish::tgridItemSideItemsMouseClick(TObject *Sender, TM
 
          bool isSameMenuTypeItemExist = true;
 
-        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -7551,7 +7551,7 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
         bool isSameMenuTypeItemExist = true;
 
-        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
 		if (Item && isSameMenuTypeItemExist)
@@ -14723,7 +14723,7 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
     bool ItemFound = Item != NULL && ItemSize != NULL;
     bool isSameMenuTypeItemExist = true;
 
-    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
         isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
     if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
