@@ -445,6 +445,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
 
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
+    TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmIsBillSplittedByMenuType, TGlobalSettings::Instance().IsBillSplittedByMenuType );
     DBTransaction.Commit();
     cbUseMemberSubs->OnClick = NULL;
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
@@ -4385,9 +4386,22 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmFloatWithdrawFromCash, TGlobalSettings::Instance().FloatWithdrawFromCash);
 	DBTransaction.Commit();
 }//--------------------------------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbSplitBillByMenuTypeClick(TObject *Sender){
-    TGlobalSettings::Instance().IsBillSplittedByMenuType = cbSplitBillByMenuType->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-  	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsBillSplittedByMenuType, TGlobalSettings::Instance().IsBillSplittedByMenuType);
-	DBTransaction.Commit();
+    TGlobalSettings  &ref_gs = TGlobalSettings::Instance();
+	TManagerVariable &ref_mv = TManagerVariable::Instance();
+
+	int isBillSplittted;
+	Database::TDBTransaction tr(DBControl);
+
+	tr.StartTransaction();
+#pragma warn -pia
+	if (!(isBillSplittted = ref_mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	isBillSplittted = ref_mv.SetProfile(tr, eSystemProfiles, "Globals");
+#pragma warn .pia
+	tr.Commit();
+
+	ref_gs.IsBillSplittedByMenuType = cbSplitBillByMenuType->Checked;
+
+	tr.StartTransaction();
+	ref_mv.SetProfileBool(tr, isBillSplittted, vmIsBillSplittedByMenuType, ref_gs.IsBillSplittedByMenuType);
+	tr.Commit();
 }
