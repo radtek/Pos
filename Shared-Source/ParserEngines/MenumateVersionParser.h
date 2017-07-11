@@ -847,6 +847,7 @@ namespace MenumateVersionParser
         void update6_41Tables();
         void AlterTable6_41(TDBControl* const inDBControl);
         void UpdateMallSalesBySalesType(TDBControl* const inDBControl);
+        void UpdateTablePatronCountTable(TDBControl* const inDBControl);
 
         void upgrade6_42Tables();
         void update6_42Tables();

@@ -55,6 +55,7 @@ private:	// User declarations
     Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
     void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
     void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
+    bool CheckDefaultPatronTypes();
 public:		// User declarations
 
 	eMessageType MessageType;

@@ -13,6 +13,7 @@
 #include <DB.hpp>
 #include "MemDS.hpp"
 #include "PanasonicModels.h"
+#include <vector>
 //---------------------------------------------------------------------------
 class TDBPanasonic
 {
@@ -21,6 +22,7 @@ private:	// User declarations
     TDataSource *DataSource;
     TUniQuery *UniInsertQuery;
     TComponent *Owner;
+    void InsertTransactionTypeRecords(UnicodeString transactionType);
 public:		// User declarations
     TDBPanasonic();
     TUniConnection *UniDataBaseConnection;
@@ -28,6 +30,8 @@ public:		// User declarations
     void InsertItemsToTItemList(TPanasonicItemList &itemList);
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);
     void InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo);
+    void PrepareTransactionTypes();
+    void InsertTenderTypes(std::vector <UnicodeString> PayTypes);
 };
 
 //---------------------------------------------------------------------------

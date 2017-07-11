@@ -69,6 +69,7 @@
 #include "WalletPaymentsInterface.h"
 
 
+
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
 BOOL CALLBACK EnumChildWindowsProc(HWND hwnd, LPARAM lParam)
@@ -484,6 +485,12 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
+        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+        {
+            std::vector <UnicodeString> PayTypes;
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+            InsertPaymentTypeInPanasonicDB(PayTypes);
+        }
 	}
 	catch(Exception & E)
 	{
@@ -6161,4 +6168,16 @@ UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList
        _lastreceipt += _receipt->Strings[i] + '\n';
     }
     return _lastreceipt;
+}
+//-----------------------------------------------------------------------------------
+void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
+{
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    dbPanasonic->InsertTenderTypes(PayTypes);
+
+    dbPanasonic->UniDataBaseConnection->Commit();
+    dbPanasonic->UniDataBaseConnection->Close();
 }
