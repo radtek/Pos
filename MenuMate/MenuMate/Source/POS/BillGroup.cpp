@@ -5063,7 +5063,21 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
     DBTransaction.StartTransaction();
     UpdateItemListDisplay(DBTransaction);
     UpdateContainerListColourDisplay();
+    UpdateSplitButtonState();
+     if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+    {
+       RemoveMembershipDiscounts(DBTransaction);
+    }
+     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+    {
+        CheckingClipItemsInSelectedList(DBTransaction);
+    }
     DBTransaction.Commit();
+    if(!TGlobalSettings::Instance().IsThorlinkSelected)
+    {
+        CheckLoyalty();
+    }
+    ShowReceipt();
 }
 //-------------------------------------------------------------------------------------------------
 void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
