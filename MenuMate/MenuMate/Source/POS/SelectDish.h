@@ -428,7 +428,7 @@ private: // User declarations
     ChitResult SetupChit(Database::TDBTransaction &tr);
     ChitResult InitializeChit();
     void ResetChit();
-    TPaymentTransaction PaymentTransaction(DBTransaction);
+//    TPaymentTransaction PaymentTransaction(DBTransaction);
     void ApplyMemberDiscounts(Database::TDBTransaction &DBTransaction,bool isInitiallyApplied = true);
     void GetAllOrders(TList* outOrders);
     std::auto_ptr<TChefmateClientManager> cmClientManager;

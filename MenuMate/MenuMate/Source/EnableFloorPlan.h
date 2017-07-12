@@ -5,7 +5,7 @@
 
 #include "Forms.hpp"
 #include "SelectTable.h"
-
+#include "SelectTable2.h"
 #include "PlanController.h"
 
 //---------------------------------------------------------------------------
@@ -49,6 +49,7 @@ class TEnableFloorPlan
 
 		bool changingName;
 		std::auto_ptr<TablePlan::PlanController> controller;
+        void ReleaseFormMemory(std::auto_ptr<TFrmSelectTable2> frmSelectTable2);
 };
 
 /*

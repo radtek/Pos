@@ -282,7 +282,8 @@ void __fastcall TfrmSelectDish::FormCreate(TObject *Sender)
 	AfterItemOrdered.RegisterForEvent(OnAfterItemOrdered);
 	AfterSaleProcessed.RegisterForEvent(OnAfterSaleProcessed);
 	AfterSelectedItemChanged.RegisterForEvent(RefreshModifyGui);
-	TDeviceRealTerminal::Instance().EventLockOutTimer.RegisterForEvent(OnLockOutTimer);
+//    if(TGlobalSettings::Instance().AutoLogoutPOS && TGlobalSettings::Instance().AutoLogoutSeconds > 0)
+	    TDeviceRealTerminal::Instance().EventLockOutTimer.RegisterForEvent(OnLockOutTimer);
 	TDeviceRealTerminal::Instance().PaymentSystem->OnAfterTransactionComplete.RegisterForEvent(TransactionComplete);
 
 	tmPosRefresh->Enabled = true;
@@ -297,6 +298,7 @@ void __fastcall TfrmSelectDish::FormDestroy(TObject *Sender)
 	for (UINT i = 0; i < SeatOrders.size(); i++)
 	{
 		delete SeatOrders[i];
+        SeatOrders[i] = NULL;
 	}
 
 	if (TDeviceRealTerminal::Instance().Menus != NULL)
@@ -308,7 +310,8 @@ void __fastcall TfrmSelectDish::FormDestroy(TObject *Sender)
 	AfterItemOrdered.DeregisterForEvent(OnAfterItemOrdered);
 	AfterSaleProcessed.DeregisterForEvent(OnAfterSaleProcessed);
 	AfterSelectedItemChanged.DeregisterForEvent(RefreshModifyGui);
-	TDeviceRealTerminal::Instance().EventLockOutTimer.DeregisterForEvent(OnLockOutTimer);
+//    if(TGlobalSettings::Instance().AutoLogoutPOS && TGlobalSettings::Instance().AutoLogoutSeconds > 0)
+	    TDeviceRealTerminal::Instance().EventLockOutTimer.DeregisterForEvent(OnLockOutTimer);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardInserted.DeregisterForEvent(OnSmartCardInserted);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.DeregisterForEvent(OnSmartCardRemoved);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardUpdated.DeregisterForEvent(OnSmartCardInserted);
@@ -1026,6 +1029,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 						OrderConfimOk = false;
 					}
                     delete frmConfirmOrder;
+                    frmConfirmOrder = NULL;
 				}
 
 				DBTransaction.Commit();
@@ -1088,6 +1092,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 							frmBillGroup->ShowModal();
 							setPatronCount( frmBillGroup->PatronCount );
                             delete frmBillGroup;
+                            frmBillGroup = NULL;
 						}
 					}
 				}
@@ -1680,6 +1685,7 @@ void __fastcall TfrmSelectDish::FormClose(TObject *Sender, TCloseAction &Action)
 				TItemComplete *Item = SeatOrders[i]->Orders->Items[0];
 				SeatOrders[i]->Orders->Remove(Item);
 				delete Item;
+                Item = NULL;
 
 			}
 			while (SeatOrders[i]->Orders->PrevCount != 0)
@@ -2094,6 +2100,7 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 			}
 
            delete isHappyHour;
+           isHappyHour = NULL;
 		}
 	}
 
@@ -2737,6 +2744,7 @@ bool TfrmSelectDish::DeleteUnsentAndProceed(Database::TDBTransaction &DBTransact
 
                             SeatOrders[i]->Orders->Remove(Item);
                             delete Item;
+                            Item = NULL;
                         }
                         while (SeatOrders[i]->Orders->PrevCount != 0)
                         {
@@ -2744,6 +2752,7 @@ bool TfrmSelectDish::DeleteUnsentAndProceed(Database::TDBTransaction &DBTransact
                           item->ReturnToAvailability(item->GetQty());
 
                           delete item;
+                          item = NULL;
                           SeatOrders[i]->Orders->DeletePrev(0);
                         }
                     }
@@ -2896,6 +2905,7 @@ bool TfrmSelectDish::DeleteUnsentDCAndProceed(Database::TDBTransaction &DBTransa
 
                                 SeatOrders[i]->Orders->Remove(Item);
                                 delete Item;
+                                Item = NULL;
                             }
                             while (SeatOrders[i]->Orders->PrevCount != 0)
                             {
@@ -2903,6 +2913,7 @@ bool TfrmSelectDish::DeleteUnsentDCAndProceed(Database::TDBTransaction &DBTransa
                               item->ReturnToAvailability(item->GetQty());
 
                               delete item;
+                              item = NULL;
                               SeatOrders[i]->Orders->DeletePrev(0);
                             }
                         }
@@ -3974,6 +3985,9 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 //clear phone number and customer name after successful sale
                 TGlobalSettings::Instance().TabPrintName = "";
                 TGlobalSettings::Instance().TabPrintPhone = "";
+                OrdersList->Clear();
+                memNote->Lines->Clear();
+                memOverview->Lines->Clear();
 			}
 		}
 		else
@@ -4900,6 +4914,7 @@ void TfrmSelectDish::RemoveItem(Database::TDBTransaction &DBTransaction)
                         RemoveSideItemFromItem(subitem,reinterpret_cast<TItemComplete *>(ListItem->ParentRedirector->ItemObject));
                         ListItem->SubOrdersList->Remove(ListItem->ItemObject);
                         delete(TItemCompleteSub*)ListItem->ItemObject;
+                        (TItemCompleteSub*)ListItem->ItemObject = NULL;
                         ListItem->ItemObject = NULL;
                         CurrentIndex--;
                         if (CurrentIndex > -1)
@@ -5088,6 +5103,7 @@ void TfrmSelectDish::RemoveItem(Database::TDBTransaction &DBTransaction)
                     {
                        ListItem->ItemObject = NULL;
                        delete Item;
+                       Item = NULL;
                     }
 
               }
@@ -6871,6 +6887,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, long sizesKey , AnsiString
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                 }
@@ -6889,6 +6906,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, long sizesKey , AnsiString
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                     else
@@ -6913,6 +6931,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, long sizesKey , AnsiString
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish= NULL;
                         Proceed = false;
                     }
                     else
@@ -6934,6 +6953,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, long sizesKey , AnsiString
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                 }
@@ -7061,6 +7081,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, int GlassType)
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                 }
@@ -7079,6 +7100,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, int GlassType)
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                     else
@@ -7103,6 +7125,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, int GlassType)
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                     else
@@ -7124,6 +7147,7 @@ void TfrmSelectDish::PaintItemToDisplay(long itemKey, int GlassType)
                     {
                         SetMenuDish->ReturnToAvailability();
                         delete SetMenuDish;
+                        SetMenuDish = NULL;
                         Proceed = false;
                     }
                 }
@@ -7246,6 +7270,7 @@ void __fastcall TfrmSelectDish::btnOkMouseClick(TObject *Sender)
    pnlItemModify->Visible = false;
    pnlItemModify->SendToBack();
    btngridModify->RowCount = 0;
+   pcItemModify->ActivePage->CleanupInstance();
 }
 // ---------------------------------------------------------------------------
 double TfrmSelectDish::CountInstances(TItemComplete &archetype)
@@ -7663,6 +7688,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 							Membership.Assign(Sale->Membership);
 						}
 						delete Sale;
+                        Sale = NULL;
 					}
 					else
 					{
@@ -7742,6 +7768,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		Sale->SelectedParty = SelectedParty;
         setParkedSale( Sale );
         delete Sale;
+        Sale = NULL;
 		lbDisplay->Clear();
 		for (UINT i = 0; i < SeatOrders.size(); i++)
 		{
@@ -7845,10 +7872,12 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
         if(MessageList->Count == 1)
         {
             delete MessageList;
+            MessageList = NULL;
         }
         else
         {
             delete MessageList;
+            MessageList = NULL;
             std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
             frmMessage->MessageType = eCashDrawer;
             if(frmMessage->ShowModal() == mrOk)
@@ -7888,7 +7917,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	bool Proceed = false;
-    if(dc_item_show)
+    if(dc_item_show && TGlobalSettings::Instance().IsDrinkCommandEnabled)
     {
       Proceed = DeleteUnsentDCAndProceed(DBTransaction);
       AnsiString memberNo = "";
@@ -8301,6 +8330,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					frmBillGroup->ShowModal();
 					setPatronCount(  frmBillGroup->PatronCount );
                     delete frmBillGroup;
+                    frmBillGroup = NULL;
 				}
 			}
 		}
@@ -8330,12 +8360,14 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                                                                 item = SeatOrders[f]->Orders->Items[j];
                                                                 item->ReturnToAvailability();
 								delete item;
+                                item = NULL;
 							}
 							for (int h = 0; h < SeatOrders[f]->Orders->PrevCount; h++)
 							{
                                                                 item = SeatOrders[f]->Orders->Items[h];
                                                                 item->ReturnToAvailability();
                                                                 delete item;
+                                                                item = NULL;
 							}
 						}
 						__finally
@@ -8483,6 +8515,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 TDBTables::ClearPatronCount(DBTransaction, frmBillGroup->CurrentTable);
             }
             delete frmBillGroup;
+            frmBillGroup = NULL;
             DBTransaction.Commit();
 
 			lbDisplay->Clear();
@@ -8496,6 +8529,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 					TItemComplete *Item = SeatOrders[i]->Orders->Items[0];
 					SeatOrders[i]->Orders->Remove(Item);
 					delete Item;
+                    Item = NULL;
 
 				}
 				while (SeatOrders[i]->Orders->PrevCount != 0)
@@ -8601,6 +8635,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                    }
                 }
                 delete frmConfirmOrder;
+                frmConfirmOrder = NULL;
 			}
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
@@ -8732,6 +8767,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                             TDBTables::ClearPatronCount(DBTransaction, frmBillGroup->CurrentTable);
                         }
                         delete frmBillGroup;
+                        frmBillGroup = NULL;
                         DBTransaction.Commit();
 
 					}
@@ -9524,6 +9560,7 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                                Retval = mrAbort;
 	                                            }
 	                                            delete frmConfirmOrder;
+                                                frmConfirmOrder = NULL;
 	                                        }
 	                                    }
 	                                }
@@ -9599,6 +9636,7 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                        Retval = mrAbort;
 	                                    }
 	                                    delete frmConfirmOrder;
+                                        frmConfirmOrder = NULL;
 	                                }
 	                            }
 	                            else
@@ -9863,6 +9901,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 								Retval = mrAbort;
 							}
                             delete frmConfirmOrder;
+                            frmConfirmOrder = NULL;
 						}
 					}
 				}
@@ -9929,6 +9968,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                             }
                         }
                         delete frmConfirmOrder;
+                        frmConfirmOrder = NULL;
 					}
 				}
 
@@ -10044,6 +10084,7 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 
                     }
                     delete frmConfirmOrder;
+                    frmConfirmOrder = NULL;
 				}
 			}
 			else
@@ -10198,7 +10239,7 @@ void TfrmSelectDish::WriteOffBillAsWastage()
 				{
 					for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 					{
-						delete SeatOrders[iSeat]->Orders->Items[i];
+						delete SeatOrders[iSeat]->Orders->Items[i];;
 					}
 					for (int j = 0; j < SeatOrders[iSeat]->Orders->PrevCount; j++)
 					{
@@ -10458,9 +10499,7 @@ void TfrmSelectDish::showOldTablePicker()
     try
     {
         bool tableSelected = false;
-        //std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
         TFloorPlanReturnParams floorPlanReturnParams;
-
         // Runs new web app of floorPlan
         if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
@@ -10479,6 +10518,7 @@ void TfrmSelectDish::showOldTablePicker()
     }
     catch(Exception & E)
     {
+         MessageBox(E.Message,"",MB_OK);
          TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
@@ -11102,6 +11142,7 @@ void TfrmSelectDish::CheckDeals(Database::TDBTransaction &DBTransaction)
 			itemsInCategory.erase(itemsInCategory.begin(), itemIt);
 			ManagerDiscount->AddDiscount(Orders, DealDiscount);
 			delete Orders;
+            Orders = NULL;
 		}
 	}
 }
@@ -11179,7 +11220,9 @@ void TfrmSelectDish::stopCustomerDisplayServer()
     if( TGlobalSettings::Instance().ShowCustomerDisplay )
     {
         delete customer_display_timer;
+        customer_display_timer = NULL;
         delete customer_display_finish_timer;
+        customer_display_finish_timer = NULL;
     }
 }
 //.............................................................................
@@ -11392,6 +11435,7 @@ TModalResult TfrmSelectDish::setupAutoSaveTabContainer(Database::TDBTransaction 
 
                 Retval = frmConfirmOrder->ShowModal();
                 delete frmConfirmOrder;
+                frmConfirmOrder = NULL;
             }
         }
     }
@@ -11717,6 +11761,7 @@ TModalResult TfrmSelectDish::GetTabContainerForTab(Database::TDBTransaction &DBT
 				}
                 Retval =  mrOk;
                 delete frmConfirmOrder;
+                frmConfirmOrder = NULL;
 			}
 		}
 	}
@@ -11853,6 +11898,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 				frmBillGroup->ShowModal();
 				setPatronCount(  frmBillGroup->PatronCount );
                 delete frmBillGroup;
+                frmBillGroup = NULL;
 			}
 		}
 	}
@@ -11882,12 +11928,14 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 							item = SeatOrders[f]->Orders->Items[j];
 							item->ReturnToAvailability();
 							delete item;
+                            item = NULL;
 						}
 						for (int h = 0; h < SeatOrders[f]->Orders->PrevCount; h++)
 						{
 							item = SeatOrders[f]->Orders->Items[h];
 							item->ReturnToAvailability();
 							delete item;
+                            item = NULL;
 						}
 					}
 					__finally
@@ -12114,6 +12162,7 @@ bool TfrmSelectDish::ParkSaletemp(int tabkey)
 					}
 
 					delete Sale;
+                    Sale = NULL;
 				}
 			}
 			__finally
@@ -12840,7 +12889,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
      if(isItemUsingPCD)
      {
 		itemComplete->ClaimAvailability();
-        
+
      }
      dBTransaction.Commit();
 
