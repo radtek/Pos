@@ -1324,6 +1324,10 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 					CurrentSelectedTab = LastTabInSelectionGroup;
 				}
 				UpdateItemListDisplay(DBTransaction);
+                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                {
+                    DisableBillEntireTable(DBTransaction);
+                }
 				UpdateContainerListColourDisplay();
 				DBTransaction.Commit();
 				ShowReceipt();
@@ -1442,6 +1446,10 @@ void __fastcall TfrmBillGroup::tbtnClearAllMouseClick(TObject *Sender)
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
 	DBTransaction.Commit();
 	CheckLoyalty();
@@ -1466,6 +1474,10 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
     if(lbeMembership->Visible == false)//todo-Arpit
     {
@@ -1619,6 +1631,10 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 				}
 			}
 			UpdateItemListDisplay(DBTransaction);
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+            {
+                DisableBillEntireTable(DBTransaction);
+            }
 
             //Get Table 's guest is linked to clipp tab
             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
@@ -1698,6 +1714,10 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 
 					CancelItems(DBTransaction, ItemsToBeCanceled, TempUserInfo);
 					UpdateItemListDisplay(DBTransaction);
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                    {
+                        DisableBillEntireTable(DBTransaction);
+                    }
 
                     //Get Table 's guest is linked to clipp tab
                     TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
@@ -2334,6 +2354,10 @@ void __fastcall TfrmBillGroup::tbtnShowItemsMouseClick(TObject *Sender)
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
@@ -2412,6 +2436,10 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateRightButtonDisplay(Sender);
         IgnoreItemThreshhold = false;
         UpdateItemListDisplay(DBTransaction);
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
          if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
@@ -2754,6 +2782,9 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
         SortingList->Add(&itItem->second);
     }
     tgridItemList->RowCount = VisibleItems.size();
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        oldSize = VisibleItems.size()-1;
     // Disable the button which was split
     for(int i = 0; i < SortingList->Count ; i++)
     {
@@ -2891,12 +2922,6 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		{
 			TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
 		}
-
-        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
-        {
-            DisableBillEntireTable(DBTransaction);
-        }
-
 		std::auto_ptr <TList> SortingList(new TList);
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
 		{
@@ -3429,6 +3454,10 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 	IgnoreItemThreshhold = false;
 
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
 
 	// Colour Buttons.
@@ -5062,6 +5091,10 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
     UpdateContainerListColourDisplay();
     UpdateSplitButtonState();
      if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
