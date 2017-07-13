@@ -8,7 +8,6 @@
 
 #include "PosIntegration.h"
 #include "MM_DBCore.h"
-#include "PlanControllerObjects.h"
 
 namespace TablePlan {
 	class PlanController {
@@ -34,34 +33,21 @@ namespace TablePlan {
         TImage *image;
       // Location ID , Location.
 	   std::map<int,DTOLocation*> locations;
-       std::map<int,TPlanLocation> locations123;
-
 		void SetView(TImage *v);
 		void DrawCurrentPlan(Database::TDBTransaction &DBTransaction);
-
 		AnsiString GetCurrentPlanName();
 		DTOReservable *GetTable(int LocationID , int TableNo);
-//        TPlanReservable GetTable(int LocationID, int TableNo);
 		DTOReservable *GetCurrentTable();
-//        TPlanReservable GetCurrentTable();
 		AnsiString GetTableDesc();
-
 		int PlanCount();
         int CurrentID();
         void FirstPlan();
         void SetLocation(int LocationIndex);
-
 		std::vector<DTOLocation*> getLocations();
-//        std::vector<TPlanLocation> getLocations();
 		TPoint CurrentMouseLocation();
-
 		void UpdateMousePos(int, int);
-
 		bool IsInitOk();
-
 		bool Init();
-//        std::vector<TPlanReservable> tableList;
-
 	};
 }
 #endif /* #ifndef PlanControllerH */

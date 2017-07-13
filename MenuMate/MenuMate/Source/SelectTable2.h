@@ -51,7 +51,6 @@ __published:	// IDE-managed Components
     void UpdateTableOnFormPaint();
 public:		// User declarations
     std::auto_ptr<TablePlan::PlanController> _controller;
-//    TablePlan::PlanController *get_plan;
 	__fastcall TFrmSelectTable2(TComponent* Owner, Database::TDBControl &IBDatabase);
 
 	void AssociateWithController(std::auto_ptr<TablePlan::PlanController> c);
