@@ -168,6 +168,7 @@ private:	// User declarations
     void GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info);
     Currency GetAvailableRedeemPoints(TMMContactInfo &Member);
     void DisableBillEntireTable(Database::TDBTransaction &DBTransaction);
+    void ChangeBillEntireTableState();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

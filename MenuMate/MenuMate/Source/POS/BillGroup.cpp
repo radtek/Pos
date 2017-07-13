@@ -1077,8 +1077,11 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                         TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
                         sendClippTabKey->SendTabDetails(CurrentSelectedTab);
                     }
-
                     ResetForm();
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                    {
+                       ChangeBillEntireTableState();
+                    }
 			    }
                 catch(Exception & E)
                 {
@@ -1086,7 +1089,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                     throw;
                 }
             }
-
 		}
 	}
 	catch(Exception & E)
@@ -1752,6 +1754,10 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
     {
         TGlobalSettings::Instance().IsPOSOffline = true;
         applyWaiterStationSettingsIfEnabled();
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        {
+           ChangeBillEntireTableState();
+        }
     }
     else
     {
@@ -3425,10 +3431,6 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
                  ClipTabInTable=true;
             }
 		}
-        if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
-        {
-              DisableBillEntireTable(DBTransaction);
-        }
 
 	}
 	else if (CurrentDisplayMode == eRooms)
@@ -4162,6 +4164,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                     }
                 }
             }
+
             //changes to get points values..
             if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
             {
@@ -5116,6 +5119,7 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
 void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
 {
     TItemType itemType;
+    btnBillTable->Enabled = true;
     for (int i = 0; i < TabList->Count; i++)
     {
         TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
@@ -5140,6 +5144,16 @@ void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransacti
             break;
         }
     }
+}
+//---------------------------------------------------------------------------------------------------------
+void TfrmBillGroup::ChangeBillEntireTableState()
+{
+    VisibleItems.clear();
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    DisableBillEntireTable(DBTransaction);
+    DBTransaction.Commit();
 }
 
 
