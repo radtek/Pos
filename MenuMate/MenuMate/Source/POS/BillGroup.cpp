@@ -338,6 +338,7 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
               btnApplyMembership->Enabled = false;
             }
 
+
 	}
 	else if (CurrentDisplayMode == eTables)
 	{
@@ -3451,7 +3452,7 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 		}
 	}
 
-     tbtnToggleGST->Visible = false;
+     //tbtnToggleGST->Visible = false;
 
 	IgnoreItemThreshhold = false;
 
@@ -5153,6 +5154,8 @@ void TfrmBillGroup::ChangeBillEntireTableState()
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     DisableBillEntireTable(DBTransaction);
+    if(btnBillTable->Enabled)
+        tbtnToggleGST->Visible = false;
     DBTransaction.Commit();
 }
 
