@@ -5074,6 +5074,15 @@ void TfrmBillGroup::UpdateContainerList()
 //------------------------------------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
 {
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+
+    if(TabList->Count > 1 && CurrentSelectedTab > 0)
+    {
+        VisibleItems.clear();
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
+    }
     TItemType itemType;
 
     if(SelectedItems.size())
@@ -5095,9 +5104,6 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
             SelectedItems[itItem->first] = ptrSelectItem;
     }
 
-    Database::TDBTransaction DBTransaction(DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-    DBTransaction.StartTransaction();
     UpdateItemListDisplay(DBTransaction);
     if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
     {
