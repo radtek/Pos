@@ -17,10 +17,12 @@ public :
         }
 
     TManagerDelayedPayment();
-    void MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer);
+    void MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer, bool isMixedMenuOrder = true);
     void MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder = true);
     bool IsDelayedPayment(TPaymentTransaction &PaymentTransaction );
     void SplitDelayedPaymentOrderByMenuType(TList *orderList, TList *foodOrdersList, TList *bevOrdersList);
+private:
+    AnsiString GetInvoiceNumber(Database::TDBTransaction &DBTransaction, bool isMixedMenuOrder);
 };
 
 #endif

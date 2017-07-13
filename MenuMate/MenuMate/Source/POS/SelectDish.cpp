@@ -1153,12 +1153,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
                        Item->ItemWeight.SetWeightIn_g(Currency(Barcode.SubString(8,6)));
                        Price= Price / Item->ItemWeight.AsKiloGrams()  ;
                     }
-                                else
-                                {
-								   Item->SetQty(Price/ItemSize->Price);
-								   Item->IsPriceBarcodedItem = true;
-                                   Price = 0;
-                                }
+                    else
+                    {
+                       Item->SetQty(Price/ItemSize->Price);
+                       Item->IsPriceBarcodedItem = true;
+                       Price = 0;
+                    }
 				BeforeItemOrdered.Occured();
 				if (BeforeItemOrdered.EventsFailed)
 				{
@@ -3413,10 +3413,16 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     TPaymentTransaction PaymentTransaction(DBTransaction);
     PaymentTransaction.PartyName = PartyName;
     AnsiString BeveragesInvoiceNumber = "";
-     bool isBeveragesInvGenerated = false;
-
+    bool isBeveragesInvGenerated = false;
      //To check whether payment done is by linking the fast tenderkey with payment
     bool isProcessedQuickPayment = false;
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TGlobalSettings::Instance().TransferTableOnPrintPrelim
+            && DelayedInvoiceNumber.Pos("L") != 0)
+    {
+        isBeveragesInvGenerated = true;
+        BeveragesInvoiceNumber = DelayedInvoiceNumber;
+    }
 
 	try
 	{
@@ -3449,6 +3455,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		{
             AnsiString BevTabName = "";
             int BevTabKey;
+            if(isBeveragesInvGenerated)
+            {
+                BevTabName = TabName;
+                BevTabKey = SelectedTab;
+            }
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
@@ -3464,6 +3475,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     TDBTab::SetTabName(DBTransaction, BevTabKey, BevTabName);
 
                 }
+                
 				Order->TabKey = SelectedTab;
 				if (TabContainerName == "" && TabType == TabTableSeat)
 				{
@@ -8660,7 +8672,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
 				if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
 				{
-
 					SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
 					OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
 					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
@@ -8691,7 +8702,30 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
                             SouceTableForDelayedPayment =  OrderContainer.Location["ContainerName"];
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                            {
+                                for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+                                {
+                                    TItemComplete* item = SeatOrders[SelectedSeat]->Orders->Items[i];
+
+                                    if(item->ItemType)
+                                        BevOrdersList->Add(item);
+                                    else
+                                        FoodOrdersList->Add(item);
+                                }
+                            }
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !FoodOrdersList->Count && BevOrdersList->Count)
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer, false);
+                            }
+                            else
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            }
                         }
                         else
                         {
