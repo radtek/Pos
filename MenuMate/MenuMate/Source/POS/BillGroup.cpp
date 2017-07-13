@@ -1079,10 +1079,14 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                         sendClippTabKey->SendTabDetails(CurrentSelectedTab);
                     }
                     ResetForm();
-                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
                     {
-                       ChangeBillEntireTableState();
-                    }
+                        if(CurrentDisplayMode == eTables)
+                            ChangeBillEntireTableState();
+
+                        if(!tgridItemList->RowCount)
+                            tbtnToggleGST->Visible = false;
+                     }
 			    }
                 catch(Exception & E)
                 {
@@ -2939,8 +2943,8 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
         
-        if(VisibleItems.size() && SelectedItems.size()
-                && TGlobalSettings::Instance().IsBillSplittedByMenuType && VisibleItems.size() > 1 && VisibleItems.size() != SelectedItems.size())
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType &&  VisibleItems.size() != SelectedItems.size() && VisibleItems.size() &&
+                SelectedItems.size() && VisibleItems.size() > 1 )
         {
             tbtnToggleGST->Visible = true;
         }
