@@ -183,14 +183,17 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                                     "FROM ARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER AND A.TERMINAL_NAME = :TERMINAL_NAME "
+                                    "AND SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
                                     "UNION ALL "
                                     "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
                                     "a.RECEIPT, SECURITY.USER_KEY  "
                                     "FROM DAYARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER AND A.TERMINAL_NAME = :TERMINAL_NAME ";
+                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER AND A.TERMINAL_NAME = :TERMINAL_NAME "
+                                    "AND SECURITY.SECURITY_EVENT = :SECURITY_EVENT ";
         IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
         IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+        IBInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Billed By";
         IBInternalQuery->ExecQuery();
 
         int contactKey = 0, customerID = 0;
