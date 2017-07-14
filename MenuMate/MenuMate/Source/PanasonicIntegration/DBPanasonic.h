@@ -32,6 +32,7 @@ public:		// User declarations
     void InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo);
     void PrepareTransactionTypes();
     void InsertTenderTypes(std::vector <UnicodeString> PayTypes);
+    void InsertTerminalId(int terminalId);
 };
 
 //---------------------------------------------------------------------------

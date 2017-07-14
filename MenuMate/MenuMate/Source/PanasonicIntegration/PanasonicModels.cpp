@@ -16,7 +16,7 @@ void TPanasonicModels::SetStoreId(UnicodeString storeId)
     _storeId = storeId;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetTerminalId(UnicodeString terminalId)
+void TPanasonicModels::SetTerminalId(int terminalId)
 {
     _terminalId = terminalId;
 }

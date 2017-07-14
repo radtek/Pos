@@ -448,7 +448,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         {
             TManagerPanasonic::Instance();
             TManagerPanasonic::Instance()->PrepareTenderTypes();
-            TManagerPanasonic::Instance()->PrepareTransactionTypes();
+            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
         }
 
 
