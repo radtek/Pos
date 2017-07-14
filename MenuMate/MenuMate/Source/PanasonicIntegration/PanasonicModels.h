@@ -10,7 +10,7 @@ class TPanasonicModels
 {
 private:
     UnicodeString _storeId;
-    UnicodeString _terminalId;
+    int _terminalId;
     UnicodeString _operatorId;
     UnicodeString _operatorName;
     UnicodeString _customerId;
@@ -45,7 +45,7 @@ private:
     bool _operatorSignOff;
     UnicodeString _lastReceipt;
     void SetStoreId(UnicodeString storeId);
-    void SetTerminalId(UnicodeString terminalId);
+    void SetTerminalId(int terminalId);
     void SetOperatorId(UnicodeString operatorId);
     void SetOperatorName(UnicodeString operatorName);
     void SetCustomerId(UnicodeString customerId);
@@ -82,7 +82,7 @@ private:
 
 public:
     __property UnicodeString StoreId = {read = _storeId, write = SetStoreId};
-    __property UnicodeString Terminald = {read = _terminalId, write = SetTerminalId};
+    __property int Terminald = {read = _terminalId, write = SetTerminalId};
     __property UnicodeString OperatorId = {read = _operatorId, write = SetOperatorId};
     __property UnicodeString OperatorName = {read = _operatorName, write = SetOperatorName};
     __property UnicodeString CustomerId = {read = _customerId, write = SetCustomerId};

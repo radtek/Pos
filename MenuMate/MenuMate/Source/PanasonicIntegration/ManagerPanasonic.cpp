@@ -195,7 +195,6 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 
         int contactKey = 0, customerID = 0;
         UnicodeString memberName = "";
-        UnicodeString appendString = "*";
         int siteId = GetSiteId(dbTransaction);
 
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -208,7 +207,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 
             TDateTime startDateTime = GetStartDateTime(dbTransaction, arcBillKey);
             panasonicModel->StoreId               = siteId;
-            panasonicModel->Terminald             = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+            panasonicModel->Terminald             = TDeviceRealTerminal::Instance().ID.DeviceKey;
             panasonicModel->OperatorId            = contactKey;
             panasonicModel->OperatorName          = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
             panasonicModel->TransactionId         = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
@@ -220,15 +219,15 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 
             if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency > 0)
             {
-                panasonicModel->TransactionType       = "*Sale*";
+                panasonicModel->TransactionType       = "Sale";
             }
             else if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency < 0)
             {
-                panasonicModel->TransactionType       = "*Refund*";
+                panasonicModel->TransactionType       = "Refund";
             }
             else
             {
-                panasonicModel->TransactionType       = "*Cancelled Order*";
+                panasonicModel->TransactionType       = "Cancelled Order";
             }
             panasonicModel->ProductListId         = arcBillKey;
             panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
@@ -272,10 +271,15 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             selectPaymentType->ParamByName("NOTE")->AsString = "Total Change.";
             selectPaymentType->ExecQuery();
 
-            panasonicModel->TenderType = appendString + selectPaymentType->FieldByName("PAY_TYPE")->AsString + appendString;
-
+            UnicodeString payTypeString = "", payTypeName = "";
              for(; !selectPaymentType->Eof; selectPaymentType->Next())
              {
+                    payTypeName = selectPaymentType->FieldByName("PAY_TYPE")->AsString;
+                    if(selectPaymentType->FieldByName("SUBTOTAL")->AsCurrency != 0.00 && payTypeString.Pos(payTypeName) == 0)
+                    {
+                        payTypeString = payTypeString != "" ? (payTypeString + "," + payTypeName) : payTypeName;
+                    }
+
                     //if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 4097)
                     if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,13,"))
                     {
@@ -299,7 +303,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                         panasonicModel->CashOut = selectPaymentType->FieldByName("CASH_OUT")->AsString == "T" ? true : false;
                     }
               }
-
+                panasonicModel->TenderType = payTypeString;
                 dbPanasonic->SendDataToServer(*panasonicModel);
 
                 //Convert TransactionInfo to panasonic Item info so that it can be directly posted to their TItemList Table.
@@ -536,9 +540,10 @@ void TManagerPanasonic::PrepareTenderTypes()
         dbPanasonic->UniDataBaseConnection->Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
+    delete dbPanasonic;
 }
 //---------------------------------------------------------------------------------------------------------------------------
-void TManagerPanasonic::PrepareTransactionTypes()
+void TManagerPanasonic::PrepareTransactionTypesAndTerminalId()
 {
     TDBPanasonic* dbPanasonic = new TDBPanasonic();
     dbPanasonic->UniDataBaseConnection->Open();
@@ -547,6 +552,7 @@ void TManagerPanasonic::PrepareTransactionTypes()
     try
     {
         dbPanasonic->PrepareTransactionTypes();
+        dbPanasonic->InsertTerminalId(TDeviceRealTerminal::Instance().ID.DeviceKey);
         dbPanasonic->UniDataBaseConnection->Commit();
         dbPanasonic->UniDataBaseConnection->Close();
     }
@@ -555,6 +561,7 @@ void TManagerPanasonic::PrepareTransactionTypes()
         dbPanasonic->UniDataBaseConnection->Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
+    delete dbPanasonic;
 }
 
 

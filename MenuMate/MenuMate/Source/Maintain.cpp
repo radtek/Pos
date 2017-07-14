@@ -3794,7 +3794,7 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
     {
         TManagerPanasonic::Instance()->TriggerTransactionSync();
         TManagerPanasonic::Instance()->PrepareTenderTypes();
-        TManagerPanasonic::Instance()->PrepareTransactionTypes();
+        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
     }
 }
 //-------------------------------------------------------------------------------------
