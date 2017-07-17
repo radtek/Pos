@@ -21,7 +21,9 @@ struct TFloorPlanReturnParams {
 class TEnableFloorPlan
 {
 	public:
-        static TEnableFloorPlan* Instance();
+        TEnableFloorPlan();
+        ~TEnableFloorPlan();
+//        static TEnableFloorPlan* Instance();
 
 		bool Run(
                                  TForm* inOwner,
@@ -33,8 +35,8 @@ class TEnableFloorPlan
         unsigned __int32 GetMaxSeatCount();
 
 	private:
-        TEnableFloorPlan();
-        static TEnableFloorPlan* enableFloorPlan;
+//        TEnableFloorPlan();
+//        static TEnableFloorPlan* enableFloorPlan;
 
 		bool runNewFloorPlan(
                                  TForm* inOwner,

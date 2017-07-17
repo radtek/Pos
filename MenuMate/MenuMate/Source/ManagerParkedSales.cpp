@@ -173,7 +173,11 @@ void TManagerParkedSales::DeleteAll(Database::TDBTransaction &DBTransaction)
 
 unsigned __int32 TManagerParkedSales::getMaxSeatCount()
 {
-    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
+    std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
+    unsigned __int32 value = floorPlan->GetMaxSeatCount();
+    floorPlan.reset();
+    return value;
+//    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
 }
 //.............................................................................
 

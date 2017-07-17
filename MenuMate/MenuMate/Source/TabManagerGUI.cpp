@@ -1638,6 +1638,7 @@ void __fastcall TfrmTabManager::btnTabCreditClick(TObject *Sender)
 	if (frmDropDown->ShowModal() == mrOk)
 	{
 		frmDropDown->FunctionToCall();
+        frmDropDown.reset();
 	}
 }
 // ---------------------------------------------------------------------------

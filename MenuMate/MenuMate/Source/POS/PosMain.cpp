@@ -460,6 +460,7 @@ void __fastcall TfrmPOSMain::tbAccountManagerClick(TObject *Sender)
 	{
 		std::auto_ptr<TfrmTabManager> frmTabManager(TfrmTabManager::Create<TfrmTabManager>(this,TDeviceRealTerminal::Instance().DBControl));
 		frmTabManager->ShowModal();
+        frmTabManager.reset();
 		ShowTableScreen();
 	}
 }
@@ -526,9 +527,10 @@ void __fastcall TfrmPOSMain::tbTableManagerMouseClick(TObject *Sender)
 	{
 		//std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
 		TFloorPlanReturnParams floorPlanReturnParams;
-
+        std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
 		// Runs new web app of floorPlan
-		if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+        if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
+//		if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 		{
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -544,6 +546,7 @@ void __fastcall TfrmPOSMain::tbTableManagerMouseClick(TObject *Sender)
 			}
 			DBTransaction.Commit();
 		}
+        floorPlan.reset();
 	}
 	else if (CurrentDisplayMode == eRooms)
 	{

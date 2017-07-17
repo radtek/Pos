@@ -4225,9 +4225,11 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			}break;
 		case TabTableSeat:
 			{
+                std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
 				TFloorPlanReturnParams floorPlanReturnParams;
 				// Runs new web app of floorPlan
-				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
+                if( floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ) )
+//				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 				{
 
                     CurrentDisplayMode = eTables;
@@ -4237,12 +4239,14 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                     int i=     floorPlanReturnParams.TabContainerNumber;
                     CheckLinkedTable(floorPlanReturnParams.TabContainerNumber);
                     ResetForm();
+                    floorPlan.reset();
 				}
                 else
                 {
                     CurrentDisplayMode = eNoDisplayMode;
                     UpdateRightButtonDisplay(NULL);
                     ResetForm();
+                    floorPlan.reset();
                 }
 			}break;
 		case TabRoom:

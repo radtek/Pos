@@ -690,7 +690,11 @@ bool TfrmTransfer::DestTabStaffAccessOk(Database::TDBTransaction &DBTransaction,
 // ---------------------------------------------------------------------------
 unsigned __int32 TfrmTransfer::getMaxSeatCount()
 {
-    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
+    std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
+    unsigned __int32 value = floorPlan->GetMaxSeatCount();
+    floorPlan.reset();
+    return value;
+//    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
 }
 
 AnsiString TfrmTransfer::DisplayKeypad( AnsiString inCaption )
@@ -2407,10 +2411,12 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                     {
                         if(title == "Select Transfer To")
                         {
+                             std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
                              TFloorPlanReturnParams floorPlanReturnParams;
                              CurrentDestDisplayMode = eTables;
                             // Runs new web app of floorPlan
-                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+                            if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
+//                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
                            {
                               lbDisplayTransferto->Clear();
                               if( CurrentDestTable != floorPlanReturnParams.TabContainerNumber )
@@ -2426,14 +2432,16 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                               floorPlanReturnParams.Ver = 0;
                               Retval = mrAbort;
                            }
-
+                           floorPlan.reset();
                         }
                         else
                         {
+                             std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
                              TFloorPlanReturnParams floorPlanReturnParams;
                              CurrentSourceDisplayMode = eTables;
                             // Runs new web app of floorPlan
-                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
+                            if(floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ))
+//                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
                            {
                              if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
                              {
@@ -2448,6 +2456,7 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                                floorPlanReturnParams.Ver = 0;
                                Retval = mrAbort;
                            }
+                           floorPlan.reset();
                         }
 
                     }break;

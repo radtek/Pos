@@ -4398,15 +4398,17 @@ void __fastcall TfrmSelectDish::tbtnCallAwayClick()
 
 		if (CallAway->TableNo == 0)
 		{
-			//std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
+            std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
 			TFloorPlanReturnParams floorPlanReturnParams;
 
 			// Runs new web app of floorPlan
-                      if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+            if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+//                      if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 			{
  //				FloorPlanReturnParams = FloorPlan->RunFloorPlan();
 				CallAway->TableNo = floorPlanReturnParams.TabContainerNumber;
 			}
+            floorPlan.reset();
 		}
 
 		if (CallAway->TableNo != 0)
@@ -7270,7 +7272,6 @@ void __fastcall TfrmSelectDish::btnOkMouseClick(TObject *Sender)
    pnlItemModify->Visible = false;
    pnlItemModify->SendToBack();
    btngridModify->RowCount = 0;
-   pcItemModify->ActivePage->CleanupInstance();
 }
 // ---------------------------------------------------------------------------
 double TfrmSelectDish::CountInstances(TItemComplete &archetype)
@@ -7957,14 +7958,14 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 		{
 			Close();
 		}
-    else if (frmPOSMain->RedrawMenus)
+        else if (frmPOSMain->RedrawMenus)
+        {
+            if(frmPOSMain->MenuEdited)
             {
-                if(frmPOSMain->MenuEdited)
-                {
-                    RedrawMenu();
-                    UpdateMenuItemsAfterLoginScreen();
-                }
+                RedrawMenu();
+                UpdateMenuItemsAfterLoginScreen();
             }
+        }
 		else if (frmPOSMain->SendHeldOrders)
 		{
 			std::auto_ptr<TList>OrdersList(new TList);
@@ -7978,19 +7979,19 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 			}
 		}
 		ResetPOS();
-                AutoLogOut();
-                if(frmPOSMain->ShowTablePicker && TGlobalSettings::Instance().EnableTableDisplayMode)
-                  {
-                    showTablePicker();
-                  }
+        AutoLogOut();
+        if(frmPOSMain->ShowTablePicker && TGlobalSettings::Instance().EnableTableDisplayMode)
+        {
+           showTablePicker();
+        }
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 
-    tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
-	tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
-	tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
-	tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
-	tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
+        tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
+        tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
+        tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
+        tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
+        tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
 	}
 	IsSubSidizeProcessed=false;
 	IsTabBillProcessed=false;
@@ -9579,11 +9580,12 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                    case TabTableSeat:
 	                        {
 
-	                            //std::auto_ptr<TEnableFloorPlan>(FloorPlan)(new TEnableFloorPlan((TForm*)this));
+	                            std::auto_ptr<TEnableFloorPlan> floorPlan (new TEnableFloorPlan());
 	                            TFloorPlanReturnParams floorPlanReturnParams;
 
 	                            // Runs new web app of floorPlan
-	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+                                if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
+//	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 	                            {
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
@@ -9596,10 +9598,12 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                {
 	                                    Retval = mrAbort;
 	                                }
+                                    floorPlan.reset();
 	                            }
 	                            else
 	                            {
-	                        Retval = mrAbort;
+                                    floorPlan.reset();
+	                                Retval = mrAbort;
 	                            }
 	                        }break;
 	                    case TabRoom:
@@ -10501,7 +10505,9 @@ void TfrmSelectDish::showOldTablePicker()
         bool tableSelected = false;
         TFloorPlanReturnParams floorPlanReturnParams;
         // Runs new web app of floorPlan
-        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
+        std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
+        if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
+//        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
             tableSelected            = true;
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
@@ -10515,6 +10521,7 @@ void TfrmSelectDish::showOldTablePicker()
                 TCustNameAndOrderType::Instance()->LoadFromOrdersDatabase( SelectedTable );
             }
         }
+        floorPlan.reset();
     }
     catch(Exception & E)
     {
@@ -11071,12 +11078,20 @@ void TfrmSelectDish::retrieveForcedOptionList(
 //---------------------------------------------------------------------------
 unsigned __int32 TfrmSelectDish::getMaxTableCount()
 {
-    return TEnableFloorPlan::Instance()->GetMaxTableCount();
+    std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
+    unsigned __int32 value = floorPlan->GetMaxTableCount();
+    floorPlan.reset();
+    return value;
+//    return TEnableFloorPlan::Instance()->GetMaxTableCount();
 }
 //.............................................................................
 unsigned __int32 TfrmSelectDish::getMaxSeatCount()
 {
-    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
+    std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
+    unsigned __int32 value = floorPlan->GetMaxSeatCount();
+    floorPlan.reset();
+    return value;
+//    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
 }
 //.............................................................................
 bool SortItemByPrice(TItemMinorComplete *lhs, TItemMinorComplete *rhs)

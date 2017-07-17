@@ -80,7 +80,7 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
         {
             _controller->locations.clear();
         }
-        _controller.release();
+        _controller.reset();
 		ModalResult = mrOk;
 	}
 }
@@ -99,7 +99,7 @@ void __fastcall TFrmSelectTable2::TouchBtn2MouseClick(TObject *Sender)
     {
         _controller->locations.clear();
     }
-    _controller.release();
+    _controller.reset();
 	ModalResult = mrCancel;
 }
 // ---------------------------------------------------------------------------
@@ -140,7 +140,7 @@ void __fastcall TFrmSelectTable2::tiUpdateFloorPlanRefreshTimer(TObject *Sender)
           {
             _controller->locations.clear();
           }
-        _controller.release();
+        _controller.reset();
         ModalResult = mrOk;
     }
     else
@@ -154,7 +154,7 @@ void __fastcall TFrmSelectTable2::tiUpdateFloorPlanRefreshTimer(TObject *Sender)
       {
         _controller->locations.clear();
       }
-       _controller.release();
+       _controller.reset();
        ModalResult = mrCancel;
     }
 }

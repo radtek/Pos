@@ -11,17 +11,27 @@
 #pragma package(smart_init)
 
 // Singleton Object Instance set to NULL.
-TEnableFloorPlan* TEnableFloorPlan::enableFloorPlan = NULL;
+//TEnableFloorPlan* TEnableFloorPlan::enableFloorPlan = NULL;
 
-TEnableFloorPlan* TEnableFloorPlan::Instance()
+//---------------------------------------------------------------------------
+TEnableFloorPlan::TEnableFloorPlan()
 {
-    if( enableFloorPlan == NULL )
-    {
-        enableFloorPlan = new TEnableFloorPlan();
-    }
-
-    return enableFloorPlan;
+    changingName = false;
 }
+//---------------------------------------------------------------------------
+TEnableFloorPlan::~TEnableFloorPlan()
+{
+}
+//---------------------------------------------------------------------------
+//TEnableFloorPlan* TEnableFloorPlan::Instance()
+//{
+//    if( enableFloorPlan == NULL )
+//    {
+//        enableFloorPlan = new TEnableFloorPlan();
+//    }
+//
+//    return enableFloorPlan;
+//}
 //................................................................
 
 bool TEnableFloorPlan::Run(
@@ -68,10 +78,10 @@ void TEnableFloorPlan::SetChangingName(bool inChangingName)
 }
 //................................................................
 
-TEnableFloorPlan::TEnableFloorPlan()
-{
-    changingName = false;
-}
+//TEnableFloorPlan::TEnableFloorPlan()
+//{
+//    changingName = false;
+//}
 //................................................................
 
 bool TEnableFloorPlan::initialiseFloorPlan()
@@ -142,15 +152,15 @@ bool TEnableFloorPlan::runNewFloorPlan(
         inFloorPlanReturnParams.TabContainerName   = frmSelectTable2->SelectedTabContainerName;
         inFloorPlanReturnParams.PartyName = frmSelectTable2->SelectedPartyName;
         ReleaseFormMemory(frmSelectTable2);
-        frmSelectTable2.release();
-        controller.release();
+        frmSelectTable2.reset();
+        controller.reset();
         retValue = true;
     }
     else
     {
         ReleaseFormMemory(frmSelectTable2);
-        frmSelectTable2.release();
-        controller.release();
+        frmSelectTable2.reset();
+        controller.reset();
         retValue = false;
     }
     if(needToReopen)
