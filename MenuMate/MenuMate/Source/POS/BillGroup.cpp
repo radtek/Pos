@@ -414,7 +414,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 
 			TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
 
-                        LoadCustNameAndOrderType(ReceiptTransaction);
+            LoadCustNameAndOrderType(ReceiptTransaction);
 
 			if (TGlobalSettings::Instance().EnableMenuPatronCount)
 			{
@@ -454,24 +454,39 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			{
 				AnsiString PartyName = TDBTables::GetPartyName(DBTransaction, CurrentTable);
 				TempReceipt->MiscData["PartyName"] = PartyName;
-                                //If TransferTableOnPrintPrelim is on then move selected items to a tab
-                                TMMContactInfo TempUserInfo;
-                                TempUserInfo = TDeviceRealTerminal::Instance().User;
-                                std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-                                bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
-                                if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
-                                {
-                                   TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
-                                   if(TDBTables::IsEmpty(DBTransaction,CurrentTable))
-                                    {
-                                      TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
-                                    }
-                                   OrderMoved = true;
-                                }
-                                else
-                                {
-                                  TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,ePrelim);
-                                }
+                    //If TransferTableOnPrintPrelim is on then move selected items to a tab
+                    TMMContactInfo TempUserInfo;
+                    TempUserInfo = TDeviceRealTerminal::Instance().User;
+                    std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+                    bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
+                    if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
+                    {
+                        std::auto_ptr<TList>FoodOrders(new TList);
+                        std::auto_ptr<TList>BevOrders(new TList);
+                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                        {
+                            TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(ReceiptTransaction.Orders, FoodOrders.get(), BevOrders.get());
+                        }
+
+                       if(TGlobalSettings::Instance().IsBillSplittedByMenuType && BevOrders->Count )
+                       {
+                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, false);
+                       }
+                       else
+                       {
+                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
+                       }
+
+                       if(TDBTables::IsEmpty(DBTransaction,CurrentTable))
+                        {
+                          TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
+                        }
+                       OrderMoved = true;
+                    }
+                    else
+                    {
+                      TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,ePrelim);
+                    }
 
 			}
 			else if (CurrentDisplayMode == eRooms)
