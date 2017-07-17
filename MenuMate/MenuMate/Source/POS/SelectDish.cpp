@@ -14923,13 +14923,16 @@ bool TfrmSelectDish::CheckItemCanBeAddedToSeat(TItem *item)
 //---------------------------------------------------------------------------------------------------------
 void TfrmSelectDish::LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList)
 {
-    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+    for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
     {
-        TItemComplete* item = SeatOrders[SelectedSeat]->Orders->Items[i];
+        for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
+        {
+            TItemComplete* item = SeatOrders[iSeat]->Orders->Items[i];
 
-        if(item->ItemType)
-            bevOrdersList->Add(item);
-        else
-            foodOrdersList->Add(item);
+            if(item->ItemType)
+                bevOrdersList->Add(item);
+            else
+                foodOrdersList->Add(item);
+        }
     }
 }
