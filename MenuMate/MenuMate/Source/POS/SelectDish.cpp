@@ -3464,7 +3464,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
 
-                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated &&
+                        TGlobalSettings::Instance().IsBillSplittedByMenuType && DelayedInvoiceNumber != "" )
                 {
                     isBeveragesInvGenerated = true;
                     BeveragesInvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
@@ -3505,7 +3506,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
 
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
-                            TGlobalSettings::Instance().IsBillSplittedByMenuType )
+                            TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
                 {
                     Order->TabKey = BevTabKey;
 				    Order->TabName = BevTabName;
@@ -8318,9 +8319,25 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                       bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                       if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+
                             TDBTables::SetTableBillingStatus(DBTransaction,OrderContainer.Location["SelectedTable"],eNoneStatus);
                             SouceTableForDelayedPayment =  OrderContainer.Location["ContainerName"];
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                            {
+                                LoadFoodAndBevList(FoodOrdersList.get(), BevOrdersList.get());
+                            }
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !FoodOrdersList->Count && BevOrdersList->Count)
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer, false);
+                            }
+                            else
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            }
                         }
 					 else
                         {
@@ -8707,15 +8724,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
                             if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                             {
-                                for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-                                {
-                                    TItemComplete* item = SeatOrders[SelectedSeat]->Orders->Items[i];
-
-                                    if(item->ItemType)
-                                        BevOrdersList->Add(item);
-                                    else
-                                        FoodOrdersList->Add(item);
-                                }
+                                LoadFoodAndBevList(FoodOrdersList.get(), BevOrdersList.get());
                             }
 
                             if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !FoodOrdersList->Count && BevOrdersList->Count)
@@ -14910,4 +14919,17 @@ bool TfrmSelectDish::CheckItemCanBeAddedToSeat(TItem *item)
     }
 
     return isMenuTypeSame;
+}
+//---------------------------------------------------------------------------------------------------------
+void TfrmSelectDish::LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList)
+{
+    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+    {
+        TItemComplete* item = SeatOrders[SelectedSeat]->Orders->Items[i];
+
+        if(item->ItemType)
+            bevOrdersList->Add(item);
+        else
+            foodOrdersList->Add(item);
+    }
 }
