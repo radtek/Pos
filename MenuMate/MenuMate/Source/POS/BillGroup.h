@@ -169,6 +169,7 @@ private:	// User declarations
     Currency GetAvailableRedeemPoints(TMMContactInfo &Member);
     void DisableBillEntireTable(Database::TDBTransaction &DBTransaction);
     void ChangeBillEntireTableState();
+    void DisableToggleGSTButton(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

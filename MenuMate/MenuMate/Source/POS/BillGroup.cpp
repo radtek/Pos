@@ -1653,9 +1653,14 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 				}
 			}
 			UpdateItemListDisplay(DBTransaction);
-            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
             {
-                DisableBillEntireTable(DBTransaction);
+                if(CurrentDisplayMode == eTables)
+                {
+                    DisableBillEntireTable(DBTransaction);
+                }
+
+                DisableToggleGSTButton(DBTransaction);
             }
 
             //Get Table 's guest is linked to clipp tab
@@ -1736,9 +1741,13 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 
 					CancelItems(DBTransaction, ItemsToBeCanceled, TempUserInfo);
 					UpdateItemListDisplay(DBTransaction);
-                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                     {
-                        DisableBillEntireTable(DBTransaction);
+                        if(CurrentDisplayMode == eTables)
+                        {
+                            DisableBillEntireTable(DBTransaction);
+                        }
+                        DisableToggleGSTButton(DBTransaction);
                     }
 
                     //Get Table 's guest is linked to clipp tab
@@ -2462,9 +2471,13 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateRightButtonDisplay(Sender);
         IgnoreItemThreshhold = false;
         UpdateItemListDisplay(DBTransaction);
-        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
         {
-            DisableBillEntireTable(DBTransaction);
+            if(CurrentDisplayMode == eTables)
+            {
+                DisableBillEntireTable(DBTransaction);
+            }
+            DisableToggleGSTButton(DBTransaction);
         }
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
@@ -2621,14 +2634,22 @@ void __fastcall TfrmBillGroup::tgridItemListMouseDown(TObject *Sender, TMouseBut
 //---------------------------------------------------------------------------
 void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
 {
-        if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
-        { // Not Found add it.
-            SelectItem(GridButton);
-        }
-        else
-        {
-            DeselectItem(GridButton);
-        }
+    if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
+    { // Not Found add it.
+        SelectItem(GridButton);
+    }
+    else
+    {
+        DeselectItem(GridButton);
+    }
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        DisableToggleGSTButton(DBTransaction);
+        DBTransaction.Commit();
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SelectItem(TGridButton *GridButton)
@@ -5182,6 +5203,38 @@ void TfrmBillGroup::ChangeBillEntireTableState()
     if(btnBillTable->Enabled)
         tbtnToggleGST->Visible = false;
     DBTransaction.Commit();
+}
+//--------------------------------------------------------------------------------------------------------
+void TfrmBillGroup::DisableToggleGSTButton(Database::TDBTransaction &DBTransaction)
+{
+    //Other cases already tested so seperating code.
+    tbtnToggleGST->Visible = false;
+    TItemType itemType;
+    std::map<__int64,TPnMOrder> VisibleItemsForGST;
+
+    if(CurrentSelectedTab == -1)
+    {
+        for (int i = 0; i < TabList->Count; i++)
+        {
+            TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItemsForGST);
+        }
+    }
+    else
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItemsForGST);
+    }
+
+        std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItemsForGST.begin();
+        itemType = itItem->second.ItemType;
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItemsForGST.begin(); itItem != VisibleItemsForGST.end(); advance(itItem, 1))
+    {
+        if(itemType !=  itItem->second.ItemType)
+        {
+            tbtnToggleGST->Visible = true;
+            break;
+        }
+    }
 }
 
 
