@@ -1496,9 +1496,13 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
 	UpdateItemListDisplay(DBTransaction);
-    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
     {
-        DisableBillEntireTable(DBTransaction);
+        if(CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
+        DisableToggleGSTButton(DBTransaction);
     }
 	UpdateContainerListColourDisplay();
     if(lbeMembership->Visible == false)//todo-Arpit
