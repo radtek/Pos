@@ -3451,15 +3451,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		TMMContactInfo Member;
 		int SecRefNumber = TDBSecurity::GetNextSecurityRef(PaymentTransaction.DBTransaction);
 		TDateTime OrderedTimeStamp = Now();
+        AnsiString BevTabName = "";
+        int BevTabKey;
+        if(isBeveragesInvGenerated)
+        {
+            BevTabName = TabName;
+            BevTabKey = SelectedTab;
+        }
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
-            AnsiString BevTabName = "";
-            int BevTabKey;
-            if(isBeveragesInvGenerated)
-            {
-                BevTabName = TabName;
-                BevTabKey = SelectedTab;
-            }
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
@@ -3961,9 +3961,29 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                 }
                             }
                             else
-                            {
+                            {  
                                 std::set<__int64>InvoiceTabs;
-                                if (TabType == TabTableSeat)
+
+                                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim )
+                                {
+                                    if(Size == 2)
+                                    {
+                                        if(index)
+                                        {
+                                            TDBOrder::GetTabKeysFromOrders(BevOrdersList.get(), InvoiceTabs);
+                                        }
+                                        else
+                                        {
+                                            TDBOrder::GetTabKeysFromOrders(FoodOrdersList.get(), InvoiceTabs);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        TDBOrder::GetTabKeysFromOrders(OrdersList.get(), InvoiceTabs);
+                                    }
+                                }
+                                else if (TabType == TabTableSeat)
                                 { // Retrive the Tab Key for this Table/Seat.
                                     TDBTables::GetTabKeys(DBTransaction, TableNo, InvoiceTabs);
                                 }
