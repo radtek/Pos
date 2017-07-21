@@ -1932,6 +1932,7 @@ void TfrmSelectDish::TotalCosts()
         {
            AssignremovedTaxesList();
            AssignDiscountLists();
+           HighlightSelectedItem();
         }
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
