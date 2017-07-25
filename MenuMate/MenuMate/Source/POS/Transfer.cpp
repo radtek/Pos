@@ -86,7 +86,6 @@ void __fastcall TfrmTransfer::FormDestroy(TObject *Sender)
 
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmTransfer::FormShow(TObject *Sender)
 {
    FormResize(this);
@@ -161,7 +160,6 @@ void __fastcall TfrmTransfer::FormShow(TObject *Sender)
    ItemTransferredFromClip=false;
    isClipLongPress=false;
 }
-
 // ---------------------------------------------------------------------------
 void TfrmTransfer::UpdateSourceTableDetails(Database::TDBTransaction &DBTransaction)
 {
@@ -179,7 +177,6 @@ void TfrmTransfer::UpdateSourceTableDetails(Database::TDBTransaction &DBTransact
 	  }
    }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmTransfer::UpdateDestTableDetails(Database::TDBTransaction &DBTransaction)
 {
@@ -197,7 +194,6 @@ void TfrmTransfer::UpdateDestTableDetails(Database::TDBTransaction &DBTransactio
 	  }
    }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmTransfer::UpdateSourceSeatDetails(Database::TDBTransaction &DBTransaction, bool isItemTransfered)
 {
@@ -305,7 +301,6 @@ void TfrmTransfer::UpdateSourceSeatDetails(Database::TDBTransaction &DBTransacti
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction)
 {
@@ -437,7 +432,6 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
    }
    UpdateListBox(lbDisplayTransferto);
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTransfer::FormResize(TObject *Sender)
 {
@@ -475,13 +469,12 @@ void __fastcall TfrmTransfer::FormResize(TObject *Sender)
     PnlOkCloseBtn->Height = Screen->Height - 45;
     PnlOkCloseBtn->Top = 0;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTransfer::WMDisplayChange(TWMDisplayChange& Message)
 {
    FormResize(this);
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnCloseClick(TObject *Sender)
 {
    DBTransaction->Rollback();
@@ -493,7 +486,7 @@ void __fastcall TfrmTransfer::btnCloseClick(TObject *Sender)
    InvoiceTabKey = 0;
 
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::FormClose(TObject *Sender, TCloseAction &Action)
 {
   TimerLongPress->Enabled = false;
@@ -564,7 +557,7 @@ bool TfrmTransfer::TabPINOk(Database::TDBTransaction &DBTransaction, int inTabKe
    }
    return TabPINProceed;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::TabStaffAccessOk(Database::TDBTransaction &DBTransaction, int inTabKey)
 {
    bool Proceed = false;
@@ -624,7 +617,7 @@ bool TfrmTransfer::TabStaffAccessOk(Database::TDBTransaction &DBTransaction, int
    }
    return Proceed;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::DestTabStaffAccessOk(Database::TDBTransaction &DBTransaction, int inTabKey)
 {
    bool Proceed = false;
@@ -685,8 +678,6 @@ bool TfrmTransfer::DestTabStaffAccessOk(Database::TDBTransaction &DBTransaction,
    }
    return Proceed;
 }
-
-
 // ---------------------------------------------------------------------------
 unsigned __int32 TfrmTransfer::getMaxSeatCount()
 {
@@ -696,7 +687,7 @@ unsigned __int32 TfrmTransfer::getMaxSeatCount()
     return value;
 //    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
 }
-
+//----------------------------------------------------------------------------
 AnsiString TfrmTransfer::DisplayKeypad( AnsiString inCaption )
 {
 	AnsiString Name = "";
@@ -712,7 +703,7 @@ AnsiString TfrmTransfer::DisplayKeypad( AnsiString inCaption )
 		return frmTouchKeyboard->KeyboardText;
 	}
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::DisplayNumpad( AnsiString inCaption )
 {
    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -726,7 +717,7 @@ int TfrmTransfer::DisplayNumpad( AnsiString inCaption )
 	  return frmTouchNumpad->INTResult;
    }
 }
-
+//----------------------------------------------------------------------------
 TCustomer TfrmTransfer::GetAndSaveCustomer( Database::TDBTransaction &DBTransaction, const int InvoiceKey )
 {
 	TCustomer Customer( DisplayNumpad( "Enter Customers Room Number" ),
@@ -757,12 +748,12 @@ void __fastcall TfrmTransfer::btnTransferFromClick(TObject *Sender)
 {
    ShowSelectScreen(*DBTransaction, "Select Transfer From");
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnTransferToClick(TObject *Sender)
 {
    ShowSelectScreen(*DBTransaction, "Select Transfer To");
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
 {
    try
@@ -978,7 +969,7 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
 {
   if(CheckStaffTabAccess(*DBTransaction))
@@ -992,12 +983,12 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
       }
   }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransferfromMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
   TimerLongPress->Enabled = true;
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransferfromMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
   if(!TimerLongPress->ComponentCount <= 3000)
@@ -1005,12 +996,12 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromMouseUp(TObject *Sender, TMou
      TimerLongPress->Enabled = false;
   }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransfertoMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
   TimerDestLongPress->Enabled = true;
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransfertoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
   if(!TimerDestLongPress->ComponentCount <= 3000)
@@ -1018,7 +1009,7 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoMouseUp(TObject *Sender, TMouse
      TimerDestLongPress->Enabled = false;
   }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransferfromDrawItem(TWinControl *Control, int Index, TRect &Rect, TOwnerDrawState State)
 {
     static int CL_STANDARD = clBlack;
@@ -1120,7 +1111,6 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromDrawItem(TWinControl *Control
 	pCanvas->Brush->Color = clBlack;
 	pCanvas->Brush->Style = Style;
 }
-
 //............................................................
 void __fastcall TfrmTransfer::lbDisplayTransfertoClick(TObject *Sender)
 {
@@ -1135,7 +1125,7 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoClick(TObject *Sender)
   }
 
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransfertoDrawItem(TWinControl *Control, int Index, TRect &Rect, TOwnerDrawState State)
 {
     static int CL_STANDARD = clBlack;
@@ -1237,7 +1227,7 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoDrawItem(TWinControl *Control, 
 	pCanvas->Brush->Color = clBlack;
 	pCanvas->Brush->Style = Style;
 }
-
+//----------------------------------------------------------------------------
 UnicodeString TfrmTransfer::GetTabNameForTable(Database::TDBTransaction &DBTransaction, long source_key, bool isTabSelected)
 {
     UnicodeString tabName ="";
@@ -1271,7 +1261,7 @@ UnicodeString TfrmTransfer::GetTabNameForTable(Database::TDBTransaction &DBTrans
 	}
    return tabName;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::ShowSourceMembersTab(Database::TDBTransaction &DBTransaction)
 {
    bool retVal = false;
@@ -1289,7 +1279,7 @@ bool TfrmTransfer::ShowSourceMembersTab(Database::TDBTransaction &DBTransaction)
    }
    return retVal;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::ShowDestMembersTab(Database::TDBTransaction &DBTransaction)
 {
    bool retVal = false;
@@ -1307,7 +1297,7 @@ bool TfrmTransfer::ShowDestMembersTab(Database::TDBTransaction &DBTransaction)
    }
    return retVal;
 }
-
+//----------------------------------------------------------------------------
 TModalResult TfrmTransfer::NewInvoiceItems(Database::TDBTransaction &DBTransaction)
 {
    TModalResult Retval = mrOk;
@@ -1371,7 +1361,7 @@ TModalResult TfrmTransfer::NewInvoiceItems(Database::TDBTransaction &DBTransacti
    }
    return Retval;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long key, bool isTabSelected,bool ReverseTransfer)
 {
    Currency TotalCost;
@@ -1451,7 +1441,7 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
    }
    
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckItemsOnTab(Database::TDBTransaction &DBTransaction,int inTabKey)
 {
 	bool RetVal = true;
@@ -1480,7 +1470,7 @@ bool TfrmTransfer::CheckItemsOnTab(Database::TDBTransaction &DBTransaction,int i
 	}
 	return RetVal;
 }
-
+//----------------------------------------------------------------------------
 TModalResult TfrmTransfer::AddNewTab(Database::TDBTransaction &DBTransaction)
 {
    TModalResult Retval = mrOk;
@@ -1536,7 +1526,7 @@ TModalResult TfrmTransfer::AddNewTab(Database::TDBTransaction &DBTransaction)
    }
    return Retval;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::UpdateDestRooms(Database::TDBTransaction &DBTransaction)
 {
    CurrentDestDisplayMode = eRooms;
@@ -1551,7 +1541,7 @@ void TfrmTransfer::UpdateDestRooms(Database::TDBTransaction &DBTransaction)
    UpdateDestTableDetails(DBTransaction);
    UpdateDestSeatDetails(DBTransaction);
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::UpdateSourceRooms(Database::TDBTransaction &DBTransaction)
 {
    CurrentSourceDisplayMode = eRooms;
@@ -1566,7 +1556,7 @@ void TfrmTransfer::UpdateSourceRooms(Database::TDBTransaction &DBTransaction)
    UpdateSourceTableDetails(DBTransaction);
    UpdateSourceSeatDetails(DBTransaction);
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
 {
   TimerLongPress->Enabled = false;
@@ -1702,7 +1692,7 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
   }
 
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
 {
   TimerDestLongPress->Enabled = false;
@@ -1838,7 +1828,7 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
       }
   }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnUpMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
    if(lbDisplayTransferto->ItemIndex > 0)
@@ -1854,7 +1844,7 @@ void __fastcall TfrmTransfer::btnUpMouseDown(TObject *Sender, TMouseButton Butto
       }
    }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnDownMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     if (lbDisplayTransferto->ItemIndex >= 0)
@@ -1862,7 +1852,7 @@ void __fastcall TfrmTransfer::btnDownMouseDown(TObject *Sender, TMouseButton But
         lbDisplayTransferto->ItemIndex++;
     }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnSourceUpMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
    if(lbDisplayTransferfrom->ItemIndex > 0)
@@ -1870,7 +1860,7 @@ void __fastcall TfrmTransfer::btnSourceUpMouseDown(TObject *Sender, TMouseButton
       lbDisplayTransferfrom->ItemIndex--;
    }
 }
-
+//----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::btnSourceDownMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	if (lbDisplayTransferfrom->ItemIndex >= 0)
@@ -1878,7 +1868,7 @@ void __fastcall TfrmTransfer::btnSourceDownMouseDown(TObject *Sender, TMouseButt
 		lbDisplayTransferfrom->ItemIndex++;
 	}
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckStaffTabAccess(Database::TDBTransaction &DBTransaction)
 {
   int tabkey = 0;
@@ -1898,7 +1888,7 @@ bool TfrmTransfer::CheckStaffTabAccess(Database::TDBTransaction &DBTransaction)
   }
   return retVal;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckDesttaffTabAccess(Database::TDBTransaction &DBTransaction)
 {
   int tabkey = 0;
@@ -1918,8 +1908,7 @@ bool TfrmTransfer::CheckDesttaffTabAccess(Database::TDBTransaction &DBTransactio
   }
   return retVal;
 }
-////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------
 void TfrmTransfer::PopulateSourceDestTabDetails(Database::TDBTransaction &DBTransaction,
                    UnicodeString Name, int key, TListBox *listBox, bool isTabKeyEmpty)
 {
@@ -2052,13 +2041,13 @@ void TfrmTransfer::PopulateSourceDestTabDetails(Database::TDBTransaction &DBTran
    }
    Tabs.clear();
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::DisplayItemsSourceList(TListBox *listBox, TTabColour *TabColor, UnicodeString Name)
 {
   listBox->AddItem(Name, (TObject *)TabColor);
   listBox->ItemIndex++;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ClearListBox(TListBox *listBox)
 {
     int i = 0;
@@ -2071,14 +2060,13 @@ void TfrmTransfer::ClearListBox(TListBox *listBox)
     }
     listBox->Clear();
 }
-
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::UpdateListBox(TListBox *listBox)
 {
    listBox->TopIndex = 0;
    listBox->Refresh();
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::GetTabKeyFromListBox(TListBox *listBox, int i)
 {
     int key = 0;
@@ -2090,7 +2078,7 @@ int TfrmTransfer::GetTabKeyFromListBox(TListBox *listBox, int i)
     }
     return key;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckTabOrItemSelected(TListBox *listBox, int i)
 {
     bool isTabSelected = false;
@@ -2101,7 +2089,7 @@ bool TfrmTransfer::CheckTabOrItemSelected(TListBox *listBox, int i)
     }
     return isTabSelected;
 }
-
+//----------------------------------------------------------------------------
 TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransaction, int TabType, TListBox *listbox, TTouchBtn *btntransfer, AnsiString title, AnsiString Section)
 {
     TModalResult Retval = mrOk;
@@ -2220,7 +2208,7 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
     }
     return Retval;
 }
-
+//----------------------------------------------------------------------------
 UnicodeString TfrmTransfer::GetSourceTabName(Database::TDBTransaction &DBTransaction, long source_key)
 {
     UnicodeString tabName ="";
@@ -2253,7 +2241,7 @@ UnicodeString TfrmTransfer::GetSourceTabName(Database::TDBTransaction &DBTransac
 	}
    return tabName;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::DeleteEmptyTabs(Database::TDBTransaction &DBTransaction)
 {
    if(CurrentSourceDisplayMode == eTabs && (CurrentSourceTabType == TabNormal || CurrentSourceTabType == TabClipp))
@@ -2273,7 +2261,7 @@ void TfrmTransfer::DeleteEmptyTabs(Database::TDBTransaction &DBTransaction)
 
    }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, AnsiString title)
 {
    try
@@ -2495,7 +2483,7 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::PrepareItemList(Database::TDBTransaction &DBTransaction, int sourceKey, bool isTabSelected, TList *Orders)
 {
    std::set <__int64> SelectedKeys;
@@ -2509,8 +2497,7 @@ void TfrmTransfer::PrepareItemList(Database::TDBTransaction &DBTransaction, int 
        TDBOrder::GetOrdersIncludingSidesFromOrderKeys(DBTransaction, Orders, SelectedKeys, true);
     }
 }
-
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
 {
        CheckClipAndTableCondition(DBTransaction);
@@ -2599,7 +2586,7 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
 
 
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
 {
 
@@ -2696,7 +2683,7 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
                 TDBTables::SetTableBillingStatus(DBTransaction,CurrentDestTable,eNoneStatus);
        }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool isReverse, bool isTabSelected)
 {
    try
@@ -2874,7 +2861,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
    UpdateDestSeatDetails(*DBTransaction);
    IsPartialTransferDone = true;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse, bool isTabSelected)
 {
    try
@@ -3054,7 +3041,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
    UpdateDestSeatDetails(*DBTransaction);
    IsPartialTransferDone = true;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransaction)
 {
     TTransferComplete *TransferComplete = new TTransferComplete();
@@ -3435,7 +3422,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 	  }
       delete TransferComplete;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::CollectDataForChefmateTransfer(int dest_key, TList *OrdersList, TListBox *listBox, bool isReverseTransfer)
 {
     AnsiString CurrentSource = "";
@@ -3556,7 +3543,7 @@ void TfrmTransfer::CollectDataForChefmateTransfer(int dest_key, TList *OrdersLis
            }
      }
 }
-
+//----------------------------------------------------------------------------
 void  TfrmTransfer::transferOrderToChefMate(TList* orderList, TTransferComplete *Transfer)
 {
 
@@ -3588,7 +3575,7 @@ void  TfrmTransfer::transferOrderToChefMate(TList* orderList, TTransferComplete 
    }
 
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::TransferOrderListtoChefmate()
 {
  try
@@ -3650,7 +3637,7 @@ void TfrmTransfer::TransferOrderListtoChefmate()
      TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::ShowProcessingBar()
 {
    std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
@@ -3658,7 +3645,6 @@ void TfrmTransfer::ShowProcessingBar()
    Processing->Show();
 }
 //-----------------------------------------------------------------------
-
 AnsiString TfrmTransfer::GetItemQtyWithName(double qty, AnsiString itemSize, UnicodeString itemName)
 {
    AnsiString returnValue = "";
@@ -3672,7 +3658,7 @@ AnsiString TfrmTransfer::GetItemQtyWithName(double qty, AnsiString itemSize, Uni
    }
    return returnValue;
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::GetSeatNumber(Database::TDBTransaction &DBTransaction, long source_key, bool isTabSelected, int table_no)
 {
     int sourceSeatNumber = 0;
@@ -3713,7 +3699,7 @@ int TfrmTransfer::GetSeatNumber(Database::TDBTransaction &DBTransaction, long so
 	}
    return sourceSeatNumber;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckSideIsSelected(TListBox *listBox, int i)
 {
     bool isSideSelected = false;
@@ -3724,7 +3710,7 @@ bool TfrmTransfer::CheckSideIsSelected(TListBox *listBox, int i)
     }
     return isSideSelected;
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::GetOrderKey(Database::TDBTransaction &DBTransaction, int tab_key, UnicodeString itemName)
 {
     int Orderkey = 0;
@@ -3750,7 +3736,7 @@ int TfrmTransfer::GetOrderKey(Database::TDBTransaction &DBTransaction, int tab_k
 	}
    return Orderkey;
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::GetOrderKeyFromSavedList(Database::TDBTransaction &DBTransaction, int transfer_qty, TListBox *listBox, int i, bool isLongPressed)
 {
     std::vector<int> OrderKeyList;
@@ -3827,8 +3813,7 @@ int TfrmTransfer::GetOrderKeyFromSavedList(Database::TDBTransaction &DBTransacti
     }
     return source_key;
 }
-
-
+//----------------------------------------------------------------------------
 __int64 TfrmTransfer::SplitOrder(Database::TDBTransaction &DBTransaction,__int64 OrderKey, int WaysToSplit)
 {
 
@@ -3885,7 +3870,7 @@ __int64 TfrmTransfer::SplitOrder(Database::TDBTransaction &DBTransaction,__int64
     }
 	return OrderImage->OrderKey;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::DeductOrder(
 TItemMinorComplete * const Order1,
 TItemMinorComplete * const Order2,
@@ -3905,7 +3890,7 @@ int cnt)
 
     return true;
 }
-
+//----------------------------------------------------------------------------
 UnicodeString TfrmTransfer::GetItemName(TListBox *listBox, int i, bool isTabSelected)
 {
     UnicodeString itemOrTabName = "";
@@ -3923,7 +3908,7 @@ UnicodeString TfrmTransfer::GetItemName(TListBox *listBox, int i, bool isTabSele
     }
     return itemOrTabName;
 }
-
+//----------------------------------------------------------------------------
 double TfrmTransfer::GetItemQty(TListBox *listBox, int i, bool isTabSelected)
 {
     double itemQty = 0;
@@ -3937,7 +3922,7 @@ double TfrmTransfer::GetItemQty(TListBox *listBox, int i, bool isTabSelected)
     }
     return itemQty;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckNameIsNullOrNot(Database::TDBTransaction &DBTransaction, int tableNumber, int key, int seatKey)
 {
      AnsiString SeatName = "";
@@ -3974,7 +3959,7 @@ bool TfrmTransfer::CheckNameIsNullOrNot(Database::TDBTransaction &DBTransaction,
      }
      return retVal;
 }
-
+//----------------------------------------------------------------------------
 int TfrmTransfer::Gettabkey(int table_no, int seat_key)
 {
     int tabkey = 0;
@@ -4007,7 +3992,7 @@ int TfrmTransfer::Gettabkey(int table_no, int seat_key)
 	}
    return tabkey;
 }
-
+//----------------------------------------------------------------------------
 UnicodeString TfrmTransfer::TabName(int TabKey)
 {
 	UnicodeString RetVal = "";
@@ -4041,7 +4026,7 @@ UnicodeString TfrmTransfer::TabName(int TabKey)
 	}
 	return RetVal;
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer:: SendTabDetails(AnsiString source, AnsiString dest, int sourceItemCount, int destItemCount )
 {
 
@@ -4156,23 +4141,19 @@ void TfrmTransfer:: SendTabDetails(AnsiString source, AnsiString dest, int sourc
 
 
 }
-
 //-----------------------------------------------------------------------
-
 void TfrmTransfer::SendClippTabDetails(int clippTabKey)
 {
    TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
    updateClippTab->SendTabDetails(clippTabKey);
 }
-
 //-----------------------------------------------------------------------
-
 void TfrmTransfer::CloseClippTab(int clippTabKey)
 {
    TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
    closeClippTab->CloseTab(clippTabKey);
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::IsSourceDestinationSame()
 {
    bool isSameTab = false;
@@ -4184,7 +4165,7 @@ bool TfrmTransfer::IsSourceDestinationSame()
    }
    return isSameTab;
 }
-
+//----------------------------------------------------------------------------
 bool TfrmTransfer::CheckSecurityEvent(Database::TDBTransaction &DBTransaction, int sec_ref)
 {
     bool retVal = true;
@@ -4209,7 +4190,6 @@ bool TfrmTransfer::CheckSecurityEvent(Database::TDBTransaction &DBTransaction, i
 	}
    return retVal;
 }
-
 //----------------------------------------------------------------------------------------------------
 bool TfrmTransfer::IsSCDAppliedOnDest(TList* Orders)
 {
@@ -4289,16 +4269,13 @@ void TfrmTransfer::SaveClipItemsInStructure(Database::TDBTransaction &DBTransact
 
     }
  }
-
  ///-----------------------------------------------------------------------------------------------
-
  void  TfrmTransfer::DoCliptabLinking(Database::TDBTransaction &DBTransaction,int source_key,int DestTabKey)
  {
      UpdateTabNameAndKey(DBTransaction, source_key, DestTabKey);
      UpdatePanelSourceKey(source_key , DestTabKey);
  }
- ///--------------------------------------------------------------------------------------------
-
+///--------------------------------------------------------------------------------------------
 void TfrmTransfer::UpdateTabNameAndKey(Database::TDBTransaction &DBTransaction, int source_key, int dest_key)
 {
     //Get clipp customer Name
@@ -4319,7 +4296,6 @@ void TfrmTransfer::UpdateTabNameAndKey(Database::TDBTransaction &DBTransaction, 
     //Update Table's guest limit
     TDBTab::UpdateGuestLimit(DBTransaction, source_key, dest_key);
 }
-
 ///------------------------------------------------------------------------------------
 bool TfrmTransfer::CheckLinkedTabValidations(Database::TDBTransaction &DBTransaction,bool checkClipTabLimit)
 {
@@ -4429,8 +4405,6 @@ bool TfrmTransfer::CheckIfTransferringLinkedTabItems(Database::TDBTransaction &D
     return false;
 
 }
-
-
 /////----------------------------------------------------------------------------------
 void TfrmTransfer::DilinkingClipTab(Database::TDBTransaction &DBTransaction,long sourceTabKey,long destTabKey)
  {
@@ -4440,9 +4414,7 @@ void TfrmTransfer::DilinkingClipTab(Database::TDBTransaction &DBTransaction,long
     TDBOrder::UpdateOrderTableDlinkingWithClipp(DBTransaction, sourceTabKey);
     TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
  }
-
 ///-----------------------------------------------------------------------------------------------
-
 bool TfrmTransfer::CheckItemsInSeat(Database::TDBTransaction &DBTransaction, long tableNo,long seatNo)
 {
 
@@ -4474,9 +4446,7 @@ bool TfrmTransfer::CheckItemsInSeat(Database::TDBTransaction &DBTransaction, lon
 	}
     return isItemPresent;
 }
-
 ///-------------------------------------------------------------------------
-
 void TfrmTransfer::UpdateGuestNameByClippName(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, bool isTabSelected)
 {
     UnicodeString clipTabName = GetTabNameForTable(DBTransaction, SourceKey, isTabSelected);
@@ -4485,7 +4455,6 @@ void TfrmTransfer::UpdateGuestNameByClippName(Database::TDBTransaction &DBTransa
     TDBTab::UpdateTabName(DBTransaction, DestTabKey,clipTabName,isTabSelected);
 }
 //---------------------------------------------------------------------------------
-
 bool TfrmTransfer::CheckPartialTransferInClipCase(Database::TDBTransaction &DBTransaction)
 {
     TListBox *destinationListBox;
@@ -4586,7 +4555,6 @@ bool TfrmTransfer::CheckPartialTransferInClipCase(Database::TDBTransaction &DBTr
 
   return false;
 }
-
 ///-------------------------------------------------------------------
 void TfrmTransfer::UpdatePanelSourceKey(int PreviousValue , int NewValue)
 {
@@ -4609,9 +4577,7 @@ void TfrmTransfer::UpdatePanelSourceKey(int PreviousValue , int NewValue)
 
        }
  }
-
 ////---------------------------------------------------------------------------------
-
 void TfrmTransfer::ChangeItemTabKey(TListBox *listBox, int pos ,int value)
 {
     int key = 0;
@@ -4622,7 +4588,6 @@ void TfrmTransfer::ChangeItemTabKey(TListBox *listBox, int pos ,int value)
     }
 
 }
-
 ////--------------------------------------------------------------------------------
 void TfrmTransfer::CheckClipAndTableCondition(Database::TDBTransaction &DBTransaction)
 {
@@ -4637,8 +4602,6 @@ void TfrmTransfer::CheckClipAndTableCondition(Database::TDBTransaction &DBTransa
              }
           }
 }
-
-
 ///------------------------------------------------------------------------------------------
 bool TfrmTransfer::CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey, bool isTabSelected )
 {
@@ -4660,7 +4623,6 @@ bool TfrmTransfer::CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTran
 
  return false;
 }
-
 //..................................................................................................................................
 void TfrmTransfer::SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, UnicodeString tabName)
 {
@@ -4673,7 +4635,7 @@ void TfrmTransfer::SetGuestNameForTable(Database::TDBTransaction &DBTransaction,
          }
     }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname)
 {
     if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)
@@ -4685,7 +4647,7 @@ void TfrmTransfer::SetPartyNameForDetinationTable(Database::TDBTransaction &DBTr
         }
     }
 }
-
+//----------------------------------------------------------------------------
 void TfrmTransfer::SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname)
 {
     if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)

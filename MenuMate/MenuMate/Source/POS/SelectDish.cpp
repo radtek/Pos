@@ -12713,7 +12713,6 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
     CheckLastAddedItem(); // check any added item in list;
 
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
-
 	if (inPrice != 0)
 	{
 		Order->SetPriceLevelCustom(inPrice);
@@ -13076,10 +13075,8 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 			}
 		}
 	}
-
-        itemComplete->PatronCount(
-            itemComplete->DefaultPatronCount());
-
+    itemComplete->PatronCount(
+    itemComplete->DefaultPatronCount());
 	// Complete itemComplete Security.
 	/* This is updated when the item is finally sold but is required here for the
 	REceipt preview if the receipt is sorted by itemCompleteed By */
@@ -13095,7 +13092,6 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->TimeKey = CurrentTimeKey;
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	return itemComplete;
-
 }
 // ---------------------------------------------------------------------------
 TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DBTransaction, TItem *Item, TItemComplete *MasterOrder)

@@ -128,7 +128,7 @@ void __fastcall TFrmSelectTable2::tiUpdateFloorPlanRefreshTimer(TObject *Sender)
 {
     tiUpdateFloorPlanReq->Enabled = false;
     tiUpdateFloorPlanRefresh->Enabled = false;
-    if(MessageBox("The screen was leftidle for 5 minutes. Do you wish to continue?","Information",MB_YESNO + MB_ICONQUESTION) == IDYES)
+    if(MessageBox("The screen was left idle for 5 minutes. Do you wish to continue?","Information",MB_YESNO + MB_ICONQUESTION) == IDYES)
     {
           NeedToReopen = true;
           if(_controller->image)

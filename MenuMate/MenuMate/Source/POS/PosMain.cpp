@@ -355,6 +355,7 @@ void __fastcall TfrmPOSMain::tbtnTransferClick(TObject *Sender)
        DBTransaction.Rollback();
     }
     delete Transfer;
+    Transfer = NULL;
 	ShowTableScreen();
 }
 //---------------------------------------------------------------------------
