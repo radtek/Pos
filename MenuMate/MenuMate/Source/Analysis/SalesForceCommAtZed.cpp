@@ -214,6 +214,13 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,Url);
            TDeviceRealTerminal::Instance().PocketVouchers->URL = Url;
         }
+
+        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+        {
+            std::vector <UnicodeString> PayTypes;
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+            TDeviceRealTerminal::Instance().PaymentSystem->InsertPaymentTypeInPanasonicDB(PayTypes);
+        }
 }
 
 void TSalesForceCommAtZed::EnableOrDisablePV(AnsiString CompanyName)

@@ -1590,7 +1590,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
             //"STKLOC.On_Hand On_Hand, "
 
 			"StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening  + coalesce(STK.QTY,0)  On_Hand,"
-			"StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening ) Variance,"
+			"StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening + coalesce(STK.QTY, 0) ) Variance,"
 			"StocktakeHistory.Closing Stocktake,"
 			"cast((StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening)) * StocktakeHistory.Average_Unit_Cost As Numeric(15, 4)) Cost,"
 			"StocktakeHistory.Opening,"

@@ -445,7 +445,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             TManagerClippIntegration::Instance();
 
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+        {
             TManagerPanasonic::Instance();
+            TManagerPanasonic::Instance()->PrepareTenderTypes();
+            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+        }
+
 
         SyncCompanyDetails();
        //initialize this variable when application starts..

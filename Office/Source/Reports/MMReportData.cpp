@@ -635,7 +635,24 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			PriceLessPoints = (BasePrice * 100.0) / (100.0 + PointsPercent);
 		 //if (PriceLessPoints != 0.00 && cdsMenu->FieldByName("COST_TIMES_QTY").AsCurrency != 0.00)
 		 if (PriceLessPoints != 0.00)
-         	cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice-(BasePrice*PointsPercent/100)) )* 100    ;
+         {
+            if(PointsPercent != 100 )
+            {
+         	    cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice-(BasePrice*PointsPercent/100)) )* 100 ;
+            }
+            else
+            {
+               if(BasePrice > 0)
+               {
+                   cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice -(BasePrice/100) ))*100    ;
+               }
+               else
+               {
+                  cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   (cdsMenu->FieldByName("PROFIT")->AsCurrency )*100 ;
+               }
+
+            }
+         }
 
 		  //	cdsMenu->FieldByName("GP_POINTS")->AsCurrency = (1 - (cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency / PriceLessPoints)) * 100;
 		 cdsMenu->Post();

@@ -11,6 +11,7 @@
 #include "MMTouchKeyboard.h"
 #include "GlobalSettings.h"
 #include "StringTools.h"
+#include "ManagerPanasonic.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -123,6 +124,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
       int PayKey = 0;
       AnsiString Properties = "";
       std::auto_ptr <TStringList> PaymentList(new TStringList);
+      std::vector <UnicodeString> PayTypes;
       Database::TDBTransaction DBTransaction(DBControl);
       DBTransaction.StartTransaction();
 
@@ -150,6 +152,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeOpensCashDrawer);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCash);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Cheque"))
@@ -166,6 +171,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Eftpos"))
@@ -185,6 +193,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeAllowCashOut);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
       if(!IsPaymentExist(DBTransaction,"Amex"))
       {
@@ -202,6 +213,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Diners"))
@@ -220,6 +234,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Visa"))
@@ -238,6 +255,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Master Card"))
@@ -256,6 +276,9 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
 
       if(!IsPaymentExist(DBTransaction,"Tips"))
@@ -273,9 +296,17 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
           PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCustomSurcharge);
+
+          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
       }
       DBTransaction.Commit();
       UpdateList();
+
+     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+     {
+        PaymentSystem->InsertPaymentTypeInPanasonicDB(PayTypes);
+     }
    }
    catch(Exception & E)
    {
