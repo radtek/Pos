@@ -488,6 +488,7 @@ public:
     UnicodeString ReportExportPath;
     ePMSType PMSType;
     bool IsBillSplittedByMenuType;
+    UnicodeString CustomerId;
 };
 
 #endif

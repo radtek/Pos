@@ -395,5 +395,6 @@ TGlobalSettings::TGlobalSettings()
     ReportExportPath = "";
     MembershipType = 0;
     IsBillSplittedByMenuType = false;
+    CustomerId = "";
 }
 

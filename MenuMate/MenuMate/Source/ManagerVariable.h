@@ -210,7 +210,7 @@ enum vmVariables
     vmUseMemberSubs,
     vmFloatWithdrawFromCash,
     ///PechTree CSV
-    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP,
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP, vmCustomerId,
 
      //Panasonic Integration
     vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,
