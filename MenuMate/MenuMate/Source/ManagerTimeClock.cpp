@@ -459,7 +459,7 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 			"WHERE TIME_STAMP IS NOT NULL "
 
          //   "and TERMINAL_NAME = :devicename "
-         " and  TIME_STAMP IN (SELECT MAX(TIME_STAMP) FROM ZEDS where  STAFF_HOUR_ENABLE = 1)  "
+         " and  TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM ZEDS where  STAFF_HOUR_ENABLE = 1)  "
 			"GROUP BY TERMINAL_NAME, PROFILE_KEY "
 			"ORDER BY TIME_STAMP DESC ";
 
