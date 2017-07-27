@@ -12,6 +12,7 @@
 #include "ListCategoryContainer.h"
 #include "ListRecipeContainer.h"
 #include "IBillCalculator.h"
+#include "Item.h"
 
 #include "EnumOrderStatus.h"
 
@@ -126,6 +127,7 @@ class TItemMinorComplete : public TItemMinor
     Currency PointRedeemed;
 
     bool PrintCancel;
+    TItemType       SubItemType;
     // Cache of last successful BillCalcResult for this item
     BillCalculator::TBillCalcResult BillCalcResult;
     BillCalculator::TBillCalcResult CancelledBillCalcResult;

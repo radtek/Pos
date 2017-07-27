@@ -1128,7 +1128,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
         {
            ItemFound = true;
         }
-
+        bool isSameMenuTypeItemExist ;
 		if (IsPricedBarcode(Barcode))
 		{
 			AnsiString ProductCode = Barcode.SubString(3, 5);
@@ -1140,8 +1140,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			TItemSize *ItemSize = ItemInfo.second;
 
 			ItemFound = Item != NULL && ItemSize != NULL;
+            isSameMenuTypeItemExist = true;
 
-			if (ItemFound && Item->Enabled)
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
                //Check for weighed and priced barcode
                  if(TGlobalSettings::Instance().BarcodeFormat == 4)
@@ -1149,12 +1153,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
                        Item->ItemWeight.SetWeightIn_g(Currency(Barcode.SubString(8,6)));
                        Price= Price / Item->ItemWeight.AsKiloGrams()  ;
                     }
-                                else
-                                {
-								   Item->SetQty(Price/ItemSize->Price);
-								   Item->IsPriceBarcodedItem = true;
-                                   Price = 0;
-                                }
+                    else
+                    {
+                       Item->SetQty(Price/ItemSize->Price);
+                       Item->IsPriceBarcodedItem = true;
+                       Price = 0;
+                    }
 				BeforeItemOrdered.Occured();
 				if (BeforeItemOrdered.EventsFailed)
 				{
@@ -1188,7 +1192,12 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			TItem *Item = ItemInfo.first;
 			TItemSize *ItemSize = ItemInfo.second;
 			ItemFound = Item != NULL && ItemSize != NULL;
-			if (ItemFound && Item->Enabled)
+
+            isSameMenuTypeItemExist = true;
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
                 Item->ItemWeight.SetWeightIn_g(Currency(Barcode.SubString(8,6)));
 				BeforeItemOrdered.Occured();
@@ -1224,7 +1233,11 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 
 			ItemFound = Item != NULL && ItemSize != NULL;
 
-			if (ItemFound && Item->Enabled)
+            isSameMenuTypeItemExist = true;
+             if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
+                isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+			if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
 			{
 				BeforeItemOrdered.Occured();
 				if (BeforeItemOrdered.EventsFailed)
@@ -3400,9 +3413,17 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     bool PaymentComplete = false;
     TPaymentTransaction PaymentTransaction(DBTransaction);
     PaymentTransaction.PartyName = PartyName;
-
+    AnsiString BeveragesInvoiceNumber = "";
+    bool isBeveragesInvGenerated = false;
      //To check whether payment done is by linking the fast tenderkey with payment
     bool isProcessedQuickPayment = false;
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TGlobalSettings::Instance().TransferTableOnPrintPrelim
+            && DelayedInvoiceNumber.Pos("L") != 0)
+    {
+        isBeveragesInvGenerated = true;
+        BeveragesInvoiceNumber = DelayedInvoiceNumber;
+    }
 
 	try
 	{
@@ -3431,12 +3452,32 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		TMMContactInfo Member;
 		int SecRefNumber = TDBSecurity::GetNextSecurityRef(PaymentTransaction.DBTransaction);
 		TDateTime OrderedTimeStamp = Now();
+        AnsiString BevTabName = "";
+        int BevTabKey;
+        if(isBeveragesInvGenerated)
+        {
+            BevTabName = TabName;
+            BevTabKey = SelectedTab;
+        }
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
 
+                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated &&
+                        TGlobalSettings::Instance().IsBillSplittedByMenuType && DelayedInvoiceNumber != "" )
+                {
+                    isBeveragesInvGenerated = true;
+                    BeveragesInvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
+                    BevTabName = TGlobalSettings::Instance().ReceiptNumberLabel + BeveragesInvoiceNumber;
+                    //Create Tab
+                    BevTabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+                    TDBTab::SetTabType(DBTransaction, BevTabKey, TabDelayedPayment);
+                    TDBTab::SetTabName(DBTransaction, BevTabKey, BevTabName);
+
+                }
+                
 				Order->TabKey = SelectedTab;
 				if (TabContainerName == "" && TabType == TabTableSeat)
 				{
@@ -3464,6 +3505,14 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
+
+                if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
+                            TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
+                {
+                    Order->TabKey = BevTabKey;
+				    Order->TabName = BevTabName;
+                    Order->TabContainerName = BevTabName;
+                }
 
 				OrdersList->Add(Order);
 
@@ -3692,7 +3741,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     {
                         SeatCounter.insert(Order->SeatNo);
                     }
-                    Order->DelayedInvoiceNumber = DelayedInvoiceNumber;
+
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Order->ItemType && DelayedInvoiceNumber != "" )
+                    {
+                        Order->DelayedInvoiceNumber = BeveragesInvoiceNumber;
+                    }
+                    else
+                    {
+                        Order->DelayedInvoiceNumber = DelayedInvoiceNumber;
+                    }
                     Order->OrderIdentificationNo = identificationNumber;
  					if (Order->ServingCourse.ServingCourseKey < 1)
 					{
@@ -3702,7 +3759,16 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                    for (int j = 0; j < Order->SubOrders->Count; j++)
 					{
                        TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
-                       SubOrder->DelayedInvoiceNumber = DelayedInvoiceNumber;
+
+                       if(TGlobalSettings::Instance().IsBillSplittedByMenuType && SubOrder->SubItemType && DelayedInvoiceNumber != "" )
+                       {
+                            SubOrder->DelayedInvoiceNumber = BeveragesInvoiceNumber;
+                       }
+                       else
+                       {
+                            SubOrder->DelayedInvoiceNumber = DelayedInvoiceNumber;
+                       }
+                       SubOrder->DelayedInvoiceNumber = Order->DelayedInvoiceNumber;
                        SubOrder->OrderIdentificationNo = identificationNumber;
                     }
 				}
@@ -3840,107 +3906,163 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 					{
 						bool OrdersLoadedFromTabs = false;
 						TMMContactInfo InvoiceOwnerInfo;
-						TPaymentTransaction InvoiceTransaction(DBTransaction);
-						InvoiceTransaction.Membership.Assign(Membership);
-						TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-                        if(TGlobalSettings::Instance().CaptureCustomerName)
+
+						///Delayed Print prelimn receipt in case of GST
+                        std::auto_ptr<TList>FoodOrdersList(new TList);
+                        std::auto_ptr<TList>BevOrdersList(new TList);
+                        int Size = 1;
+
+                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                    TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
-                            InvoiceTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
+                            TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(OrdersList.get(), FoodOrdersList.get(), BevOrdersList.get());
                         }
-						std::auto_ptr<TReqPrintJob>TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+						if(BevOrdersList->Count && FoodOrdersList->Count)
+                            Size = 2;
 
-						if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabCashAccount)
-						{
-							if (OrdersList->Count != 0)
-							{
-								InvoiceTransaction.Orders->Assign(OrdersList.get());
-								std::set<__int64>SelectedTabs;
-								TDBOrder::GetTabKeysFromOrders(OrdersList.get(), SelectedTabs);
-								InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
-								InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-							}
-						}
-						else
-						{
-							std::set<__int64>InvoiceTabs;
-							if (TabType == TabTableSeat)
-							{ // Retrive the Tab Key for this Table/Seat.
-								TDBTables::GetTabKeys(DBTransaction, TableNo, InvoiceTabs);
-							}
-							else if (TabType == TabRoom)
-							{ // Retrive the Tab Key for this Table/Seat.
-								SelectedTab = TDBRooms::GetRoomTab(DBTransaction, RoomNo);
-								InvoiceTabs.insert(SelectedTab);
-							}
-							else
-							{
-								InvoiceTabs.insert(SelectedTab);
-							}
+						for(int index = 0; index < Size; index++)
+                        {
+                            TPaymentTransaction InvoiceTransaction(DBTransaction);
+                            InvoiceTransaction.Membership.Assign(Membership);
+                            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+                            if(TGlobalSettings::Instance().CaptureCustomerName)
+                            {
+                                InvoiceTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
+                            }
+                            std::auto_ptr<TReqPrintJob>TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 
-							TDBOrder::GetOrdersFromTabKeys(DBTransaction, InvoiceTransaction.Orders, InvoiceTabs);
-							InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, InvoiceTabs);
-							InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-							OrdersLoadedFromTabs = true;
-						}
+                            if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabCashAccount)
+                            {
+                                if (OrdersList->Count != 0)
+                                {
+                                    std::set<__int64>SelectedTabs;
 
-						if (TGlobalSettings::Instance().EnableMenuPatronCount)
-						{
-							InvoiceTransaction.CalculatePatronCountFromMenu();
-						}
+                                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim && Size == 2)
+                                    {   
+                                        if(index)
+                                        {
+                                            InvoiceTransaction.Orders->Assign(BevOrdersList.get());
+                                            TDBOrder::GetTabKeysFromOrders(BevOrdersList.get(), SelectedTabs);
+                                        }
+                                        else
+                                        {
+                                            InvoiceTransaction.Orders->Assign(FoodOrdersList.get());
+                                            TDBOrder::GetTabKeysFromOrders(FoodOrdersList.get(), SelectedTabs);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        InvoiceTransaction.Orders->Assign(OrdersList.get());
+                                        TDBOrder::GetTabKeysFromOrders(OrdersList.get(), SelectedTabs);
+                                    }
 
-						if (InvoiceTransaction.Money.TotalAdjustment != 0)
-						{
-							InvoiceTransaction.TotalAdjustment = InvoiceTransaction.Money.TotalAdjustment;
-							InvoiceTransaction.DiscountReason = InvoiceTransaction.TotalAdjustment < 0 ? "Discount " : "Surcharge";
-						}
+                                    InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
+                                    InvoiceTransaction.Money.Recalc(InvoiceTransaction);
+                                }
+                            }
+                            else
+                            {  
+                                std::set<__int64>InvoiceTabs;
 
-						TempReceipt->JobType = pjReceiptReceipt;
-						TempReceipt->PaymentType = ptPreliminary;
+                                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
+                                        TGlobalSettings::Instance().TransferTableOnPrintPrelim )
+                                {
+                                    if(Size == 2)
+                                    {
+                                        if(index)
+                                        {
+                                            TDBOrder::GetTabKeysFromOrders(BevOrdersList.get(), InvoiceTabs);
+                                        }
+                                        else
+                                        {
+                                            TDBOrder::GetTabKeysFromOrders(FoodOrdersList.get(), InvoiceTabs);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        TDBOrder::GetTabKeysFromOrders(OrdersList.get(), InvoiceTabs);
+                                    }
+                                }
+                                else if (TabType == TabTableSeat)
+                                { // Retrive the Tab Key for this Table/Seat.
+                                    TDBTables::GetTabKeys(DBTransaction, TableNo, InvoiceTabs);
+                                }
+                                else if (TabType == TabRoom)
+                                { // Retrive the Tab Key for this Table/Seat.
+                                    SelectedTab = TDBRooms::GetRoomTab(DBTransaction, RoomNo);
+                                    InvoiceTabs.insert(SelectedTab);
+                                }
+                                else
+                                {
+                                    InvoiceTabs.insert(SelectedTab);
+                                }
 
-						if (TabType == TabInvoice)
-						{
-							TempReceipt->JobType = pjReceiptInvoice;
-							TempReceipt->PaymentType = ptFinal;
+                                TDBOrder::GetOrdersFromTabKeys(DBTransaction, InvoiceTransaction.Orders, InvoiceTabs);
+                                InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, InvoiceTabs);
+                                InvoiceTransaction.Money.Recalc(InvoiceTransaction);
+                                OrdersLoadedFromTabs = true;
+                            }
 
-							int InvoiceKey = TDBTab::GetTabInvoice(DBTransaction, SelectedTab);
-							InvoiceTransaction.InvoiceNumber = Invoice->GetInvoiceNumber(DBTransaction, InvoiceKey);
-							int ContactKey = Invoice->GetInvoiceOwner(DBTransaction, InvoiceKey);
-							TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, ContactKey, InvoiceOwnerInfo);
-							TempReceipt->ExtraInfo->Add("Name: " + InvoiceOwnerInfo.Name);
-							TempReceipt->ExtraInfo->Add("Member No. " + InvoiceOwnerInfo.MembershipNumber);
-						}
-						else if (TabType == TabRoom)
-						{
-							TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
-							TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(DBTransaction, RoomNo));
-						}
+                            if (TGlobalSettings::Instance().EnableMenuPatronCount)
+                            {
+                                InvoiceTransaction.CalculatePatronCountFromMenu();
+                            }
 
-						// Print Invoice.
+                            if (InvoiceTransaction.Money.TotalAdjustment != 0)
+                            {
+                                InvoiceTransaction.TotalAdjustment = InvoiceTransaction.Money.TotalAdjustment;
+                                InvoiceTransaction.DiscountReason = InvoiceTransaction.TotalAdjustment < 0 ? "Discount " : "Surcharge";
+                            }
 
-						TempReceipt->Transaction = &InvoiceTransaction;
-                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-                           (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                            TempReceipt->Transaction->Customer = TCustomer(0,0,"");
-						TempReceipt->SignReceipt = true;
-						TempReceipt->SenderType = devPC;
-						TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-						TempReceipt->MiscData["PartyName"] = PartyName;
+                            TempReceipt->JobType = pjReceiptReceipt;
+                            TempReceipt->PaymentType = ptPreliminary;
 
-						Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-						TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-						if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
-						{
-							TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-						}
+                            if (TabType == TabInvoice)
+                            {
+                                TempReceipt->JobType = pjReceiptInvoice;
+                                TempReceipt->PaymentType = ptFinal;
 
-						if (OrdersLoadedFromTabs)
-						{
-							while (InvoiceTransaction.Orders->Count != 0)
-							{
-								delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
-								InvoiceTransaction.Orders->Delete(0);
-							}
-						}
+                                int InvoiceKey = TDBTab::GetTabInvoice(DBTransaction, SelectedTab);
+                                InvoiceTransaction.InvoiceNumber = Invoice->GetInvoiceNumber(DBTransaction, InvoiceKey);
+                                int ContactKey = Invoice->GetInvoiceOwner(DBTransaction, InvoiceKey);
+                                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, ContactKey, InvoiceOwnerInfo);
+                                TempReceipt->ExtraInfo->Add("Name: " + InvoiceOwnerInfo.Name);
+                                TempReceipt->ExtraInfo->Add("Member No. " + InvoiceOwnerInfo.MembershipNumber);
+                            }
+                            else if (TabType == TabRoom)
+                            {
+                                TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
+                                TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(DBTransaction, RoomNo));
+                            }
+
+                            // Print Invoice.
+
+                            TempReceipt->Transaction = &InvoiceTransaction;
+                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+                            TempReceipt->SignReceipt = true;
+                            TempReceipt->SenderType = devPC;
+                            TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
+                            TempReceipt->MiscData["PartyName"] = PartyName;
+
+                            Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
+                            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                            if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
+                            {
+                                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                            }
+
+                            if (OrdersLoadedFromTabs)
+                            {
+                                while (InvoiceTransaction.Orders->Count != 0)
+                                {
+                                    delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
+                                    InvoiceTransaction.Orders->Delete(0);
+                                }
+                            }
+                        }
 					}
 				}
 
@@ -6378,53 +6500,62 @@ void __fastcall TfrmSelectDish::tgridItemSideItemsMouseClick(TObject *Sender, TM
 
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
 
+         bool isSameMenuTypeItemExist = true;
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
+            isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
-		TItemCompleteSub *SubItem =
-        AddSubItemToItem(DBTransaction, Item, MasterOrder);
-        if (SubItem == NULL)
-           return;
 
-		if (SubItem->PriceEach() == -999.99)
-		{
-			std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-			frmTouchNumpad->Caption = "Enter Amount";
-			frmTouchNumpad->btnSurcharge->Caption = "Ok";
-			frmTouchNumpad->btnDiscount->Visible = false;
-			frmTouchNumpad->btnSurcharge->Visible = true;
-			frmTouchNumpad->Mode = pmCurrency;
-			frmTouchNumpad->CURInitial = 0;
-			if (frmTouchNumpad->ShowModal() == mrOk)
-			{
-				SubItem->SetPriceLevelCustom(frmTouchNumpad->CURResult);
-				SubItem->PriceLevel0 = frmTouchNumpad->CURResult;
-				SubItem->PriceLevel1 = frmTouchNumpad->CURResult;
-			}
-			else
-			{
-				SubItem->SetPriceLevelCustom(0);
-				SubItem->PriceLevel0 = 0;
-				SubItem->PriceLevel1 = 0;
-			}
-            if(TGlobalSettings::Instance().UseMemberSubs)
-               SubItem->wasOpenItem = true;
-		}
-		// Apply Member Specific Discounts.
-		std::auto_ptr<TList>OrdersList(new TList);
-        for(int totalItems = 0 ; totalItems < SeatOrders[SelectedSeat]->Orders->Count ; totalItems++)
+        if(isSameMenuTypeItemExist)
         {
-             OrdersList->Add((TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[totalItems]);
-        }
+            TItemCompleteSub *SubItem =
+            AddSubItemToItem(DBTransaction, Item, MasterOrder);
+            if (SubItem == NULL)
+               return;
 
-		DBTransaction.Commit();
-		ItemRedirector->CompressedContainer->Container->LastItemSelected = SubItem;
-        ManageDiscounts();
-        CheckDeals(DBTransaction); // a sub item is added to the orders list. check for possible deals here
-		RedrawSeatOrders();
-		HighlightSelectedItem();
-		RefreshModifyGui(NULL);
-		TotalCosts();
-		UpdateExternalDevices();
+            if (SubItem->PriceEach() == -999.99)
+            {
+                std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+                frmTouchNumpad->Caption = "Enter Amount";
+                frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                frmTouchNumpad->btnDiscount->Visible = false;
+                frmTouchNumpad->btnSurcharge->Visible = true;
+                frmTouchNumpad->Mode = pmCurrency;
+                frmTouchNumpad->CURInitial = 0;
+                if (frmTouchNumpad->ShowModal() == mrOk)
+                {
+                    SubItem->SetPriceLevelCustom(frmTouchNumpad->CURResult);
+                    SubItem->PriceLevel0 = frmTouchNumpad->CURResult;
+                    SubItem->PriceLevel1 = frmTouchNumpad->CURResult;
+                }
+                else
+                {
+                    SubItem->SetPriceLevelCustom(0);
+                    SubItem->PriceLevel0 = 0;
+                    SubItem->PriceLevel1 = 0;
+                }
+                if(TGlobalSettings::Instance().UseMemberSubs)
+                   SubItem->wasOpenItem = true;
+            }
+		// Apply Member Specific Discounts.
+            std::auto_ptr<TList>OrdersList(new TList);
+            for(int totalItems = 0 ; totalItems < SeatOrders[SelectedSeat]->Orders->Count ; totalItems++)
+            {
+                 OrdersList->Add((TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[totalItems]);
+            }
+
+            DBTransaction.Commit();
+            ItemRedirector->CompressedContainer->Container->LastItemSelected = SubItem;
+            ManageDiscounts();
+            CheckDeals(DBTransaction); // a sub item is added to the orders list. check for possible deals here
+            RedrawSeatOrders();
+            HighlightSelectedItem();
+            RefreshModifyGui(NULL);
+            TotalCosts();
+            UpdateExternalDevices();
+        }
 	}
 	UpdateTableButton();
 }
@@ -7452,7 +7583,12 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	else
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
-		if (Item)
+        bool isSameMenuTypeItemExist = true;
+
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
+            isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+		if (Item && isSameMenuTypeItemExist)
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -8204,9 +8340,25 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                       bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                       if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+
                             TDBTables::SetTableBillingStatus(DBTransaction,OrderContainer.Location["SelectedTable"],eNoneStatus);
                             SouceTableForDelayedPayment =  OrderContainer.Location["ContainerName"];
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                            {
+                                LoadFoodAndBevList(FoodOrdersList.get(), BevOrdersList.get());
+                            }
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !FoodOrdersList->Count && BevOrdersList->Count)
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer, false);
+                            }
+                            else
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            }
                         }
 					 else
                         {
@@ -8558,7 +8710,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
 				if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
 				{
-
 					SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
 					OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
 					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
@@ -8589,7 +8740,22 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                         {
                             SouceTableForDelayedPayment =  OrderContainer.Location["ContainerName"];
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                            {
+                                LoadFoodAndBevList(FoodOrdersList.get(), BevOrdersList.get());
+                            }
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType && !FoodOrdersList->Count && BevOrdersList->Count)
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer, false);
+                            }
+                            else
+                            {
+                                TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
+                            }
                         }
                         else
                         {
@@ -9799,7 +9965,18 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                       isItemSelected = true;
                       SelectedTabKey = frmDelayedPaymentTabs->SelectedTabKey;
                       SelectedTabName = frmDelayedPaymentTabs->SelectedTabName;
-                      OrderContainer.Location["DelayedInvoiceNumber"] = frmDelayedPaymentTabs->DelayedInvoiceNumber;
+                      
+                      if(!TGlobalSettings::Instance().IsBillSplittedByMenuType ||
+                        (SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L") != 0))
+                        || (!SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType && (frmDelayedPaymentTabs->DelayedInvoiceNumber.Pos("L") == 0)))
+                        {
+                            OrderContainer.Location["DelayedInvoiceNumber"] = frmDelayedPaymentTabs->DelayedInvoiceNumber;
+                        }
+                        else
+                        {
+                            MessageBox("You can't save different menu types items together.", "Error", MB_OK + MB_ICONERROR);
+					        return mrAbort;
+                        }
                     }
                 }
                 else
@@ -13146,6 +13323,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(SelectedSize)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(SelectedSize)->CanBePaidForUsingPoints;
         //check item is can be paid by points..
+        NewSubOrder->SubItemType = Item->ItemType;
 
         if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
             || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
@@ -13218,7 +13396,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPoints = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(0)->CanBePaidForUsingPoints;
-
+        NewSubOrder->SubItemType = Item->ItemType;
 
     if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
          || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
@@ -14607,8 +14785,12 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
     TItemSize *ItemSize = itemAndSize.second;
 
     bool ItemFound = Item != NULL && ItemSize != NULL;
+    bool isSameMenuTypeItemExist = true;
 
-    if (ItemFound && Item->Enabled)
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && ItemFound)
+        isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
+
+    if (ItemFound && Item->Enabled && isSameMenuTypeItemExist)
     {
         Always_Prompt = CheckForServingCoursePrompt(Item->ItemKey);
         BeforeItemOrdered.Occured();
@@ -14744,3 +14926,34 @@ bool TfrmSelectDish::CheckForServingCoursePrompt(int item_key)
    return retVal;
 }
 //-----------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::CheckItemCanBeAddedToSeat(TItem *item)
+{
+    bool isMenuTypeSame = true;
+
+    if(SeatOrders[SelectedSeat]->Orders->Count && !SelectedTable)
+    {
+        if(item->ItemType != SeatOrders[SelectedSeat]->Orders->Items[0]->ItemType)
+        {
+            isMenuTypeSame = false;
+            MessageBox("Items with different menu types can't be ordered at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+    }
+
+    return isMenuTypeSame;
+}
+//---------------------------------------------------------------------------------------------------------
+void TfrmSelectDish::LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList)
+{
+    for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
+    {
+        for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
+        {
+            TItemComplete* item = SeatOrders[iSeat]->Orders->Items[i];
+
+            if(item->ItemType)
+                bevOrdersList->Add(item);
+            else
+                foodOrdersList->Add(item);
+        }
+    }
+}

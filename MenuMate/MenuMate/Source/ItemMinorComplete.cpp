@@ -219,6 +219,7 @@ TItemMinorComplete::TItemMinorComplete() {
     printFreeSideForKitchen = false;
     printFreeSideForReceipt = false;
     wasOpenItem = false;
+    SubItemType = eFoodItem;
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -273,6 +274,7 @@ TItemMinorComplete::TItemMinorComplete(
     IsPayByPoints = initializer.IsPayByPoints; //
     ItemPriceForPoints = initializer.ItemPriceForPoints;
     ItemPriceForPointsOriginal = initializer.ItemPriceForPointsOriginal;
+    SubItemType = initializer.SubItemType;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -317,6 +319,7 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     IsPayByPoints = rhs.IsPayByPoints; //
     ItemPriceForPoints = rhs.ItemPriceForPoints;
     ItemPriceForPointsOriginal = rhs.ItemPriceForPointsOriginal;
+    SubItemType = rhs.SubItemType;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -362,6 +365,7 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->IsPayByPoints = IsPayByPoints; //
         RetItem->ItemPriceForPoints = ItemPriceForPoints;
         RetItem->ItemPriceForPointsOriginal = ItemPriceForPointsOriginal;
+        RetItem->SubItemType = SubItemType;
     }
 }
 

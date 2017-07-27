@@ -476,6 +476,8 @@ private: // User declarations
     bool isChitDiscountExist;
     void RemoveChitDiscounts(TMMContactInfo Member);
     void CheckGiftCardBalance();
+    bool CheckItemCanBeAddedToSeat(TItem *item);
+    void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

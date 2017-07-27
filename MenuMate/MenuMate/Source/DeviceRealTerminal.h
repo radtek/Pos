@@ -75,26 +75,26 @@ public:
 
    __property TManagerMenusPOS *Menus = { read=GetMenuManagerAsPOS };
 
-   TListPaymentSystem *PaymentSystem;
+    TListPaymentSystem *PaymentSystem;
 
-   TProcessingController ProcessingController;
+    TProcessingController ProcessingController;
 
-   virtual void RegisterTransaction(Database::TDBTransaction &DBTransaction);
-	std::auto_ptr<TManagerMembershipGUI> ManagerMembership;
-	std::auto_ptr<TManagerGeneralLedger> ManagerGeneralLedger;
-	virtual bool OpenDatabases();
-	bool OpenMembershipDB(bool Reconfigure = false);
+    virtual void RegisterTransaction(Database::TDBTransaction &DBTransaction);
+    std::auto_ptr<TManagerMembershipGUI> ManagerMembership;
+    std::auto_ptr<TManagerGeneralLedger> ManagerGeneralLedger;
+    virtual bool OpenDatabases();
+    bool OpenMembershipDB(bool Reconfigure = false);
 
-//   TTimer *TerminalTick;
-   TDeviceRealTerminal();
-   virtual __fastcall ~TDeviceRealTerminal();
-   void SaveHdrFtr(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter,TStrings *inSubHeader);
-   void SaveZedHeader(TStrings *inZedHeader);
-   void LoadPrinterGraphic();
-	void UpdateCurrentRecipes(UnicodeString Code,UnicodeString Location,Currency Cost, double CostGSTPercent);
-	void UpdateMessage(TNetMessageMsg *Request);
-	void Initialise(Database::TDBTransaction &DBTransaction);
-	void TriggerTabStateChanged();
+    //   TTimer *TerminalTick;
+    TDeviceRealTerminal();
+    virtual __fastcall ~TDeviceRealTerminal();
+    void SaveHdrFtr(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter,TStrings *inSubHeader);
+    void SaveZedHeader(TStrings *inZedHeader);
+    void LoadPrinterGraphic();
+    void UpdateCurrentRecipes(UnicodeString Code,UnicodeString Location,Currency Cost, double CostGSTPercent);
+    void UpdateMessage(TNetMessageMsg *Request);
+    void Initialise(Database::TDBTransaction &DBTransaction);
+    void TriggerTabStateChanged();
 	// Events
 	TSystemEvents AfterTabStateChanged;
 

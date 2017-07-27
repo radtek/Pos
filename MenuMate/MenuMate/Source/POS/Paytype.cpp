@@ -848,7 +848,13 @@ void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
                      DBTransaction.StartTransaction();
                      if(Order->TableNo > 0)
                         TDBTables::SetTableBillingStatus(DBTransaction,Order->TableNo,eNoneStatus);
-                     TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable);
+
+                     bool isMixedMenuOrder = true;
+
+                     if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Order->ItemType)
+                          isMixedMenuOrder = false;
+
+                     TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable, isMixedMenuOrder);
                      DBTransaction.Commit();
                      ShowReceipt();
                  }

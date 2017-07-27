@@ -21,11 +21,12 @@ TManagerDelayedPayment::TManagerDelayedPayment()
     //
 }
 
-void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer)
+void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer, bool isMixedMenuOrder)
 {
     try
     {
-        AnsiString InvoiceNumber = Invoice->GetNextInvoiceNumber(DBTransaction,RegularSale);;
+        AnsiString InvoiceNumber = GetInvoiceNumber(DBTransaction, isMixedMenuOrder);
+
         AnsiString TabName = TGlobalSettings::Instance().ReceiptNumberLabel + InvoiceNumber;
         //Create Tab
         int TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
@@ -51,9 +52,10 @@ void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransact
 
 // ---------------------------------------------------------------------------
 
-void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable)
+void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder)
 {
-	AnsiString InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,RegularSale);
+	AnsiString InvoiceNumber = GetInvoiceNumber(PaymentTransaction.DBTransaction, isMixedMenuOrder);
+
     PaymentTransaction.InvoiceNumber =  InvoiceNumber;
 	AnsiString TabName = TGlobalSettings::Instance().ReceiptNumberLabel + InvoiceNumber;
 	//Create Tab
@@ -105,4 +107,28 @@ bool TManagerDelayedPayment::IsDelayedPayment(TPaymentTransaction &PaymentTransa
        return false;
     else
        return true;
+}
+//-------------------------------------------------------------------
+void TManagerDelayedPayment::SplitDelayedPaymentOrderByMenuType(TList *orderList, TList *foodOrdersList, TList *bevOrdersList)
+{
+    for(int index = 0; index < orderList->Count; index++)
+    {
+        TItemComplete *Order = (TItemComplete*)orderList->Items[index];
+        if(Order->ItemType)
+            bevOrdersList->Add(Order);
+        else
+            foodOrdersList->Add(Order);
+    }
+}
+//---------------------------------------------------------------------
+AnsiString TManagerDelayedPayment::GetInvoiceNumber(Database::TDBTransaction &DBTransaction, bool isMixedMenuOrder)
+{
+    AnsiString InvoiceNumber = "";
+
+    if(isMixedMenuOrder)
+        InvoiceNumber = Invoice->GetNextInvoiceNumber(DBTransaction,RegularSale);
+    else
+        InvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(DBTransaction);
+
+    return InvoiceNumber;
 }
