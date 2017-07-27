@@ -6,8 +6,8 @@ object FrmSelectTable2: TFrmSelectTable2
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Select Table'
-  ClientHeight = 635
-  ClientWidth = 884
+  ClientHeight = 595
+  ClientWidth = 844
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,10 +26,10 @@ object FrmSelectTable2: TFrmSelectTable2
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 741
+    Left = 701
     Top = 0
     Width = 143
-    Height = 635
+    Height = 595
     Align = alRight
     BevelOuter = bvNone
     BorderWidth = 3
@@ -37,7 +37,7 @@ object FrmSelectTable2: TFrmSelectTable2
     TabOrder = 1
     object TouchBtn2: TTouchBtn
       Left = 3
-      Top = 563
+      Top = 523
       Width = 133
       Height = 65
       Align = alBottom
@@ -59,7 +59,7 @@ object FrmSelectTable2: TFrmSelectTable2
       Left = 3
       Top = 3
       Width = 133
-      Height = 560
+      Height = 520
       Align = alClient
       BorderWidth = 5
       Font.Charset = DEFAULT_CHARSET
@@ -177,8 +177,8 @@ object FrmSelectTable2: TFrmSelectTable2
   object panelTables: TPanel
     Left = 0
     Top = 0
-    Width = 741
-    Height = 635
+    Width = 701
+    Height = 595
     Align = alClient
     ParentBackground = False
     TabOrder = 0
@@ -193,7 +193,7 @@ object FrmSelectTable2: TFrmSelectTable2
     object PnlLocation: TPanel
       Left = 1
       Top = 1
-      Width = 739
+      Width = 699
       Height = 41
       Align = alTop
       Caption = 'Location.'
@@ -214,5 +214,12 @@ object FrmSelectTable2: TFrmSelectTable2
     OnTimer = tiUpdateFloorPlanReqTimer
     Left = 224
     Top = 160
+  end
+  object tiUpdateFloorPlanRefresh: TTimer
+    Enabled = False
+    Interval = 600000
+    OnTimer = tiUpdateFloorPlanRefreshTimer
+    Left = 270
+    Top = 200
   end
 end

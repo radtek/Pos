@@ -5,7 +5,7 @@
 
 #include "Forms.hpp"
 #include "SelectTable.h"
-
+#include "SelectTable2.h"
 #include "PlanController.h"
 
 //---------------------------------------------------------------------------
@@ -21,7 +21,9 @@ struct TFloorPlanReturnParams {
 class TEnableFloorPlan
 {
 	public:
-        static TEnableFloorPlan* Instance();
+        TEnableFloorPlan();
+        ~TEnableFloorPlan();
+//        static TEnableFloorPlan* Instance();
 
 		bool Run(
                                  TForm* inOwner,
@@ -33,8 +35,8 @@ class TEnableFloorPlan
         unsigned __int32 GetMaxSeatCount();
 
 	private:
-        TEnableFloorPlan();
-        static TEnableFloorPlan* enableFloorPlan;
+//        TEnableFloorPlan();
+//        static TEnableFloorPlan* enableFloorPlan;
 
 		bool runNewFloorPlan(
                                  TForm* inOwner,
@@ -49,6 +51,7 @@ class TEnableFloorPlan
 
 		bool changingName;
 		std::auto_ptr<TablePlan::PlanController> controller;
+        void ReleaseFormMemory(std::auto_ptr<TFrmSelectTable2> frmSelectTable2);
 };
 
 /*

@@ -4,24 +4,34 @@
 
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
-#include "SelectTable2.h"
+
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
 // Singleton Object Instance set to NULL.
-TEnableFloorPlan* TEnableFloorPlan::enableFloorPlan = NULL;
+//TEnableFloorPlan* TEnableFloorPlan::enableFloorPlan = NULL;
 
-TEnableFloorPlan* TEnableFloorPlan::Instance()
+//---------------------------------------------------------------------------
+TEnableFloorPlan::TEnableFloorPlan()
 {
-    if( enableFloorPlan == NULL )
-    {
-        enableFloorPlan = new TEnableFloorPlan();
-    }
-
-    return enableFloorPlan;
+    changingName = false;
 }
+//---------------------------------------------------------------------------
+TEnableFloorPlan::~TEnableFloorPlan()
+{
+}
+//---------------------------------------------------------------------------
+//TEnableFloorPlan* TEnableFloorPlan::Instance()
+//{
+//    if( enableFloorPlan == NULL )
+//    {
+//        enableFloorPlan = new TEnableFloorPlan();
+//    }
+//
+//    return enableFloorPlan;
+//}
 //................................................................
 
 bool TEnableFloorPlan::Run(
@@ -68,15 +78,16 @@ void TEnableFloorPlan::SetChangingName(bool inChangingName)
 }
 //................................................................
 
-TEnableFloorPlan::TEnableFloorPlan()
-{
-    changingName = false;
-}
+//TEnableFloorPlan::TEnableFloorPlan()
+//{
+//    changingName = false;
+//}
 //................................................................
 
 bool TEnableFloorPlan::initialiseFloorPlan()
 {
     // if it initialises ok then table plan service is online; must do this!
+//    controller.release();
     controller.reset( new TablePlan::PlanController() );
 
     if ( !TGlobalSettings::Instance().ReservationsEnabled ||
@@ -88,26 +99,76 @@ bool TEnableFloorPlan::initialiseFloorPlan()
     return controller.get() != NULL;
 }
 //................................................................
-
+void TEnableFloorPlan::ReleaseFormMemory(std::auto_ptr<TFrmSelectTable2> frmSelectTable2)
+{
+    if(frmSelectTable2->imgTables)
+    {
+     delete frmSelectTable2->imgTables;
+     frmSelectTable2->imgTables = NULL;
+    }
+    if(frmSelectTable2->panelTables)
+    {
+    delete frmSelectTable2->panelTables;
+    frmSelectTable2->panelTables = NULL;
+    }
+    if(frmSelectTable2->Panel1)
+    {
+    delete frmSelectTable2->Panel1;
+    frmSelectTable2->Panel1 = NULL;
+    }
+    if(frmSelectTable2->TouchBtn2)
+    {
+    delete frmSelectTable2->TouchBtn2;
+    frmSelectTable2->TouchBtn2 = NULL;
+    }
+    if(frmSelectTable2->tgridLocations)
+    {
+    delete frmSelectTable2->tgridLocations;
+    frmSelectTable2->tgridLocations = NULL;
+    }
+    if(frmSelectTable2->PnlLocation)
+    {
+     delete frmSelectTable2->PnlLocation;
+     frmSelectTable2->PnlLocation = NULL;
+    }
+}
+//................................................................
 bool TEnableFloorPlan::runNewFloorPlan(
                                  TForm* inOwner,
                 TFloorPlanReturnParams& inFloorPlanReturnParams )
 {
+    bool retValue = false;
     std::auto_ptr<TFrmSelectTable2>frmSelectTable2(TFrmSelectTable2::Create<TFrmSelectTable2>(inOwner, TDeviceRealTerminal::Instance().DBControl));
 
     // must do this!
-    frmSelectTable2->AssociateWithController( controller.get() );
+    frmSelectTable2->AssociateWithController(controller);
     inFloorPlanReturnParams.Ver = eNewFloorPlan;
 
+    bool needToReopen = false;
     if (frmSelectTable2->ShowModal() == mrOk)
     {
+        needToReopen = frmSelectTable2->NeedToReopen;
         inFloorPlanReturnParams.TabContainerNumber = frmSelectTable2->SelectedTabContainerNumber;
         inFloorPlanReturnParams.TabContainerName   = frmSelectTable2->SelectedTabContainerName;
         inFloorPlanReturnParams.PartyName = frmSelectTable2->SelectedPartyName;
-        return true;
+        ReleaseFormMemory(frmSelectTable2);
+        frmSelectTable2.reset();
+        controller.reset();
+        retValue = true;
     }
-
-	return false;
+    else
+    {
+        ReleaseFormMemory(frmSelectTable2);
+        frmSelectTable2.reset();
+        controller.reset();
+        retValue = false;
+    }
+    if(needToReopen)
+    {
+       initialiseFloorPlan();
+       runNewFloorPlan(inOwner,inFloorPlanReturnParams );
+    }
+    return retValue;
 }
 //................................................................
 
