@@ -25,7 +25,8 @@ public:
 		TimeStamp(0),
         TimeKey(0),
         PatronCount(0),
-        IsWeighted(false) {
+        IsWeighted(false),
+        ItemType(0) {
 	}
 
 	TPnMOrder( const TPnMOrder& inOther );
@@ -49,7 +50,8 @@ public:
 	bool Selected;
     bool IsWeighted;
     int TimeKey;    // Time key value that is same as for orders placed at the same time. Used for chefmate cancellations.
-        int     PatronCount;
+    int PatronCount;
+    int ItemType;
 
 	// Selected for billing therefore not shown in orders list
 	bool operator < (const TPnMOrder & rhs)

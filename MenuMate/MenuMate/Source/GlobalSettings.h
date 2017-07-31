@@ -487,6 +487,8 @@ public:
     UnicodeString CashVarianceGLCode;
     UnicodeString ReportExportPath;
     ePMSType PMSType;
+    bool IsBillSplittedByMenuType;
+    UnicodeString CustomerId;
 };
 
 #endif

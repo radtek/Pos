@@ -222,17 +222,9 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
     //initializing CSV fields
     while(!query->Eof)
     {
-        Customer_ID                    =    query->FieldByName("CUSTOMER_ID")->AsString;
+        Customer_ID                    =    TGlobalSettings::Instance().CustomerId;
 
-        //Check if membership not applied then initialize with default value
-        if(Customer_ID == "")
-        {            
-           Customer_ID = "001";
-        }
-
-		//Adding Non Breaking Space After constant string
-        //Customer_ID += "\u00A0";
-
+		//Adding Non Breaking Space After constant string //Customer_ID += "\u00A0";
         Invoice_CM                     =    "REF#" + query->FieldByName("invoice_number")->AsString;
         Apply_to_Invoice_Number        =    "";
         Credit_Memo                    =    "FALSE";

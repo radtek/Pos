@@ -79,7 +79,11 @@ void __fastcall TfrmTransferItemOrGuest::btnCloseMouseClick(TObject *Sender)
 
 unsigned __int32 TfrmTransferItemOrGuest::getMaxSeatCount()
 {
-    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
+    std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
+    unsigned __int32 value = floorPlan->GetMaxSeatCount();
+    floorPlan.reset();
+    return value;
+//    return TEnableFloorPlan::Instance()->GetMaxSeatCount();
 }
 
 void __fastcall TfrmTransferItemOrGuest::btnDestinationClick(TObject *Sender)

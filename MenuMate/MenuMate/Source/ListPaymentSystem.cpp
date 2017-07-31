@@ -3186,16 +3186,24 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
+            TItemComplete *Order = new TItemComplete();
+
+            if(PaymentTransaction.Orders->Count)
+                Order = (TItemComplete *)PaymentTransaction.Orders->Items[0];
+
             if(TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction) &&
                TGlobalSettings::Instance().CaptureRefundRefNo)
             {
                 PaymentTransaction.InvoiceNumber = "RV " + Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
             }
-             else
-             {
-                    PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-             }
-
+            else if(TGlobalSettings::Instance().IsBillSplittedByMenuType && PaymentTransaction.TypeOfSale == RegularSale && Order->ItemType == eDrinksItem)
+            {
+                PaymentTransaction.InvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(PaymentTransaction.DBTransaction);
+            }
+            else
+            {
+                PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+            }           
       }
     }
    else

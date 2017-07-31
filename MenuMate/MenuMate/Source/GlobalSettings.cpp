@@ -394,5 +394,7 @@ TGlobalSettings::TGlobalSettings()
     CashVarianceGLCode = "";
     ReportExportPath = "";
     MembershipType = 0;
+    IsBillSplittedByMenuType = false;
+    CustomerId = "";
 }
 

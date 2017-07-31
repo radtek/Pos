@@ -63,15 +63,20 @@ AnsiString TReceiptUtility::ExtractInvoiceNumber(AnsiString &invoiceNumber)
         invoiceNumber = invoiceNumber.SubString(4,invoiceNumber.Length()-3);
         prefix = "RV ";
     }
-    if(invoiceNumber.Pos("NC ") != 0)
+    else if(invoiceNumber.Pos("NC ") != 0)
     {
         invoiceNumber = invoiceNumber.SubString(4,invoiceNumber.Length()-3);
         prefix = "NC ";
     }
-    if(invoiceNumber.Pos("Comp ") != 0)
+    else if(invoiceNumber.Pos("Comp ") != 0)
     {
         invoiceNumber = invoiceNumber.SubString(6,invoiceNumber.Length()-5);
         prefix = "Comp ";
+    }
+    else if(invoiceNumber.Pos("L") != 0)
+    {
+        invoiceNumber = invoiceNumber.SubString(2,invoiceNumber.Length()-1);
+        prefix = "L";
     }
     return prefix;
 }
