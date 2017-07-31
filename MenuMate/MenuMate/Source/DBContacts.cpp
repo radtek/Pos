@@ -1753,3 +1753,12 @@ void TDBContacts::SetFirstVisitRewardStatus(Database::TDBTransaction &DBTransact
    IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
    IBInternalQuery->ExecQuery();
 }
+UnicodeString TDBContacts::GetLastNameForLocalCard(Database::TDBTransaction &DBTransaction,int ContactKey)
+{
+   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+   IBInternalQuery->Close();
+   IBInternalQuery->SQL->Text = "SELECT LAST_NAME FROM CONTACTS where CONTACTS_KEY = :CONTACTS_KEY ";
+   IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
+   IBInternalQuery->ExecQuery();
+   return IBInternalQuery->ParamByName("LAST_NAME")->AsString;
+}

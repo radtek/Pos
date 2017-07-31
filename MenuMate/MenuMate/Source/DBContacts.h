@@ -81,6 +81,7 @@ class TDBContacts
         static AnsiString GetContactProxCard(Database::TDBTransaction &DBTransaction,int ContactKey);
         static UnicodeString GetMemberCloudId(Database::TDBTransaction &DBTransaction,int contactKey);
         static void UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
+        static UnicodeString GetLastNameForLocalCard(Database::TDBTransaction &DBTransaction,int ContactKey);
 };
 
 #endif
