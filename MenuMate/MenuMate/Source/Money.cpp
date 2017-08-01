@@ -193,7 +193,7 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     if(!Transaction.CreditTransaction)
     {
         PaymentDiscountsGSTContent = 0;
-        if (TotalOwing <= PaymentAmount)
+        if (fabs(TotalOwing) <= PaymentAmount)
         {
             UnRoundedChange = PaymentAmount - TotalOwing;
             Change = RoundToNearest(UnRoundedChange, RoundChangeTo, !TGlobalSettings::Instance().MidPointRoundsDown);
