@@ -402,9 +402,10 @@ bool TPaymentTransaction::TransOpenCashDraw()
 		{
 			return true;
 		}
-        else if(Payment->GetPay() == 0) //it will be zero in case of items having negative price.
+        else if(Payment->GetPaymentAttribute(ePayTypeOpensCashDrawer) && Payment->GetPay() == 0 && Payment->GetChange() != 0) //it will be zero in case of items having negative price.
         {
             Currency sum = 0.00;
+
             for (int orderIndex = 0; orderIndex < Orders->Count; orderIndex++)
             {
                 TItemComplete *Order = (TItemComplete*)Orders->Items[orderIndex];
@@ -414,8 +415,8 @@ bool TPaymentTransaction::TransOpenCashDraw()
                     TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(subOrderIndex);
                     sum += SubOrder->BillCalcResult.FinalPrice;
                 }
-            }
-            if(sum < 0.00)
+            }  
+            if(sum < 0.00 )
                 return true;
         }
 	}
