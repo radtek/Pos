@@ -415,8 +415,14 @@ bool TPaymentTransaction::TransOpenCashDraw()
                     TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(subOrderIndex);
                     sum += SubOrder->BillCalcResult.FinalPrice;
                 }
-            }  
-            if(sum < 0.00 )
+            }
+            Currency cashOut =0.00;
+            for ( int i = 0 ; i <  PaymentsCount(); i++ )
+            {
+                TPayment *Payment = PaymentGet(i);
+                cashOut += Payment->GetCashOut();
+            }
+            if(sum < 0.00 && cashOut == 0)
                 return true;
         }
 	}
