@@ -611,7 +611,10 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
              IBInternalQuery->ExecQuery();
          }
 	  }
-
+      UnicodeString surName = "";
+      if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate) &&
+         !TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Surname == "")
+          surName = GetLastNameForLocalCard(DBTransaction,Info.ContactKey);
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text =
 		"UPDATE "
@@ -670,7 +673,10 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 			"CONTACTS_KEY = :CONTACTS_KEY";
 
 	  IBInternalQuery->ParamByName("NAME")->AsString = Info.Name.SubString(1, 50);
-      IBInternalQuery->ParamByName("LAST_NAME")->AsString = Info.Surname.SubString(1, 20);
+      if(surName != "")
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = surName;
+      else
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = Info.Surname.SubString(1, 20);
 	  IBInternalQuery->ParamByName("KNOWN_AS")->AsString = Info.Alias.SubString(1, 50);
 	  IBInternalQuery->ParamByName("TITLE")->AsString = Info.Title.SubString(1, 10);
 	  IBInternalQuery->ParamByName("SEX")->AsString = Info.Sex.SubString(1, 10);
@@ -729,7 +735,6 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       // try to match the current database points with the points in current info object. if they are different, add a sync record to database
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
-
      // sync the earned points
       if(Info.Points.getPointsBalance(ptstLoyalty) != dbPoints.getPointsBalance(ptstLoyalty))
       {
@@ -1760,5 +1765,8 @@ UnicodeString TDBContacts::GetLastNameForLocalCard(Database::TDBTransaction &DBT
    IBInternalQuery->SQL->Text = "SELECT LAST_NAME FROM CONTACTS where CONTACTS_KEY = :CONTACTS_KEY ";
    IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
    IBInternalQuery->ExecQuery();
-   return IBInternalQuery->ParamByName("LAST_NAME")->AsString;
+   if(IBInternalQuery->RecordCount > 0)
+       return IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+   else
+       return "";
 }
