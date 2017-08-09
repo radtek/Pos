@@ -483,6 +483,14 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
          IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = Info.PointRule;
 		 IBInternalQuery->ExecQuery();
          TDBContacts::InsertDetailstoMemberSubs(DBTransaction, RetVal,inContactType,Info);
+         if(TPaySubsUtility::IsLocalLoyalty() && !TGlobalSettings::Instance().UseMemberSubs
+            && TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs) == 0)
+         {
+            int pointRules = 0;
+            pointRules |= eprAllowDiscounts;
+            pointRules |= eprFinancial;
+            TPointsRulesSetUtils().ExpandSubs(pointRules,Info.Points.PointsRulesSubs);
+         }
 	  }
    }
    catch(Exception & E)
@@ -546,7 +554,6 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
       IBInternalQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = retValue;
       IBInternalQuery->ParamByName("CONTACTS_KEY" )->AsInteger  = inContactKey;
       IBInternalQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
-
       if(TGlobalSettings::Instance().UseMemberSubs)
       {
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
