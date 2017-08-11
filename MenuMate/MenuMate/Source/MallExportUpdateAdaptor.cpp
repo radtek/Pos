@@ -638,6 +638,7 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
             }
             grossPrice += order->BillCalcResult.ServiceCharge.Value;
             grossPrice += order->BillCalcResult.ServiceCharge.TaxValue;
+            grossPrice += extractTotalRefund();
         }
         else
         {
@@ -991,6 +992,11 @@ Currency TMallExportUpdateAdaptor::extractGrandTotal( TFinancialDetails financia
         {
             result -= (financialDetails.BilledSales.Totals.ServiceChargeTaxContent + financialDetails.BilledSales.Totals.ServiceChargeContent);
         }
+    }
+
+    if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+    {
+         result += extractTotalDiscountAmount() + extractTotalRefundAmount();
     }
 
     return result;
@@ -3328,6 +3334,24 @@ Currency TMallExportUpdateAdaptor::getSalesTypeGroupTotal( UnicodeString salesty
     {
         result += Surcharge;
     }
+
+    return result;
+}
+//---------------------------------------------------------------------------
+Currency TMallExportUpdateAdaptor::extractTotalDiscountAmount()
+{
+    Currency result = 0;
+
+    mallExportUpdate->ReadTotalDiscount(result);
+
+    return result;
+}
+//---------------------------------------------------------------------------
+Currency TMallExportUpdateAdaptor::extractTotalRefundAmount()
+{
+    Currency result = 0;
+
+    mallExportUpdate->ReadTotalRefund(result);
 
     return result;
 }
