@@ -3355,15 +3355,6 @@ Currency TMallExportUpdateAdaptor::getSalesTypeGroupTotal( UnicodeString salesty
     return result;
 }
 //---------------------------------------------------------------------------
-Currency TMallExportUpdateAdaptor::extractTotalDiscountAmount()
-{
-    Currency result = 0;
-
-    mallExportUpdate->ReadTotalDiscount(result);
-
-    return result;
-}
-//---------------------------------------------------------------------------
 Currency TMallExportUpdateAdaptor::extractTotalRefundAmount()
 {
     Currency result = 0;

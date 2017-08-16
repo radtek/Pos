@@ -150,7 +150,6 @@ class TMallExportUpdateAdaptor
         Currency extractTotalSalesTypeGroceries();
         Currency extractTotalSalesTypeMedicines();
         Currency extractTotalSalesTypeOthers();
-        Currency extractTotalDiscountAmount();
         Currency extractTotalRefundAmount();
 
         /* data update methods */
