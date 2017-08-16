@@ -824,7 +824,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
                 scResult += order->BillCalcResult.BasePrice * order->GetQty();
             }
         }
-        result = scResult - result;
+        result = scResult;// - result;
     }
     else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
@@ -988,15 +988,32 @@ Currency TMallExportUpdateAdaptor::extractGrandTotal( TFinancialDetails financia
                 }
             }
         }
+        else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+        {
+            result = 0;
+            std::map<UnicodeString, UnicodeString>::iterator it;
+
+            for(int i=0;i<DataRead.size();i++)
+            {
+                switch(i)
+                {
+                    case 3:
+                        it = DataRead.find("TotalGrossSale");
+                        result += StrToCurr(it->second);
+                        break;
+                    case 11:
+                        it = DataRead.find("TotalSeniorCitizenDiscount");
+                        result += StrToCurr(it->second);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         else
         {
             result -= (financialDetails.BilledSales.Totals.ServiceChargeTaxContent + financialDetails.BilledSales.Totals.ServiceChargeContent);
         }
-    }
-
-    if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
-    {
-         result += extractTotalDiscountAmount() + extractTotalRefundAmount();
     }
 
     return result;
