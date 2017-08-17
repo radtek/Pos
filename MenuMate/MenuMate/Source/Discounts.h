@@ -61,6 +61,7 @@ private:	// User declarations
    int CurrentDiscountKey;
    AnsiString CurrentDiscountName;
    DiscountListOrder ListOrder;
+   bool CheckIfDiscountInSubsidizedTab(int discountKey);
 
 public:		// User declarations
     __fastcall TfrmDiscounts(TComponent* Owner,Database::TDBControl &inDBControl);

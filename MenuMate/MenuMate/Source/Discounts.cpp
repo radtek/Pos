@@ -131,14 +131,21 @@ void __fastcall TfrmDiscounts::tbtnEditDiscountClick(TObject *Sender)
 	{
 		std::auto_ptr<TfrmDiscountEdit> frmDiscountEdit(TfrmDiscountEdit::Create<TfrmDiscountEdit>(this,DBControl));
 		frmDiscountEdit->DiscountKey = CurrentDiscountKey;
-		frmDiscountEdit->Editing = true;
-		frmDiscountEdit->Caption = "Edit Discount";
-		frmDiscountEdit->ShowModal();
-		LoadDiscountList();
+        if(!CheckIfDiscountInSubsidizedTab(CurrentDiscountKey))
+        {
+            frmDiscountEdit->Editing = true;
+            frmDiscountEdit->Caption = "Edit Discount";
+            frmDiscountEdit->ShowModal();
+            LoadDiscountList();
+        }
+        else
+        {
+            MessageBox("Discounts assigned in Subsidized profiles can not be edited","Caution",MB_ICONWARNING + MB_OK);
+        }
 	}
    else
    {
-			MessageBox("Select a discount", "Select a discount", MB_ICONINFORMATION + MB_OK);
+        MessageBox("Select a discount", "Select a discount", MB_ICONINFORMATION + MB_OK);
    }
 }
 //---------------------------------------------------------------------------
@@ -295,6 +302,33 @@ void __fastcall TfrmDiscounts::tbtnDiscountGroupMouseClick(TObject *Sender)
     std::auto_ptr <TfrmDiscountGroupsGUI> DiscountGroupsGUI(new TfrmDiscountGroupsGUI(this));
     DiscountGroupsGUI->Caption = "Add Discount Group";
     DiscountGroupsGUI->ShowModal();
+}
+//---------------------------------------------------------------------------
+bool TfrmDiscounts::CheckIfDiscountInSubsidizedTab(int discountKey)
+{
+    bool retValue = false;
+    AnsiString message = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+	try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->SQL->Text = " Select * FROM TABDISCOUNTS td WHERE td.DISCOUNT_KEY = :DISCOUNT_KEY";
+                                     " AND td.TAB_KEY in (SELECT TAB_KEY from ORDERS)";
+        IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = discountKey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            retValue = true;
+        }
+    }
+    catch(Exception &err)
+	{
+        DBTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
+	}
+    return retValue;
 }
 //---------------------------------------------------------------------------
 

@@ -478,6 +478,7 @@ private: // User declarations
     void CheckGiftCardBalance();
     bool CheckItemCanBeAddedToSeat(TItem *item);
     void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
+    bool CheckIfSubsidizedDiscountValid(int tabKey);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

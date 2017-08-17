@@ -1013,13 +1013,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 		if(IBInternalQuery->RecordCount == 0)
 		{
 			// Add the required Finical Category.
+            int MasterOrderKey = Order->OrderKey;
+            if(Order->GetQty() != 0)
+            {
 			int PrimaryArcCatkey = GetArchiveCategory(DBTransaction,Order->Categories->FinancialCategory);
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERS, 1) FROM RDB$DATABASE";
 			IBInternalQuery->ExecQuery();
 			Order->OrderKey = IBInternalQuery->Fields[0]->AsInteger;
-			int MasterOrderKey = Order->OrderKey;
+
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Clear();
@@ -1387,12 +1390,13 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 
 			// Taxes
 			SetOrderTaxProfiles(DBTransaction,Order);
-
+            }
 			// Sides
 			for (int i = 0 ; i < Order->SubOrders->Count ; i ++)
 			{
 				TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub *)Order->SubOrders->Items[i];
-
+                if(CurrentSubOrder->GetQty() != 0)
+                {
 				int SubPrimaryArcCatkey = GetArchiveCategory(DBTransaction,CurrentSubOrder->Categories->FinancialCategory);
 
 				IBInternalQuery->Close();
@@ -1720,6 +1724,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 					IBInternalQuery->ParamByName("STOCK_LOCATION")->AsString	=  CurrentRecipe->StockLocation;
 					IBInternalQuery->ExecQuery();
 				}
+                }
 			}
 		}
 		else

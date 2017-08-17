@@ -1693,11 +1693,18 @@ TShiftState Shift, TGridButton *GridButton)
 {
 	std::set <int> ::iterator ptrDiscount;
 	ptrDiscount = TempUserInfo.AutoAppliedDiscounts.find(GridButton->Tag);
-
+    AnsiString message = "";
+    message = CheckDiscountApplicability(GridButton->Tag);
 	try
 	{
 		if (ptrDiscount == TempUserInfo.AutoAppliedDiscounts.end())
 		{ // Not Found.
+            // Check if Discount is applicable(should be other than 0% and 100%)
+            if(message.Length() != 0)
+            {
+                MessageBox(message,"Caution",MB_ICONWARNING + MB_OK);
+                return;
+            }
 			TempUserInfo.AutoAppliedDiscounts.insert(GridButton->Tag);
 			GridButton->Latched = true;
 		}
@@ -1722,7 +1729,6 @@ TShiftState Shift, TGridButton *GridButton)
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmTabManager::btnSubsidisedProfileMouseClick(TObject *Sender)
 {
     TempUserInfo.Clear();
@@ -1845,6 +1851,98 @@ void __fastcall TfrmTabManager::btnClippTabMouseClick(TObject *Sender)
 
 	ShowTabsDetails();
 }
+//---------------------------------------------------------------------------
+AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
+{
+    bool retValue = true;
+    AnsiString message = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+	try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
+        IBInternalQuery->SQL->Text = "SELECT " "a.PERCENTAGE, " "a.AMOUNT," " a.DISCOUNT_MODE," " a.DISCOUNT_TYPE " "FROM " "DISCOUNTS a " "WHERE "
+        "a.DISCOUNT_KEY = :DISCOUNT_KEY";
+        IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = discountKey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+             if(IBInternalQuery->FieldByName("DISCOUNT_TYPE")->AsInteger != dtPromptAmount &&
+                IBInternalQuery->FieldByName("DISCOUNT_TYPE")->AsInteger != dtPromptDescriptionAmount )
+             {
+                switch(IBInternalQuery->FieldByName("DISCOUNT_MODE")->AsInteger)
+                {
+                    case DiscModeCurrency:
+                    {
+                        if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                        {
+                            message = "Currency mode Discount of value 0 can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    case DiscModePercent:
+                    {
+                        if((double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 0 ||
+                          (double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 100)
+                        {
+                            message = "Percentage mode Discount of percentage " +
+                                       IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency +
+                                       " can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    case DiscModeSetPrice:
+                    {
+                        if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                        {
+                            message = "Set Price mode Discount of value 0 can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    case DiscModeCombo:
+                    {
+                        if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                        {
+                            message = "Combo mode Discount of value 0 can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    case DiscModeDeal:
+                    {
+                        if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                        {
+                            message = "Deal mode Discount of value 0 can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    case DiscModeItem:
+                    {
+                        if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                        {
+                            message = "Item mode Discount of value 0 can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        break;
+                    }
+                    default:
+                       break;
+                }
+             }
+        }
+        DBTransaction.Commit();
+	}
+	catch(Exception &err)
+	{
+        DBTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
+	}
+    return message;
+}
 //---------------------------------------------------------------------------
 
