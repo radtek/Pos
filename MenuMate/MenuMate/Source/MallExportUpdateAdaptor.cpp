@@ -824,7 +824,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
                 scResult += order->BillCalcResult.BasePrice * order->GetQty();
             }
         }
-        result = scResult;// - result;
+        result = scResult - result;
     }
     else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
@@ -1002,7 +1002,7 @@ Currency TMallExportUpdateAdaptor::extractGrandTotal( TFinancialDetails financia
                         result += StrToCurr(it->second);
                         break;
                     case 11:
-                        it = DataRead.find("TotalSeniorCitizenDiscount");
+                        it = DataRead.find("TaxExemptSales");
                         result += StrToCurr(it->second);
                         break;
                     default:
@@ -1105,6 +1105,10 @@ Currency TMallExportUpdateAdaptor::extractTaxExemptSales()
        TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
     {
         result = tax_exempt_total;
+    }
+    else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+    {
+        result = tax_exempt_total + tax_zero_rated_total + getDiscountGroupTotal(SCD_DISCOUNT_GROUP);
     }
     else
     {
@@ -1718,6 +1722,10 @@ Currency TMallExportUpdateAdaptor::extractTotalDiscount()
     if(TGlobalSettings::Instance().MallIndex == ALPHALANDMALL)
     {
         return result;
+    }
+    else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+    {
+        return result*-1;
     }
     else
     {
