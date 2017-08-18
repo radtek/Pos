@@ -314,7 +314,7 @@ bool TfrmDiscounts::CheckIfDiscountInSubsidizedTab(int discountKey)
 	{
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-        IBInternalQuery->SQL->Text = " Select * FROM TABDISCOUNTS td WHERE td.DISCOUNT_KEY = :DISCOUNT_KEY";
+        IBInternalQuery->SQL->Text = " Select * FROM TABDISCOUNTS td WHERE td.DISCOUNT_KEY = :DISCOUNT_KEY"
                                      " AND td.TAB_KEY in (SELECT TAB_KEY from ORDERS)";
         IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = discountKey;
         IBInternalQuery->ExecQuery();

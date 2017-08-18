@@ -1877,7 +1877,7 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                     {
                         if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
                         {
-                            message = "Currency mode Discount of value 0 can not be assigned to subsidized tab.";
+                            message = "Currency mode Discount/Surcharge of value 0 can not be assigned to subsidized tab.";
                             retValue = false;
                         }
                         break;
@@ -1887,7 +1887,14 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                         if((double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 0 ||
                           (double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 100)
                         {
-                            message = "Percentage mode Discount of percentage " +
+                            message = "Percentage mode Discount/Surcharge of percentage " +
+                                       IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency +
+                                       " can not be assigned to subsidized tab.";
+                            retValue = false;
+                        }
+                        if((double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == -100)
+                        {
+                            message = "Percentage mode Discount/Surcharge of percentage " +
                                        IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency +
                                        " can not be assigned to subsidized tab.";
                             retValue = false;
@@ -1898,7 +1905,7 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                     {
                         if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
                         {
-                            message = "Set Price mode Discount of value 0 can not be assigned to subsidized tab.";
+                            message = "Set Price mode Discount/Surcharge of value 0 can not be assigned to subsidized tab.";
                             retValue = false;
                         }
                         break;
@@ -1907,7 +1914,7 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                     {
                         if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
                         {
-                            message = "Combo mode Discount of value 0 can not be assigned to subsidized tab.";
+                            message = "Combo mode Discount/Surcharge of value 0 can not be assigned to subsidized tab.";
                             retValue = false;
                         }
                         break;
@@ -1916,7 +1923,7 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                     {
                         if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
                         {
-                            message = "Deal mode Discount of value 0 can not be assigned to subsidized tab.";
+                            message = "Deal mode Discount/Surcharge of value 0 can not be assigned to subsidized tab.";
                             retValue = false;
                         }
                         break;
@@ -1925,7 +1932,7 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
                     {
                         if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
                         {
-                            message = "Item mode Discount of value 0 can not be assigned to subsidized tab.";
+                            message = "Item mode Discount/Surcharge of value 0 can not be assigned to subsidized tab.";
                             retValue = false;
                         }
                         break;

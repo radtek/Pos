@@ -10132,7 +10132,24 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 						Currency Balance = TDBTab::GetTabBalance(DBTransaction, SelectedTabKey);
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Balance", Balance));
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("New Balance", Balance + InitialMoney.GrandTotal));
-
+//                        MessageBox(InitialMoney.GrandTotal,"InitialMoney.GrandTotal",MB_OK);
+//                        MessageBox(Balance,"Balance",MB_OK);
+//                        MessageBox(SeatOrders[SelectedSeat]->Orders->Count,"Count of Seat Orders",MB_OK);
+                        double orderValue = 0;
+                        for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+                        {
+                            TItemComplete *item = (TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+                            item->RunBillCalculator();
+                            orderValue += (double)item->FinalPrice_BillCalc();
+                            for(int j = 0; j < item->SubOrders->Count; j++)
+                            {
+                                TItemComplete *subItem = ((TItemComplete*)item->SubOrders->Items[j]);
+                                subItem->RunBillCalculator();
+                                orderValue += (double)subItem->FinalPrice_BillCalc();
+                            }
+                        }
+                        if(orderValue != 0)
+                        {
                         TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
 						if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
 						{
@@ -10160,6 +10177,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                         }
                         delete frmConfirmOrder;
                         frmConfirmOrder = NULL;
+                        }
 					}
 				}
 
@@ -12262,7 +12280,21 @@ bool TfrmSelectDish::SubsidizedDiscountApply(int tabkey)
 	{
 		SubsidizedQuantityApply(true);
 		// IsSubSidizeOrderCancil=false;
-		tbtnTenderClick(tbtnTender);
+        double orderValue = 0;
+        for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        {
+            TItemComplete *item = (TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+            item->RunBillCalculator();
+            orderValue += (double)item->FinalPrice_BillCalc();
+            for(int j = 0; j < item->SubOrders->Count; j++)
+            {
+                TItemComplete *subItem = ((TItemComplete*)item->SubOrders->Items[j]);
+                subItem->RunBillCalculator();
+                orderValue += (double)subItem->FinalPrice_BillCalc();
+            }
+        }
+        if(orderValue > 0)
+		    tbtnTenderClick(tbtnTender);
 		IsSubSidizeProfileExist=false;
 
 
