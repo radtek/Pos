@@ -824,7 +824,14 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
                 scResult += order->BillCalcResult.BasePrice * order->GetQty();
             }
         }
-        result = scResult - result;
+        if(order->GetQty() >= 0)
+        {
+            result = scResult - result;
+        }
+        else
+        {
+            result = (scResult + result)*-1;
+        }
     }
     else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
