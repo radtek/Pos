@@ -10132,9 +10132,6 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 						Currency Balance = TDBTab::GetTabBalance(DBTransaction, SelectedTabKey);
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Balance", Balance));
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("New Balance", Balance + InitialMoney.GrandTotal));
-//                        MessageBox(InitialMoney.GrandTotal,"InitialMoney.GrandTotal",MB_OK);
-//                        MessageBox(Balance,"Balance",MB_OK);
-//                        MessageBox(SeatOrders[SelectedSeat]->Orders->Count,"Count of Seat Orders",MB_OK);
                         double orderValue = 0;
                         for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
                         {
@@ -10150,33 +10147,33 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                         }
                         if(orderValue != 0)
                         {
-                        TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
-						if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
-						{
-							SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
-							OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
-							OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
-						}
-
-                        // if clipp tab order is in progress
-                        IsOrderinProgress = true;
-                        ClippTabKey = SelectedTabKey;
-
-						if (frmConfirmOrder->ShowModal() != mrOk)
-						{
-							Retval = mrAbort;
-                            IsOrderinProgress = false;
-						}
-                        else
-                        {
-                            IsOrderinProgress = false;
-                            if(TGlobalSettings::Instance().IsThorlinkSelected)
+                            TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
+                            if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
                             {
-                               RemoveMembership(DBTransaction);
+                                SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
+                                OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
+                                OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
                             }
-                        }
-                        delete frmConfirmOrder;
-                        frmConfirmOrder = NULL;
+
+                            // if clipp tab order is in progress
+                            IsOrderinProgress = true;
+                            ClippTabKey = SelectedTabKey;
+
+                            if (frmConfirmOrder->ShowModal() != mrOk)
+                            {
+                                Retval = mrAbort;
+                                IsOrderinProgress = false;
+                            }
+                            else
+                            {
+                                IsOrderinProgress = false;
+                                if(TGlobalSettings::Instance().IsThorlinkSelected)
+                                {
+                                   RemoveMembership(DBTransaction);
+                                }
+                            }
+                            delete frmConfirmOrder;
+                            frmConfirmOrder = NULL;
                         }
 					}
 				}
