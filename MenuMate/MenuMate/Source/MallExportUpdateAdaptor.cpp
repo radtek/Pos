@@ -810,6 +810,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
     Currency scResult = 0;
     Currency SalesTax = 0;
     result = getDiscountGroupTotal(SCD_DISCOUNT_GROUP);
+    result += getDiscountGroupTotal(PWD_DISCOUNT_GROUP);
     if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
     {
         TItemMinorComplete* order;
@@ -1115,7 +1116,7 @@ Currency TMallExportUpdateAdaptor::extractTaxExemptSales()
     }
     else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
     {
-        result = tax_exempt_total + tax_zero_rated_total + getDiscountGroupTotal(SCD_DISCOUNT_GROUP);
+        result = tax_exempt_total + tax_zero_rated_total + getDiscountGroupTotal(SCD_DISCOUNT_GROUP) + getDiscountGroupTotal(PWD_DISCOUNT_GROUP);
     }
     else
     {
