@@ -633,9 +633,23 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
         }
         else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
         {
-            if(SalesTax != 0) {
+            if(SalesTax != 0)
+            {
                 grossPrice = order->BillCalcResult.GrossPrice;
             }
+            else
+            {
+                std::vector<TDiscount>::iterator it = order->Discounts.begin();
+                for( ; it != order->Discounts.end(); it++ )
+                {
+                    if(it->Mode == DiscModePercent && it->PercentAmount == 100)
+                    {   
+                        grossPrice += order->BillCalcResult.GrossPrice ;
+						break;
+                    }
+                }
+            }
+
             grossPrice += order->BillCalcResult.ServiceCharge.Value;
             grossPrice += order->BillCalcResult.ServiceCharge.TaxValue;
             grossPrice += extractTotalRefund();
@@ -809,6 +823,10 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
     Currency result = 0;
     Currency scResult = 0;
     Currency SalesTax = 0;
+    bool isSCDOrPWDApplied = false;
+    bool isHundredPercentDiscount = false;
+    Currency discountAmount = 0;
+    Currency serviceCharge = 0;
     result = getDiscountGroupTotal(SCD_DISCOUNT_GROUP);
     result += getDiscountGroupTotal(PWD_DISCOUNT_GROUP);
     if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
@@ -816,6 +834,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
         TItemMinorComplete* order;
         std::vector<TItemMinorComplete*>::iterator it = flatternedOrdersList.begin();
 
+        isSCDOrPWDApplied = result == 0 ? false : true;
         for( ; it != flatternedOrdersList.end(); it++ )
         {
             order = *it;
@@ -824,12 +843,32 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
             {
                 scResult += order->BillCalcResult.BasePrice * order->GetQty();
             }
+            serviceCharge = serviceCharge + order->BillCalcResult.ServiceCharge.Value;
+            std::vector<TDiscount>::iterator it = order->Discounts.begin();
+            for( ; it != order->Discounts.end(); it++ )
+            {
+                discountAmount += it->Amount;
+                if(it->Mode == DiscModePercent)
+                {
+                    if(it->PercentAmount == 0)
+                        isSCDOrPWDApplied = true;
+                    else if(it->PercentAmount == 100)
+                         isHundredPercentDiscount = true;
+                    break;
+                }
+            }
         }
-        if(order->GetQty() >= 0)
+
+        if(!isSCDOrPWDApplied && !isHundredPercentDiscount)
+        {
+            isSCDOrPWDApplied = result == 0 && serviceCharge > 0 ? true : false;
+        }
+
+        if(order->GetQty() >= 0 && isSCDOrPWDApplied )
         {
             result = scResult - result;
         }
-        else
+        else if(isSCDOrPWDApplied)
         {
             result = (scResult + result)*-1;
         }
