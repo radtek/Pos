@@ -845,9 +845,10 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
             }
             serviceCharge = serviceCharge + order->BillCalcResult.ServiceCharge.Value;
             std::vector<TDiscount>::iterator it = order->Discounts.begin();
+            discountAmount += order->TotalDiscount_BillCalc();
             for( ; it != order->Discounts.end(); it++ )
             {
-                discountAmount += it->Amount;
+                //discountAmount += it->Amount;
                 if(it->Mode == DiscModePercent)
                 {
                     if(it->PercentAmount == 0)
@@ -861,7 +862,15 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
 
         if(!isSCDOrPWDApplied && !isHundredPercentDiscount)
         {
-            isSCDOrPWDApplied = result == 0 && serviceCharge > 0 ? true : false;
+            if(result == 0 && serviceCharge > 0 && SalesTax == 0)
+            {
+                scResult += discountAmount;
+                isSCDOrPWDApplied = true;
+            }
+            else
+            {
+                isSCDOrPWDApplied = false;
+            }
         }
 
         if(order->GetQty() >= 0 && isSCDOrPWDApplied )
@@ -877,7 +886,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
     {
         result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
     }
-
+     
     return result;
 }
 //---------------------------------------------------------------------------
@@ -1155,7 +1164,7 @@ Currency TMallExportUpdateAdaptor::extractTaxExemptSales()
     }
     else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
     {
-        result = tax_exempt_total + tax_zero_rated_total + getDiscountGroupTotal(SCD_DISCOUNT_GROUP) + getDiscountGroupTotal(PWD_DISCOUNT_GROUP);
+        result = tax_exempt_total + tax_zero_rated_total - GetTotalTaxExemptDiscounts();//+ getDiscountGroupTotal(SCD_DISCOUNT_GROUP) + getDiscountGroupTotal(PWD_DISCOUNT_GROUP);
     }
     else
     {
@@ -3419,6 +3428,29 @@ Currency TMallExportUpdateAdaptor::extractTotalRefundAmount()
     return result;
 }
 //---------------------------------------------------------------------------
+Currency TMallExportUpdateAdaptor::GetTotalTaxExemptDiscounts()
+{
+    Currency result = 0;
+    Currency productTax = 0;
+    Currency totalDiscounts = 0;
+
+    TItemMinorComplete* order;
+    std::vector<TItemMinorComplete*>::iterator it = flatternedOrdersList.begin();
+
+    for( ; it != flatternedOrdersList.end(); it++ )
+    {
+        order = *it;
+
+        productTax = getTotalTaxFromResult( order->BillCalcResult, TTaxType::ttSale );
+        totalDiscounts = order->TotalDiscount_BillCalc();
+
+        if( productTax == 0 && !order->BillCalcResult.PriceTaxExempt)
+        {
+            result += totalDiscounts;
+        }
+    }
+    return result;
+}
 #pragma package(smart_init)
 
 
