@@ -862,7 +862,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
 
         if(!isSCDOrPWDApplied && !isHundredPercentDiscount)
         {
-            if(result == 0 && serviceCharge > 0 && SalesTax == 0)
+            if(result == 0 && serviceCharge != 0 && SalesTax == 0)
             {
                 scResult += discountAmount;
                 isSCDOrPWDApplied = true;
