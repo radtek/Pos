@@ -47,6 +47,7 @@ TExportResponse TMallExportPowerPlantMall::ZExport()
     try
     {
         bool PrevZReportStatus = false;
+        GrossTotal = 0;
 
         CreateFilename("ZED", prevFName);
 
@@ -61,6 +62,19 @@ TExportResponse TMallExportPowerPlantMall::ZExport()
         {
             TGlobalSettings::Instance().PPlantCount += 1;
             SaveIntVariable(vmPPlantCount, TGlobalSettings::Instance().PPlantCount);
+            UnicodeString TempPath = ExtractFilePath(Application->ExeName) + "PowerPlant.txt";
+            for(int i=0;i<DataRead.size();i++)
+            {
+                if(i == 2)
+                {
+                    GrossTotal += CalculateZed((i+2),TempPath);
+                }
+                else if(i ==12)
+                {
+                    GrossTotal += CalculateZed((i+2),TempPath);
+                }
+            }
+
             CreateOutputFormatZed(DataRead, DataToWrite, FileURI, RIdentifier);
             TMallExportDataManager::ExportFile(OutputManager, DataToWrite, FileURI);
             DataRead.clear();
@@ -600,7 +614,7 @@ TExportResponse TMallExportPowerPlantMall::CreateOutputFormatZed(std::map<Unicod
         UnicodeString GetData = "";
         std::string TempData = "";
         UnicodeString TempPath = ExtractFilePath(Application->ExeName) + "PowerPlant.txt";
-
+        
         std::map<UnicodeString, UnicodeString>::iterator it;
 
         if(RIdentifier == "99")
@@ -699,6 +713,7 @@ TExportResponse TMallExportPowerPlantMall::CreateOutputFormatZed(std::map<Unicod
         {
             OutputValue = RIdentifier + Format;
             DataToWrite.push_back(OutputValue.t_str());
+            Currency GrandTotalOld = 0;
             for(i=0;i<DataRead.size();i++)
             {
                 if(i==0)
@@ -712,10 +727,12 @@ TExportResponse TMallExportPowerPlantMall::CreateOutputFormatZed(std::map<Unicod
                 else if(i==2)
                 {
                     it = DataRead.find("GrandTotalOld");
+                    GrandTotalOld = it->second;
                 }
                 else if(i==3)
                 {
                     it = DataRead.find("GrandTotal");
+                    it->second = GrandTotalOld + GrossTotal;
                 }
 
                 if (i==0)

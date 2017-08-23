@@ -282,7 +282,6 @@ class TMallExportUpdateAdaptor
         Currency getDailySalesLocalTaxes();
         void getSalesTypeQuery(int Item_ID);
         Currency getSalesTypeGroupTotal( UnicodeString salestypeGroupName );
-        Currency GetTotalTaxExemptDiscounts();
 
         // Utility fields
         TDateTime currentDateTime;

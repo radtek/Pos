@@ -58,6 +58,7 @@ public:
 
     std::fstream TempFile;
     std::string line;
+    Currency GrossTotal;
 
 protected:
 	// Override methods
