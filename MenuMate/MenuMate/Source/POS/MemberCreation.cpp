@@ -108,35 +108,49 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     int	emailcount = IBInternalQuery->Fields[0]->AsInteger;
     AnsiString firstNameMessage = "First Name ";
     AnsiString lastNameMessage = "Last Name ";
+    AnsiString missingMessage = "You have missed following manadatory field/s :- \n";
+    AnsiString errorMessage = "";//"You have missed the mandatory field/s \n";
+//    MessageBox("declared missingMessage and errorMessage","",MB_OK);
+    int missingMessageSize = missingMessage.Length();
     if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
         Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
        !Info.ValidEmail())
     {
-      MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
+//        MessageBox("assigning errorMessage","",MB_OK);
+        errorMessage += "You must enter a valid Email. \n";
     }
     else if(Info.EMail != "" && emailcount > 0)
     {
+//        MessageBox("assigning errorMessage","",MB_OK);
         MessageBox("Member already exists!!!", "Error", MB_OK + MB_ICONERROR);
+        return;
     }
-    else if(Info.Name == NULL || Info.Name.Trim() == "")
+    if(Info.Name == NULL || Info.Name.Trim() == "")
     {
-       MessageBox("You must enter first name.", "Error", MB_ICONERROR);
+//       MessageBox("assigning missingMessage with firstName","",MB_OK);
+       missingMessage += "Name \n";
     }
-    else if(!Info.ValidateFirstName(firstNameMessage))
+    if(Info.Surname == NULL || Info.Surname.Trim() == "")
     {
-       MessageBox(firstNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+//        MessageBox("assigning missingMessage with Surname","",MB_OK);
+       missingMessage += "Surname \n";
     }
-    else if(Info.Surname == NULL || Info.Surname.Trim() == "")
+    if(missingMessage.Length() != missingMessageSize)
     {
-       MessageBox("You must enter last name.", "Error", MB_ICONERROR);
+        errorMessage += missingMessage;
     }
-    else if(!Info.ValidateLastName(lastNameMessage))
+    if(errorMessage.Length() != 0)
+        MessageBox(errorMessage,"Error", MB_OK + MB_ICONERROR);
+
+    else if(Info.ValidEmail() && Info.Name != NULL && Info.Name.Trim() != "" &&
+       Info.Surname != NULL || Info.Surname.Trim() != "")
     {
-       MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
-    }
-    else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
-    {
-       MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+        if(!Info.ValidateFirstName(firstNameMessage))
+           MessageBox(firstNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+        else if(!Info.ValidateLastName(lastNameMessage))
+           MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+        else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
+           MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
     }
     else
     {
@@ -411,8 +425,24 @@ void TfrmMemberCreation::getMemberDetailsFromActivationEmail()
          }
          Info.LastModified = Now();
 		 Info.MemberType=1;
-         ModalResult = mrOk;
+        CustomerInfoPointers[0] =  Info.EMail;
+        CustomerInfoPointers[1] =  Info.Name;
+        CustomerInfoPointers[2] =  Info.Surname;
+        CustomerInfoPointers[3] =  Info.Phone;
+        DisplayCustomerDataFromPointers();
+        AnsiString monthYear = "";
+        if(Info.DateOfBirth.DateString().Pos("/") != 0)
+        {
+            tbtnDay->Caption = Info.DateOfBirth.DateString().SubString(0,Info.DateOfBirth.DateString().Pos("/") -1);
 
+            monthYear = Info.DateOfBirth.DateString().SubString(Info.DateOfBirth.DateString().Pos("/")+1,
+                        Info.DateOfBirth.DateString().Length() - Info.DateOfBirth.DateString().Pos("/")+1);
+            tbtnMonth->Caption = monthYear.SubString(0,monthYear.Pos("/") -1 );
+
+            tbtnYear->Caption = monthYear.SubString(monthYear.Pos("/")+1,monthYear.Length()-monthYear.Pos("/")+1);
+        }
+//         ModalResult = mrOk;
+//
         //if user is already in the database (i.e. this is being used to replace a card) then set contact key, site id and member number
         /*Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
@@ -434,6 +464,8 @@ void TfrmMemberCreation::getMemberDetailsFromActivationEmail()
 
         //DrawContactDetail();
 	}
+    else
+        MessageBox("Email entered is not a valid Email.","Information",MB_ICONINFORMATION+MB_OK);
 }
 
 void TfrmMemberCreation::toggleActivateAccountButton()
