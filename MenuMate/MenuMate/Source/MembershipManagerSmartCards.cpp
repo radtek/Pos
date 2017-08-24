@@ -2247,7 +2247,13 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
 	if(!result)
 	  MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
     else
-      MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+            MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+        DBTransaction.Commit();
+    }
 	// cleanup
 	delete _lmOperationDialogBox;
 	delete memberCreationThread;
@@ -3002,7 +3008,11 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
    if(triggeredForCard)
    {
-   MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+      Database::TDBTransaction DBTransaction(DBControl);
+	  DBTransaction.StartTransaction();
+      if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+         MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+      DBTransaction.Commit();
    }
    else
    {
