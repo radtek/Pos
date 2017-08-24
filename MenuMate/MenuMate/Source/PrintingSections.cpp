@@ -6901,6 +6901,17 @@ bool TPrintSection::ExtractItemsList()
 			TItemComplete *NextOrder = (TItemComplete*)WorkingOrdersList->Items[i];
 			OrdersList->Remove(NextOrder);
 		}
+        bool continueLoop = true;
+        while(continueLoop)
+        {
+            if(OrdersList->Count != 0)
+            {
+                TItemComplete *thisItem = (TItemComplete*)OrdersList->Items[0];
+                OrdersList->Remove(thisItem);
+            }
+            else
+                continueLoop = false;
+        }
 		DataExtracted = true;
 	}
 	return DataExtracted;

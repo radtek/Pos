@@ -3869,6 +3869,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						}
 
                         order_was_resumed_via_hold_and_send = PrintTransaction->Orders->Count > 0 && !OrderOnHold;
+                        double totalQuantity = 0;
+                        for(int l = 0; l < PrintTransaction->Orders->Count; l++)
+                        {
+                            totalQuantity += ((TItemComplete*)PrintTransaction->Orders->Items[l])->GetQty();
+                        }
+                        if(totalQuantity == 0)
+                           order_was_resumed_via_hold_and_send = false;
 						// SENDS A COMPLETE ORDER AFTER TENDERING IT ...
 						// OR CASHERING IT OUT.
 						if (order_was_resumed_via_hold_and_send)
