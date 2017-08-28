@@ -109,30 +109,25 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     AnsiString firstNameMessage = "First Name ";
     AnsiString lastNameMessage = "Last Name ";
     AnsiString missingMessage = "You have missed following manadatory field/s :- \n";
-    AnsiString errorMessage = "";//"You have missed the mandatory field/s \n";
-//    MessageBox("declared missingMessage and errorMessage","",MB_OK);
+    AnsiString errorMessage = "";
     int missingMessageSize = missingMessage.Length();
     if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
         Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
        !Info.ValidEmail())
     {
-//        MessageBox("assigning errorMessage","",MB_OK);
         errorMessage += "You must enter a valid Email. \n";
     }
     else if(Info.EMail != "" && emailcount > 0)
     {
-//        MessageBox("assigning errorMessage","",MB_OK);
         MessageBox("Member already exists!!!", "Error", MB_OK + MB_ICONERROR);
         return;
     }
     if(Info.Name == NULL || Info.Name.Trim() == "")
     {
-//       MessageBox("assigning missingMessage with firstName","",MB_OK);
        missingMessage += "Name \n";
     }
     if(Info.Surname == NULL || Info.Surname.Trim() == "")
     {
-//        MessageBox("assigning missingMessage with Surname","",MB_OK);
        missingMessage += "Surname \n";
     }
     if(missingMessage.Length() != missingMessageSize)
@@ -151,34 +146,32 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
            MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
         else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
            MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+        else
+        {
+          try
+          {
+            Info.LastModified = Now();
+            Info.MemberType=1;
+            ModalResult = mrOk;
+            if (Info.SiteID == 0)
+             {
+                Info.SiteID = TGlobalSettings::Instance().SiteID;
+             }
+             if(!TGlobalSettings::Instance().UseMemberSubs)
+             {
+                int PointRule = 0;
+                PointRule |= eprAllowDiscounts;
+                PointRule |= eprFinancial;
+                TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
+             }
+          }
+          catch(Exception & Err)
+          {
+             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+             MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
+          }
+        }
     }
-    else
-    {
-      try
-      {
-        Info.LastModified = Now();
-        Info.MemberType=1;
-        ModalResult = mrOk;
-        if (Info.SiteID == 0)
-         {
-            Info.SiteID = TGlobalSettings::Instance().SiteID;
-         }
-         if(!TGlobalSettings::Instance().UseMemberSubs)
-         {
-            int PointRule = 0;
-            PointRule |= eprAllowDiscounts;
-            PointRule |= eprFinancial;
-            TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
-         }
-
-      }
-      catch(Exception & Err)
-      {
-         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
-         MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
-      }
-    }
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
