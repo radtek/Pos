@@ -6875,7 +6875,8 @@ bool TPrintSection::ExtractItem()
 	if (OrdersList->Count > 0)
 	{
 		TItemComplete *Order = (TItemComplete*)OrdersList->Items[0];
-		WorkingOrdersList->Add(Order);
+        if(Order->GetQty() != 0)
+		    WorkingOrdersList->Add(Order);
 		OrdersList->Remove(Order);
 		DataExtracted = true;
 	}
@@ -6891,6 +6892,7 @@ bool TPrintSection::ExtractItemsList()
 		for (int i = 0; i < OrdersList->Count; i++)
 		{
 			TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
+            if(Order->GetQty() != 0)
 			 WorkingOrdersList->Add(Order);
 		}
 
@@ -6899,6 +6901,17 @@ bool TPrintSection::ExtractItemsList()
 			TItemComplete *NextOrder = (TItemComplete*)WorkingOrdersList->Items[i];
 			OrdersList->Remove(NextOrder);
 		}
+        bool continueLoop = true;
+        while(continueLoop)
+        {
+            if(OrdersList->Count != 0)
+            {
+                TItemComplete *thisItem = (TItemComplete*)OrdersList->Items[0];
+                OrdersList->Remove(thisItem);
+            }
+            else
+                continueLoop = false;
+        }
 		DataExtracted = true;
 	}
 	return DataExtracted;

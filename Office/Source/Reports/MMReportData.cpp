@@ -10,7 +10,8 @@
 #include <memory>
 
 #include "SqlViewer.h"
-#define PAYMENT_PROPERTIES "29"
+#define PAYMENT_PROPERTIES "%-29-%"
+#define PAYMENT_PROPERTIES2 "%-25-%"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "RpCon"
@@ -5042,7 +5043,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join DAYARCBILL on DAYARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
         "where "
-            " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
+            " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime ";
 
@@ -5074,7 +5075,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join ARCBILL on ARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "where "
-            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0 and "
+            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 ) and ARCBILLPAY.SUBTOTAL != 0 and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime ";
 
@@ -5103,6 +5104,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	qrInvoice->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoice->ParamByName("EndTime")->AsDateTime		= EndTime;
     qrInvoice->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
+    qrInvoice->ParamByName("PAYMENT_PROPERTIES2")->AsString = PAYMENT_PROPERTIES2;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
@@ -5160,7 +5162,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0  and "
+            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and ARCBILLPAY.SUBTOTAL != 0  and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime   ";
 
@@ -5222,7 +5224,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-              " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
+              " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 )and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime   " ;
 
@@ -5244,6 +5246,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	qrInvoiceDetailed->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoiceDetailed->ParamByName("EndTime")->AsDateTime		= EndTime;
     qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
+    qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES2")->AsString = PAYMENT_PROPERTIES2;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)

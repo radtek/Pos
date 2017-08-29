@@ -3869,6 +3869,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						}
 
                         order_was_resumed_via_hold_and_send = PrintTransaction->Orders->Count > 0 && !OrderOnHold;
+                        double totalQuantity = 0;
+                        for(int l = 0; l < PrintTransaction->Orders->Count; l++)
+                        {
+                            totalQuantity += ((TItemComplete*)PrintTransaction->Orders->Items[l])->GetQty();
+                        }
+                        if(totalQuantity == 0)
+                           order_was_resumed_via_hold_and_send = false;
 						// SENDS A COMPLETE ORDER AFTER TENDERING IT ...
 						// OR CASHERING IT OUT.
 						if (order_was_resumed_via_hold_and_send)
@@ -5375,8 +5382,8 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 			Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 			Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 			Order->Loyalty_Key = SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey;
-
-			NewOrdersList->Add(Order);
+            if(Order->GetQty() != 0)
+    			NewOrdersList->Add(Order);
 		}
 	}
 
@@ -8344,7 +8351,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 			bool PaymentComplete = false;
 			if (DoProcessOrders)
 			{
-
 				DBTransaction.StartTransaction();
 
                 // save party name to database if changed
@@ -10027,8 +10033,18 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
                   if(isItemSelected)
                    {
-                     SelectedTabKey =  SelectedItem.Properties["TabKey"];
-                     SelectedTabName = SelectedItem.Title;
+                     if(CheckIfSubsidizedDiscountValid(SelectedItem.Properties["TabKey"]))
+                     {
+                        SelectedTabKey =  SelectedItem.Properties["TabKey"];
+                        SelectedTabName = SelectedItem.Title;
+                     }
+                     else
+                     {
+                        MessageBox("The Tab selected has an invalid type of subsidized profile\n"
+                        "Dicounts of value 0 or equal to item price amount are not valid ","Caution",MB_OK + MB_ICONWARNING);
+                        isItemSelected = false;
+                        Retval = mrAbort;
+                     }
                    }
                 }
 
@@ -10094,7 +10110,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 			}
 			else
 			{
-				SubsidizedDiscountApply(SelectedTabKey) ;
+    		    SubsidizedDiscountApply(SelectedTabKey) ;
 				if(!IsSubSidizeOrderCancil)
 				{
 					OrderContainer.Location["TabKey"] = SelectedTabKey;
@@ -10123,34 +10139,49 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 						Currency Balance = TDBTab::GetTabBalance(DBTransaction, SelectedTabKey);
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Balance", Balance));
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("New Balance", Balance + InitialMoney.GrandTotal));
-
-                        TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
-						if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
-						{
-							SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
-							OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
-							OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
-						}
-
-                        // if clipp tab order is in progress
-                        IsOrderinProgress = true;
-                        ClippTabKey = SelectedTabKey;
-
-						if (frmConfirmOrder->ShowModal() != mrOk)
-						{
-							Retval = mrAbort;
-                            IsOrderinProgress = false;
-						}
-                        else
+                        double orderValue = 0;
+                        for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
                         {
-                            IsOrderinProgress = false;
-                            if(TGlobalSettings::Instance().IsThorlinkSelected)
+                            TItemComplete *item = (TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+                            item->RunBillCalculator();
+                            orderValue += (double)item->FinalPrice_BillCalc();
+                            for(int j = 0; j < item->SubOrders->Count; j++)
                             {
-                               RemoveMembership(DBTransaction);
+                                TItemComplete *subItem = ((TItemComplete*)item->SubOrders->Items[j]);
+                                subItem->RunBillCalculator();
+                                orderValue += (double)subItem->FinalPrice_BillCalc();
                             }
                         }
-                        delete frmConfirmOrder;
-                        frmConfirmOrder = NULL;
+                        if(orderValue != 0)
+                        {
+                            TfrmConfirmOrder* frmConfirmOrder = new TfrmConfirmOrder(this, OrderContainer);
+                            if (!TGlobalSettings::Instance().DisableReceiptOnConfirmation)
+                            {
+                                SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
+                                OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
+                                OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
+                            }
+
+                            // if clipp tab order is in progress
+                            IsOrderinProgress = true;
+                            ClippTabKey = SelectedTabKey;
+
+                            if (frmConfirmOrder->ShowModal() != mrOk)
+                            {
+                                Retval = mrAbort;
+                                IsOrderinProgress = false;
+                            }
+                            else
+                            {
+                                IsOrderinProgress = false;
+                                if(TGlobalSettings::Instance().IsThorlinkSelected)
+                                {
+                                   RemoveMembership(DBTransaction);
+                                }
+                            }
+                            delete frmConfirmOrder;
+                            frmConfirmOrder = NULL;
+                        }
 					}
 				}
 
@@ -12199,7 +12230,7 @@ bool TfrmSelectDish::SaveTransactionDetails(UnicodeString &pay_type)
           if(!IsSubSidizeOrderCancil)
 		{
 			SaveTabData(OrderContainer);
-           ModalResult = mrCancel;
+            ModalResult = mrCancel;
 			IsSubSidizeProcessed=false;
 		}
 		else
@@ -12253,7 +12284,21 @@ bool TfrmSelectDish::SubsidizedDiscountApply(int tabkey)
 	{
 		SubsidizedQuantityApply(true);
 		// IsSubSidizeOrderCancil=false;
-		tbtnTenderClick(tbtnTender);
+        double orderValue = 0;
+        for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        {
+            TItemComplete *item = (TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+            item->RunBillCalculator();
+            orderValue += (double)item->FinalPrice_BillCalc();
+            for(int j = 0; j < item->SubOrders->Count; j++)
+            {
+                TItemComplete *subItem = ((TItemComplete*)item->SubOrders->Items[j]);
+                subItem->RunBillCalculator();
+                orderValue += (double)subItem->FinalPrice_BillCalc();
+            }
+        }
+        if(orderValue > 0)
+		    tbtnTenderClick(tbtnTender);
 		IsSubSidizeProfileExist=false;
 
 
@@ -15017,3 +15062,85 @@ void TfrmSelectDish::LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersL
         }
     }
 }
+//----------------------------------------------------------------------------
+bool TfrmSelectDish::CheckIfSubsidizedDiscountValid(int tabKey)
+{
+    bool retValue = true;
+    AnsiString message = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+	try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->SQL->Text = "SELECT d.DISCOUNT_MODE, d.AMOUNT, d.PERCENTAGE FROM TABDISCOUNTS t "
+                                     "LEFT JOIN DISCOUNTS d on t.DISCOUNT_KEY = d.DISCOUNT_KEY WHERE "
+                                     "t.TAB_KEY = :TAB_KEY";
+        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        IBInternalQuery->ExecQuery();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            switch(IBInternalQuery->FieldByName("DISCOUNT_MODE")->AsInteger)
+            {
+                case DiscModeCurrency:
+                {
+                    if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                case DiscModePercent:
+                {
+                    if((double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 0 ||
+                      (double)IBInternalQuery->FieldByName("PERCENTAGE")->AsCurrency == 100)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                case DiscModeSetPrice:
+                {
+                    if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                case DiscModeCombo:
+                {
+                    if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                case DiscModeDeal:
+                {
+                    if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                case DiscModeItem:
+                {
+                    if(IBInternalQuery->FieldByName("AMOUNT")->AsCurrency == 0)
+                    {
+                        retValue = false;
+                    }
+                    break;
+                }
+                default:
+                   break;
+            }
+        }
+    }
+	catch(Exception &err)
+	{
+        DBTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
+	}
+    return retValue;
+}
+//----------------------------------------------------------------------------

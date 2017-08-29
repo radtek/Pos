@@ -2265,8 +2265,8 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 		for (int CurrentIndex = 0; CurrentIndex < PaymentTransaction.Orders->Count; CurrentIndex++)
 		{
 			TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[CurrentIndex]);
-
-
+            if(Order->GetQty() == 0)
+              continue;
 			// Patch to fix missing Serving Course.
 			if (Order->ServingCourse.ServingCourseKey < 1)
 			{

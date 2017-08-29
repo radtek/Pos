@@ -1100,6 +1100,8 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
             SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
             SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
+            SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            TDBContacts::GetDiscountDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
             {
