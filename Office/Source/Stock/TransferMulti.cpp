@@ -35,7 +35,7 @@ void __fastcall TfrmTransferMulti::FormShow(TObject *Sender)
 	lbeFrom->Caption				= Source;
 	lbeTo->Caption					= Destination;
 	edReference->Text				= "";
-	dtpTransferDate->Date		= Now();
+  	dtpTransferDate->Date		= Now();
 	LoadTreeView();
 	isStockRequestMode = SelectedStockRequestKeys->Count > 0;
      if (!Transaction->InTransaction)
@@ -784,12 +784,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                                                          stock_request_to_be_deleted.push_back( qrfetch_request_number->FieldByName("REQUEST_NUMBER")->AsInteger);
                                                          stock_request_delete_option_selected=true;
                                                        }
-
-
-
                                                }
-
-
                                           }
 
                                           if (NodeData->Quantity > 0 )
@@ -807,6 +802,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                                                 TransferInfo.Source			= Source;
                                                 TransferInfo.Destination	= Destination;
                                                 TransferInfo.STOCK_REQUEST_NO= (*i);
+                                                
 
                                                 if (stock_request_delete_option_selected)
                                                 {
@@ -819,45 +815,30 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
                                                 }
                                                 TransferInfo.STOCK_REQUEST_STOCK_KEY = NodeData->StockRequestKey;
-
-
-
-
-                                                  TransferInfo.Transfer_id = StrToInt( lbeTransferNumber->Caption);
-
+                                                TransferInfo.Transfer_id = StrToInt( lbeTransferNumber->Caption);
                                                 Transfers.push_back(TransferInfo);
                                            }
                                             if( stock_request_key_to_be_added)
-                                            {  TransfferedStockRequestKeys->Add((AnsiString)NodeData->StockRequestKey);
-                                             }
+                                            {
+                                                TransfferedStockRequestKeys->Add((AnsiString)NodeData->StockRequestKey);
+                                            }
 
 				                         	if (NodeData->Initialised)
 				                            {
 				    	                    	Initialised = true;
 					                        	if (NodeData->InitialisedTime != TDateTime(0.0))
-					                        	    {
+					                        	{
 					                            		if (NodeData->InitialisedTime < MinInitialiseTime || MinInitialiseTime == TDateTime(0.0))
 					                             		{
 						                                		MinInitialiseTime = NodeData->InitialisedTime;
 						                            	}
-						                           }
+						                        }
 				                        	}
-
-
 			                       }
 			                }
 		                    	Node = vtvStockQty->GetNext(Node);
-
-
 	               	}
-
-
        }
-
-
-
-
-
 
 		if (Initialised)
 		{
@@ -896,7 +877,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 			}
 			else
 			{
-				dtpTransferDate->DateTime = Now();
+			    dtpTransferDate->Time = Now().CurrentTime();
 				BatchInfo.Created = dtpTransferDate->DateTime;
 			}
 
