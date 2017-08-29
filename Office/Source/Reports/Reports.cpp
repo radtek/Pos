@@ -9224,6 +9224,7 @@ void TfrmReports::GetStockReceiptList(TReportFilter *ReportFilter)
 		"From "
 			"StockTrans "
 		"Where "
+            "TRANSACTION_TYPE <> 'Transfer' and "
 			"Created >= :StartTime and "
 			"Created < :EndTime "
 		"Order By "
@@ -9242,6 +9243,7 @@ void TfrmReports::GetStockInvoiceList(TReportFilter *ReportFilter)
 		"From "
 			"StockTrans "
 		"Where "
+            "TRANSACTION_TYPE <> 'Transfer' and "
 			"Created >= :StartTime and "
 			"Created < :EndTime ";
 	AddFilterStringParams(SQL, SupplierFilter->Selection, "Supplier_Name");
