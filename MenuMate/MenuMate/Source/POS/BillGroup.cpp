@@ -4113,6 +4113,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 	TPaymentTransactionType TransType)
 {
        int retVal = 0;
+       bool isPaymentComplete = false;
 	try
 	{
 
@@ -4193,7 +4194,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             }
             else
             {
-                TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
+                isPaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
                 // display last receipt if any
                 _displayLastReceipt( DBTransaction, TDeviceRealTerminal::Instance().PaymentSystem->LastReceipt );
             }
@@ -4225,6 +4226,11 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		{
 			retVal  = PaymentTransaction.SplittedItemKey;
 			PaymentTransaction.DeleteOrders();
+            if( (CurrentDisplayMode != eInvoices) && TGlobalSettings::Instance().LoyaltyMateEnabled && isPaymentComplete)
+            {
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName     = "";
+            }
             TGlobalSettings::Instance().IsPOSOffline = true;
 		}
 	}
