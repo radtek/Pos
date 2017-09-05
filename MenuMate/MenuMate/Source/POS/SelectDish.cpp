@@ -4736,12 +4736,10 @@ void TfrmSelectDish::LockOutUser()
 		//}
 
 		DBTransaction.Commit();
-        //TGlobalSettings::Instance().AutoLogoutPOS = true;
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
       // tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit
                               //&& Result == lsAccepted;
         InitializeQuickPaymentOptions();
-        TGlobalSettings::Instance().IsAutoLoggedOut = true;
 	}
 }
 // ---------------------------------------------------------------------------
