@@ -3234,8 +3234,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                   vmgPOS, false);
         SetVarBool(DBTransaction, vmIsAutoLoggedOut, "Is user auto logged out",
                  "If this setting is on means user is auto logged out "
-                 "Default is True.",
-                  vmgPOS, true);
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
