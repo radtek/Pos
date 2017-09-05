@@ -394,6 +394,6 @@ TGlobalSettings::TGlobalSettings()
     CashVarianceGLCode = "";
     ReportExportPath = "";
     MembershipType = 0;
-    IsAutoLoggedOut = true;
+    IsAutoLoggedOut = false;
 }
 

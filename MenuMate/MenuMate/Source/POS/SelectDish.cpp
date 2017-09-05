@@ -4520,9 +4520,8 @@ void TfrmSelectDish::OnLockOutTimer(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::LockOutUser()
 {
-   	if (TGlobalSettings::Instance().IsAutoLoggedOut)
+   	if (Active || TGlobalSettings::Instance().IsAutoLoggedOut)
 	{
-        TGlobalSettings::Instance().IsAutoLoggedOut = false;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
 		std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
@@ -4531,7 +4530,7 @@ void TfrmSelectDish::LockOutUser()
         bool PaymentAccessResult = true;
 			try
 			{
-                while (Result == lsDenied || Result == lsPINIncorrect)
+                while (Result == lsDenied || Result == lsPINIncorrect )
                 {
                     TMMContactInfo TempUserInfo;
                     Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckPOS);
@@ -11301,6 +11300,7 @@ void TfrmSelectDish::ClearAllParkedSales( Database::TDBTransaction &DBTransactio
 void TfrmSelectDish::ChitCaptAndSaveName()
 {
     std::auto_ptr<TfrmCaptNamePhone>(frmCaptNamePhone)(TfrmCaptNamePhone::Create<TfrmCaptNamePhone>(this));
+    TGlobalSettings::Instance().IsAutoLoggedOut = true;
     if (frmCaptNamePhone->ShowModal() == mrOk)
     {
         CustName = frmCaptNamePhone->edCustomerName->Text;
@@ -11314,6 +11314,8 @@ void TfrmSelectDish::ChitCaptAndSaveName()
        CustName = "";
        CustPhone = "";
     }
+    TGlobalSettings::Instance().IsAutoLoggedOut = false;
+
     if (CustName != "")
     {
         //Create new contact to store name in the Contacts Table

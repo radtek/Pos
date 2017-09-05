@@ -393,7 +393,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().ReportExportPath = TManagerVariable::Instance().GetStr(DBTransaction, vmReportExportPath, "");
         int DefaultPMSType = Phoenix;
         TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
-        TGlobalSettings::Instance().IsAutoLoggedOut = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAutoLoggedOut, true);
+        TGlobalSettings::Instance().IsAutoLoggedOut = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAutoLoggedOut, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
