@@ -3232,6 +3232,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Split Bill on Menu type basis"
                  "Default is False.",
                   vmgPOS, false);
+        SetVarBool(DBTransaction, vmIsAutoLoggedOut, "Is user auto logged out",
+                 "If this setting is on means user is auto logged out "
+                 "Default is True.",
+                  vmgPOS, true);
 	}
 	catch(Exception &E)
 	{

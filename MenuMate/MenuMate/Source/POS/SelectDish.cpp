@@ -4666,8 +4666,9 @@ void TfrmSelectDish::OnLockOutTimer(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::LockOutUser()
 {
-   	if (Active)
+   	if (TGlobalSettings::Instance().IsAutoLoggedOut)
 	{
+        TGlobalSettings::Instance().IsAutoLoggedOut = false;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
 		std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
@@ -4741,7 +4742,7 @@ void TfrmSelectDish::LockOutUser()
       // tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit
                               //&& Result == lsAccepted;
         InitializeQuickPaymentOptions();
-       
+        TGlobalSettings::Instance().IsAutoLoggedOut = true;
 	}
 }
 // ---------------------------------------------------------------------------
