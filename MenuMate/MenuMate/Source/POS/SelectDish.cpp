@@ -4673,6 +4673,7 @@ void TfrmSelectDish::LockOutUser()
 		std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
         //TGlobalSettings::Instance().AutoLogoutPOS = false;
 		TLoginSuccess Result = lsDenied;
+        TGlobalSettings::Instance().IsAutoLoggedOut = false;
         bool PaymentAccessResult = true;
 			try
 			{
@@ -4685,6 +4686,7 @@ void TfrmSelectDish::LockOutUser()
                     if (Result == lsAccepted)
                     {
                         bool LogIn = false;
+                        TGlobalSettings::Instance().IsAutoLoggedOut = true;
                         if (TDeviceRealTerminal::Instance().User.ContactKey != TempUserInfo.ContactKey)
                         {
                             if (!StaffChanged(TempUserInfo))
