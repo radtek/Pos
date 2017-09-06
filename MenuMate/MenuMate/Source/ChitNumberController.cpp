@@ -227,6 +227,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 			SelectionForm->Items.push_back(Item);
 		 }
 
+         TGlobalSettings::Instance().IsAutoLoggedOut = true;
 		 SelectionForm->ShowModal();
 		 TVerticalSelection SelectedItem;
 		 if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
@@ -246,6 +247,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 
 
 		 }
+         TGlobalSettings::Instance().IsAutoLoggedOut = false;
 	  }
    }
    else if (ChitNumber.Valid())
