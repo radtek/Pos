@@ -170,6 +170,8 @@ private:	// User declarations
     void DisableBillEntireTable(Database::TDBTransaction &DBTransaction);
     void ChangeBillEntireTableState();
     void DisableToggleGSTButton(Database::TDBTransaction &DBTransaction);
+    void RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys);
+    AnsiString VoucherCode;
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
