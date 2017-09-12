@@ -399,7 +399,12 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
-
+            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+            && TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
+            }
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
 			ReceiptTransaction.ApplyMembership(Membership);
@@ -1326,7 +1331,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 				// Now reslect all the remaining items.
 				if(splittedItemKey > 0)
 					SelectedItemKeys.insert(splittedItemKey);
-                if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled && splittedItemKey > 0)
+                if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
                 {
                     RemoveLoyaltymateMembership(SelectedItemKeys);
                 }
@@ -1474,6 +1479,15 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
         if(Transfer->ShowModal() != mrOk)
         {
            DBTransaction.Rollback();
+        }
+        else
+        {
+            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+            && TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
+            }
         }
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
@@ -4274,16 +4288,18 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 			retVal  = PaymentTransaction.SplittedItemKey;
 			PaymentTransaction.DeleteOrders();
             if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
-                    && TGlobalSettings::Instance().LoyaltyMateEnabled && isPaymentComplete)
+                    && TGlobalSettings::Instance().LoyaltyMateEnabled)
             {
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
-                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-                TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
-                DBTransaction1.StartTransaction();
-                RemoveMembership(DBTransaction1);
-                MessageBox("Membership Removed","",MB_OK);
-                DBTransaction1.Commit();
+                if(isPaymentComplete)
+                {
+                    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+                    DBTransaction1.StartTransaction();
+                    RemoveMembership(DBTransaction1);
+                    DBTransaction1.Commit();
+                }
             }
             TGlobalSettings::Instance().IsPOSOffline = true;
 		}
