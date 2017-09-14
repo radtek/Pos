@@ -811,7 +811,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-
 	try
 	{
         TGlobalSettings::Instance().IsThorPay = true;
@@ -869,7 +868,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                    }
                    if (PatronCount <= 0)
                          PatronCount = 1;
-                   if(!TGlobalSettings::Instance().IsThorlinkSelected)
+                   if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
                    {
                       CheckLoyalty(ItemsToBill);
                    }
@@ -2511,7 +2510,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                         const int tab_key =reinterpret_cast<int>(TabList->Objects[i]);
 
                         if (AddToSelectedTabs(DBTransaction,tab_key)== true )
-                        {    
+                        {
                             SplitItemsInSet(DBTransaction,tab_key);
                             ItemSetAddItems(DBTransaction,tab_key);
                         }
@@ -5038,7 +5037,6 @@ void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
-
     if(PossiableMembers.size() == 0 && CurrentTabType != TabMember)
     {
         Membership.Clear();
