@@ -3317,7 +3317,7 @@ object frmSelectDish: TfrmSelectDish
   end
   object tiWebClock: TTimer
     Enabled = False
-    Interval = 1500
+    Interval = 2000
     OnTimer = tiWebClockTimer
     Left = 889
     Top = 344
