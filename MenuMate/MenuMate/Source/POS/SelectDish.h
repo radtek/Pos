@@ -186,6 +186,7 @@ __published: // IDE-managed Components
    TTouchBtn *tbtnWebOrders;
    TTouchBtn *tbtnSearch;
    TEdit *tedtSearchItem;
+   TTimer *tiWebClock;
    void __fastcall FormShow(TObject *Sender);
    void __fastcall stCloseClick(TObject *Sender);
    void __fastcall FormResize(TObject *Sender);
@@ -250,6 +251,7 @@ __published: // IDE-managed Components
    void __fastcall tedtSearchItemChange(TObject *Sender);
    void __fastcall tedtSearchItemKeyPress(TObject *Sender, wchar_t &Key);
    void __fastcall tbtnSearchMouseClick(TObject *Sender);
+   void __fastcall tiWebClockTimer(TObject *Sender);
 private: // User declarations
     AnsiString SouceTableForDelayedPayment;
     AnsiString CustName;

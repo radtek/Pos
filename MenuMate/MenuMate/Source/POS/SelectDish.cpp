@@ -525,6 +525,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 	tbtnSelectTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
 	tbtnSelectTable->Visible = TGlobalSettings::Instance().TablesEnabled;
 	tiClock->Enabled = true;
+    tiWebClock->Enabled = true;
 
 	tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
 	tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
@@ -1714,6 +1715,7 @@ void __fastcall TfrmSelectDish::FormClose(TObject *Sender, TCloseAction &Action)
 		}
 	}
 	tiClock->Enabled = false;
+    tiWebClock->Enabled = false;
 
 	WaitingForSwipe = false;
 	Panel1->Enabled = true;
@@ -2078,7 +2080,6 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
         UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
         DBTransaction.Commit();
 
-   //		if (TGlobalSettings::Instance().ForceHappyHour)
        if (TGlobalSettings::Instance().ForceHappyHour)
         {
 			stHappyHour->Visible = true;
@@ -2124,48 +2125,6 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
 		LastSale = 0;
 	}
-
-    if(TDeviceRealTerminal::Instance().DBControl.Connected())
-    {
-        //Check For Web Orders.
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
-        //notify message for webmate interface is enabled or not
-        if(!NotifyLastWebOrder(DBTransaction))
-        {
-            if (WebOrdersPending)
-            {
-                if(TGlobalSettings::Instance().AutoAcceptWebOrders)
-                    ProcessWebOrders(false);
-                else
-                {
-//                    tbtnWebOrders->ButtonColor = 0x002193F6;
-//                    tbtnWebOrders->Font->Color =clWhite;
-                       tbtnWebOrders->ButtonColor= clGreen;
-                       tbtnWebOrders->Font->Color =clWhite;
-
-
-                }
-
-            }
-            else
-            {
-               // tbtnWebOrders->ButtonColor = 0x00979492;
-                 if(TGlobalSettings::Instance().ShowDarkBackground)
-                 {
-                    tbtnWebOrders->ButtonColor = 14342874;
-                 }
-                 else
-                 {
-                    tbtnWebOrders->ButtonColor = clWhite;
-                 }
-                 tbtnWebOrders->Font->Color =0x002193F6;
-            }
-        }
-        DBTransaction.Commit();
-
-    }
 
     // Mall Export Codes
     bool CloseSelectDish = false;
@@ -2590,7 +2549,7 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 void __fastcall TfrmSelectDish::FormHide(TObject *Sender)
 {
 	tiClock->Enabled = false;
-
+    tiWebClock->Enabled = false;
     customerDisplayReset();
     stopCustomerDisplayServer();
 }
@@ -12794,7 +12753,7 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
 bool TfrmSelectDish::NotifyLastWebOrder(Database::TDBTransaction &DBTransaction)
 {
     bool retVal = false;
-    tiClock->Enabled = false;
+    tiWebClock->Enabled = false;
     TGlobalSettings::Instance().NotifyPOSForLastWebOrder = GetValue(DBTransaction);
     if(TGlobalSettings::Instance().NotifyPOSForLastWebOrder)
     {
@@ -12803,7 +12762,7 @@ bool TfrmSelectDish::NotifyLastWebOrder(Database::TDBTransaction &DBTransaction)
        retVal = true;
        MessageBox("Web Orders Cannot Be Processed Please Enable Webmate Interface", "", MB_OK + MB_ICONWARNING);
     }
-    tiClock->Enabled = true;
+    tiWebClock->Enabled = true;
     return retVal;
 }
 // ---------------------------------------------------------------------------
@@ -15144,3 +15103,40 @@ bool TfrmSelectDish::CheckIfSubsidizedDiscountValid(int tabKey)
     return retValue;
 }
 //----------------------------------------------------------------------------
+void __fastcall TfrmSelectDish::tiWebClockTimer(TObject *Sender)
+{
+    if(TDeviceRealTerminal::Instance().DBControl.Connected())
+    {
+        //Check For Web Orders.
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
+        //notify message for webmate interface is enabled or not
+        if(!NotifyLastWebOrder(DBTransaction))
+        {
+            if (WebOrdersPending)
+            {
+                if(TGlobalSettings::Instance().AutoAcceptWebOrders)
+                    ProcessWebOrders(false);
+                else
+                {
+                       tbtnWebOrders->ButtonColor= clGreen;
+                       tbtnWebOrders->Font->Color =clWhite;
+                }
+            }
+            else
+            {
+                 if(TGlobalSettings::Instance().ShowDarkBackground)
+                 {
+                    tbtnWebOrders->ButtonColor = 14342874;
+                 }
+                 else
+                 {
+                    tbtnWebOrders->ButtonColor = clWhite;
+                 }
+                 tbtnWebOrders->Font->Color =0x002193F6;
+            }
+        }
+        DBTransaction.Commit();
+    }
+}
