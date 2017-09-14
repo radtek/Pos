@@ -3315,13 +3315,6 @@ object frmSelectDish: TfrmSelectDish
     Left = 889
     Top = 300
   end
-  object tiWebClock: TTimer
-    Enabled = False
-    Interval = 500
-    OnTimer = tiWebClockTimer
-    Left = 889
-    Top = 344
-  end
   object btnTimer: TTimer
     Enabled = False
     OnTimer = btnTimerTimer
