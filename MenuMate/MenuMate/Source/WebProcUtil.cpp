@@ -239,7 +239,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 				}
 			}
 		}
-
+        PaymentTransaction.IgnoreLoyaltyKey = false;
 		PaymentTransaction.Recalc();
 
 		ProcessChitNumbers(inDisplayOwner, PaymentTransaction);
@@ -412,7 +412,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(Database::TDBTransaction &DBTransa
 				}
 			}
 		}
-
+        PaymentTransaction.IgnoreLoyaltyKey = false;
 		PaymentTransaction.Recalc();
 
 		// ProcessChitNumbers(inDisplayOwner,PaymentTransaction);
@@ -504,6 +504,7 @@ void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransa
 
 				}
 			}
+            PaymentTransaction.IgnoreLoyaltyKey = false;
 			PaymentTransaction.Recalc();
 
 			// ProcessChitNumbers(inDisplayOwner, PaymentTransaction);

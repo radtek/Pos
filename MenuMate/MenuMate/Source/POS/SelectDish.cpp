@@ -3516,7 +3516,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
-
+                Order->Loyalty_Key = SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey;
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
                             TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
                 {
@@ -3556,6 +3556,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			}
 		}
 
+        if(Sender == tbtnSave)
+            PaymentTransaction.IgnoreLoyaltyKey = true;
+        else
+            PaymentTransaction.IgnoreLoyaltyKey = false;
 		PaymentTransaction.Membership.Assign(Membership);
 		PaymentTransaction.Orders->Assign(OrdersList.get());
 		PaymentTransaction.Recalc();
@@ -3598,7 +3602,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 			if (ChitNumber.Valid())
 			{
-				//int activeChitKey = TDBActiveChit::GetOrCreateActiveChit(DBTransaction, ChitNumber);
 				for (int i = 0; i < OrdersList->Count; i++)
 				{
 					TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -3635,7 +3638,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				}
 			}
 			// --------------------------------------------------------------------
-			//PaymentTransaction.CustomerOrder = CustomerOrder;
 			if(TGlobalSettings::Instance().CaptureCustomerName)
 			{
 				 TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
@@ -8282,7 +8284,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 		MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 		return;
 	}
-
 	if (SeatOrders[0]->Orders->Count > 0)
 	{
 		TotalCosts();

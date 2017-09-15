@@ -229,6 +229,7 @@ private:
     void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
     int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
     void UpdateContainerList();
+    void ClearLoyaltyVoucher();
 
 };
 #endif
