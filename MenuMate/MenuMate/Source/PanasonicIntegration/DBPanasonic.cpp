@@ -7,6 +7,7 @@
 #include "MMLogging.h"
 #include "GlobalSettings.h"
 #include "MMMessageBox.h"
+#include <SqlTimst.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "DBAccess"
@@ -63,11 +64,11 @@ void TDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
         UniInsertQuery->ParamByName("CashOut")->AsBoolean               =  panasonicModels.CashOut;
         UniInsertQuery->ParamByName("AgeRestricted")->AsBoolean         =  panasonicModels.AgeRestricted;
         UniInsertQuery->ParamByName("StartTime")->AsDateTime            =  panasonicModels.StartTime;
-        UniInsertQuery->ParamByName("TimeZoneOfST")->AsString           =  SQLTimeStampOffsetToStr("dd-mm-yyyy HH:MM:SS", panasonicModels.TimeZoneOfST);
-        UniInsertQuery->ParamByName("DayLightTimeOfST")->AsString       =  SQLTimeStampOffsetToStr("dd-mm-yyyy HH:MM:SS", panasonicModels.DayLightTimeOfST);
+        UniInsertQuery->ParamByName("TimeZoneOfST")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.TimeZoneOfST);
+        UniInsertQuery->ParamByName("DayLightTimeOfST")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.DayLightTimeOfST);
         UniInsertQuery->ParamByName("EndTime")->AsDateTime              =  panasonicModels.EndTime;
-        UniInsertQuery->ParamByName("TimeZoneOfET")->AsString           =  SQLTimeStampOffsetToStr("dd-mm-yyyy HH:MM:SS", panasonicModels.TimeZoneOfET);
-        UniInsertQuery->ParamByName("DayLightTimeOfET")->AsString       =  SQLTimeStampOffsetToStr("dd-mm-yyyy HH:MM:SS", panasonicModels.DayLightTimeOfET);
+        UniInsertQuery->ParamByName("TimeZoneOfET")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.TimeZoneOfET);
+        UniInsertQuery->ParamByName("DayLightTimeOfET")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.DayLightTimeOfET);
         UniInsertQuery->ParamByName("Cash")->AsBoolean                  =  panasonicModels.Cash;
         UniInsertQuery->ParamByName("CreditCard")->AsBoolean            =  panasonicModels.CreditCard;
         UniInsertQuery->ParamByName("Cheque")->AsBoolean                =  panasonicModels.Cheque;
