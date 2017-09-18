@@ -308,20 +308,20 @@ void TManagerMallSetup::InsertSettingValuesForDeanAndDeluca(Database::TDBTransac
 
         if(!isRecordExist)
         {
-            const int numberOfFields = 10;
+            const int numberOfFields = 11;
              UnicodeString fieldTypes[numberOfFields] =
              {
-                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool"
+                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool", "bool"
              };
 
              UnicodeString fieldValues[numberOfFields] =
              {
-                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true"
+                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true", "true"
              };
 
              int settingID[numberOfFields] =
              {
-                1, 2, 7, 9, 16, 18, 19, 20, 24, 25
+                1, 2, 7, 9, 16, 18, 19, 20, 24, 25, 27
              };
 
             TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );

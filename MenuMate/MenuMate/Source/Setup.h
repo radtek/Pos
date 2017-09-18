@@ -130,6 +130,7 @@ __published:	// IDE-managed Components
     TEdit *edMallBranchCode;
     TEdit *edMallTerminalNo;
     TEdit *edMallSerialNo;
+    TTouchBtn *btnMezzanineArea;
 
     TEdit *edNewMallPath;
     TEdit *edMallClassCode;
@@ -243,6 +244,7 @@ __published:	// IDE-managed Components
     void __fastcall btnRegenMallReportMouseClick(TObject *Sender);
     void __fastcall edTaxRateClick(TObject *Sender);
     void __fastcall btnAssignMallSalesTypeMouseClick(TObject *Sender);
+    void __fastcall btnMezzanineAreaMouseClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);

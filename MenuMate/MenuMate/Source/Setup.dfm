@@ -1483,6 +1483,26 @@ object frmSetup: TfrmSetup
           TabOrder = 18
           OnClick = edTaxRateClick
         end
+        object btnMezzanineArea: TTouchBtn
+          Left = 392
+          Top = 569
+          Width = 329
+          Height = 30
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -15
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Mezzanine Area'
+          ButtonColor = clMaroon
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          Enabled = False
+          LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnMezzanineAreaMouseClick
+        end
       end
     end
   end

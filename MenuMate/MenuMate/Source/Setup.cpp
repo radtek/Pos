@@ -2419,5 +2419,10 @@ void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
     std::auto_ptr <TfrmMallSalesTypeAssignment> mallSalesTypeAssignment(new TfrmMallSalesTypeAssignment(this));
     mallSalesTypeAssignment->ShowModal();
 }
+//---------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnMezzanineAreaMouseClick(TObject *Sender)
+{
+    //todo
+}
 
 

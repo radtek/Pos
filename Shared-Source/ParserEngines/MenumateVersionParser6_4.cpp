@@ -27,6 +27,11 @@ void TApplyParser::upgrade6_42Tables()
 {
     update6_42Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_43Tables()
+{
+    update6_43Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -44,6 +49,13 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
+}
+//--------------------------------------------------------------------
+void TApplyParser::update6_43Tables()
+{
+    InsertIntoMallExportSettings6_43(_dbControl, 27, "MEZZANINE_AREA", "btnMezzanineArea", 'T');
+    int settingID[1] = {27};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 1, 2);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -317,4 +329,30 @@ void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
         );
     }
 }
-}
+//-------------------------------------------------------------------------------
+void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName, char isUIRequired)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+         if ( tableExists( "MALLEXPORT_SETTINGS", _dbControl ) )
+	    {
+            TIBSQL *InsertQuery    = transaction.Query(transaction.AddQuery());
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS VALUES (:SETTING_KEY, :FIELD_NAME, :CONTROL_NAME, :IS_UI) ";
+            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = settingKey;
+            InsertQuery->ParamByName("FIELD_NAME")->AsString = fiedlName;
+            InsertQuery->ParamByName("CONTROL_NAME")->AsString = controlName;
+            InsertQuery->ParamByName("IS_UI")->AsString = isUIRequired;
+            InsertQuery->ExecQuery();
+
+            transaction.Commit();
+        }
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
