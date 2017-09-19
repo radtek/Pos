@@ -56,6 +56,7 @@ void TApplyParser::update6_43Tables()
     InsertIntoMallExportSettings6_43(_dbControl, 27, "MEZZANINE_AREA", "btnMezzanineArea", 'T');
     int settingID[1] = {27};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 1, 2);
+    CreateMezzanineAreaTable6_43(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -355,4 +356,14 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
     {
         transaction.Rollback();
     }
-}
+}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_43(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
+		executeQuery(
+		"CREATE TABLE MEZZANINE_AREA_TABLES "
+		"( "
+		"   TABLE_ID INTEGER PRIMARY KEY,"
+		"   TABLE_NUMBER INTEGER,"
+		"   TABLE_NAME VARCHAR(25),"
+        "   FLOORPLAN_VER  INTEGER "
+		");",
+		inDBControl );
+	}}}

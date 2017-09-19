@@ -858,6 +858,7 @@ namespace MenumateVersionParser
         void update6_43Tables();
         void InsertIntoMallExportSettings6_43(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName,
                                             char isUIRequired);
+        void CreateMezzanineAreaTable6_43(TDBControl* const inDBControl);
 
     }; // class
 } // namespace
