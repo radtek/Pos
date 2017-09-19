@@ -1520,6 +1520,10 @@ void __fastcall TfrmBillGroup::btnCloseMouseClick(TObject *Sender)
     {
       RemoveThorMembership();
     }
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+       ClearLoyaltyVoucher();
+    }
     Close();
 }
 // ---------------------------------------------------------------------------
