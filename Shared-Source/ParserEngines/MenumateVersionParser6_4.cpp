@@ -366,4 +366,12 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
         "   FLOORPLAN_VER  INTEGER "
 		");",
 		inDBControl );
-	}}}
+	}    if(!generatorExists("GEN_MEZZANINE_TABLE_ID", _dbControl))    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MEZZANINE_TABLE_ID;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_MEZZANINE_TABLE_ID TO 0;", inDBControl
+        );
+    }}}
