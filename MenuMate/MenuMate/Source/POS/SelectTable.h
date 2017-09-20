@@ -43,6 +43,8 @@ private:	// User declarations
     void SetColorAsPerNoServiceTime(TGridButton *GridButton,TDateTime OrderTime);
     void UpdateFloorPlanSheet();
     TfrmSelectTable *frmSelectTable;
+    void SetMezzanineTablesColor();
+    void UpdateColor(int tableNo, bool isSelected);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	BEGIN_MESSAGE_MAP
