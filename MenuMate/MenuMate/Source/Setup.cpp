@@ -2430,15 +2430,9 @@ void TfrmSetup::ShowMezzanineArea()
 {
     try
     {
-        bool tableSelected = false;
         TFloorPlanReturnParams floorPlanReturnParams;
-        // Runs new web app of floorPlan
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
-        if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams, false ))
-        {
-          
-        }
-        
+        floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams, false );
     }
     catch(Exception & E)
     {
