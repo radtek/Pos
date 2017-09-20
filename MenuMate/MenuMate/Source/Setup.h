@@ -260,6 +260,7 @@ private:	// User declarations
     void SetupNewMalls();
     void UpdateNoMallUI();
     UnicodeString CheckAbsolutePath(UnicodeString path);
+    void ShowMezzanineArea();
 
 public:		// User declarations
 

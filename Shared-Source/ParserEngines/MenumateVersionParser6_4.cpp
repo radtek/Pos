@@ -362,7 +362,6 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
 		"( "
 		"   TABLE_ID INTEGER PRIMARY KEY,"
 		"   TABLE_NUMBER INTEGER,"
-		"   TABLE_NAME VARCHAR(25),"
         "   FLOORPLAN_VER  INTEGER "
 		");",
 		inDBControl );

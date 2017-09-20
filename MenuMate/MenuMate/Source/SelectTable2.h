@@ -17,6 +17,7 @@
 #include "TouchBtn.h"
 
 #include "PlanController.h"
+#include "DBTables.h"
 #include <Graphics.hpp>
 #include <jpeg.hpp>
 
@@ -53,11 +54,16 @@ public:		// User declarations
     std::auto_ptr<TablePlan::PlanController> _controller;
 	__fastcall TFrmSelectTable2(TComponent* Owner, Database::TDBControl &IBDatabase);
 
-	void AssociateWithController(std::auto_ptr<TablePlan::PlanController> c);
-   UnicodeString SelectedTabContainerName;
-   UnicodeString SelectedPartyName;
-   int SelectedTabContainerNumber;
-   bool NeedToReopen;
+    void AssociateWithController(std::auto_ptr<TablePlan::PlanController> c);
+    UnicodeString SelectedTabContainerName;
+    UnicodeString SelectedPartyName;
+    int SelectedTabContainerNumber;
+    bool NeedToReopen;
+
+    //Mezzanine Area
+    int TableMode;
+    std::map<int, TMezzanineTable > MezzanineTables;
+    std::set<int> AssignedMezzanineTable;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TFrmSelectTable2 *frmSelectTable2;

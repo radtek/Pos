@@ -9,6 +9,7 @@
 #include "DBTab.h"
 #include "GlobalSettings.h"
 #include "ManagerPatron.h"
+#include "DeviceRealTerminal.h"
 
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -1531,3 +1532,114 @@ void TDBTables::UpdateTablePartyName( Database::TDBTransaction &dbTransaction, i
         throw;
     }
 }
+//-------------------------------------------------------------------------------
+void TDBTables::SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanineTables)
+{
+     //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        std::map<int, TMezzanineTable>::iterator it; 
+
+        //outer loop is for sales id and inner is for item id
+        for (it = mezzanineTables.begin(); it != mezzanineTables.end(); ++it)
+        {
+            if(it->second.SelectionType == eSelected)
+            {
+                InsertMezzanineTablesRecord(dbTransaction, it->first ,it->second.FloorplanVer);
+            }
+            else if(it->second.SelectionType == eDeSelected)
+            {
+                DeleteMizzanineTablesRecord(dbTransaction, it->first ,it->second.FloorplanVer);
+            }
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
+}
+//-----------------------------------------------------------------------------------------------------------
+void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer)
+{
+    try
+    { //   MessageBox( "Inserting DB.", "", MB_OK );
+        TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MEZZANINE_TABLE_ID, 1) FROM RDB$DATABASE";
+        incrementGenerator->ExecQuery();
+
+        TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        insertQuery->Close();
+        insertQuery->SQL->Text =  "INSERT INTO MEZZANINE_AREA_TABLES  VALUES (:TABLE_ID, :TABLE_NUMBER, :FLOORPLAN_VER) ";
+
+        insertQuery->ParamByName("TABLE_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+        insertQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+        insertQuery->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        insertQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+void TDBTables::DeleteMizzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer)
+{
+    try
+    { //   MessageBox( "Deleting DB.", "", MB_OK );
+        TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        deleteQuery->Close();
+        deleteQuery->SQL->Text =  "DELETE FROM MEZZANINE_AREA_TABLES a WHERE a.TABLE_NUMBER = :TABLE_NUMBER AND a.FLOORPLAN_VER = :FLOORPLAN_VER ";
+
+        deleteQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+        deleteQuery->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        deleteQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+}
+//-----------------------------------------------------------------------------------
+std::set<int> TDBTables::GetMezzanineAreaTables(int floorPlanVer)
+{
+    std::set<int> mezzanineTables;
+    try
+    {
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text = "SELECT a.TABLE_ID, a.TABLE_NUMBER FROM MEZZANINE_AREA_TABLES a "
+                            " WHERE  a.FLOORPLAN_VER = :FLOORPLAN_VER "
+                            "ORDER BY 1 ASC ";
+
+        query->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        query->ExecQuery();
+
+        while(!query->Eof)
+        {
+            mezzanineTables.insert(query->FieldByName("TABLE_NUMBER")->AsInteger);
+            query->Next();
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+
+    return mezzanineTables;
+}
+
+

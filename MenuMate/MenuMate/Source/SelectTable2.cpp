@@ -4,7 +4,7 @@
 
 #include "SelectTable2.h"
 #include "DeviceRealTerminal.h"
-#include "DBTables.h"
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -15,15 +15,23 @@ TFrmSelectTable2 *frmSelectTable2;
 // ---------------------------------------------------------------------------
 __fastcall TFrmSelectTable2::TFrmSelectTable2(TComponent* Owner, Database::TDBControl &inIBDatabase) : TZForm(Owner), _iBDatabase(inIBDatabase)
 {
-
+    TableMode = eNormalNode;
 }
 // ----------------------------------------------------------------------------
 void __fastcall TFrmSelectTable2::FormShow(TObject *Sender)
 {
     UpdateTableOnFormShow();
-    tiUpdateFloorPlanReq->Enabled = true;
-    tiUpdateFloorPlanRefresh->Enabled = true;
     NeedToReopen = false;
+
+    if(TableMode)
+    {
+        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(0);
+    }
+    else
+    {
+        tiUpdateFloorPlanReq->Enabled = true;
+        tiUpdateFloorPlanRefresh->Enabled = true;
+    }
 }
 // ---------------------------------------------------------------------------
 void TFrmSelectTable2::AssociateWithController(std::auto_ptr<TablePlan::PlanController> c)
@@ -61,7 +69,8 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
     tiUpdateFloorPlanRefresh->Enabled = false;
 	AnsiString message(_controller->GetTableDesc());
 	DTOReservable *Table = _controller->GetCurrentTable();
-	if (Table != NULL)
+
+	if (Table != NULL )
 	{
 		SelectedTabContainerName = Table->Name;
 		SelectedTabContainerNumber = Table->Number;
@@ -70,26 +79,62 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
 		DBTransaction.StartTransaction();
 		SelectedPartyName = TDBTables::GetPartyName(DBTransaction, SelectedTabContainerNumber);
 		TDBTables::SetTableName(DBTransaction, SelectedTabContainerNumber, SelectedTabContainerName);
-		DBTransaction.Commit();
-        if(_controller->image)
+        DBTransaction.Commit();
+
+        if(!TableMode)
         {
-            delete _controller->image;
-            _controller->image = NULL;
+            if(_controller->image)
+            {
+                delete _controller->image;
+                _controller->image = NULL;
+            }
+            if(_controller->locations.size())
+            {
+                _controller->locations.clear();
+            }
+            _controller.reset();
+            ModalResult = mrOk;
         }
-        if(_controller->locations.size())
+        else
         {
-            _controller->locations.clear();
-        }
-        _controller.reset();
-		ModalResult = mrOk;
-	}
+            std::map<int, TMezzanineTable >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
+            std::set<int>::iterator it = AssignedMezzanineTable.find(SelectedTabContainerNumber);
+            bool isTableSelected;
+
+            if(it != AssignedMezzanineTable.end())
+                isTableSelected = false;
+            else
+                isTableSelected = true;
+
+            if(outerit != MezzanineTables.end())
+            {
+                MezzanineTables.erase(SelectedTabContainerNumber);
+            }
+            else
+            {  
+                TMezzanineTable mezzanineTableDetails;
+                mezzanineTableDetails.FloorplanVer = 0;
+                mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
+                MezzanineTables.insert(std::pair<int, TMezzanineTable >(SelectedTabContainerNumber, mezzanineTableDetails));
+            }
+	  }
+    }
 }
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void __fastcall TFrmSelectTable2::TouchBtn2MouseClick(TObject *Sender)
 {
+
     tiUpdateFloorPlanReq->Enabled = false;
     tiUpdateFloorPlanRefresh->Enabled = false;
+
+    if(TableMode)
+    {
+        TDBTables::SaveMezzanineAreaTables(MezzanineTables);
+        MezzanineTables.clear();
+        AssignedMezzanineTable.clear();
+    }
+
     if(_controller->image)
     {
         delete _controller->image;
@@ -100,6 +145,7 @@ void __fastcall TFrmSelectTable2::TouchBtn2MouseClick(TObject *Sender)
         _controller->locations.clear();
     }
     _controller.reset();
+
 	ModalResult = mrCancel;
 }
 // ---------------------------------------------------------------------------

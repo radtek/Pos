@@ -45,6 +45,7 @@
 #include "Mall.h"
 #include "GUIDiscount.h"
 #include "MallSalesTypeAssignment.h"
+#include "EnableFloorPlan.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -2422,7 +2423,28 @@ void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnMezzanineAreaMouseClick(TObject *Sender)
 {
-    //todo
+    ShowMezzanineArea();
+}
+//------------------------------------------------------------------------------------------
+void TfrmSetup::ShowMezzanineArea()
+{
+    try
+    {
+        bool tableSelected = false;
+        TFloorPlanReturnParams floorPlanReturnParams;
+        // Runs new web app of floorPlan
+        std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
+        if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams, false ))
+        {
+          
+        }
+        
+    }
+    catch(Exception & E)
+    {
+         MessageBox(E.Message,"",MB_OK);
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 

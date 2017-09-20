@@ -10,6 +10,8 @@
 #include <vector>
 #include <memory>
 #include <set>
+#include "MezzanineDetails.h"
+
 enum TOrderBillingStatus {eNoneStatus, ePrelim, eCallAwayStatus,ePartialSplit};
 
 
@@ -17,7 +19,15 @@ enum TOrderBillingStatus {eNoneStatus, ePrelim, eCallAwayStatus,ePartialSplit};
 class TDBTables
 {
 	private :
-		static UnicodeString GetNameMinor(Database::TDBTransaction &DBTransaction,int TabKey);
+
+	static UnicodeString GetNameMinor(Database::TDBTransaction &DBTransaction,int TabKey);
+
+        //insert mizzanine table record.
+    static void InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer);
+
+    //delete mizzanine table record.
+    static void DeleteMizzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer);
+
 	public:
 	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo);
 	static int GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTableNo,int inSeatNo);
@@ -75,6 +85,12 @@ class TDBTables
     static bool IsSeatPresent( Database::TDBTransaction &DBTransaction,int TableNumber,int SeatNumber);
     static int GetPatronNumbersForWebOrders( Database::TDBTransaction &DBTransaction,int TableNumber);
     static void UpdateTablePartyName( Database::TDBTransaction &dbTransaction, int TableNumber);
+
+    //saveMezzanine Area Tables.
+    static void SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanineTables);
+
+    //load table which are in mezzanine area.
+    static std::set<int> GetMezzanineAreaTables(int floorPlanVer);
 };
 
 #endif

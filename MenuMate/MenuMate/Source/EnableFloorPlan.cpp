@@ -37,15 +37,15 @@ TEnableFloorPlan::~TEnableFloorPlan()
 bool TEnableFloorPlan::Run(
                                  TForm* inOwner,
                                   bool  inShowAll,
-                TFloorPlanReturnParams& inFloorPlanReturnParams )
+                TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea )
 {
 	if( initialiseFloorPlan() )
     {
-		return runNewFloorPlan( inOwner, inFloorPlanReturnParams );
+		return runNewFloorPlan( inOwner, inFloorPlanReturnParams, isNormalArea );
     }
 	else // Runs the old grid floor plan if it fails to connect to the web floorplan
     {
-		return runBackupFloorPlan( inOwner, inShowAll, inFloorPlanReturnParams );
+		return runBackupFloorPlan( inOwner, inShowAll, inFloorPlanReturnParams, isNormalArea );
     }
 }
 //................................................................
@@ -133,9 +133,7 @@ void TEnableFloorPlan::ReleaseFormMemory(std::auto_ptr<TFrmSelectTable2> frmSele
     }
 }
 //................................................................
-bool TEnableFloorPlan::runNewFloorPlan(
-                                 TForm* inOwner,
-                TFloorPlanReturnParams& inFloorPlanReturnParams )
+bool TEnableFloorPlan::runNewFloorPlan(TForm* inOwner, TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea )
 {
     bool retValue = false;
     std::auto_ptr<TFrmSelectTable2>frmSelectTable2(TFrmSelectTable2::Create<TFrmSelectTable2>(inOwner, TDeviceRealTerminal::Instance().DBControl));
@@ -143,6 +141,13 @@ bool TEnableFloorPlan::runNewFloorPlan(
     // must do this!
     frmSelectTable2->AssociateWithController(controller);
     inFloorPlanReturnParams.Ver = eNewFloorPlan;
+
+    //for mezzanine Area.
+    if(!isNormalArea)
+    {
+        frmSelectTable2->TouchBtn2->Caption = "Ok";
+        frmSelectTable2->TableMode = eMizzanineMode;
+    }
 
     bool needToReopen = false;
     if (frmSelectTable2->ShowModal() == mrOk)
@@ -166,22 +171,25 @@ bool TEnableFloorPlan::runNewFloorPlan(
     if(needToReopen)
     {
        initialiseFloorPlan();
-       runNewFloorPlan(inOwner,inFloorPlanReturnParams );
+       runNewFloorPlan(inOwner,inFloorPlanReturnParams, isNormalArea );
     }
     return retValue;
 }
 //................................................................
 
-bool TEnableFloorPlan::runBackupFloorPlan(
-                                 TForm* inOwner,
-                                  bool  inShowAll,
-                TFloorPlanReturnParams& inFloorPlanReturnParams )
+bool TEnableFloorPlan::runBackupFloorPlan(TForm* inOwner, bool  inShowAll, TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea)
 {
     std::auto_ptr<TfrmSelectTable>frmSelectTable(TfrmSelectTable::Create<TfrmSelectTable>(inOwner, TDeviceRealTerminal::Instance().DBControl));
 
     frmSelectTable->ShowAll      = inShowAll;
     frmSelectTable->ChangingName = changingName;
     inFloorPlanReturnParams.Ver  = eOldFloorPlan;
+
+     //for mezzanine Area.
+     if(!isNormalArea)
+     {
+        frmSelectTable->TableMode = eMizzanineMode;
+     }
 
     if (frmSelectTable->ShowModal() == mrOk)
     {

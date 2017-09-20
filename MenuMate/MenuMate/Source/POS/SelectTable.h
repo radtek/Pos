@@ -15,6 +15,7 @@
 #include "TouchControls.h"
 #include "TouchGrid.h"
 #include <set>
+#include "MezzanineDetails.h"
 
 #include "MM_DBCore.h"
 #include "ZForm.h"
@@ -54,7 +55,11 @@ public:		// User declarations
    AnsiString SelectedTabContainerName;
    AnsiString SelectedPartyName;
    bool ShowAll;
-   bool ChangingName;	
+   bool ChangingName;
+   //For Mezzanine
+   int TableMode;
+   std::map<int, TMezzanineTable > MezzanineTables;
+   std::set<int> AssignedMezzanineTable;
 };
 //---------------------------------------------------------------------------
 class TTableSelector : public TObject
