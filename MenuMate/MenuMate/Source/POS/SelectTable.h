@@ -45,6 +45,8 @@ private:	// User declarations
     TfrmSelectTable *frmSelectTable;
     void SetMezzanineTablesColor();
     void UpdateColor(int tableNo, bool isSelected);
+    std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
+    std::set<int> AssignedMezzanineTable;
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	BEGIN_MESSAGE_MAP
@@ -60,8 +62,6 @@ public:		// User declarations
    bool ChangingName;
    //For Mezzanine
    int TableMode;
-   std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
-   std::set<int> AssignedMezzanineTable;
 };
 //---------------------------------------------------------------------------
 class TTableSelector : public TObject

@@ -25,10 +25,8 @@ void __fastcall TFrmSelectTable2::FormShow(TObject *Sender)
 
     if(TableMode)
     {
-        TMezzanineTable tableDetails;
-        tableDetails.FloorplanVer = 0;
-        tableDetails.LocationId = TGlobalSettings::Instance().LastSelectedFloorPlanLocationID;
-        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(tableDetails);
+
+        AssignedMezzanineTables = LoadMizzanineTables();
     }
     else
     {
@@ -56,7 +54,15 @@ void __fastcall TFrmSelectTable2::FormResize(TObject *Sender)
         imgTables->Align = alClient;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
-		_controller->DrawCurrentPlan(DBTransaction);
+        if(TableMode)
+        {
+		    _controller->DrawCurrentPlan(DBTransaction, false);
+            DrawMezzanineArea();
+        }
+        else
+        {
+            _controller->DrawCurrentPlan(DBTransaction);
+        }
 		DBTransaction.Commit();
 	}
 }
@@ -101,10 +107,10 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
         else
         {
             std::map<int, std::vector<TMezzanineTable> >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
-            std::set<int>::iterator it = AssignedMezzanineTable.find(SelectedTabContainerNumber);
+            std::set<int>::iterator it = AssignedMezzanineTables.find(SelectedTabContainerNumber);
             bool isTableSelected, isTableAlreadyInserted = false;
 
-            if(it != AssignedMezzanineTable.end())
+            if(it != AssignedMezzanineTables.end())
                 isTableSelected = false;
             else
                 isTableSelected = true;
@@ -117,19 +123,22 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
                     {
                         MezzanineTables.erase(SelectedTabContainerNumber);
                         isTableAlreadyInserted = true;
+                        isTableSelected = it != AssignedMezzanineTables.end();
+                        break;
                     }
                 }
             }
 
-
             if(outerit == MezzanineTables.end() || !isTableAlreadyInserted)
-            {  
+            {
+                isTableSelected = it != AssignedMezzanineTables.end();
                 TMezzanineTable mezzanineTableDetails;
                 mezzanineTableDetails.FloorplanVer = 0;
                 mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
                 mezzanineTableDetails.LocationId = TGlobalSettings::Instance().LastSelectedFloorPlanLocationID;
                 MezzanineTables[SelectedTabContainerNumber].push_back(mezzanineTableDetails);
             }
+            DrawMezzanineArea(false, isTableSelected);
 	  }
     }
 }
@@ -145,7 +154,7 @@ void __fastcall TFrmSelectTable2::TouchBtn2MouseClick(TObject *Sender)
     {
         TDBTables::SaveMezzanineAreaTables(MezzanineTables);
         MezzanineTables.clear();
-        AssignedMezzanineTable.clear();
+        AssignedMezzanineTables.clear();
     }
 
     if(_controller->image)
@@ -173,6 +182,14 @@ void __fastcall TFrmSelectTable2::tgridLocationsMouseClick(TObject *Sender, TMou
 
 	_controller->SetLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
 	PnlLocation->Caption = _controller->GetCurrentPlanName();
+
+    if(TableMode)
+    {
+        AssignedMezzanineTables.clear();
+        AssignedMezzanineTables = LoadMizzanineTables();
+        DrawMezzanineArea();
+    }
+
 	this->Invalidate();
 }
 // ---------------------------------------------------------------------------
@@ -271,7 +288,16 @@ void TFrmSelectTable2::UpdateTableOnFormPaint()
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
-		_controller->DrawCurrentPlan(DBTransaction);
+
+        if(TableMode)
+        {
+		    _controller->DrawCurrentPlan(DBTransaction, false);
+            DrawMezzanineArea();
+        }
+        else
+        {
+            _controller->DrawCurrentPlan(DBTransaction);
+        }
 		DBTransaction.Commit();
 	}
 }
@@ -282,4 +308,101 @@ void __fastcall TFrmSelectTable2::FormClose(TObject *Sender)
    tiUpdateFloorPlanRefresh->Enabled = false;
 }
 // ---------------------------------------------------------------------------
+void TFrmSelectTable2::DrawMezzanineArea(bool isLoadTime, bool isTableSelected)
+{
+	// save canvas brush
+	TBrushRecall *savedBrush = new TBrushRecall(_controller->image->Canvas->Brush);
+	savedBrush->Store();
+
+		try
+		{
+			if (_controller->locations.size() > 0)
+			{
+                ArrayOfDTOReservable tables = _controller->_client->GetTablesForLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
+                bool isTableExist;
+
+                for (int i = 0; i < tables.Length; i++)
+                {
+                    isTableExist = false;
+                    if(isLoadTime)
+                    {
+                        std::set<int>::iterator it = AssignedMezzanineTables.find(tables[i]->Number);
+                        isTableExist = it != AssignedMezzanineTables.end();
+                    }
+                    else
+                    {
+                        isTableExist = tables[i]->Number == SelectedTabContainerNumber ? true : false;
+                    }
+
+                    if(isTableExist)
+                    {
+                        int OrigX = tables[i]->X;
+                        int OrigY = tables[i]->Y;
+                        int OrigHeight = tables[i]->Height;
+                        int OrigWidth  = tables[i]->Width;
+                        OrigX = ((double)OrigX) * _controller->ScaleFactor;
+                        OrigWidth = ((double)OrigWidth) * _controller->ScaleFactor;
+                        OrigY = ((double)OrigY) * _controller->ScaleFactor;
+                        OrigHeight = ((double)OrigHeight) * _controller->ScaleFactor;
+                        TRect rect(OrigX, OrigY, OrigX + OrigWidth , OrigY + OrigHeight );
+
+                        if(isLoadTime || isTableSelected)
+                        {
+                            _controller->image->Canvas->Brush->Style = bsClear;
+                            _controller->image->Canvas->Brush->Color = clGray;
+                            _controller->image->Canvas->Font->Color =  clWhite;
+                        }
+                        else
+                        {
+                            _controller->image->Canvas->Brush->Color = clSilver;
+                            _controller->image->Canvas->Font->Color =  clBlack;
+                            _controller->image->Canvas->Font->Color = clBlack;
+                        }
+
+                        if (tables[i]->Shape == "r")
+                        {
+                            _controller->image->Canvas->FillRect(rect);
+                        }
+                        else
+                        {
+                            _controller->image->Canvas->Ellipse(rect);
+                        }
+
+                        std::auto_ptr <TStringList> TableText(new TStringList);
+                        TableText->Add(tables[i]->Name);
+                        int LineHeight = _controller->image->Canvas->TextHeight(tables[i]->Name.t_str());
+
+                        int TotalTxtHeight = LineHeight * TableText->Count;
+
+                        int Top = rect.Top + (rect.Height() / 2) - (TotalTxtHeight / 2);
+                        for(int i = 0; i < TableText->Count; i++)
+                        {
+                            int txtWidth = _controller->image->Canvas->TextWidth(TableText->Strings[i]);
+                            int Left = rect.Left + (rect.Width() / 2) - (txtWidth / 2);
+                            _controller->image->Canvas->TextOutA(Left,Top , TableText->Strings[i]);
+                            Top += LineHeight;
+                        }
+                    }
+                    if(isTableExist && !isLoadTime)
+                        break;
+                   }
+          }
+          delete savedBrush;
+    }
+    catch(Exception & Err)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Mezzanine Area Error " + Err.Message);
+    }
+}
+//----------------------------------------------------------------------------------------------------
+std::set<int> TFrmSelectTable2::LoadMizzanineTables()
+{
+    std::set<int> MezzanineTables;
+    TMezzanineTable tableDetails;
+    tableDetails.FloorplanVer = 0;
+    tableDetails.LocationId = TGlobalSettings::Instance().LastSelectedFloorPlanLocationID;
+    MezzanineTables = TDBTables::GetMezzanineAreaTables(tableDetails);
+
+    return MezzanineTables;
+}
 

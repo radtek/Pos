@@ -9,45 +9,39 @@
 #include "PosIntegration.h"
 #include "MM_DBCore.h"
 
-namespace TablePlan {
-	class PlanController {
-
-	private:
-
-		TPoint _currentMouseLocation;
-		int _idxCurrentPlan;
-         _di_IPosIntegration _client;
-
-      	TRect BackGndRect;
-
-		bool _connected;
-      	void ClearView();
-		double ScaleFactor;
-        void SetColorAsPerNoServiceTime(Database::TDBTransaction &DBTransaction,int TableNumber) ;
-
-	protected:
-
-	public:
-		PlanController();
-		~PlanController();
-        TImage *image;
-      // Location ID , Location.
-	   std::map<int,DTOLocation*> locations;
-		void SetView(TImage *v);
-		void DrawCurrentPlan(Database::TDBTransaction &DBTransaction);
-		AnsiString GetCurrentPlanName();
-		DTOReservable *GetTable(int LocationID , int TableNo);
-		DTOReservable *GetCurrentTable();
-		AnsiString GetTableDesc();
-		int PlanCount();
-        int CurrentID();
-        void FirstPlan();
-        void SetLocation(int LocationIndex);
-		std::vector<DTOLocation*> getLocations();
-		TPoint CurrentMouseLocation();
-		void UpdateMousePos(int, int);
-		bool IsInitOk();
-		bool Init();
-	};
+namespace TablePlan
+{
+class PlanController
+{
+private:
+    TPoint _currentMouseLocation;
+    int _idxCurrentPlan;
+    TRect BackGndRect;
+    bool _connected;
+    void ClearView();
+    void SetColorAsPerNoServiceTime(Database::TDBTransaction &DBTransaction,int TableNumber) ;
+public:
+    PlanController();
+    ~PlanController();
+    TImage *image;
+    std::map<int,DTOLocation*> locations;
+    void SetView(TImage *v);
+    void DrawCurrentPlan(Database::TDBTransaction &DBTransaction, bool isNormalArea = true);
+    AnsiString GetCurrentPlanName();
+    DTOReservable *GetTable(int LocationID , int TableNo);
+    DTOReservable *GetCurrentTable();
+    AnsiString GetTableDesc();
+    int PlanCount();
+    int CurrentID();
+    void FirstPlan();
+    void SetLocation(int LocationIndex);
+    std::vector<DTOLocation*> getLocations();
+    TPoint CurrentMouseLocation();
+    void UpdateMousePos(int, int);
+    bool IsInitOk();
+    bool Init();
+    _di_IPosIntegration _client;
+    double ScaleFactor;
+};
 }
 #endif /* #ifndef PlanControllerH */
