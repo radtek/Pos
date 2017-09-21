@@ -110,11 +110,6 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
             std::set<int>::iterator it = AssignedMezzanineTables.find(SelectedTabContainerNumber);
             bool isTableSelected, isTableAlreadyInserted = false;
 
-            if(it != AssignedMezzanineTables.end())
-                isTableSelected = false;
-            else
-                isTableSelected = true;
-
             if(outerit != MezzanineTables.end())
             {
                 for(std::vector<TMezzanineTable>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
