@@ -26,7 +26,10 @@ void __fastcall TfrmSelectTable::FormShow(TObject *Sender)
 
     if(TableMode)
     {
-        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(1);
+        TMezzanineTable tableDetails;
+        tableDetails.FloorplanVer = 1;
+        tableDetails.LocationId = 0;
+        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(tableDetails);
     }
     else
     {
@@ -180,7 +183,7 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
         }
         else
         {
-            std::map<int, TMezzanineTable >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
+            std::map<int, std::vector<TMezzanineTable> >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
             std::set<int>::iterator it = AssignedMezzanineTable.find(SelectedTabContainerNumber);
             bool isTableSelected;
 
@@ -203,7 +206,8 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
                 TMezzanineTable mezzanineTableDetails;
                 mezzanineTableDetails.FloorplanVer = 1;
                 mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
-                MezzanineTables.insert(std::pair<int, TMezzanineTable >(SelectedTabContainerNumber, mezzanineTableDetails));
+                mezzanineTableDetails.LocationId = 0;
+                MezzanineTables[SelectedTabContainerNumber].push_back(mezzanineTableDetails);
             }
              UpdateColor(SelectedTabContainerNumber, isTableSelected);
         }
@@ -319,12 +323,12 @@ void TfrmSelectTable::UpdateColor(int tableNo, bool isSelected)
         GridButton->Enabled = true;
 
         if(isSelected)
-        {   MessageBox("Selected.", "Error", MB_OK);
+        {
             GridButton->Color = clGray;
             GridButton->FontColor	= clWhite;
         }
         else
-        {  MessageBox("DeSelected.", "Error", MB_OK);
+        {
             GridButton->Color = clWhite;
             GridButton->FontColor	= clBlack;
         }

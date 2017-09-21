@@ -12,5 +12,6 @@ class TMezzanineTable
     public:
     eTableSelectionMode SelectionType;
     int FloorplanVer;
+    int LocationId;
 };
 #endif

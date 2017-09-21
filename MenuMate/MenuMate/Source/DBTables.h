@@ -23,10 +23,10 @@ class TDBTables
 	static UnicodeString GetNameMinor(Database::TDBTransaction &DBTransaction,int TabKey);
 
         //insert mizzanine table record.
-    static void InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer);
+    static void InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails);
 
     //delete mizzanine table record.
-    static void DeleteMizzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer);
+    static void DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails);
 
 	public:
 	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo);
@@ -87,10 +87,10 @@ class TDBTables
     static void UpdateTablePartyName( Database::TDBTransaction &dbTransaction, int TableNumber);
 
     //saveMezzanine Area Tables.
-    static void SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanineTables);
+    static void SaveMezzanineAreaTables(std::map<int, std::vector<TMezzanineTable> > mezzanineTables);
 
     //load table which are in mezzanine area.
-    static std::set<int> GetMezzanineAreaTables(int floorPlanVer);
+    static std::set<int> GetMezzanineAreaTables(TMezzanineTable mezzanineDetails);
 };
 
 #endif

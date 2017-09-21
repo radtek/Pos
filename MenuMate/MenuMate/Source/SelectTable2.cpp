@@ -25,7 +25,10 @@ void __fastcall TFrmSelectTable2::FormShow(TObject *Sender)
 
     if(TableMode)
     {
-        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(0);
+        TMezzanineTable tableDetails;
+        tableDetails.FloorplanVer = 0;
+        tableDetails.LocationId = TGlobalSettings::Instance().LastSelectedFloorPlanLocationID;
+        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(tableDetails);
     }
     else
     {
@@ -97,9 +100,9 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
         }
         else
         {
-            std::map<int, TMezzanineTable >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
+            std::map<int, std::vector<TMezzanineTable> >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
             std::set<int>::iterator it = AssignedMezzanineTable.find(SelectedTabContainerNumber);
-            bool isTableSelected;
+            bool isTableSelected, isTableAlreadyInserted = false;
 
             if(it != AssignedMezzanineTable.end())
                 isTableSelected = false;
@@ -108,14 +111,24 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
 
             if(outerit != MezzanineTables.end())
             {
-                MezzanineTables.erase(SelectedTabContainerNumber);
+                for(std::vector<TMezzanineTable>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
+                {
+                    if(innerit->LocationId == TGlobalSettings::Instance().LastSelectedFloorPlanLocationID)
+                    {
+                        MezzanineTables.erase(SelectedTabContainerNumber);
+                        isTableAlreadyInserted = true;
+                    }
+                }
             }
-            else
+
+
+            if(outerit == MezzanineTables.end() || !isTableAlreadyInserted)
             {  
                 TMezzanineTable mezzanineTableDetails;
                 mezzanineTableDetails.FloorplanVer = 0;
                 mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
-                MezzanineTables.insert(std::pair<int, TMezzanineTable >(SelectedTabContainerNumber, mezzanineTableDetails));
+                mezzanineTableDetails.LocationId = TGlobalSettings::Instance().LastSelectedFloorPlanLocationID;
+                MezzanineTables[SelectedTabContainerNumber].push_back(mezzanineTableDetails);
             }
 	  }
     }

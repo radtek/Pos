@@ -1533,7 +1533,7 @@ void TDBTables::UpdateTablePartyName( Database::TDBTransaction &dbTransaction, i
     }
 }
 //-------------------------------------------------------------------------------
-void TDBTables::SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanineTables)
+void TDBTables::SaveMezzanineAreaTables(std::map<int, std::vector<TMezzanineTable> > mezzanineTables)
 {
      //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -1542,18 +1542,23 @@ void TDBTables::SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanine
 
     try
     {
-        std::map<int, TMezzanineTable>::iterator it; 
-
+        std::map<int, std::vector<TMezzanineTable> >::iterator outerit;
+        TMezzanineTable mezzanineDetails;
         //outer loop is for sales id and inner is for item id
-        for (it = mezzanineTables.begin(); it != mezzanineTables.end(); ++it)
+        for (outerit = mezzanineTables.begin(); outerit != mezzanineTables.end(); ++outerit)
         {
-            if(it->second.SelectionType == eSelected)
+            for(std::vector<TMezzanineTable>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
             {
-                InsertMezzanineTablesRecord(dbTransaction, it->first ,it->second.FloorplanVer);
-            }
-            else if(it->second.SelectionType == eDeSelected)
-            {
-                DeleteMizzanineTablesRecord(dbTransaction, it->first ,it->second.FloorplanVer);
+                mezzanineDetails.FloorplanVer = innerit->FloorplanVer;
+                mezzanineDetails.LocationId = innerit->LocationId;
+                if(innerit->SelectionType == eSelected)
+                {
+                    InsertMezzanineTablesRecord(dbTransaction, outerit->first ,mezzanineDetails);
+                }
+                else  
+                {
+                    DeleteMezzanineTablesRecord(dbTransaction, outerit->first ,mezzanineDetails);
+                }
             }
         }
         dbTransaction.Commit();
@@ -1565,7 +1570,7 @@ void TDBTables::SaveMezzanineAreaTables(std::map<int, TMezzanineTable> mezzanine
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer)
+void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
     { //   MessageBox( "Inserting DB.", "", MB_OK );
@@ -1576,11 +1581,12 @@ void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransact
 
         TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
         insertQuery->Close();
-        insertQuery->SQL->Text =  "INSERT INTO MEZZANINE_AREA_TABLES  VALUES (:TABLE_ID, :TABLE_NUMBER, :FLOORPLAN_VER) ";
+        insertQuery->SQL->Text =  "INSERT INTO MEZZANINE_AREA_TABLES  VALUES (:TABLE_ID, :TABLE_NUMBER, :LOCATION_ID, :FLOORPLAN_VER) ";
 
         insertQuery->ParamByName("TABLE_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
         insertQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
-        insertQuery->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        insertQuery->ParamByName("FLOORPLAN_VER")->AsInteger = mezzanineDetails.FloorplanVer;
+        insertQuery->ParamByName("LOCATION_ID")->AsInteger = mezzanineDetails.LocationId;
         insertQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -1590,16 +1596,20 @@ void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransact
 	}
 }
 //---------------------------------------------------------------------------------------------------------
-void TDBTables::DeleteMizzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, int floorPlanVer)
+void TDBTables::DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
     { //   MessageBox( "Deleting DB.", "", MB_OK );
         TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
         deleteQuery->Close();
-        deleteQuery->SQL->Text =  "DELETE FROM MEZZANINE_AREA_TABLES a WHERE a.TABLE_NUMBER = :TABLE_NUMBER AND a.FLOORPLAN_VER = :FLOORPLAN_VER ";
+        deleteQuery->SQL->Text =  "DELETE FROM MEZZANINE_AREA_TABLES a "
+                                  "WHERE a.TABLE_NUMBER = :TABLE_NUMBER AND "
+                                  "a.FLOORPLAN_VER = :FLOORPLAN_VER AND "
+                                  "a.LOCATION_ID = :LOCATION_ID ";
 
         deleteQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
-        deleteQuery->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        deleteQuery->ParamByName("FLOORPLAN_VER")->AsInteger = mezzanineDetails.FloorplanVer;
+        deleteQuery->ParamByName("LOCATION_ID")->AsInteger = mezzanineDetails.LocationId;
         deleteQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -1609,7 +1619,7 @@ void TDBTables::DeleteMizzanineTablesRecord(Database::TDBTransaction &dbTransact
 	}
 }
 //-----------------------------------------------------------------------------------
-std::set<int> TDBTables::GetMezzanineAreaTables(int floorPlanVer)
+std::set<int> TDBTables::GetMezzanineAreaTables(TMezzanineTable mezzanineDetails)
 {
     std::set<int> mezzanineTables;
     try
@@ -1621,10 +1631,11 @@ std::set<int> TDBTables::GetMezzanineAreaTables(int floorPlanVer)
 
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
         query->SQL->Text = "SELECT a.TABLE_ID, a.TABLE_NUMBER FROM MEZZANINE_AREA_TABLES a "
-                            " WHERE  a.FLOORPLAN_VER = :FLOORPLAN_VER "
+                            " WHERE  a.FLOORPLAN_VER = :FLOORPLAN_VER AND a.LOCATION_ID = :LOCATION_ID "
                             "ORDER BY 1 ASC ";
 
-        query->ParamByName("FLOORPLAN_VER")->AsInteger = floorPlanVer;
+        query->ParamByName("FLOORPLAN_VER")->AsInteger = mezzanineDetails.FloorplanVer;
+        query->ParamByName("LOCATION_ID")->AsInteger = mezzanineDetails.LocationId;
         query->ExecQuery();
 
         while(!query->Eof)

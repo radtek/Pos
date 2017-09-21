@@ -60,7 +60,7 @@ public:		// User declarations
    bool ChangingName;
    //For Mezzanine
    int TableMode;
-   std::map<int, TMezzanineTable > MezzanineTables;
+   std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
    std::set<int> AssignedMezzanineTable;
 };
 //---------------------------------------------------------------------------

@@ -361,7 +361,8 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
 		"CREATE TABLE MEZZANINE_AREA_TABLES "
 		"( "
 		"   TABLE_ID INTEGER PRIMARY KEY,"
-		"   TABLE_NUMBER INTEGER,"
+		"   TABLE_NUMBER INTEGER, "
+        "   LOCATION_ID INTEGER, "
         "   FLOORPLAN_VER  INTEGER "
 		");",
 		inDBControl );

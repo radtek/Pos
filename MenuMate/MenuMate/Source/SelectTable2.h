@@ -62,7 +62,7 @@ public:		// User declarations
 
     //Mezzanine Area
     int TableMode;
-    std::map<int, TMezzanineTable > MezzanineTables;
+    std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
     std::set<int> AssignedMezzanineTable;
 };
 //---------------------------------------------------------------------------
