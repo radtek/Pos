@@ -189,20 +189,12 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 
             if(outerit != MezzanineTables.end())
             {
-                if(it != AssignedMezzanineTable.end())
-                    isTableSelected = true;
-                else
-                    isTableSelected = false;
-
+                isTableSelected = it != AssignedMezzanineTable.end();
                 MezzanineTables.erase(SelectedTabContainerNumber);
             }
             else
             {
-                if(it != AssignedMezzanineTable.end())
-                    isTableSelected = false;
-                else
-                    isTableSelected = true;
-
+                isTableSelected = !(it != AssignedMezzanineTable.end());
                 TMezzanineTable mezzanineTableDetails;
                 mezzanineTableDetails.FloorplanVer = 1;
                 mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
