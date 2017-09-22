@@ -1033,29 +1033,30 @@ static AnsiString InvoiceNumberList = " Select "
 	// get Internal and External Loyalty Members
 	// They should be using one or the other
 	static AnsiString LoyaltyCustomerList =
-		"Select "
-			"Name "
-		"From "
-			"Contacts "
-		"Where "
-			"Contact_Type in (2,4)"
-		"Order By "
-			"Name";
+	  "Select "
+ "(NAME || ' ' || Last_Name) as NAME "
+ "from "
+"CONTACTS "
+"where "
+"Contact_Type in (2,4) "
+"order by "
+"NAME,"
+ "LAST_NAME ";
 
 	 static AnsiString LoyaltyPurchaseCustomerList =
 		"Select Distinct "
-			"Contacts.Name "
-		"From "
+			"(NAME || ' ' || Last_Name) as Name "
+           "From "
 			"ContactFreebie Left Join Contacts on "
 				"ContactFreebie.Contacts_Key = Contacts.Contacts_Key ";
 		"Where "
 			"Contacts.Contact_Type in (2,4) "
 		"Order By "
-			"Contacts.Name";
+			"Name";
 	// get both from Archive and DayArchive   cww
 	static AnsiString LoyaltyArchiveList =
 		"Select Distinct "
-			"Contacts.Name "
+		"(NAME || ' ' || Last_Name) as Name "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
 			"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
@@ -1065,7 +1066,7 @@ static AnsiString InvoiceNumberList = " Select "
 			"Security.Security_Event = 'Ordered By' "
 		"Union "
 		"Select Distinct "
-			"Contacts.Name "
+		"(NAME || ' ' || Last_Name) as Name "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
 			"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
@@ -3564,19 +3565,19 @@ case DAILY_SALES_REPORT:
 			TSubReport *SubReport1						= ReportControl->AddSubReport("Loyalty Audit");
 
 			// Dates
-			TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
-			ReportFilter0->Caption						= "Select the date range for the loyalty report.";
-			SubReport0->AddFilterIndex(0);
-			SubReport1->AddFilterIndex(0);
-			ReportControl->AddFilter(ReportFilter0);
+		   TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+		   ReportFilter0->Caption						= "Select the date range for the loyalty report.";
+		   SubReport0->AddFilterIndex(0);
+		   SubReport1->AddFilterIndex(0);
+		   ReportControl->AddFilter(ReportFilter0);
 
 			// Customers - Members
 			TReportCheckboxFilter *ReportFilter1	= new TReportCheckboxFilter(ReportControl, MMFilterTransaction);
 			ReportFilter1->Caption						= "Select the customers you wish to appear in the report.";
 			ReportFilter1->SQL							= LoyaltyCustomerList;
-			ReportFilter1->DisplayField				= "Name";
-			ReportFilter1->SelectionField				= "Name";
-			ReportFilter1->SelectionDateRange		= false;
+			ReportFilter1->DisplayField				= "Name" ;
+			ReportFilter1->SelectionField			= "Name";
+            ReportFilter1->SelectionDateRange		= false;
 			SubReport0->AddFilterIndex(1);
 			SubReport1->AddFilterIndex(1);
 			ReportControl->AddFilter(ReportFilter1);
