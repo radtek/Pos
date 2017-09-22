@@ -51,7 +51,7 @@ private:	// User declarations
     void UpdateTableOnFormPaint();
     std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
     std::set<int> AssignedMezzanineTables;
-    void DrawMezzanineArea(bool isLoadTime = true, bool isTableSelected = false);
+    void DrawMezzanineArea(bool isLoadTime = true, bool isTableSelected = true);
     std::set<int> LoadMizzanineTables();
 public:		// User declarations
     std::auto_ptr<TablePlan::PlanController> _controller;

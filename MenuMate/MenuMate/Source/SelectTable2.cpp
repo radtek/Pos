@@ -25,7 +25,6 @@ void __fastcall TFrmSelectTable2::FormShow(TObject *Sender)
 
     if(TableMode)
     {
-
         AssignedMezzanineTables = LoadMizzanineTables();
     }
     else
@@ -55,8 +54,8 @@ void __fastcall TFrmSelectTable2::FormResize(TObject *Sender)
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
         if(TableMode)
-        {
-		    _controller->DrawCurrentPlan(DBTransaction, false);
+        {    
+		    _controller->DrawCurrentPlan(DBTransaction, false); 
             DrawMezzanineArea();
         }
         else
@@ -174,7 +173,6 @@ void __fastcall TFrmSelectTable2::tgridLocationsMouseClick(TObject *Sender, TMou
     TManagerVariable::Instance().SetDeviceInt(DBTransaction, vmLastSelectedFloorPlanLocationID,
     TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
     DBTransaction.Commit();
-
 	_controller->SetLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
 	PnlLocation->Caption = _controller->GetCurrentPlanName();
 
@@ -182,7 +180,6 @@ void __fastcall TFrmSelectTable2::tgridLocationsMouseClick(TObject *Sender, TMou
     {
         AssignedMezzanineTables.clear();
         AssignedMezzanineTables = LoadMizzanineTables();
-        DrawMezzanineArea();
     }
 
 	this->Invalidate();
@@ -308,81 +305,100 @@ void TFrmSelectTable2::DrawMezzanineArea(bool isLoadTime, bool isTableSelected)
 	// save canvas brush
 	TBrushRecall *savedBrush = new TBrushRecall(_controller->image->Canvas->Brush);
 	savedBrush->Store();
+    try
+    {
+        if (_controller->locations.size() > 0)
+        {
+            ArrayOfDTOReservable tables = _controller->_client->GetTablesForLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
+            bool isTableExist;
 
-		try
-		{
-			if (_controller->locations.size() > 0)
-			{
-                ArrayOfDTOReservable tables = _controller->_client->GetTablesForLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
-                bool isTableExist;
-
-                for (int i = 0; i < tables.Length; i++)
+            for (int i = 0; i < tables.Length; i++)
+            {
+                isTableExist = false;
+                if(isLoadTime)
                 {
-                    isTableExist = false;
-                    if(isLoadTime)
+                    for(std::map<int, std::vector<TMezzanineTable> >::iterator outerit = MezzanineTables.begin();
+                                outerit!= MezzanineTables.end(); ++outerit)
+                    {
+                        if(tables[i]->Number == outerit->first)
+                        {
+                            for(std::vector<TMezzanineTable>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
+                            {
+                                if( innerit->LocationId == TGlobalSettings::Instance().LastSelectedFloorPlanLocationID)
+                                {
+                                    isTableExist = true;
+                                    isTableSelected =  innerit->SelectionType == eSelected ? true : false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(!isTableExist)
                     {
                         std::set<int>::iterator it = AssignedMezzanineTables.find(tables[i]->Number);
                         isTableExist = it != AssignedMezzanineTables.end();
                     }
+                }
+                else
+                {
+                    isTableExist = tables[i]->Number == SelectedTabContainerNumber;
+                }
+
+                if(isTableExist)
+                {
+                    int OrigX = tables[i]->X;
+                    int OrigY = tables[i]->Y;
+                    int OrigHeight = tables[i]->Height;
+                    int OrigWidth  = tables[i]->Width;
+                    OrigX = ((double)OrigX) * _controller->ScaleFactor;
+                    OrigWidth = ((double)OrigWidth) * _controller->ScaleFactor;
+                    OrigY = ((double)OrigY) * _controller->ScaleFactor;
+                    OrigHeight = ((double)OrigHeight) * _controller->ScaleFactor;
+                    TRect rect(OrigX, OrigY, OrigX + OrigWidth , OrigY + OrigHeight );
+
+                    if((isLoadTime && isTableSelected) || isTableSelected)
+                    {
+                        _controller->image->Canvas->Brush->Style = bsClear;
+                        _controller->image->Canvas->Brush->Color = clGray;
+                        _controller->image->Canvas->Font->Color =  clWhite;
+                    }
                     else
                     {
-                        isTableExist = tables[i]->Number == SelectedTabContainerNumber;
+                        _controller->image->Canvas->Brush->Color = clSilver;
+                        _controller->image->Canvas->Font->Color =  clBlack;
+                        _controller->image->Canvas->Font->Color = clBlack;
                     }
 
-                    if(isTableExist)
+                    if (tables[i]->Shape == "r")
                     {
-                        int OrigX = tables[i]->X;
-                        int OrigY = tables[i]->Y;
-                        int OrigHeight = tables[i]->Height;
-                        int OrigWidth  = tables[i]->Width;
-                        OrigX = ((double)OrigX) * _controller->ScaleFactor;
-                        OrigWidth = ((double)OrigWidth) * _controller->ScaleFactor;
-                        OrigY = ((double)OrigY) * _controller->ScaleFactor;
-                        OrigHeight = ((double)OrigHeight) * _controller->ScaleFactor;
-                        TRect rect(OrigX, OrigY, OrigX + OrigWidth , OrigY + OrigHeight );
-
-                        if(isLoadTime || isTableSelected)
-                        {
-                            _controller->image->Canvas->Brush->Style = bsClear;
-                            _controller->image->Canvas->Brush->Color = clGray;
-                            _controller->image->Canvas->Font->Color =  clWhite;
-                        }
-                        else
-                        {
-                            _controller->image->Canvas->Brush->Color = clSilver;
-                            _controller->image->Canvas->Font->Color =  clBlack;
-                            _controller->image->Canvas->Font->Color = clBlack;
-                        }
-
-                        if (tables[i]->Shape == "r")
-                        {
-                            _controller->image->Canvas->FillRect(rect);
-                        }
-                        else
-                        {
-                            _controller->image->Canvas->Ellipse(rect);
-                        }
-
-                        std::auto_ptr <TStringList> TableText(new TStringList);
-                        TableText->Add(tables[i]->Name);
-                        int LineHeight = _controller->image->Canvas->TextHeight(tables[i]->Name.t_str());
-
-                        int TotalTxtHeight = LineHeight * TableText->Count;
-
-                        int Top = rect.Top + (rect.Height() / 2) - (TotalTxtHeight / 2);
-                        for(int i = 0; i < TableText->Count; i++)
-                        {
-                            int txtWidth = _controller->image->Canvas->TextWidth(TableText->Strings[i]);
-                            int Left = rect.Left + (rect.Width() / 2) - (txtWidth / 2);
-                            _controller->image->Canvas->TextOutA(Left,Top , TableText->Strings[i]);
-                            Top += LineHeight;
-                        }
+                        _controller->image->Canvas->FillRect(rect);
                     }
-                    if(isTableExist && !isLoadTime)
-                        break;
-                   }
-          }
-          delete savedBrush;
+                    else
+                    {
+                        _controller->image->Canvas->Ellipse(rect);
+                    }
+
+                    std::auto_ptr <TStringList> TableText(new TStringList);
+                    TableText->Add(tables[i]->Name);
+                    int LineHeight = _controller->image->Canvas->TextHeight(tables[i]->Name.t_str());
+
+                    int TotalTxtHeight = LineHeight * TableText->Count;
+
+                    int Top = rect.Top + (rect.Height() / 2) - (TotalTxtHeight / 2);
+                    for(int i = 0; i < TableText->Count; i++)
+                    {
+                        int txtWidth = _controller->image->Canvas->TextWidth(TableText->Strings[i]);
+                        int Left = rect.Left + (rect.Width() / 2) - (txtWidth / 2);
+                        _controller->image->Canvas->TextOutA(Left,Top , TableText->Strings[i]);
+                        Top += LineHeight;
+                    }
+                }
+                if(isTableExist && !isLoadTime)
+                    break;
+            }
+        }
+        delete savedBrush;
     }
     catch(Exception & Err)
     {
