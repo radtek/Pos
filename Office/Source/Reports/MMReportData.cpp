@@ -965,28 +965,29 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
 {
 	qrCashupRecon->Close();
 	qrCashupRecon->SQL->Text =
-		"Select "
-			"Zeds.Z_Key,"
-			"Zeds.Time_Stamp,"
-			"Zeds.Terminal_Name,"
-			"Zeds.Adjustments as Total_Variance,"
-			"Security.From_Val as Cashier,"
-			"BlindBalance.Payment as Payment_Type,"
-			"BlindBalance.Payment_Group,"
-			"BlindBalance.Payment_Trans_Qty as Transaction_Qty,"
-            "cast(BlindBalance.Blind_Balance as numeric(15, 2)) Blind_Balance, "
-			"cast(BlindBalance.System_Balance as numeric(15, 2)) System_Balance,"
-			"cast(BlindBalance.Office_Balance as numeric(15, 2)) Office_Balance,"
-			"cast((BlindBalance.Office_Balance  "
-            "      - BlindBalance.System_Balance) as numeric(15, 2)) as Variance "
+
+       "Select  "
+			"Zeds.Z_Key, "
+			"Zeds.Time_Stamp, "
+			"Zeds.Terminal_Name, "
+			"Zeds.Adjustments as Total_Variance, "
+			"Security.From_Val as Cashier, "
+			"UPPER(BlindBalance.Payment) as Payment_Type, "
+			"BlindBalance.Payment_Group, "
+			"BlindBalance.Payment_Trans_Qty as Transaction_Qty, "
+           "cast(BlindBalance.Blind_Balance as numeric(15, 2)) Blind_Balance, "
+			"cast(BlindBalance.System_Balance as numeric(15, 2)) System_Balance, "
+			"cast(BlindBalance.Office_Balance as numeric(15, 2)) Office_Balance, "
+			"cast((BlindBalance.Office_Balance "
+           "      - BlindBalance.System_Balance) as numeric(15, 2)) as Variance "
 		"From "
 			"Zeds Inner Join Security on "
-				"Zeds.Security_Ref = Security.Security_Ref "
+			"	Zeds.Security_Ref = Security.Security_Ref "
 			"Left Join BlindBalance on "
-				"Zeds.Z_Key = BlindBalance.Z_Key "
+			"	Zeds.Z_Key = BlindBalance.Z_Key "
 		"Where "
 			"Zeds.Time_Stamp > :StartDateTime And "
-			"Zeds.Time_Stamp <= :EndDateTime ";
+			"Zeds.Time_Stamp <= :EndDateTime And SECURITY.SECURITY_EVENT = 'Till Z Off' ";
 
 	if (Terminals && Terminals->Count > 0)
 	{
@@ -995,11 +996,11 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
 	}
 	qrCashupRecon->SQL->Text =	qrCashupRecon->SQL->Text +
 
+		"GROUP BY 1,2,3,4,5,6,7,BlindBalance.Payment_Trans_Qty,BlindBalance.Blind_Balance,BlindBalance.Office_Balance,BlindBalance.System_Balance "
 		"Order By "
-			"Zeds.Time_Stamp,"
-			"BlindBalance.Z_Key,"
-			"BlindBalance.Payment_Group,"
-			"BlindBalance.Payment";
+            "Zeds.Time_Stamp , "
+            " Zeds.Z_Key, "
+            "UPPER(BlindBalance.Payment) ";
 
 	if (Terminals) for (int i=0; i<Terminals->Count; i++)
 	{
