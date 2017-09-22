@@ -125,7 +125,7 @@ void __fastcall TFrmSelectTable2::imgTablesClick(TObject *Sender)
 
             if(outerit == MezzanineTables.end() || !isTableAlreadyInserted)
             {
-                isTableSelected = !(it != AssignedMezzanineTables.end());
+                isTableSelected = (it == AssignedMezzanineTables.end());
                 TMezzanineTable mezzanineTableDetails;
                 mezzanineTableDetails.FloorplanVer = 0;
                 mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;

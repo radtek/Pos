@@ -382,7 +382,7 @@ bool TManagerMallSetup::IsSettingExistInDB(Database::TDBTransaction &dbTransacti
 //------------------------------------------------------------------------------------------------------------
 std::map<int, std::set<int> > TManagerMallSetup::LoadMezzanineAreaTablesByLocations(Database::TDBTransaction &dbTransaction)
 {
-    std::map<int, std::vector<int> >mezzanineTables;
+    std::map<int, std::set<int> >mezzanineTables;
     try
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
@@ -395,7 +395,7 @@ std::map<int, std::set<int> > TManagerMallSetup::LoadMezzanineAreaTablesByLocati
 
         while(!query->Eof)
         {
-            mezzanineTables[query->FieldByName("LOCATION_ID")->AsInteger].push_back(query->FieldByName("TABLE_NUMBER")->AsInteger);
+            mezzanineTables[query->FieldByName("LOCATION_ID")->AsInteger].insert(query->FieldByName("TABLE_NUMBER")->AsInteger);
             query->Next();
         }
     }

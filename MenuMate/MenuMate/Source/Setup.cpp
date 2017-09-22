@@ -2433,6 +2433,13 @@ void TfrmSetup::ShowMezzanineArea()
         TFloorPlanReturnParams floorPlanReturnParams;
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
         floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams, false );
+
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TGlobalSettings::Instance().MezzanineTablesMap.clear();
+        TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(dbTransaction);
+        dbTransaction.Commit();
     }
     catch(Exception & E)
     {

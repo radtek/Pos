@@ -1529,10 +1529,31 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        //Instantiation is happenning in a factory based on the active mall in database
-        TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-        delete mall;
+        bool canContinue = true;
+
+        //Check if mall type is deananddeluca then table shoul not be mezzanine.
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {
+            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
+            if(item->TableNo)
+            {
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    canContinue = (innerit == outerit->second.end());
+                }
+            }
+        }
+
+        if(canContinue)
+        {
+            //Instantiation is happenning in a factory based on the active mall in database
+            TMallExport* mall = TMallFactory::GetMallType();
+            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+            delete mall;
+        }
     }
 }
 
