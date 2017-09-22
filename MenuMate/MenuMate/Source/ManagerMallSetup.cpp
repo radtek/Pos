@@ -380,7 +380,7 @@ bool TManagerMallSetup::IsSettingExistInDB(Database::TDBTransaction &dbTransacti
     return isSettingExist;
 }
 //------------------------------------------------------------------------------------------------------------
-std::map<int, std::vector<int> > TDBTables::LoadMezzanineAreaTablesByLocations(Database::TDBTransaction &dbTransaction)
+std::map<int, std::set<int> > TManagerMallSetup::LoadMezzanineAreaTablesByLocations(Database::TDBTransaction &dbTransaction)
 {
     std::map<int, std::vector<int> >mezzanineTables;
     try
@@ -390,12 +390,12 @@ std::map<int, std::vector<int> > TDBTables::LoadMezzanineAreaTablesByLocations(D
                             " WHERE  a.FLOORPLAN_VER = :FLOORPLAN_VER  "
                             "ORDER BY 1 ASC ";
 
-        query->ParamByName("FLOORPLAN_VER")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? 1 : 0;
+        query->ParamByName("FLOORPLAN_VER")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? 0 : 1;
         query->ExecQuery();
 
         while(!query->Eof)
         {
-            MezzanineTables[query->FieldByName("LOCATION_ID")->AsInteger].push_back(query->FieldByName("TABLE_NUMBER")->AsInteger);
+            mezzanineTables[query->FieldByName("LOCATION_ID")->AsInteger].push_back(query->FieldByName("TABLE_NUMBER")->AsInteger);
             query->Next();
         }
     }
