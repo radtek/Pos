@@ -395,6 +395,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
+        if(mallIndex == 2)
+            TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(DBTransaction);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

@@ -18,6 +18,7 @@ class TManagerMallSetup
      static int CheckActiveMallExist(Database::TDBTransaction &dbTransaction);
      static void UpdateINActiveMall(Database::TDBTransaction &dbTransaction);
      static void InsertInToMallExport_Settings_Values(int mallKey);
+     static std::map<int, std::vector<int> > LoadMezzanineAreaTablesByLocations(Database::TDBTransaction &DBTransaction);
  private:
      static void InsertSettingValuesForEstancia(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
      static void InsertSettingValuesForDeanAndDeluca(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
