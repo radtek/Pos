@@ -3373,18 +3373,13 @@
 				<DependentOn>ManagerMallSetup.h</DependentOn>
 				<BuildOrder>737</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="LoyaltyMateWSDL.cpp">
-				<DependentOn>LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>769</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.h</DependentOn>
 				<BuildOrder>769</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<Suffix>_0</Suffix>
-				<BuildOrder>770</BuildOrder>
+				<BuildOrder>769</BuildOrder>
 			</CppCompile>
 			<FormResources Include="Maintenance\PaymentMaintenance.dfm"/>
 			<FormResources Include="DiscountTimes.dfm"/>
