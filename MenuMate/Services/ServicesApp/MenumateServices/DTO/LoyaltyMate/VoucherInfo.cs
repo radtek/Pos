@@ -12,6 +12,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public string VoucherName { get; set; }
         [DataMember]
+        public string VoucherDescription { get; set; }
+        [DataMember]
         public string DiscountCode { get; set; }
         [DataMember]
         public int NumberOfUsesRemaining { get; set; }

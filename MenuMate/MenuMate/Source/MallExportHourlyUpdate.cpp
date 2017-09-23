@@ -29,6 +29,7 @@ TExportUpdateResponse TMallExportHourlyUpdate::UpdateHourlyExportTablesOnTransac
 
     try
     {
+        ReceiptNumber = payTransac->InvoiceNumber;
         // clear the values to default
         clearHourlyExportFieldValues();
 
@@ -180,7 +181,10 @@ void TMallExportHourlyUpdate::Commit()
     Query->ParamByName("DATE_VALUE")->AsString = dateValue;
     Query->ParamByName("TIME_VALUE")->AsString = timeValue;
     Query->ParamByName("AMOUNT_VALUE")->AsCurrency = salesValue;
-    Query->ParamByName("TRANSACTION_COUNT")->AsInteger = transactionCount;
+    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+        Query->ParamByName("TRANSACTION_COUNT")->AsInteger = ReceiptNumber.Pos("RV") == 0 ? transactionCount : 0;
+    else
+        Query->ParamByName("TRANSACTION_COUNT")->AsInteger = transactionCount;
     Query->ParamByName("VAT_SALES")->AsCurrency = totalSalesTax;
     Query->ParamByName("TOTALDISCOUNT")->AsCurrency = totalDiscount;
     Query->ParamByName("SCHARGE_AMOUNT")->AsCurrency = servchargeAmount;

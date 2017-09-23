@@ -388,6 +388,7 @@ namespace MenumateServices.LoyaltyMate
                             {
                                 DiscountCode = voucher.DiscountCode,
                                 VoucherName = voucher.Name,
+                                VoucherDescription = voucher.Description,
                                 NumberOfUsesRemaining = voucher.NumberOfUsesAllowed.HasValue ? voucher.NumberOfUsesAllowed.Value : 0
                             };
                             result.MemberVouchers.Add(memberVoucher);
