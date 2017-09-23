@@ -7,6 +7,7 @@
 
 #include <DateUtils.hpp>
 #include <system.hpp>
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -109,15 +110,18 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 				Length.sprintf("%10.10d",Size);
 				Data = Length + Data;
 
+//                MessageBox("Checking connection","",MB_OK);
 				if(!fTCPClient->Connected())
 				{
-
+//                    MessageBox("Not Connected","",MB_OK);
 					fTCPClient->Host = HostAddress;
 					fTCPClient->Port = Port;
 					fTCPClient->BoundPort = 0;
 					fTCPClient->ReadTimeout = ReadTimeOut;
 					fTCPClient->ConnectTimeout = ConnectTimeOut;
+ //                   MessageBox("Going to connect","",MB_OK);
 					fTCPClient->Connect();
+ //                   MessageBox("Connect triggered","",MB_OK);
 				}
 
 				if(fTCPClient->Connected())

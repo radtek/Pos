@@ -293,7 +293,8 @@ void TfrmPaymentType::Reset()
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
                CopyPaymentColor(ButtonPos);
              }
-           else if (Payment->GetPaymentAttribute(ePayTypeAllowCashOut) || Payment->GetPaymentAttribute(ePayTypePoints) ||
+           else if (Payment->GetPaymentAttribute(ePayTypeAllowCashOut) ||
+                   (Payment->GetPaymentAttribute(ePayTypePoints) && TGlobalSettings::Instance().MembershipType != MembershipTypeExternal) ||
                    (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && !Payment->IsLoyaltyVoucher()))
             {
                  if((Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) || Payment->GetPaymentAttribute(ePayTypePoints)))
@@ -2062,8 +2063,8 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
         }
         else if ((((TGlobalSettings::Instance().UseTierLevels && TotalPoints > RoundedPoints)||
                  (!TGlobalSettings::Instance().UseTierLevels && wrkPayAmount > RoundedPoints )) &&
-                 (TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
-                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive))) ||
+                 //(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
+                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive)) ||
                  (PointsTransaction.Membership.Member.MemberType == 2 && (wrkPayAmount > RoundedPoints)))
         {
             if (RoundedPoints <= 0)
@@ -4089,6 +4090,10 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
                ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
             ManagerDiscount->ClearMemberExemtDiscounts(CurrentTransaction.Orders);
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
+//            for(int i = 0; i < PaymentTransaction.PaymentList->Count; i++)
+//            {
+//               MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
+//            }
 			Reset(); // Reloads the Buttons on the screen.
 			CurrentTransaction.Recalc();
 			ShowPaymentTotals();
