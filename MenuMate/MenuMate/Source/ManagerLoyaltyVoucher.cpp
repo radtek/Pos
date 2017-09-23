@@ -189,9 +189,10 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
         itVoucher != TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.end(); ++itVoucher)
     {
        	TVerticalSelection Item1;
-        Item1.Title = itVoucher->VoucherName;
+        Item1.Title = itVoucher->VoucherDescription;
         Item1.Properties["Action"] = itVoucher->DiscountCode;
         Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.Properties["VoucherName"] = itVoucher->VoucherName;
         Item1.CloseSelection = true;
         SelectionForm->Items.push_back(Item1);
     }
@@ -220,7 +221,7 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
        if(discountKey > 0)
        {
             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount =  discountCode;
-            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = SelectedItem.Title;
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = SelectedItem.Properties["VoucherName"];
             MemberInfo.AutoAppliedDiscounts.insert(discountKey);
        }
     }

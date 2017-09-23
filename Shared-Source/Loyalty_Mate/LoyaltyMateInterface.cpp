@@ -517,6 +517,7 @@ void TLoyaltyMateInterface::ReadMemberVouchers(DynamicArray<VoucherInfo*> member
          VoucherInfo* voucherInfo = memberVouchers[i];
          TVoucherDetail voucherDetail;
          voucherDetail.VoucherName = voucherInfo->VoucherName;
+         voucherDetail.VoucherDescription = voucherInfo->VoucherDescription;
          voucherDetail.DiscountCode = voucherInfo->DiscountCode;
          voucherDetail.NumberOfUsesRemaining = voucherInfo->NumberOfUsesRemaining;
          inContactInfo.MemberVouchers.push_back(voucherDetail);
