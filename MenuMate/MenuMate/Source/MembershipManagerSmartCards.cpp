@@ -3006,20 +3006,20 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
+   Database::TDBTransaction DBTransaction1(DBControl);
+   DBTransaction1.StartTransaction();
    if(triggeredForCard)
    {
 
-      if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
          MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
    }
    else
    {
-      if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
           MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
    }
-   DBTransaction.Commit();
+   DBTransaction1.Commit();
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)
