@@ -100,7 +100,7 @@ object frmMenuEdit: TfrmMenuEdit
             Top = 0
             Width = 346
             Height = 460
-            ActivePage = tsItem
+            ActivePage = tsItemSize
             Align = alClient
             Style = tsFlatButtons
             TabOrder = 0
@@ -469,13 +469,13 @@ object frmMenuEdit: TfrmMenuEdit
                 Top = 0
                 Width = 338
                 Height = 450
-                ActivePage = tsItemDetails
+                ActivePage = tsItemSizes
                 Align = alClient
-                TabIndex = 0
+                TabIndex = 1
                 TabOrder = 0
                 OnChange = pcItemDetailsChange
                 object tsItemDetails: TTabSheet
-                  Caption = 'Item Details'
+                  Caption = 'Item Detail'
                   object Label1: TLabel
                     Left = 8
                     Top = 12
@@ -553,7 +553,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     TabOrder = 0
                     OnChange = cbItemNameChange
@@ -4545,7 +4545,7 @@ object frmMenuEdit: TfrmMenuEdit
         #9#9'ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGrou' +
         'ps_Key'
       'Where'
-      #9'ArcCategories.Visible = ''T'''
+      #9'ArcCategories.Visible = '#39'T'#39
       'Order By'
       #9'CategoryGroups.Name,'
       #9'ArcCategories.Category')
@@ -4767,7 +4767,7 @@ object frmMenuEdit: TfrmMenuEdit
     SQL.Strings = (
       'SELECT a.PRICELEVEL_KEY, a.PRICELEVEL_NAME'
       'FROM PRICELEVELS a'
-      'where a.ISENABLED = ''T'''
+      'where a.ISENABLED = '#39'T'#39
       'order by a.PRICELEVEL_KEY')
     Transaction = MMTransaction
     Left = 112
