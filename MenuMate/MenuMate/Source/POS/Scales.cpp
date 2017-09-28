@@ -178,12 +178,10 @@ void __fastcall TfrmScales::tbtnAmountMouseClick(TObject *Sender)
 {
     std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad = OpenTouchNumPad("Enter Amount", pmDecimal);
 
-    if(Item->PriceEach()==0.00)
-       {
-
-      MessageBox("Items price is already zero \nyou can't set price for such an item","info",MB_OK);
-      }
-
+    if(Item->PriceEach() == 0.00)
+    {
+        MessageBox("Items price is already zero \nyou can't set price for such an item","info",MB_OK);
+    }
     else if (frmTouchNumpad->ShowModal() == mrOk)
     {
         Currency enteredAmount = frmTouchNumpad->CURResult;
