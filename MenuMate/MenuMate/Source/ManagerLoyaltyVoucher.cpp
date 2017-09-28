@@ -189,7 +189,10 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
         itVoucher != TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.end(); ++itVoucher)
     {
        	TVerticalSelection Item1;
-        Item1.Title = itVoucher->VoucherDescription;
+        if(itVoucher->VoucherDescription == NULL || itVoucher->VoucherDescription.Length() == 0)
+            Item1.Title = itVoucher->VoucherName;
+        else
+            Item1.Title = itVoucher->VoucherDescription;
         Item1.Properties["Action"] = itVoucher->DiscountCode;
         Item1.Properties["Color"] = IntToStr(clNavy);
         Item1.Properties["VoucherName"] = itVoucher->VoucherName;
