@@ -64,6 +64,7 @@ enum TTreeIndex {
                     DEPT_SALES_SUMMARY                        ,
                     PROFIT_LOSS_REPORT                       ,
                     SALES_SUMMARY_D_INDEX                     ,
+                    MEZZANINE_SALES_INDEX                     ,
 
 			SALES_INDEX													,
 					CONSUMPTION_INDEX									,

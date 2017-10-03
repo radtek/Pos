@@ -4450,6 +4450,20 @@ case DAILY_SALES_REPORT:
             //_disableBackAndExcelButton = true;
 			break;
         }
+        case MEZZANINE_SALES_INDEX:
+		{
+			requiredPermission = Security::SecurityReports;
+
+            ReportControl									= new TReportControl;
+            ReportControl->PrintReport					= &TfrmReports::PrintMezzanineSales;
+            TSubReport *SubReport0						= ReportControl->AddSubReport("Mezzanine Sales");
+            TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+            ReportFilter0->Caption						= "Select the date range for the Mezzanine sales report.";
+            SubReport0->AddFilterIndex(0);
+
+			ReportControl->AddFilter(ReportFilter0);
+        }
+
 }
  	if (ReportControl)
 	{
@@ -9212,7 +9226,6 @@ void TfrmReports::PrintStockWriteOff(TReportControl *ReportControl)
 
 }
 
-
 //---------------------------------------------------------------------------
 void TfrmReports::GetStockTransSupplierList(TReportFilter *ReportFilter)
 {
@@ -11226,6 +11239,49 @@ void TfrmReports::PrintSubReports(TReportControl *ReportControl)
 			}
 
 
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
+/-------------------------------------------------------------------------------------------------------------------------------//
+void TfrmReports::PrintMezzanineSales(TReportControl *ReportControl)
+{
+	const AnsiString ReportName = "repMezzanine";
+
+	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+	try
+	{
+
+		dmMMReportData->SetupChronological(ReportControl->Start, ReportControl->End, TableFilter->Selection, TabFilter->Selection, TerminalFilter->Selection);
+		if (ReportType == rtExcel)
+		{
+			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+			ExcelDataSetsList->AddObject("Sales",(TObject *)dmMMReportData->qrChronological);
+			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+		}
+		else
+		{
+			if (rvMenuMate->SelectReport(ReportName, false))
+			{
+				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+				rvMenuMate->SetParam("ReportRange", DateRange);
+				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+				rvMenuMate->Execute();
+			}
+			else
+			{
+				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+			}
+		}
+	}
 	__finally
 	{
 		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
