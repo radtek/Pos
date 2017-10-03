@@ -2249,7 +2249,13 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
 	if(!result)
 	  MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
     else
-      MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+            MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+        DBTransaction.Commit();
+    }
 	// cleanup
 	delete _lmOperationDialogBox;
 	delete memberCreationThread;
@@ -3002,14 +3008,20 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
+   Database::TDBTransaction DBTransaction1(DBControl);
+   DBTransaction1.StartTransaction();
    if(triggeredForCard)
    {
-   MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+
+      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
+         MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
    }
    else
    {
-      MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
+          MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
    }
+   DBTransaction1.Commit();
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)

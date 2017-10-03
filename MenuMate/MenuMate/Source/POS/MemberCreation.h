@@ -68,6 +68,8 @@ __published:	// IDE-managed Components
 private:	// User declarations
         UnicodeString CustomerInfoPointers[4];
         TMMContactInfo &Info;
+        int CheckEmailInDB(AnsiString email);
+        void RefreshScreen();
 public:		// User declarations
         __fastcall TfrmMemberCreation(TComponent* Owner, TMMContactInfo &info);
         bool Editing;
