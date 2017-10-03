@@ -438,6 +438,7 @@ public:		// User declarations
     AnsiString tinNumber;
     AnsiString serialNo;
     void SetupSubsReport(TDateTime StartTime, TDateTime EndTime);
+	void SetupMezzanineSales(TDateTime StartTime, TDateTime EndTime);
 };
 
 

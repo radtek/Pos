@@ -4456,12 +4456,14 @@ case DAILY_SALES_REPORT:
 
             ReportControl									= new TReportControl;
             ReportControl->PrintReport					= &TfrmReports::PrintMezzanineSales;
-            TSubReport *SubReport0						= ReportControl->AddSubReport("Mezzanine Sales");
-            TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
-            ReportFilter0->Caption						= "Select the date range for the Mezzanine sales report.";
-            SubReport0->AddFilterIndex(0);
+            TSubReport *SubReport1						= ReportControl->AddSubReport("Mezzanine Sales");
+            TReportDateFilter *ReportFilter1			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+            ReportFilter1->Caption						= "Select the date range for the Mezzanine sales report.";
+			ReportFilter1->ShowGST						= false;
+			ReportFilter1->GSTChecked					= false;
+            SubReport1->AddFilterIndex(0);
 
-			ReportControl->AddFilter(ReportFilter0);
+			ReportControl->AddFilter(ReportFilter1);
         }
 
 }
@@ -11247,10 +11249,10 @@ void TfrmReports::PrintSubReports(TReportControl *ReportControl)
 		}
 	}
 }
-/-------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------------- 
 void TfrmReports::PrintMezzanineSales(TReportControl *ReportControl)
 {
-	const AnsiString ReportName = "repMezzanine";
+	const AnsiString ReportName = "repMezzanineSales";
 
 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 	{
@@ -11259,11 +11261,11 @@ void TfrmReports::PrintMezzanineSales(TReportControl *ReportControl)
 	try
 	{
 
-		dmMMReportData->SetupChronological(ReportControl->Start, ReportControl->End, TableFilter->Selection, TabFilter->Selection, TerminalFilter->Selection);
+		dmMMReportData->SetupMezzanineSales(ReportControl->Start, ReportControl->End);
 		if (ReportType == rtExcel)
 		{
 			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-			ExcelDataSetsList->AddObject("Sales",(TObject *)dmMMReportData->qrChronological);
+			ExcelDataSetsList->AddObject("Mezzanine Sales Report",(TObject *)dmMMReportData->qrMezzanine);
 			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
 		}
 		else

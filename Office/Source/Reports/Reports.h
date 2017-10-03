@@ -792,6 +792,7 @@ private:	// User declarations
     void GetStockReceiptList(TReportFilter *ReportFilter);
     void PrintProfitLossSummary(TReportControl *ReportControl);
     void GetStockSupplierList(TReportFilter *ReportFilter);
+    void PrintMezzanineSales(TReportControl *ReportControl);
 public:		// User declarations
 	__fastcall TfrmReports(TComponent* Owner);
     bool SaveReportToFile(AnsiString &EmailFileName );
