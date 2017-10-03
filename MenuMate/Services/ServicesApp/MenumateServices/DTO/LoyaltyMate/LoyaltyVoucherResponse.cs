@@ -40,6 +40,7 @@ namespace MenumateServices.DTO.LoyaltyMate
             var result = new VoucherInfo();
             result.DiscountCode = inVoucherInfo.DiscountCode;
             result.VoucherName = inVoucherInfo.VoucherName;
+            result.VoucherDescription = inVoucherInfo.VoucherDescription;
             result.NumberOfUsesRemaining = inVoucherInfo.NumberOfUsesRemaining;
             return result;
         }

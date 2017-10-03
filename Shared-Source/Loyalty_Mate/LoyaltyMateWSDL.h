@@ -6,10 +6,11 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd0
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (4/02/2015 9:33:26 p.m. - - $Rev: 25127 $)
+// (23/09/2017 10:16:10 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -45,7 +46,7 @@ namespace NS_LoyaltyMateWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also
+// typically map to predefined/known XML or Embarcadero types; however, they could also 
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
@@ -95,10 +96,10 @@ class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
 
 enum class DiscountType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
-  Percent,
-  Dollar,
-  Combo,
-  ItemMode,
+  Percent, 
+  Dollar, 
+  Combo, 
+  ItemMode, 
   SetPrice
 };
 
@@ -111,9 +112,9 @@ __published:
 
 enum class DisplayOption   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
-  FixedDescriptionAndAmount,
-  PromptForDescription,
-  PromptForAmount,
+  FixedDescriptionAndAmount, 
+  PromptForDescription, 
+  PromptForAmount, 
   PromptForDescriptionAndAmount
 };
 
@@ -126,8 +127,8 @@ __published:
 
 enum class ImplicationType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
-  Discount,
-  Surcharge,
+  Discount, 
+  Surcharge, 
   Point
 };
 
@@ -140,8 +141,8 @@ __published:
 
 enum class ProductPriority   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
-  LowestPriceFirst,
-  HighestPriceFirst,
+  LowestPriceFirst, 
+  HighestPriceFirst, 
   NotApllicable
 };
 
@@ -154,19 +155,19 @@ __published:
 
 enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblSmpl] */
 {
-  Successful,
-  AuthenticationFailed,
-  CreateMemberFailed,
-  UpdateMemberFailed,
-  DeleteMemberFailed,
-  GetMemberFailed,
-  PostTransactionFailed,
-  MemberNotExist,
-  CompanySyncFailed,
-  InvalidGiftVoucher,
-  InvalidPocketVoucher,
-  TransactionFailed,
-  GetGiftCardFailed,
+  Successful, 
+  AuthenticationFailed, 
+  CreateMemberFailed, 
+  UpdateMemberFailed, 
+  DeleteMemberFailed, 
+  GetMemberFailed, 
+  PostTransactionFailed, 
+  MemberNotExist, 
+  CompanySyncFailed, 
+  InvalidGiftVoucher, 
+  InvalidPocketVoucher, 
+  TransactionFailed, 
+  GetGiftCardFailed, 
   GetPocketVoucherFailed
 };
 
@@ -194,15 +195,15 @@ private:
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
-  {  return FDescription_Specified;  }
+  {  return FDescription_Specified;  } 
   void __fastcall SetMessage(int Index, UnicodeString _prop_val)
   {  FMessage = _prop_val; FMessage_Specified = true;  }
   bool __fastcall Message_Specified(int Index)
-  {  return FMessage_Specified;  }
+  {  return FMessage_Specified;  } 
   void __fastcall SetSuccessful(int Index, bool _prop_val)
   {  FSuccessful = _prop_val; FSuccessful_Specified = true;  }
   bool __fastcall Successful_Specified(int Index)
-  {  return FSuccessful_Specified;  }
+  {  return FSuccessful_Specified;  } 
 __published:
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
   __property UnicodeString    Message = { index=(IS_OPTN|IS_NLBL), read=FMessage, write=SetMessage, stored = Message_Specified };
@@ -308,151 +309,151 @@ private:
   void __fastcall SetActivated(int Index, bool _prop_val)
   {  FActivated = _prop_val; FActivated_Specified = true;  }
   bool __fastcall Activated_Specified(int Index)
-  {  return FActivated_Specified;  }
+  {  return FActivated_Specified;  } 
   void __fastcall SetAddress1(int Index, UnicodeString _prop_val)
   {  FAddress1 = _prop_val; FAddress1_Specified = true;  }
   bool __fastcall Address1_Specified(int Index)
-  {  return FAddress1_Specified;  }
+  {  return FAddress1_Specified;  } 
   void __fastcall SetAddress2(int Index, UnicodeString _prop_val)
   {  FAddress2 = _prop_val; FAddress2_Specified = true;  }
   bool __fastcall Address2_Specified(int Index)
-  {  return FAddress2_Specified;  }
+  {  return FAddress2_Specified;  } 
   void __fastcall SetAvailableBirthDayPoint(int Index, double _prop_val)
   {  FAvailableBirthDayPoint = _prop_val; FAvailableBirthDayPoint_Specified = true;  }
   bool __fastcall AvailableBirthDayPoint_Specified(int Index)
-  {  return FAvailableBirthDayPoint_Specified;  }
+  {  return FAvailableBirthDayPoint_Specified;  } 
   void __fastcall SetAvailableFirstVisitPoint(int Index, double _prop_val)
   {  FAvailableFirstVisitPoint = _prop_val; FAvailableFirstVisitPoint_Specified = true;  }
   bool __fastcall AvailableFirstVisitPoint_Specified(int Index)
-  {  return FAvailableFirstVisitPoint_Specified;  }
+  {  return FAvailableFirstVisitPoint_Specified;  } 
   void __fastcall SetBirthdayBenefitDate(int Index, TXSDateTime* _prop_val)
   {  FBirthdayBenefitDate = _prop_val; FBirthdayBenefitDate_Specified = true;  }
   bool __fastcall BirthdayBenefitDate_Specified(int Index)
-  {  return FBirthdayBenefitDate_Specified;  }
+  {  return FBirthdayBenefitDate_Specified;  } 
   void __fastcall SetCardNumber(int Index, UnicodeString _prop_val)
   {  FCardNumber = _prop_val; FCardNumber_Specified = true;  }
   bool __fastcall CardNumber_Specified(int Index)
-  {  return FCardNumber_Specified;  }
+  {  return FCardNumber_Specified;  } 
   void __fastcall SetCity(int Index, UnicodeString _prop_val)
   {  FCity = _prop_val; FCity_Specified = true;  }
   bool __fastcall City_Specified(int Index)
-  {  return FCity_Specified;  }
+  {  return FCity_Specified;  } 
   void __fastcall SetCountry(int Index, UnicodeString _prop_val)
   {  FCountry = _prop_val; FCountry_Specified = true;  }
   bool __fastcall Country_Specified(int Index)
-  {  return FCountry_Specified;  }
+  {  return FCountry_Specified;  } 
   void __fastcall SetCurrentYearPoint(int Index, double _prop_val)
   {  FCurrentYearPoint = _prop_val; FCurrentYearPoint_Specified = true;  }
   bool __fastcall CurrentYearPoint_Specified(int Index)
-  {  return FCurrentYearPoint_Specified;  }
+  {  return FCurrentYearPoint_Specified;  } 
   void __fastcall SetDateOfBirth(int Index, TXSDateTime* _prop_val)
   {  FDateOfBirth = _prop_val; FDateOfBirth_Specified = true;  }
   bool __fastcall DateOfBirth_Specified(int Index)
-  {  return FDateOfBirth_Specified;  }
+  {  return FDateOfBirth_Specified;  } 
   void __fastcall SetEarnedPoints(int Index, double _prop_val)
   {  FEarnedPoints = _prop_val; FEarnedPoints_Specified = true;  }
   bool __fastcall EarnedPoints_Specified(int Index)
-  {  return FEarnedPoints_Specified;  }
+  {  return FEarnedPoints_Specified;  } 
   void __fastcall SetEmail(int Index, UnicodeString _prop_val)
   {  FEmail = _prop_val; FEmail_Specified = true;  }
   bool __fastcall Email_Specified(int Index)
-  {  return FEmail_Specified;  }
+  {  return FEmail_Specified;  } 
   void __fastcall SetFirstName(int Index, UnicodeString _prop_val)
   {  FFirstName = _prop_val; FFirstName_Specified = true;  }
   bool __fastcall FirstName_Specified(int Index)
-  {  return FFirstName_Specified;  }
+  {  return FFirstName_Specified;  } 
   void __fastcall SetGender(int Index, int _prop_val)
   {  FGender = _prop_val; FGender_Specified = true;  }
   bool __fastcall Gender_Specified(int Index)
-  {  return FGender_Specified;  }
+  {  return FGender_Specified;  } 
   void __fastcall SetHasTransactions(int Index, bool _prop_val)
   {  FHasTransactions = _prop_val; FHasTransactions_Specified = true;  }
   bool __fastcall HasTransactions_Specified(int Index)
-  {  return FHasTransactions_Specified;  }
+  {  return FHasTransactions_Specified;  } 
   void __fastcall SetHomeSiteId(int Index, __int64 _prop_val)
   {  FHomeSiteId = _prop_val; FHomeSiteId_Specified = true;  }
   bool __fastcall HomeSiteId_Specified(int Index)
-  {  return FHomeSiteId_Specified;  }
+  {  return FHomeSiteId_Specified;  } 
   void __fastcall SetIsFirstVisitRewarded(int Index, bool _prop_val)
   {  FIsFirstVisitRewarded = _prop_val; FIsFirstVisitRewarded_Specified = true;  }
   bool __fastcall IsFirstVisitRewarded_Specified(int Index)
-  {  return FIsFirstVisitRewarded_Specified;  }
+  {  return FIsFirstVisitRewarded_Specified;  } 
   void __fastcall SetLastModified(int Index, TXSDateTime* _prop_val)
   {  FLastModified = _prop_val; FLastModified_Specified = true;  }
   bool __fastcall LastModified_Specified(int Index)
-  {  return FLastModified_Specified;  }
+  {  return FLastModified_Specified;  } 
   void __fastcall SetLastName(int Index, UnicodeString _prop_val)
   {  FLastName = _prop_val; FLastName_Specified = true;  }
   bool __fastcall LastName_Specified(int Index)
-  {  return FLastName_Specified;  }
+  {  return FLastName_Specified;  } 
   void __fastcall SetLastVisitDate(int Index, TXSDateTime* _prop_val)
   {  FLastVisitDate = _prop_val; FLastVisitDate_Specified = true;  }
   bool __fastcall LastVisitDate_Specified(int Index)
-  {  return FLastVisitDate_Specified;  }
+  {  return FLastVisitDate_Specified;  } 
   void __fastcall SetLoadedPoints(int Index, double _prop_val)
   {  FLoadedPoints = _prop_val; FLoadedPoints_Specified = true;  }
   bool __fastcall LoadedPoints_Specified(int Index)
-  {  return FLoadedPoints_Specified;  }
+  {  return FLoadedPoints_Specified;  } 
   void __fastcall SetMemberCardCode(int Index, UnicodeString _prop_val)
   {  FMemberCardCode = _prop_val; FMemberCardCode_Specified = true;  }
   bool __fastcall MemberCardCode_Specified(int Index)
-  {  return FMemberCardCode_Specified;  }
+  {  return FMemberCardCode_Specified;  } 
   void __fastcall SetMemberType(int Index, int _prop_val)
   {  FMemberType = _prop_val; FMemberType_Specified = true;  }
   bool __fastcall MemberType_Specified(int Index)
-  {  return FMemberType_Specified;  }
+  {  return FMemberType_Specified;  } 
   void __fastcall SetMemberVouchers(int Index, ArrayOfVoucherInfo _prop_val)
   {  FMemberVouchers = _prop_val; FMemberVouchers_Specified = true;  }
   bool __fastcall MemberVouchers_Specified(int Index)
-  {  return FMemberVouchers_Specified;  }
+  {  return FMemberVouchers_Specified;  } 
   void __fastcall SetMembershipNumber(int Index, UnicodeString _prop_val)
   {  FMembershipNumber = _prop_val; FMembershipNumber_Specified = true;  }
   bool __fastcall MembershipNumber_Specified(int Index)
-  {  return FMembershipNumber_Specified;  }
+  {  return FMembershipNumber_Specified;  } 
   void __fastcall SetMiddleName(int Index, UnicodeString _prop_val)
   {  FMiddleName = _prop_val; FMiddleName_Specified = true;  }
   bool __fastcall MiddleName_Specified(int Index)
-  {  return FMiddleName_Specified;  }
+  {  return FMiddleName_Specified;  } 
   void __fastcall SetMobile(int Index, UnicodeString _prop_val)
   {  FMobile = _prop_val; FMobile_Specified = true;  }
   bool __fastcall Mobile_Specified(int Index)
-  {  return FMobile_Specified;  }
+  {  return FMobile_Specified;  } 
   void __fastcall SetPhoneNumber(int Index, UnicodeString _prop_val)
   {  FPhoneNumber = _prop_val; FPhoneNumber_Specified = true;  }
   bool __fastcall PhoneNumber_Specified(int Index)
-  {  return FPhoneNumber_Specified;  }
+  {  return FPhoneNumber_Specified;  } 
   void __fastcall SetPointRule(int Index, int _prop_val)
   {  FPointRule = _prop_val; FPointRule_Specified = true;  }
   bool __fastcall PointRule_Specified(int Index)
-  {  return FPointRule_Specified;  }
+  {  return FPointRule_Specified;  } 
   void __fastcall SetPreviousYearPoint(int Index, double _prop_val)
   {  FPreviousYearPoint = _prop_val; FPreviousYearPoint_Specified = true;  }
   bool __fastcall PreviousYearPoint_Specified(int Index)
-  {  return FPreviousYearPoint_Specified;  }
+  {  return FPreviousYearPoint_Specified;  } 
   void __fastcall SetState(int Index, UnicodeString _prop_val)
   {  FState = _prop_val; FState_Specified = true;  }
   bool __fastcall State_Specified(int Index)
-  {  return FState_Specified;  }
+  {  return FState_Specified;  } 
   void __fastcall SetTierId(int Index, __int64 _prop_val)
   {  FTierId = _prop_val; FTierId_Specified = true;  }
   bool __fastcall TierId_Specified(int Index)
-  {  return FTierId_Specified;  }
+  {  return FTierId_Specified;  } 
   void __fastcall SetTitle(int Index, UnicodeString _prop_val)
   {  FTitle = _prop_val; FTitle_Specified = true;  }
   bool __fastcall Title_Specified(int Index)
-  {  return FTitle_Specified;  }
+  {  return FTitle_Specified;  } 
   void __fastcall SetUniqueId(int Index, UnicodeString _prop_val)
   {  FUniqueId = _prop_val; FUniqueId_Specified = true;  }
   bool __fastcall UniqueId_Specified(int Index)
-  {  return FUniqueId_Specified;  }
+  {  return FUniqueId_Specified;  } 
   void __fastcall SetYearStartDate(int Index, TXSDateTime* _prop_val)
   {  FYearStartDate = _prop_val; FYearStartDate_Specified = true;  }
   bool __fastcall YearStartDate_Specified(int Index)
-  {  return FYearStartDate_Specified;  }
+  {  return FYearStartDate_Specified;  } 
   void __fastcall SetZipCode(int Index, UnicodeString _prop_val)
   {  FZipCode = _prop_val; FZipCode_Specified = true;  }
   bool __fastcall ZipCode_Specified(int Index)
-  {  return FZipCode_Specified;  }
+  {  return FZipCode_Specified;  } 
 
 public:
   __fastcall ~MemberInfo();
@@ -509,23 +510,30 @@ private:
   bool            FDiscountCode_Specified;
   int             FNumberOfUsesRemaining;
   bool            FNumberOfUsesRemaining_Specified;
+  UnicodeString   FVoucherDescription;
+  bool            FVoucherDescription_Specified;
   UnicodeString   FVoucherName;
   bool            FVoucherName_Specified;
   void __fastcall SetDiscountCode(int Index, UnicodeString _prop_val)
   {  FDiscountCode = _prop_val; FDiscountCode_Specified = true;  }
   bool __fastcall DiscountCode_Specified(int Index)
-  {  return FDiscountCode_Specified;  }
+  {  return FDiscountCode_Specified;  } 
   void __fastcall SetNumberOfUsesRemaining(int Index, int _prop_val)
   {  FNumberOfUsesRemaining = _prop_val; FNumberOfUsesRemaining_Specified = true;  }
   bool __fastcall NumberOfUsesRemaining_Specified(int Index)
-  {  return FNumberOfUsesRemaining_Specified;  }
+  {  return FNumberOfUsesRemaining_Specified;  } 
+  void __fastcall SetVoucherDescription(int Index, UnicodeString _prop_val)
+  {  FVoucherDescription = _prop_val; FVoucherDescription_Specified = true;  }
+  bool __fastcall VoucherDescription_Specified(int Index)
+  {  return FVoucherDescription_Specified;  } 
   void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
   {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
   bool __fastcall VoucherName_Specified(int Index)
-  {  return FVoucherName_Specified;  }
+  {  return FVoucherName_Specified;  } 
 __published:
   __property UnicodeString DiscountCode = { index=(IS_OPTN|IS_NLBL), read=FDiscountCode, write=SetDiscountCode, stored = DiscountCode_Specified };
   __property int        NumberOfUsesRemaining = { index=(IS_OPTN), read=FNumberOfUsesRemaining, write=SetNumberOfUsesRemaining, stored = NumberOfUsesRemaining_Specified };
+  __property UnicodeString VoucherDescription = { index=(IS_OPTN|IS_NLBL), read=FVoucherDescription, write=SetVoucherDescription, stored = VoucherDescription_Specified };
   __property UnicodeString VoucherName = { index=(IS_OPTN|IS_NLBL), read=FVoucherName, write=SetVoucherName, stored = VoucherName_Specified };
 };
 
@@ -545,11 +553,11 @@ private:
   void __fastcall SetMemberInfo(int Index, MemberInfo* _prop_val)
   {  FMemberInfo = _prop_val; FMemberInfo_Specified = true;  }
   bool __fastcall MemberInfo_Specified(int Index)
-  {  return FMemberInfo_Specified;  }
+  {  return FMemberInfo_Specified;  } 
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
 
 public:
   __fastcall ~LoyaltyMemberResponse();
@@ -576,15 +584,15 @@ private:
   void __fastcall SetRequestKey(int Index, UnicodeString _prop_val)
   {  FRequestKey = _prop_val; FRequestKey_Specified = true;  }
   bool __fastcall RequestKey_Specified(int Index)
-  {  return FRequestKey_Specified;  }
+  {  return FRequestKey_Specified;  } 
   void __fastcall SetRequestTime(int Index, TXSDateTime* _prop_val)
   {  FRequestTime = _prop_val; FRequestTime_Specified = true;  }
   bool __fastcall RequestTime_Specified(int Index)
-  {  return FRequestTime_Specified;  }
+  {  return FRequestTime_Specified;  } 
   void __fastcall SetSiteCode(int Index, __int64 _prop_val)
   {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
   bool __fastcall SiteCode_Specified(int Index)
-  {  return FSiteCode_Specified;  }
+  {  return FSiteCode_Specified;  } 
 
 public:
   __fastcall ~RequestInfo();
@@ -608,7 +616,7 @@ private:
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
 __published:
   __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
 };
@@ -637,27 +645,27 @@ private:
   void __fastcall SetInvoiceNumber(int Index, UnicodeString _prop_val)
   {  FInvoiceNumber = _prop_val; FInvoiceNumber_Specified = true;  }
   bool __fastcall InvoiceNumber_Specified(int Index)
-  {  return FInvoiceNumber_Specified;  }
+  {  return FInvoiceNumber_Specified;  } 
   void __fastcall SetPointsDelta(int Index, double _prop_val)
   {  FPointsDelta = _prop_val; FPointsDelta_Specified = true;  }
   bool __fastcall PointsDelta_Specified(int Index)
-  {  return FPointsDelta_Specified;  }
+  {  return FPointsDelta_Specified;  } 
   void __fastcall SetPointsType(int Index, int _prop_val)
   {  FPointsType = _prop_val; FPointsType_Specified = true;  }
   bool __fastcall PointsType_Specified(int Index)
-  {  return FPointsType_Specified;  }
+  {  return FPointsType_Specified;  } 
   void __fastcall SetSiteCode(int Index, __int64 _prop_val)
   {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
   bool __fastcall SiteCode_Specified(int Index)
-  {  return FSiteCode_Specified;  }
+  {  return FSiteCode_Specified;  } 
   void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
   {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
   bool __fastcall TransactionDate_Specified(int Index)
-  {  return FTransactionDate_Specified;  }
+  {  return FTransactionDate_Specified;  } 
   void __fastcall SetUniqueId(int Index, UnicodeString _prop_val)
   {  FUniqueId = _prop_val; FUniqueId_Specified = true;  }
   bool __fastcall UniqueId_Specified(int Index)
-  {  return FUniqueId_Specified;  }
+  {  return FUniqueId_Specified;  } 
 
 public:
   __fastcall ~TransactionInfo();
@@ -686,11 +694,11 @@ private:
   void __fastcall SetCompanyInfo(int Index, CompanyInfo* _prop_val)
   {  FCompanyInfo = _prop_val; FCompanyInfo_Specified = true;  }
   bool __fastcall CompanyInfo_Specified(int Index)
-  {  return FCompanyInfo_Specified;  }
+  {  return FCompanyInfo_Specified;  } 
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
 
 public:
   __fastcall ~LoyaltyCompanyResponse();
@@ -721,19 +729,19 @@ private:
   void __fastcall SetDiscounts(int Index, ArrayOfDiscountInfo _prop_val)
   {  FDiscounts = _prop_val; FDiscounts_Specified = true;  }
   bool __fastcall Discounts_Specified(int Index)
-  {  return FDiscounts_Specified;  }
+  {  return FDiscounts_Specified;  } 
   void __fastcall SetHasGiftCardsAvailable(int Index, bool _prop_val)
   {  FHasGiftCardsAvailable = _prop_val; FHasGiftCardsAvailable_Specified = true;  }
   bool __fastcall HasGiftCardsAvailable_Specified(int Index)
-  {  return FHasGiftCardsAvailable_Specified;  }
+  {  return FHasGiftCardsAvailable_Specified;  } 
   void __fastcall SetHasPocketVouchersAvailable(int Index, bool _prop_val)
   {  FHasPocketVouchersAvailable = _prop_val; FHasPocketVouchersAvailable_Specified = true;  }
   bool __fastcall HasPocketVouchersAvailable_Specified(int Index)
-  {  return FHasPocketVouchersAvailable_Specified;  }
+  {  return FHasPocketVouchersAvailable_Specified;  } 
   void __fastcall SetTierLevels(int Index, ArrayOfTierLevelInfo _prop_val)
   {  FTierLevels = _prop_val; FTierLevels_Specified = true;  }
   bool __fastcall TierLevels_Specified(int Index)
-  {  return FTierLevels_Specified;  }
+  {  return FTierLevels_Specified;  } 
 
 public:
   __fastcall ~CompanyInfo();
@@ -798,87 +806,87 @@ private:
   void __fastcall SetAppearanceOrder(int Index, int _prop_val)
   {  FAppearanceOrder = _prop_val; FAppearanceOrder_Specified = true;  }
   bool __fastcall AppearanceOrder_Specified(int Index)
-  {  return FAppearanceOrder_Specified;  }
+  {  return FAppearanceOrder_Specified;  } 
   void __fastcall SetCode(int Index, UnicodeString _prop_val)
   {  FCode = _prop_val; FCode_Specified = true;  }
   bool __fastcall Code_Specified(int Index)
-  {  return FCode_Specified;  }
+  {  return FCode_Specified;  } 
   void __fastcall SetDailyUsageAllowedPerMember(int Index, int _prop_val)
   {  FDailyUsageAllowedPerMember = _prop_val; FDailyUsageAllowedPerMember_Specified = true;  }
   bool __fastcall DailyUsageAllowedPerMember_Specified(int Index)
-  {  return FDailyUsageAllowedPerMember_Specified;  }
+  {  return FDailyUsageAllowedPerMember_Specified;  } 
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
-  {  return FDescription_Specified;  }
+  {  return FDescription_Specified;  } 
   void __fastcall SetDiscountGroup(int Index, int _prop_val)
   {  FDiscountGroup = _prop_val; FDiscountGroup_Specified = true;  }
   bool __fastcall DiscountGroup_Specified(int Index)
-  {  return FDiscountGroup_Specified;  }
+  {  return FDiscountGroup_Specified;  } 
   void __fastcall SetDiscountId(int Index, __int64 _prop_val)
   {  FDiscountId = _prop_val; FDiscountId_Specified = true;  }
   bool __fastcall DiscountId_Specified(int Index)
-  {  return FDiscountId_Specified;  }
+  {  return FDiscountId_Specified;  } 
   void __fastcall SetDiscountType(int Index, DiscountType _prop_val)
   {  FDiscountType = _prop_val; FDiscountType_Specified = true;  }
   bool __fastcall DiscountType_Specified(int Index)
-  {  return FDiscountType_Specified;  }
+  {  return FDiscountType_Specified;  } 
   void __fastcall SetDisplayAs(int Index, DisplayOption _prop_val)
   {  FDisplayAs = _prop_val; FDisplayAs_Specified = true;  }
   bool __fastcall DisplayAs_Specified(int Index)
-  {  return FDisplayAs_Specified;  }
+  {  return FDisplayAs_Specified;  } 
   void __fastcall SetImplicationType(int Index, ImplicationType _prop_val)
   {  FImplicationType = _prop_val; FImplicationType_Specified = true;  }
   bool __fastcall ImplicationType_Specified(int Index)
-  {  return FImplicationType_Specified;  }
+  {  return FImplicationType_Specified;  } 
   void __fastcall SetIsAutoMembersDiscount(int Index, bool _prop_val)
   {  FIsAutoMembersDiscount = _prop_val; FIsAutoMembersDiscount_Specified = true;  }
   bool __fastcall IsAutoMembersDiscount_Specified(int Index)
-  {  return FIsAutoMembersDiscount_Specified;  }
+  {  return FIsAutoMembersDiscount_Specified;  } 
   void __fastcall SetIsCategoryFilterApplicable(int Index, bool _prop_val)
   {  FIsCategoryFilterApplicable = _prop_val; FIsCategoryFilterApplicable_Specified = true;  }
   bool __fastcall IsCategoryFilterApplicable_Specified(int Index)
-  {  return FIsCategoryFilterApplicable_Specified;  }
+  {  return FIsCategoryFilterApplicable_Specified;  } 
   void __fastcall SetIsMemberExemptDiscount(int Index, bool _prop_val)
   {  FIsMemberExemptDiscount = _prop_val; FIsMemberExemptDiscount_Specified = true;  }
   bool __fastcall IsMemberExemptDiscount_Specified(int Index)
-  {  return FIsMemberExemptDiscount_Specified;  }
+  {  return FIsMemberExemptDiscount_Specified;  } 
   void __fastcall SetIsMembersOnlyDiscount(int Index, bool _prop_val)
   {  FIsMembersOnlyDiscount = _prop_val; FIsMembersOnlyDiscount_Specified = true;  }
   bool __fastcall IsMembersOnlyDiscount_Specified(int Index)
-  {  return FIsMembersOnlyDiscount_Specified;  }
+  {  return FIsMembersOnlyDiscount_Specified;  } 
   void __fastcall SetMaximumNumberOfItemsAllowed(int Index, int _prop_val)
   {  FMaximumNumberOfItemsAllowed = _prop_val; FMaximumNumberOfItemsAllowed_Specified = true;  }
   bool __fastcall MaximumNumberOfItemsAllowed_Specified(int Index)
-  {  return FMaximumNumberOfItemsAllowed_Specified;  }
+  {  return FMaximumNumberOfItemsAllowed_Specified;  } 
   void __fastcall SetMaximumValue(int Index, TXSDecimal* _prop_val)
   {  FMaximumValue = _prop_val; FMaximumValue_Specified = true;  }
   bool __fastcall MaximumValue_Specified(int Index)
-  {  return FMaximumValue_Specified;  }
+  {  return FMaximumValue_Specified;  } 
   void __fastcall SetMinimumNumberOfItemsAllowed(int Index, int _prop_val)
   {  FMinimumNumberOfItemsAllowed = _prop_val; FMinimumNumberOfItemsAllowed_Specified = true;  }
   bool __fastcall MinimumNumberOfItemsAllowed_Specified(int Index)
-  {  return FMinimumNumberOfItemsAllowed_Specified;  }
+  {  return FMinimumNumberOfItemsAllowed_Specified;  } 
   void __fastcall SetName(int Index, UnicodeString _prop_val)
   {  FName = _prop_val; FName_Specified = true;  }
   bool __fastcall Name_Specified(int Index)
-  {  return FName_Specified;  }
+  {  return FName_Specified;  } 
   void __fastcall SetPriorityOrder(int Index, int _prop_val)
   {  FPriorityOrder = _prop_val; FPriorityOrder_Specified = true;  }
   bool __fastcall PriorityOrder_Specified(int Index)
-  {  return FPriorityOrder_Specified;  }
+  {  return FPriorityOrder_Specified;  } 
   void __fastcall SetProductPriority(int Index, ProductPriority _prop_val)
   {  FProductPriority = _prop_val; FProductPriority_Specified = true;  }
   bool __fastcall ProductPriority_Specified(int Index)
-  {  return FProductPriority_Specified;  }
+  {  return FProductPriority_Specified;  } 
   void __fastcall SetRoundToDecimalPlaces(int Index, TXSDecimal* _prop_val)
   {  FRoundToDecimalPlaces = _prop_val; FRoundToDecimalPlaces_Specified = true;  }
   bool __fastcall RoundToDecimalPlaces_Specified(int Index)
-  {  return FRoundToDecimalPlaces_Specified;  }
+  {  return FRoundToDecimalPlaces_Specified;  } 
   void __fastcall SetValue(int Index, TXSDecimal* _prop_val)
   {  FValue = _prop_val; FValue_Specified = true;  }
   bool __fastcall Value_Specified(int Index)
-  {  return FValue_Specified;  }
+  {  return FValue_Specified;  } 
 
 public:
   __fastcall ~DiscountInfo();
@@ -942,51 +950,51 @@ private:
   void __fastcall SetAllowEarntLoyaltyRedemption(int Index, bool _prop_val)
   {  FAllowEarntLoyaltyRedemption = _prop_val; FAllowEarntLoyaltyRedemption_Specified = true;  }
   bool __fastcall AllowEarntLoyaltyRedemption_Specified(int Index)
-  {  return FAllowEarntLoyaltyRedemption_Specified;  }
+  {  return FAllowEarntLoyaltyRedemption_Specified;  } 
   void __fastcall SetBirthdayBonus(int Index, double _prop_val)
   {  FBirthdayBonus = _prop_val; FBirthdayBonus_Specified = true;  }
   bool __fastcall BirthdayBonus_Specified(int Index)
-  {  return FBirthdayBonus_Specified;  }
+  {  return FBirthdayBonus_Specified;  } 
   void __fastcall SetChangeCard(int Index, bool _prop_val)
   {  FChangeCard = _prop_val; FChangeCard_Specified = true;  }
   bool __fastcall ChangeCard_Specified(int Index)
-  {  return FChangeCard_Specified;  }
+  {  return FChangeCard_Specified;  } 
   void __fastcall SetLevel(int Index, int _prop_val)
   {  FLevel = _prop_val; FLevel_Specified = true;  }
   bool __fastcall Level_Specified(int Index)
-  {  return FLevel_Specified;  }
+  {  return FLevel_Specified;  } 
   void __fastcall SetName(int Index, UnicodeString _prop_val)
   {  FName = _prop_val; FName_Specified = true;  }
   bool __fastcall Name_Specified(int Index)
-  {  return FName_Specified;  }
+  {  return FName_Specified;  } 
   void __fastcall SetPointsRequired(int Index, double _prop_val)
   {  FPointsRequired = _prop_val; FPointsRequired_Specified = true;  }
   bool __fastcall PointsRequired_Specified(int Index)
-  {  return FPointsRequired_Specified;  }
+  {  return FPointsRequired_Specified;  } 
   void __fastcall SetPricedRedemptionRate(int Index, double _prop_val)
   {  FPricedRedemptionRate = _prop_val; FPricedRedemptionRate_Specified = true;  }
   bool __fastcall PricedRedemptionRate_Specified(int Index)
-  {  return FPricedRedemptionRate_Specified;  }
+  {  return FPricedRedemptionRate_Specified;  } 
   void __fastcall SetSendMailToHeadOffice(int Index, bool _prop_val)
   {  FSendMailToHeadOffice = _prop_val; FSendMailToHeadOffice_Specified = true;  }
   bool __fastcall SendMailToHeadOffice_Specified(int Index)
-  {  return FSendMailToHeadOffice_Specified;  }
+  {  return FSendMailToHeadOffice_Specified;  } 
   void __fastcall SetSendMailToMember(int Index, bool _prop_val)
   {  FSendMailToMember = _prop_val; FSendMailToMember_Specified = true;  }
   bool __fastcall SendMailToMember_Specified(int Index)
-  {  return FSendMailToMember_Specified;  }
+  {  return FSendMailToMember_Specified;  } 
   void __fastcall SetTierId(int Index, int _prop_val)
   {  FTierId = _prop_val; FTierId_Specified = true;  }
   bool __fastcall TierId_Specified(int Index)
-  {  return FTierId_Specified;  }
+  {  return FTierId_Specified;  } 
   void __fastcall SetWeighedRedemptionPoints(int Index, double _prop_val)
   {  FWeighedRedemptionPoints = _prop_val; FWeighedRedemptionPoints_Specified = true;  }
   bool __fastcall WeighedRedemptionPoints_Specified(int Index)
-  {  return FWeighedRedemptionPoints_Specified;  }
+  {  return FWeighedRedemptionPoints_Specified;  } 
   void __fastcall SetWeighedRedemptionWeight(int Index, double _prop_val)
   {  FWeighedRedemptionWeight = _prop_val; FWeighedRedemptionWeight_Specified = true;  }
   bool __fastcall WeighedRedemptionWeight_Specified(int Index)
-  {  return FWeighedRedemptionWeight_Specified;  }
+  {  return FWeighedRedemptionWeight_Specified;  } 
 __published:
   __property bool       AllowEarntLoyaltyRedemption = { index=(IS_OPTN), read=FAllowEarntLoyaltyRedemption, write=SetAllowEarntLoyaltyRedemption, stored = AllowEarntLoyaltyRedemption_Specified };
   __property double     BirthdayBonus = { index=(IS_OPTN), read=FBirthdayBonus, write=SetBirthdayBonus, stored = BirthdayBonus_Specified };
@@ -1018,11 +1026,11 @@ private:
   void __fastcall SetGiftCardInfo(int Index, GiftCardInfo* _prop_val)
   {  FGiftCardInfo = _prop_val; FGiftCardInfo_Specified = true;  }
   bool __fastcall GiftCardInfo_Specified(int Index)
-  {  return FGiftCardInfo_Specified;  }
+  {  return FGiftCardInfo_Specified;  } 
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
 
 public:
   __fastcall ~LoyaltyGiftCardResponse();
@@ -1055,27 +1063,27 @@ private:
   void __fastcall SetExpiryDate(int Index, TXSDateTime* _prop_val)
   {  FExpiryDate = _prop_val; FExpiryDate_Specified = true;  }
   bool __fastcall ExpiryDate_Specified(int Index)
-  {  return FExpiryDate_Specified;  }
+  {  return FExpiryDate_Specified;  } 
   void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
   {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
   bool __fastcall GiftCardNumber_Specified(int Index)
-  {  return FGiftCardNumber_Specified;  }
+  {  return FGiftCardNumber_Specified;  } 
   void __fastcall SetPointBalance(int Index, double _prop_val)
   {  FPointBalance = _prop_val; FPointBalance_Specified = true;  }
   bool __fastcall PointBalance_Specified(int Index)
-  {  return FPointBalance_Specified;  }
+  {  return FPointBalance_Specified;  } 
   void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
   {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
   bool __fastcall ResponseMessage_Specified(int Index)
-  {  return FResponseMessage_Specified;  }
+  {  return FResponseMessage_Specified;  } 
   void __fastcall SetStartDate(int Index, TXSDateTime* _prop_val)
   {  FStartDate = _prop_val; FStartDate_Specified = true;  }
   bool __fastcall StartDate_Specified(int Index)
-  {  return FStartDate_Specified;  }
+  {  return FStartDate_Specified;  } 
   void __fastcall SetStatusCode(int Index, int _prop_val)
   {  FStatusCode = _prop_val; FStatusCode_Specified = true;  }
   bool __fastcall StatusCode_Specified(int Index)
-  {  return FStatusCode_Specified;  }
+  {  return FStatusCode_Specified;  } 
 
 public:
   __fastcall ~GiftCardInfo();
@@ -1104,11 +1112,11 @@ private:
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
   void __fastcall SetVoucherInfo(int Index, VoucherInfo* _prop_val)
   {  FVoucherInfo = _prop_val; FVoucherInfo_Specified = true;  }
   bool __fastcall VoucherInfo_Specified(int Index)
-  {  return FVoucherInfo_Specified;  }
+  {  return FVoucherInfo_Specified;  } 
 
 public:
   __fastcall ~LoyaltyVoucherResponse();
@@ -1160,63 +1168,63 @@ private:
   void __fastcall SetDiscountUsages(int Index, ArrayOfDiscountUsageInfo _prop_val)
   {  FDiscountUsages = _prop_val; FDiscountUsages_Specified = true;  }
   bool __fastcall DiscountUsages_Specified(int Index)
-  {  return FDiscountUsages_Specified;  }
+  {  return FDiscountUsages_Specified;  } 
   void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
   {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
   bool __fastcall GiftCardNumber_Specified(int Index)
-  {  return FGiftCardNumber_Specified;  }
+  {  return FGiftCardNumber_Specified;  } 
   void __fastcall SetInvoiceNumber(int Index, UnicodeString _prop_val)
   {  FInvoiceNumber = _prop_val; FInvoiceNumber_Specified = true;  }
   bool __fastcall InvoiceNumber_Specified(int Index)
-  {  return FInvoiceNumber_Specified;  }
+  {  return FInvoiceNumber_Specified;  } 
   void __fastcall SetMemberUniqueId(int Index, UnicodeString _prop_val)
   {  FMemberUniqueId = _prop_val; FMemberUniqueId_Specified = true;  }
   bool __fastcall MemberUniqueId_Specified(int Index)
-  {  return FMemberUniqueId_Specified;  }
+  {  return FMemberUniqueId_Specified;  } 
   void __fastcall SetMemberVoucherDiscountAmount(int Index, double _prop_val)
   {  FMemberVoucherDiscountAmount = _prop_val; FMemberVoucherDiscountAmount_Specified = true;  }
   bool __fastcall MemberVoucherDiscountAmount_Specified(int Index)
-  {  return FMemberVoucherDiscountAmount_Specified;  }
+  {  return FMemberVoucherDiscountAmount_Specified;  } 
   void __fastcall SetPocketVoucherDiscountAmount(int Index, double _prop_val)
   {  FPocketVoucherDiscountAmount = _prop_val; FPocketVoucherDiscountAmount_Specified = true;  }
   bool __fastcall PocketVoucherDiscountAmount_Specified(int Index)
-  {  return FPocketVoucherDiscountAmount_Specified;  }
+  {  return FPocketVoucherDiscountAmount_Specified;  } 
   void __fastcall SetPocketVoucherNumber(int Index, UnicodeString _prop_val)
   {  FPocketVoucherNumber = _prop_val; FPocketVoucherNumber_Specified = true;  }
   bool __fastcall PocketVoucherNumber_Specified(int Index)
-  {  return FPocketVoucherNumber_Specified;  }
+  {  return FPocketVoucherNumber_Specified;  } 
   void __fastcall SetPointsPurchased(int Index, double _prop_val)
   {  FPointsPurchased = _prop_val; FPointsPurchased_Specified = true;  }
   bool __fastcall PointsPurchased_Specified(int Index)
-  {  return FPointsPurchased_Specified;  }
+  {  return FPointsPurchased_Specified;  } 
   void __fastcall SetPointsRedeemed(int Index, double _prop_val)
   {  FPointsRedeemed = _prop_val; FPointsRedeemed_Specified = true;  }
   bool __fastcall PointsRedeemed_Specified(int Index)
-  {  return FPointsRedeemed_Specified;  }
+  {  return FPointsRedeemed_Specified;  } 
   void __fastcall SetPurchasedGiftCardNumber(int Index, UnicodeString _prop_val)
   {  FPurchasedGiftCardNumber = _prop_val; FPurchasedGiftCardNumber_Specified = true;  }
   bool __fastcall PurchasedGiftCardNumber_Specified(int Index)
-  {  return FPurchasedGiftCardNumber_Specified;  }
+  {  return FPurchasedGiftCardNumber_Specified;  } 
   void __fastcall SetSiteCode(int Index, __int64 _prop_val)
   {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
   bool __fastcall SiteCode_Specified(int Index)
-  {  return FSiteCode_Specified;  }
+  {  return FSiteCode_Specified;  } 
   void __fastcall SetTotalSaleAmount(int Index, double _prop_val)
   {  FTotalSaleAmount = _prop_val; FTotalSaleAmount_Specified = true;  }
   bool __fastcall TotalSaleAmount_Specified(int Index)
-  {  return FTotalSaleAmount_Specified;  }
+  {  return FTotalSaleAmount_Specified;  } 
   void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
   {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
   bool __fastcall TransactionDate_Specified(int Index)
-  {  return FTransactionDate_Specified;  }
+  {  return FTransactionDate_Specified;  } 
   void __fastcall SetTransactionReferenceNumber(int Index, UnicodeString _prop_val)
   {  FTransactionReferenceNumber = _prop_val; FTransactionReferenceNumber_Specified = true;  }
   bool __fastcall TransactionReferenceNumber_Specified(int Index)
-  {  return FTransactionReferenceNumber_Specified;  }
+  {  return FTransactionReferenceNumber_Specified;  } 
   void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
   {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
   bool __fastcall VoucherName_Specified(int Index)
-  {  return FVoucherName_Specified;  }
+  {  return FVoucherName_Specified;  } 
 
 public:
   __fastcall ~VoucherTransactionInfo();
@@ -1254,11 +1262,11 @@ private:
   void __fastcall SetDiscountAmount(int Index, double _prop_val)
   {  FDiscountAmount = _prop_val; FDiscountAmount_Specified = true;  }
   bool __fastcall DiscountAmount_Specified(int Index)
-  {  return FDiscountAmount_Specified;  }
+  {  return FDiscountAmount_Specified;  } 
   void __fastcall SetDiscountCode(int Index, UnicodeString _prop_val)
   {  FDiscountCode = _prop_val; FDiscountCode_Specified = true;  }
   bool __fastcall DiscountCode_Specified(int Index)
-  {  return FDiscountCode_Specified;  }
+  {  return FDiscountCode_Specified;  } 
 __published:
   __property double     DiscountAmount = { index=(IS_OPTN), read=FDiscountAmount, write=SetDiscountAmount, stored = DiscountAmount_Specified };
   __property UnicodeString DiscountCode = { index=(IS_OPTN|IS_NLBL), read=FDiscountCode, write=SetDiscountCode, stored = DiscountCode_Specified };
@@ -1280,11 +1288,11 @@ private:
   void __fastcall SetGiftCardExpiryDate(int Index, TXSDateTime* _prop_val)
   {  FGiftCardExpiryDate = _prop_val; FGiftCardExpiryDate_Specified = true;  }
   bool __fastcall GiftCardExpiryDate_Specified(int Index)
-  {  return FGiftCardExpiryDate_Specified;  }
+  {  return FGiftCardExpiryDate_Specified;  } 
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  {  return FResponseCode_Specified;  } 
 
 public:
   __fastcall ~VoucherTransactionResponse();
@@ -1315,23 +1323,23 @@ private:
   void __fastcall SetDiscountCodes(int Index, ArrayOfDiscountUsageInfo _prop_val)
   {  FDiscountCodes = _prop_val; FDiscountCodes_Specified = true;  }
   bool __fastcall DiscountCodes_Specified(int Index)
-  {  return FDiscountCodes_Specified;  }
+  {  return FDiscountCodes_Specified;  } 
   void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
   {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
   bool __fastcall GiftCardNumber_Specified(int Index)
-  {  return FGiftCardNumber_Specified;  }
+  {  return FGiftCardNumber_Specified;  } 
   void __fastcall SetPocketVoucherNumber(int Index, UnicodeString _prop_val)
   {  FPocketVoucherNumber = _prop_val; FPocketVoucherNumber_Specified = true;  }
   bool __fastcall PocketVoucherNumber_Specified(int Index)
-  {  return FPocketVoucherNumber_Specified;  }
+  {  return FPocketVoucherNumber_Specified;  } 
   void __fastcall SetTransactionReferenceNumber(int Index, UnicodeString _prop_val)
   {  FTransactionReferenceNumber = _prop_val; FTransactionReferenceNumber_Specified = true;  }
   bool __fastcall TransactionReferenceNumber_Specified(int Index)
-  {  return FTransactionReferenceNumber_Specified;  }
+  {  return FTransactionReferenceNumber_Specified;  } 
   void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
   {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
   bool __fastcall VoucherName_Specified(int Index)
-  {  return FVoucherName_Specified;  }
+  {  return FVoucherName_Specified;  } 
 
 public:
   __fastcall ~ReleasedVoucherInfo();
@@ -1562,17 +1570,17 @@ __published:
 __interface INTERFACE_UUID("{57F4745D-2B20-3175-961E-BD77B1A09506}") IWCFServiceLoyaltyMate : public IInvokable
 {
 public:
-  virtual LoyaltyMemberResponse* SaveMember(const UnicodeString inSyndicateCode, const MemberInfo* inInfo) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByUniqueId(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByCardCode(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByEmail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual LoyaltyResponse* UpdateMemberCardCode(const UnicodeString inSyndicateCode, const UnicodeString uniqueId, const UnicodeString memberCardCode) = 0;
-  virtual LoyaltyResponse* PostTransaction(const UnicodeString inSyndicateCode, const TransactionInfo* transaction) = 0;
-  virtual LoyaltyCompanyResponse* GetCompanyInformation(const UnicodeString inSyndicateCode) = 0;
-  virtual LoyaltyGiftCardResponse* GetGiftCardBalance(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0;
-  virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0;
+  virtual LoyaltyMemberResponse* SaveMember(const UnicodeString inSyndicateCode, const MemberInfo* inInfo) = 0; 
+  virtual LoyaltyMemberResponse* GetMemberByUniqueId(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
+  virtual LoyaltyMemberResponse* GetMemberByCardCode(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
+  virtual LoyaltyMemberResponse* GetMemberByEmail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
+  virtual LoyaltyResponse* UpdateMemberCardCode(const UnicodeString inSyndicateCode, const UnicodeString uniqueId, const UnicodeString memberCardCode) = 0; 
+  virtual LoyaltyResponse* PostTransaction(const UnicodeString inSyndicateCode, const TransactionInfo* transaction) = 0; 
+  virtual LoyaltyCompanyResponse* GetCompanyInformation(const UnicodeString inSyndicateCode) = 0; 
+  virtual LoyaltyGiftCardResponse* GetGiftCardBalance(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
+  virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
+  virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0; 
+  virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 
@@ -1581,7 +1589,6 @@ _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiStr
 
 };     // NS__
 
-
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS_LoyaltyMateWSDL;
 #endif
@@ -1589,4 +1596,3 @@ using  namespace NS_LoyaltyMateWSDL;
 
 
 #endif // _H
-

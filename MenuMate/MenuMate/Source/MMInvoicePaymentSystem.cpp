@@ -234,6 +234,7 @@ void TMMInvoicePaymentSystem::_processMultipleInvoicePartialPayTransaction( TPay
                         {
                             TPaymentTransaction RemainingOrderTransaction(MasterPaymentTransaction.DBTransaction);
                             RemainingOrderTransaction.Orders->Add(SplittedItem);
+                            RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                             RemainingOrderTransaction.Recalc();
                             // Save off the cloned orders with whats left of the partial payment.
                             //insert only splitted order because it's quantity is changed
@@ -362,6 +363,7 @@ void TMMInvoicePaymentSystem::_processMultipleInvoiceSplitPayTransaction( TPayme
                               //Calculate DWT , Tax on discount on remaining quantities
                                 TPaymentTransaction RemainingOrderTransaction(MasterPaymentTransaction.DBTransaction);
                                 RemainingOrderTransaction.Orders->Add(SplittedItem);
+                                RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                                 RemainingOrderTransaction.Recalc();
 
                                 SplittedItem->OrderKey = 0;

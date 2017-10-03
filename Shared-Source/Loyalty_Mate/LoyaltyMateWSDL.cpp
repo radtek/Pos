@@ -6,10 +6,11 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd0
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (4/02/2015 9:33:26 p.m. - - $Rev: 25127 $)
+// (23/09/2017 10:16:10 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -18,7 +19,6 @@
 #if !defined(_H)
 #include "LoyaltyMateWSDL.h"
 #endif
-
 
 
 

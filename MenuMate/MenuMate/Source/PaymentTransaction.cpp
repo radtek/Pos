@@ -67,6 +67,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     TaxOnClippDiscount = 0;
     ServiceChargeWithTax = 0;
     IsVouchersProcessed = false;
+    IgnoreLoyaltyKey = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -653,7 +654,8 @@ void TPaymentTransaction::Recalc()
       for (int i=0; i < Orders->Count; i++)
       {
          TItemComplete *Order = (TItemComplete *) Orders->Items[i];
-		 Order->Loyalty_Key = Membership.Member.ContactKey;
+         if(!IgnoreLoyaltyKey)
+    		 Order->Loyalty_Key = Membership.Member.ContactKey;
          if(SalesType != eAccount)
          { // Do not do this for invoices.
 		 	Order->ResetPrice();
@@ -671,7 +673,8 @@ void TPaymentTransaction::Recalc()
              {
                 CurrentSubOrder->ClearAllDiscounts();
              }
-            CurrentSubOrder->Loyalty_Key = Membership.Member.ContactKey;
+
+                CurrentSubOrder->Loyalty_Key = Order->Loyalty_Key;//Membership.Member.ContactKey;
             if(SalesType != eAccount)
             { // Do not do this for invoices.
                CurrentSubOrder->ResetPrice();

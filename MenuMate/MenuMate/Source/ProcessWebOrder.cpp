@@ -203,7 +203,7 @@ void TfrmProcessWebOrder::ShowReceipt()
             ReceiptTransaction.Membership.Assign(webMemberInfo, MemberSource);
             TempReceipt->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
 		}
-
+        ReceiptTransaction.IgnoreLoyaltyKey = false;
 		ReceiptTransaction.Recalc();
 
 		TStringList *TabHistory = new TStringList;
