@@ -57,6 +57,7 @@ void TApplyParser::update6_43Tables()
     int settingID[1] = {27};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 1, 2);
     CreateMezzanineAreaTable6_43(_dbControl);
+    CreateMezzanineSalesTable6_43(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -373,5 +374,32 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
 
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_TABLE_ID TO 0;", inDBControl
+        );
+    }}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineSalesTable6_43(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_SALES", _dbControl ) )	{
+		executeQuery(
+		"CREATE TABLE MEZZANINE_SALES "
+		"( "
+		"   SALES_ID INTEGER PRIMARY KEY,"
+		"   TABLE_NUMBER INTEGER, "
+        "   GROSS_SALES NUMERIC(15,4), "
+        "   TIME_STAMP_BILLED TIMESTAMP, "
+        "   PWD NUMERIC(17,4), "
+        "   SCD NUMERIC(17,4), "
+        "   OTHER_DISCOUNTS NUMERIC(17,4), "
+        "   VAT_EXEMPT_SALES NUMERIC(17,4), "
+        "   SERVICE_CHARGE NUMERIC(17,4), "
+        "   VAT NUMERIC(17,4), "
+        "   LOCATION_ID INTEGER, "
+        "   TERMINAL_NAME VARCHAR(22), "
+        "   Z_KEY INTEGER "
+		");",
+		inDBControl );
+	}    if(!generatorExists("GEN_MEZZANINE_SALES_ID", _dbControl))    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MEZZANINE_SALES_ID;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_MEZZANINE_SALES_ID TO 0;", inDBControl
         );
     }}}

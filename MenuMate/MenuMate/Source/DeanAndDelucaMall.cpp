@@ -50,6 +50,16 @@ void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
    _totalSCDAndPWDAmount = totalSCDAndPWDAmount;
 }
 //------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetSCDDiscount(double totalSCDAmount)
+{
+   _scdAmount = totalSCDAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetPWDDiscount(double totalPWDAmount)
+{
+   _pwdAmount = totalPWDAmount;
+}
+//------------------------------------------------------------------------------------------
  void TDeanAndDelucaMallField::SetOtherDiscount(double totalOtherDiscount)
 {
     _totalOtherDiscount = totalOtherDiscount;
@@ -1201,6 +1211,8 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     discounts.scdDiscount = order->GetQty() > 0.00 ? fabs(discounts.scdDiscount) : discounts.scdDiscount*-1;
     discounts.pwdDiscount = order->GetQty() > 0.00 ? fabs(discounts.pwdDiscount) : discounts.pwdDiscount*-1;
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
+    fieldData.TotalSCDAmount += discounts.scdDiscount;
+    fieldData.TotalPWDAmount += discounts.pwdDiscount;
     fieldData.TotalOtherDiscount += order->GetQty() > 0.00 ? fabs(discounts.otherDiscount) : discounts.otherDiscount*-1;
     fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
     fieldData.TotalServiceCharge += taxes.serviceCharge;
