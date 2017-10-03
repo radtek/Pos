@@ -30,7 +30,7 @@ object frmScales: TfrmScales
     object Label2: TLabel
       Left = 16
       Top = 190
-      Width = 132
+      Width = 118
       Height = 24
       Caption = 'Unit Price/kg'
       Font.Charset = DEFAULT_CHARSET
