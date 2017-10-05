@@ -113,6 +113,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO">
       <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
     </Reference>
@@ -184,6 +185,7 @@
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -212,6 +214,12 @@
     </Compile>
     <Compile Include="MenumateServiceSalesForce.Designer.cs">
       <DependentUpon>MenumateServiceSalesForce.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceSmartConnect.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSmartConnect.Designer.cs">
+      <DependentUpon>MenumateServiceSmartConnect.cs</DependentUpon>
     </Compile>
     <Compile Include="MenumateServiceThorlink.cs">
       <SubType>Component</SubType>
@@ -365,6 +373,7 @@
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
+    <Compile Include="WCFServices\IWCFSmartConnect.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
@@ -386,6 +395,7 @@
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WCFServices\WCFServiceSmartConnect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
