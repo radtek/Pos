@@ -3232,6 +3232,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Split Bill on Menu type basis"
                  "Default is False.",
                   vmgPOS, false);
+        SetVarBool(DBTransaction, vmIsFastTenderEnabled, "Enable Fast Tender",
+                 "Enable Fast Tender"
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

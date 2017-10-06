@@ -530,7 +530,12 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 	tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
 	tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
 	tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
-	tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
+    if(!(TDeviceRealTerminal::Instance().BasePMS->Registered &&
+        TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled))
+	    tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
+    else
+        tbtnDollar5->Caption = "Room";
     setParkedSalesBtnColor();
 	SetGridColors(tgridOrderCourse);
     SetGridColors(tgridServingCourse);
@@ -3414,6 +3419,17 @@ void __fastcall TfrmSelectDish::HighlightSelectedItem()
 		lbDisplay->Selected[lbDisplay->ItemIndex] = true;
 	}
 }
+//----------------------------------------------------------------------------
+void TfrmSelectDish::FillPMSRoomDetails(TPaymentTransaction &PaymentTransaction)
+{
+    PaymentTransaction.Phoenix.AccountNumber = SiHotAccounts[0].AccountNumber;
+    PaymentTransaction.Phoenix.AccountName   = SiHotAccounts[0].AccountDetails[0].FirstName + " " +
+                                               SiHotAccounts[0].AccountDetails[0].LastName;
+    PaymentTransaction.Phoenix.FolderNumber  = 1;
+    PaymentTransaction.SalesType = eRoomSale;
+    PaymentTransaction.Phoenix.RoomNumber = SiHotAccounts[0].AccountDetails[0].RoomNumber;
+    PaymentTransaction.Customer.RoomNumber = atoi(((AnsiString)SiHotAccounts[0].AccountDetails[0].RoomNumber).c_str());
+}
 // ---------------------------------------------------------------------------
 bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DBTransaction, int SelectedTab, TMMTabType TabType, AnsiString TabContainerName, AnsiString TabName,
 	AnsiString PartyName, bool PrintPrelim, int TableNo, int SeatNo, int RoomNo, bool BillOff,AnsiString DelayedInvoiceNumber)
@@ -3422,6 +3438,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     bool order_was_resumed_via_hold_and_send = false;
     bool PaymentComplete = false;
     TPaymentTransaction PaymentTransaction(DBTransaction);
+    if(SiHotAccounts.size() > 0)
+        FillPMSRoomDetails(PaymentTransaction);
     PaymentTransaction.PartyName = PartyName;
     AnsiString BeveragesInvoiceNumber = "";
     bool isBeveragesInvGenerated = false;
@@ -3523,7 +3541,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				    Order->TabName = BevTabName;
                     Order->TabContainerName = BevTabName;
                 }
-
+                if(SiHotAccounts.size() > 0)
+                {
+                    Order->TabContainerName = SiHotAccounts[0].AccountDetails[0].RoomNumber;
+                    Order->TabName = SiHotAccounts[0].AccountDetails[0].RoomNumber;
+                    Order->TabType = TabRoom;
+                    Order->RoomNo = atoi(((AnsiString)SiHotAccounts[0].AccountDetails[0].RoomNumber).c_str());
+                }
 				OrdersList->Add(Order);
 
 				// Complete Order Security.
@@ -3562,6 +3586,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		PaymentTransaction.Membership.Assign(Membership);
 		PaymentTransaction.Orders->Assign(OrdersList.get());
 		PaymentTransaction.Recalc();
+
 		// --------------------------------------------------------------------
 
 		if (OrdersList->Count > 0 || Sender == tbtnTender)
@@ -4366,49 +4391,102 @@ void __fastcall TfrmSelectDish::btnDollarMouseUp(TObject *Sender, TMouseButton B
 
     if ((Btn = dynamic_cast<TTouchBtn*>(Sender)) != NULL)
     {
-        double amount = 0;
-     //   UnicodeString _str = Btn->Caption;
-     //   AnsiString _astr = _str;
-     //   RemoveCharsFromString( Btn->Caption.c_str(), "," );
-         do
-         {
-            pos = Btn->Caption.Pos( "," );
-            Btn->Caption = Btn->Caption.Delete( pos, 1 );   // Remove all commas
-         }
-	     while( pos > 0 );
-
-        if (!TryStrToFloat(Btn->Caption,amount))
+        if(IsQuickRoomEnabled(Btn->Caption))
         {
-           if (SeatOrders[0]->Orders->Count > 0)
-            {
-               if(SaveTransactionDetails(UnicodeString(Btn->Caption))) //
-               {
-                 ProcessQuickPayment(Sender,Btn->Caption);
-               }
-
-            }
-           else
-           {
-              	MessageBox("Nothing to Bill.", "Info", MB_OK + MB_ICONINFORMATION);
-           }
+            // do communication with SiHot
+            GetPMSRoomQuick();
         }
         else
         {
-            if (Btn->Tag == 0) // Toggle
+            double amount = 0;
+            do
             {
-                if (SeatOrders[0]->Orders->Count > 0)
-                {
-                        CurrentTender += BtnCaptionToCurrency( Btn );
-                        tbtnTender->Caption = "Tender " + CurrToStrF(CurrentTender, ffNumber, CurrencyDecimals);
-                        tbtnCashSale->Caption = "Clear Tender";
-                        tbtnCashSale->Enabled = true;
-                        TotalCosts();
-                        UpdateExternalDevices();
-                }
+               pos = Btn->Caption.Pos( "," );
+               Btn->Caption = Btn->Caption.Delete( pos, 1 );   // Remove all commas
             }
-            Btn->Tag = 0;
+            while( pos > 0 );
+
+            if (!TryStrToFloat(Btn->Caption,amount))
+            {
+               if (SeatOrders[0]->Orders->Count > 0)
+                {
+                   if(SaveTransactionDetails(UnicodeString(Btn->Caption))) //
+                   {
+                     ProcessQuickPayment(Sender,Btn->Caption);
+                   }
+
+                }
+               else
+               {
+                    MessageBox("Nothing to Bill.", "Info", MB_OK + MB_ICONINFORMATION);
+               }
+            }
+            else
+            {
+                if (Btn->Tag == 0) // Toggle
+                {
+                    if (SeatOrders[0]->Orders->Count > 0)
+                    {
+                            CurrentTender += BtnCaptionToCurrency( Btn );
+                            tbtnTender->Caption = "Tender " + CurrToStrF(CurrentTender, ffNumber, CurrencyDecimals);
+                            tbtnCashSale->Caption = "Clear Tender";
+                            tbtnCashSale->Enabled = true;
+                            TotalCosts();
+                            UpdateExternalDevices();
+                    }
+                }
+                Btn->Tag = 0;
+            }
         }
     }
+}
+//----------------------------------------------------------------------------
+bool TfrmSelectDish::IsQuickRoomEnabled(AnsiString caption)
+{
+    return (TDeviceRealTerminal::Instance().BasePMS->Registered &&
+            TGlobalSettings::Instance().PMSType == SiHot &&
+            caption.UpperCase() == "ROOM" &&
+            TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled);
+}
+//----------------------------------------------------------------------------
+bool TfrmSelectDish::GetPMSRoomQuick()
+{
+    int roomNumber = GetRoomNumberInput();
+    if(roomNumber != 0)
+    {
+        TSiHotAccounts siHotAccount;
+        siHotAccount.AccountNumber = roomNumber;
+        SiHotAccounts.push_back(siHotAccount);
+        TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,
+                            TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,
+                            TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+
+    }
+    return true;
+}
+//----------------------------------------------------------------------------
+int TfrmSelectDish::GetRoomNumberInput()
+{
+    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+    frmTouchNumpad->Caption = "Enter Room Number";
+    frmTouchNumpad->btnOk->Visible = true;
+    frmTouchNumpad->btnCancel->Visible = true;
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = false;
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->INTInitial = 0;
+    int roomNumber = 0;
+    if (frmTouchNumpad->ShowModal() == mrOk)
+    {
+        if(frmTouchNumpad->INTResult == 0)
+        {
+            MessageBox("Please enter a valid Room Number","Warning", MB_OK+MB_ICONINFORMATION);
+            roomNumber = GetRoomNumberInput();
+        }
+        else
+            roomNumber = frmTouchNumpad->INTResult;
+    }
+    return roomNumber;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ProcessQuickPayment(TObject *Sender,AnsiString paymentName)
@@ -8136,7 +8214,12 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         tbtnDollar2->Caption = GetTenderStrValue( vmbtnDollar2 );
         tbtnDollar3->Caption = GetTenderStrValue( vmbtnDollar3 );
         tbtnDollar4->Caption = GetTenderStrValue( vmbtnDollar4 );
-        tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
+        if(!(TDeviceRealTerminal::Instance().BasePMS->Registered &&
+        TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled))
+            tbtnDollar5->Caption = GetTenderStrValue( vmbtnDollar5 );
+        else
+            tbtnDollar5->Caption = "Room";
 	}
 	IsSubSidizeProcessed=false;
 	IsTabBillProcessed=false;
@@ -9043,6 +9126,7 @@ void TfrmSelectDish::InitializeTablePatrons()
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ResetPOS()
 {
+    SiHotAccounts.clear();
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name);
@@ -9147,8 +9231,12 @@ void TfrmSelectDish::InitializeQuickPaymentOptions()
     tbtnDollar2->Enabled = enableQuickPayment;
     tbtnDollar3->Enabled = enableQuickPayment;
     tbtnDollar4->Enabled = enableQuickPayment;
-    tbtnDollar5->Enabled = enableQuickPayment;
-
+    if(!(TDeviceRealTerminal::Instance().BasePMS->Registered &&
+        TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled))
+        tbtnDollar5->Enabled = enableQuickPayment;
+    else
+        tbtnDollar5->Enabled = true;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ReloadChitNumberStatistics()

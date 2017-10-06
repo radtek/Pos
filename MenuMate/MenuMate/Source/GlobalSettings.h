@@ -489,6 +489,7 @@ public:
     ePMSType PMSType;
     bool IsBillSplittedByMenuType;
     UnicodeString CustomerId;
+    bool IsFastTenderEnabled;
 };
 
 #endif

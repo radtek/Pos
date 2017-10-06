@@ -479,6 +479,11 @@ private: // User declarations
     bool CheckItemCanBeAddedToSeat(TItem *item);
     void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
     bool CheckIfSubsidizedDiscountValid(int tabKey);
+    bool GetPMSRoomQuick();
+    bool IsQuickRoomEnabled(AnsiString caption);
+    int GetRoomNumberInput();
+    std::vector<TSiHotAccounts> SiHotAccounts;
+    void FillPMSRoomDetails(TPaymentTransaction &PaymentTransaction);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

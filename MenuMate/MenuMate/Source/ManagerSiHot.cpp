@@ -28,6 +28,7 @@ TManagerSiHot::TManagerSiHot() : TBasePMS()
 	RoundingCategory = "";
 	Enabled = false;
 	Registered = false;
+    IsFastTenderEnabled = false;
 }
 //---------------------------------------------------------------------------
 TManagerSiHot::~TManagerSiHot()
@@ -56,12 +57,12 @@ void TManagerSiHot::Initialise()
     RoundingAccountSiHot = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
     DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
-
+    IsFastTenderEnabled = TManagerVariable::Instance().GetBool(DBTransaction,vmIsFastTenderEnabled);
 	DBTransaction.Commit();
 	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
-        Enabled = GetRoundingandDefaultAccount();
+//        Enabled = GetRoundingandDefaultAccount();
 	}
 	else
 	{

@@ -395,6 +395,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
+        TGlobalSettings::Instance().IsFastTenderEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFastTenderEnabled, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

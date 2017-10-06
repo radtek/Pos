@@ -141,12 +141,26 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbExpensesAccount-> Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
+        AnsiString fastTenderCaption = "Fast Tender";
+        if(TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled)
+        {
+            fastTenderCaption += "\nEnabled";
+            tbFastTender->Caption = fastTenderCaption;
+            tbFastTender->ButtonColor = clGreen;
+        }
+        else
+        {
+            fastTenderCaption += "\nDisabled";
+            tbFastTender->Caption = fastTenderCaption;
+            tbFastTender->ButtonColor = clRed;
+        }
     }
     else
     {
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
+        tbFastTender->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -509,6 +523,36 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSServiceChargeAccount,TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount);
             DBTransaction1.Commit();
 		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::tbFastTenderMouseClick(TObject *Sender)
+{
+//    int i = 0;
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        if(!TDeviceRealTerminal::Instance().BasePMS->IsFastTenderEnabled)
+        {
+          TGlobalSettings::Instance().IsFastTenderEnabled = true;
+          tbFastTender->Caption = "Fast Tender\nEnabled";
+          tbFastTender->ButtonColor = clGreen;
+        }
+        else
+        {
+          TGlobalSettings::Instance().IsFastTenderEnabled = false;
+          tbFastTender->Caption = "Fast Tender\nDisabled";
+          tbFastTender->ButtonColor = clRed;
+        }
+
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFastTenderEnabled, TGlobalSettings::Instance().IsFastTenderEnabled);
+        DBTransaction1.Commit();
 	}
 }
 //---------------------------------------------------------------------------

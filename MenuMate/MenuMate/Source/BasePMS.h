@@ -32,7 +32,7 @@ class TBasePMS
         AnsiString RoundingAccountSiHot;
         AnsiString DefaultAccountNumber;
         AnsiString RoundingAccountNumber;
-
+        bool IsFastTenderEnabled;
 
         std::set<AnsiString> CodesTestedOk;
         public :
