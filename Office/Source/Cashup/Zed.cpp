@@ -103,11 +103,11 @@ std::set<Payment> Zed::GetPayments() const
 	TIBSQL* paymentsQuery = transaction.Query(transaction.AddQuery());
 	paymentsQuery->SQL->Text =
 		"Select "
-        "case when (arcbillpay.pay_type = 'Eftpos' "
+        "CASE when (UPPER(arcbillpay.pay_type) = 'EFTPOS' "
         "and arcbillpay.cash_out = 'T') then "
-        "'Eftpos Cash Out' "
+        " 'Eftpos Cash Out'  "
         "else arcbillpay.pay_type "
-        "end Pay_Type, "
+        "end Pay_Type,  "
 		" ArcBillPay.Group_Number,"
 		" Sum (ArcBillPay.SubTotal) SubTotal,"
 		" Count (ArcBillPay.ArcBillPay_Key) Trans_Count "
@@ -127,7 +127,7 @@ std::set<Payment> Zed::GetPayments() const
         "Security.Terminal_Name,"
         "ArcBillPay.Pay_Type,"
         "ArcBillPay.Group_Number,"
-        "ArcBillPay.Properties, "
+      //  "ArcBillPay.Properties, "
         "ArcBillPay.Cash_Out "
 		"Having "
 		 "Count (ArcBillPay.ArcBillPay_Key) > 0 "

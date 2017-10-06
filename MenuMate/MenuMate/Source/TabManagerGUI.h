@@ -108,7 +108,8 @@ private:	// User declarations
 
 	Database::TDBControl &DBControl;
 
-        	void RedrawDiscounts();
+    void RedrawDiscounts();
+    AnsiString CheckDiscountApplicability(int discountKey);
 public:		// User declarations
 
     TTouchBtn *CurrentTabBtn;

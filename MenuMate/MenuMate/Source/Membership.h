@@ -30,6 +30,7 @@ struct TVoucherDetail
     public:
         AnsiString VoucherNumber;
         AnsiString VoucherName;
+        AnsiString VoucherDescription;
         AnsiString DiscountCode;
         int NumberOfUsesRemaining;
 };

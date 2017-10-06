@@ -861,7 +861,15 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+
+          if(salesData.FieldIndex != 19)
+          {
+                salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          }
+          else
+          {
+                salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "1";
+          }
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.ZKey = 0;
 
@@ -1074,14 +1082,17 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
 
         for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
-            fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
-
             if(IBInternalQuery->Fields[0]->AsInteger == 19)
             {
+                fileName = fileName + "1" ;
                 TDateTime date = IBInternalQuery->Fields[5]->AsDateTime;
                 UnicodeString month = GetMonthCode(MonthOf(date));
                 int day = DayOf(date);
                 fileName = fileName + "." + month + IntToStr(day);
+            }
+            else
+            {
+                fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
             }
         }
     }
@@ -1205,7 +1216,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     }
     else
     {
-       fieldData.NonTaxableSaleAmount += (salesBySalesType - taxes.serviceCharge);
+       fieldData.NonTaxableSaleAmount += (salesBySalesType + discounts.scdDiscount + discounts.pwdDiscount - taxes.serviceCharge);
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";

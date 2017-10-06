@@ -56,6 +56,7 @@ private:	// User declarations
     Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
     void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
     void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
+    bool CheckDefaultPatronTypes();
     void LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
     void AddMessage(TObject *Sender);
     void AddRevenueCode(TObject *Sender);

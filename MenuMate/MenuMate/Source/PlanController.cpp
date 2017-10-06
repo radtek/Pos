@@ -129,7 +129,7 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
 					}
 				}
 
-		ArrayOfDTOReservable tables = _client->GetTablesForLocation(_idxCurrentPlan);
+		        ArrayOfDTOReservable tables = _client->GetTablesForLocation(_idxCurrentPlan);
                 std::map<int,UnicodeString> PartyNames;
                 TDBTables::GetPartyNames(DBTransaction, PartyNames);
                 std::map<int,UnicodeString> TableStatus;

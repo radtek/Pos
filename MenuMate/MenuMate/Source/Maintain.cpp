@@ -3662,6 +3662,13 @@ void TfrmMaintain::PeachTreeSettings()
         Item3.CloseSelection = true;
         SelectionForm->Items.push_back(Item3);
 
+        TVerticalSelection Item4;
+        Item3.Title = "Customer ID \r" + TGlobalSettings::Instance().CustomerId;
+        Item3.Properties["Action"] = IntToStr(4);
+        Item3.Properties["Color"] = IntToStr(clNavy);
+        Item3.CloseSelection = true;
+        SelectionForm->Items.push_back(Item3);
+
         SelectionForm->ShowModal();
         TVerticalSelection SelectedItem;
         if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -3750,6 +3757,23 @@ void TfrmMaintain::PeachTreeSettings()
                     }
                 }
                 break;
+            case 4 :
+                {
+
+                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                    frmTouchKeyboard->MaxLength = 20;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = false;
+                    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().CustomerId;
+                    frmTouchKeyboard->Caption = "Enter Customer ID ";
+                    if (frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        TGlobalSettings::Instance().CustomerId = frmTouchKeyboard->KeyboardText;
+                        DBTransaction.StartTransaction();
+                        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmCustomerId,TGlobalSettings::Instance().CustomerId);
+                        DBTransaction.Commit();
+                    }
+                }
             }
         }
         else
@@ -3793,7 +3817,11 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
     }
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            TManagerPanasonic::Instance()->TriggerTransactionSync();
+    {
+        TManagerPanasonic::Instance()->TriggerTransactionSync();
+        TManagerPanasonic::Instance()->PrepareTenderTypes();
+        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+    }
 }
 //-------------------------------------------------------------------------------------
 

@@ -475,7 +475,7 @@ object frmMenuEdit: TfrmMenuEdit
                 TabOrder = 0
                 OnChange = pcItemDetailsChange
                 object tsItemDetails: TTabSheet
-                  Caption = 'Item Detai'
+                  Caption = 'Item Detail'
                   object Label1: TLabel
                     Left = 8
                     Top = 12

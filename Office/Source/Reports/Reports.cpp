@@ -1033,29 +1033,30 @@ static AnsiString InvoiceNumberList = " Select "
 	// get Internal and External Loyalty Members
 	// They should be using one or the other
 	static AnsiString LoyaltyCustomerList =
-		"Select "
-			"Name "
-		"From "
-			"Contacts "
-		"Where "
-			"Contact_Type in (2,4)"
-		"Order By "
-			"Name";
+	  "Select "
+ "(NAME || ' ' || Last_Name) as NAME "
+ "from "
+"CONTACTS "
+"where "
+"Contact_Type in (2,4) "
+"order by "
+"NAME,"
+ "LAST_NAME ";
 
 	 static AnsiString LoyaltyPurchaseCustomerList =
 		"Select Distinct "
-			"Contacts.Name "
-		"From "
+			"(NAME || ' ' || Last_Name) as Name "
+           "From "
 			"ContactFreebie Left Join Contacts on "
 				"ContactFreebie.Contacts_Key = Contacts.Contacts_Key ";
 		"Where "
 			"Contacts.Contact_Type in (2,4) "
 		"Order By "
-			"Contacts.Name";
+			"Name";
 	// get both from Archive and DayArchive   cww
 	static AnsiString LoyaltyArchiveList =
 		"Select Distinct "
-			"Contacts.Name "
+		"(NAME || ' ' || Last_Name) as Name "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
 			"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
@@ -1065,7 +1066,7 @@ static AnsiString InvoiceNumberList = " Select "
 			"Security.Security_Event = 'Ordered By' "
 		"Union "
 		"Select Distinct "
-			"Contacts.Name "
+		"(NAME || ' ' || Last_Name) as Name "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
 			"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
@@ -3564,19 +3565,19 @@ case DAILY_SALES_REPORT:
 			TSubReport *SubReport1						= ReportControl->AddSubReport("Loyalty Audit");
 
 			// Dates
-			TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
-			ReportFilter0->Caption						= "Select the date range for the loyalty report.";
-			SubReport0->AddFilterIndex(0);
-			SubReport1->AddFilterIndex(0);
-			ReportControl->AddFilter(ReportFilter0);
+		   TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+		   ReportFilter0->Caption						= "Select the date range for the loyalty report.";
+		   SubReport0->AddFilterIndex(0);
+		   SubReport1->AddFilterIndex(0);
+		   ReportControl->AddFilter(ReportFilter0);
 
 			// Customers - Members
 			TReportCheckboxFilter *ReportFilter1	= new TReportCheckboxFilter(ReportControl, MMFilterTransaction);
 			ReportFilter1->Caption						= "Select the customers you wish to appear in the report.";
 			ReportFilter1->SQL							= LoyaltyCustomerList;
-			ReportFilter1->DisplayField				= "Name";
-			ReportFilter1->SelectionField				= "Name";
-			ReportFilter1->SelectionDateRange		= false;
+			ReportFilter1->DisplayField				= "Name" ;
+			ReportFilter1->SelectionField			= "Name";
+            ReportFilter1->SelectionDateRange		= false;
 			SubReport0->AddFilterIndex(1);
 			SubReport1->AddFilterIndex(1);
 			ReportControl->AddFilter(ReportFilter1);
@@ -4108,25 +4109,37 @@ case DAILY_SALES_REPORT:
 			SubReport0->AddFilterIndex(FilterIndex);
             SubReport1->AddFilterIndex(FilterIndex);
 
-			TReportCheckboxFilter *ReportFilter1	= new TReportCheckboxFilter(ReportControl, StockFilterTransaction);
+		   	TReportCheckboxFilter *ReportFilter1	= new TReportCheckboxFilter(ReportControl, StockFilterTransaction);
 			FilterIndex										= ReportControl->AddFilter(ReportFilter1);
 
-			ReportFilter1->Caption						= "Select the Stock Receipt Number you wish to appear in the report.";
-			ReportFilter1->GetSQL						= &TfrmReports::GetStockReceiptList;
-			ReportFilter1->DisplayField				= "BATCH_KEY";
-			ReportFilter1->SelectionField				= "BATCH_KEY";
+            ReportFilter1->Caption						= "Select the Supplier you wish to appear in the report.";
+			ReportFilter1->GetSQL						= &TfrmReports::GetStockSupplierList;
+			ReportFilter1->DisplayField				    = "SUPPLIER_NAME";
+			ReportFilter1->SelectionField				= "SUPPLIER_NAME";
 			ReportFilter1->SelectionDateRange		= true;
+            SubReport0->AddFilterIndex(FilterIndex);
 			SubReport1->AddFilterIndex(FilterIndex);
 
 			TReportCheckboxFilter *ReportFilter2	= new TReportCheckboxFilter(ReportControl, StockFilterTransaction);
 			FilterIndex										= ReportControl->AddFilter(ReportFilter2);
 
-			ReportFilter2->Caption						= "Select the invoices you wish to appear in the report.";
-			ReportFilter2->GetSQL						= &TfrmReports::GetStockInvoiceList;
-			ReportFilter2->DisplayField				= "Reference";
-			ReportFilter2->SelectionField				= "Reference";
+			ReportFilter2->Caption						= "Select the Stock Receipt Number you wish to appear in the report.";
+			ReportFilter2->GetSQL						= &TfrmReports::GetStockReceiptList;
+			ReportFilter2->DisplayField				= "BATCH_KEY";
+			ReportFilter2->SelectionField				= "BATCH_KEY";
 			ReportFilter2->SelectionDateRange		= true;
-			ReportFilter2->AddPreviousFilters(ReportFilter1);
+            ReportFilter2->AddPreviousFilters(ReportFilter1);
+			SubReport1->AddFilterIndex(FilterIndex);
+
+			TReportCheckboxFilter *ReportFilter3	= new TReportCheckboxFilter(ReportControl, StockFilterTransaction);
+			FilterIndex										= ReportControl->AddFilter(ReportFilter3);
+
+			ReportFilter3->Caption						= "Select the invoices you wish to appear in the report.";
+			ReportFilter3->GetSQL						= &TfrmReports::GetStockInvoiceList;
+			ReportFilter3->DisplayField				= "Reference";
+			ReportFilter3->SelectionField				= "Reference";
+			ReportFilter3->SelectionDateRange		= true;
+			ReportFilter3->AddPreviousFilters(ReportFilter1);
 			SubReport0->AddFilterIndex(FilterIndex);
 
 			break;
@@ -9217,6 +9230,9 @@ void TfrmReports::GetStockTransSupplierList(TReportFilter *ReportFilter)
 }
 void TfrmReports::GetStockReceiptList(TReportFilter *ReportFilter)
 {
+    TReportCheckboxFilter *SupplierFilter	= (TReportCheckboxFilter *)ReportFilter->PreviousFilter(0);
+	TIBSQL *Query									= ReportFilter->Query;
+	TStrings *SQL									= Query->SQL;
 
 	ReportFilter->SQL =
 		"Select Distinct "
@@ -9224,8 +9240,12 @@ void TfrmReports::GetStockReceiptList(TReportFilter *ReportFilter)
 		"From "
 			"StockTrans "
 		"Where "
+            "TRANSACTION_TYPE = 'Receipt' and "
 			"Created >= :StartTime and "
-			"Created < :EndTime "
+			"Created < :EndTime ";
+    AddFilterStringParams(SQL, SupplierFilter->Selection, "Supplier_Name");
+
+    SQL->Text = SQL->Text +   
 		"Order By "
 			"BATCH_KEY";
 }
@@ -9242,6 +9262,7 @@ void TfrmReports::GetStockInvoiceList(TReportFilter *ReportFilter)
 		"From "
 			"StockTrans "
 		"Where "
+            "TRANSACTION_TYPE = 'Receipt' and "
 			"Created >= :StartTime and "
 			"Created < :EndTime ";
 	AddFilterStringParams(SQL, SupplierFilter->Selection, "Supplier_Name");
@@ -9251,6 +9272,20 @@ void TfrmReports::GetStockInvoiceList(TReportFilter *ReportFilter)
 			"Reference";
 }
 //---------------------------------------------------------------------------
+void TfrmReports::GetStockSupplierList(TReportFilter *ReportFilter)
+{
+
+	ReportFilter->SQL =
+		"Select SUPPLIER_NAME "
+	   "From "
+			"StockTrans "
+		"Where "
+            "TRANSACTION_TYPE = 'Receipt' and  "
+			"Created >= :StartTime and "
+			"Created < :EndTime "
+        "GROUP BY 1 ";
+}
+//---------------------------------------------------------------------------
 void TfrmReports::PrintPurchaseInvoices(TReportControl *ReportControl)
 {
 	if (dmStockReportData->StockTrans->DefaultDatabase->Connected)
@@ -9258,11 +9293,11 @@ void TfrmReports::PrintPurchaseInvoices(TReportControl *ReportControl)
 		dmStockReportData->StockTrans->StartTransaction();
 	}
 	try
-	{
-		TReportCheckboxFilter *StockReceiptFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
-		TReportCheckboxFilter *InvoiceFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+	{   TReportCheckboxFilter *StockSupplierFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
+		TReportCheckboxFilter *StockReceiptFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+		TReportCheckboxFilter *InvoiceFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(3);
 
-		dmStockReportData->SetupSupplierPurchases(ReportControl->Start, ReportControl->End, StockReceiptFilter->Selection, InvoiceFilter->Selection,rgReports->ItemIndex);
+		dmStockReportData->SetupSupplierPurchases(ReportControl->Start, ReportControl->End, StockReceiptFilter->Selection, InvoiceFilter->Selection, StockSupplierFilter->Selection, rgReports->ItemIndex);
 		if (ReportType == rtExcel)
 		{
 			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());

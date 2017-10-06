@@ -369,9 +369,9 @@ void TMallExportUpdateAdaptor::setMallExportFieldValuesOnTransaction()
     otherCharges              =   extractOtherCharges();
     firstTransaction          =   extractFirstTransaction();
     lastTransaction           =   extractLastTransaction();
-    transactionCount          =   extractTransactionCount();
     beginingInvoiceNumber     =   extractBeginingInvoiceNumber();
     endingInvoiceNumber       =   extractEndingInvoiceNumber();
+    transactionCount          =   extractTransactionCount();
     cashTransactionsCount          =   extractCashTransactions();
     giftCardChequeTransactionsCount    =   extractGiftCardChequeTransactions();
     debitCardTransactionsCount     =   extractDebitCardTransactions();
@@ -1507,7 +1507,11 @@ int TMallExportUpdateAdaptor::extractTransactionCount()
     }
     else
     {
-        result = 1;
+        if(TGlobalSettings::Instance().MallIndex == AYALAMALL &&
+           endingInvoiceNumber.Pos("RV") != 0)
+            result = 0;
+        else
+            result = 1;
     }
 
     return result;
@@ -2427,13 +2431,25 @@ void TMallExportUpdateAdaptor::setTransactionCount()
 
 void TMallExportUpdateAdaptor::setBeginingInvoiceNumber()
 {
-    mallExportUpdate->SaveBeginningInvoiceNo( beginingInvoiceNumber );
+    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+    {
+        if(beginingInvoiceNumber.Pos("RV") == 0)
+            mallExportUpdate->SaveBeginningInvoiceNo( beginingInvoiceNumber );
+    }
+    else
+            mallExportUpdate->SaveBeginningInvoiceNo( beginingInvoiceNumber );
 }
 //---------------------------------------------------------------------------
 
 void TMallExportUpdateAdaptor::setEndingInvoiceNumber()
 {
-    mallExportUpdate->SaveEndingInvoiveNo( endingInvoiceNumber );
+    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+    {
+        if(endingInvoiceNumber.Pos("RV") == 0)
+            mallExportUpdate->SaveEndingInvoiveNo( endingInvoiceNumber );
+    }
+    else
+        mallExportUpdate->SaveEndingInvoiveNo( endingInvoiceNumber );
 }
 //---------------------------------------------------------------------------
 
@@ -3152,6 +3168,10 @@ void TMallExportUpdateAdaptor::extractBeginingAndEndingInvoiceNumbers( AnsiStrin
         beginInvoiceNum = query->Fields[0]->AsString;
         for(; !query->Eof; query->Next())
         {
+            if(beginInvoiceNum.Pos("RV") != 0 && TGlobalSettings::Instance().MallIndex == AYALAMALL)
+            {
+               beginInvoiceNum = query->Fields[0]->AsString;
+            }
             endInvoiceNum = query->Fields[0]->AsString;
         }
     }

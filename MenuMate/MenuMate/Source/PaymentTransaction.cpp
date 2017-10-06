@@ -67,6 +67,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     TaxOnClippDiscount = 0;
     ServiceChargeWithTax = 0;
     IsVouchersProcessed = false;
+    IgnoreLoyaltyKey = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -402,10 +403,34 @@ bool TPaymentTransaction::TransOpenCashDraw()
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
+        
 		if(Payment->GetPaymentAttribute(ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0))
 		{
 			return true;
 		}
+        else if(Payment->GetPaymentAttribute(ePayTypeOpensCashDrawer) && Payment->GetPay() == 0 && Payment->GetChange() != 0) //it will be zero in case of items having negative price.
+        {
+            Currency sum = 0.00;
+
+            for (int orderIndex = 0; orderIndex < Orders->Count; orderIndex++)
+            {
+                TItemComplete *Order = (TItemComplete*)Orders->Items[orderIndex];
+                sum += Order->BillCalcResult.FinalPrice;
+                for (int subOrderIndex = 0; subOrderIndex < Order->SubOrders->Count; subOrderIndex++)
+                {
+                    TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(subOrderIndex);
+                    sum += SubOrder->BillCalcResult.FinalPrice;
+                }
+            }
+            Currency cashOut =0.00;
+            for ( int i = 0 ; i <  PaymentsCount(); i++ )
+            {
+                TPayment *Payment = PaymentGet(i);
+                cashOut += Payment->GetCashOut();
+            }
+            if(sum < 0.00 && cashOut == 0)
+                return true;
+        }
 	}
 	return false;
 }
@@ -634,7 +659,8 @@ void TPaymentTransaction::Recalc()
       for (int i=0; i < Orders->Count; i++)
       {
          TItemComplete *Order = (TItemComplete *) Orders->Items[i];
-		 Order->Loyalty_Key = Membership.Member.ContactKey;
+         if(!IgnoreLoyaltyKey)
+    		 Order->Loyalty_Key = Membership.Member.ContactKey;
          if(SalesType != eAccount)
          { // Do not do this for invoices.
 		 	Order->ResetPrice();
@@ -652,7 +678,8 @@ void TPaymentTransaction::Recalc()
              {
                 CurrentSubOrder->ClearAllDiscounts();
              }
-            CurrentSubOrder->Loyalty_Key = Membership.Member.ContactKey;
+
+                CurrentSubOrder->Loyalty_Key = Order->Loyalty_Key;//Membership.Member.ContactKey;
             if(SalesType != eAccount)
             { // Do not do this for invoices.
                CurrentSubOrder->ResetPrice();

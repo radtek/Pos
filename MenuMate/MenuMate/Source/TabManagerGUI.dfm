@@ -21,8 +21,6 @@ object frmTabManager: TfrmTabManager
   OnCreate = FormCreate
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object pgControl: TPageControl
@@ -35,10 +33,6 @@ object frmTabManager: TfrmTabManager
     TabOrder = 0
     object tsTabManager: TTabSheet
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         1016
         758)
@@ -706,10 +700,6 @@ object frmTabManager: TfrmTabManager
       Caption = 'tsDiscounts'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         1016
         758)

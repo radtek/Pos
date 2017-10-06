@@ -10,7 +10,7 @@ class TPanasonicModels
 {
 private:
     UnicodeString _storeId;
-    UnicodeString _terminalId;
+    int _terminalId;
     UnicodeString _operatorId;
     UnicodeString _operatorName;
     UnicodeString _customerId;
@@ -27,11 +27,11 @@ private:
     bool _cashOut;
     bool _ageRestricted;
     TDateTime _startTime;
-    TDateTime _timeZoneOfST;
-    TDateTime _dayLightTimeOfST;
+    TSQLTimeStampOffset _timeZoneOfST;
+    TSQLTimeStampOffset _dayLightTimeOfST;
     TDateTime _endTime;
-    TDateTime _timeZoneOfET;
-    TDateTime _dayLightTimeOfET;
+    TSQLTimeStampOffset _timeZoneOfET;
+    TSQLTimeStampOffset _dayLightTimeOfET;
     bool _cash;
     bool _creditCard;
     bool _cheque;
@@ -45,7 +45,7 @@ private:
     bool _operatorSignOff;
     UnicodeString _lastReceipt;
     void SetStoreId(UnicodeString storeId);
-    void SetTerminalId(UnicodeString terminalId);
+    void SetTerminalId(int terminalId);
     void SetOperatorId(UnicodeString operatorId);
     void SetOperatorName(UnicodeString operatorName);
     void SetCustomerId(UnicodeString customerId);
@@ -62,11 +62,11 @@ private:
     void SetCashOut(bool cashOut);
     void SetAgeRestricted(bool ageRestricted);
     void SetStartTime(TDateTime startTime);
-    void SetTimeZoneOfST(TDateTime timeZoneOfST);
-    void SetDayLightTimeOfST(TDateTime dayLightTimeOfST);
+    void SetTimeZoneOfST(TSQLTimeStampOffset timeZoneOfST);
+    void SetDayLightTimeOfST(TSQLTimeStampOffset dayLightTimeOfST);
     void SetEndTime(TDateTime endTime);
-    void SetTimeZoneOfET(TDateTime timeZoneOfET);
-    void SetDayLightTimeOfET(TDateTime dayLightTimeOfET);
+    void SetTimeZoneOfET(TSQLTimeStampOffset timeZoneOfET);
+    void SetDayLightTimeOfET(TSQLTimeStampOffset dayLightTimeOfET);
     void SetCashFlag(bool cash);
     void SetCreditCardFlag(bool creditCard);
     void SetChequeFlag(bool cheque);
@@ -82,7 +82,7 @@ private:
 
 public:
     __property UnicodeString StoreId = {read = _storeId, write = SetStoreId};
-    __property UnicodeString Terminald = {read = _terminalId, write = SetTerminalId};
+    __property int Terminald = {read = _terminalId, write = SetTerminalId};
     __property UnicodeString OperatorId = {read = _operatorId, write = SetOperatorId};
     __property UnicodeString OperatorName = {read = _operatorName, write = SetOperatorName};
     __property UnicodeString CustomerId = {read = _customerId, write = SetCustomerId};
@@ -99,11 +99,11 @@ public:
     __property bool CashOut = {read = _cashOut, write = SetCashOut};
     __property bool AgeRestricted = {read = _ageRestricted, write = SetAgeRestricted};
     __property TDateTime StartTime = {read = _startTime, write = SetStartTime};
-    __property TDateTime TimeZoneOfST = {read = _timeZoneOfST, write = SetTimeZoneOfST};
-    __property TDateTime DayLightTimeOfST = {read = _dayLightTimeOfST, write = SetDayLightTimeOfST};
+    __property TSQLTimeStampOffset TimeZoneOfST = {read = _timeZoneOfST, write = SetTimeZoneOfST};
+    __property TSQLTimeStampOffset DayLightTimeOfST = {read = _dayLightTimeOfST, write = SetDayLightTimeOfST};
     __property TDateTime EndTime = {read = _endTime, write = SetEndTime};
-    __property TDateTime TimeZoneOfET = {read = _timeZoneOfET, write = SetTimeZoneOfET};
-    __property TDateTime DayLightTimeOfET = {read = _dayLightTimeOfET, write = SetDayLightTimeOfET};
+    __property TSQLTimeStampOffset TimeZoneOfET = {read = _timeZoneOfET, write = SetTimeZoneOfET};
+    __property TSQLTimeStampOffset DayLightTimeOfET = {read = _dayLightTimeOfET, write = SetDayLightTimeOfET};
     __property bool Cash = {read = _cash, write = SetCashFlag};
     __property bool CreditCard = {read = _creditCard, write = SetCreditCardFlag};
     __property bool Cheque = {read = _cheque, write = SetChequeFlag};

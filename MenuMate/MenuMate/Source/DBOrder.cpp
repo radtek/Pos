@@ -1013,13 +1013,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 		if(IBInternalQuery->RecordCount == 0)
 		{
 			// Add the required Finical Category.
+            int MasterOrderKey = Order->OrderKey;
+            if(Order->GetQty() != 0)
+            {
 			int PrimaryArcCatkey = GetArchiveCategory(DBTransaction,Order->Categories->FinancialCategory);
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERS, 1) FROM RDB$DATABASE";
 			IBInternalQuery->ExecQuery();
 			Order->OrderKey = IBInternalQuery->Fields[0]->AsInteger;
-			int MasterOrderKey = Order->OrderKey;
+
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Clear();
@@ -1387,12 +1390,13 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 
 			// Taxes
 			SetOrderTaxProfiles(DBTransaction,Order);
-
+            }
 			// Sides
 			for (int i = 0 ; i < Order->SubOrders->Count ; i ++)
 			{
 				TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub *)Order->SubOrders->Items[i];
-
+                if(CurrentSubOrder->GetQty() != 0)
+                {
 				int SubPrimaryArcCatkey = GetArchiveCategory(DBTransaction,CurrentSubOrder->Categories->FinancialCategory);
 
 				IBInternalQuery->Close();
@@ -1633,7 +1637,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = CurrentSubOrder->BillCalcResult.BasePrice;
 				IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
 				IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-				IBInternalQuery->ParamByName("ITEM_TYPE")->AsInteger = Order->ItemType;
+				IBInternalQuery->ParamByName("ITEM_TYPE")->AsInteger = CurrentSubOrder->SubItemType;
 				IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = CurrentSubOrder->ServingCourse.ServingCourseKey;
 				IBInternalQuery->ParamByName("MENU_ITEM_KEY")->Clear();
 				IBInternalQuery->ParamByName("PLU")->AsInteger = CurrentSubOrder->PLU;
@@ -1720,6 +1724,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 					IBInternalQuery->ParamByName("STOCK_LOCATION")->AsString	=  CurrentRecipe->StockLocation;
 					IBInternalQuery->ExecQuery();
 				}
+                }
 			}
 		}
 		else
@@ -2368,11 +2373,11 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		IBInternalQuery->SQL->Clear();
 		IBInternalQuery->SQL->Text =
         "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
-        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,b.WEIGHTED_SIZE "
+        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE "
         " FROM ORDERS a inner join SIZES b  "
         " on a.SIZE_NAME = b.SIZE_NAME  "
         " WHERE a.TAB_KEY = :TAB_KEY "
-        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14  "
+        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15  "
         " ORDER BY a.ITEM_NAME,a.SIZE_NAME,a.Price,a.QTY ";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
@@ -2386,6 +2391,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
         bool isPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Person with Disability");
         isSCDOrPWDDiscountExist = isSCDDiscountExist || isPWDDiscountExist;
         bool checkSCDOrPWDExist = false;
+        TItemType itemType = eDrinksItem;
 
         //Create Set For inserting OrderKeys having SCD Discount.
         std::set<__int64> orderKeysWithSCDDiscount;
@@ -2429,6 +2435,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeStamp	  = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
+            Order.ItemType 	  = (TItemType)IBInternalQuery->FieldByName("ITEM_TYPE")->AsInteger;
 
             if(isSCDOrPWDDiscountExist)
             {
@@ -2484,7 +2491,28 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 {
                     Order.IsSide = false;
                 }
-                Orders[Order.Key] = Order;
+
+                if(Orders.size())
+                {
+                    std::map <__int64, TPnMOrder> ::iterator itItem = Orders.begin();
+                    itemType = itItem->second.ItemType;
+                }
+                else
+                {
+                    itemType = Order.ItemType;
+                }
+
+                if(SelectingItems && TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                {
+                    if(itemType == Order.ItemType)
+                        Orders[Order.Key] = Order;
+                }
+                else if(( !SelectingItems && TGlobalSettings::Instance().IsBillSplittedByMenuType) ||
+                                (!TGlobalSettings::Instance().IsBillSplittedByMenuType))
+                {
+                    Orders[Order.Key] = Order;
+                }
+
                 if(ValidOrderKeys.size() == 0)
                   ValidOrderKeys.insert(Order.Key);
 

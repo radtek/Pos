@@ -60,5 +60,8 @@ class TManagerPanasonic
         }
 
         void TriggerTransactionSync();
+        void PrepareTenderTypes();
+        void PrepareTransactionTypesAndTerminalId();
+
 };
 #endif

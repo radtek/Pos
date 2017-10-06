@@ -10,7 +10,8 @@
 #include <memory>
 
 #include "SqlViewer.h"
-#define PAYMENT_PROPERTIES "29"
+#define PAYMENT_PROPERTIES "%-29-%"
+#define PAYMENT_PROPERTIES2 "%-25-%"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "RpCon"
@@ -635,7 +636,24 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			PriceLessPoints = (BasePrice * 100.0) / (100.0 + PointsPercent);
 		 //if (PriceLessPoints != 0.00 && cdsMenu->FieldByName("COST_TIMES_QTY").AsCurrency != 0.00)
 		 if (PriceLessPoints != 0.00)
-         	cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice-(BasePrice*PointsPercent/100)) )* 100    ;
+         {
+            if(PointsPercent != 100 )
+            {
+         	    cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice-(BasePrice*PointsPercent/100)) )* 100 ;
+            }
+            else
+            {
+               if(BasePrice > 0)
+               {
+                   cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   ((cdsMenu->FieldByName("PROFIT")->AsCurrency )/(BasePrice -(BasePrice/100) ))*100    ;
+               }
+               else
+               {
+                  cdsMenu->FieldByName("GP_POINTS")->AsCurrency =   (cdsMenu->FieldByName("PROFIT")->AsCurrency )*100 ;
+               }
+
+            }
+         }
 
 		  //	cdsMenu->FieldByName("GP_POINTS")->AsCurrency = (1 - (cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency / PriceLessPoints)) * 100;
 		 cdsMenu->Post();
@@ -947,28 +965,29 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
 {
 	qrCashupRecon->Close();
 	qrCashupRecon->SQL->Text =
-		"Select "
-			"Zeds.Z_Key,"
-			"Zeds.Time_Stamp,"
-			"Zeds.Terminal_Name,"
-			"Zeds.Adjustments as Total_Variance,"
-			"Security.From_Val as Cashier,"
-			"BlindBalance.Payment as Payment_Type,"
-			"BlindBalance.Payment_Group,"
-			"BlindBalance.Payment_Trans_Qty as Transaction_Qty,"
-            "cast(BlindBalance.Blind_Balance as numeric(15, 2)) Blind_Balance, "
-			"cast(BlindBalance.System_Balance as numeric(15, 2)) System_Balance,"
-			"cast(BlindBalance.Office_Balance as numeric(15, 2)) Office_Balance,"
-			"cast((BlindBalance.Office_Balance  "
-            "      - BlindBalance.System_Balance) as numeric(15, 2)) as Variance "
+
+       "Select  "
+			"Zeds.Z_Key, "
+			"Zeds.Time_Stamp, "
+			"Zeds.Terminal_Name, "
+			"Zeds.Adjustments as Total_Variance, "
+			"Security.From_Val as Cashier, "
+			"UPPER(BlindBalance.Payment) as Payment_Type, "
+			"BlindBalance.Payment_Group, "
+			"BlindBalance.Payment_Trans_Qty as Transaction_Qty, "
+           "cast(BlindBalance.Blind_Balance as numeric(15, 2)) Blind_Balance, "
+			"cast(BlindBalance.System_Balance as numeric(15, 2)) System_Balance, "
+			"cast(BlindBalance.Office_Balance as numeric(15, 2)) Office_Balance, "
+			"cast((BlindBalance.Office_Balance "
+           "      - BlindBalance.System_Balance) as numeric(15, 2)) as Variance "
 		"From "
 			"Zeds Inner Join Security on "
-				"Zeds.Security_Ref = Security.Security_Ref "
+			"	Zeds.Security_Ref = Security.Security_Ref "
 			"Left Join BlindBalance on "
-				"Zeds.Z_Key = BlindBalance.Z_Key "
+			"	Zeds.Z_Key = BlindBalance.Z_Key "
 		"Where "
 			"Zeds.Time_Stamp > :StartDateTime And "
-			"Zeds.Time_Stamp <= :EndDateTime ";
+			"Zeds.Time_Stamp <= :EndDateTime And SECURITY.SECURITY_EVENT = 'Till Z Off' ";
 
 	if (Terminals && Terminals->Count > 0)
 	{
@@ -977,11 +996,11 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
 	}
 	qrCashupRecon->SQL->Text =	qrCashupRecon->SQL->Text +
 
+		"GROUP BY 1,2,3,4,5,6,7,BlindBalance.Payment_Trans_Qty,BlindBalance.Blind_Balance,BlindBalance.Office_Balance,BlindBalance.System_Balance "
 		"Order By "
-			"Zeds.Time_Stamp,"
-			"BlindBalance.Z_Key,"
-			"BlindBalance.Payment_Group,"
-			"BlindBalance.Payment";
+            "Zeds.Time_Stamp , "
+            " Zeds.Z_Key, "
+            "UPPER(BlindBalance.Payment) ";
 
 	if (Terminals) for (int i=0; i<Terminals->Count; i++)
 	{
@@ -5025,7 +5044,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join DAYARCBILL on DAYARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join DAYARCBILLPAY on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
         "where "
-            " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
+            " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime ";
 
@@ -5057,7 +5076,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
             "left join ARCBILL on ARCBILL.INVOICE_KEY = invoices.INVOICE_KEY "
             "Left join ARCBILLPAY on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "where "
-            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0 and "
+            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 ) and ARCBILLPAY.SUBTOTAL != 0 and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime ";
 
@@ -5086,6 +5105,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	qrInvoice->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoice->ParamByName("EndTime")->AsDateTime		= EndTime;
     qrInvoice->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
+    qrInvoice->ParamByName("PAYMENT_PROPERTIES2")->AsString = PAYMENT_PROPERTIES2;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
@@ -5143,7 +5163,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-            " ARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and ARCBILLPAY.SUBTOTAL != 0  and "
+            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and ARCBILLPAY.SUBTOTAL != 0  and "
             "arcbill.time_stamp >= :StartTime and "
             "arcbill.time_stamp < :EndTime   ";
 
@@ -5205,7 +5225,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-              " DAYARCBILLPAY.PROPERTIES containing :PAYMENT_PROPERTIES and DAYARCBILLPAY.SUBTOTAL != 0 and "
+              " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 )and DAYARCBILLPAY.SUBTOTAL != 0 and "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime   " ;
 
@@ -5227,6 +5247,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	qrInvoiceDetailed->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrInvoiceDetailed->ParamByName("EndTime")->AsDateTime		= EndTime;
     qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES")->AsString = PAYMENT_PROPERTIES;
+    qrInvoiceDetailed->ParamByName("PAYMENT_PROPERTIES2")->AsString = PAYMENT_PROPERTIES2;
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
@@ -6314,13 +6335,12 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 {
-
 	qrTabSummary->Close();
 	qrTabSummary->SQL->Text =
 	"Select   "
 	"Tab.Tab_Key,  "
 	"Tab.Tab_Name,  "
-	"Tab.Credit Credit,  "
+	"COALESCE(Tab.Credit,0) Credit,  "
 	"Extract(Day From Orders.Time_Stamp) Trans_Day,  "
 	"Extract(Month From Orders.Time_Stamp) Trans_Month, " 
 	"Extract(Year From Orders.Time_Stamp) Trans_Year,  "
@@ -6329,31 +6349,231 @@ void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 	"Orders.Course_Name, "  
 	"Orders.Item_Name,  "
 	"Orders.Size_Name, "
-	"cast(Sum(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX) as numeric(17, 4)) Total_Price ,  "
-	"cast((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.VAT/100 as numeric(17, 4)) VAT,  "
-	"cast((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100 as numeric(17, 4)) ServiceCharge ,  "
-	"cast(((Sum(Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100)*STAX.ServiceChargeTax/100 as numeric(17, 4))  ServiceChargeTax "
+	"CAST(Sum(COALESCE(Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX,0)) as numeric(17, 4)) Total_Price , "
+
+     " cast((  Sum( "  
+                 " case when taxsetting.isPriceIncludetax =1 then "
+                               "cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) + "
+                                       "cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "
+                                        " + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))  "
+                                                        "  ) )as numeric(17,4)) )as  numeric(17,4)) "
+                   " else "
+                             " case when taxsetting.isRecalculateTaxAfterDiscount =1  then "
+                                 "  cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+                                        "   cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "
+                                         "    + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))  "
+                                                                            "  ) )as numeric(17,4)) )as  numeric(17,4))   "
+                             "  else "
+                               "       cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) "
+                            "  end "
+              "   end  "
+           " )  * cast ((COALESCE(TaxDetails.VAT,0))as numeric (17,4))/100 )as numeric(17,4))  VAT, "
+
+          
+ "  Sum( "  
+ "            case when taxsetting.isPriceIncludeServiceCharge =1 then "  
+ "                          cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+ "                                  cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "                                                                                                                                                           
+ "                                    + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+ "                                                         ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"	 else  "
+ "                 case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then "    
+ "                                 cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+ "                                      cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "                                                                                                                                                               
+ "                                        + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))"   
+ "                                                                         ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) " 
+ "                          else "  
+ "                          cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "   
+ "                       end " 
+ "               end  "        
+ "            ) ServiceCharge , "
+
+
+"	cast((   Sum(  "          
+ "            case when taxsetting.isPriceIncludeServiceCharge =1 then " 
+ "                          cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+ "                                      cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "                                                                                                                                                        
+ "                                        + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+ "                                                         ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+ "             else " 
+ "                 case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then " 
+ "                                 cast((  (cast((  cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) + "
+ "                                      cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) "                                                                                                                                                                      
+ "                                        + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "   
+ "                                                         ) )as numeric(17,4)) )as  numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+ "                       else "
+ "                          cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+ "                       end  "
+ "               end  "    
+ "            ) *  cast((COALESCE(STAX.ServiceChargeTax,0))as numeric(17,4))/100 )as numeric(17,4))    ServiceChargeTax, "
+
+
+     "Cast( "      
+     "CASE WHEN (TaxDetails.VAT = 0) THEN (cast(( "
+"          Sum(  "
+"               cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  " 
+"                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) " 
+"                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) "
+"                      )    +  "
+"     cast((  Sum( "  
+"                  case when taxsetting.isPriceIncludetax =1 then "  
+"                               cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))  "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) " 
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) "
+"	 else  "
+"                              case when taxsetting.isRecalculateTaxAfterDiscount =1  then " 
+"                                   cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) + " 
+"                                           cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4)) " 
+"                                             + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "
+"                                                                              ) )as numeric(17,4)) )as  numeric(17,4)) " 
+"                               else "   
+"                                      cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) "
+"                              end                                                                                                                  "
+"                 end                                                                                                                               "
+"            )  * cast ((COALESCE(TaxDetails.VAT,0))as numeric (17,4))/100 )as numeric(17,4))  +                                                    "
+"      sum( cast((  cast(( coalesce(ORDERS.BASE_PRICE,0)-  coalesce(ORDERS.MAXRETAILPRICE,0))as numeric(17,4)) *  cast((coalesce(TaxDetails.ProfitTax,0))as numeric(17,4))/100 )as numeric(17,4)) ) +  "
+"        Sum(   "
+"             case when taxsetting.isPriceIncludeServiceCharge =1 then   "
+"                           cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) + " 
+"                                   cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))                                                                                                                                                            "
+"                                     + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"	 else  "
+"                  case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then "    
+"                                  cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))                                                                                                                                                                "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+"                                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"                           else  " 
+"                           cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "   
+"                        end  "
+"                end          "
+"             )  +            "
+"    cast((   Sum(            "
+"             case when taxsetting.isPriceIncludeServiceCharge =1 then " 
+"                           cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))                                                                                                                                                         "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"              else  "
+"                  case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then  "
+"                                  cast((  (cast((  cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.BASE_PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT_WITHOUT_TAX,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) + "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))                                                                                                                                                                       "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "  
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) " 
+
+"                        else "
+"                           cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"                        end  "
+"                end  "    
+"             ) *  cast((COALESCE(STAX.ServiceChargeTax,0))as numeric(17,4))/100 )as numeric(17,4)) " 
+"      )    as numeric(17,4)) ) "
+   " ELSE "
+"        (  "
+"          Sum(  "
+"               cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +   "
+"                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))  "
+"                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) "
+"                      )    +  "
+"     cast((  Sum(   "
+"                  case when taxsetting.isPriceIncludetax =1 then   "
+"                               cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))  "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))  "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4))  "
+"                    else  "
+"                              case when taxsetting.isRecalculateTaxAfterDiscount =1  then  "
+"                                   cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                           cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))  "
+"                                             + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4)) "
+"                                                                              ) )as numeric(17,4)) )as  numeric(17,4))  "
+"                               else    "
+"                                      cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4))  "
+"                              end    "
+"                 end    "
+"            )  * cast ((COALESCE(TaxDetails.VAT,0))as numeric (17,4))/100 )as numeric(17,4))  +   "
+"      sum( cast((  cast(( coalesce(ORDERS.PRICE,0)-  coalesce(ORDERS.MAXRETAILPRICE,0))as numeric(17,4)) *  cast((coalesce(TaxDetails.ProfitTax,0))as numeric(17,4))/100 )as numeric(17,4)) ) +  "
+"        Sum(     "
+"             case when taxsetting.isPriceIncludeServiceCharge =1 then   "
+"                           cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                   cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))   "
+"                                     + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))   "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4))  "
+"              else  "
+"                  case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then     "
+"                                  cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))   "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))   "
+"                                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"                           else   "
+"                           cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4))   "
+"                        end  "
+"                end  "
+"             )  +  "
+"    cast((   Sum(  "
+"             case when taxsetting.isPriceIncludeServiceCharge =1 then  "
+"                           cast((  (cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))   "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))  "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"              else  "
+"                  case when  taxsetting.isRecalculateServiceChargeAfterDiscount =1   then  "
+"                                  cast((  (cast((  cast((  cast((  (cast( (cast((Orders.Qty)as numeric(17,4)) * cast((ORDERS.PRICE)as numeric(17,4)))as numeric(17,4)) + coalesce(ORDERS.DISCOUNT,0)) / (1 + cast((( case when taxsetting.isPriceIncludetax =1 then 1 else 0 end )* (coalesce(TaxDetails.VAT,0)/100))as numeric (17,4)) +  "
+"                                       cast( ( (case when taxsetting.isPriceIncludeServiceCharge =1 then 1 else 0 end)*(coalesce(TaxDetails.ServiceCharge,0)/100) )as numeric(17,4))   "
+"                                         + cast(((case when taxsetting.isApplyTaxToServiceCharge =1  and taxsetting.isPriceIncludeServiceCharge =1 and taxsetting.isPriceIncludetax =1 and taxsetting.isPriceIncludetax =1  then 1 else 0 end) *  cast((    (coalesce(STAX.ServiceChargeTax,0)/100) *(coalesce(TaxDetails.ServiceCharge,0)/100))as numeric(17,4)) )as numeric(17,4))   "
+"                                                          ) )as numeric(17,4)) )as  numeric(17,4)) )as  numeric(17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4))  "
+"                              "
+"                        else "
+"                           cast (( (cast ((( cast((Orders.Qty)as numeric(17,4))  * cast(Orders.BASE_PRICE as numeric(17,4) )))as numeric (17,4)) )* cast ((coalesce(TaxDetails.ServiceCharge,0))as numeric(17,4))/100 )as numeric(17,4)) "
+"                        end  "
+"                end      "
+"             ) *  cast((COALESCE(STAX.ServiceChargeTax,0))as numeric(17,4))/100 )as numeric(17,4))  "
+"      ) END as numeric(17,4))  SalesIncl "
 	"From  "
 	"Tab Left Join Orders On  "
 	"Tab.Tab_Key = Orders.Tab_Key  "
+    "left join  "
+            "(SELECT  cast(1 as int) keyvalue ,  "
+           " TAXPROFILE.ORDER_KEY,    "
+                    "COALESCE(sum(CASE WHEN (TAXPROFILE.TYPE = 0 AND COALESCE(DISC_GROUPS.ORDER_KEY,0) = 0 ) THEN COALESCE(TAXPROFILE.TAX_RATE,0) END),0) AS VAT, "
+                    "sum(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,  "
+                    "sum(CASE WHEN TAXPROFILE.TYPE = 3 THEN TAXPROFILE.TAX_RATE END) AS ServiceChargeTax,  "
+                     "sum(CASE WHEN TAXPROFILE.TYPE = 5 THEN TAXPROFILE.TAX_RATE END) AS ProfitTax  "
+                   " FROM (SELECT "
+                   " TFO.ORDER_KEY,  TAXPROFILES.TYPE,  "
+                   " Cast(( sum(COALESCE(TAXPROFILES.RATE,0)) ) as Numeric(17,4)) TAX_RATE  "
+                   " FROM TAXPROFILES_ORDERS TFO   "
+                   " left join TAXPROFILES on TAXPROFILES.PROFILE_KEY=TFO.PROFILE_KEY  "
+                   " group by TFO.ORDER_KEY,TAXPROFILES.TYPE,TAXPROFILES.RATE )  TAXPROFILE "
+                   " LEFT JOIN (  SELECT  OD.ORDER_KEY, "
+                                         " DGDT.DISCOUNTTYPE_KEY, "
+                                         "  DGDT.DISCOUNTGROUPS_KEY,  "
+                                         " DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY KEY2   "
+                               " FROM ORDERDISCOUNTS OD   "
+                               " INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGDT ON OD.DISCOUNT_KEY = DGDT.DISCOUNTTYPE_KEY "
+                               " INNER JOIN DISCOUNT_GROUPS ON  DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY = DGDT.DISCOUNTGROUPS_KEY  "
+                               " WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME  = 'Senior Citizen' OR DISCOUNT_GROUPS.DISCOUNTGROUP_NAME  = 'Person with Disability') DISC_GROUPS ON DISC_GROUPS.ORDER_KEY = TAXPROFILE.ORDER_KEY "
+                   " GROUP BY TAXPROFILE.ORDER_KEY "
+                                         
+            " ) TaxDetails on TaxDetails.ORDER_KEY=ORDERS.ORDER_KEY                            "
+            " left join (SELECT VARS.keyvalue  ,MIN(CASE WHEN setting.INTEGER_VAL = 1 THEN VARS.ServiceChargeTax else cast(0 as int)   END) AS ServiceChargeTax "                                                                                            
+                       "  FROM (  SELECT      cast(1 as int) keyvalue   , "                                                                                                                                                                                                        
+                       "             MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8007 THEN VARSPROFILE.NUMERIC_VAL END "                                                                                                                                                                       
+                       "                     ) AS ServiceChargeTax      FROM VARSPROFILE   )    VARS                 "                                                                                                                                                                               
+                       "     left join (SELECT   cast(1 as int) keyvalue  ,a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY=8005) setting on  setting.keyvalue=    VARS.keyvalue "                                                                                              
+                       " group by 1   ) STAX on  STAX.keyvalue=TaxDetails.keyvalue "                                                                                                                                                                                             
+           "left join ( SELECT                                                     "                                                                                                                                                                      
+                "cast(1 as int) keyvalue   ,                                       "                                                                                                                                                                      
+                " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8000 THEN VARSPROFILE.INTEGER_VAL END ) As isPriceIncludetax  ,                       "                                                                                                       
+                " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8001 THEN VARSPROFILE.INTEGER_VAL END ) As isPriceIncludeServiceCharge  ,             "                                                                                                       
+                " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8002 THEN VARSPROFILE.INTEGER_VAL END ) As isRecalculateTaxAfterDiscount  ,           "                                                                                                       
+                " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8003 THEN VARSPROFILE.INTEGER_VAL END ) As  isRecalculateServiceChargeAfterDiscount , "                                                                                                       
+                " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8005 THEN VARSPROFILE.INTEGER_VAL END ) As  isApplyTaxToServiceCharge                 "                                                                                                       
+                " from VARSPROFILE) taxsetting on  taxsetting.keyvalue=TaxDetails.keyvalue                                                        "
 
-	"left join  "
-	"(SELECT  cast(1 as int) keyvalue   ,  "
-	"TAXPROFILE.ORDER_KEY,   "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 0 THEN TAXPROFILE.TAX_RATE END) AS VAT, "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,   "
-	"MIN(CASE WHEN TAXPROFILE.TYPE = 3 THEN TAXPROFILE.TAX_RATE END) AS OtherServiceCharge    "
-	"FROM (SELECT "
-	"TFO.ORDER_KEY,  TAXPROFILES.TYPE,  "
-	"Cast(Sum(COALESCE(TAXPROFILES.RATE,0) ) as Numeric(17,4)) TAX_RATE  "
-	"FROM TAXPROFILES_ORDERS TFO       "
-	"left join TAXPROFILES on TAXPROFILES.PROFILE_KEY=TFO.PROFILE_KEY  "
-	"group by TFO.ORDER_KEY,TAXPROFILES.TYPE     "
-	")  TAXPROFILE   "
-	"GROUP BY TAXPROFILE.ORDER_KEY  "
-	") Tax on Tax.ORDER_KEY=Orders.ORDER_KEY "
-	"left join (SELECT      cast(1 as int) keyvalue   , "
-	"MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8007 THEN VARSPROFILE.NUMERIC_VAL END) AS ServiceChargeTax      FROM VARSPROFILE    ) STAX on  STAX.keyvalue=Tax.keyvalue "
 	"Where  "
 		"(Orders.Order_Type = 3 Or  "
 		"Orders.Order_Type = 0 Or  "
@@ -6384,7 +6604,8 @@ void TdmMMReportData::SetupTabSummary(TStrings *TabTypes, TStrings *Tabs)
 		"Orders.Time_Stamp,  "
 		"Orders.Course_Name, " 
 		"Orders.Item_Name,  "
-		"Orders.Size_Name ,Tax.VAT ,Tax.ServiceCharge ,Tax.OtherServiceCharge ,STAX.ServiceChargeTax "
+		"Orders.Size_Name , "
+         +  _groupByClause + ///group by taxes
 		"Having  "
 		"Sum(Orders.Qty) <> 0 " 
 		"Order By  "
@@ -8296,7 +8517,7 @@ void TdmMMReportData::SetupLoyaltyPoints(TStrings *Customers)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Member_Number,"
 			"Total_Spent Points_Earnt,"
             "Earnt_Points,"
@@ -8312,7 +8533,7 @@ void TdmMMReportData::SetupLoyaltyPoints(TStrings *Customers)
 	if (Customers->Count > 0)
 	{
 		qrLoyalty->SQL->Text =	qrLoyalty->SQL->Text + "And (" +
-										ParamString(Customers->Count, "Name", "Param") + ")";
+										ParamString(Customers->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "Param") + ")";
 	}
 	qrLoyalty->SQL->Text =		qrLoyalty->SQL->Text +
 		"Order By "
@@ -8333,7 +8554,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 
 		"select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+		 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Item_Name Item_Name,"
 			"Archive.Size_Name,"
 			"cast(sum(Archive.Points_Earned) as numeric(17, 4)) as Earned,"
@@ -8364,7 +8585,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8374,7 +8595,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 
 	qrLoyaltySales->SQL->Text		=	qrLoyaltySales->SQL->Text +
 		"Group By "
-			"Contacts.Name,"
+			"Name,"
 			"Contacts.Member_Number,"
 			//"Archive.Time_Stamp,"
 			//"Archive.Menu_Name,"
@@ -8389,7 +8610,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 
 		"Select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+			 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			//"DayArchive.Time_Stamp,"
 			//"DayArchive.Menu_Name Group_Name,"
 			//"DayArchive.Course_Name,"
@@ -8427,7 +8648,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8437,7 +8658,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryCategory(TDateTime StartTime, TDat
 
 	qrLoyaltySales->SQL->Text		=	qrLoyaltySales->SQL->Text +
 		"Group By "
-			"Contacts.Name,"
+			"Name,"
 			"Contacts.Member_Number,"
 			//"DayArchive.Time_Stamp,"
 			//"DayArchive.Menu_Name,"
@@ -8473,7 +8694,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategory(TDateTime StartTime, TDa
 	qrLoyaltySales->SQL->Text =
 		"select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+             "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Time_Stamp,"
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name,"
 			"Archive.Size_Name,"
@@ -8503,7 +8724,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategory(TDateTime StartTime, TDa
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8519,7 +8740,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategory(TDateTime StartTime, TDa
 
 		"Select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+		"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"DayArchive.Time_Stamp,"
 			"Cast(DayArchive.Item_Name as VarChar(50)) Item_Name,"
 			"DayArchive.Size_Name,"
@@ -8548,7 +8769,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategory(TDateTime StartTime, TDa
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8586,7 +8807,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategoryExternalMember(TDateTime 
 		"select "
 			"Contacts.CONTACTS_3RDPARTY_KEY,"
 			"Cast(Contacts.CONTACTS_3RDPARTY_KEY as VarChar(10)) Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Time_Stamp_Billed,"
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name,"
 			"Archive.Size_Name,"
@@ -8616,7 +8837,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategoryExternalMember(TDateTime 
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8633,7 +8854,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategoryExternalMember(TDateTime 
 		"Select "
 			"Contacts.CONTACTS_3RDPARTY_KEY,"
 			"Cast(Contacts.CONTACTS_3RDPARTY_KEY as VarChar(10)) Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"DayArchive.Time_Stamp_Billed,"
 			"Cast(DayArchive.Item_Name as VarChar(50)) Item_Name,"
 			"DayArchive.Size_Name,"
@@ -8662,7 +8883,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedCategoryExternalMember(TDateTime 
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Groups && Groups->Count > 0)
 	{
@@ -8706,7 +8927,8 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 	qrLoyaltySales->SQL->Text =
 		"select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+
+            "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Item_Name Item_Name,"
 			"Archive.Size_Name,"
 			"cast(sum(Archive.Points_Earned) as numeric(17, 4)) as Earned,"
@@ -8734,7 +8956,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -8746,7 +8968,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 	}
 	qrLoyaltySales->SQL->Text		=	qrLoyaltySales->SQL->Text +
 		"Group By "
-			"Contacts.Name,"
+			"Name,"
 			"Contacts.Member_Number,"
 			"Archive.Item_Name,"
 			"Archive.Size_Name "
@@ -8757,7 +8979,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 
 		"Select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"DayArchive.Item_Name Item_Name,"
 			"DayArchive.Size_Name,"
 			"cast(sum(DayArchive.Points_Earned) as numeric(17, 4)) as Earned,"
@@ -8783,7 +9005,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -8795,7 +9017,7 @@ void TdmMMReportData::SetupLoyaltySalesSummaryItem(TDateTime StartTime, TDateTim
 	}
 	qrLoyaltySales->SQL->Text		=	qrLoyaltySales->SQL->Text +
 		"Group By "
-			"Contacts.Name,"
+			"Name,"
 			"Contacts.Member_Number,"
 			"DayArchive.Item_Name,"
 			"DayArchive.Size_Name "
@@ -8844,7 +9066,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItem(TDateTime StartTime, TDateTi
 	qrLoyaltySales->SQL->Text =
 		"select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Time_Stamp,"
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name,"
 			"Archive.Size_Name,"
@@ -8867,7 +9089,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItem(TDateTime StartTime, TDateTi
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -8885,7 +9107,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItem(TDateTime StartTime, TDateTi
 
 		"Select "
 			"Contacts.Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"DayArchive.Time_Stamp,"
 			"Cast(DayArchive.Item_Name as VarChar(50)) Item_Name,"
 			"DayArchive.Size_Name,"
@@ -8908,7 +9130,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItem(TDateTime StartTime, TDateTi
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -8962,7 +9184,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItemExternalMember(TDateTime Star
 		"select "
 			"Contacts.CONTACTS_3RDPARTY_KEY,"
 			"Cast(Contacts.CONTACTS_3RDPARTY_KEY as VarChar(10)) Member_Number,"
-			"Contacts.Name,"
+		"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"Archive.Time_Stamp,"
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name,"
 			"Archive.Size_Name,"
@@ -8985,7 +9207,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItemExternalMember(TDateTime Star
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -9004,7 +9226,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItemExternalMember(TDateTime Star
 		"Select "
 			"Contacts.CONTACTS_3RDPARTY_KEY,"
 			"Cast(Contacts.CONTACTS_3RDPARTY_KEY as VarChar(10)) Member_Number,"
-			"Contacts.Name,"
+			"(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"DayArchive.Time_Stamp,"
 			"Cast(DayArchive.Item_Name as VarChar(50)) Item_Name,"
 			"DayArchive.Size_Name,"
@@ -9027,7 +9249,7 @@ void TdmMMReportData::SetupLoyaltySalesDetailedItemExternalMember(TDateTime Star
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltySales->SQL->Text	=	qrLoyaltySales->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	// Item and Size
 	if (ItemList && ItemList->Count > 0)
@@ -9075,7 +9297,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	qrLoyaltyDiscProducts->SQL->Text =
 		"Select "
 			"Security.Security_Event,"
-			"Contacts.Name,"
+            "(NAME || ' ' || Last_Name) as Name, "
 			"Archive.Time_Stamp,"
 			"Archive.Menu_Name Group_Name,"
 			"Archive.Course_Name,"
@@ -9102,7 +9324,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-														ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+														ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 
@@ -9110,7 +9332,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 
 	"Select "
 			"Security.Security_Event,"
-			"Contacts.Name,"
+			 "(NAME || ' ' || Last_Name) as Name, "
 			"DayArchive.Time_Stamp,"
 			"DayArchive.Menu_Name Group_Name,"
 			"DayArchive.Course_Name,"
@@ -9138,7 +9360,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-														ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+														ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 
@@ -9146,7 +9368,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 
 	"Select "
 			"Security.Security_Event,"
-			"Contacts.Name,"
+		   "(NAME || ' ' || Last_Name) as Name, "
 			"Orders.Time_Stamp,"
 			"Orders.Menu_Name Group_Name,"
 			"Orders.Course_Name,"
@@ -9172,7 +9394,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 
@@ -9526,7 +9748,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 	qrLoyaltyHistory->SQL->Text =
 		"Select "
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
-			"Contacts.Name,"
+             "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
 			"PT.Total Total_Points, "
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
@@ -9549,7 +9771,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	if (Locations->Count > 0)
 	{
@@ -9560,14 +9782,14 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"Group By "
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
-			"Contacts.Name,"
+			"Name,"
 			"PT.Total "
 
 		"Union All "
 
     "Select "
 			"cast(ArcBill.Billed_Location as varchar(25)) Order_Location,"
-			"CT.NAME,"
+            "(CT.NAME || ' ' || CT.Last_Name) as Name, "
 			"cast(0 as numeric(17, 4)) Total_Points,"
 			"cast(0 as numeric(17, 4)) Total_Spent,"
 			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
@@ -9589,7 +9811,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "CT.NAME", "NamesParam") + ")";
+													ParamString(Names->Count, "(CT.NAME || ' ' || CT.Last_Name)", "NamesParam") + ")";
 	}
 	if (Locations->Count > 0)
 	{
@@ -9598,7 +9820,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 	}
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
-			"ArcBill.Billed_Location,CT.NAME "
+			"ArcBill.Billed_Location,Name "
 
 		"Order By "
 			"1,2";
@@ -9738,7 +9960,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "ARCBILL.BILLED_LOCATION AS LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
+			 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as NAME, "
 			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9759,7 +9981,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyAuditSummary->SQL->Text	=	qrLoyaltyAuditSummary->SQL->Text + "AND (" +
-														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
+														ParamString(Names->Count,  "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 
 	qrLoyaltyAuditSummary->SQL->Text		=	qrLoyaltyAuditSummary->SQL->Text +
@@ -9769,6 +9991,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
+              "CONTACTS.LAST_NAME,"
 			 "CONTACTS.TOTAL_SPENT,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9782,7 +10005,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "DAYARCBILL.BILLED_LOCATION AS LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
+			 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as NAME, "
 			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9803,7 +10026,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyAuditSummary->SQL->Text	=	qrLoyaltyAuditSummary->SQL->Text + "AND (" +
-														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
+														ParamString(Names->Count,  "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 
 	qrLoyaltyAuditSummary->SQL->Text		=	qrLoyaltyAuditSummary->SQL->Text +
@@ -9813,6 +10036,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
+              "CONTACTS.LAST_NAME,"
 			 "CONTACTS.TOTAL_SPENT,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9844,7 +10068,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "ARCBILL.BILLED_LOCATION AS LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
+              "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as NAME, "
 			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9877,7 +10101,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyAuditSummary->SQL->Text	=	qrLoyaltyAuditSummary->SQL->Text + "AND (" +
-														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
+														ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 
 	if (Locations->Count > 0)
@@ -9891,8 +10115,8 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "ARCBILL.BILLED_LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
-			 "CONTACTS.TOTAL_SPENT,"
+			 "NAME,"
+            "CONTACTS.TOTAL_SPENT,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
@@ -9906,7 +10130,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "DAYARCBILL.BILLED_LOCATION AS LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
+			 "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as NAME, "
 			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -9955,7 +10179,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "DAYARCBILL.BILLED_LOCATION,"
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
-			 "CONTACTS.NAME,"
+			   "NAME,"
 			 "CONTACTS.TOTAL_SPENT,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
@@ -10190,7 +10414,7 @@ void TdmMMReportData::SetupLoyaltyDetails(TStrings *Customers)
 	if (Customers->Count > 0)
 	{
 		qrLoyalty->SQL->Text =	qrLoyalty->SQL->Text + "And (" +
-										ParamString(Customers->Count, "Name", "Param") + ")";
+										ParamString(Customers->Count, "Name ||' '|| LAST_NAME", "Param") + ")";
 	}
 	qrLoyalty->SQL->Text =		qrLoyalty->SQL->Text +
 		"Order By "
@@ -10923,7 +11147,7 @@ void TdmMMReportData::SetupLoyaltyPurchaseCountByContact(TStrings *Names)
 			"ContactFreebie.Item_Name,"
 			"ContactFreebie.Size_Name,"
 			"Cast(ContactFreebie.Item_Count as numeric(15,2)) Item_Count,"
-			"Contacts.Name,"
+             "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as NAME, "
 			"cast(sum(ItemSize.Loc_Sale_Count) as numeric(17, 4)) Loc_Sale_Count,"
 			"cast(sum(ItemSize.Loc_Discount_Percent) as numeric(17, 4)) Loc_Discount_Percent,"
 			"cast(sum(ItemSize.Mem_Sale_Count) as numeric(17, 4)) Mem_Sale_Count,"
@@ -10938,16 +11162,16 @@ void TdmMMReportData::SetupLoyaltyPurchaseCountByContact(TStrings *Names)
 	if (Names->Count > 0)
 	{
 		qrLoyaltyPurchaseCount->SQL->Text	=	qrLoyaltyPurchaseCount->SQL->Text + "Where (" +
-												ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+												ParamString(Names->Count, "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyPurchaseCount->SQL->Text = qrLoyaltyPurchaseCount->SQL->Text +
 		"Group by "
-			"Contacts.Name,"
+			"Name, "
 			"ContactFreebie.Item_Name,"
 			"ContactFreebie.Size_Name,"
 			"ContactFreebie.Item_Count "
 		"Order by "
-			"Contacts.Name,ContactFreebie.Item_Name,ContactFreebie.Size_Name";
+			"Name,ContactFreebie.Item_Name,ContactFreebie.Size_Name";
 
 	for (int i=0; i<Names->Count; i++)
 	{
@@ -15657,7 +15881,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
       case 0:
       {
          qrResetPoints->SQL->Text =
-            "SELECT contacts.NAME,"
+            "SELECT (CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
             "a.TIMESTAMPS, a.CONTACTS_KEY, a.POINTS,a.ADJUSTMENT_TYPE "
             "FROM RESETPOINTS a "
             "left join contacts on contacts.CONTACTS_KEY=a.CONTACTS_KEY "
@@ -15668,7 +15892,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
       case 1:
       {
          qrResetPoints->SQL->Text =
-            "SELECT contacts.NAME,"
+            "SELECT (CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
             "a.TIMESTAMPS, a.CONTACTS_KEY, a.POINTS,a.ADJUSTMENT_TYPE "
             "FROM RESETPOINTS a "
             "left join contacts on contacts.CONTACTS_KEY=a.CONTACTS_KEY "
@@ -15679,7 +15903,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
       case 2:
       {
          qrResetPoints->SQL->Text =
-            "SELECT contacts.NAME,"
+            "SELECT (CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
             "a.TIMESTAMPS, a.CONTACTS_KEY, a.POINTS,a.ADJUSTMENT_TYPE "
             "FROM RESETPOINTS a "
 
@@ -15691,7 +15915,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
       case 3:
       {
          qrResetPoints->SQL->Text =
-            "SELECT contacts.NAME,"
+            "SELECT (CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Name, "
             "a.TIMESTAMPS, a.CONTACTS_KEY, a.POINTS,a.ADJUSTMENT_TYPE "
             "FROM RESETPOINTS a "
             "left join contacts on contacts.CONTACTS_KEY=a.CONTACTS_KEY "
@@ -16283,7 +16507,8 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 	qrMembershipAuditPointsBreakdown->Close();
 	qrMembershipAuditPointsBreakdown->SQL->Text =
 		"select "
-				"CONTACTS.NAME as Contacts_name, "
+
+                "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name) as Contacts_name, "
                 "CONTACTS.CONTACTS_KEY, "
                 "Item_breakdown.TIME_STAMP, "
 				"Contacts.Mailing_address as Contacts_address, "
@@ -16481,7 +16706,7 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
                  	if (Names && Names->Count > 0)
 	{
 		qrMembershipAuditPointsBreakdown->SQL->Text	=	qrMembershipAuditPointsBreakdown->SQL->Text + "AND (" +
-														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
+														ParamString(Names->Count,  "(CONTACTS.NAME || ' ' || CONTACTS.Last_Name)", "NamesParam") + ")";
 	}
 
     qrMembershipAuditPointsBreakdown->SQL->Text = qrMembershipAuditPointsBreakdown->SQL->Text + "order by 2, 3 asc ";

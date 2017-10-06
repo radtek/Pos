@@ -483,6 +483,14 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
          IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = Info.PointRule;
 		 IBInternalQuery->ExecQuery();
          TDBContacts::InsertDetailstoMemberSubs(DBTransaction, RetVal,inContactType,Info);
+         if(TPaySubsUtility::IsLocalLoyalty() && !TGlobalSettings::Instance().UseMemberSubs
+            && TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs) == 0)
+         {
+            int pointRules = 0;
+            pointRules |= eprAllowDiscounts;
+            pointRules |= eprFinancial;
+            TPointsRulesSetUtils().ExpandSubs(pointRules,Info.Points.PointsRulesSubs);
+         }
 	  }
    }
    catch(Exception & E)
@@ -546,7 +554,6 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
       IBInternalQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = retValue;
       IBInternalQuery->ParamByName("CONTACTS_KEY" )->AsInteger  = inContactKey;
       IBInternalQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
-
       if(TGlobalSettings::Instance().UseMemberSubs)
       {
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
@@ -611,7 +618,10 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
              IBInternalQuery->ExecQuery();
          }
 	  }
-
+      UnicodeString surName = "";
+      if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate) &&
+         !TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Surname == "")
+          surName = GetLastNameForLocalCard(DBTransaction,Info.ContactKey);
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text =
 		"UPDATE "
@@ -670,7 +680,10 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 			"CONTACTS_KEY = :CONTACTS_KEY";
 
 	  IBInternalQuery->ParamByName("NAME")->AsString = Info.Name.SubString(1, 50);
-      IBInternalQuery->ParamByName("LAST_NAME")->AsString = Info.Surname.SubString(1, 20);
+      if(surName != "")
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = surName;
+      else
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = Info.Surname.SubString(1, 20);
 	  IBInternalQuery->ParamByName("KNOWN_AS")->AsString = Info.Alias.SubString(1, 50);
 	  IBInternalQuery->ParamByName("TITLE")->AsString = Info.Title.SubString(1, 10);
 	  IBInternalQuery->ParamByName("SEX")->AsString = Info.Sex.SubString(1, 10);
@@ -729,7 +742,6 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       // try to match the current database points with the points in current info object. if they are different, add a sync record to database
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
-
      // sync the earned points
       if(Info.Points.getPointsBalance(ptstLoyalty) != dbPoints.getPointsBalance(ptstLoyalty))
       {
@@ -1752,4 +1764,16 @@ void TDBContacts::SetFirstVisitRewardStatus(Database::TDBTransaction &DBTransact
    IBInternalQuery->SQL->Text = "Update CONTACTS set IS_FIRSTVISIT_REWARDED = 'T' where CONTACTS_KEY = :CONTACTS_KEY ";
    IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
    IBInternalQuery->ExecQuery();
+}
+UnicodeString TDBContacts::GetLastNameForLocalCard(Database::TDBTransaction &DBTransaction,int ContactKey)
+{
+   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+   IBInternalQuery->Close();
+   IBInternalQuery->SQL->Text = "SELECT LAST_NAME FROM CONTACTS where CONTACTS_KEY = :CONTACTS_KEY ";
+   IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
+   IBInternalQuery->ExecQuery();
+   if(IBInternalQuery->RecordCount > 0)
+       return IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+   else
+       return "";
 }

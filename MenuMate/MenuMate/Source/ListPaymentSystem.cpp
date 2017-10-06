@@ -69,6 +69,7 @@
 #include "WalletPaymentsInterface.h"
 
 
+
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
 BOOL CALLBACK EnumChildWindowsProc(HWND hwnd, LPARAM lParam)
@@ -484,6 +485,12 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
+        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+        {
+            std::vector <UnicodeString> PayTypes;
+            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+            InsertPaymentTypeInPanasonicDB(PayTypes);
+        }
 	}
 	catch(Exception & E)
 	{
@@ -2258,8 +2265,8 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 		for (int CurrentIndex = 0; CurrentIndex < PaymentTransaction.Orders->Count; CurrentIndex++)
 		{
 			TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[CurrentIndex]);
-
-
+            if(Order->GetQty() == 0)
+              continue;
 			// Patch to fix missing Serving Course.
 			if (Order->ServingCourse.ServingCourseKey < 1)
 			{
@@ -3179,16 +3186,24 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
+            TItemComplete *Order = new TItemComplete();
+
+            if(PaymentTransaction.Orders->Count)
+                Order = (TItemComplete *)PaymentTransaction.Orders->Items[0];
+
             if(TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction) &&
                TGlobalSettings::Instance().CaptureRefundRefNo)
             {
                 PaymentTransaction.InvoiceNumber = "RV " + Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
             }
-             else
-             {
-                    PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-             }
-
+            else if(TGlobalSettings::Instance().IsBillSplittedByMenuType && PaymentTransaction.TypeOfSale == RegularSale && Order->ItemType == eDrinksItem)
+            {
+                PaymentTransaction.InvoiceNumber = "L" + Invoice->GetBeveragesInvoiceNumber(PaymentTransaction.DBTransaction);
+            }
+            else
+            {
+                PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+            }           
       }
     }
    else
@@ -4681,6 +4696,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                               //Calculate DWT , Tax on discount on remaining quantities
                                 TPaymentTransaction RemainingOrderTransaction(PaymentTransaction.DBTransaction);
                                 RemainingOrderTransaction.Orders->Add(SplittedItem);
+                                RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                                 RemainingOrderTransaction.Recalc();
 
                                 SplittedItem->OrderKey = 0;
@@ -4839,6 +4855,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                         {
                             TPaymentTransaction RemainingOrderTransaction(PaymentTransaction.DBTransaction);
                             RemainingOrderTransaction.Orders->Add(SplittedItem);
+                            RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                             RemainingOrderTransaction.Recalc();
                             // Save off the cloned orders with whats left of the partial payment.
                             //insert only splitted order because it's quantity is changed
@@ -4852,6 +4869,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 
                             TDBOrder::SetOrder(PaymentTransaction.DBTransaction, SplittedItem);
                             TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SplittedItem->Security);
+                            PaymentTransaction.SplittedItemKey = SplittedItem->OrderKey;
                             for (int i = 0; i < SplittedItem->SubOrders->Count; i++)
                             {
                                     TItemCompleteSub *SubOrder = SplittedItem->SubOrders->SubOrderGet(i);
@@ -6153,4 +6171,16 @@ UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList
        _lastreceipt += _receipt->Strings[i] + '\n';
     }
     return _lastreceipt;
+}
+//-----------------------------------------------------------------------------------
+void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
+{
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
+
+    dbPanasonic->InsertTenderTypes(PayTypes);
+
+    dbPanasonic->UniDataBaseConnection->Commit();
+    dbPanasonic->UniDataBaseConnection->Close();
 }

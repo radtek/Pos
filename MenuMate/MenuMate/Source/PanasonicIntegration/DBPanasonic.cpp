@@ -6,6 +6,8 @@
 #include "DBPanasonic.h"
 #include "MMLogging.h"
 #include "GlobalSettings.h"
+#include "MMMessageBox.h"
+#include <SqlTimst.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "DBAccess"
@@ -46,14 +48,14 @@ void TDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
 
         UniInsertQuery->ParamByName("CompleteReceiptData")->AsString    =  panasonicModels.LastReceipt;
         UniInsertQuery->ParamByName("StoreId")->AsAnsiString            =  (panasonicModels.StoreId).SubString (0,7);
-        UniInsertQuery->ParamByName("TerminalId")->AsAnsiString         =  (panasonicModels.Terminald).SubString (0,7);
+        UniInsertQuery->ParamByName("TerminalId")->AsAnsiString         =  panasonicModels.Terminald;
         UniInsertQuery->ParamByName("OperatorId")->AsAnsiString         =  (panasonicModels.OperatorId).SubString(0,7);
         UniInsertQuery->ParamByName("OperatorName")->AsAnsiString       =  panasonicModels.OperatorName != "" ? (panasonicModels.OperatorName).SubString (0,31):panasonicModels.OperatorName;
         UniInsertQuery->ParamByName("CustomerId")->AsAnsiString         =  panasonicModels.CustomerId != "" ? (panasonicModels.CustomerId).SubString (0,7):panasonicModels.CustomerId;
         UniInsertQuery->ParamByName("CustomerName")->AsAnsiString       =  panasonicModels.CustomerName != "" ? (panasonicModels.CustomerName).SubString (0,31) : panasonicModels.CustomerName;
         UniInsertQuery->ParamByName("TransactionId")->AsAnsiString      =  (panasonicModels.TransactionId).SubString (0,7);
         UniInsertQuery->ParamByName("TransactionType")->AsAnsiString    =  (panasonicModels.TransactionType).SubString (0,149);
-        UniInsertQuery->ParamByName("TenderType")->AsAnsiString         =  panasonicModels.TenderType != "" ? (panasonicModels.TenderType).SubString (0,149) : panasonicModels.TenderType;
+        UniInsertQuery->ParamByName("TenderType")->AsAnsiString         =  (panasonicModels.TenderType).SubString (0,149);
         UniInsertQuery->ParamByName("TransactionAmount")->AsCurrency    =  panasonicModels.TransactionAmount;
         UniInsertQuery->ParamByName("VoidAmount")->AsCurrency           =  panasonicModels.VoidAmount;
         UniInsertQuery->ParamByName("RefundAmount")->AsCurrency         =  panasonicModels.RefundAmount;
@@ -62,11 +64,11 @@ void TDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
         UniInsertQuery->ParamByName("CashOut")->AsBoolean               =  panasonicModels.CashOut;
         UniInsertQuery->ParamByName("AgeRestricted")->AsBoolean         =  panasonicModels.AgeRestricted;
         UniInsertQuery->ParamByName("StartTime")->AsDateTime            =  panasonicModels.StartTime;
-        UniInsertQuery->ParamByName("TimeZoneOfST")->AsDateTime         =  panasonicModels.TimeZoneOfST;
-        UniInsertQuery->ParamByName("DayLightTimeOfST")->AsDateTime     =  panasonicModels.DayLightTimeOfST;
+        UniInsertQuery->ParamByName("TimeZoneOfST")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.TimeZoneOfST);
+        UniInsertQuery->ParamByName("DayLightTimeOfST")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.DayLightTimeOfST);
         UniInsertQuery->ParamByName("EndTime")->AsDateTime              =  panasonicModels.EndTime;
-        UniInsertQuery->ParamByName("TimeZoneOfET")->AsDateTime         =  panasonicModels.TimeZoneOfET;
-        UniInsertQuery->ParamByName("DayLightTimeOfET")->AsDateTime     =  panasonicModels.DayLightTimeOfET;
+        UniInsertQuery->ParamByName("TimeZoneOfET")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.TimeZoneOfET);
+        UniInsertQuery->ParamByName("DayLightTimeOfET")->AsAnsiString = SQLTimeStampOffsetToStr("yyyy-mm-dd hh:nn:ss", panasonicModels.DayLightTimeOfET);
         UniInsertQuery->ParamByName("Cash")->AsBoolean                  =  panasonicModels.Cash;
         UniInsertQuery->ParamByName("CreditCard")->AsBoolean            =  panasonicModels.CreditCard;
         UniInsertQuery->ParamByName("Cheque")->AsBoolean                =  panasonicModels.Cheque;
@@ -190,3 +192,124 @@ void TDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransactionDBS
 		throw;
 	}
 }
+//-------------------------------------------------------------------------------------------------------------------------------
+void TDBPanasonic::InsertTenderTypes(std::vector <UnicodeString> PayTypes)
+{
+    try
+    {
+        UniInsertQuery->Connection = UniDataBaseConnection;
+        UniInsertQuery->Close();
+        UniInsertQuery->SQL->Clear();
+        int index = 0;
+
+        UniInsertQuery->SQL->Text = "SELECT MAX(ListOfOrder) ListOfOrder FROM TTenderType ";
+        UniInsertQuery->Execute();
+
+        if(!UniInsertQuery->Eof)
+            index = UniInsertQuery->FieldByName("ListOfOrder")->AsInteger;
+
+        for (std::vector <UnicodeString> ::iterator payType = PayTypes.begin(); payType != PayTypes.end(); payType++)
+        {
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text = "SELECT ListOfOrder, TenderType FROM TTenderType WHERE TTenderType.TenderType = :TENDER_TYPE ";
+            UniInsertQuery->ParamByName("TENDER_TYPE")->AsAnsiString = *payType;
+            UniInsertQuery->Execute();
+
+            if(UniInsertQuery->Eof)
+            {
+                UniInsertQuery->Close();
+                UniInsertQuery->SQL->Clear();
+                UniInsertQuery->SQL->Text =  "INSERT INTO TTenderType (ListOfOrder, TenderType) VALUES (:ListOfOrder, :TENDER_TYPE) ";
+                UniInsertQuery->ParamByName("ListOfOrder")->AsInteger =  ++index;
+                UniInsertQuery->ParamByName("TENDER_TYPE")->AsAnsiString = *payType;
+                UniInsertQuery->Execute();
+            }
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------------------
+void TDBPanasonic::PrepareTransactionTypes()
+{
+    try
+    {
+        InsertTransactionTypeRecords("*Sale*");
+        InsertTransactionTypeRecords("*Refund*");
+        InsertTransactionTypeRecords("*Cancelled Order*");
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//-------------------------------------------------------------------------------
+void TDBPanasonic::InsertTransactionTypeRecords(UnicodeString transactionType)
+{
+    try
+    {
+        UniInsertQuery->Connection = UniDataBaseConnection;
+        UniInsertQuery->Close();
+        UniInsertQuery->SQL->Clear();
+        UniInsertQuery->SQL->Text =  "SELECT * FROM TTransactionType WHERE TTransactionType.TransactionType = :TransactionType ";
+        UniInsertQuery->ParamByName("TransactionType")->AsString =  transactionType;
+        UniInsertQuery->Execute();
+
+        if(UniInsertQuery->Eof)
+        {
+            int index = 0;
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "SELECT MAX(ListOfOrder) ListOfOrder FROM TTransactionType ";
+            UniInsertQuery->Execute();
+
+            if(!UniInsertQuery->Eof)
+                index = UniInsertQuery->FieldByName("ListOfOrder")->AsInteger;
+
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "INSERT INTO TTransactionType (ListOfOrder, TransactionType) VALUES (:ListOfOrder, :TransactionType ) ";
+            UniInsertQuery->ParamByName("ListOfOrder")->AsInteger =  ++index;
+            UniInsertQuery->ParamByName("TransactionType")->AsString =  transactionType;
+            UniInsertQuery->Execute();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//-----------------------------------------------------------------------------------------
+void TDBPanasonic::InsertTerminalId(int terminalId)
+{
+    try
+    {
+        UniInsertQuery->Connection = UniDataBaseConnection;
+        UniInsertQuery->Close();
+        UniInsertQuery->SQL->Clear();
+        UniInsertQuery->SQL->Text =  "SELECT * FROM TPosTerminal WHERE TPosTerminal.PosTerminalID = :TerminalID ";
+        UniInsertQuery->ParamByName("TerminalID")->AsInteger =  terminalId;
+        UniInsertQuery->Execute();
+
+        if(UniInsertQuery->Eof)
+        {
+            UniInsertQuery->Close();
+            UniInsertQuery->SQL->Clear();
+            UniInsertQuery->SQL->Text =  "INSERT INTO TPosTerminal (PosTerminalID) VALUES (:TerminalID ) ";
+            UniInsertQuery->ParamByName("TerminalID")->AsInteger =  terminalId;
+            UniInsertQuery->Execute();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+

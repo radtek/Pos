@@ -147,6 +147,7 @@ TPaymentTransaction TManagerClippIntegrationHelper::CreatePartialPaymentTransact
         ApplyDiscountOnTabClose(clippTabTransaction, clippDiscounts, &totalVenueDiscount);
 
         //Calculate the details of the complete order..
+        clippTabTransaction.IgnoreLoyaltyKey = false;
         clippTabTransaction.Recalc();
 
         //If tax setting is recalculate tax than add tax on discount to total amount

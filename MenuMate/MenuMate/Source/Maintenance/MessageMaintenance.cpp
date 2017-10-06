@@ -172,6 +172,10 @@ void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
     if(MessageType == eServingTimes || MessageType == eRevenueCodes)
         delete managerPMSCodes;
 	Close();
+    if(CheckDefaultPatronTypes())
+    {
+	    Close();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
@@ -634,6 +638,8 @@ void __fastcall TfrmMessageMaintenance::sgDisplayDrawCell(TObject *Sender, int A
   }
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
 void __fastcall TfrmMessageMaintenance::sgDisplaySelectCell(TObject *Sender, int ACol,
           int ARow, bool &CanSelect)
 {
@@ -642,7 +648,29 @@ void __fastcall TfrmMessageMaintenance::sgDisplaySelectCell(TObject *Sender, int
         SelectedRow = ARow;
     }
 }
-//----------------------------------------------------------------------------
+bool TfrmMessageMaintenance::CheckDefaultPatronTypes()
+{
+    bool retVal = true;
+    if((int)sgDisplay->Objects[0][sgDisplay->Row] > 0 && MessageType == ePatronTypes)
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TIBSQL *query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text = " SELECT a.PATRONTYPES_KEY, a.PATRON_TYPE, a.IS_DEFAULT "
+                           " FROM PATRONTYPES a WHERE a.IS_DEFAULT = :IS_DEFAULT ";
+        query->ParamByName("IS_DEFAULT")->AsString = "T" ;
+        query->ExecQuery();
+        if(!query->RecordCount)
+        {
+            retVal = false;
+            MessageBox("Please Configure one of Patron Type to Default ", "Warning", MB_ICONWARNING + MB_OK);
+        }
+        DBTransaction.Commit();
+    }
+    return  retVal;
+}
+//---------------------------------------------------------------------------
 void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
 {
     std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));

@@ -118,7 +118,7 @@ class TStaffHoursController
 
 	public :
 		TStaffHoursController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction);
-		void Run(void);
+		void Run(bool isStaffHoursEditable = false);
 		TStaffHoursInterface Get(void);
 		TStaffHoursInterface StaffHours;
 };

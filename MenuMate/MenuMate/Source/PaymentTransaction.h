@@ -206,6 +206,7 @@ class TPaymentTransaction
         bool IsVouchersProcessed;
         void makeLogFile(UnicodeString str);
         SCDPWDCustomerDetails customerDetails;
+        bool IgnoreLoyaltyKey;
         TPMSClientDetails PMSClientDetails;
 };
 

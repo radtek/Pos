@@ -17,7 +17,7 @@ void TManagerTimeClock::SetDefaultDept(Database::TDBTransaction &DBTransaction)
    AddClockInDept(DBTransaction,"Kitchen",4);
    AddClockInDept(DBTransaction,"Cleaner",5);
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::AddClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode)
 {
    if(GetClockInDept(DBTransaction,DeptName,DeptCode) == 0)
@@ -25,7 +25,7 @@ void TManagerTimeClock::AddClockInDept(Database::TDBTransaction &DBTransaction,A
       SetClockInDept(DBTransaction,DeptName,DeptCode);
    }
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::SetClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode)
 {
    try
@@ -65,7 +65,7 @@ void TManagerTimeClock::SetClockInDept(Database::TDBTransaction &DBTransaction,A
 		throw;
 	}
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::UpdateClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode,int DeptKey)
 {
    try
@@ -91,7 +91,7 @@ void TManagerTimeClock::UpdateClockInDept(Database::TDBTransaction &DBTransactio
 		throw;
 	}
 }
-
+//---------------------------------------------------------------------------
 int TManagerTimeClock::GetClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode)
 {
    int RetVal = 0;
@@ -118,7 +118,7 @@ int TManagerTimeClock::GetClockInDept(Database::TDBTransaction &DBTransaction,An
 	}
    return RetVal;
 }
-
+//---------------------------------------------------------------------------
 AnsiString TManagerTimeClock::GetClockInDeptName(Database::TDBTransaction &DBTransaction,int DeptKey)
 {
    AnsiString DeptName;
@@ -144,7 +144,7 @@ AnsiString TManagerTimeClock::GetClockInDeptName(Database::TDBTransaction &DBTra
 	}
    return DeptName;
 }
-
+//---------------------------------------------------------------------------
 int TManagerTimeClock::GetClockInDeptCode(Database::TDBTransaction &DBTransaction,int DeptKey)
 {
    int DeptCode = 0;
@@ -170,7 +170,7 @@ int TManagerTimeClock::GetClockInDeptCode(Database::TDBTransaction &DBTransactio
 	}
    return DeptCode;
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::DelClockInDept(Database::TDBTransaction &DBTransaction,int Key)
 {
    try
@@ -187,7 +187,7 @@ void TManagerTimeClock::DelClockInDept(Database::TDBTransaction &DBTransaction,i
 		throw Exception("Unable to remove department, as users have clocked into it previously.");
 	}
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::GetClockInDeptList(Database::TDBTransaction &DBTransaction,TStringList *DeptList)
 {
    try
@@ -215,7 +215,7 @@ void TManagerTimeClock::GetClockInDeptList(Database::TDBTransaction &DBTransacti
 		throw;
 	}
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::ClockIn(Database::TDBTransaction &DBTransaction,int inContactKey,int DeptKey,TDateTime LogInTime)
 {
    try
@@ -256,7 +256,7 @@ void TManagerTimeClock::ClockIn(Database::TDBTransaction &DBTransaction,int inCo
 		throw;
    }
 }
-
+//---------------------------------------------------------------------------
 bool TManagerTimeClock::ClockedIn(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
    bool LoggedIn = false;
@@ -280,7 +280,7 @@ bool TManagerTimeClock::ClockedIn(Database::TDBTransaction &DBTransaction,int in
 	}
 	return LoggedIn;
 }
-
+//---------------------------------------------------------------------------
 int TManagerTimeClock::ClockedCount(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
    int Count = 0;
@@ -304,7 +304,7 @@ int TManagerTimeClock::ClockedCount(Database::TDBTransaction &DBTransaction,int 
    }
 	return Count;
 }
-
+//---------------------------------------------------------------------------
 
 TDateTime TManagerTimeClock::ClockedInDateTime(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
@@ -329,7 +329,7 @@ TDateTime TManagerTimeClock::ClockedInDateTime(Database::TDBTransaction &DBTrans
 	}
 	return LoggedInAt;
 }
-
+//---------------------------------------------------------------------------
 
 TTime TManagerTimeClock::GetUserBreak(Database::TDBTransaction &DBTransaction,int inContactKey, int &ContactTimeKey)
 {
@@ -354,7 +354,7 @@ TTime TManagerTimeClock::GetUserBreak(Database::TDBTransaction &DBTransaction,in
 	}
 	return Breaks;
 }
-
+//---------------------------------------------------------------------------
 int TManagerTimeClock::SetUserBreak(Database::TDBTransaction &DBTransaction, int &ContactTimeKey, TTime inBreak)
 {
 	try
@@ -380,11 +380,7 @@ int TManagerTimeClock::SetUserBreak(Database::TDBTransaction &DBTransaction, int
 	}
 	return ContactTimeKey;
 }
-
-
-
-
-
+//---------------------------------------------------------------------------
 int TManagerTimeClock::ClockOut(Database::TDBTransaction &DBTransaction,int &inContactKey,TDateTime &LogInTime,TDateTime &LogOutTime)
 {
 	int ContactTimeKey = 0;
@@ -432,22 +428,12 @@ int TManagerTimeClock::ClockOut(Database::TDBTransaction &DBTransaction,int &inC
 	}
 	return ContactTimeKey;
 }
-
-
-
-
-
-
-void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransaction,
-                                           TDateTime LogInTime,
-                                           std::vector<TStaffHours> &inStaffHours,
+//---------------------------------------------------------------------------
+void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransaction, TDateTime LogInTime, std::vector<TStaffHours> &inStaffHours,
                                            UnicodeString inDevicename)
-
 {
-
    try
 	{
-
         UnicodeString devicename = inDevicename;
 
 		TDateTime PrevZedTime;
@@ -459,7 +445,7 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 			"WHERE TIME_STAMP IS NOT NULL "
 
          //   "and TERMINAL_NAME = :devicename "
-         " and  TIME_STAMP IN (SELECT MAX(TIME_STAMP) FROM ZEDS where  STAFF_HOUR_ENABLE = 1)  "
+         " and  TIME_STAMP = (SELECT MAX(TIME_STAMP) FROM ZEDS where  STAFF_HOUR_ENABLE = 1)  "
 			"GROUP BY TERMINAL_NAME, PROFILE_KEY "
 			"ORDER BY TIME_STAMP DESC ";
 
@@ -494,20 +480,20 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 
          "union all "
 
-	"SELECT "
-        "CONTACTTIME_KEY , "
-        "ROUNDEDCONTACTTIME.CONTACTS_KEY, "
-        "ROUNDED_LOGIN_DATETIME,  "
-        "ROUNDED_LOGOUT_DATETIME, "
-        "TIMECLOCKLOCATIONS_KEY,  "
-        "CONTACTS.HOURLY_RATE,  "
-        "ROUNDEDCONTACTTIME.BREAKS,  "
-        "ROUNDEDCONTACTTIME.ZED_STATUS "
-	"FROM   "
-        "ROUNDEDCONTACTTIME LEFT JOIN CONTACTS ON  "
-        "ROUNDEDCONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY  "
-	"WHERE "
-    	"ROUNDED_LOGOUT_DATETIME is null  and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE and ROUNDEDCONTACTTIME.ZED_STATUS is null " ;
+        "SELECT "
+            "CONTACTTIME_KEY , "
+            "ROUNDEDCONTACTTIME.CONTACTS_KEY, "
+            "ROUNDED_LOGIN_DATETIME,  "
+            "ROUNDED_LOGOUT_DATETIME, "
+            "TIMECLOCKLOCATIONS_KEY,  "
+            "CONTACTS.HOURLY_RATE,  "
+            "ROUNDEDCONTACTTIME.BREAKS,  "
+            "ROUNDEDCONTACTTIME.ZED_STATUS "
+        "FROM   "
+            "ROUNDEDCONTACTTIME LEFT JOIN CONTACTS ON  "
+            "ROUNDEDCONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY  "
+        "WHERE "
+            "ROUNDED_LOGOUT_DATETIME is null  and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE and ROUNDEDCONTACTTIME.ZED_STATUS is null " ;
 
 		IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = PrevZedTime;
         IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = 0;
@@ -541,12 +527,7 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 		throw;
 	}
 }
-
-
-
-
-
-
+//---------------------------------------------------------------------------
 TDateTime TManagerTimeClock::GetRoundedLoginTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key)
 {
    TDateTime RetVal = 0;
@@ -573,7 +554,7 @@ TDateTime TManagerTimeClock::GetRoundedLoginTime(Database::TDBTransaction &DBTra
 	}
    return RetVal;
 }
-
+//---------------------------------------------------------------------------
 TDateTime TManagerTimeClock::GetRoundedLogOutTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key)
 {
    TDateTime RetVal = 0;
@@ -600,7 +581,7 @@ TDateTime TManagerTimeClock::GetRoundedLogOutTime(Database::TDBTransaction &DBTr
 	}
    return RetVal;
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::SetLoggedInOutDetails(Database::TDBTransaction &DBTransaction, TStaffHoursContainer::iterator inStaffHours)
 {
 	try
@@ -636,12 +617,7 @@ void TManagerTimeClock::SetLoggedInOutDetails(Database::TDBTransaction &DBTransa
 		throw;
 	}
 }
-
-
-
-
-
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::MoveDisplayOrderUp(Database::TDBTransaction &DBTransaction,int Key)
 {
    try
@@ -699,7 +675,7 @@ void TManagerTimeClock::MoveDisplayOrderUp(Database::TDBTransaction &DBTransacti
       throw;
    }
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::MoveDisplayOrderDown(Database::TDBTransaction &DBTransaction,int Key)
 {
    try
@@ -757,7 +733,7 @@ void TManagerTimeClock::MoveDisplayOrderDown(Database::TDBTransaction &DBTransac
       throw;
    }
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::BuildXMLTotalsTimeClock(TPOS_XMLBase &Data,int SiteID, int ContactKey, TDateTime &Login, TDateTime &LogOut)
 {
    Data.Doc.Clear();
@@ -777,7 +753,7 @@ void TManagerTimeClock::BuildXMLTotalsTimeClock(TPOS_XMLBase &Data,int SiteID, i
    List->LinkEndChild( EleTimeClock );
    Data.Doc.LinkEndChild( List );
 }
-
+//---------------------------------------------------------------------------
 void TManagerTimeClock::UpdateClockInOut(Database::TDBTransaction &DBTransaction, int contact_time_key, int contact_key)
 {
 	try
@@ -820,4 +796,4 @@ void TManagerTimeClock::UpdateClockInOut(Database::TDBTransaction &DBTransaction
 		throw;
 	}
 }
-
+//---------------------------------------------------------------------------

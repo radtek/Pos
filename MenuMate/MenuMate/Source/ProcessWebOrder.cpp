@@ -58,17 +58,20 @@ void __fastcall TfrmProcessWebOrder::FormShow(TObject *Sender)
 
 void TfrmProcessWebOrder::Execute()
 {
-
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-	WebOrderContainer.first();
-	DBTransaction.Commit();
-
     if(TGlobalSettings::Instance().AutoAcceptWebOrders)
     {
         autoAcceptAllWebOrders();
         return;
+    }
+    else
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+
+        TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+        WebOrderContainer.first();
+
+        DBTransaction.Commit();
     }
 	UpdateDisplay();
 	ShowModal();
@@ -200,7 +203,7 @@ void TfrmProcessWebOrder::ShowReceipt()
             ReceiptTransaction.Membership.Assign(webMemberInfo, MemberSource);
             TempReceipt->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
 		}
-
+        ReceiptTransaction.IgnoreLoyaltyKey = false;
 		ReceiptTransaction.Recalc();
 
 		TStringList *TabHistory = new TStringList;
@@ -343,7 +346,6 @@ void TfrmProcessWebOrder::autoAcceptAllWebOrders()
 void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject* sender )
 {
     autoAcceptingWebOrders = false;
-
     frmProcessing->Close();
     UpdateDisplay();
 }
@@ -352,6 +354,14 @@ void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
 {
     if(!autoAcceptingWebOrders)
     {
+        if(acceptAll)
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+            WebOrderContainer.first();
+            DBTransaction.Commit();
+        }
        func_ptr ptr = &acceptWebOrder;
        TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
        autoAcceptThread->OnTerminate = autoAcceptWebOrdersTheadTerminate;
@@ -360,8 +370,6 @@ void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
        autoAcceptingWebOrders = true;
     }
 }
-
-// TAcceptWebOrdersThread Methods
 
 TAcceptWebOrdersThread::TAcceptWebOrdersThread(TWebOrderContainer* webOrderContainer, bool acceptAllWebOrders)
     :TThread(true)
@@ -402,7 +410,7 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 		DBTransaction.Commit();
 		DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
-        {
+         {
             if(container->hasprev())
             {
                container->prev();

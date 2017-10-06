@@ -36,6 +36,7 @@ class TInvoice
     UnicodeString GetNextInvoiceNumber(Database::TDBTransaction &DBTransaction, int TypeOfSale);
 	void SetOrdersToInvoiceFormat(Database::TDBTransaction &DBTransaction,int InvoiceKey,int InvoiceTabKey,UnicodeString InvoiceOwner);
     UnicodeString GetVoidInvoiceNumber(Database::TDBTransaction &DBTransaction);
+    UnicodeString GetBeveragesInvoiceNumber(Database::TDBTransaction &DBTransaction);
 
 };
 

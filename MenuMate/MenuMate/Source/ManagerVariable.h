@@ -122,6 +122,7 @@ enum vmVariables
     vmHideRoundingOnReceipt,
 	vmCashDenominationEntry,
     vmReportExportPath,
+    vmIsBillSplittedByMenuType,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -209,7 +210,7 @@ enum vmVariables
     vmUseMemberSubs,
     vmFloatWithdrawFromCash,
     ///PechTree CSV
-    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP,
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP, vmCustomerId,
 
      //Panasonic Integration
     vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,

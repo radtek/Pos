@@ -185,6 +185,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 	FormResize(this);
 	InCheckFunc = false;
     ClipTabInTable =false;
+    VoucherCode = "";
 	// SelectedTabs.clear();
 	// Remove these to values in order to have page remember the last
 	// selected Tab Container. But beware the Member/Staff Picker will pop up before page shows.
@@ -266,6 +267,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
       //mm-5145
       delivery_time = 0;
       PatronCountForMallExport = 0;
+      tbtnToggleGST->Visible = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormResize(TObject *Sender)
@@ -337,6 +339,7 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
               btnApplyMembership->Enabled = false;
             }
 
+
 	}
 	else if (CurrentDisplayMode == eTables)
 	{
@@ -396,7 +399,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
-
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
 			ReceiptTransaction.ApplyMembership(Membership);
@@ -412,7 +414,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 
 			TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
 
-                        LoadCustNameAndOrderType(ReceiptTransaction);
+            LoadCustNameAndOrderType(ReceiptTransaction);
 
 			if (TGlobalSettings::Instance().EnableMenuPatronCount)
 			{
@@ -452,24 +454,39 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			{
 				AnsiString PartyName = TDBTables::GetPartyName(DBTransaction, CurrentTable);
 				TempReceipt->MiscData["PartyName"] = PartyName;
-                                //If TransferTableOnPrintPrelim is on then move selected items to a tab
-                                TMMContactInfo TempUserInfo;
-                                TempUserInfo = TDeviceRealTerminal::Instance().User;
-                                std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-                                bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
-                                if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
-                                {
-                                   TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
-                                   if(TDBTables::IsEmpty(DBTransaction,CurrentTable))
-                                    {
-                                      TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
-                                    }
-                                   OrderMoved = true;
-                                }
-                                else
-                                {
-                                  TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,ePrelim);
-                                }
+                    //If TransferTableOnPrintPrelim is on then move selected items to a tab
+                    TMMContactInfo TempUserInfo;
+                    TempUserInfo = TDeviceRealTerminal::Instance().User;
+                    std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+                    bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
+                    if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
+                    {
+                        std::auto_ptr<TList>FoodOrders(new TList);
+                        std::auto_ptr<TList>BevOrders(new TList);
+                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                        {
+                            TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(ReceiptTransaction.Orders, FoodOrders.get(), BevOrders.get());
+                        }
+
+                       if(TGlobalSettings::Instance().IsBillSplittedByMenuType && BevOrders->Count )
+                       {
+                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, false);
+                       }
+                       else
+                       {
+                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
+                       }
+
+                       if(TDBTables::IsEmpty(DBTransaction,CurrentTable))
+                        {
+                          TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
+                        }
+                       OrderMoved = true;
+                    }
+                    else
+                    {
+                      TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,ePrelim);
+                    }
 
 			}
 			else if (CurrentDisplayMode == eRooms)
@@ -496,7 +513,20 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                         ReceiptTransaction.DeleteOrders();
 
 			DBTransaction.Commit();
-
+            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+                    || TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                VoucherCode = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+                DBTransaction1.StartTransaction();
+                RemoveMembership(DBTransaction1);
+                TDBTables::GetOrderKeys(DBTransaction1, CurrentTable, ReceiptItemKeys);
+                RemoveLoyaltymateMembership(ReceiptItemKeys);
+                DBTransaction1.Commit();
+                ClearLoyaltyVoucher();
+                VoucherCode = "";
+            }
 		}
 		else
 		{
@@ -512,29 +542,83 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                         bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                         if(allowed)
                         {
-                            std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                            TPaymentTransaction ReceiptTransaction(DBTransaction);
-                            ReceiptTransaction.ApplyMembership(Membership);
-                            TempReceipt->Transaction = &ReceiptTransaction;
-                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
-                               (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
-                                TempReceipt->Transaction->Customer = TCustomer(0,0,"");
                             std::set <__int64> ReceiptItemKeys;
+                            std::auto_ptr<TList>OrdersList(new TList);
+                            std::auto_ptr<TList>FoodOrdersList(new TList);
+                            std::auto_ptr<TList>BevOrdersList(new TList);
+                            bool isMixedMenuOrder = true;
+                            int Size = 1;
+
                             TDBTables::GetOrderKeys(DBTransaction, CurrentTable, ReceiptItemKeys);
-                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
-                            if(ReceiptTransaction.Orders->Count > 0)
+                            TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ReceiptItemKeys);
+
+                            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
                             {
-                                ReceiptTransaction.Recalc();
-                                TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
-                                OrderMoved = true;
-                                TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
-                                TempReceipt->JobType = pjReceiptReceipt;
-                                TempReceipt->SenderType = devPC;
-                                TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-                                TempReceipt->PaymentType = ptPreliminary;
-                                Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-                                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-                                ReceiptTransaction.DeleteOrders();
+                                TManagerDelayedPayment::Instance().SplitDelayedPaymentOrderByMenuType(OrdersList.get(), FoodOrdersList.get(), BevOrdersList.get());
+                            }
+
+                            if(BevOrdersList->Count && FoodOrdersList->Count)
+                                Size = 2;
+
+                            for(int index = 0; index < Size; index++)
+                            {
+                                std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+                                TPaymentTransaction ReceiptTransaction(DBTransaction);
+                                ReceiptTransaction.ApplyMembership(Membership);
+
+                                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Size == 2)
+                                {
+                                    if(index )
+                                        ReceiptTransaction.Orders->Assign(BevOrdersList.get());
+                                    else
+                                        ReceiptTransaction.Orders->Assign(FoodOrdersList.get());
+                                }
+                                else
+                                {
+                                    ReceiptTransaction.Orders->Assign(OrdersList.get());
+                                }
+
+                                TempReceipt->Transaction = &ReceiptTransaction;
+                                if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                                   (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
+                                    TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+                                if(ReceiptTransaction.Orders->Count > 0)
+                                {
+                                    ReceiptTransaction.IgnoreLoyaltyKey = false;
+                                    ReceiptTransaction.Recalc();
+
+                                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                                    {
+                                        TItemComplete *Order = (TItemComplete*)ReceiptTransaction.Orders->Items[0];
+                                        isMixedMenuOrder = Order->ItemType == 1 ? false : true;
+                                    }
+
+                                    TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, isMixedMenuOrder);
+                                    OrderMoved = true;
+                                    TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
+                                    TempReceipt->JobType = pjReceiptReceipt;
+                                    TempReceipt->SenderType = devPC;
+                                    TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
+                                    TempReceipt->PaymentType = ptPreliminary;
+                                    Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
+                                    TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+                                    ReceiptTransaction.DeleteOrders();
+                                }
+                            }
+                            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+                                    || TGlobalSettings::Instance().LoyaltyMateEnabled)
+                            {
+                                VoucherCode = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount;
+                                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                                TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+                                DBTransaction1.StartTransaction();
+                                RemoveMembership(DBTransaction1);
+                                TDBTables::GetOrderKeys(DBTransaction1, CurrentTable, ReceiptItemKeys);
+                                RemoveLoyaltymateMembership(ReceiptItemKeys);
+                                DBTransaction1.Commit();
+                                ClearLoyaltyVoucher();
+                                VoucherCode = "";
                             }
                         }
 			            DBTransaction.Commit();
@@ -544,11 +628,10 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 		                MessageBox("Nothing selected to print.", "Print error", MB_OK + MB_ICONERROR);
                      }
 		}
-
-                if(OrderMoved)
-                {
-                   ResetForm();
-                }
+        if(OrderMoved)
+        {
+           ResetForm();
+        }
 	}
 }
 // ---------------------------------------------------------------------------
@@ -749,7 +832,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-
 	try
 	{
         TGlobalSettings::Instance().IsThorPay = true;
@@ -807,7 +889,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                    }
                    if (PatronCount <= 0)
                          PatronCount = 1;
-                   if(!TGlobalSettings::Instance().IsThorlinkSelected)
+                   if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
                    {
                       CheckLoyalty(ItemsToBill);
                    }
@@ -885,6 +967,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					Credit.CurrentCredit = TDBTab::GetTabCredit(DBTransaction, CurrentSelectedTab);
 					Credit.CreditRedeemed = Credit.CurrentCredit;
 					CreditTransaction.TabCredit[CurrentSelectedTab] = Credit;
+                    CreditTransaction.IgnoreLoyaltyKey = false;
 					CreditTransaction.Recalc();
 
 					TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
@@ -1037,8 +1120,15 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                         TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
                         sendClippTabKey->SendTabDetails(CurrentSelectedTab);
                     }
-
                     ResetForm();
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+                    {
+                        if(CurrentDisplayMode == eTables)
+                            ChangeBillEntireTableState();
+
+                        if(!tgridItemList->RowCount)
+                            tbtnToggleGST->Visible = false;
+                     }
 			    }
                 catch(Exception & E)
                 {
@@ -1046,7 +1136,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                     throw;
                 }
             }
-
 		}
 	}
 	catch(Exception & E)
@@ -1066,6 +1155,8 @@ void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 {
+    std::set <__int64> SplitItemKeySet;
+    int SplitItemKey = 0;
 	try
 	{
 		if (SelectedItems.empty())
@@ -1124,8 +1215,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 						}
 
                         PatronCount = DeterminePatronCount();
-						BillItems(DBTransaction, SelectedItemKeys, eTransPartialPayment);
-
+						SplitItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransPartialPayment);
 					}
 				}
 				else
@@ -1136,7 +1226,11 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
 
 				DBTransaction.Commit();
-
+                SplitItemKeySet.insert(SplitItemKey);
+                if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
+                {
+                    RemoveLoyaltymateMembership(SplitItemKeySet);
+                }
                 //If tab is clipp tab than send the detail
                 if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isClippTabFullyPaid) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
                 {
@@ -1263,6 +1357,10 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 				// Now reslect all the remaining items.
 				if(splittedItemKey > 0)
 					SelectedItemKeys.insert(splittedItemKey);
+                if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
+                {
+                    RemoveLoyaltymateMembership(SelectedItemKeys);
+                }
 				TDBOrder::LoadPickNMixOrders(DBTransaction, SelectedItemKeys, SelectedItems);
 
 				int LastTabInSelectionGroup = 0;
@@ -1284,6 +1382,10 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 					CurrentSelectedTab = LastTabInSelectionGroup;
 				}
 				UpdateItemListDisplay(DBTransaction);
+                if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+                {
+                    DisableBillEntireTable(DBTransaction);
+                }
 				UpdateContainerListColourDisplay();
 				DBTransaction.Commit();
 				ShowReceipt();
@@ -1295,6 +1397,40 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 		MessageBox("Unable to process this bill.\r" "Please report the following message to your service provider :\r\r" + E.Message +
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
+}
+//----------------------------------------------------------------------------
+void TfrmBillGroup::RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TPaymentTransaction ReceiptTransaction(DBTransaction);
+        TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, SelectedItemKeys);
+        for(int i = 0; i < ReceiptTransaction.Orders->Count; i++)
+        {
+            TItemComplete *Order = (TItemComplete*)(ReceiptTransaction.Orders->Items[i]);
+            for(int k = 0; k < Order->Discounts.size(); k++)
+            {
+                if(Order->Discounts[k].DiscountCode == VoucherCode)
+                {
+                    Order->DiscountRemove(Order->Discounts[k]);
+                }
+            }
+        }
+        TManagerDiscount managerDiscount;
+        managerDiscount.SetDiscountAmountDB(DBTransaction, ReceiptTransaction.Orders);
+        ClearLoyaltyVoucher();
+        VoucherCode = "";
+
+        DBTransaction.Commit();
+    }
+	catch(Exception & E)
+	{
+        DBTransaction.Rollback();
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 }
@@ -1366,10 +1502,14 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
 		ResetSelection();
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
+        {
+            CheckLoyalty();
+        }
 		UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
 		DBTransaction.Commit();
         delete Transfer;
-       TGlobalSettings::Instance().IsPOSOffline = true;
+        TGlobalSettings::Instance().IsPOSOffline = true;
 		ShowReceipt();
 	}
 }
@@ -1379,6 +1519,10 @@ void __fastcall TfrmBillGroup::btnCloseMouseClick(TObject *Sender)
     if(TGlobalSettings::Instance().IsThorlinkSelected)
     {
       RemoveThorMembership();
+    }
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+       ClearLoyaltyVoucher();
     }
     Close();
 }
@@ -1402,9 +1546,18 @@ void __fastcall TfrmBillGroup::tbtnClearAllMouseClick(TObject *Sender)
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+    {
+        if(CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
+        DisableToggleGSTButton(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
 	DBTransaction.Commit();
 	CheckLoyalty();
+    ClearLoyaltyVoucher();
 	ShowReceipt();
 }
 // ---------------------------------------------------------------------------
@@ -1426,6 +1579,14 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+    {
+        if(CurrentDisplayMode == eTables)
+        {
+            DisableBillEntireTable(DBTransaction);
+        }
+        DisableToggleGSTButton(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
     if(lbeMembership->Visible == false)//todo-Arpit
     {
@@ -1434,7 +1595,11 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	DBTransaction.Commit();
     if(!TGlobalSettings::Instance().IsThorlinkSelected)
     {
-	  CheckLoyalty();
+        if((TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
+            || !TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+	        CheckLoyalty();
+        }
     }
 	ShowReceipt();
 }
@@ -1513,6 +1678,10 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 					}
 				}
 				SelectedItems.clear();
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
+                {
+                    CheckLoyalty();
+                }
 				UpdateTableDetails(DBTransaction);
 				UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
 
@@ -1579,6 +1748,15 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 				}
 			}
 			UpdateItemListDisplay(DBTransaction);
+            if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+            {
+                if(CurrentDisplayMode == eTables)
+                {
+                    DisableBillEntireTable(DBTransaction);
+                }
+
+                DisableToggleGSTButton(DBTransaction);
+            }
 
             //Get Table 's guest is linked to clipp tab
             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
@@ -1658,6 +1836,14 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 
 					CancelItems(DBTransaction, ItemsToBeCanceled, TempUserInfo);
 					UpdateItemListDisplay(DBTransaction);
+                    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+                    {
+                        if(CurrentDisplayMode == eTables)
+                        {
+                            DisableBillEntireTable(DBTransaction);
+                        }
+                        DisableToggleGSTButton(DBTransaction);
+                    }
 
                     //Get Table 's guest is linked to clipp tab
                     TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
@@ -1692,6 +1878,10 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
     {
         TGlobalSettings::Instance().IsPOSOffline = true;
         applyWaiterStationSettingsIfEnabled();
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+        {
+           ChangeBillEntireTableState();
+        }
     }
     else
     {
@@ -1939,6 +2129,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 						TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
                         ManagerDiscount->ClearDiscounts(PaymentTransaction.Orders);
 						ManagerDiscount->SetDiscountAmountDB(DBTransaction, PaymentTransaction.Orders);
+                        PaymentTransaction.IgnoreLoyaltyKey = false;
 						PaymentTransaction.Recalc();
                   		PaymentTransaction.DeleteOrders();
 					}
@@ -2081,6 +2272,7 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                             TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
                             ManagerDiscount->ClearThorVouchersDiscounts(PaymentTransaction.Orders);
                             ManagerDiscount->SetDiscountAmountDB(DBTransaction, PaymentTransaction.Orders);
+                            PaymentTransaction.IgnoreLoyaltyKey = false;
                             PaymentTransaction.Recalc();
                             PaymentTransaction.DeleteOrders();
                         }
@@ -2103,6 +2295,7 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                               PaymentTransaction.ApplyMembership(Membership);
                               //ApplyDiscount(DBTransaction,SelectedDiscount.DiscountKey,dsMMMembership);
                             }
+                          PaymentTransaction.IgnoreLoyaltyKey = false;
                           PaymentTransaction.Recalc();
                           PaymentTransaction.DeleteOrders();
                         }
@@ -2294,6 +2487,10 @@ void __fastcall TfrmBillGroup::tbtnShowItemsMouseClick(TObject *Sender)
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
@@ -2342,6 +2539,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                     for (int i = 0; i < TabList->Count; i++)
                     {
                         const int tab_key =reinterpret_cast<int>(TabList->Objects[i]);
+
                         if (AddToSelectedTabs(DBTransaction,tab_key)== true )
                         {
                             SplitItemsInSet(DBTransaction,tab_key);
@@ -2371,6 +2569,14 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateRightButtonDisplay(Sender);
         IgnoreItemThreshhold = false;
         UpdateItemListDisplay(DBTransaction);
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+        {
+            if(CurrentDisplayMode == eTables)
+            {
+                DisableBillEntireTable(DBTransaction);
+            }
+            DisableToggleGSTButton(DBTransaction);
+        }
         UpdateContainerListColourDisplay();
         UpdateSplitButtonState();
          if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
@@ -2385,7 +2591,11 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         DBTransaction.Commit();
         if(!TGlobalSettings::Instance().IsThorlinkSelected)
         {
-            CheckLoyalty();
+            if((TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
+              || !TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                CheckLoyalty();
+            }
         }
         ShowReceipt();
     }
@@ -2526,14 +2736,22 @@ void __fastcall TfrmBillGroup::tgridItemListMouseDown(TObject *Sender, TMouseBut
 //---------------------------------------------------------------------------
 void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
 {
-        if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
-        { // Not Found add it.
-            SelectItem(GridButton);
-        }
-        else
-        {
-            DeselectItem(GridButton);
-        }
+    if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
+    { // Not Found add it.
+        SelectItem(GridButton);
+    }
+    else
+    {
+        DeselectItem(GridButton);
+    }
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        DisableToggleGSTButton(DBTransaction);
+        DBTransaction.Commit();
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SelectItem(TGridButton *GridButton)
@@ -2543,8 +2761,10 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
     DBTransaction.StartTransaction();
 
     std::set <__int64> SelectedItemKeys;
+    TItemType itemType;
     for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
     {
+        itemType = itItem->second.ItemType;
         SelectedItemKeys.insert(itItem->first);
     }
 
@@ -2553,7 +2773,16 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {
-        SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        if((!TGlobalSettings::Instance().IsBillSplittedByMenuType) ||
+                ((itemType == VisibleItems[GridButton->Tag].ItemType) && (SelectedItemKeys.size())) ||(!SelectedItemKeys.size())  )
+        {
+            SelectedItems[GridButton->Tag] = VisibleItems[GridButton->Tag];
+        }
+        else
+        {
+             MessageBox("Items with different menu types can't be selected at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+
         if (CurrentDisplayMode == eInvoices)
         { // Must selected the Entire Invoice.
             SelectedItems.clear();
@@ -2646,7 +2875,11 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
 	UpdateSplitButtonState();
     if(!TGlobalSettings::Instance().IsThorlinkSelected)
     {
-	    CheckLoyalty();
+        if((TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
+          || !TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+	        CheckLoyalty();
+        }
     }
 	ShowReceipt();
 
@@ -2702,6 +2935,9 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
         SortingList->Add(&itItem->second);
     }
     tgridItemList->RowCount = VisibleItems.size();
+
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
+        oldSize = VisibleItems.size()-1;
     // Disable the button which was split
     for(int i = 0; i < SortingList->Count ; i++)
     {
@@ -2848,6 +3084,16 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
+        
+        if(TGlobalSettings::Instance().IsBillSplittedByMenuType &&  VisibleItems.size() != SelectedItems.size() && VisibleItems.size() &&
+                SelectedItems.size() && VisibleItems.size() > 1 )
+        {
+            tbtnToggleGST->Visible = true;
+        }
+        else
+        {
+            tbtnToggleGST->Visible = false;
+        }
 
 		for (int i = 0; i < SortingList->Count; i++)
 		{
@@ -3332,6 +3578,7 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
                  ClipTabInTable=true;
             }
 		}
+
 	}
 	else if (CurrentDisplayMode == eRooms)
 	{
@@ -3351,9 +3598,15 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 		}
 	}
 
+     //tbtnToggleGST->Visible = false;
+
 	IgnoreItemThreshhold = false;
 
 	UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
 	UpdateContainerListColourDisplay();
 
 	// Colour Buttons.
@@ -3445,7 +3698,7 @@ void TfrmBillGroup::ShowReceipt()
 					ReceiptTransaction.TabCredit[*itTabs] = Credit;
 				}
 			}
-
+            ReceiptTransaction.IgnoreLoyaltyKey = false;
 			ReceiptTransaction.Recalc();
             ReceiptTransaction.ProcessPoints();
             bool isTable = false;
@@ -3574,7 +3827,7 @@ void TfrmBillGroup::ShowReceipt()
 					ReceiptTransaction.TabCredit[*itTabs] = Credit;
 				}
 			}
-
+            ReceiptTransaction.IgnoreLoyaltyKey = false;
 			ReceiptTransaction.Recalc();
             ReceiptTransaction.ProcessPoints();
             bool isTable = false;
@@ -3903,7 +4156,6 @@ void TfrmBillGroup::ResetForm()
 	DBTransaction.Commit();
 	PatronCount = 1;
 	ShowReceipt();
-
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		OnSmartCardInserted(NULL);
@@ -3957,7 +4209,9 @@ void TfrmBillGroup::UpdateBilledPatronCount(Database::TDBTransaction &DBTransact
 int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std::set <__int64> &ItemsToBill,
 	TPaymentTransactionType TransType)
 {
-       int retVal = 0;
+    int retVal = 0;
+    bool isPaymentComplete = false;
+    VoucherCode = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount;
 	try
 	{
 
@@ -4015,7 +4269,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		{
 
             LoadCustNameAndOrderType(PaymentTransaction);
-
+            PaymentTransaction.IgnoreLoyaltyKey = false;
 			PaymentTransaction.Recalc();
 			PaymentTransaction.Type = TransType;
 
@@ -4038,7 +4292,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             }
             else
             {
-                TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
+                isPaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
                 // display last receipt if any
                 _displayLastReceipt( DBTransaction, TDeviceRealTerminal::Instance().PaymentSystem->LastReceipt );
             }
@@ -4058,6 +4312,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                     }
                 }
             }
+
             //changes to get points values..
             if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
             {
@@ -4069,6 +4324,16 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		{
 			retVal  = PaymentTransaction.SplittedItemKey;
 			PaymentTransaction.DeleteOrders();
+            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+                    || TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                ClearLoyaltyVoucher();
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+                DBTransaction1.StartTransaction();
+                RemoveMembership(DBTransaction1);
+                DBTransaction1.Commit();
+            }
             TGlobalSettings::Instance().IsPOSOffline = true;
 		}
 	}
@@ -4225,9 +4490,11 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			}break;
 		case TabTableSeat:
 			{
+                std::auto_ptr<TEnableFloorPlan> floorPlan(new TEnableFloorPlan());
 				TFloorPlanReturnParams floorPlanReturnParams;
 				// Runs new web app of floorPlan
-				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
+                if( floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ) )
+//				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 				{
 
                     CurrentDisplayMode = eTables;
@@ -4237,12 +4504,14 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                     int i=     floorPlanReturnParams.TabContainerNumber;
                     CheckLinkedTable(floorPlanReturnParams.TabContainerNumber);
                     ResetForm();
+                    floorPlan.reset();
 				}
                 else
                 {
                     CurrentDisplayMode = eNoDisplayMode;
                     UpdateRightButtonDisplay(NULL);
                     ResetForm();
+                    floorPlan.reset();
                 }
 			}break;
 		case TabRoom:
@@ -4629,6 +4898,7 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
 {
 	try
 	{
+        VoucherCode = "";
 		eMemberSource MemberSource;
 		TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, MembershipInfo, MemberSource);
 
@@ -4704,17 +4974,13 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
     ManagerFreebie->UndoFreeCount(DBTransaction, OrdersList.get());
 
     ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
-   ManagerDiscount->SetDiscountAmountDB(DBTransaction, OrdersList.get());
+    ManagerDiscount->SetDiscountAmountDB(DBTransaction, OrdersList.get());
 
     while (OrdersList->Count != 0)
 	{
 		delete(TItemComplete*)OrdersList->Items[0];
 		OrdersList->Delete(0);
     }
-
-//    RemoveMembershipFreeItems(DBTransaction);
-//   	RemoveMembershipDiscounts(DBTransaction);
-
 
     for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
     {
@@ -4783,6 +5049,7 @@ void TfrmBillGroup::CheckLoyalty()
         TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
         DBTransaction.StartTransaction();
         RemoveMembership(DBTransaction);
+        ClearLoyaltyVoucher();
         DBTransaction.Commit();
 
    }
@@ -4805,10 +5072,10 @@ void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     TDBOrder::GetMemberKeysFromOrderKeys(DBTransaction, PossiableMembers, ReceiptItemKeys);
-
     if(PossiableMembers.size() == 0 && CurrentTabType != TabMember)
     {
         Membership.Clear();
+        ClearLoyaltyVoucher();
         MembershipConfirmed = false;
         lbeMembership->Visible = false;
         lbeMembership->Caption = "";
@@ -4959,6 +5226,157 @@ void TfrmBillGroup::UpdateContainerList()
     TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
     DBTransaction.Commit();
 }
+//------------------------------------------------------------------------------------------------------
+void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+
+    if(TabList->Count > 1 && CurrentSelectedTab > 0)
+    {
+        VisibleItems.clear();
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
+    }
+    TItemType itemType;
+
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        itemType = eDrinksItem;
+    }
+
+     SelectedItems.clear();
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+       TPnMOrder ptrSelectItem = VisibleItems[itItem->first];
+       if(itItem->second.ItemType != itemType)
+            SelectedItems[itItem->first] = ptrSelectItem;
+    }
+
+    UpdateItemListDisplay(DBTransaction);
+    if(TGlobalSettings::Instance().IsBillSplittedByMenuType && CurrentDisplayMode == eTables)
+    {
+        DisableBillEntireTable(DBTransaction);
+    }
+    UpdateContainerListColourDisplay();
+    UpdateSplitButtonState();
+     if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
+    {
+       RemoveMembershipDiscounts(DBTransaction);
+    }
+     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+    {
+        CheckingClipItemsInSelectedList(DBTransaction);
+    }
+    DBTransaction.Commit();
+    if(!TGlobalSettings::Instance().IsThorlinkSelected)
+    {
+        CheckLoyalty();
+    }
+    ShowReceipt();
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmBillGroup::DisableBillEntireTable(Database::TDBTransaction &DBTransaction)
+{
+    TItemType itemType;
+    btnBillTable->Enabled = true;
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
+    }
+
+    if(SelectedItems.size())
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+    else
+    {
+        std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin();
+        itemType = itItem->second.ItemType;
+    }
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+        if(itemType !=  itItem->second.ItemType)
+        {
+            btnBillTable->Enabled = false;
+            break;
+        }
+    }
+}
+//---------------------------------------------------------------------------------------------------------
+void TfrmBillGroup::ChangeBillEntireTableState()
+{
+    VisibleItems.clear();
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    DisableBillEntireTable(DBTransaction);
+    if(btnBillTable->Enabled)
+        tbtnToggleGST->Visible = false;
+    DBTransaction.Commit();
+}
+//--------------------------------------------------------------------------------------------------------
+void TfrmBillGroup::DisableToggleGSTButton(Database::TDBTransaction &DBTransaction)
+{
+    //Other cases already tested so seperating code.
+    tbtnToggleGST->Visible = false;
+    TItemType itemType;
+    std::map<__int64,TPnMOrder> VisibleItemsForGST;
+
+    if(CurrentSelectedTab == -1)
+    {
+        for (int i = 0; i < TabList->Count; i++)
+        {
+            TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItemsForGST);
+        }
+    }
+    else
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItemsForGST);
+    }
+
+        std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItemsForGST.begin();
+        itemType = itItem->second.ItemType;
+
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItemsForGST.begin(); itItem != VisibleItemsForGST.end(); advance(itItem, 1))
+    {
+        if(itemType !=  itItem->second.ItemType)
+        {
+            tbtnToggleGST->Visible = true;
+            break;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+void TfrmBillGroup::ClearLoyaltyVoucher()
+{
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
+    }
+}
 
 
-
+/* In reference to case #90727(Salesforce)
+In case of Loyaltymate membership can not get saved to table.
+If memebrship is applied on bill group screen, with number of selected
+items as x. Now if we start deselecting items and reach a state where
+number of selected items becomes 0, membership should get removed.
+If Voucher was applied, Voucher/Discount should get removed.
+Case of number of selected items becoming zero can be achieved by multiple ways
+like by transferring partial/complete to another table/tab,
+by moving item/items of one guest to another guest.
+Method ClearLoyaltyVoucher() is created for this purpose. This method is called from
+multiple places to handle the required situations.
+Also changes to CheckLoyalty() calling is changed in case of loyaltymate by
+appending if clause to the calling.
+*/

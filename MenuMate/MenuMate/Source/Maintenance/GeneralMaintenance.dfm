@@ -730,7 +730,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox19: TGroupBox
           Left = 447
-          Top = 425
+          Top = 448
           Width = 401
           Height = 115
           Anchors = [akLeft]
@@ -802,7 +802,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox23: TGroupBox
           Left = 447
-          Top = 540
+          Top = 563
           Width = 401
           Height = 49
           Anchors = [akLeft]
@@ -824,7 +824,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBoxEJournal: TGroupBox
           Left = 447
-          Top = 590
+          Top = 613
           Width = 401
           Height = 70
           Anchors = [akLeft]
@@ -858,13 +858,13 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 447
           Top = 235
           Width = 401
-          Height = 190
+          Height = 213
           Anchors = [akLeft]
           Caption = 'Item Billing'
           TabOrder = 6
           DesignSize = (
             401
-            190)
+            213)
           object cbDisplayTaxExempt: TCheckBox
             Left = 8
             Top = 19
@@ -954,6 +954,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Merge Similar Items for Billing'
             TabOrder = 4
             OnClick = cbMergeSimilarItemClick
+          end
+          object cbSplitBillByMenuType: TCheckBox
+            Left = 8
+            Top = 185
+            Width = 250
+            Height = 25
+            Anchors = [akLeft]
+            Caption = 'Split Bill On Menu Basis'
+            TabOrder = 7
+            OnClick = cbSplitBillByMenuTypeClick
           end
         end
       end

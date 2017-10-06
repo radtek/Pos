@@ -89,7 +89,7 @@ public:		// User declarations
 	void SetupStockInquiry(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, TStrings *Groups, TStrings *Transactions);
 	void SetupStockReorderItem(TStrings *Locations, TStrings *Groups);
 	//void SetupStocktakeHistory(TDateTime StartTime, TDateTime EndTime, TStrings *StocktakeFilter);
-	void SetupSupplierPurchases(TDateTime StartTime, TDateTime EndTime, TStrings *Suppliers, TStrings *Invoices , int ByVal);
+	void SetupSupplierPurchases(TDateTime StartTime, TDateTime EndTime, TStrings *Suppliers, TStrings *Invoices , TStrings *StockSupplierFilter, int ByVal);
 	void SetupSupplierDetails(TStrings *Suppliers);
 	void SetupStockReorderBySupplier(TStrings *Suppliers);
 	void SetupSupplierBackOrders(TStrings *Suppliers);

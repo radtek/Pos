@@ -749,7 +749,7 @@ void TdmStockReportData::SetupWriteOffLocation(TDateTime StartTime, TDateTime En
  		"Where "
  			"StockTrans.Created >= :StartTime and "
  			"StockTrans.Created < :EndTime and "
-            "StockTrans.Transaction_Type = 'Writeoff' ";
+            "(StockTrans.Transaction_Type = 'Writeoff'OR StockTrans.Transaction_Type = 'WriteOff') ";
 	if (Locations->Count)
 	{
 		qrStockWriteOff->SQL->Text	=	qrStockWriteOff->SQL->Text + "And (" +
@@ -929,7 +929,7 @@ void TdmStockReportData::SetupStockReorderItem(TStrings *Locations, TStrings *Gr
 	}
 } */
 //---------------------------------------------------------------------------
-void TdmStockReportData::SetupSupplierPurchases(TDateTime StartTime, TDateTime EndTime, TStrings *StockReceipts, TStrings *Invoices , int byval)
+void TdmStockReportData::SetupSupplierPurchases(TDateTime StartTime, TDateTime EndTime, TStrings *StockReceipts, TStrings *Invoices , TStrings *StockSupplier , int byval)
 {
 	qrStockReceiptByCat->Close();
 	qrStockReceiptByCat->SQL->Text =
@@ -973,6 +973,11 @@ void TdmStockReportData::SetupSupplierPurchases(TDateTime StartTime, TDateTime E
 		qrStockReceiptByCat->SQL->Text	=	qrStockReceiptByCat->SQL->Text + "And (" +
 														ParamString(Invoices->Count, "StockTrans.Reference", "InvoiceParam") + ")";
 	}
+    if (StockSupplier->Count > 0)
+	{
+		qrStockReceiptByCat->SQL->Text	=	qrStockReceiptByCat->SQL->Text + "And (" +
+														ParamString(StockSupplier->Count, "StockTrans.SUPPLIER_NAME", "StockSupplierParam") + ")";
+	}
 	qrStockReceiptByCat->SQL->Text 		=	qrStockReceiptByCat->SQL->Text +
 		"Order By "
             "StockTrans.Supplier_Name, "  ;
@@ -1003,6 +1008,10 @@ void TdmStockReportData::SetupSupplierPurchases(TDateTime StartTime, TDateTime E
 	for (int i=0; i<Invoices->Count; i++)
 	{
 		qrStockReceiptByCat->ParamByName("InvoiceParam" + IntToStr(i))->AsString = Invoices->Strings[i];
+	}
+    for (int i=0; i< StockSupplier->Count; i++)
+	{
+		qrStockReceiptByCat->ParamByName("StockSupplierParam" + IntToStr(i))->AsString = StockSupplier->Strings[i];
 	}
 	qrStockReceiptByCat->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrStockReceiptByCat->ParamByName("EndTime")->AsDateTime		= EndTime;
@@ -1590,7 +1599,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
             //"STKLOC.On_Hand On_Hand, "
 
 			"StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening  + coalesce(STK.QTY,0)  On_Hand,"
-			"StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening ) Variance,"
+			"StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening + coalesce(STK.QTY, 0) ) Variance,"
 			"StocktakeHistory.Closing Stocktake,"
 			"cast((StocktakeHistory.Closing - (StocktakeHistory.Sales + StocktakeHistory.Transfer + StocktakeHistory.Writeoff + StocktakeHistory.Inwards + StocktakeHistory.Opening)) * StocktakeHistory.Average_Unit_Cost As Numeric(15, 4)) Cost,"
 			"StocktakeHistory.Opening,"

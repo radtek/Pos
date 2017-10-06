@@ -122,6 +122,7 @@ class TListPaymentSystem : public TMMPaymentSystem
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
+    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
 
 protected:
 

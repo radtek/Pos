@@ -773,25 +773,24 @@ private:	// User declarations
 	void PrintSupplierReorder(TReportControl *ReportControl);
 	void ExportToExcel( TStringList *ExcelDataSets,AnsiString ACaption );
    void DailySalesReport(TReportControl *ReportControl);
-void PrintNonChargeable(TReportControl *ReportControl)  ;
-void PrintComplimentary(TReportControl *ReportControl);
-   void PrintTaxProfile(TReportControl *ReportControl) ;
-      void PrintSupplierInvoice(TReportControl *ReportControl);
-   void PrintAccumulatedZeds(TReportControl *ReportControl);
-	void PrintSalesSummaryB(TReportControl *ReportControl);
-	void PrintSalesSummaryC(TReportControl *ReportControl);
-    	void PrintFinanceDaily(TReportControl *ReportControl);
+    void PrintNonChargeable(TReportControl *ReportControl)  ;
+    void PrintComplimentary(TReportControl *ReportControl);
+    void PrintTaxProfile(TReportControl *ReportControl) ;
+    void PrintSupplierInvoice(TReportControl *ReportControl);
+    void PrintAccumulatedZeds(TReportControl *ReportControl);
+    void PrintSalesSummaryB(TReportControl *ReportControl);
+    void PrintSalesSummaryC(TReportControl *ReportControl);
+    void PrintFinanceDaily(TReportControl *ReportControl);
 
-   void PrintCashier(TReportControl *ReportControl);
-   void PrintDeptSalesSummary(TReportControl *ReportControl);
-   void GetTerminalFilter(TReportFilter *ReportFilter) ;
-   void PrintCheckRemoval(TReportControl *ReportControl);     //MM-4327
-     void PrintReprintReceipt(TReportControl *ReportControl);
-   void PrintReprintOrder(TReportControl *ReportControl);
-
-   	void GetStockReceiptList(TReportFilter *ReportFilter);
-
+    void PrintCashier(TReportControl *ReportControl);
+    void PrintDeptSalesSummary(TReportControl *ReportControl);
+    void GetTerminalFilter(TReportFilter *ReportFilter) ;
+    void PrintCheckRemoval(TReportControl *ReportControl);     //MM-4327
+    void PrintReprintReceipt(TReportControl *ReportControl);
+    void PrintReprintOrder(TReportControl *ReportControl);
+    void GetStockReceiptList(TReportFilter *ReportFilter);
     void PrintProfitLossSummary(TReportControl *ReportControl);
+    void GetStockSupplierList(TReportFilter *ReportFilter);
 public:		// User declarations
 	__fastcall TfrmReports(TComponent* Owner);
     bool SaveReportToFile(AnsiString &EmailFileName );

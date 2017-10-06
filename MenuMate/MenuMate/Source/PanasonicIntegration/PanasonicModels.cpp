@@ -16,7 +16,7 @@ void TPanasonicModels::SetStoreId(UnicodeString storeId)
     _storeId = storeId;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetTerminalId(UnicodeString terminalId)
+void TPanasonicModels::SetTerminalId(int terminalId)
 {
     _terminalId = terminalId;
 }
@@ -101,12 +101,12 @@ void TPanasonicModels::SetStartTime(TDateTime startTime)
     _startTime = startTime;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetTimeZoneOfST(TDateTime timeZoneOfST)
+void TPanasonicModels::SetTimeZoneOfST(TSQLTimeStampOffset timeZoneOfST)
 {
     _timeZoneOfST = timeZoneOfST;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetDayLightTimeOfST(TDateTime dayLightTimeOfST)
+void TPanasonicModels::SetDayLightTimeOfST(TSQLTimeStampOffset dayLightTimeOfST)
 {
     _dayLightTimeOfST = dayLightTimeOfST;
 }
@@ -116,12 +116,12 @@ void TPanasonicModels::SetEndTime(TDateTime endTime)
     _endTime = endTime;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetTimeZoneOfET(TDateTime timeZoneOfET)
+void TPanasonicModels::SetTimeZoneOfET(TSQLTimeStampOffset timeZoneOfET)
 {
     _timeZoneOfET = timeZoneOfET;
 }
 //---------------------------------------------------------------------------
-void TPanasonicModels::SetDayLightTimeOfET(TDateTime dayLightTimeOfET)
+void TPanasonicModels::SetDayLightTimeOfET(TSQLTimeStampOffset dayLightTimeOfET)
 {
     _dayLightTimeOfET = dayLightTimeOfET;
 }

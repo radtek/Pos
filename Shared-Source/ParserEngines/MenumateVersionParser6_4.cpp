@@ -38,8 +38,14 @@ void TApplyParser::update6_41Tables()
 {
     AlterTable6_41(_dbControl);
     UpdateMallSalesBySalesType(_dbControl);
+    UpdateTablePatronCountTable(_dbControl);
 }
-
+//--------------------------------------------------------------------
+void TApplyParser::update6_42Tables()
+{
+    Create6_42Generator(_dbControl);
+}
+//----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
     int invoiceInterface = 25;
@@ -257,6 +263,66 @@ void TApplyParser::update6_42Tables()
    UpdateRevenueCodes(_dbControl);
    Create6_42ServingTimesGenerator(_dbControl);
    UpdateServingTimes(_dbControl);
+void TApplyParser::UpdateTablePatronCountTable(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+    int _patronTypeKey = 0;
+    try
+    {
+
+
+        TIBSQL *SelectQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *SelectPatronTypeKeyQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = " SELECT a.PATRONTYPES_KEY, a.PATRON_TYPE, a.IS_DEFAULT "
+                                 " FROM PATRONTYPES a WHERE a.IS_DEFAULT = :IS_DEFAULT " ;
+        SelectQuery->ParamByName("IS_DEFAULT")->AsString = "T";
+        SelectQuery->ExecQuery();
+
+        if(!SelectQuery->RecordCount)
+        {
+            SelectPatronTypeKeyQuery->Close();
+            SelectPatronTypeKeyQuery->SQL->Text = " Select FIRST(1) a.PATRONTYPES_KEY FROM PATRONTYPES a " ;
+            SelectPatronTypeKeyQuery->ExecQuery();
+
+            if(SelectPatronTypeKeyQuery->RecordCount)
+            {
+                _patronTypeKey = SelectPatronTypeKeyQuery->FieldByName("PATRONTYPES_KEY")->AsInteger;
+            }
+        }
+
+        if(_patronTypeKey > 0)
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+            UpdateQuery->Close();
+            UpdateQuery->SQL->Text =  " UPDATE PATRONTYPES a SET a.IS_DEFAULT = :IS_DEFAULT WHERE a.PATRONTYPES_KEY = :PATRONTYPES_KEY " ;
+            UpdateQuery->ParamByName("IS_DEFAULT")->AsString = "T";
+            UpdateQuery->ParamByName("PATRONTYPES_KEY")->AsInteger = _patronTypeKey;
+            UpdateQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_BEVERAGEINVOICENUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_BEVERAGEINVOICENUMBER;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_BEVERAGEINVOICENUMBER TO 0;", inDBControl
+        );
+    }
+}
 }
 void TApplyParser::UpdateTaxProfiles(TDBControl* const inDBControl){    if ( !fieldExists("TAXPROFILES", "TAX_CODE", inDBControl ) )    {
         executeQuery(
