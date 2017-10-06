@@ -353,8 +353,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		}
 		TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
 		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
-		if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-		{
+		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+		{   	
 			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
 			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 		}

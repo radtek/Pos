@@ -551,7 +551,9 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
       tgridOrderCourse->Font->Size = 12;
     }
 
-    ProcessWebOrders(false);
+    if(TGlobalSettings::Instance().WebMateEnabled)
+        ProcessWebOrders(false);
+
 	InitXeroIntegration();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
@@ -700,7 +702,7 @@ void TfrmSelectDish::AdjustScreenSize()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::WebOrder(Messages::TMessage& Message)
 {
-	if (TDeviceRealTerminal::Instance().DBControl.Connected()) // If we not connected dont bother.
+	if (TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().DBControl.Connected()) // If we not connected dont bother.
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -714,28 +716,28 @@ void __fastcall TfrmSelectDish::WebOrder(Messages::TMessage& Message)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    if(!NotifyLastWebOrder(DBTransaction))
-    {
-        bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
-        if (WebOrdersPending)
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        if(!NotifyLastWebOrder(DBTransaction))
         {
-            frmProcessWebOrder->Execute();
-            this->SetFocus();
+            bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
+            if (WebOrdersPending)
+            {
+                frmProcessWebOrder->Execute();
+                this->SetFocus();
+            }
+            else if (Prompt)
+            {
+                MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
+            }
+            //after processing web order again load chit specific to terminal
+            TManagerChitNumber::Instance().Load(DBTransaction);
+            DBTransaction.Commit();
         }
-        else if (Prompt)
+        else
         {
-            MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
+           DBTransaction.Commit();
         }
-        //after processing web order again load chit specific to terminal
-        TManagerChitNumber::Instance().Load(DBTransaction);
-        DBTransaction.Commit();
-    }
-    else
-    {
-       DBTransaction.Commit();
-    }
 }
 // ---------------------------------------------------------------------------
 bool TfrmSelectDish::IsPricedBarcode(AnsiString &data) const
@@ -2124,7 +2126,7 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 		LastSale = 0;
 	}
 
-    if(TDeviceRealTerminal::Instance().DBControl.Connected())
+    if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().DBControl.Connected())
     {
         //Check For Web Orders.
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -10622,7 +10624,15 @@ void __fastcall TfrmSelectDish::webDisplayBeforeNavigate2(TObject *ASender, cons
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnWebOrdersMouseClick(TObject *Sender)
 {
-	ProcessWebOrders(true);
+    if(TGlobalSettings::Instance().WebMateEnabled)
+    {
+	    ProcessWebOrders(true);
+    }
+    else
+    {
+        MessageBox("Please, Setup Webmate first.", "Webmate is Disabled.", MB_OK + MB_ICONWARNING);
+    }
+
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitXeroIntegration()
