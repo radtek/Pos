@@ -382,10 +382,6 @@
 				<BuildOrder>95</BuildOrder>
 				<BuildOrder>518</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.cpp">
-				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.h</DependentOn>
-				<BuildOrder>472</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="product-count-down\i_signalling_item_definition_factory.cpp">
 				<BuildOrder>436</BuildOrder>
 			</CppCompile>
@@ -1097,6 +1093,10 @@
 				<DependentOn>MallExportDefines.h</DependentOn>
 				<BuildOrder>657</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="POS\WalletPaymentsWSDL.cpp">
+				<DependentOn>POS\WalletPaymentsWSDL.h</DependentOn>
+				<BuildOrder>756</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="POS\WalletPaymentsInterface.cpp">
 				<DependentOn>POS\WalletPaymentsInterface.h</DependentOn>
 				<BuildOrder>756</BuildOrder>
@@ -1105,9 +1105,9 @@
 				<DependentOn>ReportExport\HavanaReport.h</DependentOn>
 				<BuildOrder>753</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ReportExport\ManagerReportExport.cpp">
-				<DependentOn>ReportExport\ManagerReportExport.h</DependentOn>
-				<BuildOrder>750</BuildOrder>
+			<CppCompile Include="BasePMS.cpp">
+				<DependentOn>BasePMS.h</DependentOn>
+				<BuildOrder>764</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="AddSalesType.cpp">
 				<Form>frmAddSalesType</Form>
@@ -1118,10 +1118,9 @@
 				<DependentOn>SalesTypeItemDetails.h</DependentOn>
 				<BuildOrder>764</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\WalletPaymentsWSDL.cpp">
-				<DependentOn>POS\WalletPaymentsWSDL.h</DependentOn>
-				<BuildOrder>756</BuildOrder>
-			</CppCompile>
+			<None Include="StringTableVariables.h">
+				<BuildOrder>750</BuildOrder>
+			</None>
 			<CppCompile Include="product-count-down\spinlock.cpp">
 				<BuildOrder>462</BuildOrder>
 			</CppCompile>
@@ -1129,9 +1128,9 @@
 				<DependentOn>PanasonicIntegration\ManagerPanasonic.h</DependentOn>
 				<BuildOrder>746</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Chefmate\TcpStreamSenderSettings.cpp">
-				<DependentOn>Chefmate\TcpStreamSenderSettings.h</DependentOn>
-				<BuildOrder>411</BuildOrder>
+			<CppCompile Include="ReportExport\ManagerReportExport.cpp">
+				<DependentOn>ReportExport\ManagerReportExport.h</DependentOn>
+				<BuildOrder>750</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="PanasonicIntegration\DBPanasonic.cpp">
 				<DependentOn>PanasonicIntegration\DBPanasonic.h</DependentOn>
@@ -1141,9 +1140,10 @@
 				<DependentOn>MMPaymentSystem.h</DependentOn>
 				<BuildOrder>623</BuildOrder>
 			</CppCompile>
-			<None Include="StringTableVariables.h">
-				<BuildOrder>750</BuildOrder>
-			</None>
+			<CppCompile Include="MallFactory.cpp">
+				<DependentOn>MallFactory.h</DependentOn>
+				<BuildOrder>768</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="SiHotDataObjects.cpp">
 				<DependentOn>SiHotDataObjects.h</DependentOn>
 				<BuildOrder>767</BuildOrder>
@@ -1151,10 +1151,6 @@
 			<CppCompile Include="ManagerSiHot.cpp">
 				<DependentOn>ManagerSiHot.h</DependentOn>
 				<BuildOrder>766</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ManagerPMS.cpp">
-				<DependentOn>ManagerPMS.h</DependentOn>
-				<BuildOrder>765</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SiHotInterface.cpp">
 				<DependentOn>SiHotInterface.h</DependentOn>
@@ -1164,9 +1160,9 @@
 				<DependentOn>SiHotDataProcessor.h</DependentOn>
 				<BuildOrder>768</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallFactory.cpp">
-				<DependentOn>MallFactory.h</DependentOn>
-				<BuildOrder>768</BuildOrder>
+			<CppCompile Include="MallExportRobinsonMall.cpp">
+				<DependentOn>MallExportRobinsonMall.h</DependentOn>
+				<BuildOrder>541</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DeanAndDelucaMall.cpp">
 				<DependentOn>DeanAndDelucaMall.h</DependentOn>
@@ -1176,9 +1172,9 @@
 				<DependentOn>DBSalesTypeAssignment.h</DependentOn>
 				<BuildOrder>766</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="BasePMS.cpp">
-				<DependentOn>BasePMS.h</DependentOn>
-				<BuildOrder>764</BuildOrder>
+			<CppCompile Include="ManagerPMS.cpp">
+				<DependentOn>ManagerPMS.h</DependentOn>
+				<BuildOrder>765</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SiHotWSDL.cpp">
 				<DependentOn>SiHotWSDL.h</DependentOn>
@@ -1188,10 +1184,6 @@
 				<Form>frmMallSalesTypeAssignment</Form>
 				<DependentOn>MallSalesTypeAssignment.h</DependentOn>
 				<BuildOrder>769</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportRobinsonMall.cpp">
-				<DependentOn>MallExportRobinsonMall.h</DependentOn>
-				<BuildOrder>541</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.cpp">
 				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.h</DependentOn>
@@ -1255,9 +1247,9 @@
 				<DependentOn>SelectSizesAsList.h</DependentOn>
 				<BuildOrder>697</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>471</BuildOrder>
+			<CppCompile Include="Chefmate\TcpStreamSenderSettings.cpp">
+				<DependentOn>Chefmate\TcpStreamSenderSettings.h</DependentOn>
+				<BuildOrder>411</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\XReportDateTimeReportSection.cpp">
 				<BuildOrder>722</BuildOrder>
@@ -3380,6 +3372,14 @@
 			<CppCompile Include="ManagerMallSetup.cpp">
 				<DependentOn>ManagerMallSetup.h</DependentOn>
 				<BuildOrder>737</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.cpp">
+				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.h</DependentOn>
+				<BuildOrder>769</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
+				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
+				<BuildOrder>769</BuildOrder>
 			</CppCompile>
 			<FormResources Include="Maintenance\PaymentMaintenance.dfm"/>
 			<FormResources Include="DiscountTimes.dfm"/>

@@ -407,9 +407,9 @@ object frmMemberCreation: TfrmMemberCreation
       object lbeLoyaltyMateActive: TLabel
         Left = 12
         Top = 40
-        Width = 184
+        Width = 186
         Height = 23
-        Caption = 'Account Not Activated'
+        Caption = 'Member Not Activated'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clMaroon
         Font.Height = -19
@@ -418,8 +418,8 @@ object frmMemberCreation: TfrmMemberCreation
         ParentFont = False
       end
       object btnActivateLoyaltyMate: TTouchBtn
-        Left = 204
-        Top = 26
+        Left = 202
+        Top = 29
         Width = 186
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
@@ -428,7 +428,7 @@ object frmMemberCreation: TfrmMemberCreation
         Font.Style = []
         ParentFont = False
         ParentColor = True
-        Caption = 'Activate Account'
+        Caption = 'Activate Member'
         ButtonColor = 6052441
         LatchedColor = clBtnFace
         DisabledButtonColor = clBtnFace

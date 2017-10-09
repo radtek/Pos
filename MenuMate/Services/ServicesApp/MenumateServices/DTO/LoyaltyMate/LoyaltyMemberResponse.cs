@@ -81,6 +81,7 @@ namespace MenumateServices.DTO.LoyaltyMate
                     var voucher = new VoucherInfo();
                     voucher.DiscountCode = memberVoucher.DiscountCode;
                     voucher.VoucherName = memberVoucher.VoucherName;
+                    voucher.VoucherDescription = memberVoucher.VoucherDescription;
                     voucher.NumberOfUsesRemaining = memberVoucher.NumberOfUsesRemaining;
                     result.MemberVouchers.Add(voucher);
                 }
