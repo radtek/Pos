@@ -452,6 +452,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
     cbFloatWithdrawFromCash->Checked = TGlobalSettings::Instance().FloatWithdrawFromCash;
     cbSplitBillByMenuType->Checked = TGlobalSettings::Instance().IsBillSplittedByMenuType;
+    cbIntegratedEftposSmartConnect->Checked = TGlobalSettings::Instance().EnableEftPosSmartConnect;
     FormResize(this);
 }
 
@@ -3943,9 +3944,11 @@ void _fastcall TfrmGeneralMaintenance::cbGiftCardOnlyClick(TObject *Sender)
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartPayClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;
+    TGlobalSettings::Instance().EnableEftPosSmartConnect = !TGlobalSettings::Instance().EnableEftPosSmartPay;
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
 	DBTransaction.Commit();
 }
 
@@ -3957,15 +3960,23 @@ void _fastcall TfrmGeneralMaintenance::tbtnSmartLinkIpClick(TObject *Sender)
 	frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
 	frmTouchKeyboard->KeyboardText = tbtnSmartLinkIp->Caption;
-	frmTouchKeyboard->Caption = "Enter SmartLink Ip Address";
+    if(TGlobalSettings::Instance().EnableEftPosSmartPay)
+    {
+	    frmTouchKeyboard->Caption = "Enter SmartLink Ip Address";
+    }
+    else
+    {
+        frmTouchKeyboard->Caption = "Enter SmartConnect Ip Address";
+    }
+
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-	TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
-    tbtnSmartLinkIp->Caption = TGlobalSettings::Instance().EftPosSmartPayIp;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
-	DBTransaction.Commit();
+        TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
+        tbtnSmartLinkIp->Caption = TGlobalSettings::Instance().EftPosSmartPayIp;
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
+        DBTransaction.Commit();
 	}
 }
 
@@ -4404,4 +4415,8 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	tr.StartTransaction();
 	ref_mv.SetProfileBool(tr, isBillSplittted, vmIsBillSplittedByMenuType, ref_gs.IsBillSplittedByMenuType);
 	tr.Commit();
-}
+}//-------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender){    TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;    TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
+	DBTransaction.Commit();}

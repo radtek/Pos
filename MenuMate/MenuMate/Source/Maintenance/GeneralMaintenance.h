@@ -329,7 +329,7 @@ __published:	// IDE-managed Components
         TGroupBox *GroupBox26;
         TLabel *lblEndOfDay;
         TCheckBox *cbSplitBillByMenuType;
-
+        TCheckBox *cbIntegratedEftposSmartConnect;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -565,6 +565,7 @@ __published:	// IDE-managed Components
         void __fastcall cbUseMemberSubsClick(TObject *Sender);
         void __fastcall cbFloatWithdrawFromCashClick(TObject *Sender);
         void __fastcall cbSplitBillByMenuTypeClick(TObject *Sender);
+        void __fastcall cbIntegratedEftposSmartConnectClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

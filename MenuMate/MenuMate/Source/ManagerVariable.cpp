@@ -3232,6 +3232,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Split Bill on Menu type basis"
                  "Default is False.",
                   vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableEftPosSmartConnect, "Use SmartConnect EFTPOS",
+					 "Till uses SmartConnect Intergrated EFTPOS.\r"
+					 "Default is False",
+					 vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{
