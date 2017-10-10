@@ -4,8 +4,6 @@
 #define OracleDataObjectsH
 #include <system.hpp>
 #include <vector>
-#include "OracleDataObjects.h"
-#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 ///////////////  Room Request /////////////////////////////////
 enum OracleRequestType {eRoomInquiry = 1, eRoomPost};
