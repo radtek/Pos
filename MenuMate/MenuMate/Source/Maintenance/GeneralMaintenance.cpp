@@ -3944,12 +3944,18 @@ void _fastcall TfrmGeneralMaintenance::cbGiftCardOnlyClick(TObject *Sender)
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartPayClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;
-    TGlobalSettings::Instance().EnableEftPosSmartConnect = !TGlobalSettings::Instance().EnableEftPosSmartPay;
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
 	DBTransaction.Commit();
+	cbIntegratedEftposSmartConnect->Enabled = true;
+
+	if(cbIntegratedEftposSmartPay->Checked)
+	{
+		cbIntegratedEftposSmartConnect->Enabled = false;
+		cbIntegratedEftposSmartConnect->Checked = false;
+    }
 }
 
 void _fastcall TfrmGeneralMaintenance::tbtnSmartLinkIpClick(TObject *Sender)
@@ -4415,8 +4421,11 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	tr.StartTransaction();
 	ref_mv.SetProfileBool(tr, isBillSplittted, vmIsBillSplittedByMenuType, ref_gs.IsBillSplittedByMenuType);
 	tr.Commit();
-}//-------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender){    TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;    TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;	Database::TDBTransaction DBTransaction(DBControl);
+}//-------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender){    TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
-    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
-	DBTransaction.Commit();}
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
+	DBTransaction.Commit();
+	cbIntegratedEftposSmartPay->Enabled = true;
+
+	if(cbIntegratedEftposSmartConnect->Checked)
+	    cbIntegratedEftposSmartPay->Enabled = false;}
