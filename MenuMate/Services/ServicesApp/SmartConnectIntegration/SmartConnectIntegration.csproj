@@ -34,6 +34,7 @@
     <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,12 +42,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\PairingTerminal.cs" />
+    <Compile Include="Domain\POSDetails.cs" />
+    <Compile Include="Domain\SmartConnectDataObject.cs" />
+    <Compile Include="Domain\SmartConnectResponse.cs" />
+    <Compile Include="Domain\TransactionTypes.cs" />
+    <Compile Include="Enums\ResultType.cs" />
+    <Compile Include="Enums\TerminalStatus.cs" />
+    <Compile Include="Enums\TransactionType.cs" />
+    <Compile Include="Enums\TransResultType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmartConnectController.cs" />
     <Compile Include="Tools\ServiceLogger.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Domain\" />
     <Folder Include="Utility\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
