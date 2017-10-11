@@ -445,6 +445,10 @@
       <Project>{BE08BEA6-3A39-43C9-9E2A-94C2D89734C4}</Project>
       <Name>SiHotIntegration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmartConnectIntegration\SmartConnectIntegration.csproj">
+      <Project>{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}</Project>
+      <Name>SmartConnectIntegration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WalletPaymets\WalletPaymets.csproj">
       <Project>{843E831F-1B70-4238-AA55-96492F53AAE5}</Project>
       <Name>WalletPaymets</Name>

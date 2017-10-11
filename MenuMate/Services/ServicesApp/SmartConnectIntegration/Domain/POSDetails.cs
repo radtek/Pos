@@ -13,5 +13,7 @@ namespace SmartConnectIntegration.Domain
         public string PosBusinessName { get; set; }
         [DataMember]
         public string PosVendorName { get; set; }
+        [DataMember]
+        public string IpAddress { get; set; }
     }
 }

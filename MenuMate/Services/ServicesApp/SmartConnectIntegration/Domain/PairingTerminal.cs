@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace SmartConnectIntegration.Domain
 {
     [DataContract]
-    class PairingTerminal : POSDetails
+    public class PairingTerminal : POSDetails
     {
         [DataMember]
         public string PosRegisterName { get; set; }

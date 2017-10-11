@@ -6,7 +6,7 @@ using SmartConnectIntegration.Enums;
 namespace SmartConnectIntegration.Domain
 {
     [DataContract]
-    class TransactionTypes : POSDetails
+    public class TransactionTypes : POSDetails
     {
         [DataMember]
         public int Transactiontype { get; set; }    

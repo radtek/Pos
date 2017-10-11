@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace SmartConnectIntegration.Domain
 {
     [DataContract]
-    class SmartConnectResponse
+    public class SmartConnectResponse
     {
         [DataMember]
         public string TransactionId { get; set; }
