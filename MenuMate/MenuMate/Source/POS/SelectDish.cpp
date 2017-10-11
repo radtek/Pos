@@ -311,7 +311,7 @@ void __fastcall TfrmSelectDish::FormDestroy(TObject *Sender)
 	AfterSaleProcessed.DeregisterForEvent(OnAfterSaleProcessed);
 	AfterSelectedItemChanged.DeregisterForEvent(RefreshModifyGui);
 //    if(TGlobalSettings::Instance().AutoLogoutPOS && TGlobalSettings::Instance().AutoLogoutSeconds > 0)
-	    TDeviceRealTerminal::Instance().EventLockOutTimer.DeregisterForEvent(OnLockOutTimer);
+    TDeviceRealTerminal::Instance().EventLockOutTimer.DeregisterForEvent(OnLockOutTimer);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardInserted.DeregisterForEvent(OnSmartCardInserted);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.DeregisterForEvent(OnSmartCardRemoved);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardUpdated.DeregisterForEvent(OnSmartCardInserted);
@@ -4721,6 +4721,7 @@ void TfrmSelectDish::LockOutUser()
                         if (CanClose)
                         {
                             Close();
+                            CloseChitForm();
                         }
                         else
                         {
@@ -4747,6 +4748,16 @@ void TfrmSelectDish::LockOutUser()
 	}
 }
 // ---------------------------------------------------------------------------
+
+void TfrmSelectDish::CloseChitForm()
+{
+    if((Screen->ActiveForm->Name == "frmTouchKeyboard") || (Screen->ActiveForm->Name == "frmTouchNumpad") || (Screen->ActiveForm->Name == "frmCaptNamePhone") || (Screen->ActiveForm->Name == "frmVerticalSelect"))
+    {
+        Screen->ActiveForm->Close();
+
+    }
+}
+
 bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)
 {
 	bool RetVal = false;
