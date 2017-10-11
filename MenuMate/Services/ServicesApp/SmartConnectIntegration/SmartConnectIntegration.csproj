@@ -49,6 +49,7 @@
     <Compile Include="Domain\TransactionTypes.cs" />
     <Compile Include="Enums\ResultType.cs" />
     <Compile Include="Enums\TerminalStatus.cs" />
+    <Compile Include="Enums\TransactionStatus.cs" />
     <Compile Include="Enums\TransactionType.cs" />
     <Compile Include="Enums\TransResultType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

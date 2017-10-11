@@ -4,17 +4,57 @@ using System.Linq;
 using System.Text;
 using SmartConnectIntegration.Domain;
 using System.Diagnostics;
+using System.ServiceModel;
 
 namespace MenumateServices.WCFServices
 {
-
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class WCFServiceSmartConnect : IWCFSmartConnect
     {
         private SmartConnectResponse _response;
+        private bool _waitflag;
+        private string SampleText = "****** SAMPLE ******\n" +
+            "Terminal print\n" +
+            "function test\n" +
+            "The following two\n" +
+            "lines should be\n" +
+            "blank.\n" +
+            "                    \n" +
+            "\n" +
+            "********************\n" +
+            "************************\n" +
+            "\n\n\n\n\n\n\n\n\n";
+
         public WCFServiceSmartConnect()
         {
-           
-        }      
+            _waitflag = false;
+            _response = new SmartConnectResponse();
+        }
+
+        public SmartConnectResponse PingTerminal(string ipAddress)
+        {
+            var response = new SmartConnectResponse();
+            try
+            {
+                using (var ping = new System.Net.NetworkInformation.Ping())
+                {
+                    System.Net.NetworkInformation.PingReply pingReply = ping.Send(ipAddress);
+                    response.SmartConnectData.Result = (pingReply.Status == System.Net.NetworkInformation.IPStatus.Success);
+                    if (!response.Successful)
+                    {
+                        response.ErrorText = "Login Failed - " + Convert.ToString(pingReply.Status);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Successful = false;
+                response.ErrorText = ex.Message;
+                EventLog.WriteEntry("In PingTerminal Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 18, short.MaxValue);
+                ServiceLogger.LogException("Exception in PingTerminal", ex);
+            }
+            return response;
+        }
 
         public string Pairing(PairingTerminal param)
         {

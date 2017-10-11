@@ -16,7 +16,7 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public string DeviceId { get; set; }
         [DataMember]
-        public string TransactionStatus { get; set; }
+        public TransactionStatus TransactionStatus { get; set; }
         [DataMember]
         public SmartConnectDataObject SmartConnectData { get; set; }
     }

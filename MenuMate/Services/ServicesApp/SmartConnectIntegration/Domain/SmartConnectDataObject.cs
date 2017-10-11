@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using SmartConnectIntegration.Enums
 
 namespace SmartConnectIntegration.Domain
 {
@@ -8,7 +9,7 @@ namespace SmartConnectIntegration.Domain
     public class SmartConnectDataObject
     {
         [DataMember]
-        public string TransactionResult { get; set; }
+        public TransResultType TransactionResult { get; set; }
         [DataMember]
         public string  Receipt { get; set; }
         [DataMember]
@@ -20,7 +21,7 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public DateTime Timestamp { get; set; }
         [DataMember]
-        public string Result { get; set; }
+        public ResultType Result { get; set; }
         [DataMember]
         public string Function { get; set; }
         [DataMember]
