@@ -19,17 +19,17 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         SmartConnectResponse SettlementCutover(TransactionTypes settlementCutoverType);
         [OperationContract]
-        SmartConnectResponse Purchase(TransactionTypes purchaseType);
+        SmartConnectResponse Purchase(TransactionTypes purchaseType, double amount);
         [OperationContract]
-        SmartConnectResponse PurchasePlusCash(TransactionTypes purchasePlusCashType);
+        SmartConnectResponse PurchasePlusCash(TransactionTypes purchasePlusCashType, double totalAmount, double cashAmount);
         [OperationContract]
-        SmartConnectResponse CashOutOnly(TransactionTypes cashOutOnlyType);
+        SmartConnectResponse CashOutOnly(TransactionTypes cashOutOnlyType, double cashAmount);
         [OperationContract]
-        SmartConnectResponse Refund(TransactionTypes refundType);
+        SmartConnectResponse Refund(TransactionTypes refundType, double refundAmount);
         [OperationContract]
-        SmartConnectResponse Authorise(TransactionTypes authoriseType);
+        SmartConnectResponse Authorise(TransactionTypes authoriseType, double amountAuth, string transactionRef);
         [OperationContract]
-        SmartConnectResponse Finalise(TransactionTypes finaliseType);
+        SmartConnectResponse Finalise(TransactionTypes finaliseType, double amountAuth, string transactionRef);
         [OperationContract]
         SmartConnectResponse GetTransactionResult(TransactionTypes transResultType);
         [OperationContract]

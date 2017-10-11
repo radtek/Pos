@@ -52,6 +52,7 @@
     <Compile Include="Enums\TransactionType.cs" />
     <Compile Include="Enums\TransResultType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmartConnectConstraints.cs" />
     <Compile Include="SmartConnectController.cs" />
     <Compile Include="Tools\ServiceLogger.cs" />
   </ItemGroup>

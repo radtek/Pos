@@ -10,11 +10,11 @@ namespace MenumateServices.WCFServices
 
     public class WCFServiceSmartConnect : IWCFSmartConnect
     {
+        private SmartConnectResponse _response;
         public WCFServiceSmartConnect()
         {
-        }
-
-        private SmartConnectResponse _response;
+           
+        }      
 
         public string Pairing(PairingTerminal param)
         {
@@ -63,7 +63,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse Purchase(TransactionTypes purchaseType) 
+        public SmartConnectResponse Purchase(TransactionTypes purchaseType, double amount) 
         {
             try
             {
@@ -77,7 +77,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse PurchasePlusCash(TransactionTypes purchasePlusCashType) 
+        public SmartConnectResponse PurchasePlusCash(TransactionTypes purchasePlusCashType, double totalAmount, double cashAmount) 
         {
             try
             {
@@ -91,7 +91,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse CashOutOnly(TransactionTypes cashOutOnlyType)
+        public SmartConnectResponse CashOutOnly(TransactionTypes cashOutOnlyType, double cashAmount)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse Refund(TransactionTypes refundType) 
+        public SmartConnectResponse Refund(TransactionTypes refundType, double refAmount) 
         {
             try
             {
@@ -119,7 +119,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse Authorise(TransactionTypes authoriseType) 
+        public SmartConnectResponse Authorise(TransactionTypes authoriseType, double amountAuth, string transactionRef) 
         {
             try
             {
@@ -133,7 +133,7 @@ namespace MenumateServices.WCFServices
             return _response;
         }
 
-        public SmartConnectResponse Finalise(TransactionTypes finaliseType) 
+        public SmartConnectResponse Finalise(TransactionTypes finaliseType, double amountAuth, string transactionRef) 
         {
             try
             {
