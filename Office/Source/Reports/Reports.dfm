@@ -1,6 +1,6 @@
 object frmReports: TfrmReports
-  Left = 7
-  Top = 3
+  Left = 575
+  Top = 204
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Reports'
@@ -371,7 +371,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clNavy
-            Date = 37581.681001169
+            Date = 37581.9422710301
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -390,7 +390,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clMaroon
-            Date = 36795.681001169
+            Date = 36795.9422711458
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11

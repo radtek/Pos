@@ -4463,7 +4463,9 @@ case DAILY_SALES_REPORT:
 			ReportFilter1->GSTChecked					= false;
             SubReport1->AddFilterIndex(0);
 
-			ReportControl->AddFilter(ReportFilter1);
+		   ReportControl->AddFilter(ReportFilter1);
+
+        break;
         }
 
 }
@@ -11225,6 +11227,7 @@ void TfrmReports::PrintSubReports(TReportControl *ReportControl)
 				{
 					if (rvMenuMate->SelectReport(ReportName, false))
 					{
+                       
 						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 						rvMenuMate->SetParam("ReportRange", DateRange);
@@ -11271,13 +11274,13 @@ void TfrmReports::PrintMezzanineSales(TReportControl *ReportControl)
 		else
 		{
 			if (rvMenuMate->SelectReport(ReportName, false))
-			{
-				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
-				rvMenuMate->Execute();
+			{		   
+                AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+						rvMenuMate->SetParam("ReportRange", DateRange);
+                        rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+						rvMenuMate->Execute();
 			}
 			else
 			{
