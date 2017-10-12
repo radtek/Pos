@@ -133,6 +133,7 @@ private:
     double _totalRefundAmount;
     double _totalTax;
     double _totalServiceCharge;
+    double _totalNonTaxableSC;
     double _totalNetSaleAmount;
     double _totalCashSales;
     double _totalChargedSales;
@@ -170,6 +171,7 @@ private:
     void SetHourCode(int hourCode);
     void SetZKey(int zKey);
     void SetSalesBySalesType(std::map<int, double> salesBySalestype);
+    void SetNonTaxableServiceCharge(double nonTaxableServiceCharge);
 
 public:
     __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
@@ -183,6 +185,7 @@ public:
     __property double TotalRefundAmount = {read = _totalRefundAmount, write = SetRefundAmount};
     __property double TotalTax = {read = _totalTax, write = SetTax};
     __property double TotalServiceCharge = {read = _totalServiceCharge, write = SetServiceCharge};
+    __property double TotalNonTaxableSC = {read = _totalNonTaxableSC, write = SetNonTaxableServiceCharge};
     __property double TotalNetSaleAmount = {read = _totalNetSaleAmount, write = SetNetSaleAmount};
     __property double TotalCashSales = {read = _totalCashSales, write = SetCashSales};
     __property double TotalChargedSales = {read = _totalChargedSales, write = SetTotalChargedSales};

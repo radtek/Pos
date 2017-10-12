@@ -6284,7 +6284,7 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
             insertQuery->ParamByName("PWD")->AsCurrency = fieldData->TotalPWDAmount;
             insertQuery->ParamByName("SCD")->AsCurrency = fieldData->TotalSCDAmount;
             insertQuery->ParamByName("OTHER_DISCOUNTS")->AsCurrency = fieldData->TotalOtherDiscount;
-            insertQuery->ParamByName("VAT_EXEMPT_SALES")->AsCurrency = fieldData->NonTaxableSaleAmount;
+            insertQuery->ParamByName("VAT_EXEMPT_SALES")->AsCurrency = (fieldData->NonTaxableSaleAmount - fieldData->TotalNonTaxableSC - fieldData->TotalPWDAmount - fieldData->TotalSCDAmount);
             insertQuery->ParamByName("SERVICE_CHARGE")->AsCurrency = fieldData->TotalServiceCharge;
             insertQuery->ParamByName("VAT")->AsCurrency = fieldData->TotalTax;
             insertQuery->ParamByName("LOCATION_ID")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;

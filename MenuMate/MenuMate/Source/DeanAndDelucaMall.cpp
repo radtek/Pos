@@ -80,6 +80,11 @@ void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
     _totalServiceCharge = totalServiceCharge;
 }
 //------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetNonTaxableServiceCharge(double totalServiceCharge)
+{
+    _totalNonTaxableSC = _totalNonTaxableSC;
+}
+//------------------------------------------------------------------------------------------
  void TDeanAndDelucaMallField::SetNetSaleAmount(double totalNetSaleAmount)
 {
     _totalNetSaleAmount = totalNetSaleAmount;
@@ -1229,6 +1234,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     else
     {
        fieldData.NonTaxableSaleAmount += (salesBySalesType + discounts.scdDiscount + discounts.pwdDiscount - taxes.serviceCharge);
+       fieldData.TotalNonTaxableSC += taxes.serviceCharge;
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";
