@@ -9,6 +9,7 @@ namespace SmartConnectIntegration.Domain
     {
         [DataMember]
         public string PosRegisterName { get; set; }
-        //How the pairing code will be fetched.
+        [DataMember]
+        public string PairingCode { get; set; }
     }
 }

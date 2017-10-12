@@ -113,7 +113,7 @@ namespace MenumateServices.MenumateRunners
         {
             try
             {
-                return new ServiceHost(typeof(WCFServiceSmartLink));
+                return new ServiceHost(typeof(WCFServiceSmartConnect));
             }
             catch (Exception e)
             {

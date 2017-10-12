@@ -3385,6 +3385,10 @@
 				<DependentOn>EftposSmartConnect.h</DependentOn>
 				<BuildOrder>770</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="SmartConnectWSDL.cpp">
+				<DependentOn>SmartConnectWSDL.h</DependentOn>
+				<BuildOrder>771</BuildOrder>
+			</CppCompile>
 			<FormResources Include="Maintenance\PrinterMaintenance.dfm"/>
 			<FormResources Include="DeskTop\VerticalSelect.dfm"/>
 			<FormResources Include="POS\SelectReceipt.dfm"/>

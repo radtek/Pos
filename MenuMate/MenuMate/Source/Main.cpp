@@ -91,6 +91,7 @@
 #include "CSVExportReceiver.h"
 #include "ManagerPanasonic.h"
 #include "ManagerPMS.h"
+#include "EftposSmartConnect.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -345,6 +346,11 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
 			EftPos = new TEftPosSmartLink();
 			EftPos->Initialise();
+		}
+        else if (TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPosRegiestered)
+		{
+//			EftPos = new TEftPosSmartConnect();
+//			EftPos->Initialise();
 		}
 		else
 		{

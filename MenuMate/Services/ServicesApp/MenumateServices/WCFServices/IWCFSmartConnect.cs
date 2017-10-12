@@ -11,7 +11,7 @@ namespace MenumateServices.WCFServices
     public interface IWCFSmartConnect
     {
         [OperationContract]
-        string Pairing(PairingTerminal param);
+        SmartConnectResponse Pairing(PairingTerminal param);
         [OperationContract]
         SmartConnectResponse Logon(TransactionTypes logonType);
         [OperationContract]

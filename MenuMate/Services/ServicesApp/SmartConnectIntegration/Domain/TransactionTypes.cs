@@ -9,6 +9,6 @@ namespace SmartConnectIntegration.Domain
     public class TransactionTypes : POSDetails
     {
         [DataMember]
-        public int Transactiontype { get; set; }    
+        public string Transactiontype { get; set; }    
     }
 }
