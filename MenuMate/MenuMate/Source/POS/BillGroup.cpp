@@ -238,6 +238,8 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
             Database::TDBTransaction DBTransaction(DBControl);
             TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
             DBTransaction.StartTransaction();
+            SelectedTabs.clear();
+            SelectedItems.clear();
             UpdateTableDetails(DBTransaction);
             TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
             DBTransaction.Commit();
@@ -2034,7 +2036,18 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                                 ProcessBillThorVouchers(DBTransaction);
                                 TGlobalSettings::Instance().IsProcessThorVoucher = false ;
                             }
-                            TDBTab::SetTabOrdersLoyalty(DBTransaction,CurrentSelectedTab, TempMembershipInfo.ContactKey);
+                            if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+                            {
+                                for(std::set <__int64> ::iterator CrntTabKey = SelectedTabs.begin();
+                                    CrntTabKey != SelectedTabs.end(); advance(CrntTabKey, 1))
+                                {
+                                    TDBTab::SetTabOrdersLoyalty(DBTransaction,*CrntTabKey, TempMembershipInfo.ContactKey);
+                                }
+                            }
+                            else
+                            {
+                                TDBTab::SetTabOrdersLoyalty(DBTransaction,CurrentSelectedTab, TempMembershipInfo.ContactKey);
+                            }
                             //check whether selected table's selected guest is linked to clipp tab
                             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
                             //Send tab details back if selected tab is clipp tab.
