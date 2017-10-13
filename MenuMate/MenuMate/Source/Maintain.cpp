@@ -3382,15 +3382,15 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     TVerticalSelection Item2;
     Item2.Title = "Xero";
     Item2.Properties["Action"] = IntToStr(2);
-    Item2.Properties["Color"] = IntToStr(clNavy);
+    Item2.Properties["Color"] = TGlobalSettings::Instance().IsXeroEnabled ? IntToStr(clGreen) : IntToStr(clRed);
     Item2.CloseSelection = true;
-    Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+ //   Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item2);
 
     TVerticalSelection Item3;
     Item3.Title = "MYOB";
     Item3.Properties["Action"] = IntToStr(3);
-    Item3.Properties["Color"] = IntToStr(clNavy);
+    Item3.Properties["Color"] = TGlobalSettings::Instance().IsMYOBEnabled ? IntToStr(clGreen) : IntToStr(clRed);
     Item3.CloseSelection = true;
     Item3.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item3);
@@ -3398,7 +3398,7 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     TVerticalSelection Item4;
     Item4.Title = "PeachTree";
     Item4.Properties["Action"] = IntToStr(4);
-    Item4.Properties["Color"] = IntToStr(clNavy);
+    Item4.Properties["Color"] = TGlobalSettings::Instance().IsEnabledPeachTree ? IntToStr(clGreen) : IntToStr(clRed);
     Item4.CloseSelection = true;
     //Item4.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item4);
@@ -3505,6 +3505,8 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                 TGlobalSettings::Instance().IsMYOBEnabled = false;
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
+                TGlobalSettings::Instance().IsEnabledPeachTree = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
             }
             else if(accountingType == eAccountingMYOB)
             {
@@ -3522,6 +3524,8 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
                 TGlobalSettings::Instance().IsXeroEnabled = false;
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
+                TGlobalSettings::Instance().IsEnabledPeachTree = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
                 TMYOBIntegration::Instance().MYOBMachineName = TGlobalSettings::Instance().MYOBMachineName;
                 TMYOBIntegration::Instance().MYOBFolderPath  = TGlobalSettings::Instance().MYOBFolderPath;
                 TMYOBIntegration::Instance().MYOBUserName    = TGlobalSettings::Instance().MYOBUserName;
@@ -3708,6 +3712,8 @@ void TfrmMaintain::PeachTreeSettings()
                         {
                         case 1 :
                             TGlobalSettings::Instance().IsEnabledPeachTree = true;
+                            TGlobalSettings::Instance().IsXeroEnabled = false;
+                            TGlobalSettings::Instance().IsMYOBEnabled = false;
                             break;
                         case 2 :
                             TGlobalSettings::Instance().IsEnabledPeachTree = false;
@@ -3715,6 +3721,8 @@ void TfrmMaintain::PeachTreeSettings()
                         }
 
                         DBTransaction.StartTransaction();
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
                         DBTransaction.Commit();
                     }
