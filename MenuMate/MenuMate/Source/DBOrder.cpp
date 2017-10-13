@@ -1013,7 +1013,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 		if(IBInternalQuery->RecordCount == 0)
 		{
 			// Add the required Finical Category.
-            int MasterOrderKey = Order->OrderKey;
+            int MasterOrderKey = 0;
             if(Order->GetQty() != 0)
             {
 			int PrimaryArcCatkey = GetArchiveCategory(DBTransaction,Order->Categories->FinancialCategory);
@@ -1022,7 +1022,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERS, 1) FROM RDB$DATABASE";
 			IBInternalQuery->ExecQuery();
 			Order->OrderKey = IBInternalQuery->Fields[0]->AsInteger;
-
+            MasterOrderKey = Order->OrderKey;
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Clear();
@@ -3426,7 +3426,6 @@ void TDBOrder::GetOrdersIncludingSidesFromTabKeys(Database::TDBTransaction &DBTr
 			{
 				OrderKeys.insert(IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger);
 			}
-
 			GetOrdersIncludingSidesFromOrderKeys(DBTransaction,Orders,OrderKeys, true);
 		}
 	}
