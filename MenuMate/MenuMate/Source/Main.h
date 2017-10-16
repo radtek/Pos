@@ -135,6 +135,7 @@ private:	// User declarations
     bool MenusToStockExchangeFolderExists();
     void ImportStockExchange();
     void CreateMenusToExchangeStockFolder();
+    void ReFormatIpToUrl();
 
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);
