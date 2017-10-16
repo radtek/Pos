@@ -460,7 +460,7 @@ void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->TipAccount = frmTouchKeyboard->KeyboardText;
-			tbRoundingCategory->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
+			tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSExpensesAccount,TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount);
