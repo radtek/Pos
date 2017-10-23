@@ -350,13 +350,12 @@ ChitResult TfrmSelectDish::InitializeChit()
 // ---------------------------------------------------------------------------
 ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
 {
-
    TChitNumberController controller(this, tr);
-   ChitResult selection_result = controller.GetChitNumber(true, ChitNumber);
+     ChitResult selection_result = controller.GetChitNumber(true, ChitNumber);
+
    tbtnChitNumber->Caption =
    ChitNumber.ChitNumberKey ? ChitNumber.GetChitNumber()
                                : UnicodeString(L"Chit");
-
     if(ChitNumber.Valid())
     {
         TGlobalSettings::Instance().TabPrintName = "";
@@ -610,6 +609,9 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     }
     SetPOSBackgroundColor();
     isChitDiscountExist = false;
+   // isChitFormOpened = false;
+    isNagUserToSelectChit=true;
+
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1789,7 +1791,6 @@ void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
 
 		purge_unsent_orders();
 	}
-
 	ResetPOS();
 }
 // ---------------------------------------------------------------------------
@@ -1828,7 +1829,6 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 
 	 if(SaveTransactionDetails(CashPayment->Name))
 	{
-
 		bool PaymentComplete = ProcessOrders(Sender, DBTransaction, 0, // Tab
 			TabCashAccount, // Tab Type
 			"Sale", // Tab Container Name
@@ -1838,6 +1838,7 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 			0, // Table
 			0, // Seat
 			0); // Room
+
 		if (PaymentComplete)
 		{
 			DBTransaction.Commit();
@@ -1849,13 +1850,18 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 
     }
 	}
+
     AutoLogOut();
    if(TGlobalSettings::Instance().EnableTableDisplayMode)
        {
               showTablePicker();
        }
     //MM-1647: Ask for chit if it is enabled for every order.
-    NagUserToSelectChit();
+    if(isNagUserToSelectChit)
+    {
+     NagUserToSelectChit();
+    }
+
 
      //mm-5145
     CheckMandatoryMembershipCardSetting(tbtnMembership);
@@ -2572,13 +2578,18 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 		}
 	}
 	if(!IsSubSidizeProcessed&&!IsSubSidizeOrderCancil)
-	{ AutoLogOut();
+	{
+        AutoLogOut();
 		if(TGlobalSettings::Instance().EnableTableDisplayMode)
 		{
 			showTablePicker();
 		}
 		//MM-1647: Ask for chit if it is enabled for every order.
+            if(isNagUserToSelectChit)
+            {
               	NagUserToSelectChit();
+            }
+
 	}
 
     IsParkSalesEnable=false;
@@ -3418,6 +3429,7 @@ void __fastcall TfrmSelectDish::HighlightSelectedItem()
 bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DBTransaction, int SelectedTab, TMMTabType TabType, AnsiString TabContainerName, AnsiString TabName,
 	AnsiString PartyName, bool PrintPrelim, int TableNo, int SeatNo, int RoomNo, bool BillOff,AnsiString DelayedInvoiceNumber)
 {
+    CanClose=false;
     IsParkSalesEnable = true;
     bool order_was_resumed_via_hold_and_send = false;
     bool PaymentComplete = false;
@@ -3566,9 +3578,14 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 		if (OrdersList->Count > 0 || Sender == tbtnTender)
 		{
-
 			// Retrive Chit Number ------------------------------------------------
 			TChitNumberController ChitNumberController(this, DBTransaction);
+
+          //  isChitFormOpened = true;
+
+
+            //variable make it false
+
 			ChitResult Result = ChitNumberController.GetChitNumber(false, ChitNumber);
 			switch(Result)
 			{
@@ -3587,13 +3604,12 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				break;
 			case ChitCancelled:
 				tbtnChitNumber->Caption = ChitNumber.Name;
-				throw EAbort("Cancelled by User.");
+                throw EAbort("Cancelled by User.");
 				break;
 			case ChitNone:
 				PaymentTransaction.ChitNumber.Clear();
 				break;
 			}
-
 			// --------------------------------------------------------------------
 			// Sort Transaction Balance -------------------------------------------
             TotalCosts();
@@ -3968,7 +3984,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                         {
                                             InvoiceTransaction.Orders->Assign(FoodOrdersList.get());
                                             TDBOrder::GetTabKeysFromOrders(FoodOrdersList.get(), SelectedTabs);
-                                        }
+                                          }
                                     }
                                     else
                                     {
@@ -4133,15 +4149,22 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 	}
 	catch(EAbort & E)
 	{
-		MessageBox(E.Message, "Abort", MB_OK + MB_ICONERROR);
+        if(!CanClose)
+        {
+	    	MessageBox(E.Message, "Abort", MB_OK + MB_ICONERROR);
+        }
+
 	}
 	catch(Exception & E)
 	{
+        if(!CanClose)
+        {
 		MessageBox("Unable to process this order.\r" "Please report the following message to your service provider :\r\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Tab Data Type :" + IntToStr(TabType) + " Selected Tab Key " + IntToStr(SelectedTab) + "Tab Name :" + TabName);
 		PaymentComplete = false;
+        }
 	}
 
     if(PaymentComplete)
@@ -4438,7 +4461,6 @@ void TfrmSelectDish::ProcessQuickPayment(TObject *Sender,AnsiString paymentName)
         ResetPOS();
 
     }
-
    AutoLogOut();
    if(TGlobalSettings::Instance().EnableTableDisplayMode)
     {
@@ -4716,8 +4738,10 @@ void TfrmSelectDish::LockOutUser()
                     }
                     else if (Result == lsCancel)
                     {
-                        bool CanClose = true;
+                        CanClose = true;
+                        isNagUserToSelectChit=false;
                         FormCloseQuery(NULL, CanClose);
+
                         if (CanClose)
                         {
                             Close();
@@ -4737,7 +4761,7 @@ void TfrmSelectDish::LockOutUser()
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message);
 				Result = lsDenied;
 			}
-		//}
+
 
 		DBTransaction.Commit();
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
@@ -4751,7 +4775,13 @@ void TfrmSelectDish::LockOutUser()
 
 void TfrmSelectDish::CloseChitForm()
 {
-    if((Screen->ActiveForm->Name == "frmTouchKeyboard") || (Screen->ActiveForm->Name == "frmTouchNumpad") || (Screen->ActiveForm->Name == "frmCaptNamePhone") || (Screen->ActiveForm->Name == "frmVerticalSelect"))
+     if(
+        (Screen->ActiveForm->Name == "frmTouchKeyboard")    ||
+        (Screen->ActiveForm->Name == "frmTouchNumpad")      ||
+        (Screen->ActiveForm->Name == "frmCaptNamePhone")    ||
+        (Screen->ActiveForm->Name == "frmVerticalSelect")   ||
+        (Screen->ActiveForm->Name == "frmChitList")         ||
+        (Screen->ActiveForm->Name == "frmMessageBox"))
     {
         Screen->ActiveForm->Close();
 
@@ -11514,6 +11544,7 @@ void TfrmSelectDish::AutoLogOut()
      {
         LockOutUser();
      }
+
 }
 
 //:::::::::::::::::::::::::::::::::::::::::::::::
