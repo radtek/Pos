@@ -550,10 +550,6 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     {
       tgridOrderCourse->Font->Size = 12;
     }
-
-    if(TGlobalSettings::Instance().WebMateEnabled)
-        ProcessWebOrders(false);
-
 	InitXeroIntegration();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
@@ -612,6 +608,9 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     }
     SetPOSBackgroundColor();
     isChitDiscountExist = false;
+
+    if(TGlobalSettings::Instance().WebMateEnabled)
+        ProcessWebOrders(false);
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -716,6 +715,8 @@ void __fastcall TfrmSelectDish::WebOrder(Messages::TMessage& Message)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
 {
+    try
+    {
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         if(!NotifyLastWebOrder(DBTransaction))
@@ -738,6 +739,11 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
         {
            DBTransaction.Commit();
         }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 bool TfrmSelectDish::IsPricedBarcode(AnsiString &data) const
@@ -2062,124 +2068,129 @@ void __fastcall TfrmSelectDish::tiChitDelayComplete(TObject *)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 {
-	TCHAR szTime[64];
-
-	int Length = GetTimeFormat(NULL, NULL, NULL, _T("h':'mm':'ss tt"), szTime, sizeof(szTime));
-	AnsiString TheTime = " ";
-	for (int i = 0; i < Length; i++)
-	{
-		TheTime += szTime[i];
-	}
-	AnsiString LastTime = stTime->Caption.Trim();
-	if (LastTime != TheTime.Trim())
-	{
-		stTime->Caption = TheTime;
-       	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-        UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
-        DBTransaction.Commit();
-
-       if (TGlobalSettings::Instance().ForceHappyHour)
+    try
+    {
+        TCHAR szTime[64];
+        //std::<Initializer_list> t1;     for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr)
+        int Length = GetTimeFormat(NULL, NULL, NULL, _T("h':'mm':'ss tt"), szTime, sizeof(szTime));
+        AnsiString TheTime = " ";
+        for (int i = 0; i < Length; i++)
         {
-			stHappyHour->Visible = true;
-		}
-		else
-		{
-            //check if current time fall under any profile then it will return true;
-            TManagerHappyHour* isHappyHour = new TManagerHappyHour();
-            int priceLevel;
-            stHappyHour->Tag=1;
-             bool happyHour = isHappyHour->IsCurrentTimeHappyHour(TDeviceRealTerminal::Instance().ID.DeviceKey,priceLevel);
+            TheTime += szTime[i];
+        }
+        AnsiString LastTime = stTime->Caption.Trim();
+        if (LastTime != TheTime.Trim())
+        {
+            stTime->Caption = TheTime;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+            UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
+            DBTransaction.Commit();
 
-			if (!TGlobalSettings::Instance().TerminalExemptFromHappyHour)
-			{
-				TDateTime CurrentTime = Time();
-				bool InTimeSpan;
+            if (TGlobalSettings::Instance().ForceHappyHour)
+            {
+                stHappyHour->Visible = true;
+            }
+            else
+            {
+                //check if current time fall under any profile then it will return true;
+                TManagerHappyHour* isHappyHour = new TManagerHappyHour();
+                int priceLevel;
+                stHappyHour->Tag=1;
+                 bool happyHour = isHappyHour->IsCurrentTimeHappyHour(TDeviceRealTerminal::Instance().ID.DeviceKey,priceLevel);
 
-				if (happyHour)
-				{
-					InTimeSpan = true;
-                    stHappyHour->Visible = true;
-                    stHappyHour->Tag=priceLevel;
+                if (!TGlobalSettings::Instance().TerminalExemptFromHappyHour)
+                {
+                    TDateTime CurrentTime = Time();
+                    bool InTimeSpan;
+
+                    if (happyHour)
+                    {
+                        InTimeSpan = true;
+                        stHappyHour->Visible = true;
+                        stHappyHour->Tag=priceLevel;
+                    }
+                    else
+                    {
+                        stHappyHour->Visible = false;
+
+                    }
                 }
                 else
                 {
                     stHappyHour->Visible = false;
-
                 }
-			}
-			else
-			{
-				stHappyHour->Visible = false;
-			}
 
-           delete isHappyHour;
-           isHappyHour = NULL;
-		}
-	}
+               delete isHappyHour;
+               isHappyHour = NULL;
+            }
+        }
 
-	// Rest poledisplay.
-	if (Now() > (LastSale + (1.0 / 24.0 / 60.0 / 6.0)) && double(LastSale) != 0) // 10 seconds.
-	{
-		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
-		LastSale = 0;
-	}
-
-    if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().DBControl.Connected())
-    {
-        //Check For Web Orders.
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
-        //notify message for webmate interface is enabled or not
-        if(!NotifyLastWebOrder(DBTransaction))
+        // Rest poledisplay.
+        if (Now() > (LastSale + (1.0 / 24.0 / 60.0 / 6.0)) && double(LastSale) != 0) // 10 seconds.
         {
-            if (WebOrdersPending)
+            TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
+            LastSale = 0;
+        }
+
+        if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().DBControl.Connected())
+        {
+            //Check For Web Orders.
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            bool WebOrdersPending = TDBWebUtil::WebOrdersPending(DBTransaction);
+            //notify message for webmate interface is enabled or not
+            if(!NotifyLastWebOrder(DBTransaction))
             {
-                if(TGlobalSettings::Instance().AutoAcceptWebOrders)
-                    ProcessWebOrders(false);
+                if (WebOrdersPending)
+                {
+                    if(TGlobalSettings::Instance().AutoAcceptWebOrders)
+                    { // MessageBox("Inside Timertick process weborder", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
+                        ProcessWebOrders(false);
+                    }
+                    else
+                    {
+    //                    tbtnWebOrders->ButtonColor = 0x002193F6;
+    //                    tbtnWebOrders->Font->Color =clWhite;
+                           tbtnWebOrders->ButtonColor= clGreen;
+                           tbtnWebOrders->Font->Color =clWhite;
+                    }
+                }
                 else
                 {
-//                    tbtnWebOrders->ButtonColor = 0x002193F6;
-//                    tbtnWebOrders->Font->Color =clWhite;
-                       tbtnWebOrders->ButtonColor= clGreen;
-                       tbtnWebOrders->Font->Color =clWhite;
-
-
+                   // tbtnWebOrders->ButtonColor = 0x00979492;
+                     if(TGlobalSettings::Instance().ShowDarkBackground)
+                     {
+                        tbtnWebOrders->ButtonColor = 14342874;
+                     }
+                     else
+                     {
+                        tbtnWebOrders->ButtonColor = clWhite;
+                     }
+                     tbtnWebOrders->Font->Color =0x002193F6;
                 }
-
             }
-            else
-            {
-               // tbtnWebOrders->ButtonColor = 0x00979492;
-                 if(TGlobalSettings::Instance().ShowDarkBackground)
-                 {
-                    tbtnWebOrders->ButtonColor = 14342874;
-                 }
-                 else
-                 {
-                    tbtnWebOrders->ButtonColor = clWhite;
-                 }
-                 tbtnWebOrders->Font->Color =0x002193F6;
-            }
+            DBTransaction.Commit();
         }
-        DBTransaction.Commit();
 
-    }
+        // Mall Export Codes
+        bool CloseSelectDish = false;
+        std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
 
-    // Mall Export Codes
-    bool CloseSelectDish = false;
-    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-
-    if(TGlobalSettings::Instance().MallIndex == ROBINSONMALL)
-    {
-        CloseSelectDish = MEM->IMallManager->ScheduledExitOnSelectDish();
-
-        if(CloseSelectDish)
+        if(TGlobalSettings::Instance().MallIndex == ROBINSONMALL)
         {
-            Close();
+            CloseSelectDish = MEM->IMallManager->ScheduledExitOnSelectDish();
+
+            if(CloseSelectDish)
+            {
+                Close();
+            }
         }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
 // ---------------------------------------------------------------------------
