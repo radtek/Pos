@@ -609,7 +609,6 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     }
     SetPOSBackgroundColor();
     isChitDiscountExist = false;
-   // isChitFormOpened = false;
     isNagUserToSelectChit=true;
 
 }
@@ -3580,12 +3579,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		{
 			// Retrive Chit Number ------------------------------------------------
 			TChitNumberController ChitNumberController(this, DBTransaction);
-
-          //  isChitFormOpened = true;
-
-
-            //variable make it false
-
 			ChitResult Result = ChitNumberController.GetChitNumber(false, ChitNumber);
 			switch(Result)
 			{
