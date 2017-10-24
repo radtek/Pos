@@ -649,7 +649,7 @@ public: // User declarations
     void PaintItemToDisplay(long itemKey, long sizesKey , AnsiString qtyValue , AnsiString billValue);
     void CloseChitForm();
     bool CanClose;
-    bool isNagUserToSelectChit;
+    bool IsChitPromptFormActive;
 
    //:::::::::::::::::::::::::::::::::::::::::::::::
    // Parked Sales

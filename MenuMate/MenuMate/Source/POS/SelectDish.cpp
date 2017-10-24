@@ -609,7 +609,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     }
     SetPOSBackgroundColor();
     isChitDiscountExist = false;
-    isNagUserToSelectChit=true;
+    IsChitPromptFormActive=true;
 
 }
 // ---------------------------------------------------------------------------
@@ -1856,7 +1856,7 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
               showTablePicker();
        }
     //MM-1647: Ask for chit if it is enabled for every order.
-    if(isNagUserToSelectChit)
+    if(IsChitPromptFormActive)
     {
      NagUserToSelectChit();
     }
@@ -2584,7 +2584,7 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			showTablePicker();
 		}
 		//MM-1647: Ask for chit if it is enabled for every order.
-            if(isNagUserToSelectChit)
+            if(IsChitPromptFormActive)
             {
               	NagUserToSelectChit();
             }
@@ -4732,11 +4732,11 @@ void TfrmSelectDish::LockOutUser()
                     else if (Result == lsCancel)
                     {
                         CanClose = true;
-                        isNagUserToSelectChit=false;
                         FormCloseQuery(NULL, CanClose);
 
                         if (CanClose)
                         {
+                            IsChitPromptFormActive=false;
                             Close();
                             CloseChitForm();
                         }
