@@ -19,7 +19,7 @@ char MemButtonChar[24][2] = { {'~', '`'}, {'!', '1'}, {'@', '2'}, {'#', '3'}, {'
 
 //---------------------------------------------------------------------------
 __fastcall TfrmPhoenixRoom::TfrmPhoenixRoom(TComponent* Owner)
-	: TZForm(Owner)
+	: TZForm(Owner)//, *roomResult(new TRoomInquiryResult())
 {
 }
 //---------------------------------------------------------------------------
@@ -396,21 +396,9 @@ void TfrmPhoenixRoom::QuickSearch()
 
 	SelectedRoom.Clear();
 	SelectedRoom.AccountNumber = edSearch->Text;
-    if(TGlobalSettings::Instance().PMSType != SiHot)
+    if(TGlobalSettings::Instance().PMSType == Oracle)
     {
-    	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
-        if(SelectedRoom.Result != eAccepted)
-        {
-            MessageBox(SelectedRoom.ResultText,"PMS Hotel Error", MB_OK + MB_ICONERROR);
-        }
-
-        ShowAccount();
-
-        for (int i=0; i<pnlLastPicked->ControlCount; i++)
-        {
-            TTouchBtn *UnSelected = (TTouchBtn * )pnlLastPicked->Controls[i];
-            UnSelected->Color = clMaroon;
-        }
+        TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(edSearch->Text,roomResult);
     }
     else if(TGlobalSettings::Instance().PMSType == SiHot)
     {
@@ -418,7 +406,21 @@ void TfrmPhoenixRoom::QuickSearch()
         siHotAccount.AccountNumber = edSearch->Text;
         SiHotAccounts.push_back(siHotAccount);
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,PMSIPAddress,PMSPort);
-        ShowAccount();
+    }
+    else
+    {
+    	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
+        if(SelectedRoom.Result != eAccepted)
+        {
+            MessageBox(SelectedRoom.ResultText,"PMS Hotel Error", MB_OK + MB_ICONERROR);
+        }
+    }
+    ShowAccount();
+
+    for (int i=0; i<pnlLastPicked->ControlCount; i++)
+    {
+        TTouchBtn *UnSelected = (TTouchBtn * )pnlLastPicked->Controls[i];
+        UnSelected->Color = clMaroon;
     }
 }
 //---------------------------------------------------------------------------
@@ -539,9 +541,19 @@ void __fastcall TfrmPhoenixRoom::CardSwipe(TMessage& Message)
 
 void TfrmPhoenixRoom::RefreshList()
 {
-    if(TGlobalSettings::Instance().PMSType != SiHot)
+    if(TGlobalSettings::Instance().PMSType == Oracle)
     {
-
+        List->RowCount = roomResult.RoomInquiryItem.size();
+        List->Cells[0][0] = "";
+        bool CommitTransaction = false;
+        int Row = 0;
+        int SelectedRow = 0;
+        List->Cols[0] = SelectedRoom.Folders;
+        List->Row = SelectedRow;
+        List->SetFocus();
+    }
+    else if(TGlobalSettings::Instance().PMSType != SiHot)
+    {
         List->RowCount = SelectedRoom.Folders->Count;
         List->Cells[0][0] = "";
 
@@ -553,7 +565,7 @@ void TfrmPhoenixRoom::RefreshList()
         List->Row = SelectedRow;
         List->SetFocus();
     }
-    else
+    else if(TGlobalSettings::Instance().PMSType == SiHot)
     {
         List->RowCount = SiHotAccounts.size();
         List->Cells[0][0] = "";
@@ -568,11 +580,25 @@ void TfrmPhoenixRoom::RefreshList()
 
 void TfrmPhoenixRoom::DisplayData()
 {
-	if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
+    memText->Clear();
+    if(roomResult.RoomInquiryItem.size() != 0 && TGlobalSettings::Instance().PMSType == Oracle)
+    {
+       AnsiString Balance = "0.0";
+       SelectedRoom.Folders->Clear();
+       memText->Lines->Add("Room Number : " + roomResult.RoomInquiryItem[0].RoomNumber);
+       memText->Lines->Add("Balance   : " + Balance);
+       memText->Lines->Add("Credit Limit : " + roomResult.RoomInquiryItem[0].CreditLimit);
+       for(std::vector<TRoomInquiryItem>::iterator itRoomResult = roomResult.RoomInquiryItem.begin();
+          itRoomResult != roomResult.RoomInquiryItem.end(); ++itRoomResult)
+       {
+           SelectedRoom.Folders->Add(itRoomResult->FirstName + " " + itRoomResult->LastName);
+       }
+       RefreshList();
+    }
+	else if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		AnsiString Balance = CurrToStrF(SelectedRoom.Balance, ffCurrency, 2);
 		AnsiString CreditLimit = CurrToStrF(SelectedRoom.CreditLimit, ffCurrency, 2);
-		memText->Clear();
 		memText->Lines->Add("Room Number : " + SelectedRoom.AccountNumber);
 		memText->Lines->Add("Balance   : " + Balance);
 		memText->Lines->Add("Credit Limit : " + CreditLimit);
@@ -580,7 +606,6 @@ void TfrmPhoenixRoom::DisplayData()
 	}
     else if(SiHotAccounts.size() != 0 && TGlobalSettings::Instance().PMSType == SiHot)
     {
-          memText->Clear();
           SelectedRoom.Folders->Clear();
           bool displayed = false;
           for(std::vector<TSiHotAccounts>::iterator i = SiHotAccounts.begin();
@@ -596,7 +621,6 @@ void TfrmPhoenixRoom::DisplayData()
                 if(!displayed)
                 {
                     LimitSiHot = (double)((StrToCurr)(SiHotAccounts[0].AccountDetails[0].CreditLimit));
-                    memText->Clear();
                     memText->Lines->Add("Room Number : " + RoomNumber);
                     memText->Lines->Add("Balance   : " + Balance);
                     memText->Lines->Add("Credit Limit : " + CreditLimit);
@@ -609,7 +633,6 @@ void TfrmPhoenixRoom::DisplayData()
     }
 	else
 	{
-		memText->Clear();
 		List->RowCount = 1;
 		List->Cells[0][0] = "";
 	}
@@ -772,28 +795,39 @@ void TfrmPhoenixRoom::ShowAccount()
 
 int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
 {
-	if(FolderNumber != -1 && TGlobalSettings::Instance().PMSType != SiHot)
-	{
-		SelectedRoom.FolderNumber = FolderNumber;
-		tbtnOk->Enabled = true;
-		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
-        SelectedRoom.SiHotRoom = "";
-		SelectionVisible = true;
-	}
-    else if(FolderNumber != -1 && TGlobalSettings::Instance().PMSType == SiHot)
+    if(FolderNumber != -1)
     {
-        SelectedRoom.AccountNumber = SiHotAccounts[FolderNumber-1].AccountNumber;
-        SelectedRoom.FolderNumber = FolderNumber;
-        SelectedRoom.SiHotRoom = edSearch->Text;
-        LimitSiHot = (double)((StrToCurr)(SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit));
-		tbtnOk->Enabled = true;
-		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
-        AnsiString Balance = "0.0";
         memText->Clear();
-        memText->Lines->Add("Room Number : " + edSearch->Text);
-        memText->Lines->Add("Balance   : " + Balance);
-        memText->Lines->Add("Credit Limit : " + SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit);
-		SelectionVisible = true;
+        AnsiString Balance = "0.0";
+        if(TGlobalSettings::Instance().PMSType == Oracle)
+        {
+            LimitSiHot = (double)((StrToCurr)(roomResult.RoomInquiryItem[FolderNumber-1].CreditLimit));
+            memText->Lines->Add("Room Number : " + roomResult.RoomInquiryItem[FolderNumber-1].RoomNumber);
+            memText->Lines->Add("Balance   : " + Balance);
+            memText->Lines->Add("Credit Limit : " + roomResult.RoomInquiryItem[FolderNumber-1].CreditLimit);
+            SelectedRoom.SiHotRoom = "";
+            SelectedRoom.FolderNumber = FolderNumber;
+        }
+        else if(TGlobalSettings::Instance().PMSType == SiHot)
+        {
+            SelectedRoom.AccountNumber = SiHotAccounts[FolderNumber-1].AccountNumber;
+            SelectedRoom.FolderNumber = FolderNumber;
+            SelectedRoom.SiHotRoom = edSearch->Text;
+            LimitSiHot = (double)((StrToCurr)(SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit));
+            memText->Clear();
+            memText->Lines->Add("Room Number : " + edSearch->Text);
+            memText->Lines->Add("Balance   : " + Balance);
+            memText->Lines->Add("Credit Limit : " + SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit);
+            SelectionVisible = true;
+        }
+        else
+        {
+            SelectedRoom.FolderNumber = FolderNumber;
+            SelectedRoom.SiHotRoom = "";
+        }
+            tbtnOk->Enabled = true;
+            tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
+            SelectionVisible = true;
     }
 	else
 	{

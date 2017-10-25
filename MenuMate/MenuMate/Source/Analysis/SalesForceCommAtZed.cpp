@@ -85,9 +85,10 @@ bool TSalesForceCommAtZed::CheckPocketVoucherPaymentType(Database::TDBTransactio
                  {
                      UpdatePVPaymentType(DBTransaction, i->Name);
 
-                     TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,pvDetailsLocal.Url);
+                     if(pvDetailsLocal.Url.Length() != 0)
+                        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,pvDetailsLocal.Url);
                  }
-                if(TDeviceRealTerminal::Instance().PocketVouchers->URL != pvDetailsLocal.Url)
+                if(TDeviceRealTerminal::Instance().PocketVouchers->URL != pvDetailsLocal.Url && (pvDetailsLocal.Url.Length() != 0))
                 {
                    TDeviceRealTerminal::Instance().PocketVouchers->URL = pvDetailsLocal.Url;
                    TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,Url);

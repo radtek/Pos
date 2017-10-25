@@ -12,7 +12,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 //---------------------------------------------------------------------------
-enum ePMS { phoenix = 1, siHot};
+enum ePMS { phoenix = 1, siHot, oracle};
 class TfrmPHSConfiguration : public TZForm
 {
 	friend TZForm;
@@ -35,6 +35,9 @@ __published:	// IDE-managed Components
    TTouchBtn *tbTipAccount;
    TTouchBtn *tbExpensesAccount;
    TTouchBtn *tbServiceCharge;
+    TTouchBtn *tbRevenueCodes;
+    TTouchBtn *tbServingTime;
+    TTouchBtn *tbRevenueCentre;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -51,6 +54,9 @@ __published:	// IDE-managed Components
     void __fastcall tbTipAccountClick(TObject *Sender);
     void __fastcall tbExpensesAccountClick(TObject *Sender);
     void __fastcall tbServiceChargeMouseClick(TObject *Sender);
+    void __fastcall tbRevenueCodesClick(TObject *Sender);
+    void __fastcall tbServingTimeMouseClick(TObject *Sender);
+    void __fastcall tbRevenueCentreMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();

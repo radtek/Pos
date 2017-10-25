@@ -21,6 +21,7 @@
 #include "enumTerminalGlobalMessageTypes.h"
 #include "BasePMS.h"
 #include "PhoenixHotelSystem.h"
+#include "OracleDataObjects.h"
 
 //---------------------------------------------------------------------------
 class TDeviceRealTerminal : public TDeviceRealControl

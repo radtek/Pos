@@ -388,7 +388,7 @@ void __fastcall TfrmMenuEdit::FormShow(TObject *Sender)
         }
         qrGetTaxSettings->Transaction->Commit();
     }
-
+    revenueCodesMap.clear();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::WMSysCommand(TWMSysCommand& Message)
@@ -2478,14 +2478,35 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		cbCategory->DropDownCount = 16;
 
 		cb3rdPartyGroupCode->Items->Clear();
+        cbRevenueGroupCode->Items->Clear();
 		std::auto_ptr<TStringList> ThirdPartyGroups(new TStringList());
+        Menu::TMenuLoadDB	   		MenuLoader(dmMMData->dbMenuMate);
 		GetAll3rdPartyGroups(ThirdPartyGroups.get());
 		for (int i=0; i<ThirdPartyGroups->Count; i+=2)
 		{
 			cb3rdPartyGroupCode->Items->Add(ThirdPartyGroups->Strings[i]);
 		}
 
+	   	for (std::map <int,AnsiString> ::iterator itRevenue = revenueCodesMap.begin(); itRevenue != revenueCodesMap.end(); advance(itRevenue, 1))
+		{
+            AnsiString value = itRevenue->first;
+            value += "(";
+            value += itRevenue->second;
+            value += ")";
+			cbRevenueGroupCode->Items->Add(value);
+		}
+
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
+        if(ItemSizeData->RevenueCode != 0)
+        {
+            AnsiString revenueCodeText = ItemSizeData->RevenueCode;
+            revenueCodeText += "(";
+            revenueCodeText += revenueCodesMap[ItemSizeData->RevenueCode];//ItemSizeData->RevenueCodeDescription;
+            revenueCodeText += ")";
+            cbRevenueGroupCode->Text =  revenueCodeText;
+        }
+        else
+            cbRevenueGroupCode->Text =  "";
         if(ItemSizeData->CanBePaidForUsingPoints)
         {
            nePriceForPoint->Enabled = true;
@@ -2857,7 +2878,7 @@ void TfrmMenuEdit::GetAllCategoriesWithKeys(std::vector<Menu::TNameAndKey> *AllC
 }
 
 //---------------------------------------------------------------------------
-void TfrmMenuEdit::GetAll3rdPartyGroups(TStrings *ThirdPartyGroups)
+void TfrmMenuEdit::GetAll3rdPartyGroups(TStrings *ThirdPartyGroups/*, TStrings *revenueCodesList*/)
 {
 	TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
 	for (int i = FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
@@ -6124,7 +6145,52 @@ void TfrmMenuEdit::GetThirdPartyCodesListFromFile(std::vector<Menu::TThirdPartyC
 		}
 	}
 }
+//---------------------------------------------------------------------------
+AnsiString TfrmMenuEdit::GetRevenueDecriptionFromCode(int code)
+{
+    std::map<int,AnsiString>::iterator revIT;
+    AnsiString description = "";
+    for(revIT = revenueCodesMap.begin(); revIT != revenueCodesMap.end(); ++revIT)
+    {
+        if(revIT->first == code)
+        {
+            description = revIT->second;
+            break;
+        }
+    }
+    return  description;
+}
+//---------------------------------------------------------------------------
+void TfrmMenuEdit::GetRevenueCodesListFromFile(std::map<int,AnsiString> &revenueCodesMap, TLoadMenu *inLoadMenu)
+{
+	int count = inLoadMenu->RevenueCodesCount();
+	if( count > 0)
+	{
+        std::map<int,AnsiString>::iterator revIt;
+		for(int i=0;i< count ; i++)
+		{
+			Menu::TRevenueCodesInfo revenueInfo;
+			inLoadMenu->RevenueCodeAtIndex(
+			i,
+			revenueInfo.code,
+			revenueInfo.codeDescription);
+            bool codeExists = false;
+            for(revIt = revenueCodesMap.begin(); revIt != revenueCodesMap.end(); ++revIt)
+            {
+                if(revIt->first == revenueInfo.code)
+                {
+                    codeExists = true;
+                    break;
+                }
+            }
+            if(!codeExists)
+            {
+                revenueCodesMap.insert(std::pair<int,AnsiString>(revenueInfo.code,revenueInfo.codeDescription));
+            }
 
+		}
+	}
+}
 //---------------------------------------------------------------------------
 
 AnsiString  TfrmMenuEdit::GetThirdPartyCodeFromKeyFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, __int32 tpcKey)
@@ -9577,8 +9643,7 @@ void __fastcall TfrmMenuEdit::cb3rdPartyGroupCodeChange(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupItemClick(
-TObject *Sender)
+void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupItemClick(TObject *Sender)
 {
 	TTreeNode *CurrentTreeNode = tvMenu->Selected;
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
@@ -9586,24 +9651,23 @@ TObject *Sender)
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
 		if(MasterThirdPartyCode != "")
 		{
-			if (Application->MessageBox(AnsiString("All sizes in this item will be set to '" +
-							MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
-						"Warning",
-						MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-			{
-				return;
-			}
-			for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
-			{
-				TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
-				TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
+            if (Application->MessageBox(AnsiString("3rd Party codes of all sizes in this item will be set to '" +
+                                    MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
+                                "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
+            {
+                TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
+                TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
 
-				if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
-				{
-					CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-				}
-			}
-			MenuEdited = true;
+                if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
+                {
+                    CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                }
+            }
+            MenuEdited = true;
 		}
 	}
 }
@@ -9611,41 +9675,41 @@ TObject *Sender)
 void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupCourseClick(
 TObject *Sender)
 {
+    bool retValue1 = false;
+    bool retValue2 = false;
 	TTreeNode *CurrentTreeNode = tvMenu->Selected;
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
 	{
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
 		if(MasterThirdPartyCode != "")
 		{
-			if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this course will be set to '" +
-							MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
-						"Warning",
-						MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-			{
-				return;
-			}
-			for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
-			{
-				TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
-				if (CurrentItemNode->NodeType == ITEM_NODE)
-				{
-					for (int i=0; i<CurrentItemNode->Owner->Count; i++)
-					{
-						TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
-						if (CurrentItemSizeData != tvMenu->Selected->Data)
-						{
-							CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-						}
-					}
-				}
-			}
-			MenuEdited = true;
+            if (Application->MessageBox(AnsiString("WARNING!\r\r 3rd Party codes of all items in this course will be set to '" +
+                            MasterThirdPartyCode  + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
+            {
+                TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
+                if (CurrentItemNode->NodeType == ITEM_NODE)
+                {
+                    for (int i=0; i<CurrentItemNode->Owner->Count; i++)
+                    {
+                        TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
+                        if (CurrentItemSizeData != tvMenu->Selected->Data)
+                        {
+                            CurrentItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
 		}
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupMenuClick(
-TObject *Sender)
+void __fastcall TfrmMenuEdit::btnSync3rdPartyGroupMenuClick(TObject *Sender)
 {
 	TTreeNode *CurrentTreeNode = tvMenu->Selected;
 	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
@@ -9653,40 +9717,39 @@ TObject *Sender)
 		AnsiString MasterThirdPartyCode = ((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
 		if(MasterThirdPartyCode != "")
 		{
-			if (Application->MessageBox(AnsiString("WARNING!\r\rAll items in this menu will be set to '" +
-							MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
-						"Warning",
-						MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
-			{
-				return;
-			}
-			TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
-			for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
-			{
-				TTreeNode *CourseNode = MenuNode->Item[i];
-				if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
-				{
-					for (int j=0; j<CourseNode->Count; j++)
-					{
-						TTreeNode *ItemNode = CourseNode->Item[j];
+            if (Application->MessageBox(AnsiString("WARNING!\r\r3rd Party codes of all items in this menu will be set to '" +
+                            MasterThirdPartyCode + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
 
-						if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
-						{
-							for (int k=0; k<ItemNode->Count; k++)
-							{
-								TTreeNode *ItemSizeNode = ItemNode->Item[k];
-								if (ItemSizeNode->Data != tvMenu->Selected->Data)
-								{
-									TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            for (int k=0; k<ItemNode->Count; k++)
+                            {
+                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                                {
+                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
 
-									ItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
-								}
-							}
-						}
-					}
-				}
-			}
-			MenuEdited = true;
+                                    ItemSizeData->ThirdPartyCode = MasterThirdPartyCode;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
 		}
 	}
 }
@@ -11000,6 +11063,7 @@ bool TfrmMenuEdit::LoadTree2(int MenuKey)
 		Menu::TCategoriesInfo     CategoriesInfo;
 		Menu::TLocationsInfo	     LocationsInfo;
 		Menu::TServingCoursesInfo ServingCoursesInfo;
+        MenuLoader.GetAllRevenueCodesFromDB(revenueCodesMap);
 		if (MenuLoader.GetMenu(&MenuInfo, &SizesInfo, &CategoriesInfo, &LocationsInfo, &ServingCoursesInfo))
 		{
 			AnsiString FilePath = CurrentConnection.ServerPath + "\\Menu Import";
@@ -11447,6 +11511,8 @@ TTreeNode *TfrmMenuEdit::AddMenuSize(TTreeNode *ItemNode, Menu::TItemSizeInfo *I
 	ItemSizeInfo->CanBePaidForUsingPoints;
 	ItemSizeData->DefaultPatronCount = 	ItemSizeInfo->DefaultPatronCount;
     ItemSizeData->CostForPoints = ItemSizeInfo->PriceForPoints;
+    ItemSizeData->RevenueCode = ItemSizeInfo->RevenueCode;
+    ItemSizeData->RevenueCodeDescription = ItemSizeInfo->RevenueCodeDescription;
 
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeInfo->ItemSizePriceLevels.begin();
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeInfo->ItemSizePriceLevels.end();
@@ -11582,6 +11648,8 @@ bool TfrmMenuEdit::LoadMenuFromFile( AnsiString FileName )
 	try
 	{
 		TLoadMenu *loadMenu = new TLoadMenu( FileName );
+        Menu::TMenuLoadDB	   		MenuLoader(dmMMData->dbMenuMate);
+        MenuLoader.GetAllRevenueCodesFromDB(revenueCodesMap);        
 		result = LoadTreeFromXML( loadMenu );
 		new_menu_element_key_generator_.reset(
 		menu_key_generator_t::Instance());
@@ -11627,7 +11695,7 @@ bool TfrmMenuEdit::LoadTreeFromXML( TLoadMenu *inLoadMenu )
 
 	//::::::::::::::::::::::::::::::::::::
 
-	InitProgressBar( 6 );   // 5 main nodes in the XML file: Menu, Sizes,
+	InitProgressBar( 7 );   // 5 main nodes in the XML file: Menu, Sizes,
 	//                               Category Groups,
 	//                               Service Courses,
 	//                               Courses
@@ -11640,7 +11708,6 @@ bool TfrmMenuEdit::LoadTreeFromXML( TLoadMenu *inLoadMenu )
 		try
 		{
 			resetMenuTaxProfileProvider( inLoadMenu );
-
 			result = CreateCourseNodes( inLoadMenu );
 		}
 		__finally
@@ -12141,8 +12208,8 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 		if(itemSizeCount > 0)
 		{
 			GetThirdPartyCodesListFromFile( &thirdPartyCodes, inLoadMenu );
+            GetRevenueCodesListFromFile(revenueCodesMap, inLoadMenu);
 		}
-
 		for( __int32 i = 0; i < itemSizeCount; i++ )
 		{
 			Menu::TItemSizeInfo itemSizeInfo;
@@ -12184,8 +12251,9 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 			itemSizeInfo.DisableWhenCountReachesZero,
 			itemSizeInfo.CanBePaidForUsingPoints,
 			itemSizeInfo.DefaultPatronCount,
-            itemSizeInfo.PriceForPoints);
-
+            itemSizeInfo.PriceForPoints,
+            itemSizeInfo.RevenueCode);
+            itemSizeInfo.RevenueCodeDescription = GetRevenueDecriptionFromCode(itemSizeInfo.RevenueCode);
 			itemSizeInfo.Third_Party_Code = GetThirdPartyCodeFromKeyFromFile(&thirdPartyCodes, itemSizeInfo.ThirdPartyCodes_Key);
 			itemSizeInfo.Size_Name = itemSizeName;
 
@@ -12336,6 +12404,9 @@ void TfrmMenuEdit::SaveMenu( AnsiString inFileName, AnsiString inBackupFileName 
         // Courses
 		menuTreeNode = tvMenu->Items->GetFirstNode();
 		SaveMenuCourses( saveMenu, menuTreeNode );
+        // Revenue Codes
+		menuTreeNode = tvMenu->Items->GetFirstNode();
+		SaveMenuRevenueCodes( saveMenu, menuTreeNode );
 		//:::::::::::::::::::::::::::::::::::::::
 		saveMenu->Commit();
 
@@ -12494,7 +12565,10 @@ void TfrmMenuEdit::SaveMenuTaxProfiles( TSaveMenu* inSaveMenu, std::set<TaxProfi
 		( *taxProfileIT )->taxProfileName,
 		( *taxProfileIT )->taxPercentage,
 		( *taxProfileIT )->taxProfileType,
-		( *taxProfileIT )->taxPriority );
+		( *taxProfileIT )->taxPriority);
+        //-- to be incorpotated in future--//
+        //,
+        //( *taxProfileIT)->taxCode );
 	}
 }
 //---------------------------------------------------------------------------
@@ -12682,7 +12756,8 @@ __int32 TfrmMenuEdit::SaveMenuItemSize( TSaveMenu* inSaveMenu, __int32 inItemID,
 	inDCData->DisableWhenCountReachesZero,
 	inDCData->CanBePaidForUsingPoints,
 	inDCData->DefaultPatronCount,
-	inDCData->CostForPoints);
+	inDCData->CostForPoints,
+    inDCData->RevenueCode);
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuBreakdownCategories( TSaveMenu* inSaveMenu, __int32 inItemSizeID, TItemSizeNode* inDCData )
@@ -13061,7 +13136,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
 		menu.allTaxProfiles[taxProfile].taxName,    // taxname
 		menu.allTaxProfiles[taxProfile].taxPercent, //tax percent
 		menu.allTaxProfiles[taxProfile].taxType,  // type
-		0 ); //Prioroty
+		0/*,  //Prioroty
+        0*/); // tax code
 	}
 
 
@@ -13199,8 +13275,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
                             0,   //DisableWhenCountReachesZero
                             0, //CanBePaidForUsingPoints
                             0,  //DefaultPatronCount
-                            itemSize.itemSizePrice // Price for points
-                            );
+                            itemSize.itemSizePrice,        // Price for points
+                            0);
 
                     //save the item recipe
                      CsvSaveMenuItemSizeRecipes(     inSaveMenu, xmlitemSizeID, itemSize );
@@ -13692,4 +13768,186 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
     return priceExcl;
 }
 
+
+void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
+{
+    int codeAlready = 0;
+	if (tvMenu->Selected)
+	{
+        if(cbRevenueGroupCode->Text.Length() > 0)
+        {
+            if (((TEditorNode *)tvMenu->Selected->Data)->NodeType == ITEM_SIZE_NODE)
+            {
+                TItemSizeNode *ItemSizeData = (TItemSizeNode *)tvMenu->Selected->Data;
+                if(codeAlready == 0 && ItemSizeData->RevenueCode)
+                {
+                    codeAlready = ItemSizeData->RevenueCode;
+                }
+                bool correctData = false;
+                for(int i = 0; i < cbRevenueGroupCode->Items->Count; i += 1)
+                {
+                    if(cbRevenueGroupCode->Items->Strings[i] == cbRevenueGroupCode->Text)
+                    {
+                        correctData = true;
+                        break;
+                    }
+                }
+                if(correctData)
+                {
+                    AnsiString stringVal = cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1);
+                    ItemSizeData->RevenueCode = StrToInt(cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
+                    //ItemSizeData->RevenueCodeDescription = revenueCodesMap[ItemSizeData->RevenueCode];
+                }
+                else
+                {
+                    Application->MessageBox("Please select Revenue Codes from drop down list only.", "Error", MB_OK + MB_ICONWARNING);
+                    AnsiString revenueCodeOld = "";
+                    revenueCodeOld = ItemSizeData->RevenueCode;
+                    revenueCodeOld += "(";
+                    revenueCodeOld += revenueCodesMap[codeAlready];
+                    revenueCodeOld += ")";
+                    cbRevenueGroupCode->Text = revenueCodeOld;
+                }
+            }
+        }
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmMenuEdit::SaveMenuRevenueCodes(TSaveMenu* inSaveMenu, TTreeNode* inMenuNode)
+{
+	Menu::TMenuLoadDB MenuLoader( dmMMData->dbMenuMate );
+
+	std::map<int,AnsiString>::iterator revenueIT;
+
+	for( revenueIT = revenueCodesMap.begin(); revenueIT != revenueCodesMap.end(); revenueIT++ )
+	{
+
+		inSaveMenu->SaveRevenueCodes( revenueIT->first, revenueIT->second);
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeItemClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+    {
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("Revenue codes of all sizes in this item will be set to '" +
+                                    revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                                "Warning",
+                                MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int i=0; i<CurrentTreeNode->Parent->Count; i++)
+            {
+                TTreeNode *CurrentItemSizeNode	= CurrentTreeNode->Parent->Item[i];
+                TItemSizeNode *CurrentItemSizeData	= (TItemSizeNode *)CurrentItemSizeNode->Data;
+
+                if (CurrentItemSizeData->NodeType == ITEM_SIZE_NODE && CurrentItemSizeData != tvMenu->Selected->Data)
+                {
+                    CurrentItemSizeData->RevenueCode = revenueCode;
+                    CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
+                }
+            }
+            MenuEdited = true;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeCourseClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+	{
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("WARNING!\r\rRevenue code of all items in this course will be set to '" +
+                            revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                        "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            for (int j=0; j<CurrentTreeNode->Parent->Parent->Count; j++)
+            {
+                TEditorNode *CurrentItemNode = ((TEditorNode *)CurrentTreeNode->Parent->Parent->Item[j]->Data);
+                if (CurrentItemNode->NodeType == ITEM_NODE)
+                {
+                    for (int i=0; i<CurrentItemNode->Owner->Count; i++)
+                    {
+                        TItemSizeNode *CurrentItemSizeData = ((TItemSizeNode *)CurrentItemNode->Owner->Item[i]->Data);
+                        if (CurrentItemSizeData != tvMenu->Selected->Data)
+                        {
+                            CurrentItemSizeData->RevenueCode = revenueCode;
+                            CurrentItemSizeData->RevenueCodeDescription = revenueDescription;
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnSyncRevenueCodeMenuClick(TObject *Sender)
+{
+	TTreeNode *CurrentTreeNode = tvMenu->Selected;
+	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+	{
+        int revenueCode = ((TItemSizeNode *)CurrentTreeNode->Data)->RevenueCode;
+        AnsiString revenueDescription = "";
+        if(revenueCode != 0)
+        {
+            std::map<int,AnsiString>::iterator ITRev = revenueCodesMap.find(revenueCode);
+            if(ITRev != revenueCodesMap.end())
+                 revenueDescription = ITRev->second;
+            if (Application->MessageBox(AnsiString("WARNING!\r\rRevenue codes of all items in this menu will be set to '" +
+                            revenueDescription + "'.\rDo you wish to continue?").c_str(),
+                            "Warning", MB_OKCANCEL + MB_ICONWARNING + MB_DEFBUTTON2) == IDCANCEL)
+            {
+                return;
+            }
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
+
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            for (int k=0; k<ItemNode->Count; k++)
+                            {
+                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                                {
+                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                                    ItemSizeData->RevenueCode = revenueCode;
+                                    ItemSizeData->RevenueCodeDescription = revenueDescription;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+        }
+    }
+}
+//---------------------------------------------------------------------------
 

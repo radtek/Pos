@@ -495,7 +495,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->PriceLevel0 = IBInternalQuery->FieldByName("Price")->AsCurrency;
 			Order->PriceLevel1 = IBInternalQuery->FieldByName("Special_Price")->AsCurrency;
 			//Order->GSTPercent = IBInternalQuery->FieldByName("GST_Percent")->AsDouble;
-            Order->TaxProfiles.push_back(TaxProfile("GST_Percent", IBInternalQuery->FieldByName("GST_Percent")->AsCurrency, SalesTax, 1));
+            Order->TaxProfiles.push_back(TaxProfile("GST_Percent", IBInternalQuery->FieldByName("GST_Percent")->AsCurrency, SalesTax, 1/*,0*/));
 			Order->Cost = IBInternalQuery->FieldByName("Cost")->AsCurrency;
 			Order->CostGSTPercent = IBInternalQuery->FieldByName("Cost_GST_Percent")->AsDouble;
 			Order->PointsPercent = IBInternalQuery->FieldByName("Points_Percent")->AsDouble;
@@ -700,7 +700,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->PriceLevel0 = IBInternalQuery->FieldByName("Price")->AsCurrency;
 			Order->PriceLevel1 = IBInternalQuery->FieldByName("Special_Price")->AsCurrency;
 			//Order->GSTPercent = IBInternalQuery->FieldByName("GST_Percent")->AsDouble;
-            Order->TaxProfiles.push_back(TaxProfile("GST_Percent", IBInternalQuery->FieldByName("GST_Percent")->AsCurrency, SalesTax, 1));
+            Order->TaxProfiles.push_back(TaxProfile("GST_Percent", IBInternalQuery->FieldByName("GST_Percent")->AsCurrency, SalesTax, 1/*,0*/));
 			Order->Cost = IBInternalQuery->FieldByName("Cost")->AsCurrency;
 			Order->CostGSTPercent = IBInternalQuery->FieldByName("Cost_GST_Percent")->AsDouble;
 			Order->PointsPercent = IBInternalQuery->FieldByName("Points_Percent")->AsDouble;

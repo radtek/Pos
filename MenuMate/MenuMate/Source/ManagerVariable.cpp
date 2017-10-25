@@ -3232,6 +3232,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Split Bill on Menu type basis"
                  "Default is False.",
                   vmgPOS, false);
+		SetVarStr(DBTransaction,vmRevenueCentre, "PMS Revenue Centre",
+		"PMS Revenue Centre./r"
+		"Default is 0",
+		vmg3rdPartyInterface, "0");
 	}
 	catch(Exception &E)
 	{

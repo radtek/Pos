@@ -75,7 +75,12 @@ __fastcall TPaymentTransaction::~TPaymentTransaction()
     delete Orders;
     PaymentsClear();
 }
-
+TPMSClientDetails::TPMSClientDetails()
+{
+}
+//TPMSClientDetails::~TPMSClientDetails()
+//{
+//}
 TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransaction)
 : DBTransaction(OtherTransaction.DBTransaction) , PaymentList(new TList)
 {

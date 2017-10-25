@@ -720,6 +720,7 @@ TListMenu *TDBMenu::LoadMenuFromDB(Database::TDBControl &DBControl, const Unicod
                      Size->PLU = ItemSizeInfo.PLU;
 
                      Size->PriceLevels = ItemSizeInfo.PriceLevels;
+                     Size->RevenueCode = ItemSizeInfo.RevenueCode;
 
 					 Size->Categories->FinancialCategory = ItemSizeInfo.Category;
 					 Size->Categories->FinancialCategoryGroup = ItemSizeInfo.Category_Group_Name;

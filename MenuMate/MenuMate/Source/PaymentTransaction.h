@@ -74,7 +74,22 @@ class TRewardsTransaction
       UnicodeString EFTPOSRef;
       Currency Amount;
 };
-
+class TPMSClientDetails
+{
+    public:
+    TPMSClientDetails();
+    AnsiString ReservationID;
+    AnsiString SequenceNumber;
+    AnsiString ProfileID;
+    AnsiString CreditLimit;
+    AnsiString HotelID;
+    AnsiString FirstName;
+    AnsiString LastName;
+    AnsiString MatchIdentifier;
+    AnsiString RoomNumber;
+    AnsiString Date;
+    AnsiString Time;
+};
 class TPaymentTransaction
 {
 
@@ -192,6 +207,7 @@ class TPaymentTransaction
         void makeLogFile(UnicodeString str);
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
+        TPMSClientDetails PMSClientDetails;
 };
 
 #endif

@@ -72,7 +72,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     {
 
         TItemComplete *itemComplete = ((TItemComplete*)_paymentTransaction.Orders->Items[i]);
-        double currentVAT = GetVATpercentage(itemComplete);
+//        double currentVAT = GetVATpercentage(itemComplete);
 
         // Cancelled orders should not get posted
         if(itemComplete->OrderType == CanceledOrder)
@@ -119,14 +119,23 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
-    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
+    AnsiString categoryCode = itemComplete->RevenueCode;
     if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+       categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    AnsiString catDescription = "Default";
+    //UnicodeString categoryCode = itemComplete->ThirdPartyCode;
+    std::map<int,AnsiString>::iterator itRev =
+                    TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.find(atoi(categoryCode.c_str()));
+
+    if(itRev != TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end())
+    {
+        catDescription = itRev->second;
+    }
     TSiHotService siHotService;
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = categoryCode;
-    siHotService.MiddleCategory_Desc = itemComplete->MenuName;
+    siHotService.MiddleCategory_Desc = catDescription;//itemComplete->MenuName;
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;
@@ -304,6 +313,7 @@ double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
     {
         if(tax->Value != 0)
             percentage += (double)tax->Percentage;
+//        MessageBox(tax->TaxCode,"tax code",MB_OK);
     }
     if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
     {
@@ -318,6 +328,17 @@ double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
             }
         }
     }
+//     MessageBox(percentage,"getting code",MB_OK);
+//    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
+//          tax != itemComplete->BillCalcResult.Tax.end() ; advance(tax,1))
+//    {
+//
+//        if(tax->Value != 0 && tax->TaxType == SalesTax && tax->TaxCode != 0)
+//        {
+//            percentage = tax->TaxCode;
+//            break;
+//        }
+//    }
     return percentage;
 }
 //----------------------------------------------------------------------------

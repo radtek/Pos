@@ -453,6 +453,12 @@ class TfrmMenuEdit : public TForm
     TLabel *lblPriceForPoint;
     TNumericEdit *nePriceForPoint;
     TIBSQL *qrGetTaxSettings;
+    TComboBox *cbRevenueGroupCode;
+    TBevel *Bevel10;
+    TButton *btnSyncRevenueCodeItem;
+    TButton *btnSyncRevenueCodeCourse;
+    TButton *btnSyncRevenueCodeMenu;
+    TLabel *Label3;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -717,6 +723,10 @@ class TfrmMenuEdit : public TForm
     void __fastcall nePriceForPointExit(TObject *Sender);
     void __fastcall nePriceForPointChange(TObject *Sender);
     void __fastcall nePriceForPointEnter(TObject *Sender);
+    void __fastcall cbRevenueGroupCodeChange(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeItemClick(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeCourseClick(TObject *Sender);
+	void __fastcall btnSyncRevenueCodeMenuClick(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);
@@ -782,6 +792,8 @@ private:
 	void GetAllServingCourses(TStringList *AllServingCourses);
 	void LoadServingCoursesPrior3Point4(TMenuNode *MenuData);
 	void GetThirdPartyCodesListFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, TLoadMenu *inLoadMenu);
+    void GetRevenueCodesListFromFile(std::map<int,AnsiString> &revenueCodesMap, TLoadMenu *inLoadMenu);
+    AnsiString GetRevenueDecriptionFromCode(int code);
 	AnsiString  GetThirdPartyCodeFromKeyFromFile(std::vector<Menu::TThirdPartyCodeInfo> *thirdPartyCodes, __int32 tpcKey);
 
 	int InsertCategory(TCategoryGroupNode *CategoryGroup, AnsiString CategoryName, AnsiString GlCode);
@@ -835,7 +847,7 @@ private:
 
 	void ShowHideMaxRetailPrice(bool displayFlag);
 	bool IsProfitTaxAssigned(TaxProfileKeyList taxProfileKeys);
-	
+
 	void initMenuTaxProfileProvider();
 
 	void resetMenuTaxProfileProvider( TIBDatabase* inDatabase );
@@ -926,6 +938,14 @@ private:
     void ReadItemSizePriceLevel( TLoadMenu *inLoadMenu, __int32 inItemSizeID, Menu::TItemSizeInfo& inItemSizeInfo );
 
 	void StartStockTransaction();
+    /*bool SyncRevenueCodeItem(TTreeNode *CurrentTreeNode, int revenueCode,AnsiString revenueDescription);
+    bool Sync3rdPartyGroupItem(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool SyncRevenueCodeForCourse(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);
+    bool Sync3rdPartyCodeForCourse(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool Sync3rdPartyCodeForMenu(TTreeNode *CurrentTreeNode,AnsiString MasterThirdPartyCode);
+    bool SyncRevenueCodeForMenu(TTreeNode *CurrentTreeNode,int revenueCode,AnsiString revenueDescription);*/
+
+
 
 	//::::::::::::::::::::::::::::::::::::::::::
 	//   Save Menu to a XML file
@@ -986,6 +1006,8 @@ private:
     Currency GetPriceExclusiveAmount(Currency menuPrice, Currency saleTaxPercentage, Currency serviceChargePercentage);
     bool isItemPriceIncludedTax;
     bool isItemPriceIncludeServiceCharge;
+    std::map<int,AnsiString> revenueCodesMap;
+    void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
@@ -1417,6 +1439,9 @@ public:
 	bool DisableWhenCountReachesZero;
 
 	int DefaultPatronCount;
+
+    int RevenueCode;
+    AnsiString RevenueCodeDescription;
 
 	std::set<__int32> TaxProfileKeys;
 	AnsiString KitchenName;   

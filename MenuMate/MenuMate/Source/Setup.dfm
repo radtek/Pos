@@ -23,6 +23,8 @@ object frmSetup: TfrmSetup
   OnCreate = FormCreate
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
     1030
     749)
@@ -61,6 +63,10 @@ object frmSetup: TfrmSetup
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label6: TLabel
         Left = 224
         Top = 32
@@ -535,6 +541,10 @@ object frmSetup: TfrmSetup
     object tsApplications: TTabSheet
       Caption = 'Applications Settings'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox4: TGroupBox
         Left = 8
         Top = 326
@@ -852,6 +862,10 @@ object frmSetup: TfrmSetup
     object tsExport: TTabSheet
       Caption = 'Export Settings'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object gbMall: TGroupBox
         Left = 16
         Top = 3
@@ -1150,6 +1164,10 @@ object frmSetup: TfrmSetup
     object tsMallSettings: TTabSheet
       Caption = 'Mall Export Settings'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object gbMallsNew: TGroupBox
         Left = 16
         Top = 3

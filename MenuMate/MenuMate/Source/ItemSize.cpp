@@ -149,6 +149,7 @@ TItemSize::TItemSize(item_key_type host_item_key)
    default_patron_count_ = 0;
    CostForPoints = 0;
    IsCanBePaidForUsingPoints = false;  // check can be paid by points..
+   RevenueCode = 0;
 }
 
 __fastcall TItemSize::~TItemSize()
