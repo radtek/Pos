@@ -1507,12 +1507,11 @@ void TDBWebUtil::getWebOrderData(Database::TDBTransaction &DBTransaction, TStrin
 	}
 }
 
-TChitNumber TDBWebUtil::InitializeChit(int web_key, TChitNumber &WebOrderChitNumber)//, TChitNumberController &ChitNumberController)
+void TDBWebUtil::InitializeChit(int web_key, TChitNumber &WebOrderChitNumber)//, TChitNumberController &ChitNumberController)
 {
     try
     {
         ChitResult result;
-        TChitNumber ChitNumber;
         Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
         transaction.StartTransaction();
         AnsiString orderType ="";
@@ -1540,7 +1539,6 @@ TChitNumber TDBWebUtil::InitializeChit(int web_key, TChitNumber &WebOrderChitNum
              }
         }
         transaction.Commit();
-      return ChitNumber;
     }
     catch(Exception & E)
 	{

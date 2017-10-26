@@ -349,8 +349,6 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
                 }
             }
         }
-
-
 	}
 	catch(EAbort &E)
 	{
@@ -571,23 +569,33 @@ void __fastcall TWebProcUtil::ProcessSecurity(TPaymentTransaction &PaymentTransa
 // ---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::ProcessChitNumbers(TForm *inDisplayOwner, TPaymentTransaction &PaymentTransaction)
 {
-	TChitNumber ChitNumber;
-	TChitNumberController ChitNumberController(inDisplayOwner, PaymentTransaction.DBTransaction);
-	ChitResult Result = ChitNumberController.GetChitNumber(false, ChitNumber);
-	switch(Result)
+    try
+    {
+        TChitNumber ChitNumber;
+        TChitNumberController ChitNumberController(PaymentTransaction.DBTransaction); //inDisplayOwner,
+        ChitResult Result = ChitNumberController.GetChitNumber(false, ChitNumber);
+    
+        switch(Result)
+        {
+            case ChitDisabled:
+               // PaymentTransaction.ChitNumber.
+                PaymentTransaction.ChitNumber.Clear();
+                break;
+            case ChitOk:
+                PaymentTransaction.ChitNumber = ChitNumber;
+                break;
+            case ChitCancelled:
+                throw EAbort("Cancelled by User.");
+                break;
+            case ChitNone:
+            PaymentTransaction.ChitNumber.Clear();
+            break;
+        }
+    }
+    catch(Exception & E)
 	{
-	case ChitDisabled:
-		PaymentTransaction.ChitNumber.Clear();
-		break;
-	case ChitOk:
-		PaymentTransaction.ChitNumber = ChitNumber;
-		break;
-	case ChitCancelled:
-		throw EAbort("Cancelled by User.");
-		break;
-	case ChitNone:
-		PaymentTransaction.ChitNumber.Clear();
-		break;
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 }
 
@@ -725,7 +733,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                 if (!Request->Printouts->Print(devPalm,JobName))
                 {
                     TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Printing Some Web Orders Failed, Please Check Printer.");
-                    throw Exception("Printing Some Orders Failed, Please Check Printer.");
+                    //throw Exception("Printing Some Orders Failed, Please Check Printer.");
                 }
                 ManagerDockets->Archive(Request.get());
                 completeOrderToChefMate(PrintTransaction.get());
