@@ -666,41 +666,42 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
             Request->BarCodeData = PaymentTransaction.TimeKey;
             Request->Transaction = PrintTransaction.get();
             Request->JobType = pjKitchen;
-            TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
-            Request->Waiter = Order->Security->SecurityGetField(secOrderedBy, secfFrom);
+            if(PaymentTransaction.Orders->Count)
+            {
+                TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+                Request->Waiter = Order->Security->SecurityGetField(secOrderedBy, secfFrom);
 
-            if (Order->TabType == TabTableSeat)
-            {
-               if(TDBTables::Valid(Order->TableNo,Order->SeatNo))
-               {
-					Order->TabContainerName = TDBTables::GetTableName(PaymentTransaction.DBTransaction,Order->TableNo);
-					Order->PartyName = TDBTables::GetPartyName(PaymentTransaction.DBTransaction,Order->TableNo);
-               }
-            }
-            else if (Order->TabType == TabRoom)
-            {
-					Order->PartyName 	= TDBRooms::GetPartyName(PaymentTransaction.DBTransaction,Order->RoomNo);
-					Order->TabContainerName = TDBRooms::GetRoomName(PaymentTransaction.DBTransaction,Order->RoomNo);
-	           		Order->TabName = Order->PartyName;
-            }
-            else if (Order->TabType == TabWeb)
-            {
-					Order->TabContainerName = TDBWebUtil::GetOrderGUID(PaymentTransaction.DBTransaction,Order->WebKey);
-            }
-
-            Request->Transaction->Membership.Assign(PaymentTransaction.Membership);
-            PrintTransaction->ChitNumber = PaymentTransaction.ChitNumber;
-            Request->MiscData["PartyName"] = Order->PartyName;
-
-            for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
-            {
-                TSecurityReference *OldSecRef = Order->Security->SecurityGetType(secCredit);
-                if (OldSecRef == NULL)
+                if (Order->TabType == TabTableSeat)
                 {
-                    PrintTransaction->Orders->Add(PaymentTransaction.Orders->Items[i]);
+                   if(TDBTables::Valid(Order->TableNo,Order->SeatNo))
+                   {
+                        Order->TabContainerName = TDBTables::GetTableName(PaymentTransaction.DBTransaction,Order->TableNo);
+                        Order->PartyName = TDBTables::GetPartyName(PaymentTransaction.DBTransaction,Order->TableNo);
+                   }
+                }
+                else if (Order->TabType == TabRoom)
+                {
+                        Order->PartyName 	= TDBRooms::GetPartyName(PaymentTransaction.DBTransaction,Order->RoomNo);
+                        Order->TabContainerName = TDBRooms::GetRoomName(PaymentTransaction.DBTransaction,Order->RoomNo);
+                        Order->TabName = Order->PartyName;
+                }
+                else if (Order->TabType == TabWeb)
+                {
+                        Order->TabContainerName = TDBWebUtil::GetOrderGUID(PaymentTransaction.DBTransaction,Order->WebKey);
+                }
+
+                Request->Transaction->Membership.Assign(PaymentTransaction.Membership);
+                PrintTransaction->ChitNumber = PaymentTransaction.ChitNumber;
+                Request->MiscData["PartyName"] = Order->PartyName;
+                for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
+                {
+                    TSecurityReference *OldSecRef = Order->Security->SecurityGetType(secCredit);
+                    if (OldSecRef == NULL)
+                    {
+                        PrintTransaction->Orders->Add(PaymentTransaction.Orders->Items[i]);
+                    }
                 }
             }
-
             if (WebKey != 0)
             {
                 std::auto_ptr<TStringList>WebDetials(new TStringList);
