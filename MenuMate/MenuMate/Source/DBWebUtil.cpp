@@ -1250,17 +1250,17 @@ void TDBWebUtil::getWebOrderDetials(Database::TDBTransaction &DBTransaction, int
 	}
 }
 
-void
-TDBWebUtil::GetUnpaidTabs(Database::TDBTransaction &tr, TStringList *tl)
+void TDBWebUtil::GetUnpaidTabs(Database::TDBTransaction &tr, TStringList *tl)
 {
-	try {
+	try
+    {
 		TIBSQL *qr = tr.Query(tr.AddQuery());
 
-		qr->SQL->Text = "select tab_key, "
-		                "       name "
-		                "       from weborders "
-		                "       where tab_key is not null "
-		                "       order by order_date desc;";
+		qr->SQL->Text = "SELECT TAB_KEY, "
+		                "       NAME "
+		                "       FROM WEBORDERS "
+		                "       WHERE  TAB_KEY IS NOT NULL AND STATUS <> 0 "
+		                "       ORDER BY ORDER_DATE DESC ;";
 
 		qr->ExecQuery();
 		for (int i; !qr->Eof; qr->Next()) {
@@ -1270,7 +1270,9 @@ TDBWebUtil::GetUnpaidTabs(Database::TDBTransaction &tr, TStringList *tl)
 		}
 
 		qr->Close();
-	} catch (Exception &e) {
+	}
+    catch (Exception &e) 
+    {
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, e.Message);
 		throw;
 	}
