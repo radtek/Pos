@@ -28,7 +28,7 @@ private:
 	void OnActivate(int ItemIndex, int ColIndex = -1);
 	void OnClose(int ItemIndex, int ColIndex = -1);
    void PopulateListManager();
-   ChitResult GetNextChitNumber(TChitNumber &Chit);
+   ChitResult GetNextChitNumber(TChitNumber &Chit, bool isWebOrder = true);
 
 public:
       TChitNumberController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction);
@@ -37,6 +37,7 @@ public:
    void Run();
    ChitResult GetChitNumber(bool Prompt, TChitNumber &ChitNumber);
    ChitResult GetDefaultChitNumber(TChitNumber &ChitNumber);
+   ChitResult GetChitNumber(TChitNumber &ChitNumber);
 };
 
 #endif

@@ -1358,6 +1358,7 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 						TVerticalSelection SelectedItem1;
 						if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
 						{
+                            DBTransaction.StartTransaction();
 							int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
 							switch(Action)
 							{
@@ -1371,22 +1372,29 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 									WebDevice->ID.Name = "WebMate";
 									WebDevice->ID.Type = devPC;
 									WebDevice->ID.LocationKey = TDeviceRealTerminal::Instance().ID.LocationKey;
-									DBTransaction.StartTransaction();
 									if(WebDevice->Locate(DBTransaction) == 0)
 									{
 										WebDevice->ID.ProfileKey = TManagerVariable::Instance().SetProfile(DBTransaction,eTerminalProfiles,WebDevice->ID.Name);
 										WebDevice->Create(DBTransaction);
 									}
-									DBTransaction.Commit();
 
 								}  break;
 							case 2 :
 								{
 									TGlobalSettings::Instance().WebMateEnabled = false;
+                                    if(TGlobalSettings::Instance().AutoAddWebMembers)
+                                    {
+                                        TGlobalSettings::Instance().AutoAddWebMembers = false;
+                                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAddWebMembers,TGlobalSettings::Instance().AutoAddWebMembers);
+                                    }
+                                    if(TGlobalSettings::Instance().AutoAcceptWebOrders)
+                                    {
+                                        TGlobalSettings::Instance().AutoAcceptWebOrders = false;
+                                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAcceptWebOrders,TGlobalSettings::Instance().AutoAcceptWebOrders);
+                                    }
 								}  break;
 							}
 
-							DBTransaction.StartTransaction();
 							TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmWebMateEnabled,TGlobalSettings::Instance().WebMateEnabled);
 							DBTransaction.Commit();
 
@@ -1416,106 +1424,119 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 					}  break;
 				case 3 :
 					{
-						// Display Launch List
-						std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+                        if(TGlobalSettings::Instance().WebMateEnabled)
+					    {	// Display Launch List
+                            std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
-						TVerticalSelection Item;
-						Item.Title = "Cancel";
-						Item.Properties["Color"] = IntToStr(clMaroon);
-						Item.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item);
+                            TVerticalSelection Item;
+                            Item.Title = "Cancel";
+                            Item.Properties["Color"] = IntToStr(clMaroon);
+                            Item.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item);
 
-						TVerticalSelection Item1;
-						Item1.Title = "Enable";
-						Item1.Properties["Action"] = IntToStr(1);
-						Item1.Properties["Color"] = IntToStr(clGreen);
-						Item1.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item1);
+                            TVerticalSelection Item1;
+                            Item1.Title = "Enable";
+                            Item1.Properties["Action"] = IntToStr(1);
+                            Item1.Properties["Color"] = IntToStr(clGreen);
+                            Item1.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item1);
 
-						TVerticalSelection Item2;
-						Item2.Title = "Disable";
-						Item2.Properties["Action"] = IntToStr(2);
-						Item2.Properties["Color"] = IntToStr(clRed);
-						Item2.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item2);
+                            TVerticalSelection Item2;
+                            Item2.Title = "Disable";
+                            Item2.Properties["Action"] = IntToStr(2);
+                            Item2.Properties["Color"] = IntToStr(clRed);
+                            Item2.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item2);
 
-						SelectionForm1->ShowModal();
-						TVerticalSelection SelectedItem1;
-						if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-						{
-							int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-							switch(Action)
-							{
-							case 1 :
-								{
-									TGlobalSettings::Instance().AutoAddWebMembers = true;
-								}  break;
-							case 2 :
-								{
-									TGlobalSettings::Instance().AutoAddWebMembers = false;
-								}  break;
-							}
+                            SelectionForm1->ShowModal();
+                            TVerticalSelection SelectedItem1;
+                            if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+                            {
+                                int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+                                switch(Action)
+                                {
+                                case 1 :
+                                    {
+                                        TGlobalSettings::Instance().AutoAddWebMembers = true;
+                                    }  break;
+                                case 2 :
+                                    {
+                                        TGlobalSettings::Instance().AutoAddWebMembers = false;
+                                    }  break;
+                                }
 
-							DBTransaction.StartTransaction();
-							TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAddWebMembers,TGlobalSettings::Instance().WebMateEnabled);
-							DBTransaction.Commit();
+                                DBTransaction.StartTransaction();
+                                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAddWebMembers,TGlobalSettings::Instance().AutoAddWebMembers);
+                                DBTransaction.Commit();
 
-							//::::::::::::::::::::::::::::::::::::::::::::::::
+                                //::::::::::::::::::::::::::::::::::::::::::::::::
 
-							ResetWebMate();
-							RefreshWebMateBtnColor();
+                                ResetWebMate();
+                                RefreshWebMateBtnColor();
+                            }
 						}
+                        else
+                        {
+                             MessageBox("Please Enable Webmate First.", "Error", MB_OK + MB_ICONERROR);
+                        }
 					} break;
 				case 4 :
 					{
-						// Display Launch List
-						std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+                        if(TGlobalSettings::Instance().WebMateEnabled)
+                        {
+                            // Display Launch List
+                            std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
-						TVerticalSelection Item;
-						Item.Title = "Cancel";
-						Item.Properties["Color"] = IntToStr(clMaroon);
-						Item.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item);
+                            TVerticalSelection Item;
+                            Item.Title = "Cancel";
+                            Item.Properties["Color"] = IntToStr(clMaroon);
+                            Item.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item);
 
-						TVerticalSelection Item1;
-						Item1.Title = "Enable";
-						Item1.Properties["Action"] = IntToStr(1);
-						Item1.Properties["Color"] = IntToStr(clGreen);
-						Item1.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item1);
+                            TVerticalSelection Item1;
+                            Item1.Title = "Enable";
+                            Item1.Properties["Action"] = IntToStr(1);
+                            Item1.Properties["Color"] = IntToStr(clGreen);
+                            Item1.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item1);
 
-						TVerticalSelection Item2;
-						Item2.Title = "Disable";
-						Item2.Properties["Action"] = IntToStr(2);
-						Item2.Properties["Color"] = IntToStr(clRed);
-						Item2.CloseSelection = true;
-						SelectionForm1->Items.push_back(Item2);
+                            TVerticalSelection Item2;
+                            Item2.Title = "Disable";
+                            Item2.Properties["Action"] = IntToStr(2);
+                            Item2.Properties["Color"] = IntToStr(clRed);
+                            Item2.CloseSelection = true;
+                            SelectionForm1->Items.push_back(Item2);
 
-						SelectionForm1->ShowModal();
-						TVerticalSelection SelectedItem1;
-						if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-						{
-							int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-							switch(Action)
-							{
-							case 1 :
-								{
-									TGlobalSettings::Instance().AutoAcceptWebOrders = true;
-								}  break;
-							case 2 :
-								{
-									TGlobalSettings::Instance().AutoAcceptWebOrders = false;
-								}  break;
-							}
+                            SelectionForm1->ShowModal();
+                            TVerticalSelection SelectedItem1;
+                            if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+                            {
+                                int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+                                switch(Action)
+                                {
+                                case 1 :
+                                    {
+                                        TGlobalSettings::Instance().AutoAcceptWebOrders = true;
+                                    }  break;
+                                case 2 :
+                                    {
+                                        TGlobalSettings::Instance().AutoAcceptWebOrders = false;
+                                    }  break;
+                                }
 
-							DBTransaction.StartTransaction();
-							TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAcceptWebOrders,TGlobalSettings::Instance().AutoAcceptWebOrders);
-							DBTransaction.Commit();
-							//::::::::::::::::::::::::::::::::::::::::::::::::
+                                DBTransaction.StartTransaction();
+                                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAutoAcceptWebOrders,TGlobalSettings::Instance().AutoAcceptWebOrders);
+                                DBTransaction.Commit();
+                                //::::::::::::::::::::::::::::::::::::::::::::::::
 
-							ResetWebMate();
-							RefreshWebMateBtnColor();
-						}
+                                ResetWebMate();
+                                RefreshWebMateBtnColor();
+                            }
+                        }
+                        else
+                        {
+                             MessageBox("Please Enable Webmate First.", "Error", MB_OK + MB_ICONERROR);
+                        }
 					} break;
 				}
 			}
