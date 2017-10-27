@@ -1538,7 +1538,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
             if(item->TableNo)
             {
                 int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
-                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
                 if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
                 {
                     std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
