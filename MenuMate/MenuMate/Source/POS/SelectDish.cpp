@@ -556,10 +556,6 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 	TManagerChitNumber::Instance().Load(DBTransaction);
     DBTransaction.Commit();
 
-    tbtnChitNumber->Caption = "Chit";
-    ChitNumber = TChitNumber();
-    tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
-    InitializeChit();
     FormResize(Sender);
     if(TGlobalSettings::Instance().EnableTableDisplayMode)
     {
@@ -611,6 +607,11 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 
     if(TGlobalSettings::Instance().WebMateEnabled)
         ProcessWebOrders(false);
+
+    tbtnChitNumber->Caption = "Chit";
+    ChitNumber = TChitNumber();
+    tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
+    InitializeChit();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()

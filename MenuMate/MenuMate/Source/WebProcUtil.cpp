@@ -242,7 +242,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
         PaymentTransaction.IgnoreLoyaltyKey = false;
 		PaymentTransaction.Recalc();
 
-		ProcessChitNumbers(inDisplayOwner, PaymentTransaction);
+	   //	ProcessChitNumbers(inDisplayOwner, PaymentTransaction);   //UI Distortion
 		ProcessPatrons(PaymentTransaction, PaymentTransaction.SalesType, 1);
 		ProcessSecurity(PaymentTransaction);
 
@@ -578,7 +578,6 @@ void __fastcall TWebProcUtil::ProcessChitNumbers(TForm *inDisplayOwner, TPayment
         switch(Result)
         {
             case ChitDisabled:
-               // PaymentTransaction.ChitNumber.
                 PaymentTransaction.ChitNumber.Clear();
                 break;
             case ChitOk:
