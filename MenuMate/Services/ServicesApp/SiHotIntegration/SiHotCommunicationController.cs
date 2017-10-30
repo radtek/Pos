@@ -18,17 +18,32 @@ namespace SiHotIntegration
 
         public string URIRoomRequest(string ipAddress, int portNumber)
         {
-            string uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/roomrequest" + @"/";
+            //string uri = @"";
+            //if(!ipAddress.Contains(":"))
+            //     uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/roomrequest" + @"/";
+            //else
+            //     uri = @"http://" + ipAddress + @"/roomrequest" + @"/";
+            string uri = ipAddress + @"/roomrequest" + @"/";
             return uri;
         }
         public string URIRoomChargePost(string ipAddress, int portNumber)
         {
-            string uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/accountbook" + @"/";
+            //string uri = @"";
+            //if(!ipAddress.Contains(":"))
+            //    uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/accountbook" + @"/";
+            //else
+            //    uri = @"http://" + ipAddress + @"/accountbook" + @"/";
+            string uri = ipAddress + @"/accountbook" + @"/";
             return uri;
         }
         public string URIValidate(string ipAddress, int portNumber)
         {
-            string uri = @"http://" + ipAddress + @":" + portNumber + @"/RMS" + @"/paymenttype" + @"/";
+            //string uri = @"";
+            //if(!ipAddress.Contains(":"))
+            //    uri = @"http://" + ipAddress + @":" + portNumber + @"/RMS" + @"/paymenttype" + @"/";
+            //else
+            //    uri = @"http://" + ipAddress + @"/paymenttype" + @"/";
+            string uri = ipAddress + @"/paymenttype" + @"/";
             return uri;
         }
         public RoomDetails GetRoomDetails(RoomRequest roomRequest)

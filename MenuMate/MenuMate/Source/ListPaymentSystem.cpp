@@ -4721,6 +4721,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                               //Calculate DWT , Tax on discount on remaining quantities
                                 TPaymentTransaction RemainingOrderTransaction(PaymentTransaction.DBTransaction);
                                 RemainingOrderTransaction.Orders->Add(SplittedItem);
+                                RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                                 RemainingOrderTransaction.Recalc();
 
                                 SplittedItem->OrderKey = 0;
@@ -4879,6 +4880,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                         {
                             TPaymentTransaction RemainingOrderTransaction(PaymentTransaction.DBTransaction);
                             RemainingOrderTransaction.Orders->Add(SplittedItem);
+                            RemainingOrderTransaction.IgnoreLoyaltyKey = false;
                             RemainingOrderTransaction.Recalc();
                             // Save off the cloned orders with whats left of the partial payment.
                             //insert only splitted order because it's quantity is changed
@@ -4892,6 +4894,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 
                             TDBOrder::SetOrder(PaymentTransaction.DBTransaction, SplittedItem);
                             TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SplittedItem->Security);
+                            PaymentTransaction.SplittedItemKey = SplittedItem->OrderKey;
                             for (int i = 0; i < SplittedItem->SubOrders->Count; i++)
                             {
                                     TItemCompleteSub *SubOrder = SplittedItem->SubOrders->SubOrderGet(i);

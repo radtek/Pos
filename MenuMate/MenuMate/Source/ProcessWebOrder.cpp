@@ -58,23 +58,30 @@ void __fastcall TfrmProcessWebOrder::FormShow(TObject *Sender)
 
 void TfrmProcessWebOrder::Execute()
 {
-    if(TGlobalSettings::Instance().AutoAcceptWebOrders)
+    try
     {
-        autoAcceptAllWebOrders();
-        return;
-    }
-    else
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
+        if(TGlobalSettings::Instance().AutoAcceptWebOrders)
+        {
+            autoAcceptAllWebOrders();
+            return;
+        }
+        else
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
 
-        TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-        WebOrderContainer.first();
+            TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+            WebOrderContainer.first();
 
-        DBTransaction.Commit();
+            DBTransaction.Commit();
+        }
+        UpdateDisplay();
+        ShowModal();
     }
-	UpdateDisplay();
-	ShowModal();
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void __fastcall TfrmProcessWebOrder::WebOrder(TMessage& Message)
@@ -203,7 +210,7 @@ void TfrmProcessWebOrder::ShowReceipt()
             ReceiptTransaction.Membership.Assign(webMemberInfo, MemberSource);
             TempReceipt->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
 		}
-
+        ReceiptTransaction.IgnoreLoyaltyKey = false;
 		ReceiptTransaction.Recalc();
 
 		TStringList *TabHistory = new TStringList;
@@ -327,48 +334,84 @@ void __fastcall TfrmProcessWebOrder::btnBillDownMouseClick(TObject *Sender)
 
 void __fastcall TfrmProcessWebOrder::tbtnAcceptOrderMouseClick(TObject *Sender)
 {
-    acceptWebOrder();
+    try
+    {
+        acceptWebOrder();
+    }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void TfrmProcessWebOrder::acceptWebOrder()
 {
-    frmProcessing->Message = "Posting Orders";
-    frmProcessing->Show();
+    try
+    {
+        frmProcessing->Message = "Posting Orders";
+        frmProcessing->Show();
 
-    startAcceptWebOrdersThread(false);
+        startAcceptWebOrdersThread(false);
+    }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void TfrmProcessWebOrder::autoAcceptAllWebOrders()
 {
-    startAcceptWebOrdersThread(true);
+    try
+    {
+        startAcceptWebOrdersThread(true);
+    }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject* sender )
 {
-    autoAcceptingWebOrders = false;
-    frmProcessing->Close();
-    UpdateDisplay();
+    try
+    {
+        autoAcceptingWebOrders = false;
+        frmProcessing->Close();
+        UpdateDisplay();
+    }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
 {
-    if(!autoAcceptingWebOrders)
+    try
     {
-        if(acceptAll)
+        if(!autoAcceptingWebOrders)
         {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-            WebOrderContainer.first();
-            DBTransaction.Commit();
+            if(acceptAll)
+            {
+                Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction.StartTransaction();
+                TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+                WebOrderContainer.first();
+                DBTransaction.Commit();
+            }
+           func_ptr ptr = &acceptWebOrder;
+           TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
+           autoAcceptThread->OnTerminate = autoAcceptWebOrdersTheadTerminate;
+           autoAcceptThread->ChitNumber = WebOrderChitNumber;
+           autoAcceptThread->Start();
+           autoAcceptingWebOrders = true;
         }
-       func_ptr ptr = &acceptWebOrder;
-       TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
-       autoAcceptThread->OnTerminate = autoAcceptWebOrdersTheadTerminate;
-       autoAcceptThread->ChitNumber = WebOrderChitNumber;
-       autoAcceptThread->Start();
-       autoAcceptingWebOrders = true;
     }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
+
 }
 
 TAcceptWebOrdersThread::TAcceptWebOrdersThread(TWebOrderContainer* webOrderContainer, bool acceptAllWebOrders)
@@ -381,16 +424,23 @@ TAcceptWebOrdersThread::TAcceptWebOrdersThread(TWebOrderContainer* webOrderConta
 
 void __fastcall TAcceptWebOrdersThread::Execute()
 {
-    if( acceptAll )
-        acceptAllWebOrders();
-    else
-        acceptWebOrder();
+    try
+    {
+        if( acceptAll )
+            acceptAllWebOrders();
+        else
+            acceptWebOrder();
+    }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void TAcceptWebOrdersThread::acceptWebOrder()
 {
 	try
-	{
+	{  
 		// Load the Order.
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -441,10 +491,17 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 
 void TAcceptWebOrdersThread::acceptAllWebOrders()
 {
-    while(!container->empty())
+    try
     {
-        acceptWebOrder();
+        while(!container->empty())
+        {
+            acceptWebOrder();
+        }
     }
+    catch(Exception & E)
+	{
+	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	}
 }
 
 void __fastcall TfrmProcessWebOrder::FormClose(TObject *Sender, TCloseAction &Action)

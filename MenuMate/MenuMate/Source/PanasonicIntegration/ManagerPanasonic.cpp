@@ -6,6 +6,7 @@
 #include "ManagerPanasonic.h"
 #include "PanasonicModels.h"
 #include "StringTools.h"
+#include "SqlTimst.hpp"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -199,6 +200,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
         int contactKey = 0, customerID = 0;
         UnicodeString memberName = "";
         int siteId = GetSiteId(dbTransaction);
+        TSQLTimeStampOffset timeStampOffsSet, saleSavedTime;
 
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
@@ -239,10 +241,12 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             panasonicModel->CashOut               = false;
             panasonicModel->Cash                  = false;
             panasonicModel->VoidAmount            = 0;
-            panasonicModel->TimeZoneOfET          = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-            panasonicModel->TimeZoneOfST          = startDateTime;
-            panasonicModel->DayLightTimeOfET      = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-            panasonicModel->DayLightTimeOfST      = startDateTime;
+            timeStampOffsSet                      = DateTimeToSQLTimeStampOffset(IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime);
+            saleSavedTime                         = DateTimeToSQLTimeStampOffset(startDateTime);
+            panasonicModel->TimeZoneOfET          = timeStampOffsSet;
+            panasonicModel->TimeZoneOfST          = saleSavedTime;
+            panasonicModel->DayLightTimeOfET      = timeStampOffsSet;
+            panasonicModel->DayLightTimeOfST      = saleSavedTime;
             panasonicModel->StartTime             = startDateTime;
             panasonicModel->EndTime               = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
             panasonicModel->CreditCard = false;
@@ -316,7 +320,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                 ConverTransactionInfoToTransactionDBServerInfo(*dbPanasonic, dbTransaction);
 
                 //Update flag if data posted to panasonic server
-                 UpdateArcBillAndDayArcBill(dbTransaction, arcBillKey);
+                UpdateArcBillAndDayArcBill(dbTransaction, arcBillKey);
         }
         dbPanasonic->UniDataBaseConnection->Commit();
         dbPanasonic->UniDataBaseConnection->Close();

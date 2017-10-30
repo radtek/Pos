@@ -1571,7 +1571,7 @@ void __fastcall TfrmTabManager::btnManInvoiceClick(TObject *Sender)
 							Order->Security->SecurityAdd(SecRef);
 
 							PaymentTransaction.Orders->Add(Order);
-
+                            PaymentTransaction.IgnoreLoyaltyKey = false;
 							PaymentTransaction.Recalc();
 							// Put Orders in DB where required.
 							TDBOrder::ProcessOrders(DBTransaction, PaymentTransaction.Orders);
