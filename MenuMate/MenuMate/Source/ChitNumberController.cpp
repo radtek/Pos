@@ -158,7 +158,8 @@ ChitResult TChitNumberController::GetDefaultChitNumber(TChitNumber &ChitNumber)
    }
 }
 
-const chit_option_name_t get_chit_option(const chit_key_t chit_key)
+const chit_option_name_t
+get_chit_option(const chit_key_t chit_key)
 {
 	TManagerChitNumber::Instance().SetLastAccessedChitKey(chit_key);
 
@@ -167,14 +168,14 @@ const chit_option_name_t get_chit_option(const chit_key_t chit_key)
 	std::auto_ptr<TfrmChitList> menu(new TfrmChitList(0x0, *names));
 
 	menu->Caption = "Select a chit option";
-    TGlobalSettings::Instance().IsAutoLoggedOut = true;
+
 	if (menu->ShowModal() == mrCancel)
 	{
 		return L"";
 	}
 
 	UnicodeString selectedChitName = menu->SelectedChitName;
-    TGlobalSettings::Instance().IsAutoLoggedOut = false;
+
     return selectedChitName.c_str();
 }
 
@@ -227,7 +228,6 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 			SelectionForm->Items.push_back(Item);
 		 }
 
-         TGlobalSettings::Instance().IsAutoLoggedOut = true;
 		 SelectionForm->ShowModal();
 		 TVerticalSelection SelectedItem;
 		 if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
@@ -247,7 +247,6 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 
 
 		 }
-         TGlobalSettings::Instance().IsAutoLoggedOut = false;
 	  }
    }
    else if (ChitNumber.Valid())
@@ -277,7 +276,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
    return ChitNumberReturned;
 }
 
-ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit)
+ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWebOrder)
 {
     ChitResult ChitNumberReturned = ChitCancelled;
     if (Chit.Type == ectAuto || Chit.Format == ectList || Chit.OnlineDeliveryOrder)
@@ -294,41 +293,74 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit)
         }
     }
 
-    if (Chit.Format == ectNumeric)
+    if(isWebOrder)
     {
-         std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (DisplayOwner));
-         frmTouchNumpad->Caption = "Enter the " + Chit.Name + " Number";
-         frmTouchNumpad->btnSurcharge->Caption = "Ok";
-         frmTouchNumpad->btnSurcharge->Visible = true;
-         frmTouchNumpad->btnDiscount->Visible = false;
-         frmTouchNumpad->Mode = pmNumber;
-         frmTouchNumpad->INTInitial = 0;
-         TGlobalSettings::Instance().IsAutoLoggedOut = true;
-         if (frmTouchNumpad->ShowModal() == mrOk)
-         {
-            Chit.ChitNumber = IntToStr(frmTouchNumpad->INTResult);
-            ChitNumberReturned = ChitOk;
-         }		 
-         TGlobalSettings::Instance().IsAutoLoggedOut = false;
-    }
-    else
-    {
-        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (Screen->ActiveForm));
-        frmTouchKeyboard->MaxLength = 15;
-        frmTouchKeyboard->AllowCarriageReturn = false;
-        frmTouchKeyboard->StartWithShiftDown = false;
-        frmTouchKeyboard->KeyboardText = "";
-        frmTouchKeyboard->Caption = "Enter the " + Chit.Name + " Text/Number";
-        TGlobalSettings::Instance().IsAutoLoggedOut = true;
-
-        if (frmTouchKeyboard->ShowModal() == mrOk)
+        if (Chit.Format == ectNumeric)
         {
-            Chit.ChitNumber = frmTouchKeyboard->KeyboardText;
-            ChitNumberReturned = ChitOk;
+             std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (DisplayOwner));
+             frmTouchNumpad->Caption = "Enter the " + Chit.Name + " Number";
+             frmTouchNumpad->btnSurcharge->Caption = "Ok";
+             frmTouchNumpad->btnSurcharge->Visible = true;
+             frmTouchNumpad->btnDiscount->Visible = false;
+             frmTouchNumpad->Mode = pmNumber;
+             frmTouchNumpad->INTInitial = 0;
+             if (frmTouchNumpad->ShowModal() == mrOk)
+             {
+                Chit.ChitNumber = IntToStr(frmTouchNumpad->INTResult);
+                ChitNumberReturned = ChitOk;
+             }
         }
-        TGlobalSettings::Instance().IsAutoLoggedOut = false;
+        else
+        {
+            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (Screen->ActiveForm));
+            frmTouchKeyboard->MaxLength = 15;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->KeyboardText = "";
+            frmTouchKeyboard->Caption = "Enter the " + Chit.Name + " Text/Number";
+
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                Chit.ChitNumber = frmTouchKeyboard->KeyboardText;
+                ChitNumberReturned = ChitOk;
+            }
+        }
     }
     return ChitNumberReturned;
+}
+
+ChitResult TChitNumberController::GetChitNumber(TChitNumber &ChitNumber)
+{
+   ChitResult ChitNumberReturned = ChitCancelled;
+   if (!Enabled)
+   {
+	  return ChitDisabled;
+   }
+   else if (ChitNumber.Valid())
+   {
+	  if (!ChitNumber.Assigned())
+	  {
+		 ChitNumberReturned = GetNextChitNumber(ChitNumber, false);
+	  }
+	  else
+	  {
+		 ChitNumberReturned = ChitOk;
+	  }
+   }
+   else
+   {
+	  ChitNumber = TManagerChitNumber::Instance().GetDefault();
+	  if (ChitNumber.Valid())
+	  {
+		 ChitNumberReturned = GetNextChitNumber(ChitNumber, false);
+	  }
+	  else
+	  {
+		 ChitNumberReturned = ChitNone;
+	  }
+   }
+
+   return ChitNumberReturned;
 }
 
 
