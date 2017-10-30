@@ -168,14 +168,14 @@ get_chit_option(const chit_key_t chit_key)
 	std::auto_ptr<TfrmChitList> menu(new TfrmChitList(0x0, *names));
 
 	menu->Caption = "Select a chit option";
-
+    TGlobalSettings::Instance().IsAutoLoggedOut = true;
 	if (menu->ShowModal() == mrCancel)
 	{
 		return L"";
 	}
 
 	UnicodeString selectedChitName = menu->SelectedChitName;
-
+    TGlobalSettings::Instance().IsAutoLoggedOut = false;
     return selectedChitName.c_str();
 }
 
@@ -228,6 +228,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 			SelectionForm->Items.push_back(Item);
 		 }
 
+         TGlobalSettings::Instance().IsAutoLoggedOut = true;
 		 SelectionForm->ShowModal();
 		 TVerticalSelection SelectedItem;
 		 if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
@@ -247,6 +248,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 
 
 		 }
+         TGlobalSettings::Instance().IsAutoLoggedOut = false;
 	  }
    }
    else if (ChitNumber.Valid())
@@ -309,6 +311,7 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWe
                 Chit.ChitNumber = IntToStr(frmTouchNumpad->INTResult);
                 ChitNumberReturned = ChitOk;
              }
+			 TGlobalSettings::Instance().IsAutoLoggedOut = false;
         }
         else
         {
@@ -318,12 +321,14 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWe
             frmTouchKeyboard->StartWithShiftDown = false;
             frmTouchKeyboard->KeyboardText = "";
             frmTouchKeyboard->Caption = "Enter the " + Chit.Name + " Text/Number";
+			TGlobalSettings::Instance().IsAutoLoggedOut = true;
 
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
                 Chit.ChitNumber = frmTouchKeyboard->KeyboardText;
                 ChitNumberReturned = ChitOk;
             }
+			TGlobalSettings::Instance().IsAutoLoggedOut = false;
         }
     }
     return ChitNumberReturned;
