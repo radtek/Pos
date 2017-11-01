@@ -333,8 +333,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Height = -17
       Font.Name = 'Arial'
       Font.Style = [fsBold]
-      Color = 10011108
       ParentFont = False
+      ParentColor = True
       Caption = 'Revenue Centre'
       ButtonColor = clGreen
       LatchedColor = clBtnFace

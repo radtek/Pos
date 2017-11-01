@@ -6,7 +6,7 @@
 #include <vector>
 //---------------------------------------------------------------------------
 ///////////////  Room Request /////////////////////////////////
-enum OracleRequestType {eRoomInquiry = 1, eRoomPost};
+enum OracleRequestType {eLinkDecription = 1, eRoomInquiry, eRoomPost};
 class TRoomInquiryItem;
 class TPostRoomInquiry
 {
@@ -30,12 +30,17 @@ class TRoomInquiryResult
   public:
     TRoomInquiryResult();
     ~TRoomInquiryResult();
+    AnsiString PathId;
     AnsiString SequenceNumber;
+//    AnsiString PostNum;
     AnsiString HotelId;
     AnsiString PaymentMethod;
     AnsiString RevenueCenter;
+//    AnsiString SalesOutlet;
     AnsiString WaiterId;
+//    AnsiString UserID;
     AnsiString WorkstationId;
+//    AnsiString WSNum;
     AnsiString Date;
     AnsiString Time;
     std::vector<TRoomInquiryItem> RoomInquiryItem;
@@ -50,13 +55,41 @@ class TRoomInquiryItem
     ~TRoomInquiryItem();
     AnsiString RoomNumber;
     AnsiString ReservationId;
+//    AnsiString GuestNum;
     AnsiString LastName;
+//    AnsiString GuestName;
+//    AnsiString GuestFirstname;
     AnsiString FirstName;
     AnsiString Title;
+    AnsiString GuestTitle;
+    AnsiString GuestVip;
     AnsiString NoPost;
+    AnsiString PaymentMethod;
     AnsiString CreditLimit;
     AnsiString ProfileId;
     AnsiString HotelId;
+//    AnsiString DefRef0;
+//    AnsiString DefRef1;
+//    AnsiString DefRef2;
+//    AnsiString DefRef3;
+//    AnsiString DefRef4;
+//    AnsiString DefRef5;
+//    AnsiString DefRef6;
+//    AnsiString DefRef7;
+//    AnsiString DefRef8;
+//    AnsiString DefRef9;
+//    AnsiString DefRef10;
+    AnsiString Reference1;
+    AnsiString Reference2;
+    AnsiString Reference3;
+    AnsiString Reference4;
+    AnsiString Reference5;
+    AnsiString Reference6;
+    AnsiString Reference7;
+    AnsiString Reference8;
+    AnsiString Reference9;
+    AnsiString Reference110;
+//    AnsiString PathId;
 };
 
 class TRoomInquiryAnswer
@@ -120,22 +153,33 @@ class TPostRequestAnswer
   public:
     TPostRequestAnswer();
     ~TPostRequestAnswer();
+    AnsiString Defref0;
     AnsiString RoomNumber;
     AnsiString ReservationId;
+//    AnsiString GuestNum;
+//    AnsiString PostNum;
     AnsiString LastName;
+//    AnsiString GuestName;
     AnsiString AnswerStatus;
+//    AnsiString AnswerStat;
+//    AnsiString ClearText;
     AnsiString ResponseText;
     AnsiString CheckNumber;
+//    AnsiString CheckNum;
     AnsiString SequenceNumber;
     AnsiString HotelId;
     AnsiString Date;
     AnsiString Time;
     AnsiString PaymentMethod;
     AnsiString RevenueCenter;
+//    AnsiString SalesOutlet;
     AnsiString WaiterId;
+//    AnsiString UserID;
     AnsiString WorkstationId;
+//    AnsiString WSNum;
     bool IsSuccessful;
     AnsiString resultText;
+    AnsiString PathId;
 };
 class TTax
 {

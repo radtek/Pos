@@ -153,6 +153,8 @@ void TfrmPHSConfiguration::UpdateGUI()
     }
     else if(PMSType == oracle)
     {
+        tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+        tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;

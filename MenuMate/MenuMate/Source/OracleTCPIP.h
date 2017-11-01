@@ -30,17 +30,17 @@ class TOracleTCPIP
         }
         TOracleTCPIP();
         ~TOracleTCPIP();
-        void SendAndFetch(AnsiString data,AnsiString address,int portNumber);
-        AnsiString SerializeOut(TPostRoomInquiry roomInquiry);
-        AnsiString SerializeOut(TPostRequest postRequest);
-        AnsiString SerializeOut(TLinkDescription linkDes);
-        TRoomInquiryItem SerializeIn(AnsiString data, TRoomInquiryAnswer roomAnswer);
-        TPostRequestAnswer SerializeIn(AnsiString data);
-        TLinkAlive SerializeIn(AnsiString data, int i);
+        AnsiString SendAndFetch(AnsiString inData);
         OracleRequestType oracleRequestType;
         bool Connect();
+        bool Disconnect();
     private:
-        TIdTCPClient* CreateTCPClient();
+        void CreateTCPClient();
         TIdTCPClient* tcpClient;
+        void sendData( AnsiString inData );
+        AnsiString fetchResponse();
+        TBytes CreateByteArray( const char* inBuffer, __int32 inBufferSize );
+        TBytes CreateSTX();
+        TBytes CreateETX();
 };
 #endif

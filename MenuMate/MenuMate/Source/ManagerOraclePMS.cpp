@@ -54,6 +54,7 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
+        DBTransaction.Commit();
         bool connectionMade = InitializeoracleTCP();
 
         if(Registered && TCPIPAddress != "")
@@ -65,7 +66,6 @@ void TManagerOraclePMS::Initialise()
         {
             Enabled = false;
         }
-        DBTransaction.Commit();
     }
     catch (Exception &E)
     {
@@ -76,7 +76,8 @@ void TManagerOraclePMS::Initialise()
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
 {
-    return TOracleTCPIP::Instance().Connect();
+    bool retValue = TOracleTCPIP::Instance().Connect();
+    return retValue;
 }
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::GetLinkStatus()
@@ -84,8 +85,12 @@ bool TManagerOraclePMS::GetLinkStatus()
     bool retValue = false;
     std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
     TLinkDescription linkDescription = oracledata->CreateLinkDescription();
-    // Call for sending Link Description and receiving Link Alive
-    retValue = true;
+    TiXmlDocument doc = oracledata->CreateLinkDescriptionXML(linkDescription);
+    AnsiString data = oracledata->SerializeOut(doc);
+    AnsiString resultData = "";
+    resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+    // deserialize the resposne
+    retValue = oracledata->DeserializeGetLinkStatus(resultData);
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -109,7 +114,8 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
 {
     TOracleDataBuilder oracledata;
     TPostRequest postRequest;
-    oracledata.CreatePost(_paymentTransaction,postRequest);
+//    for(int i = )
+    oracledata.CreatePost(_paymentTransaction);
     TiXmlDocument doc = oracledata.CreatePostXML(postRequest);
 
     // Post Sales Data
@@ -124,8 +130,12 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
     TPostRoomInquiry postRoomRequest;
     postRoomRequest.InquiryInformation = _roomNumber;
     oracledata->CreatePostRoomInquiry(postRoomRequest);
-    oracledata->CreateRoomInquiryXML(postRoomRequest);
-    _roomResult = oracledata->createXMLInquiryDoc();
+    TiXmlDocument doc = oracledata->CreateRoomInquiryXML(postRoomRequest);
+    AnsiString resultData = "";
+    AnsiString data = oracledata->SerializeOut(doc);
+    resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+
+    oracledata->DeserializeInquiryData(resultData, _roomResult);
     if(!_roomResult.IsSuccessful)
     {
         MessageBox(_roomResult.resultText,"Warning",MB_OK);

@@ -4084,14 +4084,15 @@ bool TfrmMaintain::SetUpOracle()
     std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
     frmPHSConfiguration->PMSType = 3;
     frmPHSConfiguration->ShowModal();
-
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
+//        MessageBox("Oracle Enabled","",MB_OK);
         tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
     }
     else
     {
+//        MessageBox("Oracle Disabled","",MB_OK);
         tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
         tbPHSInterface->ButtonColor = clRed;
     }
