@@ -178,27 +178,32 @@ namespace MenumateServices.WebMate.InternalClasses
 
             try
             {
-                webOrderDB.BeginTransaction();
-                //check webmate enabled here or not..
-                bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
-                if (checkWebmateIsEnabled)
+                if (webOrderDB.BeginTransaction())
                 {
-                    int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
-                    int menu_key = getMenuKeyFormChit(webOrderDB);
-                    dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+                    //check webmate enabled here or not..
+                    bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
+                    if (checkWebmateIsEnabled)
+                    {
+                        int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
+                        int menu_key = getMenuKeyFormChit(webOrderDB);
+                        dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+                    }
+                    else
+                    {
+                        SetWebmateForMessage(webOrderDB);
+                    }
                 }
                 else
                 {
-                   SetWebmateForMessage(webOrderDB); 
+                    throw new Exception(@"Could not process order as transaction was not active.");
                 }
-
                 webOrderDB.EndTransaction();
             }
             catch (Exception e)
             {
                 webOrderDB.RollbackTransaction();
                 ServiceLogger.Log(@"WebOrderDBAccessProcess.dbSaveOrder(WebOrder inOrder) ROLLBACK");
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
+                EventLog.WriteEntry("IN dbSaveOrder", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
                 throw;
             }
        }

@@ -364,18 +364,21 @@ namespace MenumateServices.WebMate.InternalClasses
         /// </summary>
         public bool BeginTransaction()
         {
+            bool retValue = false;
             try
             {
+                connection_.Close();
                 connection_ = dbConnection_.Open();
                 transaction_ = connection_.BeginTransaction();
-                return true;
+                retValue = true;
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
-                return false;
+                connection_.Close();
+                EventLog.WriteEntry("IN BeginTransaction", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+                retValue = false;
             }
-
+            return retValue;
         }
 
         /// <summary>
@@ -386,14 +389,18 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 if (transaction_ != null)
+                {
                     transaction_.Commit();
-
+                    transaction_.Dispose();
+                }
                 if (connection_ != null)
+                {
                     connection_.Close();
+                }
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+                EventLog.WriteEntry("IN EndTransaction", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
             }
         }
 

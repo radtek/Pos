@@ -282,8 +282,14 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 WebOrderDB webOrderDB = new WebOrderDB();
-                webOrderDB.BeginTransaction();
-                result = webOrderDB.WebOrderAccepted(inOrderHandle);
+                if (webOrderDB.BeginTransaction())
+                {
+                    result = webOrderDB.WebOrderAccepted(inOrderHandle);
+                }
+                else
+                {
+                    result = false;
+                }
                 webOrderDB.EndTransaction();
             }
             catch (Exception e)
