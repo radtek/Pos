@@ -367,7 +367,8 @@ namespace MenumateServices.WebMate.InternalClasses
             bool retValue = false;
             try
             {
-                connection_.Close();
+                if(connection_!= null && connection_.State == System.Data.ConnectionState.Open)
+                    connection_.Close();
                 connection_ = dbConnection_.Open();
                 transaction_ = connection_.BeginTransaction();
                 retValue = true;
