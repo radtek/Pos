@@ -320,7 +320,9 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWe
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = false;
             frmTouchKeyboard->KeyboardText = "";
+            frmTouchKeyboard->Name = "frmTouchKeyboard";
             frmTouchKeyboard->Caption = "Enter the " + Chit.Name + " Text/Number";
+
 			TGlobalSettings::Instance().IsAutoLoggedOut = true;
 
             if (frmTouchKeyboard->ShowModal() == mrOk)
