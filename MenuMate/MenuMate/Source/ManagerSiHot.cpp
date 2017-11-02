@@ -135,7 +135,8 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
      // Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
      return siHotInterface->SendRoomRequest(_roomRequest);
-}//---------------------------------------------------------------------------
+}
+//---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
 {
     bool retValue = false;

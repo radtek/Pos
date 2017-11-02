@@ -496,7 +496,8 @@ void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 //            DBTransaction1.Commit();
 //		}
 //	}
-//}
+//}
+
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 {
