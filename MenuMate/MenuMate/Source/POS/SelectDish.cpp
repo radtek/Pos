@@ -612,6 +612,9 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     ChitNumber = TChitNumber();
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
+    if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        DisplayRoomNoUI();
+
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1852,6 +1855,8 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 			DBTransaction.Commit();
 			ResetPOS();
 
+            if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        		DisplayRoomNoUI();
 		}
 
 
@@ -1860,9 +1865,9 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 	}
     AutoLogOut();
    if(TGlobalSettings::Instance().EnableTableDisplayMode)
-       {
-              showTablePicker();
-       }
+   {
+          showTablePicker();
+   }
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 
@@ -2518,6 +2523,8 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 				DBTransaction.Commit();
 				ResetPOS();
 
+                if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        			DisplayRoomNoUI();
 			}
 		}
 	}
@@ -2540,6 +2547,8 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			DBTransaction.Commit();
 			ResetPOS();
 
+            if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        		DisplayRoomNoUI();
 		}
 		if(!PaymentComplete)
 		{
@@ -2586,7 +2595,7 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 		}
 	}
 	if(!IsSubSidizeProcessed&&!IsSubSidizeOrderCancil)
-	{ AutoLogOut();
+	{   AutoLogOut();
 		if(TGlobalSettings::Instance().EnableTableDisplayMode)
 		{
 			showTablePicker();
@@ -15228,3 +15237,23 @@ bool TfrmSelectDish::CheckIfSubsidizedDiscountValid(int tabKey)
     return retValue;
 }
 //----------------------------------------------------------------------------
+void TfrmSelectDish::DisplayRoomNoUI()
+{
+    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+    frmTouchNumpad->Caption = "Enter the Room Number";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Caption = "Walk In";
+    frmTouchNumpad->btnDiscount->Visible = true;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->btnDiscount->Color = clGreen;
+    frmTouchNumpad->Mode = pmNumber;
+    frmTouchNumpad->CURInitial = 0;
+    if (frmTouchNumpad->ShowModal() == mrOk)
+    {
+        isWalkInUser = false;
+    }
+    else
+    {
+        isWalkInUser = true;
+    }
+}

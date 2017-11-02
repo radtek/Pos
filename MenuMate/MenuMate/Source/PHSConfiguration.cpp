@@ -139,6 +139,7 @@ void TfrmPHSConfiguration::UpdateGUI()
     tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     // enable default transaction count button for sihot also
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+
     if(PMSType == siHot)
     {
         //tbDefTransAccount->Caption = "ServiceCharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
@@ -148,6 +149,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
+        cbEnableCustomerJourney->Enabled = true;
+        cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
     }
     else
     {
@@ -521,4 +524,12 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().EnableCustomerJourney = cbEnableCustomerJourney->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableCustomerJourney, TGlobalSettings::Instance().EnableCustomerJourney);
+    DBTransaction.Commit();
+}
 

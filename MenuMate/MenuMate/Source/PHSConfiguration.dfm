@@ -25,6 +25,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
+    DesignSize = (
+      600
+      435)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -284,6 +287,23 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbServiceChargeMouseClick
+    end
+    object cbEnableCustomerJourney: TCheckBox
+      Left = 310
+      Top = 368
+      Width = 266
+      Height = 49
+      Anchors = [akLeft]
+      Caption = 'Enable customer Journey'
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 0
+      OnClick = cbEnableCustomerJourneyClick
     end
   end
   object Panel2: TPanel

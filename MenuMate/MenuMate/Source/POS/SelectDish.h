@@ -276,13 +276,53 @@ private: // User declarations
     AnsiString memberName;
     AnsiString memberNo;
     TNotifyEvent OnCloseThreadTerminate;
+    void AdjustScreenSize();
+    TSaleType TypeOfSale;
+    eLocation fLocation;
+    TCustomerOrder CustomerOrder;
+    long LastEnabledStateSync;
+    unsigned char LastMenuSync1, LastMenuSync2;
+    int LastTableNo, LastSeatNumber;
+    TTouchBtn *LastCourseBtn, *LastClassBtn;
+    TDateTime LastSale;
+    int CurrentTimeKey;
+    bool WaitingForSwipe;
+    AnsiString SwipeString;
+    bool Swiping;
+    TDataBtn *CurrentButton;
+    bool Always_Prompt;
+    int SelectedTable;
+    AnsiString SelectedTabContainerName;
+    int SelectedSeat;
+    AnsiString SelectedParty;
+    TServingCourse CurrentServingCourse;
+    TChitNumber ChitNumber;
+    TContactMemberApplied Membership;
+    unsigned long SetMenuMask;
+    int SetMenuGroupNo;
+    UnicodeString SelectedOrderMenuName;
+    std::vector <TSeatOrders*> SeatOrders;
+    Currency CurrentTender; // From pressing $5 - $100 buttons
+    TTouchBtn *CurrentTenderButton;
+    TMoney InitialMoney;
+    bool ignore_preloaded_card;
+    bool OrderHeld;
+    bool IsPricedBarcode(AnsiString &data) const;
+    bool IsWeighedBarcode(AnsiString &data) const;
+    std::auto_ptr<TChefmateClientManager> cmClientManager;
+    typedef std::vector<TCustomerDisp> TCustomerDisps;
+    TCustomerDisp customerDisp;
+    TStringList* removedTaxList;
+    int sec_ref;
+    AnsiString CustAddress;
+    bool itemSearch;
+    bool isWalkInUser;
+
     void YesGoForSessionWithDC(int memPoints, AnsiString memberPoints,AnsiString memNo,int contactKey);
     void StartThreadDC(int _memPoints, char* _memberDetails_char , AnsiString _memberPoints , AnsiString _memberDetails);
     void _fastcall CloseTerminateCallBack(TObject* sender);
     void __fastcall OnDCThreadTerminate(TObject* sender);
     bool CheckMenuExistsOrNot(UnicodeString default_menu_name_);
-    void AdjustScreenSize();
-    TSaleType TypeOfSale;
     void RedrawSetMenuItems();
     void AutoLogOut();
     void LockOutUser();
@@ -301,7 +341,6 @@ private: // User declarations
     void ProcessQuickPayment(TObject *Sender,AnsiString paymentName);
     bool IsProcessQuickPayment(TObject *Sender);
     AnsiString GetQuickPaymentName(TObject *Sender);
-    eLocation fLocation;
     void AddItemToSeat(Database::TDBTransaction& inDBTransaction,
                        TItem* inItem,
                        bool  inSetMenuItem,
@@ -311,44 +350,16 @@ private: // User declarations
                                       TItem* Item,
                                       bool  SetMenuItem,
                                       TItemSize* inItemSize , bool IsItemSeaarchedOrScan);
-
-    TCustomerOrder CustomerOrder; //Customer name, OrderType
-    long LastEnabledStateSync;
-    unsigned char LastMenuSync1, LastMenuSync2;
-    int LastTableNo, LastSeatNumber;
-    // TStaticText *LastCourseBtn, *LastClassBtn;
-    TTouchBtn *LastCourseBtn, *LastClassBtn;
-    TDateTime LastSale;
-    int CurrentTimeKey;
-    bool WaitingForSwipe;
-    AnsiString SwipeString;
-    bool Swiping;
-    TDataBtn *CurrentButton;
     bool DisplayHoldSend(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> &Patrons);
     void HoldButtonClick(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> Patrons);
     bool SendButtonClick(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> &Patrons);
     bool SendRelatedOrders(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> &Patrons);
     void RetrieveHeldCustomerName(std::auto_ptr <TList> &OrderObjects);
-    bool Always_Prompt;
     void RefreshSeats();
-    int SelectedTable;
-    AnsiString SelectedTabContainerName;
-    int SelectedSeat;
-    AnsiString SelectedParty;
-    TServingCourse CurrentServingCourse;
-    TChitNumber ChitNumber;
-    TContactMemberApplied Membership;
-    unsigned long SetMenuMask;
-    int SetMenuGroupNo;
-    UnicodeString SelectedOrderMenuName;
-    std::vector <TSeatOrders*> SeatOrders;
     void SelectNewMenus();
     void SetSelectedSeat(bool selectGuest=false); //changes for 5900
     void RedrawSeatOrders();
     void __fastcall CurrentItemChange(TItemRedirector *);
-    Currency CurrentTender; // From pressing $5 - $100 buttons
-    TTouchBtn *CurrentTenderButton;
-    TMoney InitialMoney;
     void RedrawModifyOptionsBtnGrid(bool Reset = false);
     void SetServingCourseBtnSizes();
     void pcItemModifyDisplayOptions(bool PlusOpt);
@@ -370,28 +381,14 @@ private: // User declarations
     void WriteOffBillAsWastage();
     void AlterFloat();
     void EnterPaxCount();
-    // void Navigate(TCppWebBrowser *WebBrowser,TStringList *Html);
     void Navigate(TWebBrowser *WebBrowser, TStringList *Html);
     void SendOrderListToKitchen(Database::TDBTransaction &DBTransaction, TList *OrdersList, std::vector<TPatronType> Patrons);
-    bool ignore_preloaded_card;
-    bool OrderHeld;
     // gets patron count from user
     std::vector<TPatronType> QueryForPatronCount(TPaymentTransaction &PaymentTransaction);
     std::vector<TPatronType> GetPatronCount(Database::TDBTransaction &dbTransaction);
     void ReloadChitNumberStatistics();
-
-    //::::::::::::::::::::::::::
-    // DEALS
-    //::::::::::::::::::::::::::
     void CheckDeals(Database::TDBTransaction &DBTransaction);
-    void MapItemsAndCategories(std::multimap<TItemMinorComplete*, int> &itemCatMap, Currency &totalItemCost); //void MapItemsAndCategories(std::multimap<TItemComplete*, int> &itemCatMap, Currency &totalItemCost);
-
-    //::::::::::::::::::::::::::
-    // PRICED BARCODES
-    //::::::::::::::::::::::::::
-
-    bool IsPricedBarcode(AnsiString &data) const;
-    bool IsWeighedBarcode(AnsiString &data) const;
+    void MapItemsAndCategories(std::multimap<TItemMinorComplete*, int> &itemCatMap, Currency &totalItemCost);
     Currency GetPriceFromBarcode(AnsiString barcode);
     std::pair<TItem*, TItemSize*> GetLoadedItemFromBarcode(UnicodeString inBarcode);
     // auto ptr to hold process web order form
@@ -431,12 +428,7 @@ private: // User declarations
 //    TPaymentTransaction PaymentTransaction(DBTransaction);
     void ApplyMemberDiscounts(Database::TDBTransaction &DBTransaction,bool isInitiallyApplied = true);
     void GetAllOrders(TList* outOrders);
-    std::auto_ptr<TChefmateClientManager> cmClientManager;
-    typedef std::vector<TCustomerDisp> TCustomerDisps;
-    TCustomerDisp customerDisp;
-    TStringList* removedTaxList;
     void AssignremovedTaxesList();
-    int sec_ref;       //MM-4327
     void CancelItemsBill(TItemComplete *cancelitem, AnsiString& User, bool isFullItemRemove=false);//void CancelItemsBill(TItemComplete *item);
     bool CheckItemsPrintCancel();
     void SaveRemoveItems(AnsiString& User);
@@ -452,7 +444,6 @@ private: // User declarations
     void GetItemsFromTable(int seatkey, TGridButton *GridButton);
     //change here..
     UnicodeString SetPartyNameOnChitSettings(Database::TDBTransaction &DBTransaction, AnsiString PartyName, int tableNo, bool setPartyName = false);
-    AnsiString CustAddress;
     UnicodeString TfrmSelectDish::PrepareAddress(UnicodeString str_name);
     Currency  VerifyPriceLevelPrice(Database::TDBTransaction &DBTransaction,int itemsizeKey,Currency Price);
     void CheckLastAddedItem();
@@ -468,7 +459,6 @@ private: // User declarations
     void DoCloundSync();
     void AddSearchedItemToSeat();
     void  OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSize);
-    bool itemSearch;
     void SetPOSBackgroundColor();
 	bool PromptForDiscountDescription(TDiscount &currentDiscount);
     bool PromptForDiscountAmount(TDiscount &currentDiscount);
@@ -479,6 +469,7 @@ private: // User declarations
     bool CheckItemCanBeAddedToSeat(TItem *item);
     void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
     bool CheckIfSubsidizedDiscountValid(int tabKey);
+    void DisplayRoomNoUI();
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);
