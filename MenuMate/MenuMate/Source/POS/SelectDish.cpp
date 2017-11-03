@@ -612,9 +612,9 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     ChitNumber = TChitNumber();
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
+    isWalkInUser = true;
     if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
         DisplayRoomNoUI();
-
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1836,49 +1836,39 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(PaymentTransaction);
         TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
 
+        if(SaveTransactionDetails(CashPayment->Name))
+        {
+            bool PaymentComplete = ProcessOrders(Sender, DBTransaction, 0, // Tab
+                TabCashAccount, // Tab Type
+                "Sale", // Tab Container Name
+                "Sale", // Tab Name
+                "", // PartyName
+                false, // Print Prelim Receipt.
+                0, // Table
+                0, // Seat
+                0); // Room
+            if (PaymentComplete)
+            {
+                DBTransaction.Commit();
+                ResetPOS();
 
-
-	 if(SaveTransactionDetails(CashPayment->Name))
-	{
-
-		bool PaymentComplete = ProcessOrders(Sender, DBTransaction, 0, // Tab
-			TabCashAccount, // Tab Type
-			"Sale", // Tab Container Name
-			"Sale", // Tab Name
-			"", // PartyName
-			false, // Print Prelim Receipt.
-			0, // Table
-			0, // Seat
-			0); // Room
-		if (PaymentComplete)
-		{
-			DBTransaction.Commit();
-			ResetPOS();
-
-            if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-        		DisplayRoomNoUI();
-		}
-
-
-
-    }
+                if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+                    DisplayRoomNoUI();
+            }
+        }
 	}
     AutoLogOut();
-   if(TGlobalSettings::Instance().EnableTableDisplayMode)
-   {
+    if(TGlobalSettings::Instance().EnableTableDisplayMode)
+    {
           showTablePicker();
-   }
-    //MM-1647: Ask for chit if it is enabled for every order.
+    }
     NagUserToSelectChit();
-
-     //mm-5145
     CheckMandatoryMembershipCardSetting(tbtnMembership);
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RedrawSeatOrders()
 {
 	SeatOrders[SelectedSeat]->Orders->RefreshDisplay() ;
-
 	lbDisplay->Clear();
 
 	for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
@@ -15248,7 +15238,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
     frmTouchNumpad->btnDiscount->Color = clGreen;
     frmTouchNumpad->Mode = pmNumber;
     frmTouchNumpad->CURInitial = 0;
-    if (frmTouchNumpad->ShowModal() == mrOk)
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
     {
         isWalkInUser = false;
     }
