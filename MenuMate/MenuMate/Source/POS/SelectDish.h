@@ -681,6 +681,9 @@ public: // User declarations
     void UpdateMenuItemsAfterLoginScreen();
     int GetDefaultServingCourse(int item_key);
     bool CheckForServingCoursePrompt(int item_key);
+private:
+  bool IsAutoLogOutInSelectDish;
+
  };
 // ---------------------------------------------------------------------------
 

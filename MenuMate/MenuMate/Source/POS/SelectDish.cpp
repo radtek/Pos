@@ -350,11 +350,10 @@ ChitResult TfrmSelectDish::InitializeChit()
 // ---------------------------------------------------------------------------
 ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
 {
-   TChitNumberController controller(this, tr);
+     TChitNumberController controller(this, tr);
      ChitResult selection_result = controller.GetChitNumber(true, ChitNumber);
-
-   tbtnChitNumber->Caption =
-   ChitNumber.ChitNumberKey ? ChitNumber.GetChitNumber()
+     tbtnChitNumber->Caption =
+    ChitNumber.ChitNumberKey ? ChitNumber.GetChitNumber()
                                : UnicodeString(L"Chit");
     if(ChitNumber.Valid())
     {
@@ -455,6 +454,7 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
     }
 
     return selection_result;
+
 
 }
 // ---------------------------------------------------------------------------
@@ -611,7 +611,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     ChitNumber = TChitNumber();
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
-    IsChitPromptFormActive=true;
+     IsChitPromptFormActive=true;
 
 }
 // ---------------------------------------------------------------------------
@@ -4696,7 +4696,7 @@ void TfrmSelectDish::OnLockOutTimer(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::LockOutUser()
 {
-   	if (Active || TGlobalSettings::Instance().IsAutoLoggedOut)
+  	if ((Active && IsAutoLogOutInSelectDish) || TGlobalSettings::Instance().IsAutoLoggedOut)
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -4716,7 +4716,6 @@ void TfrmSelectDish::LockOutUser()
                     if (Result == lsAccepted)
                     {
                         bool LogIn = false;
-                        TGlobalSettings::Instance().IsAutoLoggedOut = true;
                         if (TDeviceRealTerminal::Instance().User.ContactKey != TempUserInfo.ContactKey)
                         {
                             if (!StaffChanged(TempUserInfo))
@@ -4747,12 +4746,14 @@ void TfrmSelectDish::LockOutUser()
                     {
                         CanClose = true;
                         FormCloseQuery(NULL, CanClose);
-
                         if (CanClose)
                         {
+
                             IsChitPromptFormActive=false;
                             Close();
                             CloseChitForm();
+                            IsAutoLogOutInSelectDish = false;
+
                         }
                         else
                         {
@@ -4768,7 +4769,6 @@ void TfrmSelectDish::LockOutUser()
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message);
 				Result = lsDenied;
 			}
-
 
 		DBTransaction.Commit();
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
@@ -4789,9 +4789,10 @@ void TfrmSelectDish::CloseChitForm()
         (Screen->ActiveForm->Name == "frmVerticalSelect")   ||
         (Screen->ActiveForm->Name == "frmChitList")         ||
         (Screen->ActiveForm->Name == "frmMessageBox"))
+
+
     {
         Screen->ActiveForm->Close();
-
     }
 }
 
@@ -9183,6 +9184,7 @@ void TfrmSelectDish::ResetPOS()
 
   RefreshMenu();
   InitializeChit(); // initialize default chit...
+  IsAutoLogOutInSelectDish = true;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
