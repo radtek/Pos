@@ -329,18 +329,8 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
     {
         TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQueryGenerator->Close();
+        switch(_paymentTransaction.TypeOfSale)
         {
-//           case 0:
-//           {
-//                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-//                IBInternalQueryGenerator->ExecQuery();
-//                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-//                invoiceNumber = IntToStr(number);
-//                MessageBox(number,"number",MB_OK);
-//
-//                MessageBox(invoiceNumber,"invoiceNumber",MB_OK);
-//                break;
-//           }
            case 1:
            {
                 IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
