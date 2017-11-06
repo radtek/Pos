@@ -157,7 +157,8 @@ void __fastcall TfrmInvoices::btnNewInvoiceClick(TObject *Sender)
 		frmReceiveInvoice->InvoiceReference	= NewInvoiceRef;
         InvoiceRef=   NewInvoiceRef;
         frmReceiveInvoice->IsPurchaseOrderMode = false;
-		if (frmReceiveInvoice->ShowModal() == mrOk)
+        frmReceiveInvoice->AllowNegativeStockQuantity = true;
+        if (frmReceiveInvoice->ShowModal() == mrOk)
 		{
 			try
 			{
