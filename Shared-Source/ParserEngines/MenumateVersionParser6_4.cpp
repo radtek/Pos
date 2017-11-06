@@ -27,6 +27,11 @@ void TApplyParser::upgrade6_42Tables()
 {
     update6_42Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_43Tables()
+{
+    update6_43Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -44,6 +49,11 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_43Tables()
+{
+    CreateTable6_43(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -317,4 +327,23 @@ void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
         );
     }
 }
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SIHOT_CUSTOMER_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SIHOT_CUSTOMER_DETAILS "
+		"( "
+		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+        "   INVOICE_NUMBER VARCHAR(50), "
+		"   ACC_NUMBER INTEGER,"
+        "   FIRST_NAME VARCHAR(50),"
+        "   LAST_NAME VARCHAR(50), "
+        "   AMOUNT  NUMERIC(15,4) "
+		");",
+		inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------------------
 }
