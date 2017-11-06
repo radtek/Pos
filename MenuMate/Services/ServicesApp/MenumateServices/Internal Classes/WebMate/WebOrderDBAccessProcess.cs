@@ -175,29 +175,39 @@ namespace MenumateServices.WebMate.InternalClasses
         void dbSaveOrder(WebOrder inOrder)
         {
             WebOrderDB webOrderDB = new WebOrderDB();
-
+            bool IsSuccessful = false;
             try
             {
-                if (webOrderDB.BeginTransaction())
+                //if (webOrderDB.BeginTransaction())
+                //{
+                using(webOrderDB.connection_ = webOrderDB.BeginConnection())
                 {
-                    //check webmate enabled here or not..
-                    bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
-                    if (checkWebmateIsEnabled)
+                    using(webOrderDB.transaction_ = webOrderDB.BeginFBTransaction())
                     {
-                        int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
-                        int menu_key = getMenuKeyFormChit(webOrderDB);
-                        dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+                        //check webmate enabled here or not..
+                        bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
+                        if (checkWebmateIsEnabled)
+                        {
+                            int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
+                            int menu_key = getMenuKeyFormChit(webOrderDB);
+                            dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+                        }
+                        else
+                        {
+                            SetWebmateForMessage(webOrderDB);
+                        }
+                        webOrderDB.transaction_.Commit();
                     }
-                    else
-                    {
-                        SetWebmateForMessage(webOrderDB);
-                    }
+                    webOrderDB.connection_.Close();
+                    IsSuccessful = true;
                 }
-                else
-                {
-                    throw new Exception(@"Could not process order as transaction was not active.");
-                }
-                webOrderDB.EndTransaction();
+                if(!IsSuccessful)
+                    throw new Exception(@"Could not process order as transaction was started.");
+                //else
+                //{
+                //    throw new Exception(@"Could not process order as transaction was not active.");
+                //}
+                //webOrderDB.EndTransaction();
             }
             catch (Exception e)
             {

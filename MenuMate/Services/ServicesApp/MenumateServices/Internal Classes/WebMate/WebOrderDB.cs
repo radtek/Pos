@@ -323,8 +323,8 @@ namespace MenumateServices.WebMate.InternalClasses
         WebOrderDBConnection dbConnection_ = WebOrderDBConnection.Instance;
         WebOrderDBQueries dbQueries_ = WebOrderDBQueries.Instance;
 
-        FbTransaction transaction_;
-        FbConnection connection_;
+        public FbTransaction transaction_;
+        public FbConnection connection_;
 
         /// <summary>
         /// 
@@ -380,6 +380,22 @@ namespace MenumateServices.WebMate.InternalClasses
                 retValue = false;
             }
             return retValue;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public FbConnection BeginConnection()
+        {
+            return dbConnection_.Open();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public FbTransaction BeginFBTransaction()
+        {
+            return connection_.BeginTransaction();
         }
 
         /// <summary>
