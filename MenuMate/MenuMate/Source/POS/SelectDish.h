@@ -317,6 +317,7 @@ private: // User declarations
     AnsiString CustAddress;
     bool itemSearch;
     bool isWalkInUser;
+    int selectedRoomNumber;
 
     void YesGoForSessionWithDC(int memPoints, AnsiString memberPoints,AnsiString memNo,int contactKey);
     void StartThreadDC(int _memPoints, char* _memberDetails_char , AnsiString _memberPoints , AnsiString _memberDetails);
@@ -470,6 +471,7 @@ private: // User declarations
     void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
     bool CheckIfSubsidizedDiscountValid(int tabKey);
     void DisplayRoomNoUI();
+    void GetRoomDetails(TPaymentTransaction &inTransactio);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

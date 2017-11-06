@@ -338,6 +338,7 @@ void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
 		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   INVOICE_NUMBER VARCHAR(50), "
 		"   ACC_NUMBER INTEGER,"
+        "   ROOM_NUMBER INTEGER, "
         "   FIRST_NAME VARCHAR(50),"
         "   LAST_NAME VARCHAR(50), "
         "   AMOUNT  NUMERIC(15,4) "
