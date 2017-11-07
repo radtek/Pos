@@ -338,8 +338,8 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isNo
                 isChitFormatChanged = false;
                 Chit.ChitNumber = frmTouchKeyboard->KeyboardText;
                 ChitNumberReturned = ChitOk;
-            }
-            if(isChitFormatChanged)
+          }
+            if(TGlobalSettings::Instance().AutoLogoutPOS && isChitFormatChanged && Chit.Format == ectList )
             {
                 Chit.Format = ectAlphaNumeric;
             }

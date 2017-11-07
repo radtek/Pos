@@ -4701,7 +4701,6 @@ void TfrmSelectDish::LockOutUser()
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
 		std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-        //TGlobalSettings::Instance().AutoLogoutPOS = false;
 		TLoginSuccess Result = lsDenied;
         TGlobalSettings::Instance().IsAutoLoggedOut = false;
         bool PaymentAccessResult = true;
@@ -4715,6 +4714,10 @@ void TfrmSelectDish::LockOutUser()
                     IsWaiterLogged =  !PaymentAccessResult;
                     if (Result == lsAccepted)
                     {
+                        if(CloseChitForm())
+                        {
+                            TGlobalSettings::Instance().IsAutoLoggedOut = true;
+                        }
                         bool LogIn = false;
                         if (TDeviceRealTerminal::Instance().User.ContactKey != TempUserInfo.ContactKey)
                         {
@@ -4748,11 +4751,13 @@ void TfrmSelectDish::LockOutUser()
                         FormCloseQuery(NULL, CanClose);
                         if (CanClose)
                         {
-
                             IsChitPromptFormActive=false;
                             Close();
-                            CloseChitForm();
-                            IsAutoLogOutInSelectDish = false;
+                           if(CloseChitForm())
+                           {
+                                Screen->ActiveForm->Close();
+                           }
+                           IsAutoLogOutInSelectDish = false;
 
                         }
                         else
@@ -4780,8 +4785,9 @@ void TfrmSelectDish::LockOutUser()
 }
 // ---------------------------------------------------------------------------
 
-void TfrmSelectDish::CloseChitForm()
+bool TfrmSelectDish::CloseChitForm()
 {
+    bool CloseChitRetval=false;
      if(
         (Screen->ActiveForm->Name == "frmTouchKeyboard")    ||
         (Screen->ActiveForm->Name == "frmTouchNumpad")      ||
@@ -4790,10 +4796,10 @@ void TfrmSelectDish::CloseChitForm()
         (Screen->ActiveForm->Name == "frmChitList")         ||
         (Screen->ActiveForm->Name == "frmMessageBox"))
 
-
     {
-        Screen->ActiveForm->Close();
+        CloseChitRetval=true;
     }
+    return CloseChitRetval;
 }
 
 bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)

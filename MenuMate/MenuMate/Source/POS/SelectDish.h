@@ -647,7 +647,7 @@ public: // User declarations
     void SaveTabData(TSaveOrdersTo &OrderContainer);
     void PaintItemToDisplay(long itemKey, int sizesKey);
     void PaintItemToDisplay(long itemKey, long sizesKey , AnsiString qtyValue , AnsiString billValue);
-    void CloseChitForm();
+    bool CloseChitForm();
     bool CanClose;
     bool IsChitPromptFormActive;
 
