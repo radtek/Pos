@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
 
-#include <vcl.h>
 #pragma hdrstop
 
 #include "GuestList.h"
@@ -9,38 +8,28 @@
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
 #pragma link "TouchGrid"
-#pragma resource "*.dfm"
+#pragma resource "*.dfm" 
 TfrmGuestList *frmGuestList;
 //---------------------------------------------------------------------------
-__fastcall TfrmGuestList::TfrmGuestList(TComponent* Owner)
-	: TZForm(Owner)
+__fastcall TfrmGuestList::TfrmGuestList(TComponent* Owner): TZForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
 
 void TfrmGuestList::DisplayGuests()
 {
-	int size = 10;//GuestList.size();
+    const int size = GuestAccounts.size();
 	const int cols = GuestListGrid->ColCount;
 	GuestListGrid->RowCount = (size + (cols - 1)) / cols;
 	UnicodeString chitOptionColor = "";
 	for (int i = 0; i < size; i++)
 	{
-	   	AnsiString caption = "";//GuestList.at(i).c_str();
+	   	AnsiString caption = GuestAccounts.at(i).AccountDetails.at(i).FirstName + " " + GuestAccounts.at(i).AccountDetails.at(i).LastName;
+        caption = caption.c_str();
 		GuestListGrid->Buttons[i/8][i%8]->Caption   = caption;
+        GuestListGrid->Buttons[i/8][i%8]->Tag = i;
 
-		// check for chit option colors only when hold and send is enabled. Because without holding orders
-//		if(TGlobalSettings::Instance().EnableHoldSend)
-//			chitOptionColor = TManagerChitNumber::Instance().GetColorForChitOption(caption);
-//		else
-//          	chitOptionColor = "";
-
-		if(chitOptionColor == "Green")
-			GuestListGrid->Buttons[i/8][i%8]->Color 	   =  clGreen;
-		else if(chitOptionColor == "Red")
-			GuestListGrid->Buttons[i/8][i%8]->Color 	   =  clRed;
-		else
-			GuestListGrid->Buttons[i/8][i%8]->Color 	   =  ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+		GuestListGrid->Buttons[i/8][i%8]->Color 	   =  ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
 
 		GuestListGrid->Buttons[i/8][i%8]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
 	}
@@ -56,7 +45,6 @@ void TfrmGuestList::DisplayGuests()
 }
 //---------------------------------------------------------------------------
 
-
 void __fastcall TfrmGuestList::BtnCancelMouseClick(TObject *Sender)
 {
 	ModalResult = mrCancel;
@@ -66,7 +54,15 @@ void __fastcall TfrmGuestList::BtnCancelMouseClick(TObject *Sender)
 void __fastcall TfrmGuestList::GuestListGridMouseClick(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton)
 {
-	GuestName = GridButton->Caption;
+    int size = GuestAccounts.size();
+    for(int index = 0; index < size; index++ )
+    {
+        if(index == GridButton->Tag)
+        {
+            AccountNumber = GuestAccounts.at(index).AccountNumber;
+            break;
+        }
+    }
 	ModalResult = mrOk;
 }
 //---------------------------------------------------------------------------
