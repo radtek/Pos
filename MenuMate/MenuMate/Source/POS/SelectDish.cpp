@@ -15311,7 +15311,10 @@ bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
         }
     }
     else if(SiHotAccounts.size() == 0)
+    {
+        isGuestExist = false;
         MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
+    }
 
     return isGuestExist;
 }
