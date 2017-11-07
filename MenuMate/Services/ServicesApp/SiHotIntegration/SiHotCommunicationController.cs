@@ -86,7 +86,8 @@ namespace SiHotIntegration
 
         public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
         {
-		    RoomChargeResponse response = new RoomChargeResponse();
+            List<string> stringList = GetDetailsList(roomChargeDetails);
+            RoomChargeResponse response = new RoomChargeResponse();
             SiHotSerializer serializer = new SiHotSerializer();
             SiHotDesrializer deserializer = new SiHotDesrializer();            
             try 
@@ -104,6 +105,14 @@ namespace SiHotIntegration
                 WebResponse webResponse = request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 response = deserializer.DesrializeRoomPostResponse(memberStream.ReadToEnd());
+                //-------------------------------------------------------------------------------------//
+                stringList.Add("Response Date                        " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("Response Time                        " + DateTime.Now.ToString("hhmmss"));
+                string responseText = "Unsuccessful";
+                if (response.IsSuccessful)
+                    responseText = "Successful";
+                stringList.Add("Response                             " + responseText);
+                WriteToFile(stringList);
             }
             catch (Exception ex)
             {
@@ -139,6 +148,91 @@ namespace SiHotIntegration
                 ServiceLogger.Log("Exception in sending Room request" + ex.Message);
             }
             return value;
+        }
+        private List<string> GetDetailsList(RoomChargeDetails roomChargeDetails)
+        {
+            List<string> stringList = new List<string>();
+            try
+            {
+                stringList.Add("=============================================================================");
+                string invoiceNnumber = "0";
+                for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
+                {
+                    invoiceNnumber = roomChargeDetails.ItemList[0].Billno;
+                    break;
+                }
+                stringList.Add("Invoice Number                      " + invoiceNnumber);
+                double value = 0.0;
+                for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
+                {
+                    value += Double.Parse(roomChargeDetails.ItemList[i].PriceTotal);
+                }
+                stringList.Add("Invoice Amount                      " + value.ToString());
+                string paymentNames = "";
+                for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
+                {
+                    paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Amount;
+                }
+                stringList.Add("Payments                         " + paymentNames);
+                stringList.Add("Request Date                        " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("Request Time                        " + DateTime.Now.ToString("hhmmss"));
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in preparing data for LOG" + ex.Message);
+            }
+            return stringList;
+        }
+
+        private void WriteToFile(List<string> list)
+        {
+            try
+            {
+                string path = System.IO.Path.GetDirectoryName(
+                          System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+
+                string location = Path.Combine(path, "Sihot Post Logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string name2 = "SiHotPosts " + DateTime.Now.ToString("ddMMMyyyy") + ".txt";
+                string fileName = Path.Combine(location, name2);
+
+                if (fileName.Contains(@"file:\"))
+                {
+                    fileName = fileName.Replace(@"file:\", "");
+                }
+                if (!File.Exists(fileName))
+                {
+
+                    using (StreamWriter sw = File.CreateText(fileName))
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sw.WriteLine(list[i]);
+                        }                        
+                    }
+                }
+                else
+                {
+                    using (var sw = File.AppendText(fileName))
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sw.WriteLine(list[i]);
+                        } 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Making File" + ex.Message);
+            }
         }
     }
 }
