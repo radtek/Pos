@@ -36,6 +36,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
         _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
         _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
         _paymentTransaction.SalesType = eRoomSale;
 
         for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
