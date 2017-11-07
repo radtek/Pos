@@ -15261,70 +15261,76 @@ void TfrmSelectDish::DisplayRoomNoUI()
 bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
 {
     bool isGuestExist = false;
-    std::vector<TSiHotAccounts> SiHotAccounts;
-    TSiHotAccounts siHotAccount;
-    siHotAccount.AccountNumber =  selectedRoomNumber;
-    SiHotAccounts.push_back(siHotAccount);
-    TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-
-    if(SiHotAccounts.size())
+    try
     {
-        bool isOkPressed = false;
-        UnicodeString selectedAccountNumber = "";
-        if(SiHotAccounts.size() > 1)
-        {
-            std::auto_ptr<TfrmGuestList> frmGuestList(TfrmGuestList::Create<TfrmGuestList>(this));
-            frmGuestList->GuestAccounts = SiHotAccounts;
-            frmGuestList->Caption = "Select Any Guest";
-            if(frmGuestList->ShowModal() == mrOk)
-            {
-                isOkPressed = true;
-                selectedAccountNumber = frmGuestList->SelectedAccountNumber.c_str();
-            }
-        }
-        for(std::vector<TSiHotAccounts>::iterator it = SiHotAccounts.begin(); it != SiHotAccounts.end() ; ++it)
-        {
-            if((isOkPressed && it->AccountNumber == selectedAccountNumber) || (SiHotAccounts.size() == 1))
-            {
-                for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
-                {
-                    double CreditLimit = (double)((StrToCurr)(accIt->CreditLimit));
-                    if(((double)inTransaction.Money.RoundedGrandTotal > CreditLimit) && (CreditLimit != 0.0))
-                    {
-                        MessageBox("Credit Limit Exceeded","Info",MB_OK);
-                        break;
-                    }
-                    else
-                    {
+        std::vector<TSiHotAccounts> SiHotAccounts;
+        TSiHotAccounts siHotAccount;
+        siHotAccount.AccountNumber =  selectedRoomNumber;
+        SiHotAccounts.push_back(siHotAccount);
+        TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
 
-                        inTransaction.Phoenix.AccountNumber = it->AccountNumber;
-                        inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                        inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
-                        inTransaction.Phoenix.FirstName = accIt->FirstName;
-                        inTransaction.Phoenix.LastName = accIt->LastName;
-                        inTransaction.SalesType = eRoomSale;
-                        isGuestExist = true;
-                    }
-                }
-
-                for (int i = 0; i < inTransaction.Orders->Count; i++)
+        if(SiHotAccounts.size())
+        {
+            bool isOkPressed = false;
+            UnicodeString selectedAccountNumber = "";
+            if(SiHotAccounts.size() > 1)
+            {
+                std::auto_ptr<TfrmGuestList> frmGuestList(TfrmGuestList::Create<TfrmGuestList>(this));
+                frmGuestList->GuestAccounts = SiHotAccounts;
+                frmGuestList->Caption = "Select Any Guest";
+                if(frmGuestList->ShowModal() == mrOk)
                 {
-                    TItemComplete *Order = (TItemComplete*)inTransaction.Orders->Items[i];
-                    if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
-                        break;
-                    Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
-                    Order->TabName = inTransaction.Phoenix.RoomNumber;
-                    Order->TabType = TabRoom;
-                    Order->RoomNo = atoi(inTransaction.Phoenix.AccountNumber.t_str());
+                    isOkPressed = true;
+                    selectedAccountNumber = frmGuestList->SelectedAccountNumber.c_str();
                 }
             }
+            for(std::vector<TSiHotAccounts>::iterator it = SiHotAccounts.begin(); it != SiHotAccounts.end() ; ++it)
+            {
+                if((isOkPressed && it->AccountNumber == selectedAccountNumber) || (SiHotAccounts.size() == 1))
+                {
+                    for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
+                    {
+                        double CreditLimit = (double)((StrToCurr)(accIt->CreditLimit));
+                        if(((double)inTransaction.Money.RoundedGrandTotal > CreditLimit) && (CreditLimit != 0.0))
+                        {
+                            MessageBox("Credit Limit Exceeded","Info",MB_OK);
+                            break;
+                        }
+                        else
+                        {
+
+                            inTransaction.Phoenix.AccountNumber = it->AccountNumber;
+                            inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                            inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
+                            inTransaction.Phoenix.FirstName = accIt->FirstName;
+                            inTransaction.Phoenix.LastName = accIt->LastName;
+                            inTransaction.SalesType = eRoomSale;
+                            isGuestExist = true;
+                        }
+                    }
+
+                    for (int i = 0; i < inTransaction.Orders->Count; i++)
+                    {
+                        TItemComplete *Order = (TItemComplete*)inTransaction.Orders->Items[i];
+                        if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
+                            break;
+                        Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
+                        Order->TabName = inTransaction.Phoenix.RoomNumber;
+                        Order->TabType = TabRoom;
+                        Order->RoomNo = atoi(inTransaction.Phoenix.AccountNumber.t_str());
+                    }
+                }
+            }
+        }
+        else if(SiHotAccounts.size() == 0)
+        {
+            MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
         }
     }
-    else if(SiHotAccounts.size() == 0)
-    {
-        MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
-    }
-
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
+	}
     return isGuestExist;
 }
 //-----------------------------------------------------------------------------------------------
