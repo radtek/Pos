@@ -3681,10 +3681,14 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 					{
                         MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                     }
-                } 
+                }
+
+                bool isGuestExist = true;
                 if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !isWalkInUser && Sender == tbtnCashSale)
-                    GetRoomDetails(PaymentTransaction);
-				PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
+                    isGuestExist = GetRoomDetails(PaymentTransaction);
+
+                if(isGuestExist)
+				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
                 customerDisp.TierLevel = TGlobalSettings::Instance().TierLevelChange ;
 
 				if (PaymentComplete)
@@ -15251,8 +15255,9 @@ void TfrmSelectDish::DisplayRoomNoUI()
     }
 }
 //------------------------------------------------------------------------------
-void TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
+bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
 {
+    bool isGuestExist = false;
     std::vector<TSiHotAccounts> SiHotAccounts;
     TSiHotAccounts siHotAccount;
     siHotAccount.AccountNumber =  selectedRoomNumber;
@@ -15284,6 +15289,7 @@ void TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
                     inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
                     inTransaction.Phoenix.RoomNumber = accIt->RoomNumber;
                     inTransaction.SalesType = eRoomSale;
+                    isGuestExist = true;
                 }
 
                 for (int i = 0; i < inTransaction.Orders->Count; i++)
@@ -15301,6 +15307,8 @@ void TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
     }
     else if(SiHotAccounts.size() == 0)
         MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
+
+    return isGuestExist;
 }
 //-----------------------------------------------------------------------------------------------
 

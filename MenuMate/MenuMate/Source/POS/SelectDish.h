@@ -471,7 +471,7 @@ private: // User declarations
     void LoadFoodAndBevList(TList *foodOrdersList, TList *bevOrdersList);
     bool CheckIfSubsidizedDiscountValid(int tabKey);
     void DisplayRoomNoUI();
-    void GetRoomDetails(TPaymentTransaction &inTransactio);
+    bool GetRoomDetails(TPaymentTransaction &inTransactio);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);
