@@ -8653,6 +8653,9 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 	}
 	else
 	{
+        if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        		MessageBox("SiHot Room Details will not be saved.", "Error", MB_OK + MB_ICONERROR);
+
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
@@ -15287,7 +15290,9 @@ bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
                 {
                     inTransaction.Phoenix.AccountNumber = it->AccountNumber;
                     inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                    inTransaction.Phoenix.RoomNumber = accIt->RoomNumber;
+                    inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
+                    inTransaction.Phoenix.FirstName = accIt->FirstName;
+                    inTransaction.Phoenix.LastName = accIt->LastName;
                     inTransaction.SalesType = eRoomSale;
                     isGuestExist = true;
                 }

@@ -1524,6 +1524,9 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
 
+    if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        SaveRoomGuestDetails(PaymentTransaction);
+
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
@@ -6183,4 +6186,53 @@ void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeStri
 
     dbPanasonic->UniDataBaseConnection->Commit();
     dbPanasonic->UniDataBaseConnection->Close();
+}
+//-----------------------------------------------------------------------------------
+void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_GUEST_DETAILS_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int guestDetailsKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamCheck = true;
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+        "INSERT INTO ROOM_GUEST_DETAILS ("
+        "GUEST_DETAILS_KEY,"
+        "INVOICE_NUMBER,"
+        "ACC_NUMBER,"
+        "ROOM_NUMBER,"
+        "FIRST_NAME, "
+        "LAST_NAME, "
+        "AMOUNT "
+        ")"
+        " VALUES "
+        "("
+        ":GUEST_DETAILS_KEY, "
+        ":INVOICE_NUMBER, "
+        ":ACC_NUMBER,"
+        ":ROOM_NUMBER,"
+        ":FIRST_NAME, "
+        ":LAST_NAME, "
+        ":AMOUNT "
+        ");";
+
+        IBInternalQuery->ParamByName("GUEST_DETAILS_KEY")->AsInteger = guestDetailsKey;
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = paymentTransaction.InvoiceNumber;
+        IBInternalQuery->ParamByName("ACC_NUMBER")->AsString = paymentTransaction.Phoenix.AccountNumber;
+        IBInternalQuery->ParamByName("ROOM_NUMBER")->AsInteger = StrToInt(paymentTransaction.Phoenix.RoomNumber);
+        IBInternalQuery->ParamByName("FIRST_NAME")->AsString = paymentTransaction.Phoenix.FirstName;
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = paymentTransaction.Phoenix.LastName;
+        IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = paymentTransaction.Money.RoundedGrandTotal;
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
 }

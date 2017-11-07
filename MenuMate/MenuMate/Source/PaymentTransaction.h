@@ -130,6 +130,8 @@ class TPaymentTransaction
                 UnicodeString ReferenceNumber;
                 int FolderNumber;
                 UnicodeString RoomNumber;
+                UnicodeString FirstName;
+                UnicodeString LastName;
         } Phoenix;
 
         std::vector<TPatronType> Patrons;
