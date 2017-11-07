@@ -54,6 +54,7 @@ void TApplyParser::update6_42Tables()
 void TApplyParser::update6_43Tables()
 {
     CreateTable6_43(_dbControl);
+    Create6_43Generator(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -330,12 +331,12 @@ void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
 {
-    if ( !tableExists( "SIHOT_CUSTOMER_DETAILS", _dbControl ) )
+    if ( !tableExists( "ROOM_GUEST_DETAILS", _dbControl ) )
 	{
 		executeQuery(
-		"CREATE TABLE SIHOT_CUSTOMER_DETAILS "
+		"CREATE TABLE ROOM_GUEST_DETAILS "
 		"( "
-		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+		"   GUEST_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   INVOICE_NUMBER VARCHAR(50), "
 		"   ACC_NUMBER INTEGER,"
         "   ROOM_NUMBER INTEGER, "
@@ -344,6 +345,20 @@ void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
         "   AMOUNT  NUMERIC(15,4) "
 		");",
 		inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_43Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_GUEST_DETAILS_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_GUEST_DETAILS_KEY;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_GUEST_DETAILS_KEY TO 0;", inDBControl
+        );
     }
 }
 //--------------------------------------------------------------------------------------------------

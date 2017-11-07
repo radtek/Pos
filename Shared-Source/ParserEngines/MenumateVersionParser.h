@@ -857,6 +857,7 @@ namespace MenumateVersionParser
         void upgrade6_43Tables();
         void update6_43Tables();
         void CreateTable6_43(TDBControl* const inDBControl);
+        void Create6_43Generator(TDBControl* const inDBControl);
     }; // class
 } // namespace
 
