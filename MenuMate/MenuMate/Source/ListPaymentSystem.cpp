@@ -6225,7 +6225,7 @@ void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransa
         IBInternalQuery->ParamByName("GUEST_DETAILS_KEY")->AsInteger = guestDetailsKey;
         IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = paymentTransaction.InvoiceNumber;
         IBInternalQuery->ParamByName("ACC_NUMBER")->AsString = paymentTransaction.Phoenix.AccountNumber;
-        IBInternalQuery->ParamByName("ROOM_NUMBER")->AsInteger = StrToInt(paymentTransaction.Phoenix.RoomNumber);
+        IBInternalQuery->ParamByName("ROOM_NUMBER")->AsInteger =atoi(paymentTransaction.Phoenix.RoomNumber.t_str());
         IBInternalQuery->ParamByName("FIRST_NAME")->AsString = paymentTransaction.Phoenix.FirstName;
         IBInternalQuery->ParamByName("LAST_NAME")->AsString = paymentTransaction.Phoenix.LastName;
         IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = paymentTransaction.Money.RoundedGrandTotal;
