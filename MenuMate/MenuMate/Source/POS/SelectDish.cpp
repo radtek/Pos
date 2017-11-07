@@ -15288,13 +15288,23 @@ bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
             {
                 for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
                 {
-                    inTransaction.Phoenix.AccountNumber = it->AccountNumber;
-                    inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                    inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
-                    inTransaction.Phoenix.FirstName = accIt->FirstName;
-                    inTransaction.Phoenix.LastName = accIt->LastName;
-                    inTransaction.SalesType = eRoomSale;
-                    isGuestExist = true;
+                    double CreditLimit = (double)((StrToCurr)(accIt->CreditLimit));
+                    if(((double)inTransaction.Money.RoundedGrandTotal > CreditLimit) && (CreditLimit != 0.0))
+                    {
+                        MessageBox("Credit Limit Exceeded","Info",MB_OK);
+                        break;
+                    }
+                    else
+                    {
+
+                        inTransaction.Phoenix.AccountNumber = it->AccountNumber;
+                        inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                        inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
+                        inTransaction.Phoenix.FirstName = accIt->FirstName;
+                        inTransaction.Phoenix.LastName = accIt->LastName;
+                        inTransaction.SalesType = eRoomSale;
+                        isGuestExist = true;
+                    }
                 }
 
                 for (int i = 0; i < inTransaction.Orders->Count; i++)
@@ -15312,7 +15322,6 @@ bool TfrmSelectDish::GetRoomDetails(TPaymentTransaction &inTransaction)
     }
     else if(SiHotAccounts.size() == 0)
     {
-        isGuestExist = false;
         MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
     }
 
