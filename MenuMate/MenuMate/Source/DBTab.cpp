@@ -1261,7 +1261,7 @@ void TDBTab::GetOrderKeysExcludeSides(Database::TDBTransaction &DBTransaction,in
 		"  ORDERS "
 		" WHERE "
 		"  TAB_KEY = :TAB_KEY AND "
-		" SIDE_ORDER_KEY IS NULL";
+		" (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0)";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
