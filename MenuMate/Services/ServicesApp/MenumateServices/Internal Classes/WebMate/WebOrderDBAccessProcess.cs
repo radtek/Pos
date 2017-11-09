@@ -191,11 +191,12 @@ namespace MenumateServices.WebMate.InternalClasses
                 {
                    SetWebmateForMessage(webOrderDB); 
                 }
-
+                ServiceLogger.Log("In dbSaveOrder(WebOrder inOrder) before calling webOrderDB.EndTransaction() for order with GUID " + inOrder.Handle);
                 webOrderDB.EndTransaction();
             }
             catch (Exception e)
             {
+                ServiceLogger.Log("In dbSaveOrder(WebOrder inOrder) before calling webOrderDB.RollbackTransaction() with GUID " + inOrder.Handle);
                 webOrderDB.RollbackTransaction();
                 ServiceLogger.Log(@"WebOrderDBAccessProcess.dbSaveOrder(WebOrder inOrder) ROLLBACK");
                 EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
