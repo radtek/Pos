@@ -34,7 +34,6 @@ namespace MenumateServices
             this.serviceInstallerAccounting = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerLoyaltyMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWebMate = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerChefMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartLink = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerClippIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerThorLink = new System.ServiceProcess.ServiceInstaller();
@@ -71,14 +70,6 @@ namespace MenumateServices
             this.serviceInstallerWebMate.DisplayName = "Menumate Webmate";
             this.serviceInstallerWebMate.ServiceName = "MenumateServiceWebMate";
             this.serviceInstallerWebMate.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
-            // serviceInstallerChefMate
-            // 
-            this.serviceInstallerChefMate.Description = "Menumate Chefmate server: Provide all the Chefmate terminals with database access" +
-                "";
-            this.serviceInstallerChefMate.DisplayName = "Menumate Chefmate";
-            this.serviceInstallerChefMate.ServiceName = "MenumateServiceChefMate";
-            this.serviceInstallerChefMate.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // serviceInstallerSmartLink
             // 
@@ -136,7 +127,6 @@ namespace MenumateServices
             this.serviceInstallerAccounting,
             this.serviceInstallerLoyaltyMate,
             this.serviceInstallerWebMate,
-            this.serviceInstallerChefMate,
             this.serviceInstallerSmartLink,
             this.serviceInstallerClippIntegration,
             this.serviceInstallerThorLink,
@@ -183,7 +173,6 @@ namespace MenumateServices
         private System.ServiceProcess.ServiceInstaller serviceInstallerAccounting;
         private System.ServiceProcess.ServiceInstaller serviceInstallerLoyaltyMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerWebMate;
-        private System.ServiceProcess.ServiceInstaller serviceInstallerChefMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerSmartLink;
         private ServiceInstaller serviceInstallerClippIntegration;
         private ServiceInstaller serviceInstallerThorLink;

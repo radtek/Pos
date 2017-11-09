@@ -84,7 +84,7 @@ namespace MenumateServices.MenumateRunners
             {
                 ServiceLogger.Log(@"SiHot endpoint is running ...");
 
-                // Any Chefmate initialization goes here!!!!!
+                // Any SiHot initialization goes here!!!!!
 
                 ServiceLogger.Log(@"SiHot runner: SiHot has started");
             }

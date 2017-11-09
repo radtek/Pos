@@ -133,7 +133,7 @@ namespace MenumateServices.MenumateRunners
             {
                 ServiceLogger.Log(@"Loyaltymate endpoint is running ...");
 
-                // Any Chefmate initialization goes here!!!!!
+                // Any Loyaltymate initialization goes here!!!!!
 
                 ServiceLogger.Log(@"Loyaltymate runner: Loyaltymate has started");
             }

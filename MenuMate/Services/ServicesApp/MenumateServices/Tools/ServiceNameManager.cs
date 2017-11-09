@@ -40,7 +40,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.Reservations: return "MenumateServiceReservations";
                 case MenumateServicesIdentifier.WebMate: return "MenumateServiceWebMate";
                 case MenumateServicesIdentifier.LoyaltyMate: return "MenumateServiceLoyaltyMate";
-                case MenumateServicesIdentifier.ChefMate: return "MenumateServiceChefMate";
                 case MenumateServicesIdentifier.EFTPosIntegration: return "MenumateServiceEFTPosIntegration";
                 case MenumateServicesIdentifier.PosIntegration: return "MenumateServicePosIntegration";
                 case MenumateServicesIdentifier.SmartLink: return "MenumateServiceSmartLink";
@@ -67,7 +66,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SmartLink: return "Menumate SmartLink";
                 case MenumateServicesIdentifier.WebMate: return "Menumate WebMate";
                 case MenumateServicesIdentifier.LoyaltyMate: return "Menumate LoyaltyMate";
-                case MenumateServicesIdentifier.ChefMate: return "Menumate ChefMate";
                 case MenumateServicesIdentifier.EFTPosIntegration: return "Menumate EFTPOS Integration";
                 case MenumateServicesIdentifier.PosIntegration: return "Menumate FloorPlan Integration";
                 case MenumateServicesIdentifier.Reservations: return "Menumate Table Reservation Integration";
@@ -92,7 +90,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.AccountingIntegration: return "Menumate Interface to Accounting server";
                 case MenumateServicesIdentifier.WebMate: return "Menumate WebMate server";
                 case MenumateServicesIdentifier.LoyaltyMate: return "Menumate LoyaltyMate server";
-                case MenumateServicesIdentifier.ChefMate: return "Menumate ChefMate server";
                 case MenumateServicesIdentifier.SmartLink: return "Menumate SmartLink Server";
                 case MenumateServicesIdentifier.EFTPosIntegration: return "Not implemented in this version. Menumate Interface to EFTPOS Devices";
                 case MenumateServicesIdentifier.PosIntegration: return "Not implemented in this version. Menumate Interface to FloorPlan";

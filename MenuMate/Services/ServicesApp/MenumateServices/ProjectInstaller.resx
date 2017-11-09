@@ -129,9 +129,6 @@
   <metadata name="serviceInstallerWebMate.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 313</value>
   </metadata>
-  <metadata name="serviceInstallerChefMate.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 387</value>
-  </metadata>
   <metadata name="serviceInstallerSmartLink.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 350</value>
   </metadata>

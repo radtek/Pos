@@ -23,7 +23,6 @@ namespace MenumateServices
 
         private static Logger _logger   = LogManager.GetLogger("Trace");
         private static Logger _debugger = LogManager.GetLogger("Debug");
-        private static Logger _chefmate = LogManager.GetLogger("ChefMate");
         private static bool _debugging  = false;
         private static bool _tracing    = true;
 
@@ -96,21 +95,6 @@ namespace MenumateServices
                 _logger.Log(LogLevel.Info, text);
             }
         }
-
-        //:::::::::::::::::::::::::::::::::
-
-        static public void LogChefMateError(string inMessage)
-        {
-            _chefmate.Log(LogLevel.Error, inMessage);
-        }
-
-        //:::::::::::::::::::::::::::::::::
-
-        static public void LogChefMateException(string inMessage, Exception inException)
-        {
-            _chefmate.LogException(LogLevel.Error, inMessage, inException);
-        }
-
         //:::::::::::::::::::::::::::::::::
     }
 }

@@ -44,7 +44,6 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.AccountingIntegration); // Standard Windows Service: AccountingIntegration
             AddService(serviceList, MenumateServicesIdentifier.LoyaltyMate);     // WCF Service: LoyaltyMate
             AddService(serviceList, MenumateServicesIdentifier.WebMate);         // WCF Service: WebMate
-            AddService(serviceList, MenumateServicesIdentifier.ChefMate);        // WCF Service: ChefMate
             AddService(serviceList, MenumateServicesIdentifier.ClippIntegration); // WCF Service: Clipp
             AddService(serviceList, MenumateServicesIdentifier.SmartLink);
             AddService(serviceList, MenumateServicesIdentifier.ThorLink);
@@ -151,8 +150,6 @@ namespace MenumateServices
                     return new MenumateServiceLoyaltyMate();
                 case MenumateServicesIdentifier.WebMate:
                     return new MenumateServiceWebMate();
-                case MenumateServicesIdentifier.ChefMate:
-                    return new MenumateServiceChefMate();
                 case MenumateServicesIdentifier.ClippIntegration:
                     return new MenumateServiceClippIntegration();
                 case MenumateServicesIdentifier.SmartLink:

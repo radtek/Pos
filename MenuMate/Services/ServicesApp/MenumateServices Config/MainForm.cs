@@ -14,7 +14,6 @@ namespace MenumateServices.Config
         {
             Unique,
             Webmate,
-            Chefmate
         };
 
         private MenumateServicesConfigurationManager _configurationManager;
@@ -128,16 +127,6 @@ namespace MenumateServices.Config
             UpdateDbServerWebmateFolderSetting(tbDBServerWebmateFolder.Text);
         }
 
-        private void tbDBServerChefmateName_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDbServerChefmateNameSetting(tbDBServerChefmateName.Text);
-        }
-
-        private void tbDBServerChefmateFolder_TextChanged(object sender, EventArgs e)
-        {
-            UpdateDbServerChefmateFolderSetting(tbDBServerChefmateFolder.Text);
-        }
-
         private void btnUniqueDBFolderBrowse_Click(object sender, EventArgs e)
         {
             if (ShowDatabaseFolder(DatabaseConfigurationFolder.Unique))
@@ -156,15 +145,6 @@ namespace MenumateServices.Config
             }
         }
 
-        private void btnChefmateDBFolderBrowse_Click(object sender, EventArgs e)
-        {
-            if (ShowDatabaseFolder(DatabaseConfigurationFolder.Chefmate))
-            {
-                tbDBServerChefmateFolder.Text = _databaseFolders[DatabaseConfigurationFolder.Chefmate];
-                UpdateDbServerChefmateFolderSetting(tbDBServerChefmateFolder.Text);
-            }
-        }
-
         protected void CloseApplication()
         {
             Close();
@@ -173,8 +153,7 @@ namespace MenumateServices.Config
         protected void InitializeDatabaseFolders()
         {
             _databaseFolders[DatabaseConfigurationFolder.Unique] = _configurationManager.UniqueDatabaseServerFolder;
-            _databaseFolders[DatabaseConfigurationFolder.Webmate] = _configurationManager.ChefmateDatabaseServerFolder;
-            _databaseFolders[DatabaseConfigurationFolder.Chefmate] = _configurationManager.ChefmateDatabaseServerFolder;
+            _databaseFolders[DatabaseConfigurationFolder.Webmate] = _configurationManager.WebmateDatabaseServerFolder;
         }
 
         protected void LoadExistingSettings()
@@ -186,8 +165,6 @@ namespace MenumateServices.Config
             rbDatabaseServers.Checked = _configurationManager.DatabaseServers;
             tbDBServerWebmateName.Text = _configurationManager.WebmateDatabaseServerName;
             tbDBServerWebmateFolder.Text = _configurationManager.WebmateDatabaseServerFolder;
-            tbDBServerChefmateName.Text = _configurationManager.ChefmateDatabaseServerName;
-            tbDBServerChefmateFolder.Text = _configurationManager.ChefmateDatabaseServerFolder;
 
             //Clipp Settings
             tbClippServerIpAddress.Text = _configurationManager.ClippIpAddress;
@@ -246,16 +223,6 @@ namespace MenumateServices.Config
             _configurationManager.WebmateDatabaseServerFolder = inUrl;
         }
 
-        private void UpdateDbServerChefmateNameSetting(string inName)
-        {
-            _configurationManager.ChefmateDatabaseServerName = inName;
-        }
-
-        private void UpdateDbServerChefmateFolderSetting(string inUrl)
-        {
-            _configurationManager.ChefmateDatabaseServerFolder = inUrl;
-        }
-
         private void EnableUniqueDbServerSettings(bool inEnabled)
         {
             tbUniqueDBserverName.Enabled = inEnabled;
@@ -268,10 +235,7 @@ namespace MenumateServices.Config
         {
             tbDBServerWebmateName.Enabled = inEnabled;
             tbDBServerWebmateFolder.Enabled = inEnabled;
-            tbDBServerChefmateName.Enabled = inEnabled;
-            tbDBServerChefmateFolder.Enabled = inEnabled;
 
-            btnChefmateDBFolderBrowse.Enabled = inEnabled;
             btnWebmateDBFolderBrowse.Enabled = inEnabled;
         }
 

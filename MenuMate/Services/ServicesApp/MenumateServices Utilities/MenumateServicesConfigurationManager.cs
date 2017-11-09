@@ -21,8 +21,6 @@ namespace MenumateServices.Utilities
         private bool _databaseServer;
         private string _webmateDatabaseServerName = DefaultDatabaseServerName;
         private string _webmateDatabaseServerFolder = DefaultDatabaseFolder;
-        private string _chefmateDatabaseServerName = DefaultDatabaseServerName;
-        private string _chefmateDatabaseServerFolder = DefaultDatabaseFolder;
         private string _clippIpAddress;
         private string _clippPort;
 
@@ -165,32 +163,6 @@ namespace MenumateServices.Utilities
             }
         }
 
-        public string ChefmateDatabaseServerName
-        {
-            set
-            {
-                _chefmateDatabaseServerName = value;
-                _modified = true;
-            }
-            get
-            {
-                return _chefmateDatabaseServerName;
-            }
-        }
-
-        public string ChefmateDatabaseServerFolder
-        {
-            set
-            {
-                _chefmateDatabaseServerFolder = value;
-                _modified = true;
-            }
-            get
-            {
-                return _chefmateDatabaseServerFolder;
-            }
-        }
-
         public void Reset()
         {
             _modified = false;
@@ -211,7 +183,6 @@ namespace MenumateServices.Utilities
                 XmlNode dbServersNode = GetDatabaseServerNode();
 
                 XmlNode webmateDatabaseServerNode = dbServersNode.FirstChild;
-                XmlNode chefmateDatabaseServerNode = dbServersNode.FirstChild.NextSibling;
 
                 XMLDocManager.SetAttribute(uniqueDatabaseServerNode, @"checked", Convert.ToString(_uniqueDatabaseServer));
                 XMLDocManager.SetAttribute(uniqueDatabaseServerNode, @"name", _uniqueDatabaseServerName);
@@ -221,9 +192,6 @@ namespace MenumateServices.Utilities
 
                 XMLDocManager.SetAttribute(webmateDatabaseServerNode, @"name", _webmateDatabaseServerName);
                 XMLDocManager.SetAttribute(webmateDatabaseServerNode, @"folder", _webmateDatabaseServerFolder);
-
-                XMLDocManager.SetAttribute(chefmateDatabaseServerNode, @"name", _chefmateDatabaseServerName);
-                XMLDocManager.SetAttribute(chefmateDatabaseServerNode, @"folder", _chefmateDatabaseServerFolder);
 
                 //IpAddresses
                 XmlNode clippPortNode = GetClippPortNode();
@@ -300,7 +268,6 @@ namespace MenumateServices.Utilities
             XmlNode dbServersNode = XMLDocManager.AddNode(_configurationFileDocument, databasesNode, @"DBServers");
 
             XmlNode webmateDatabaseServerNode = XMLDocManager.AddNode(_configurationFileDocument, dbServersNode, @"WebmateDBServer");
-            XmlNode chefmateDatabaseServerNode = XMLDocManager.AddNode(_configurationFileDocument, dbServersNode, @"ChefmateDBServer");
 
             XMLDocManager.AddAttribute(_configurationFileDocument, uniqueDatabaseServerNode, @"checked", @"true");
             XMLDocManager.AddAttribute(_configurationFileDocument, uniqueDatabaseServerNode, @"name", DefaultDatabaseServerName);
@@ -310,9 +277,6 @@ namespace MenumateServices.Utilities
 
             XMLDocManager.AddAttribute(_configurationFileDocument, webmateDatabaseServerNode, @"name", DefaultDatabaseServerName);
             XMLDocManager.AddAttribute(_configurationFileDocument, webmateDatabaseServerNode, @"folder", DefaultDatabaseFolder);
-
-            XMLDocManager.AddAttribute(_configurationFileDocument, chefmateDatabaseServerNode, @"name", DefaultDatabaseServerName);
-            XMLDocManager.AddAttribute(_configurationFileDocument, chefmateDatabaseServerNode, @"folder", DefaultDatabaseFolder);
 
             XmlNode ipAddressesNode = XMLDocManager.AddNode(_configurationFileDocument, root, @"IPAddresses");
             XmlNode clippIpAddressNode = XMLDocManager.AddNode(_configurationFileDocument, ipAddressesNode, @"ClippIPAddress");
@@ -333,8 +297,6 @@ namespace MenumateServices.Utilities
             _databaseServer = ReadDatabaseServers();
             _webmateDatabaseServerName = ReadWebmateDatabaseServerName();
             _webmateDatabaseServerFolder = ReadWebmateDatabaseServerFolder();
-            _chefmateDatabaseServerName = ReadChefmateDatabaseServerName();
-            _chefmateDatabaseServerFolder = ReadChefmateDatabaseServerFolder();
 
             _clippIpAddress = ReadClippIpAddress();
             _clippPort = ReadClippPort();
@@ -468,44 +430,6 @@ namespace MenumateServices.Utilities
                 XmlNode webmateDatabaseServerNode = databaseServerNode.FirstChild;
 
                 result = XMLDocManager.GetAttribute(webmateDatabaseServerNode, @"folder", DefaultDatabaseFolder);
-            }
-            catch
-            {
-                result = DefaultDatabaseFolder;
-            }
-
-            return result;
-        }
-
-        private string ReadChefmateDatabaseServerName()
-        {
-            string result = DefaultDatabaseServerName;
-
-            try
-            {
-                XmlNode databaseServerNode = GetDatabaseServerNode();
-                XmlNode chefmateDatabaseServerNode = databaseServerNode.FirstChild.NextSibling;
-
-                result = XMLDocManager.GetAttribute(chefmateDatabaseServerNode, @"name", DefaultDatabaseServerName);
-            }
-            catch
-            {
-                result = DefaultDatabaseServerName;
-            }
-
-            return result;
-        }
-
-        private string ReadChefmateDatabaseServerFolder()
-        {
-            string result = DefaultDatabaseFolder;
-
-            try
-            {
-                XmlNode databaseServerNode = GetDatabaseServerNode();
-                XmlNode chefmateDatabaseServerNode = databaseServerNode.FirstChild.NextSibling;
-
-                result = XMLDocManager.GetAttribute(chefmateDatabaseServerNode, @"folder", DefaultDatabaseFolder);
             }
             catch
             {

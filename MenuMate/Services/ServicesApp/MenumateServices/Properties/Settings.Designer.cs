@@ -112,38 +112,5 @@ namespace MenumateServices.Properties {
                 return ((string)(this["WebOrderURL"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ChefMate.fdb")]
-        public string ChefmateDatabaseName {
-            get {
-                return ((string)(this["ChefmateDatabaseName"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files\\MenuMate")]
-        public string ChefmateDatabaseLocation {
-            get {
-                return ((string)(this["ChefmateDatabaseLocation"]));
-            }
-            set {
-                this["ChefmateDatabaseLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
-        public string ChefmateDatabaseIPAddress {
-            get {
-                return ((string)(this["ChefmateDatabaseIPAddress"]));
-            }
-            set {
-                this["ChefmateDatabaseIPAddress"] = value;
-            }
-        }
     }
 }

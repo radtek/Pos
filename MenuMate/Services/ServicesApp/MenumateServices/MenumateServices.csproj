@@ -227,30 +227,6 @@
     <Compile Include="MenumateServiceClippIntegration.Designer.cs">
       <DependentUpon>MenumateServiceClippIntegration.cs</DependentUpon>
     </Compile>
-    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminalNamesResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrderResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrder.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateBooleanResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateDataTableResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateDateTimeResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerListResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateModelKeysResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrder.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroup.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroupResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOption.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItem.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOptionResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSide.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSideResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateStringResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminal.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalName.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalNameType.cs" />
     <Compile Include="DTO\Clipp\ClippMessage.cs" />
     <Compile Include="DTO\Clipp\ClippMessageDetail.cs" />
     <Compile Include="DTO\Clipp\ClippTabDetailRequest.cs" />
@@ -302,7 +278,6 @@
     <Compile Include="Internal Classes\WebMate\WebOrderResponsive.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderURLManager.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderXMLManager.cs" />
-    <Compile Include="MenumateRunners\ChefmateRunner.cs" />
     <Compile Include="MenumateRunners\ClippIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\IMenumateRunner.cs" />
     <Compile Include="MenumateRunners\LoyaltymateRunner.cs" />
@@ -348,12 +323,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MenumateServiceChefMate.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceChefMate.Designer.cs">
-      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\FileSupplier.cs" />
     <Compile Include="Tools\MenumateServiceLoader.cs" />
@@ -374,12 +343,10 @@
     <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
     <Compile Include="WCFServices\IClippIntergrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServiceThorlink.cs" />
-    <Compile Include="WCFServices\IWCFServiceChefMate.cs" />
     <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
-    <Compile Include="WCFServices\WCFServiceChefMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
@@ -467,10 +434,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MenumateServiceChefMate.resx">
-      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
       <SubType>Designer</SubType>
