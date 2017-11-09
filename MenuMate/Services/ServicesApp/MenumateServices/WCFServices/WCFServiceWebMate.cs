@@ -58,7 +58,7 @@ namespace MenumateServices.WCFServices
                 getWebOrder(inOrderHandle).Commit();
 
                 // WebOrder successfuly committed
-                ServiceLogger.Log("In CommitOrder(string inOrderHandle) after commit of order.");
+                ServiceLogger.Log("In CommitOrder(string inOrderHandle) after commit of order with " +  inOrderHandle);
                 return createResponseNoError();
             }
             catch (ExceptionOrderGUIDDuplicate exc)
