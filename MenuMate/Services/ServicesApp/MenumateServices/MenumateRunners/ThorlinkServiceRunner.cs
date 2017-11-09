@@ -138,7 +138,7 @@ namespace MenumateServices.MenumateRunners
 
             ServiceLogger.Log(@"Stopping Thorlink Integration Service endpoint ...");
 
-            //TODO: Clear the Clipp Integration Server....
+            //TODO: Clear the Thorlink Integration Server....
             result = CloseServiceHost();
 
             ServiceLogger.Log(result

@@ -21,16 +21,12 @@ namespace MenumateServices.Utilities
         private bool _databaseServer;
         private string _webmateDatabaseServerName = DefaultDatabaseServerName;
         private string _webmateDatabaseServerFolder = DefaultDatabaseFolder;
-        private string _clippIpAddress;
-        private string _clippPort;
 
         static readonly string ProgramFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         private const string ConfigurationFileName = @"MenumateServicesConfig.xml";
 
         static readonly string DefaultConfigFilePath = string.Format(@"{0}\{1}", ServiceInfo.Instance.StartPath, ConfigurationFileName);
 
-        private const string DefaultClippIpAddress = @"localhost";
-        private const string DefaultClippPort = @"8081";
         private const string DefaultDatabaseServerName = @"localhost";
         static readonly string DefaultDatabaseFolder = string.Format(@"{0}\{1}", ProgramFilesPath, @"Menumate");
 
@@ -193,13 +189,6 @@ namespace MenumateServices.Utilities
                 XMLDocManager.SetAttribute(webmateDatabaseServerNode, @"name", _webmateDatabaseServerName);
                 XMLDocManager.SetAttribute(webmateDatabaseServerNode, @"folder", _webmateDatabaseServerFolder);
 
-                //IpAddresses
-                XmlNode clippPortNode = GetClippPortNode();
-                XmlNode clippIpAddressNode = GetClippIpAddressNode();
-
-                XMLDocManager.SetAttribute(clippPortNode, @"value", _clippPort);
-                XMLDocManager.SetAttribute(clippIpAddressNode, @"value", _clippIpAddress);
-
                 _configurationFileDocument.Save(_filePath);
 
                 _modified = false;
@@ -279,11 +268,6 @@ namespace MenumateServices.Utilities
             XMLDocManager.AddAttribute(_configurationFileDocument, webmateDatabaseServerNode, @"folder", DefaultDatabaseFolder);
 
             XmlNode ipAddressesNode = XMLDocManager.AddNode(_configurationFileDocument, root, @"IPAddresses");
-            XmlNode clippIpAddressNode = XMLDocManager.AddNode(_configurationFileDocument, ipAddressesNode, @"ClippIPAddress");
-            XmlNode clippPortNode = XMLDocManager.AddNode(_configurationFileDocument, ipAddressesNode, @"ClippPort");
-
-            XMLDocManager.AddAttribute(_configurationFileDocument, clippIpAddressNode, @"value", DefaultClippIpAddress);
-            XMLDocManager.AddAttribute(_configurationFileDocument, clippPortNode, @"value", DefaultClippPort);
 
             _configurationFileDocument.Save(filePath);
         }
@@ -298,42 +282,6 @@ namespace MenumateServices.Utilities
             _webmateDatabaseServerName = ReadWebmateDatabaseServerName();
             _webmateDatabaseServerFolder = ReadWebmateDatabaseServerFolder();
 
-            _clippIpAddress = ReadClippIpAddress();
-            _clippPort = ReadClippPort();
-        }
-
-        private string ReadClippPort()
-        {
-            string result = DefaultClippPort;
-
-            try
-            {
-                XmlNode clippPortNode = GetClippPortNode();
-                result = XMLDocManager.GetAttribute(clippPortNode, @"value", DefaultClippPort);
-            }
-            catch
-            {
-                result = DefaultClippPort;
-            }
-
-            return result;
-        }
-
-        private string ReadClippIpAddress()
-        {
-            string result = DefaultClippIpAddress;
-
-            try
-            {
-                XmlNode clippIpAddressNode = GetClippIpAddressNode();
-                result = XMLDocManager.GetAttribute(clippIpAddressNode, @"value", DefaultClippIpAddress);
-            }
-            catch
-            {
-                result = DefaultClippIpAddress;
-            }
-
-            return result;
         }
 
         private bool ReadUniqueDatabaseServer()
@@ -445,25 +393,6 @@ namespace MenumateServices.Utilities
             return dbNode.FirstChild;
         }
 
-        private XmlNode GetClippPortNode()
-        {
-
-            XmlNode ipAddressesNode = GetIpAddressesNode();
-            var clippPortNode = ipAddressesNode.ChildNodes.Cast<XmlNode>()
-                .SingleOrDefault(cn => cn.Name == @"ClippPort");
-
-            return clippPortNode;
-        }
-
-        private XmlNode GetClippIpAddressNode()
-        {
-            XmlNode ipAddressesNode = GetIpAddressesNode();
-            var clippIpAddressNode = ipAddressesNode.ChildNodes.Cast<XmlNode>()
-                .SingleOrDefault(cn => cn.Name == @"ClippIPAddress");
-
-            return clippIpAddressNode;
-        }
-
         private XmlNode GetDatabaseServerNode()
         {
             XmlNode dbNode = GetDatabaseNode();
@@ -479,11 +408,6 @@ namespace MenumateServices.Utilities
             {
                 var root = XMLDocManager.GetRoot(_configurationFileDocument);
                 ipAddressesNode = XMLDocManager.AddNode(_configurationFileDocument, root, @"IPAddresses");
-                XmlNode clippIpAddressNode = XMLDocManager.AddNode(_configurationFileDocument, ipAddressesNode, @"ClippIPAddress");
-                XmlNode clippPortNode = XMLDocManager.AddNode(_configurationFileDocument, ipAddressesNode, @"ClippPort");
-
-                XMLDocManager.AddAttribute(_configurationFileDocument, clippIpAddressNode, @"value", DefaultClippIpAddress);
-                XMLDocManager.AddAttribute(_configurationFileDocument, clippPortNode, @"value", DefaultClippPort);
 
                 _configurationFileDocument.Save(_filePath);
             }
@@ -494,33 +418,6 @@ namespace MenumateServices.Utilities
         private XmlNode GetDatabaseNode()
         {
             return XMLDocManager.GetNode(_configurationFileDocument, @"Databases");
-        }
-
-
-        public string ClippIpAddress
-        {
-            get
-            {
-                return _clippIpAddress;
-            }
-            set
-            {
-                _clippIpAddress = value;
-                _modified = true;
-            }
-        }
-
-        public string ClippPort
-        {
-            get
-            {
-                return _clippPort;
-            }
-            set
-            {
-                _clippPort = value;
-                _modified = true;
-            }
         }
     }
 }

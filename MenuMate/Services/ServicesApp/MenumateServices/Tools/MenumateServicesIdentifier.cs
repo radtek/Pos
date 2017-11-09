@@ -11,7 +11,6 @@ namespace MenumateServices
         AccountingIntegration,
         WebMate,
         LoyaltyMate,
-        ClippIntegration,
         SmartLink,
         ThorLink,
         PocketVoucher,

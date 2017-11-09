@@ -35,7 +35,6 @@ namespace MenumateServices
             this.serviceInstallerLoyaltyMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWebMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartLink = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerClippIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerThorLink = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerPocketVoucher = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
@@ -77,13 +76,6 @@ namespace MenumateServices
             this.serviceInstallerSmartLink.DisplayName = "Menumate SmartLink";
             this.serviceInstallerSmartLink.ServiceName = "MenumateServiceSmartLink";
             this.serviceInstallerSmartLink.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
-            // serviceInstallerClippIntegration
-            // 
-            this.serviceInstallerClippIntegration.Description = "Menumate Clipp Integration";
-            this.serviceInstallerClippIntegration.DisplayName = "MenumateServiceClippIntegration";
-            this.serviceInstallerClippIntegration.ServiceName = "MenumateServiceClippIntegration";
-            this.serviceInstallerClippIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // serviceInstallerThorLink
             // 
@@ -128,7 +120,6 @@ namespace MenumateServices
             this.serviceInstallerLoyaltyMate,
             this.serviceInstallerWebMate,
             this.serviceInstallerSmartLink,
-            this.serviceInstallerClippIntegration,
             this.serviceInstallerThorLink,
             this.serviceInstallerPocketVoucher,
             this.serviceInstallerSalesForceIntegration,
@@ -174,7 +165,6 @@ namespace MenumateServices
         private System.ServiceProcess.ServiceInstaller serviceInstallerLoyaltyMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerWebMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerSmartLink;
-        private ServiceInstaller serviceInstallerClippIntegration;
         private ServiceInstaller serviceInstallerThorLink;
         private ServiceInstaller serviceInstallerPocketVoucher;
         private ServiceInstaller serviceInstallerSalesForceIntegration;

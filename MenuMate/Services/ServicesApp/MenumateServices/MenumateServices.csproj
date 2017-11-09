@@ -219,24 +219,6 @@
     <Compile Include="MenumateServiceThorlink.Designer.cs">
       <DependentUpon>MenumateServiceThorlink.cs</DependentUpon>
     </Compile>
-    <Compile Include="DTO\Clipp\ClippErrorDetail.cs" />
-    <Compile Include="DTO\Clipp\ClippTabDetail.cs" />
-    <Compile Include="MenumateServiceClippIntegration.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceClippIntegration.Designer.cs">
-      <DependentUpon>MenumateServiceClippIntegration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DTO\Clipp\ClippMessage.cs" />
-    <Compile Include="DTO\Clipp\ClippMessageDetail.cs" />
-    <Compile Include="DTO\Clipp\ClippTabDetailRequest.cs" />
-    <Compile Include="DTO\Clipp\Discount.cs" />
-    <Compile Include="DTO\Clipp\Item.cs" />
-    <Compile Include="DTO\Clipp\MessageType.cs" />
-    <Compile Include="DTO\Clipp\Payment.cs" />
-    <Compile Include="DTO\Clipp\PaymentDetailRequest.cs" />
-    <Compile Include="DTO\Clipp\PaymentDetailResponse.cs" />
-    <Compile Include="DTO\Clipp\Sundry.cs" />
     <Compile Include="DTO\DTODevice.cs" />
     <Compile Include="DTO\DTOFactory.cs" />
     <Compile Include="DTO\DTOPrompt.cs" />
@@ -278,7 +260,6 @@
     <Compile Include="Internal Classes\WebMate\WebOrderResponsive.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderURLManager.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderXMLManager.cs" />
-    <Compile Include="MenumateRunners\ClippIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\IMenumateRunner.cs" />
     <Compile Include="MenumateRunners\LoyaltymateRunner.cs" />
     <Compile Include="MenumateRunners\MenumateRunner.cs" />
@@ -339,9 +320,7 @@
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\WCFServiceThorlink.cs" />
-    <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
     <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
-    <Compile Include="WCFServices\IClippIntergrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServiceThorlink.cs" />
     <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />

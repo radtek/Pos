@@ -166,10 +166,6 @@ namespace MenumateServices.Config
             tbDBServerWebmateName.Text = _configurationManager.WebmateDatabaseServerName;
             tbDBServerWebmateFolder.Text = _configurationManager.WebmateDatabaseServerFolder;
 
-            //Clipp Settings
-            tbClippServerIpAddress.Text = _configurationManager.ClippIpAddress;
-            tbClippServerPort.Text = _configurationManager.ClippPort;
-
             _configurationManager.Reset();
         }
 
@@ -433,16 +429,6 @@ namespace MenumateServices.Config
         private void ShowErrorMessage(string inErrorMsg)
         {
             MessageBox.Show(inErrorMsg);
-        }
-
-        private void tbClippServerIpAddress_TextChanged(object sender, EventArgs e)
-        {
-            _configurationManager.ClippIpAddress = tbClippServerIpAddress.Text;
-        }
-
-        private void tbClippServerPort_TextChanged(object sender, EventArgs e)
-        {
-            _configurationManager.ClippPort = tbClippServerPort.Text;
         }
     }
 }
