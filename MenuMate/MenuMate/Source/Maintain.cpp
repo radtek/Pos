@@ -130,14 +130,14 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
 
 	tbtnLocations->Caption  = "Location \r" + TDeviceRealTerminal::Instance().ID.Location;
-    if((TDeviceRealTerminal::Instance().IMManager->Registered))
-    {
-    TouchBtnThorlink->Enabled = true;
-    }
-    else
-    {
-    TouchBtnThorlink->Enabled = false;
-    }
+//    if((TDeviceRealTerminal::Instance().IMManager->Registered))
+//    {
+//    TouchBtnThorlink->Enabled = true;
+//    }
+//    else
+//    {
+//    TouchBtnThorlink->Enabled = false;
+//    }
 
 	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
