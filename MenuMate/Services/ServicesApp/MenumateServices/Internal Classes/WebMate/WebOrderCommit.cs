@@ -284,6 +284,7 @@ namespace MenumateServices.WebMate.InternalClasses
                 WebOrderDB webOrderDB = new WebOrderDB();
                 webOrderDB.BeginTransaction();
                 result = webOrderDB.WebOrderAccepted(inOrderHandle);
+                ServiceLogger.Log("In dbWebOrderAccepted(string inOrderHandle) before calling webOrderDB.EndTransaction() with handle " + inOrderHandle);
                 webOrderDB.EndTransaction();
             }
             catch (Exception e)

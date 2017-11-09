@@ -367,7 +367,9 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 connection_ = dbConnection_.Open();
+                ServiceLogger.Log("In BeginTransaction() after dbConnection_.Open().");
                 transaction_ = connection_.BeginTransaction();
+                ServiceLogger.Log("In BeginTransaction() after connection_.BeginTransaction().");
                 return true;
             }
             catch (Exception e)
@@ -386,10 +388,16 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 if (transaction_ != null)
+                {
                     transaction_.Commit();
-
+                    ServiceLogger.Log("In EndTransaction() after transaction_.Commit().");
+                }
                 if (connection_ != null)
+                {
+                    ServiceLogger.Log("In EndTransaction() before connection_.Close().");
                     connection_.Close();
+                    ServiceLogger.Log("In EndTransaction() after connection_.Close().");
+                }
             }
             catch (Exception e)
             {
