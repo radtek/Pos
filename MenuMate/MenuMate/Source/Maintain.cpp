@@ -3379,7 +3379,7 @@ void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsClippIntegrationEnabled,TGlobalSettings::Instance().IsClippIntegrationEnabled);
 					DBTransaction.Commit();
-                    }
+                }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
