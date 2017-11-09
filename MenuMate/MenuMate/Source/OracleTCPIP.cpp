@@ -31,10 +31,13 @@ TOracleTCPIP::~TOracleTCPIP()
 void TOracleTCPIP::CreateTCPClient()
 {
 	tcpClient->Host           = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+//    MessageBox(tcpClient->Host,"Host",MB_OK);
 	tcpClient->Port           = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+//    MessageBox(tcpClient->Port,"Port",MB_OK);
 	tcpClient->BoundPort      = 0;
 	tcpClient->ReadTimeout    = _READ_TIME_OUT;
 	tcpClient->ConnectTimeout = _CONNECT_TIME_OUT;
+//    MessageBox("client created","",MB_OK);
 }
 //---------------------------------------------------------------------------
 bool TOracleTCPIP::Connect()
@@ -42,6 +45,8 @@ bool TOracleTCPIP::Connect()
     bool retValue = false;
 	try
 	{
+//       MessageBox(tcpClient->Host,"Host",MB_OK);
+//       MessageBox(tcpClient->Port,"Port",MB_OK);
        if( tcpClient->Connected() )
 	   {
             Disconnect();
@@ -52,7 +57,7 @@ bool TOracleTCPIP::Connect()
 	}
 	catch( Exception& E)
 	{
-       	MessageBox(E.Message+"\nPlease check IP adress and Port number Values",
+       	MessageBox(E.Message+"\nPlease check IP address and Port number Values",
                                                  "Abort", MB_OK + MB_ICONERROR);
 	}
     return retValue;
@@ -125,7 +130,7 @@ AnsiString TOracleTCPIP::fetchResponse()
        tcpClient->IOHandler->CheckForDataOnSource(3000);
        tcpClient->IOHandler->ReadTimeout = 1000;
        TByteDynArray buffer;
-       Sleep(1000);
+//       Sleep(1000);
        tcpClient->IOHandler->ReadBytes( buffer, -1, true );
        outData = AnsiString((char*) & buffer[0], buffer.Length);
     }

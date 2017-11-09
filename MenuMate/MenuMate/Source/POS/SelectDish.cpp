@@ -3474,7 +3474,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
-
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated &&
                         TGlobalSettings::Instance().IsBillSplittedByMenuType && DelayedInvoiceNumber != "" )
                 {

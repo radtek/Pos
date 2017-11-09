@@ -112,14 +112,47 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
 bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                                     int StaffId)
 {
-    TOracleDataBuilder oracledata;
+    std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
     TPostRequest postRequest;
-//    for(int i = )
-    oracledata.CreatePost(_paymentTransaction);
-    TiXmlDocument doc = oracledata.CreatePostXML(postRequest);
-
+    TPostRequestAnswer _postResult;
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+    std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+    AnsiString checkNumber = managerDB->GetCheckNumber(DBTransaction);
+    DBTransaction.Commit();
+    bool retValue = false;
+    double tip = 0;
+    for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+    {
+        TPayment *payment = _paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+        {
+           tip += (double)payment->GetAdjustment();
+        }
+    }
+    for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+    {
+        TPayment *payment = _paymentTransaction.PaymentGet(i);
+        double amount = (double)payment->GetPayTendered();
+        double portion = 0;
+        if((amount != 0)
+              && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+        {
+            portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
+            double tipPortion = tip * portion;
+            postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
+            postRequest.CheckNumber = checkNumber;
+            TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
+            AnsiString resultData = "";
+            AnsiString data = oracledata->SerializeOut(doc);
+//            MessageBox(data,"data",MB_OK);
+            resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+//            MessageBox(resultData,"resultData",MB_OK);
+            retValue = oracledata->DeserializeData(resultData, _postResult);
+        }
+    }
     // Post Sales Data
-    return true;
+    return retValue;
 }
 //---------------------------------------------------------------------------
 void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult)//std::auto_ptr<TRoomInquiryResult> &_roomResult)

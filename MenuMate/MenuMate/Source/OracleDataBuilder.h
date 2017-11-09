@@ -22,7 +22,7 @@ class TOracleDataBuilder
         TPostRequest PostRequest;
 		void ClearPostRoomInquiry(TPaymentTransaction &paymentTransaction);
         void CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry);
-        std::vector<TPostRequest> CreatePost(TPaymentTransaction &paymentTransaction);
+        TPostRequest CreatePost(TPaymentTransaction &paymentTransaction,double portion,int paymentIndex, double tip);
         TLinkDescription CreateLinkDescription();
         TRoomInquiryResult createXMLInquiryDoc();
         TiXmlDocument CreatePostXML(TPostRequest &postRequest);
@@ -41,12 +41,15 @@ class TOracleDataBuilder
         void SetNodeAttr(TiXmlElement *inNode, AnsiString inAttrName, AnsiString inAttrValue);
         void LoadCustomerDetails(int _index,TRoomInquiryResult &roomInquiryResult);
         void ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomInquiryResult);
+        void ReadXML(TiXmlDocument *result,TPostRequestAnswer &_postResult);
         void AddInvoiceAttrs(TiXmlElement *rootNode,TLinkDescription linkDescription);
         void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest);
         void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRoomInquiry);
-        void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete);
-        void ExtractSubTotal();
-        void ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector);
+        void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete,double portion);
+        void ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,TItemComplete *itemComplete,double portion);
+        void ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector,double portion);
+        void ExtractServiceCharges(std::vector<TServiceCharge> serviceChargeVector, TItemComplete *itemComplete);
+        double CalculateTotal(std::map<int,double> subtotals,std::vector<TTax> taxVector,std::map<int, double> discMap);
         void ExtractServiceCharge();
         TiXmlDocument PrepareXMLDocument();
 };
