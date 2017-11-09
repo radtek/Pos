@@ -45,7 +45,6 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.LoyaltyMate);     // WCF Service: LoyaltyMate
             AddService(serviceList, MenumateServicesIdentifier.WebMate);         // WCF Service: WebMate
             AddService(serviceList, MenumateServicesIdentifier.SmartLink);
-            AddService(serviceList, MenumateServicesIdentifier.ThorLink);
             AddService(serviceList, MenumateServicesIdentifier.PocketVoucher);
             AddService(serviceList, MenumateServicesIdentifier.SalesForceIntegration);
             AddService(serviceList, MenumateServicesIdentifier.SiHotIntegration);
@@ -151,8 +150,6 @@ namespace MenumateServices
                     return new MenumateServiceWebMate();
                 case MenumateServicesIdentifier.SmartLink:
                     return new MenumateServiceSmartLink();
-                case MenumateServicesIdentifier.ThorLink:
-                    return new MenumateServiceThorlink();
                 case MenumateServicesIdentifier.PocketVoucher:
                     return new MenumateServicePocketVoucher();
                 case MenumateServicesIdentifier.SalesForceIntegration:

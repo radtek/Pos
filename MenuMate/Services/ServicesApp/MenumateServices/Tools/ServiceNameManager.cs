@@ -43,7 +43,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.EFTPosIntegration: return "MenumateServiceEFTPosIntegration";
                 case MenumateServicesIdentifier.PosIntegration: return "MenumateServicePosIntegration";
                 case MenumateServicesIdentifier.SmartLink: return "MenumateServiceSmartLink";
-                case MenumateServicesIdentifier.ThorLink: return "MenumateServiceThorlink";
                 case MenumateServicesIdentifier.PocketVoucher: return "PocketVoucherWebService";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "SalesForceIntegrationWebService";
                 case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
@@ -68,7 +67,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.EFTPosIntegration: return "Menumate EFTPOS Integration";
                 case MenumateServicesIdentifier.PosIntegration: return "Menumate FloorPlan Integration";
                 case MenumateServicesIdentifier.Reservations: return "Menumate Table Reservation Integration";
-                case MenumateServicesIdentifier.ThorLink: return "Menumate Thor Link Integration";
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
@@ -92,7 +90,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.EFTPosIntegration: return "Not implemented in this version. Menumate Interface to EFTPOS Devices";
                 case MenumateServicesIdentifier.PosIntegration: return "Not implemented in this version. Menumate Interface to FloorPlan";
                 case MenumateServicesIdentifier.Reservations: return "Not implemented in this version. Menumate Interface to Table Reservation";
-                case MenumateServicesIdentifier.ThorLink: return "Menumate Thor Link server";
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";

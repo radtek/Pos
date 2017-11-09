@@ -35,7 +35,6 @@ namespace MenumateServices
             this.serviceInstallerLoyaltyMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWebMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartLink = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerThorLink = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerPocketVoucher = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
@@ -77,13 +76,6 @@ namespace MenumateServices
             this.serviceInstallerSmartLink.ServiceName = "MenumateServiceSmartLink";
             this.serviceInstallerSmartLink.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
-            // serviceInstallerThorLink
-            // 
-            this.serviceInstallerThorLink.Description = "Menumate Thor Link Integration";
-            this.serviceInstallerThorLink.DisplayName = "MenumateThorLinkIntegration";
-            this.serviceInstallerThorLink.ServiceName = "MenumateServiceThorlink";
-            this.serviceInstallerThorLink.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
             // serviceInstallerPocketVoucher
             // 
             this.serviceInstallerPocketVoucher.Description = "Menumate Pocket Voucher";
@@ -110,7 +102,7 @@ namespace MenumateServices
             this.serviceInstallerWalletPayments.Description = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
-            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Disabled;
             // 
             // ProjectInstaller
             // 
@@ -120,7 +112,6 @@ namespace MenumateServices
             this.serviceInstallerLoyaltyMate,
             this.serviceInstallerWebMate,
             this.serviceInstallerSmartLink,
-            this.serviceInstallerThorLink,
             this.serviceInstallerPocketVoucher,
             this.serviceInstallerSalesForceIntegration,
             this.serviceInstallerSiHotIntegration,
@@ -165,7 +156,6 @@ namespace MenumateServices
         private System.ServiceProcess.ServiceInstaller serviceInstallerLoyaltyMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerWebMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerSmartLink;
-        private ServiceInstaller serviceInstallerThorLink;
         private ServiceInstaller serviceInstallerPocketVoucher;
         private ServiceInstaller serviceInstallerSalesForceIntegration;
         private ServiceInstaller serviceInstallerSiHotIntegration;

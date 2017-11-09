@@ -167,22 +167,10 @@
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TenderDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ItemDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_VoucherDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
-    <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
@@ -193,7 +181,6 @@
     <Compile Include="Internal Classes\WalletPayments\WalletPaymentController.cs" />
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
-    <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
     <Compile Include="MenumateRunners\WalletPaymentsServiceRunner.cs" />
     <Compile Include="MenumateServiceAccounting.cs">
       <SubType>Component</SubType>
@@ -212,12 +199,6 @@
     </Compile>
     <Compile Include="MenumateServiceSalesForce.Designer.cs">
       <DependentUpon>MenumateServiceSalesForce.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MenumateServiceThorlink.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceThorlink.Designer.cs">
-      <DependentUpon>MenumateServiceThorlink.cs</DependentUpon>
     </Compile>
     <Compile Include="DTO\DTODevice.cs" />
     <Compile Include="DTO\DTOFactory.cs" />
@@ -319,9 +300,6 @@
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
-    <Compile Include="WCFServices\WCFServiceThorlink.cs" />
-    <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
-    <Compile Include="WCFServices\IWCFServiceThorlink.cs" />
     <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
