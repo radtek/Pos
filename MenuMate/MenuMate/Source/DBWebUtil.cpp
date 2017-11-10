@@ -1132,7 +1132,7 @@ void TDBWebUtil::LoadWebOrders(Database::TDBTransaction &DBTransaction, TWebOrde
 		DBTransaction.RegisterQuery(IBInternalQuery);
 
 		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT * FROM WEBORDERS WHERE STATUS = :STATUS ORDER BY ORDER_DATE DESC";
+		IBInternalQuery->SQL->Text = "SELECT * FROM WEBORDERS WHERE STATUS = :STATUS ORDER BY ORDER_DATE ";
 		IBInternalQuery->ParamByName("STATUS")->AsInteger = ewosReceived;
 		IBInternalQuery->ExecQuery();
 
