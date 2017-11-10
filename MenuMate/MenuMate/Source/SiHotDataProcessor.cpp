@@ -66,7 +66,6 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     }
 
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
-
     // Iterate pyamentTransaction orders loop and identify the same III party codes
     // with same tax percentage over them to club item prices and their quantities.
     for(int i = 0; i < _paymentTransaction.Orders->Count; i++)
@@ -333,14 +332,6 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
         IBInternalQueryGenerator->Close();
         switch(_paymentTransaction.TypeOfSale)
         {
-           case 0:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = IntToStr(number);
-                break;
-           }
            case 1:
            {
                 IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
@@ -357,9 +348,16 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
                 invoiceNumber = "NC "+ IntToStr(number);
                 break;
            }
+           default:
+           {
+                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+                IBInternalQueryGenerator->ExecQuery();
+                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+                invoiceNumber = IntToStr(number);
+                break;
+           }
         }
         DBTransaction.Commit();
-        return invoiceNumber;
     }
     catch(Exception &ex)
     {
