@@ -3301,12 +3301,19 @@ object frmSelectDish: TfrmSelectDish
     Left = 945
     Top = 180
   end
+  object tiPMSRoom: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tiPMSRoomInputTimer
+    Left = 945
+    Top = 211
+  end
   object tmPosRefresh: TTimer
     Enabled = False
     Interval = 4000
     OnTimer = tmPosRefreshTimer
-    Left = 945
-    Top = 180
+    Left = 905
+    Top = 204
   end
   object tiClock: TTimer
     Enabled = False

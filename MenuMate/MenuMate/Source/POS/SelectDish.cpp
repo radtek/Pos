@@ -609,13 +609,12 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     if(TGlobalSettings::Instance().WebMateEnabled)
         ProcessWebOrders(false);
 
+    tiPMSRoom->Enabled = TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney;
     tbtnChitNumber->Caption = "Chit";
     ChitNumber = TChitNumber();
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
     isWalkInUser = true;
-    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-        DisplayRoomNoUI();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1852,9 +1851,6 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
             {
                 DBTransaction.Commit();
                 ResetPOS();
-
-                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-                    DisplayRoomNoUI();
             }
         }
 	}
@@ -1863,6 +1859,7 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
     {
           showTablePicker();
     }
+    DisplayRoomNoUI();
     NagUserToSelectChit();
     CheckMandatoryMembershipCardSetting(tbtnMembership);
 }
@@ -2513,9 +2510,6 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			{
 				DBTransaction.Commit();
 				ResetPOS();
-
-                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-        			DisplayRoomNoUI();
 			}
 		}
 	}
@@ -2537,9 +2531,6 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 		{
 			DBTransaction.Commit();
 			ResetPOS();
-
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-        		DisplayRoomNoUI();
 		}
 		if(!PaymentComplete)
 		{
@@ -2586,13 +2577,16 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 		}
 	}
 	if(!IsSubSidizeProcessed&&!IsSubSidizeOrderCancil)
-	{   AutoLogOut();
+	{
+        AutoLogOut();
 		if(TGlobalSettings::Instance().EnableTableDisplayMode)
 		{
 			showTablePicker();
 		}
+
+        DisplayRoomNoUI();
 		//MM-1647: Ask for chit if it is enabled for every order.
-              	NagUserToSelectChit();
+        NagUserToSelectChit();
 	}
 
     IsParkSalesEnable=false;
@@ -4464,6 +4458,7 @@ void TfrmSelectDish::ProcessQuickPayment(TObject *Sender,AnsiString paymentName)
     {
       showTablePicker();
     }
+    DisplayRoomNoUI();
     NagUserToSelectChit();
 }
 // ---------------------------------------------------------------------------
@@ -4835,7 +4830,7 @@ void TfrmSelectDish::OnAfterItemOrdered(TSystemEvents *Sender)
         t.StartTransaction();
             SetupChit(t);
         t.Commit();
-    }
+    }  
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RedrawServingCourses()
@@ -6064,6 +6059,7 @@ void __fastcall TfrmSelectDish::btnRemoveMouseClick(TObject *Sender)
         TDBSaleTimes::VoidSaleTime(DBTransaction, CurrentTimeKey);
         CurrentTimeKey = 0;
         AutoLogOut();
+        DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
         sec_ref = 0;
@@ -6890,10 +6886,12 @@ void TfrmSelectDish::SelectNewMenus()
                 }
 	}
 	DBTransaction.Commit();
-        if (AskForLogin)
-            {
-               AutoLogOut();
-            }
+    if (AskForLogin)
+    {
+       AutoLogOut();
+    }
+
+    DisplayRoomNoUI();
 
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
@@ -7801,7 +7799,7 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
          AutoLogOut();
        }
 
-
+       DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 	}
@@ -7973,6 +7971,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 	}
       AutoLogOut();
 
+     DisplayRoomNoUI();
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }
@@ -8071,7 +8070,8 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 	{
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
-      AutoLogOut();
+    AutoLogOut();
+    DisplayRoomNoUI();
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }
@@ -8118,9 +8118,10 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 	{
 		std::auto_ptr<TfrmPOSMain>frmPOSMain(TfrmPOSMain::Create<TfrmPOSMain>(this, TDeviceRealTerminal::Instance().DBControl));
 		frmPOSMain->ShowModal();
-
+        bool isExitPressed = false;
 		if (frmPOSMain->ExitPOS)
 		{
+            isExitPressed = true;
 			Close();
 		}
         else if (frmPOSMain->RedrawMenus)
@@ -8149,7 +8150,8 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         {
            showTablePicker();
         }
-        //MM-1647: Ask for chit if it is enabled for every order.
+        if(!isExitPressed)
+            DisplayRoomNoUI();
         NagUserToSelectChit();
 
         tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
@@ -8275,17 +8277,14 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                     AutoLogOut();
                 }
 
-        //MM-1647: Ask for chit if it is enabled for every order.
-        NagUserToSelectChit();
-            	}
+                DisplayRoomNoUI();
+                NagUserToSelectChit();
+            }
         	else
-            	{
-            		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-            	}
-
+            {
+                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+            }
     }
-
-
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
@@ -8579,6 +8578,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 		}
        AutoLogOut();
 
+       DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 	}
@@ -8988,6 +8988,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			showTablePicker();
 		}
 
+        DisplayRoomNoUI();
 		//MM-1647: Ask for chit if it is enabled for every order.
 		NagUserToSelectChit();
 
@@ -10706,6 +10707,7 @@ void TfrmSelectDish::showTablePicker()
             showOldTablePicker();
         }
 
+        DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 
@@ -12497,7 +12499,7 @@ bool TfrmSelectDish::ParkSaletemp(int tabkey)
 		DBTransaction.Commit();
 	}
 	AutoLogOut();
-
+    DisplayRoomNoUI();
 	NagUserToSelectChit();
 }
 // ---------------------------------------------------------------------------
@@ -15239,24 +15241,28 @@ bool TfrmSelectDish::CheckIfSubsidizedDiscountValid(int tabKey)
 //----------------------------------------------------------------------------
 void TfrmSelectDish::DisplayRoomNoUI()
 {
-    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-    frmTouchNumpad->Caption = "Enter the Room Number";
-    frmTouchNumpad->btnSurcharge->Caption = "Ok";
-    frmTouchNumpad->btnDiscount->Caption = "Walk In";
-    frmTouchNumpad->btnDiscount->Visible = true;
-    frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->btnDiscount->Color = clGreen;
-    frmTouchNumpad->Mode = pmNumber;
-    frmTouchNumpad->CURInitial = 0;
-    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+            TGlobalSettings::Instance().EnableCustomerJourney )
     {
-        selectedRoomNumber = frmTouchNumpad->INTResult;
-        isWalkInUser = false;
-        GetRoomDetails();
-    }
-    else
-    {
-        isWalkInUser = true;
+        std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        frmTouchNumpad->Caption = "Enter the Room Number";
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnDiscount->Caption = "Walk In";
+        frmTouchNumpad->btnDiscount->Visible = true;
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->btnDiscount->Color = clGreen;
+        frmTouchNumpad->Mode = pmNumber;
+        frmTouchNumpad->CURInitial = 0;
+        if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
+        {
+            selectedRoomNumber = frmTouchNumpad->INTResult;
+            isWalkInUser = false;
+            GetRoomDetails();
+        }
+        else
+        {
+            isWalkInUser = true;
+        }
     }
 }
 //------------------------------------------------------------------------------
@@ -15357,4 +15363,14 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
 	}
     return isRoomDetailsLoaded;
+}
+//-------------------------------------------------------------------------------------------------
+void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
+{
+    Database::TDBTransaction t(TDeviceRealControl::ActiveInstance().DBControl);
+    tiPMSRoom->Enabled = false;
+
+    t.StartTransaction();
+    DisplayRoomNoUI();
+    t.Commit();
 }
