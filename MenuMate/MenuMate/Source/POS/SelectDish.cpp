@@ -612,6 +612,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     tiPMSRoom->Enabled = TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney;
     tbtnChitNumber->Caption = "Chit";
     ChitNumber = TChitNumber();
+    if(!tiPMSRoom->Enabled)
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
     isWalkInUser = true;
@@ -15311,6 +15312,7 @@ void TfrmSelectDish::GetRoomDetails()
         else if(SiHotAccounts.size() == 0)
         {
             MessageBox("Not occupied.", "Error", MB_ICONWARNING + MB_OK);
+            DisplayRoomNoUI();
         }
     }
     catch(Exception &err)
@@ -15367,10 +15369,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
 //-------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
 {
-    Database::TDBTransaction t(TDeviceRealControl::ActiveInstance().DBControl);
     tiPMSRoom->Enabled = false;
-
-    t.StartTransaction();
     DisplayRoomNoUI();
-    t.Commit();
+    tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
 }
