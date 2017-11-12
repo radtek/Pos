@@ -780,7 +780,7 @@ AnsiString TOracleDataBuilder::SerializeOut(TiXmlDocument inDoc)
 
    result = AnsiString( printer.CStr() );
    //::::::::::::::::::::::::::::::::::::::::::::
-
+   result = result.SubString(23,result.Length() - 23);
    return result;
 }
 //----------------------------------------------------------------------------
