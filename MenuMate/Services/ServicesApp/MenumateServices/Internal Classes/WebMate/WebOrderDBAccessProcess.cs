@@ -172,27 +172,63 @@ namespace MenumateServices.WebMate.InternalClasses
         /// 
         /// </summary>
         /// <param name="webOrderXML"></param>
+        //void dbSaveOrder(WebOrder inOrder)
+        //{
+        //    WebOrderDB webOrderDB = new WebOrderDB();
+
+        //    try
+        //    {
+        //        webOrderDB.BeginTransaction();
+        //        //check webmate enabled here or not..
+        //        bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
+        //        if (checkWebmateIsEnabled)
+        //        {
+        //            int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
+        //            int menu_key = getMenuKeyFormChit(webOrderDB);
+        //            dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+        //        }
+        //        else
+        //        {
+        //            SetWebmateForMessage(webOrderDB);
+        //        }
+
+        //        webOrderDB.EndTransaction();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        webOrderDB.RollbackTransaction();
+        //        ServiceLogger.Log(@"WebOrderDBAccessProcess.dbSaveOrder(WebOrder inOrder) ROLLBACK");
+        //        EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
+        //        throw;
+        //    }
+        //}
+
         void dbSaveOrder(WebOrder inOrder)
         {
             WebOrderDB webOrderDB = new WebOrderDB();
 
             try
             {
-                webOrderDB.BeginTransaction();
-                //check webmate enabled here or not..
-                bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
-                if (checkWebmateIsEnabled)
+                bool isProperConnection = false;
+                using (webOrderDB.connection_ = webOrderDB.BeginConnection())
                 {
-                    int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
-                    int menu_key = getMenuKeyFormChit(webOrderDB);
-                    dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
-                }
-                else
-                {
-                   SetWebmateForMessage(webOrderDB); 
-                }
 
-                webOrderDB.EndTransaction();
+                    using (webOrderDB.transaction_ = webOrderDB.BeginFBtransaction())
+                    {
+                        //check webmate enabled here or not..
+                        bool checkWebmateIsEnabled = checkWebmateEnabledOrNot(webOrderDB);
+                        if (checkWebmateIsEnabled)
+                        {
+                            isProperConnection = true;
+                            int weborderKey = dbSaveOrderInfo(inOrder, webOrderDB);
+                            int menu_key = getMenuKeyFormChit(webOrderDB);
+                            dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
+                        }
+                        webOrderDB.transaction_.Commit();
+                    }
+                }
+                if (!isProperConnection)
+                    SetWebmateForMessage(webOrderDB);
             }
             catch (Exception e)
             {
@@ -201,7 +237,7 @@ namespace MenumateServices.WebMate.InternalClasses
                 EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
                 throw;
             }
-       }
+        }
 
         /// <summary>
         /// 

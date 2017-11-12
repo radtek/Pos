@@ -323,8 +323,8 @@ namespace MenumateServices.WebMate.InternalClasses
         WebOrderDBConnection dbConnection_ = WebOrderDBConnection.Instance;
         WebOrderDBQueries dbQueries_ = WebOrderDBQueries.Instance;
 
-        FbTransaction transaction_;
-        FbConnection connection_;
+        public FbTransaction transaction_;
+        public FbConnection connection_;
 
         /// <summary>
         /// 
@@ -395,6 +395,21 @@ namespace MenumateServices.WebMate.InternalClasses
             {
                 EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public FbConnection BeginConnection()
+        {
+            return dbConnection_.Open();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public FbTransaction BeginFBtransaction()
+        {
+            return connection_.BeginTransaction();
         }
 
         /// <summary>

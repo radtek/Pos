@@ -9,6 +9,7 @@ using System.Diagnostics;
 using MenumateServices.WebMate.DTO;
 using MenumateServices.Tools;
 using XMLManager;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -275,6 +276,29 @@ namespace MenumateServices.WebMate.InternalClasses
         /// </summary>
         /// <param name="inOrderHandle"></param>
         /// <returns></returns>
+        //public bool dbWebOrderAccepted(string inOrderHandle)
+        //{
+        //    bool result = false;
+        //    //::::::::::::::::::::::::::::::::::::::::::::::
+        //    try
+        //    {
+        //        WebOrderDB webOrderDB = new WebOrderDB();
+        //        webOrderDB.BeginTransaction();
+        //        result = webOrderDB.WebOrderAccepted(inOrderHandle);
+        //        webOrderDB.EndTransaction();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
+        //    }
+        //    //::::::::::::::::::::::::::::::::::::::::::::::
+        //    return result;
+        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inOrderHandle"></param>
+        /// <returns></returns>
         public bool dbWebOrderAccepted(string inOrderHandle)
         {
             bool result = false;
@@ -282,9 +306,17 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 WebOrderDB webOrderDB = new WebOrderDB();
-                webOrderDB.BeginTransaction();
-                result = webOrderDB.WebOrderAccepted(inOrderHandle);
-                webOrderDB.EndTransaction();
+                bool isProperConnection = false;
+                using (webOrderDB.connection_ = webOrderDB.BeginConnection())
+                {
+                    //check webmate enabled here or not..
+                    using (webOrderDB.transaction_ = webOrderDB.BeginFBtransaction())
+                    {
+                        isProperConnection = true;
+                        result = webOrderDB.WebOrderAccepted(inOrderHandle);
+                        webOrderDB.transaction_.Commit();
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -293,7 +325,6 @@ namespace MenumateServices.WebMate.InternalClasses
             //::::::::::::::::::::::::::::::::::::::::::::::
             return result;
         }
-
         #endregion
 
         #region Private
