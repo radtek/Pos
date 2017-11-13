@@ -25,7 +25,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In useDevice EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 16, short.MaxValue);
+                ServiceLogger.LogException(exception.Message, exception);
+                //EventLog.WriteEntry("In useDevice EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 16, short.MaxValue);
             }
             return null;
         }
@@ -43,7 +44,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In status EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 17, short.MaxValue);
+                ServiceLogger.LogException(exception.Message, exception);
+                //EventLog.WriteEntry("In status EFTPOS", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 17, short.MaxValue);
             }
             return null;
         }

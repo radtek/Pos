@@ -42,7 +42,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In UpdateSalesForceVersion Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 12, short.MaxValue);
+                //EventLog.WriteEntry("In UpdateSalesForceVersion Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 12, short.MaxValue);
                 ServiceLogger.LogException("Exception in UpdateSalesForceVersion", exception);
             }
 
@@ -70,7 +70,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In EnableMobiToGo Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 13, short.MaxValue);
+                //EventLog.WriteEntry("In EnableMobiToGo Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 13, short.MaxValue);
                 ServiceLogger.LogException("Exception in EnableMobiToGo", exception);
             }
 
@@ -98,7 +98,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In DisableMobiToGo Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                //EventLog.WriteEntry("In DisableMobiToGo Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in DisableMobiToGo", exception);
             }
 
@@ -126,7 +126,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                EventLog.WriteEntry("In UpdateSalesForceModulesStatus Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 15, short.MaxValue);
+                //EventLog.WriteEntry("In UpdateSalesForceModulesStatus Salesforce", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 15, short.MaxValue);
                 ServiceLogger.LogException("Exception in UpdateSalesForceModulesStatus", exception);
             }
 

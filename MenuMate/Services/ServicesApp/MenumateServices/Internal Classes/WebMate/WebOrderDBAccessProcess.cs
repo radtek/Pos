@@ -224,20 +224,20 @@ namespace MenumateServices.WebMate.InternalClasses
                             int menu_key = getMenuKeyFormChit(webOrderDB);
                             dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
                         }
+                        else
+                            SetWebmateForMessage(webOrderDB);
+
                         webOrderDB.transaction_.Commit();
                         ServiceLogger.Log(@"after commit in dbSaveOrder(WebOrder inOrder) with order "+inOrder.Handle);
                     }
                 }
                 ServiceLogger.Log(@"outside using in dbSaveOrder(WebOrder inOrder) with order " + inOrder.Handle);
-                if (!isProperConnection)
-                    SetWebmateForMessage(webOrderDB);
             }
             catch (Exception e)
             {
-                ServiceLogger.Log(@"before webOrderDB.RollbackTransaction(); with order " + inOrder.Handle);
+                ServiceLogger.LogException(@"before RollBack in dbSaveOrder "+e.Message,e);
                 webOrderDB.RollbackTransaction();
-                ServiceLogger.Log(@"WebOrderDBAccessProcess.dbSaveOrder(WebOrder inOrder) ROLLBACK");
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
+                ServiceLogger.LogException(@"after RollBack in dbSaveOrder " + e.Message, e);
                 throw;
             }
         }
@@ -303,7 +303,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 301, short.MaxValue);
+                ServiceLogger.LogException(@"in createWebOrderDBInfo " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 301, short.MaxValue);
             }
             //....................................................
 
@@ -369,7 +370,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 302, short.MaxValue);
+                ServiceLogger.LogException("In createWebOrderDBItems with order " + inOrder.Handle,e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 302, short.MaxValue);
             }
 
             //....................................................
@@ -408,7 +410,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 303, short.MaxValue);
+                ServiceLogger.LogException("In getMenuKeyFormChit with order "+e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 303, short.MaxValue);
             }
             return menu_key;  
         }
@@ -427,7 +430,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-              EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 304, short.MaxValue);
+                ServiceLogger.LogException("In checkWebmateEnabledOrNot with order " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 304, short.MaxValue);
             }          
         }
 
