@@ -98,6 +98,7 @@ void TOracleTCPIP::sendData( AnsiString inData )
  	__int32 remainedDataSize = dataSize;
 
      __int32 maxBufferSize = data.size(); // It can be assigned a lower value
+     maxBufferSize += 2;                  // added 2 for STX and ETX
 	__int32 itPos = 0;
 
 	char   *buffer = new char[maxBufferSize];
@@ -127,8 +128,8 @@ AnsiString TOracleTCPIP::fetchResponse()
     AnsiString outData = "";
 	if( tcpClient->IOHandler->Readable( _READ_TIME_OUT ) )
 	{
-       tcpClient->IOHandler->CheckForDataOnSource(3000);
-       tcpClient->IOHandler->ReadTimeout = 1000;
+       tcpClient->IOHandler->CheckForDataOnSource(500);
+       tcpClient->IOHandler->ReadTimeout = 100;
        TByteDynArray buffer;
 //       Sleep(1000);
        tcpClient->IOHandler->ReadBytes( buffer, -1, true );
