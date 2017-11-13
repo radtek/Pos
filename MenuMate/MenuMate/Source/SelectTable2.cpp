@@ -232,7 +232,7 @@ void TFrmSelectTable2::UpdateTableFloorPlan()
 
 	tgridLocations->ColCount = 0;
 	tgridLocations->RowCount = 0;
-    MessageBox(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID, "", MB_OK );
+
 	std::vector<DTOLocation*>Locations = _controller->getLocations();
 //    std::vector<TPlanLocation>Locations = _controller->getLocations();
     _controller->SetLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
