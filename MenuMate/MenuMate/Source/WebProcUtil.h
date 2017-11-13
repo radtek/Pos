@@ -34,7 +34,6 @@ public:
 	static void __fastcall ProcessCallAway(Database::TDBTransaction &DBTransaction, int TableNumber, TStringList *Courses);
 	static void __fastcall ProcessReceipt(Database::TDBTransaction &DBTransaction, TMMTabType TabType, int Primary, int Secondary);
 	static void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransaction, UnicodeString TransNo, UnicodeString DeviceName,std::vector<UnicodeString>GUIDS);
-    static void MakeLogFile(UnicodeString str);
 
 };
 #endif
