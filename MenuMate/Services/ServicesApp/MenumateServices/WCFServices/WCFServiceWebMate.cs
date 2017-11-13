@@ -33,6 +33,7 @@ namespace MenumateServices.WCFServices
                 outHandle = webOrder.Handle;
 
                 // WebOrder successfuly open
+                ServiceLogger.Log("In OpenWebOrder(out string outHandle) with handle as " + webOrder.Handle);
                 return createResponseNoError();
             }
             catch (Exception exc)
@@ -57,6 +58,7 @@ namespace MenumateServices.WCFServices
                 getWebOrder(inOrderHandle).Commit();
 
                 // WebOrder successfuly committed
+                ServiceLogger.Log("In CommitOrder(string inOrderHandle) after commit of order with " +  inOrderHandle);
                 return createResponseNoError();
             }
             catch (ExceptionOrderGUIDDuplicate exc)

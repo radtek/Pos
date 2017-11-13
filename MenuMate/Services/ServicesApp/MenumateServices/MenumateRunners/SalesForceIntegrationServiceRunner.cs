@@ -110,7 +110,7 @@ namespace MenumateServices.MenumateRunners
             {
                 ServiceLogger.Log(@"Sales Force Server endpoint is running ...");
 
-                //TODO: Initialize the Clipp Integration Server....
+                //TODO: Initialize the Sales Force Integration Server....
 
                 ServiceInfo serviceInfo = ServiceInfo.Instance;
 
@@ -133,7 +133,7 @@ namespace MenumateServices.MenumateRunners
 
             ServiceLogger.Log(@"Stopping Sales Force Integration Service endpoint ...");
 
-            //TODO: Clear the Clipp Integration Server....
+            //TODO: Clear the Sales Force Integration Server....
             result = CloseServiceHost();
 
             ServiceLogger.Log(result
