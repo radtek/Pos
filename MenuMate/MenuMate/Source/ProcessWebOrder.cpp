@@ -391,9 +391,6 @@ void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject*
         autoAcceptingWebOrders = false;
         frmProcessing->Close();
         UpdateDisplay();
-        UnicodeString str = "THread Terminated. ";
-        str = str + " " + Now();
-        TWebProcUtil::MakeLogFile(str);
     }
     catch(Exception & E)
 	{
@@ -410,27 +407,17 @@ void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
         {
             if(acceptAll)
             {
-                str =  str + " Before Loading order inside startAcceptWebOrdersThread() ";
-                str = str +  Now() + "\n";
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction.StartTransaction();
                 TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
                 WebOrderContainer.first();
                 DBTransaction.Commit();
-                str =  str +  "After Loading order inside startAcceptWebOrdersThread() ";
-                str = str +  Now() + "\n";
             }
-            str =  str + "Befor Creating thread inside startAcceptWebOrdersThread()";
-            str = str +  Now() + "\n";
-            TWebProcUtil::MakeLogFile(str);
            func_ptr ptr = &acceptWebOrder;
            TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
            autoAcceptThread->OnTerminate = autoAcceptWebOrdersTheadTerminate;
            autoAcceptThread->ChitNumber = WebOrderChitNumber;
            autoAcceptThread->Start();
-           str = "After Creating thread inside startAcceptWebOrdersThread()";
-            str = str +  Now() + "\n";
-            TWebProcUtil::MakeLogFile(str);
            autoAcceptingWebOrders = true;
         }
     }
@@ -477,24 +464,14 @@ void TAcceptWebOrdersThread::acceptWebOrder()
         {
            if(container->Current.WebKey > 0)
            {
-              str =  str +  " Before  initializing chit inside startAcceptWebOrdersThread() ";
-              str = str +  Now() + "\n";
-              TWebProcUtil::MakeLogFile(str);
               TDBWebUtil::InitializeChit(container->Current.WebKey, ChitNumber);//, ChitNumberController);
-              str =  str +  "After  initializing chit inside startAcceptWebOrdersThread()";
-              str = str +  Now() + "\n";
            }
         }
         if(WebOrderTabKey != container->Current.TabKey)
         {
            WebOrderTabKey = container->Current.TabKey;
-            str =  str +  " Before  ProcessWebOrder inside startAcceptWebOrdersThread() ";
-               str = str +  Now() + "\n";
 		   TWebProcUtil::ProcessWebOrder(Screen->ActiveForm, DBTransaction, container->Current, ChitNumber);
         }
-        str =  str +  "Before  Transaction commit inside startAcceptWebOrdersThread()";
-              str = str +  Now() + "\n";
-              TWebProcUtil::MakeLogFile(str);
 		DBTransaction.Commit();
 		DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)

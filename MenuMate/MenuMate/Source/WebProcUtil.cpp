@@ -190,7 +190,6 @@ void __fastcall TWebProcUtil::ProcessCallAway(Database::TDBTransaction &DBTransa
 
 void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::TDBTransaction &DBTransaction, TWebOrder &WebOrder, TChitNumber &WebOrderChitNumber)
 {
-    UnicodeString str = "";
 	try
 	{
 		// Load the Order.
@@ -262,8 +261,6 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 
         std::auto_ptr<TStringList>WebDetials(new TStringList);
         TDBWebUtil::getWebOrderDetials(DBTransaction, WebKey, *WebDetials.get());
-        str = str + " After  getWebOrderDetials ";
-        str = str + Now()+ "\n";
         TMMContactInfo webMember;
 
         if(WebOrderChitNumber.Valid())
@@ -326,8 +323,6 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
            }
            PaymentTransaction.ChitNumber = WebOrderChitNumber;
         }
-        str = str = str + " After  Applying chit ";
-        str = str + Now()+ "\n";
         PaymentTransaction.Membership.Assign(webMember, emsManual);
         PaymentTransaction.WebOrderKey =  WebOrder.WebKey;
 
@@ -336,14 +331,8 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 		// Print the Receipts.
 		AutoPrintReceipts(TabWeb, PaymentTransaction);
 
-        str = str +"Before SetWebOrderStatus ";
-        str = str + Now()+ "\n";
         // Change the Order Status.
         TDBWebUtil::SetWebOrderStatus(PaymentTransaction.DBTransaction, WebOrder.WebKey, ewosProcessed);
-        str = str +  "After SetWebOrderStatus ";
-        str = str + Now()+ "\n";
-        MakeLogFile(str);
-
      	ProcessKitchenMod(true, PaymentTransaction);
 
         if(PaymentTransaction.Orders->Count > 0 && TDeviceRealTerminal::Instance().KitchenMod->Enabled)
@@ -368,9 +357,6 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		throw;
 	}
-    str = str + "After ProcessWebOrder ";
-    str = str + Now()+ "\n";
-    MakeLogFile(str);
 }
 
 void __fastcall TWebProcUtil::ProcessWebOrder(Database::TDBTransaction &DBTransaction, eTransactionType TransType, int defaultCovers, TMMContactInfo &Staff, TList * OrdersList,
@@ -580,9 +566,6 @@ void __fastcall TWebProcUtil::ProcessSecurity(TPaymentTransaction &PaymentTransa
 // ---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::ProcessChitNumbers(TForm *inDisplayOwner, TPaymentTransaction &PaymentTransaction)
 {
-    UnicodeString str = "Inside  ProcessChitNumbers ";
-    str = str + " " + Now();
-    MakeLogFile(str);
     try
     {
         TChitNumber ChitNumber;
@@ -610,9 +593,6 @@ void __fastcall TWebProcUtil::ProcessChitNumbers(TForm *inDisplayOwner, TPayment
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         throw;
 	}
-    str = "After  ProcessChitNumbers ";
-    str = str + " " + Now();
-    MakeLogFile(str);
 }
 
 // ---------------------------------------------------------------------------
@@ -676,8 +656,6 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
         {
             DeviceName = "WebMate";
         }
-        UnicodeString str = "Inside  PrintKitchenDockets ";
-        str = str +  Now();
         if(WebDevice->NameToKey(PaymentTransaction.DBTransaction, DeviceName) != 0)
         {
             WebDevice->Load(PaymentTransaction.DBTransaction);
@@ -752,8 +730,6 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                 PrintTransaction->WebOrderKey =  WebKey;
 
                 Request->Transaction->Money.Recalc(*Request->Transaction);
-                str = str + " Before Archieving docket inside  PrintKitchenDockets ";
-                str = str + Now() + "\n";
                 if (PrintTransaction->Orders->Count > 0)
                 {
                     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
@@ -765,14 +741,8 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                         //throw Exception("Printing Some Orders Failed, Please Check Printer.");
                     }
                     ManagerDockets->Archive(Request.get());
-                    str = str + " Before sending order to chefmate inside  PrintKitchenDockets ";
-                    str = str +  Now()+ "\n";
                     completeOrderToChefMate(PrintTransaction.get());
-                    str = str + "After sending order to chefmate inside  PrintKitchenDockets ";
-                    str = str +  Now()+ "\n";
                 }
-				
-                    MakeLogFile(str);
             }
         }
         else
@@ -921,9 +891,6 @@ void __fastcall TWebProcUtil::AutoPrintReceipts(TMMTabType TabType, TPaymentTran
                     InvoiceTransaction.Orders->Delete(0);
                 }
             }
-            str = str + " After  AutoPrintReceipts ";
-            str = str + " " + Now() + "\n";
-            MakeLogFile(str);
         }
 
     }
@@ -1037,9 +1004,6 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 			}
 			DBTransaction.Commit();
 		}
-        str = str + "After ProcessKitchenMod ";
-                str = str + " " + Now()+ "\n";
-                MakeLogFile(str);
 	}
 	catch(Exception & E)
 	{
@@ -1199,15 +1163,4 @@ void TWebProcUtil::sendPosDroidOrderToChefmate(TPaymentTransaction* inTransactio
     }
 }
 
-void TWebProcUtil::MakeLogFile(UnicodeString str)
-{
-    AnsiString fileName = ExtractFilePath(Application->ExeName) + "WebOrder_Logs.txt" ;
-    std::auto_ptr<TStringList> List(new TStringList);
-    if (FileExists(fileName) )
-    {
-      List->LoadFromFile(fileName);
-    }
-    List->Add(" "+ str +  "\n");
-    List->SaveToFile(fileName );
-}
 
