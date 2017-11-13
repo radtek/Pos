@@ -22,7 +22,6 @@ void __fastcall TFrmSelectTable2::FormShow(TObject *Sender)
 {
     UpdateTableOnFormShow();
     NeedToReopen = false;
-
     if(TableMode)
     {
         AssignedMezzanineTables = LoadMizzanineTables();
@@ -168,11 +167,7 @@ void __fastcall TFrmSelectTable2::TouchBtn2MouseClick(TObject *Sender)
 void __fastcall TFrmSelectTable2::tgridLocationsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
     TGlobalSettings::Instance().LastSelectedFloorPlanLocationID = GridButton->Tag;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TManagerVariable::Instance().SetDeviceInt(DBTransaction, vmLastSelectedFloorPlanLocationID,
-    TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
-    DBTransaction.Commit();
+	SaveLocationId(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
 	_controller->SetLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
 	PnlLocation->Caption = _controller->GetCurrentPlanName();
 
@@ -237,7 +232,7 @@ void TFrmSelectTable2::UpdateTableFloorPlan()
 
 	tgridLocations->ColCount = 0;
 	tgridLocations->RowCount = 0;
-
+    MessageBox(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID, "", MB_OK );
 	std::vector<DTOLocation*>Locations = _controller->getLocations();
 //    std::vector<TPlanLocation>Locations = _controller->getLocations();
     _controller->SetLocation(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
@@ -247,6 +242,9 @@ void TFrmSelectTable2::UpdateTableFloorPlan()
 	{
 		tgridLocations->ColCount = 1;
 		tgridLocations->RowCount = Locations.size();
+
+        if(TGlobalSettings::Instance().LastSelectedFloorPlanLocationID == -1 && TableMode)
+            SaveLocationId(Locations[0]->Id);
 
 		for (int i = 0; i < Locations.size(); i++)
 		{
@@ -415,5 +413,14 @@ std::set<int> TFrmSelectTable2::LoadMizzanineTables()
     MezzanineTables = TDBTables::GetMezzanineAreaTables(tableDetails);
 
     return MezzanineTables;
+}
+//-------------------------------------------------------------------------------------------------
+void TFrmSelectTable2::SaveLocationId(int locationId)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TGlobalSettings::Instance().LastSelectedFloorPlanLocationID = locationId;
+    TManagerVariable::Instance().SetDeviceInt(DBTransaction, vmLastSelectedFloorPlanLocationID, TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
+    DBTransaction.Commit();
 }
 

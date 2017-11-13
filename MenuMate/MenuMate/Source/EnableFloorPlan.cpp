@@ -138,16 +138,16 @@ bool TEnableFloorPlan::runNewFloorPlan(TForm* inOwner, TFloorPlanReturnParams& i
     bool retValue = false;
     std::auto_ptr<TFrmSelectTable2>frmSelectTable2(TFrmSelectTable2::Create<TFrmSelectTable2>(inOwner, TDeviceRealTerminal::Instance().DBControl));
 
-    // must do this!
-    frmSelectTable2->AssociateWithController(controller);
-    inFloorPlanReturnParams.Ver = eNewFloorPlan;
-
     //for mezzanine Area.
     if(!isNormalArea)
     {
         frmSelectTable2->TouchBtn2->Caption = "Ok";
         frmSelectTable2->TableMode = eMizzanineMode;
     }
+
+    // must do this!
+    frmSelectTable2->AssociateWithController(controller);
+    inFloorPlanReturnParams.Ver = eNewFloorPlan;
 
     bool needToReopen = false;
     if (frmSelectTable2->ShowModal() == mrOk)
