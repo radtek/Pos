@@ -315,8 +315,10 @@ namespace MenumateServices.WebMate.InternalClasses
                         isProperConnection = true;
                         result = webOrderDB.WebOrderAccepted(inOrderHandle);
                         webOrderDB.transaction_.Commit();
+                        ServiceLogger.Log(@"after commit in dbWebOrderAccepted(string inOrderHandle) with order " + inOrderHandle);
                     }
                 }
+                ServiceLogger.Log(@"outside using in dbWebOrderAccepted(string inOrderHandle) with order " + inOrderHandle);
             }
             catch (Exception e)
             {

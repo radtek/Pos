@@ -225,8 +225,10 @@ namespace MenumateServices.WebMate.InternalClasses
                             dbSaveOrderItems(weborderKey, inOrder, webOrderDB, menu_key);
                         }
                         webOrderDB.transaction_.Commit();
+                        ServiceLogger.Log(@"after commit in dbSaveOrder(WebOrder inOrder) with order "+inOrder.Handle);
                     }
                 }
+                ServiceLogger.Log(@"outside using in dbSaveOrder(WebOrder inOrder) with order " + inOrder.Handle);
                 if (!isProperConnection)
                     SetWebmateForMessage(webOrderDB);
             }
