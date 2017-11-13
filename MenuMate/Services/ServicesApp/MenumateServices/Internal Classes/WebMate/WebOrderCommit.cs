@@ -302,10 +302,11 @@ namespace MenumateServices.WebMate.InternalClasses
         public bool dbWebOrderAccepted(string inOrderHandle)
         {
             bool result = false;
+            WebOrderDB webOrderDB = new WebOrderDB();
             //::::::::::::::::::::::::::::::::::::::::::::::
             try
             {
-                WebOrderDB webOrderDB = new WebOrderDB();
+                
                 bool isProperConnection = false;
                 using (webOrderDB.connection_ = webOrderDB.BeginConnection())
                 {
@@ -322,6 +323,7 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
+                webOrderDB.RollbackTransaction();
                 EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
             }
             //::::::::::::::::::::::::::::::::::::::::::::::

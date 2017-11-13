@@ -235,6 +235,7 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 132, short.MaxValue);
                 ServiceLogger.LogException(@"before RollBack in dbSaveOrder "+e.Message,e);
                 webOrderDB.RollbackTransaction();
                 ServiceLogger.LogException(@"after RollBack in dbSaveOrder " + e.Message, e);
