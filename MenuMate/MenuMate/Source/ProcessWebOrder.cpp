@@ -86,35 +86,48 @@ void TfrmProcessWebOrder::Execute()
 
 void __fastcall TfrmProcessWebOrder::WebOrder(TMessage& Message)
 {
-	UnicodeString OrderID = WebOrderContainer.Current.GUID;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-	WebOrderContainer.find(OrderID);
-	DBTransaction.Commit();
-	UpdateDisplay();
+    try
+    {
+        UnicodeString OrderID = WebOrderContainer.Current.GUID;
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+        WebOrderContainer.find(OrderID);
+        DBTransaction.Commit();
+        UpdateDisplay();
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 void __fastcall TfrmProcessWebOrder::UpdateDisplay()
 {
-
-    if(!TGlobalSettings::Instance().AutoAcceptWebOrders)
+    try
     {
-       if(WebOrderContainer.Current.WebKey > 0)
-       {
-          TDBWebUtil::InitializeChit(WebOrderContainer.Current.WebKey, WebOrderChitNumber); // initialize chit here..
-       }
+        if(!TGlobalSettings::Instance().AutoAcceptWebOrders)
+        {
+           if(WebOrderContainer.Current.WebKey > 0)
+           {
+              TDBWebUtil::InitializeChit(WebOrderContainer.Current.WebKey, WebOrderChitNumber); // initialize chit here..
+           }
+        }
+        UpdateButtons();
+        if (WebOrderContainer.empty())
+        {
+            memReceipt->Lines->Clear();
+            memReceipt->Lines->Add("There are no more Web Orders pending.");
+        }
+        else
+        {
+            ShowReceipt();
+        }
     }
-	UpdateButtons();
-	if (WebOrderContainer.empty())
+    catch(Exception & E)
 	{
-		memReceipt->Lines->Clear();
-		memReceipt->Lines->Add("There are no more Web Orders pending.");
-	}
-	else
-	{
-		ShowReceipt();
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 void TfrmProcessWebOrder::ShowReceipt()
@@ -378,6 +391,9 @@ void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject*
         autoAcceptingWebOrders = false;
         frmProcessing->Close();
         UpdateDisplay();
+        UnicodeString str = "THread Terminated. ";
+        str = str + " " + Now();
+        TWebProcUtil::MakeLogFile(str);
     }
     catch(Exception & E)
 	{
@@ -387,23 +403,34 @@ void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject*
 
 void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
 {
+    UnicodeString str = "";
     try
     {
         if(!autoAcceptingWebOrders)
         {
             if(acceptAll)
             {
+                str =  str + " Before Loading order inside startAcceptWebOrdersThread() ";
+                str = str +  Now() + "\n";
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction.StartTransaction();
                 TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
                 WebOrderContainer.first();
                 DBTransaction.Commit();
+                str =  str +  "After Loading order inside startAcceptWebOrdersThread() ";
+                str = str +  Now() + "\n";
             }
+            str =  str + "Befor Creating thread inside startAcceptWebOrdersThread()";
+            str = str +  Now() + "\n";
+            TWebProcUtil::MakeLogFile(str);
            func_ptr ptr = &acceptWebOrder;
            TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
            autoAcceptThread->OnTerminate = autoAcceptWebOrdersTheadTerminate;
            autoAcceptThread->ChitNumber = WebOrderChitNumber;
            autoAcceptThread->Start();
+           str = "After Creating thread inside startAcceptWebOrdersThread()";
+            str = str +  Now() + "\n";
+            TWebProcUtil::MakeLogFile(str);
            autoAcceptingWebOrders = true;
         }
     }
@@ -439,6 +466,7 @@ void __fastcall TAcceptWebOrdersThread::Execute()
 
 void TAcceptWebOrdersThread::acceptWebOrder()
 {
+    UnicodeString str = "";
 	try
 	{  
 		// Load the Order.
@@ -449,14 +477,24 @@ void TAcceptWebOrdersThread::acceptWebOrder()
         {
            if(container->Current.WebKey > 0)
            {
+              str =  str +  " Before  initializing chit inside startAcceptWebOrdersThread() ";
+              str = str +  Now() + "\n";
+              TWebProcUtil::MakeLogFile(str);
               TDBWebUtil::InitializeChit(container->Current.WebKey, ChitNumber);//, ChitNumberController);
+              str =  str +  "After  initializing chit inside startAcceptWebOrdersThread()";
+              str = str +  Now() + "\n";
            }
         }
         if(WebOrderTabKey != container->Current.TabKey)
         {
            WebOrderTabKey = container->Current.TabKey;
+            str =  str +  " Before  ProcessWebOrder inside startAcceptWebOrdersThread() ";
+               str = str +  Now() + "\n";
 		   TWebProcUtil::ProcessWebOrder(Screen->ActiveForm, DBTransaction, container->Current, ChitNumber);
         }
+        str =  str +  "Before  Transaction commit inside startAcceptWebOrdersThread()";
+              str = str +  Now() + "\n";
+              TWebProcUtil::MakeLogFile(str);
 		DBTransaction.Commit();
 		DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
@@ -480,7 +518,7 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 	}
 	catch(EAbort & E)
 	{
-		//MessageBox(E.Message, "Abort", MB_OK + MB_ICONERROR);
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 	catch(Exception & E)
 	{
