@@ -30,7 +30,7 @@ namespace MenumateVersionParser
             pv6_00,pv6_01,pv6_02,pv6_03,pv6_04,pv6_05,pv6_06,pv6_07,pv6_08,pv6_09,pv6_10,
             pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
             pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
-            pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,pv6_41, pv6_42,
+            pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,pv6_41, pv6_42,pv6_43
     };
 
     class TApplyParser
@@ -118,6 +118,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_40( TDBControl* const inDBControl );
         PARSER_ERROR apply6_41( TDBControl* const inDBControl );
         PARSER_ERROR apply6_42( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_43( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -851,7 +852,14 @@ namespace MenumateVersionParser
 
         void upgrade6_42Tables();
         void update6_42Tables();
+        
+
         void Create6_42Generator(TDBControl* const inDBControl);
+
+         void upgrade6_43Tables();
+        void update6_43Tables();
+        void AlterTableTIMECLOCKLOCATIONS6_43(TDBControl* const inDBControl);
+        void AlterTableCONTACTTIME6_43(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

@@ -27,6 +27,11 @@ void TApplyParser::upgrade6_42Tables()
 {
     update6_42Tables();
 }
+//--------------------------------------------------------------------
+void TApplyParser::upgrade6_43Tables()
+{
+    update6_43Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -37,14 +42,22 @@ void TApplyParser::update6_40Tables()
 void TApplyParser::update6_41Tables()
 {
     AlterTable6_41(_dbControl);
-    UpdateMallSalesBySalesType(_dbControl);
+   UpdateMallSalesBySalesType(_dbControl);
     UpdateTablePatronCountTable(_dbControl);
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
+  
 }
+//--------------------------------------------------------
+ void TApplyParser::update6_43Tables()
+ {
+
+   AlterTableTIMECLOCKLOCATIONS6_43(_dbControl);
+   AlterTableCONTACTTIME6_43(_dbControl);
+ }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
@@ -218,6 +231,46 @@ void TApplyParser::AlterTable6_41(TDBControl* const inDBControl)
         inDBControl);
     }
 }
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableTIMECLOCKLOCATIONS6_43(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "TIMECLOCKLOCATIONS", "DATE_CREATED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE TIMECLOCKLOCATIONS "
+         "ADD DATE_CREATED TIMESTAMP;",
+        inDBControl);
+    }
+
+
+
+   if ( !fieldExists( "TIMECLOCKLOCATIONS", "STATUS", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE TIMECLOCKLOCATIONS ADD STATUS CHAR(1) DEFAULT 'T' NOT NULL;",
+		inDBControl);
+    }
+
+
+
+
+
+
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableCONTACTTIME6_43(TDBControl* const inDBControl)
+{
+
+   if ( !fieldExists( "CONTACTTIME", "STATUS", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE CONTACTTIME ADD STATUS CHAR(1) DEFAULT 'T' NOT NULL;",
+         inDBControl);
+    }
+
+
+}
+
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::UpdateMallSalesBySalesType(TDBControl* const inDBControl)
 {
