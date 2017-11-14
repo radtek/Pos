@@ -1524,7 +1524,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
 
-    if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
         SaveRoomGuestDetails(PaymentTransaction);
 
     if(isSCDOrPWDApplied)
