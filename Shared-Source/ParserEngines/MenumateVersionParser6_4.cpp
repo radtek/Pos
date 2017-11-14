@@ -56,6 +56,7 @@ void TApplyParser::update6_43Tables()
     InsertIntoMallExportSettings6_43(_dbControl, 27, "MEZZANINE_AREA", "btnMezzanineArea", 'T');
     int settingID[1] = {27};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 1, 2);
+    InsertInTo_MallExport_Settings_Values6_43(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_43(_dbControl);
     CreateMezzanineSalesTable6_43(_dbControl);
 }
@@ -402,4 +403,57 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_SALES_ID TO 0;", inDBControl
         );
-    }}}
+    }}//------------------------------------------------------------------------------------------void TApplyParser::InsertInTo_MallExport_Settings_Values6_43(TDBControl* const inDBControl, int settingId, int mallId){    TDBTransaction transaction( *inDBControl );    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT a.DEVICE_KEY FROM MALLEXPORT_SETTINGS_VALUES a "
+                                 "WHERE a.MALL_KEY = :MALL_KEY GROUP BY 1 ";
+        SelectQuery->ParamByName("MALL_KEY")->AsInteger = mallId;
+        SelectQuery->ExecQuery();
+        int index = GetMallExportSettingValueKey(_dbControl);
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {            if ( tableExists( "MALLEXPORT_SETTINGS_VALUES", _dbControl ) )            {
+                TIBSQL *InsertQuery    = transaction.Query(transaction.AddQuery());
+                InsertQuery->Close();
+                InsertQuery->SQL->Text =
+                            "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:MALLEXPORT_SETTING_VALUE_KEY, :MALLEXPORTSETTING_ID, :FIELD_VALUE, "
+                            " :FIELD_TYPE, :DEVICE_KEY, :MALL_KEY ) ";
+                InsertQuery->ParamByName("MALLEXPORT_SETTING_VALUE_KEY")->AsInteger = index++;
+                InsertQuery->ParamByName("MALLEXPORTSETTING_ID")->AsInteger = settingId;
+                InsertQuery->ParamByName("FIELD_VALUE")->AsString = "true";
+                InsertQuery->ParamByName("FIELD_TYPE")->AsString = "UnicodeString";
+                InsertQuery->ParamByName("DEVICE_KEY")->AsInteger = SelectQuery->FieldByName("DEVICE_KEY")->AsInteger;
+                InsertQuery->ParamByName("MALL_KEY")->AsInteger = mallId;
+                InsertQuery->ExecQuery();
+            }
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }}//--------------------------------------------------------------------------------------int TApplyParser::GetMallExportSettingValueKey(TDBControl* const inDBControl){    int index = 0;    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        if ( tableExists( "MALLEXPORT_SETTINGS_VALUES", _dbControl ) )
+        {
+            TIBSQL *selectQuery    = transaction.Query(transaction.AddQuery());
+            selectQuery->SQL->Text = "SELECT MAX(A.MALLEXPORT_SETTING_VALUE_KEY) MALLEXPORT_SETTING_VALUE_KEY FROM MALLEXPORT_SETTINGS_VALUES a ";
+            selectQuery->ExecQuery();
+
+            if(selectQuery->RecordCount)
+                index = selectQuery->FieldByName("MALLEXPORT_SETTING_VALUE_KEY")->AsInteger;
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+    return index + 1;}}

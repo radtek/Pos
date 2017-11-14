@@ -860,6 +860,8 @@ namespace MenumateVersionParser
                                             char isUIRequired);
         void CreateMezzanineAreaTable6_43(TDBControl* const inDBControl);
         void CreateMezzanineSalesTable6_43(TDBControl* const inDBControl);
+        int GetMallExportSettingValueKey(TDBControl* const inDBControl);
+        void InsertInTo_MallExport_Settings_Values6_43(TDBControl* const inDBControl, int settingId, int mallId);
 
     }; // class
 } // namespace
