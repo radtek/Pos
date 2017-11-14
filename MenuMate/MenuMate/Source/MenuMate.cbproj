@@ -3328,10 +3328,6 @@
 				<DependentOn>ReportExport\HavanaReport.h</DependentOn>
 				<BuildOrder>753</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="OracleDataIntegration.cpp">
-				<DependentOn>OracleDataIntegration.h</DependentOn>
-				<BuildOrder>772</BuildOrder>
-			</CppCompile>
 			<None Include="StringTableVariables.h">
 				<BuildOrder>750</BuildOrder>
 			</None>
