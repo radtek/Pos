@@ -17,7 +17,7 @@
 
 // 1000 = 1 sec
 #define _CONNECT_TIME_OUT 3000
-#define _READ_TIME_OUT    100000
+#define _READ_TIME_OUT    10000
 
 #define _RESPONSE_BUFFER_SIZE 10249886756453434
 //---------------------------------------------------------------------------

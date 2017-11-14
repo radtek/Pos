@@ -31,13 +31,10 @@ TOracleTCPIP::~TOracleTCPIP()
 void TOracleTCPIP::CreateTCPClient()
 {
 	tcpClient->Host           = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-//    MessageBox(tcpClient->Host,"Host",MB_OK);
 	tcpClient->Port           = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
-//    MessageBox(tcpClient->Port,"Port",MB_OK);
 	tcpClient->BoundPort      = 0;
 	tcpClient->ReadTimeout    = _READ_TIME_OUT;
 	tcpClient->ConnectTimeout = _CONNECT_TIME_OUT;
-//    MessageBox("client created","",MB_OK);
 }
 //---------------------------------------------------------------------------
 bool TOracleTCPIP::Connect()
@@ -45,8 +42,6 @@ bool TOracleTCPIP::Connect()
     bool retValue = false;
 	try
 	{
-//       MessageBox(tcpClient->Host,"Host",MB_OK);
-//       MessageBox(tcpClient->Port,"Port",MB_OK);
        if( tcpClient->Connected() )
 	   {
             Disconnect();
@@ -57,6 +52,7 @@ bool TOracleTCPIP::Connect()
 	}
 	catch( Exception& E)
 	{
+        Disconnect();
        	MessageBox(E.Message+"\nPlease check IP address and Port number Values",
                                                  "Abort", MB_OK + MB_ICONERROR);
 	}
@@ -66,7 +62,9 @@ bool TOracleTCPIP::Connect()
 bool TOracleTCPIP::Disconnect()
 {
     if(tcpClient->Connected())
+    {
         tcpClient->Disconnect();
+    }
 }
 //---------------------------------------------------------------------------
 AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
@@ -98,26 +96,15 @@ void TOracleTCPIP::sendData( AnsiString inData )
  	__int32 remainedDataSize = dataSize;
 
      __int32 maxBufferSize = data.size(); // It can be assigned a lower value
-     maxBufferSize += 2;                  // added 2 for STX and ETX
 	__int32 itPos = 0;
 
 	char   *buffer = new char[maxBufferSize];
-	// Send Data Size
-	tcpClient->IOHandler->Write( maxBufferSize );
 
 	// Send Data
     tcpClient->IOHandler->Write( CreateSTX(), 1 );
-	while( remainedDataSize > 0 )
-	{
-	   __int32 bufferSize = ( remainedDataSize >= maxBufferSize ) ? maxBufferSize : remainedDataSize;
-	   data.copy( buffer, bufferSize, itPos );
-
-
-	   tcpClient->IOHandler->Write( CreateByteArray( buffer, bufferSize), bufferSize );
-
-	   itPos += bufferSize;
-	   remainedDataSize -= bufferSize;
-	}
+    __int32 bufferSize = ( remainedDataSize >= maxBufferSize ) ? maxBufferSize : remainedDataSize;
+    data.copy( buffer, bufferSize, itPos );
+    tcpClient->IOHandler->Write( CreateByteArray( buffer, bufferSize), bufferSize );
     tcpClient->IOHandler->Write( CreateETX(), 1 );
 	delete[] buffer;
 }
@@ -131,7 +118,6 @@ AnsiString TOracleTCPIP::fetchResponse()
        tcpClient->IOHandler->CheckForDataOnSource(500);
        tcpClient->IOHandler->ReadTimeout = 100;
        TByteDynArray buffer;
-//       Sleep(1000);
        tcpClient->IOHandler->ReadBytes( buffer, -1, true );
        outData = AnsiString((char*) & buffer[0], buffer.Length);
     }

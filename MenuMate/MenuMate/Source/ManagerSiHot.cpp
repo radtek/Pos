@@ -62,36 +62,12 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = true;
         Enabled = GetRoundingandDefaultAccount();
-        if(Enabled)
-        {
-            if(LoadRevenueCodes(DBTransaction))
-                Enabled = true;
-            else
-            {
-                Enabled = false;
-                MessageBox("Please Configure Revenue Codes to enable SIHot","Warning",MB_ICONWARNING);
-            }
-        }
 	}
 	else
 	{
 		Enabled = false;
 	}
     DBTransaction.Commit();
-}
-//---------------------------------------------------------------------------
-bool TManagerSiHot::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
-{
-    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
-    SelectQuery->Close();
-    SelectQuery->SQL->Text = "SELECT REVENUECODE,REVENUECODE_DESCRIPTION FROM REVENUECODEDETAILS";
-    SelectQuery->ExecQuery();
-    for(;!SelectQuery->Eof;SelectQuery->Next())
-    {
-        RevenueCodesMap.insert(std::pair<int,AnsiString>(SelectQuery->FieldByName("REVENUECODE")->AsInteger,
-                                             SelectQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString));
-    }
-    return RevenueCodesMap.size() > 0 ;
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::GetRoundingandDefaultAccount()

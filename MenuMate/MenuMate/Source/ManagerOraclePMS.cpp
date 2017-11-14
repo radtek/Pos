@@ -54,24 +54,55 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
-        DBTransaction.Commit();
         bool connectionMade = InitializeoracleTCP();
 
         if(Registered && TCPIPAddress != "")
         {
-            if(connectionMade)
+            if(connectionMade && LoadRevenueCodes(DBTransaction) && LoadMealTimings(DBTransaction))
+            {
                 Enabled = GetLinkStatus();
+            }
+            else
+            {
+                Enabled = false;
+                MessageBox("Please Configure Revenue Codes and Serving Times to enable Oracle","Warning",MB_ICONWARNING);
+            }
         }
         else
         {
             Enabled = false;
         }
+        DBTransaction.Commit();
     }
     catch (Exception &E)
     {
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction.Rollback();
     }
+}
+//---------------------------------------------------------------------------
+bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
+{
+    bool retValue = false;
+    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+    SelectQuery->Close();
+    SelectQuery->SQL->Text = "SELECT REVENUECODE,REVENUECODE_DESCRIPTION FROM REVENUECODEDETAILS";
+    SelectQuery->ExecQuery();
+    if(SelectQuery->RecordCount > 0)
+        retValue = true;
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TManagerOraclePMS::LoadMealTimings(Database::TDBTransaction &DBTransaction)
+{
+    bool retValue = false;
+    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+    SelectQuery->Close();
+    SelectQuery->SQL->Text = "SELECT a.SERVINGTIMES_KEY, a.MEALIDENTIFIER, a.STARTTIME, a.ENDTIME FROM SERVINGTIMESDETAILS a";
+    SelectQuery->ExecQuery();
+    if(SelectQuery->RecordCount > 0)
+        retValue = true;
+    return retValue;
 }
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
@@ -112,68 +143,81 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
 bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                                     int StaffId)
 {
-    std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
-    TPostRequest postRequest;
-    TPostRequestAnswer _postResult;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-    std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
-    AnsiString checkNumber = managerDB->GetCheckNumber(DBTransaction);
-    DBTransaction.Commit();
     bool retValue = false;
-    double tip = 0;
-    for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+    try
     {
-        TPayment *payment = _paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+        std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
+        TPostRequest postRequest;
+        TPostRequestAnswer _postResult;
+        std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+        AnsiString checkNumber = managerDB->GetCheckNumber(DBTransaction);
+        DBTransaction.Commit();
+
+        double tip = 0;
+        for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
-           tip += (double)payment->GetAdjustment();
+            TPayment *payment = _paymentTransaction.PaymentGet(i);
+            if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+            {
+               tip += (double)payment->GetAdjustment();
+            }
+        }
+        for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+        {
+            TPayment *payment = _paymentTransaction.PaymentGet(i);
+            double amount = (double)payment->GetPayTendered();
+            double portion = 0;
+            if((amount != 0)
+                  && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
+            {
+                portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
+                double tipPortion = tip * portion;
+                postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
+                postRequest.CheckNumber = checkNumber;
+                TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
+                AnsiString resultData = "";
+                AnsiString data = oracledata->SerializeOut(doc);
+                resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+                retValue = oracledata->DeserializeData(resultData, _postResult);
+            }
         }
     }
-    for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+    catch(Exception &E)
     {
-        TPayment *payment = _paymentTransaction.PaymentGet(i);
-        double amount = (double)payment->GetPayTendered();
-        double portion = 0;
-        if((amount != 0)
-              && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
-        {
-            portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
-            double tipPortion = tip * portion;
-            postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
-            postRequest.CheckNumber = checkNumber;
-            TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
-            AnsiString resultData = "";
-            AnsiString data = oracledata->SerializeOut(doc);
-//            MessageBox(data,"data",MB_OK);
-            resultData = TOracleTCPIP::Instance().SendAndFetch(data);
-//            MessageBox(resultData,"resultData",MB_OK);
-            retValue = oracledata->DeserializeData(resultData, _postResult);
-        }
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
     }
-    // Post Sales Data
     return retValue;
 }
 //---------------------------------------------------------------------------
 void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult)//std::auto_ptr<TRoomInquiryResult> &_roomResult)
 {
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-    std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
-    TPostRoomInquiry postRoomRequest;
-    postRoomRequest.InquiryInformation = _roomNumber;
-    oracledata->CreatePostRoomInquiry(postRoomRequest);
-    TiXmlDocument doc = oracledata->CreateRoomInquiryXML(postRoomRequest);
-    AnsiString resultData = "";
-    AnsiString data = oracledata->SerializeOut(doc);
-    resultData = TOracleTCPIP::Instance().SendAndFetch(data);
-
-    oracledata->DeserializeInquiryData(resultData, _roomResult);
-    if(!_roomResult.IsSuccessful)
+    std::auto_ptr<TfrmProcessing>
+    (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Getting Room Details , Please Wait...";
+    Processing->Show();
+    try
     {
-        MessageBox(_roomResult.resultText,"Warning",MB_OK);
+        std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
+        TPostRoomInquiry postRoomRequest;
+        postRoomRequest.InquiryInformation = _roomNumber;
+        oracledata->CreatePostRoomInquiry(postRoomRequest);
+        TiXmlDocument doc = oracledata->CreateRoomInquiryXML(postRoomRequest);
+        AnsiString resultData = "";
+        AnsiString data = oracledata->SerializeOut(doc);
+        resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+
+        oracledata->DeserializeInquiryData(resultData, _roomResult);
+        if(!_roomResult.IsSuccessful)
+        {
+            MessageBox(_roomResult.resultText,"Warning",MB_OK);
+        }
     }
-    // Post room Inquiry
-    DBTransaction.Commit();
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
 }
 //---------------------------------------------------------------------------

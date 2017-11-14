@@ -51,5 +51,6 @@ TIBSQL* TOracleManagerDB::LoadMeals(Database::TDBTransaction &DBTransaction)
     SelectQuery->Close();
     SelectQuery->SQL->Text = "SELECT MEALIDENTIFIER,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS";
     SelectQuery->ExecQuery();
+    return SelectQuery;
 }
 //----------------------------------------------------------------------------

@@ -74,15 +74,12 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
     TPostRequest postRequest;
     try
     {
-        MessageBox(tip,"tip",MB_OK);
         double serviceCharge = 0;
         Currency discount = 0;
         std::map<int, double> discMap;
         discMap.clear();
         std::vector<TTax> taxVector;
-//        std::vector<TServiceCharge> serviceChargeVector;
         std::map<int,double> subtotals;
-//        serviceChargeVector.clear();
         taxVector.clear();
         subtotals.clear();
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
@@ -93,8 +90,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
             // calculation of taxes
             if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
                 ExtractTaxes(itemComplete,taxVector,portion);
-            // calculation for discount
-//            ExtractDiscount(discMap,itemComplete,portion);
             // calculation of service Charge
             if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                 serviceCharge += (double)itemComplete->BillCalcResult.ServiceCharge.Value;
@@ -106,8 +101,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
                 // calculation of taxes
                 if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
                     ExtractTaxes(itemCompleteSub,taxVector,portion);
-                // calculation for discount
-//                ExtractDiscount(discMap,itemCompleteSub,portion);
                 // calculation of service Charge
                 if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                     serviceCharge += (double)itemCompleteSub->BillCalcResult.ServiceCharge.Value;
@@ -121,19 +114,17 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 
 
         double total = CalculateTotal(subtotals,taxVector,discMap);
-//        MessageBox(total,"total1", MB_OK);
         total += serviceCharge;
         total += tip;
-//        MessageBox(total,"total",MB_OK);
+        total += (double)payment->GetAdjustment();
         Currency patronCount = 0;
         std::vector<TPatronType>::iterator itPatron = paymentTransaction.Patrons.begin();
         for(;itPatron != paymentTransaction.Patrons.end(); ++itPatron)
         {
             patronCount += itPatron->Count;
         }
-//        MessageBox(patronCount,"patronCount",MB_OK);
         // Identify Meal Code
-        AnsiString mealName = "Default";
+        AnsiString mealName = "1";
         std::vector<TTimeSlots>::iterator it = TDeviceRealTerminal::Instance().BasePMS->Slots.begin();
         for(;it !=TDeviceRealTerminal::Instance().BasePMS->Slots.end(); ++it)
         {
@@ -145,7 +136,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
                 break;
             }
         }
-//        MessageBox(mealName,"mealName",MB_OK);
         postRequest.RoomNumber = paymentTransaction.PMSClientDetails.RoomNumber;
         postRequest.ReservationId = paymentTransaction.PMSClientDetails.ReservationID;
         postRequest.ProfileId = paymentTransaction.PMSClientDetails.ProfileID;
@@ -182,8 +172,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
            }
            postRequest.Subtotal1.push_back(str);
         }
-//        MessageBox(postRequest.Subtotal1.size(),"postRequest.Subtotal1",MB_OK);
-        //
 
         std::map<int,double>::iterator itDisc =  discMap.begin();
         for(;itDisc != discMap.end(); advance(itDisc,1))
@@ -194,14 +182,12 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
            {
               str = str.SubString(1,str.Pos(".")-1);
            }
-//           MessageBox(str,"discount",MB_OK);
            postRequest.Discount.push_back(str);
         }
 
         data = RoundTo((double)serviceCharge, -2);
         data = data * 100;
         postRequest.ServiceCharge.push_back(data);
-//        MessageBox(postRequest.ServiceCharge.size(),"postRequest.ServiceCharge",MB_OK);
         for(int i = 0; i < taxVector.size(); i++)
         {
             double value = RoundTo(taxVector[i].Value * 100,-2);
@@ -212,7 +198,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
             }
             postRequest.Tax.push_back(str);
         }
-//        MessageBox(postRequest.Tax.size(),"postRequest.Tax",MB_OK);
         postRequest.Date = Now().FormatString( "YYMMDD");
         postRequest.Time = Now().FormatString( "HHMMSS");
         postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
@@ -222,9 +207,8 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 	catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        MessageBox(E.Message,"Exception in CreatePost",MB_OK);
+        MessageBox(E.Message,"Exception in creating XML",MB_OK);
 	}
-//    MessageBox("Returning data gathered", "", MB_OK);
     return postRequest;
 }
 //----------------------------------------------------------------------------
@@ -249,12 +233,10 @@ TiXmlDocument TOracleDataBuilder::CreateRoomInquiryXML(TPostRoomInquiry &postReq
 	TiXmlDocument doc = PrepareXMLDocument();
     try
     {
-	// add root node ( Oracle )
+    	// add root node ( Oracle )
         TiXmlElement *rootNode = new TiXmlElement("PostInquiry");
         doc.LinkEndChild( rootNode );
         AddInvoiceAttrs( rootNode,postRequest);
-//       AnsiString fileName = ExtractFilePath(Application->ExeName) +"\\"+ "Oracle Room Inquiry\\" + "RoomInquiry@ "+Now().FormatString("HHMMSS") + ".txt";
-//       bool result = doc.SaveFile( fileName.c_str() );
     }
     catch( Exception &E )
     {
@@ -286,15 +268,14 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TLinkDescription
 //----------------------------------------------------------------------------
 TiXmlDocument TOracleDataBuilder::CreatePostXML(TPostRequest &postRequest)
 {
-    TiXmlDocument doc = PrepareXMLDocument();
-	// add root node ( Oracle )
-	TiXmlElement *rootNode = new TiXmlElement("PostRequest");
-	doc.LinkEndChild( rootNode );
-	AddInvoiceAttrs( rootNode,postRequest);
+    TiXmlDocument doc;
     try
     {
-//       AnsiString fileName = ExtractFilePath(Application->ExeName) + "\\" + "Oracle Room Post\\" + "Room Post@ "+Now().FormatString("HHMMSS") + ".txt";
-//       bool result = doc.SaveFile( fileName.c_str() );
+        doc = PrepareXMLDocument();
+        // add root node ( Oracle )
+        TiXmlElement *rootNode = new TiXmlElement("PostRequest");
+        doc.LinkEndChild( rootNode );
+        AddInvoiceAttrs( rootNode,postRequest);
     }
     catch( Exception &E )
     {
@@ -460,7 +441,6 @@ TRoomInquiryResult TOracleDataBuilder::createXMLInquiryDoc()
 		result = NULL;
 	}
 	//::::::::::::::::::::::::::::::
-
 	return roomInquiryResult;
 }
 //----------------------------------------------------------------------------
@@ -494,10 +474,14 @@ void TOracleDataBuilder::ReadXML(TiXmlDocument *result,TRoomInquiryResult &roomI
             }
         }
     }
-    else if(value == "PostAnswer")
+    else if(value == "PostAnswer" || !(roomInquiryResult.RoomInquiryItem.size() > 0))
     {
         roomInquiryResult.IsSuccessful = false;
         roomInquiryResult.resultText = _rootElem->Attribute("ResponseText");
+        if(roomInquiryResult.resultText.Length() == 0)
+        {
+            roomInquiryResult.resultText = "No details found for the room inquired.";
+        }
     }
 }
 //----------------------------------------------------------------------------
@@ -508,6 +492,7 @@ void TOracleDataBuilder::ReadXML(TiXmlDocument *result,TPostRequestAnswer &_post
     if(value == "PostAnswer")
     {
         _postResult.AnswerStatus = _rootElem->Attribute("AnswerStatus");
+        _postResult.resultText   = _rootElem->Attribute("ResponseText");
     }
 }
 //----------------------------------------------------------------------------
@@ -545,8 +530,9 @@ void TOracleDataBuilder::LoadCustomerDetails(int _index,TRoomInquiryResult &room
             }
         }
 	}
-	catch( ... )
+	catch(Exception &E)
 	{
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
 }
 //----------------------------------------------------------------------------
@@ -565,9 +551,9 @@ TiXmlElement* TOracleDataBuilder::loaditemsElem(TiXmlElement* _rootElem)
 			element = element->NextSiblingElement();
 		}
 	}
-	catch( ... )
+	catch(Exception &E)
 	{
-		//throw Exception( "Invalid menu version: " + VERSION + " Element not found: " + "root" );
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
     return 0;
 }
@@ -590,8 +576,9 @@ __int32 TOracleDataBuilder::ChildCount( TiXmlElement* inElem )
 			}
 		}
 	}
-	catch( ... )
+	catch(Exception &E)
 	{
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
 
 	//::::::::::::::::::::::::::::::::
@@ -749,17 +736,14 @@ double TOracleDataBuilder::CalculateTotal(std::map<int,double> subtotals,std::ve
     {
         totalValue += taxVector[i].Value;
     }
-//    MessageBox(totalValue,"after tax",MB_OK);
     for(std::map<int,double>::iterator itdisc = discMap.begin(); itdisc != discMap.end();advance(itdisc,1))
     {
         totalValue += itdisc->second;
     }
-//    MessageBox(totalValue,"after disc",MB_OK);
     for(std::map<int,double>::iterator itsubtotals = subtotals.begin(); itsubtotals != subtotals.end();advance(itsubtotals,1))
     {
         totalValue += itsubtotals->second;
     }
-//    MessageBox(totalValue,"after subtotal",MB_OK);
     return totalValue;
 }
 //----------------------------------------------------------------------------
@@ -781,13 +765,19 @@ AnsiString TOracleDataBuilder::SerializeOut(TiXmlDocument inDoc)
    result = AnsiString( printer.CStr() );
    //::::::::::::::::::::::::::::::::::::::::::::
    result = result.SubString(23,result.Length() - 23);
+   result = result.Trim();
    return result;
 }
 //----------------------------------------------------------------------------
 bool TOracleDataBuilder::DeserializeGetLinkStatus(AnsiString inData)
 {
-//    MessageBox(inData,"",MB_OK);
-//    MessageBox(inData.Pos("Alive"),"",MB_OK);
+    bool retValue = inData.Pos("LinkAlive") != 0;
+
+    if(inData.Length() == 0)
+        MessageBox("Oracle PMS was not enabled because no response was received.","Error", MB_OK+MB_ICONERROR);
+    else if(!retValue)
+        MessageBox(inData,"Error", MB_OK+MB_ICONERROR);
+
     return (inData.Pos("LinkAlive") != 0);
 }
 //----------------------------------------------------------------------------
@@ -795,9 +785,7 @@ bool TOracleDataBuilder::DeserializeInquiryData(AnsiString inData, TRoomInquiryR
 {
     TiXmlDocument* result = new TiXmlDocument();
     result->Parse(inData.c_str());
-//    MessageBox(inData,"inData",MB_OK);
     ReadXML(result,_roomResult);
-//    MessageBox(_roomResult.PathId);
     return true;
 }
 //----------------------------------------------------------------------------
@@ -805,12 +793,14 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
 {
     TiXmlDocument* result = new TiXmlDocument();
     result->Parse(inData.c_str());
-//    MessageBox(inData,"inData",MB_OK);
     ReadXML(result,_postResult);
     if(_postResult.AnswerStatus.Pos("OK") != 0)
         return true;
     else
+    {
+        MessageBox(_postResult.resultText,"Error",MB_OK + MB_ICONERROR);
         return false;
+    }
 }
 //----------------------------------------------------------------------------
 

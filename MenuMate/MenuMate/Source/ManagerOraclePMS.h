@@ -18,5 +18,7 @@ class TManagerOraclePMS : public TBasePMS
     private:
        bool GetLinkStatus();
        bool InitializeoracleTCP();
+       bool LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
+       bool LoadMealTimings(Database::TDBTransaction &DBTransaction);
 };
 #endif

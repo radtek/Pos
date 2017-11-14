@@ -36,6 +36,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
         _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
         _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
         _paymentTransaction.SalesType = eRoomSale;
 
         for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
@@ -65,14 +66,13 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     }
 
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
-
     // Iterate pyamentTransaction orders loop and identify the same III party codes
     // with same tax percentage over them to club item prices and their quantities.
     for(int i = 0; i < _paymentTransaction.Orders->Count; i++)
     {
 
         TItemComplete *itemComplete = ((TItemComplete*)_paymentTransaction.Orders->Items[i]);
-//        double currentVAT = GetVATpercentage(itemComplete);
+        double currentVAT = GetVATpercentage(itemComplete);
 
         // Cancelled orders should not get posted
         if(itemComplete->OrderType == CanceledOrder)
@@ -119,23 +119,14 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
-    AnsiString categoryCode = itemComplete->RevenueCode;
+    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
     if(categoryCode == "")
-       categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
-    AnsiString catDescription = "Default";
-    //UnicodeString categoryCode = itemComplete->ThirdPartyCode;
-    std::map<int,AnsiString>::iterator itRev =
-                    TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.find(atoi(categoryCode.c_str()));
-
-    if(itRev != TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end())
-    {
-        catDescription = itRev->second;
-    }
+        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = categoryCode;
-    siHotService.MiddleCategory_Desc = catDescription;//itemComplete->MenuName;
+    siHotService.MiddleCategory_Desc = itemComplete->MenuName;
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;
@@ -313,7 +304,6 @@ double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
     {
         if(tax->Value != 0)
             percentage += (double)tax->Percentage;
-//        MessageBox(tax->TaxCode,"tax code",MB_OK);
     }
     if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
     {
@@ -328,17 +318,6 @@ double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
             }
         }
     }
-//     MessageBox(percentage,"getting code",MB_OK);
-//    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
-//          tax != itemComplete->BillCalcResult.Tax.end() ; advance(tax,1))
-//    {
-//
-//        if(tax->Value != 0 && tax->TaxType == SalesTax && tax->TaxCode != 0)
-//        {
-//            percentage = tax->TaxCode;
-//            break;
-//        }
-//    }
     return percentage;
 }
 //----------------------------------------------------------------------------
@@ -353,14 +332,6 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
         IBInternalQueryGenerator->Close();
         switch(_paymentTransaction.TypeOfSale)
         {
-           case 0:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = IntToStr(number);
-                break;
-           }
            case 1:
            {
                 IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
@@ -377,9 +348,16 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
                 invoiceNumber = "NC "+ IntToStr(number);
                 break;
            }
+           default:
+           {
+                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+                IBInternalQueryGenerator->ExecQuery();
+                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+                invoiceNumber = IntToStr(number);
+                break;
+           }
         }
         DBTransaction.Commit();
-        return invoiceNumber;
     }
     catch(Exception &ex)
     {
@@ -634,3 +612,4 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     return retValue;
 }
 //----------------------------------------------------------------------------
+
