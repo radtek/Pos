@@ -252,6 +252,7 @@ __published: // IDE-managed Components
    void __fastcall tedtSearchItemKeyPress(TObject *Sender, wchar_t &Key);
    void __fastcall tbtnSearchMouseClick(TObject *Sender);
    void __fastcall tiPMSRoomInputTimer(TObject *Sender);
+   void ShowSihotDetailsMessage();
 private: // User declarations
     AnsiString SouceTableForDelayedPayment;
     AnsiString CustName;

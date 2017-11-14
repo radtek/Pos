@@ -8297,7 +8297,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 
         return;
 
-        }
+    }
 	if (CurrentTender != 0)
 	{
 		MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
@@ -8305,6 +8305,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 	}
 	if (SeatOrders[0]->Orders->Count > 0)
 	{
+        ShowSihotDetailsMessage();
 		TotalCosts();
 		UpdateExternalDevices();
 
@@ -8650,17 +8651,15 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-
+        ShowSihotDetailsMessage();
 		showTablePicker();
 	}
 	else
 	{
-        if(TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-        		MessageBox("SiHot Room Details will not be saved.", "Error", MB_OK + MB_ICONERROR);
-
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
+            ShowSihotDetailsMessage();
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
@@ -10708,7 +10707,6 @@ void TfrmSelectDish::showTablePicker()
             showOldTablePicker();
         }
 
-        DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 
@@ -15282,7 +15280,7 @@ void TfrmSelectDish::GetRoomDetails()
         {
             bool isOkPressed = false;
             UnicodeString selectedAccountNumber = "";
-            if(SiHotAccounts.size() )
+            if(SiHotAccounts.size() > 1)
             {
                 std::auto_ptr<TfrmGuestList> frmGuestList(TfrmGuestList::Create<TfrmGuestList>(this));
                 frmGuestList->GuestAccounts = SiHotAccounts;
@@ -15376,4 +15374,10 @@ void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
     tiPMSRoom->Enabled = false;
     DisplayRoomNoUI();
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
+}
+//-----------------------------------------------------------------------------------------------------
+void TfrmSelectDish::ShowSihotDetailsMessage()
+{
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+            MessageBox("SiHot Room Details will not be saved.", "Warning", MB_OK + MB_ICONWARNING);
 }

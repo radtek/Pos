@@ -8,7 +8,7 @@
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
 #pragma link "TouchGrid"
-#pragma resource "*.dfm" 
+#pragma resource "*.dfm"
 TfrmGuestList *frmGuestList;
 //---------------------------------------------------------------------------
 __fastcall TfrmGuestList::TfrmGuestList(TComponent* Owner): TZForm(Owner)
@@ -24,13 +24,11 @@ void TfrmGuestList::DisplayGuests()
 	UnicodeString chitOptionColor = "";
 	for (int i = 0; i < size; i++)
 	{
-	   	AnsiString caption = GuestAccounts.at(i).AccountDetails.at(i).FirstName + " " + GuestAccounts.at(i).AccountDetails.at(i).LastName;
+	   	AnsiString caption = GuestAccounts.at(i).AccountDetails.at(0).FirstName + " " + GuestAccounts.at(i).AccountDetails.at(0).LastName;
         caption = caption.c_str();
 		GuestListGrid->Buttons[i/8][i%8]->Caption   = caption;
         GuestListGrid->Buttons[i/8][i%8]->Tag = i;
-
-		GuestListGrid->Buttons[i/8][i%8]->Color 	   =  ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-
+		GuestListGrid->Buttons[i/8][i%8]->Color =  ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
 		GuestListGrid->Buttons[i/8][i%8]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
 	}
 
