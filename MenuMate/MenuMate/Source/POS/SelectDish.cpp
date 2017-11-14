@@ -15292,6 +15292,10 @@ void TfrmSelectDish::GetRoomDetails()
                     isOkPressed = true;
                     selectedAccountNumber = frmGuestList->SelectedAccountNumber.c_str();
                 }
+                else
+                {
+                    DisplayRoomNoUI();
+                }
             }
             for(std::vector<TSiHotAccounts>::iterator it = SiHotAccounts.begin(); it != SiHotAccounts.end() ; ++it)
             {
