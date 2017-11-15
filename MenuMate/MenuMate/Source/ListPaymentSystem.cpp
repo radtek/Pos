@@ -1340,7 +1340,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction)
 {
-	bool RetVal = true;
+	bool RetVal = false;
 
 	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
@@ -1365,6 +1365,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		}
 		else
 		{
+            RetVal = true;
 			AnsiString TransactionRef = TDeviceRealTerminal::Instance().BasePMS->GetLastTransactionRef();
 			PaymentTransaction.References.push_back(RefRefType(TransactionRef,
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));

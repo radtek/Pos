@@ -102,7 +102,8 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 		Payment->SetAdjustment(0);
 	}
 
-	tbCredit->Visible = CurrentTransaction.SalesType == eCash;
+	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
+                        TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney);
 
 	if (TGlobalSettings::Instance().EnableMenuPatronCount)
 	CurrentTransaction.CalculatePatronCountFromMenu();

@@ -72,7 +72,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 500000;
+                    request.Timeout = 100000;
                     //request.ContentType = "text/plain";
 
                     // Get the request stream.  
@@ -108,7 +108,7 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 500000;
+                request.Timeout = 100000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse webResponse = request.GetResponse();
@@ -144,7 +144,7 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetValidateContent(transno);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 500000;
+                request.Timeout = 100000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse wr = request.GetResponse();

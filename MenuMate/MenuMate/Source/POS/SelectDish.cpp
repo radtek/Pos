@@ -616,6 +616,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
     InitializeChit();
     isWalkInUser = true;
+    isRoomNoUiCalled = false;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -3679,8 +3680,21 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 }
 
                 bool isGuestExist = true;
-                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !isWalkInUser)
-                     isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);  //&& Sender == tbtnCashSale
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+                {
+                    if(isWalkInUser)
+                    {
+                        PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
+                        PaymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                        PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+                        PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                        PaymentTransaction.SalesType = eRoomSale;
+                    }
+                    else
+                    {
+                        isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
+                     }
+                }
 
                 if(isGuestExist)
 				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
@@ -4682,8 +4696,8 @@ void TfrmSelectDish::OnLockOutTimer(TSystemEvents *Sender)
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::LockOutUser()
-{
-   	if (Active)
+{  
+   	if (Active || isRoomNoUiCalled)
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -4691,6 +4705,7 @@ void TfrmSelectDish::LockOutUser()
         //TGlobalSettings::Instance().AutoLogoutPOS = false;
 		TLoginSuccess Result = lsDenied;
         bool PaymentAccessResult = true;
+        isRoomNoUiCalled = false;
 			try
 			{
                 while (Result == lsDenied || Result == lsPINIncorrect)
@@ -4699,9 +4714,11 @@ void TfrmSelectDish::LockOutUser()
                     Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckPOS);
                     bool PaymentAccessResult = Staff->TestAccessLevel(TempUserInfo, CheckPaymentAccess);
                     IsWaiterLogged =  !PaymentAccessResult;
+
                     if (Result == lsAccepted)
                     {
                         bool LogIn = false;
+                        isRoomNoUiCalled = true;
                         if (TDeviceRealTerminal::Instance().User.ContactKey != TempUserInfo.ContactKey)
                         {
                             if (!StaffChanged(TempUserInfo))
@@ -4735,6 +4752,10 @@ void TfrmSelectDish::LockOutUser()
                         if (CanClose)
                         {
                             Close();
+                            if(Screen->ActiveForm->ClassNameIs("TfrmTouchNumpad"))
+                            {
+                                Screen->ActiveForm->Close();
+                            }
                         }
                         else
                         {
@@ -7799,8 +7820,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
        {
          AutoLogOut();
        }
-
-       DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 	}
@@ -7854,6 +7873,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 						}
 						delete Sale;
                         Sale = NULL;
+                        DisplayRoomNoUI();
 					}
 					else
 					{
@@ -7971,8 +7991,6 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		ResetPOS();
 	}
       AutoLogOut();
-
-     DisplayRoomNoUI();
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }
@@ -8072,7 +8090,6 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
     AutoLogOut();
-    DisplayRoomNoUI();
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }
@@ -8151,8 +8168,6 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         {
            showTablePicker();
         }
-        if(!isExitPressed)
-            DisplayRoomNoUI();
         NagUserToSelectChit();
 
         tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
@@ -8277,8 +8292,6 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                 {
                     AutoLogOut();
                 }
-
-                DisplayRoomNoUI();
                 NagUserToSelectChit();
             }
         	else
@@ -15241,7 +15254,7 @@ bool TfrmSelectDish::CheckIfSubsidizedDiscountValid(int tabKey)
 void TfrmSelectDish::DisplayRoomNoUI()
 {
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-            TGlobalSettings::Instance().EnableCustomerJourney )
+            TGlobalSettings::Instance().EnableCustomerJourney && Screen->ActiveForm->ClassNameIs("TfrmSelectDish"))
     {
         std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
         frmTouchNumpad->Caption = "Enter the Room Number";
@@ -15252,19 +15265,23 @@ void TfrmSelectDish::DisplayRoomNoUI()
         frmTouchNumpad->btnDiscount->Color = clGreen;
         frmTouchNumpad->Mode = pmNumber;
         frmTouchNumpad->CURInitial = 0;
+        isRoomNoUiCalled = true;
         if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
         {
             selectedRoomNumber = frmTouchNumpad->INTResult;
             isWalkInUser = false;
+            isRoomNoUiCalled = false;
             GetRoomDetails();
         }
         else if(frmTouchNumpad->INTResult == 0 && frmTouchNumpad->BtnExit == 2)
         {
             isWalkInUser = true;
+            isRoomNoUiCalled = false;
         }
         else
         {
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
+            isRoomNoUiCalled = true;
             DisplayRoomNoUI();
         }
     }
