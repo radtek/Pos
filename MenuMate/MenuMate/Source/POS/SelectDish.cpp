@@ -15279,7 +15279,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
             isWalkInUser = true;
             isRoomNoUiCalled = false;
         }
-        else if(frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 2 && frmTouchNumpad->INTResult > 0)
+        else if(frmTouchNumpad->BtnExit == 2 && frmTouchNumpad->INTResult > 0)
         {
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
             isRoomNoUiCalled = true;
