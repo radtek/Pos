@@ -20,7 +20,7 @@ __fastcall TfrmExport::TfrmExport()
 {
    // TODO implement export of accounts to Xero
 	dmMMData->Registered(&Registered, &Modules);
-	TouchBtn1->Enabled = (Modules & eOfficeMYOB) && (CurrentConnection.AccountSystem != "Xero");
+	TouchBtn1->Enabled = (Modules & eAccounting) && (CurrentConnection.AccountSystem != "Xero");
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmExport::btnEditMenusMouseClick(TObject *Sender)
