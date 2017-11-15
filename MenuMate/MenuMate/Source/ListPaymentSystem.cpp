@@ -623,7 +623,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTransaction)
 {
     TPayment *NewPayment = new TPayment;
-    NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    if(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal)
+        NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    else
+        NewPayment->Name = "PtsBal";
     NewPayment->SysNameOveride = "Points";
     NewPayment->SetPaymentAttribute(ePayTypePoints);
     NewPayment->DisplayOrder = 1;

@@ -271,6 +271,12 @@ void TfrmPaymentType::Reset()
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
             }
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && Payment->Name == "PtsBal")
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+            }
 
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Grams")
             {
@@ -359,6 +365,12 @@ void TfrmPaymentType::Reset()
 
                    //MM 4775
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+            }
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && Payment->Name == "PtsBal")
             {
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
@@ -553,6 +565,12 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
 
+            }
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && Payment->Name == "PtsBal")
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
             }
 			ButtonPos++;
 		}
@@ -1284,6 +1302,10 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
         {
             Payment->SetPay(-wrkPayAmount);
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
+            {
+                TGlobalSettings::Instance().RefundingItems = true;
+            }
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && Payment->Name == "PtsBal")
             {
                 TGlobalSettings::Instance().RefundingItems = true;
             }
