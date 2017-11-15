@@ -323,6 +323,7 @@ private: // User declarations
     int selectedRoomNumber;
     TSiHotAccounts SiHotAccount;
     bool isRoomNoUiCalled;
+    bool IsAutoLogOutInSelectDish;
 
     void YesGoForSessionWithDC(int memPoints, AnsiString memberPoints,AnsiString memNo,int contactKey);
     void StartThreadDC(int _memPoints, char* _memberDetails_char , AnsiString _memberPoints , AnsiString _memberDetails);

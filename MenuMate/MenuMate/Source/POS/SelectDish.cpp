@@ -4697,8 +4697,8 @@ void TfrmSelectDish::OnLockOutTimer(TSystemEvents *Sender)
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::LockOutUser()
-{  
-   	if (Active || isRoomNoUiCalled)
+{    
+   	if (Active && IsAutoLogOutInSelectDish|| isRoomNoUiCalled)
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -4755,6 +4755,8 @@ void TfrmSelectDish::LockOutUser()
                             Close();
                             if(Screen->ActiveForm->ClassNameIs("TfrmTouchNumpad"))
                             {
+                                isRoomNoUiCalled = false;
+                                IsAutoLogOutInSelectDish = false;
                                 Screen->ActiveForm->Close();
                             }
                         }
@@ -8096,7 +8098,7 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
-{
+{   isRoomNoUiCalled = false;
 	IsSubSidizeProcessed=true;
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -9172,6 +9174,7 @@ void TfrmSelectDish::ResetPOS()
 
   RefreshMenu();
   InitializeChit(); // initialize default chit...
+  IsAutoLogOutInSelectDish = true;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -15286,6 +15289,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
             DisplayRoomNoUI();
         }
     }
+    isRoomNoUiCalled = false;
 }
 //------------------------------------------------------------------------------
 void TfrmSelectDish::GetRoomDetails()
