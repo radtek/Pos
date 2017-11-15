@@ -15258,9 +15258,14 @@ void TfrmSelectDish::DisplayRoomNoUI()
             isWalkInUser = false;
             GetRoomDetails();
         }
-        else
+        else if(frmTouchNumpad->INTResult == 0 && frmTouchNumpad->BtnExit == 2)
         {
             isWalkInUser = true;
+        }
+        else
+        {
+            MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
+            DisplayRoomNoUI();
         }
     }
 }
@@ -15305,6 +15310,7 @@ void TfrmSelectDish::GetRoomDetails()
                         TAccountDetails accountDetails;
                         accountDetails.RoomNumber = IntToStr(selectedRoomNumber);
                         accountDetails.LastName = accIt->LastName;
+                        accountDetails.FirstName = accIt->FirstName;
                         accountDetails.CreditLimit = accIt->CreditLimit;
                         SiHotAccount.AccountDetails.push_back(accountDetails);
                     }
@@ -15313,7 +15319,7 @@ void TfrmSelectDish::GetRoomDetails()
         }
         else if(SiHotAccounts.size() == 0)
         {
-            MessageBox("Not occupied.", "Error", MB_ICONWARNING + MB_OK);
+            MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
             DisplayRoomNoUI();
         }
     }
@@ -15341,7 +15347,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 else
                 {
                     inTransaction.Phoenix.AccountNumber = SiHotAccount.AccountNumber;
-                    inTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(inTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                    inTransaction.Phoenix.AccountName = accIt->FirstName + " " + accIt->LastName;
                     inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
                     inTransaction.Phoenix.FirstName = accIt->FirstName;
                     inTransaction.Phoenix.LastName = accIt->LastName;

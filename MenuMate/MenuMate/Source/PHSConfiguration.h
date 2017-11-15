@@ -36,6 +36,7 @@ __published:	// IDE-managed Components
    TTouchBtn *tbExpensesAccount;
    TTouchBtn *tbServiceCharge;
    TCheckBox *cbEnableCustomerJourney;
+    TLabel *Label1;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);

@@ -41,6 +41,19 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Style = [fsBold]
       ParentFont = False
     end
+    object Label1: TLabel
+      Left = 310
+      Top = 384
+      Width = 242
+      Height = 22
+      Caption = 'Enable Customer Journey'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 310
       Top = 32
@@ -289,12 +302,11 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbServiceChargeMouseClick
     end
     object cbEnableCustomerJourney: TCheckBox
-      Left = 310
-      Top = 368
-      Width = 266
-      Height = 49
+      Left = 558
+      Top = 369
+      Width = 27
+      Height = 58
       Anchors = [akLeft]
-      Caption = 'Enable customer Journey'
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
