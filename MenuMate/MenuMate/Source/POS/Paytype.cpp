@@ -923,6 +923,7 @@ void __fastcall TfrmPaymentType::pnlCancelClick(TObject *Sender)
         if(TGlobalSettings::Instance().PontsSpentCountedAsRevenue)
           Order->DiscountByTypeRemove(dsMMMebersPoints);
     }
+    CurrentTransaction.IgnoreLoyaltyKey = false;
     CurrentTransaction.Recalc();
     if(TGlobalSettings::Instance().EnableCancelCheckRemoval)
     {
@@ -1114,7 +1115,7 @@ void TfrmPaymentType::RemoveTaxes(TStringList* removedTaxes)
 			SideItem->RemovedTaxes =removedTaxes;
 		}
 	}
-
+    CurrentTransaction.IgnoreLoyaltyKey = false;
 	CurrentTransaction.Recalc();
 	ShowPaymentTotals();
 }
@@ -1953,6 +1954,7 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
                 }
             }
         }
+        PointsTransaction.IgnoreLoyaltyKey = false;
         PointsTransaction.Recalc();
 
         RoundedPoints = GetAvailableRedeemPoints(PointsTransaction);
@@ -2319,9 +2321,11 @@ void TfrmPaymentType::ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPaymen
        {
            ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
            ApplyDiscount(discountKey,TDeviceRealTerminal::Instance().User.ContactKey);
+           CurrentTransaction.IgnoreLoyaltyKey = false;
            CurrentTransaction.Recalc();
            Currency discountAmount = fabs(CurrentTransaction.Money.ProductDiscount);
            ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
+           CurrentTransaction.IgnoreLoyaltyKey = false;
            CurrentTransaction.Recalc();
            if(discountAmount < amountToPay)
            {
@@ -3614,6 +3618,7 @@ void TfrmPaymentType::ApplyMemberPointsDiscount(Currency selectedPoints,Currency
     TPointsType Type(pasDiscount,Pair,pesNone);
     CurrentTransaction.Membership.Member.Points.ClearBySource(pasDiscount);
     CurrentTransaction.Membership.Member.Points.Load(Type, selectedPoints);
+    CurrentTransaction.IgnoreLoyaltyKey = false;
     CurrentTransaction.Recalc();
 }
 // ---------------------------------------------------------------------------
@@ -3912,6 +3917,7 @@ void TfrmPaymentType::ProcessThorVouchers()
                     TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityDelete
                     (TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityGetType(secDiscountedBy));
                     ManagerDiscount->ClearThorVouchersDiscounts(CurrentTransaction.Orders);
+                    CurrentTransaction.IgnoreLoyaltyKey = false;
                     CurrentTransaction.Recalc();
                     CurrentTransaction.ProcessPoints();
                     ShowPaymentTotals();
@@ -4004,6 +4010,7 @@ void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 				TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityDelete
 				(TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityGetType(secDiscountedBy));
 				ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
+                CurrentTransaction.IgnoreLoyaltyKey = false;
 				CurrentTransaction.Recalc();
 				tbtnDiscountSurcharge->Caption = "Discount / Surcharge";
 				CurrentTransaction.ProcessPoints();
@@ -4095,6 +4102,7 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 //               MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
 //            }
 			Reset(); // Reloads the Buttons on the screen.
+            CurrentTransaction.IgnoreLoyaltyKey = false;
 			CurrentTransaction.Recalc();
 			ShowPaymentTotals();
 		}
@@ -4126,6 +4134,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 	{
 		if(CurrentTransaction.Membership.Applied())
 		{
+            CurrentTransaction.IgnoreLoyaltyKey = false;
 			CurrentTransaction.Recalc();
 			Currency ProductValue = CurrentTransaction.Money.PaymentDue;
 			CurrentDiscount.MaximumValue = CurrentTransaction.Membership.Member.Points.getPointsBalance(pasDatabase,ptstLoyalty);
@@ -4244,6 +4253,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
                 CurrentTransaction.Membership.Member.Points.ClearBySource(pasDiscount);
                 CurrentTransaction.Membership.Member.Points.Load(Type, CurrentDiscount.Amount);
             }
+        CurrentTransaction.IgnoreLoyaltyKey = false;
         CurrentTransaction.Recalc();
 		TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityDelete
 		(TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityGetType(secDiscountedBy));

@@ -75,7 +75,7 @@ bool TManagerSiHot::GetRoundingandDefaultAccount()
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort);
     if(!retValue)
-        MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address,Port Number and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
+        MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     return retValue;
 }
 //---------------------------------------------------------------------------

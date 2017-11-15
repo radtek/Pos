@@ -163,9 +163,9 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 			RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
 			TDBContacts::GetAvailableGroups(DBTransaction, Info);
-
-		   if (GetMembershipDetailsFromGUI(DBTransaction, Info, triggered_by_preloaded_card))
-		   {
+            bool isCloudUUIDAvailable = Info.CloudUUID != "";
+		    if (GetMembershipDetailsFromGUI(DBTransaction, Info, triggered_by_preloaded_card))
+		    {
                Info.ActivationDate = Now();
                if(Info.ProxStr.Length() == 0)
                   Info.MemberCode = cardCode;
@@ -177,7 +177,11 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
                     memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
                }
-
+               if(!memberCreationSuccess && TGlobalSettings::Instance().LoyaltyMateEnabled)
+               {
+                   if(!isCloudUUIDAvailable && Info.CloudUUID != "")
+                      memberCreationSuccess = true;
+               }
                if(memberCreationSuccess || !TGlobalSettings::Instance().LoyaltyMateEnabled)
                {
                   ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);

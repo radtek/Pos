@@ -298,6 +298,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
 		{
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
+            ReFormatIpToUrl();
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
@@ -353,8 +354,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		}
 		TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
 		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
-		if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-		{
+		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+		{   	
 			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
 			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 		}
@@ -1698,6 +1699,32 @@ void __fastcall TfrmMain::tiBarStockturnoverTimer(TObject *Sender)
 	TDeviceRealTerminal::Instance().SelectBarStockTurnOver(DBTransaction,FileName);
 	DBTransaction.Commit();
 	tiBarStock->Enabled = true;
+}
+//---------------------------------------------------------------------------
+void TfrmMain::ReFormatIpToUrl()
+{
+    if(TGlobalSettings::Instance().PMSType == SiHot)
+    {
+        Database::TDBTransaction DBTransaction( TDeviceRealTerminal::Instance().DBControl );
+        DBTransaction.StartTransaction();
+        try
+        {
+            AnsiString ipAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
+            int portNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
+            if(ipAddress.Pos(":") == 0 && ipAddress.Length() != 0 )
+            {
+                AnsiString url = "http://"+ipAddress+":"+portNumber+"/RMS";
+                TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress = url.Trim();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress);
+            }
+            DBTransaction.Commit();
+        }
+		catch(Exception &E)
+		{
+            DBTransaction.Rollback();
+			TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+		}
+    }
 }
 //---------------------------------------------------------------------------
 

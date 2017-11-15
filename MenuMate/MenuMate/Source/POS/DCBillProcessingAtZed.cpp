@@ -214,6 +214,7 @@ void TDCBillProcessingAtZed::ProceedForPayment()
     PaymentTransaction.Orders->Assign(OrdersList1.get());
     TotalCosts(PaymentTransaction);
     PaymentTransaction.SalesType = eCash;
+    PaymentTransaction.IgnoreLoyaltyKey = false;
     PaymentTransaction.Recalc();
     PaymentTransaction.ChitNumber.Clear();
     PaymentTransaction.Type = eTransOrderSet;
