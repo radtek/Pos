@@ -2039,7 +2039,8 @@ TWriteOffStock::TWriteOffStock(TIBDatabase *IBDatabase) : TStockTransaction(IBDa
 
     sqlSelectLocation->SQL->Text =
         "Select Latest_Cost From StockLocation "
-        "Where Stock_Key = :Stock_Key;";
+        "Where Stock_Key = :Stock_Key "
+        "And Location = :Location;";
 
 
     fBatchInfo.User_Name = frmLogin->CurrentUserName;
@@ -2075,6 +2076,7 @@ void TWriteOffStock::UpdateStock(AnsiString temp[], double Qty, TDateTime Date)
 
     sqlSelectStock->Close();
     sqlSelectStock->ParamByName("Description")->AsString = temp[2];
+
     sqlSelectStock->ExecQuery();
     if(sqlSelectStock->RecordCount)
     {
@@ -2099,9 +2101,10 @@ void TWriteOffStock::UpdateStock(AnsiString temp[], double Qty, TDateTime Date)
 
     sqlSelectLocation->Close();
     sqlSelectLocation->ParamByName("Stock_Key")->AsInteger = StockKey;
+    sqlSelectLocation->ParamByName("Location")->AsString =  TransactionInfo.Location;
     sqlSelectLocation->ExecQuery();
     if(sqlSelectLocation->RecordCount)
-        TransactionInfo.Unit_Cost = sqlSelectLocation->FieldByName("Latest_Cost")->AsFloat;
+    TransactionInfo.Unit_Cost = sqlSelectLocation->FieldByName("Latest_Cost")->AsFloat;
 
     TransactionInfo.Qty = Qty;
     TransactionInfo.Total_Cost = TransactionInfo.Unit_Cost * Qty;
