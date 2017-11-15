@@ -1855,13 +1855,13 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
                 ResetPOS();
             }
         }
+        DisplayRoomNoUI();
 	}
     AutoLogOut();
     if(TGlobalSettings::Instance().EnableTableDisplayMode)
     {
           showTablePicker();
     }
-    DisplayRoomNoUI();
     NagUserToSelectChit();
     CheckMandatoryMembershipCardSetting(tbtnMembership);
 }
@@ -3686,14 +3686,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     {
                         PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
                         PaymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                        PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+                        PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
                         PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
                         PaymentTransaction.SalesType = eRoomSale;
+                        PaymentTransaction.Customer.RoomNumber = StrToInt(PaymentTransaction.Phoenix.RoomNumber);
                     }
                     else
                     {
                         isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
-                     }
+                    }
                 }
 
                 if(isGuestExist)
@@ -15278,7 +15279,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
             isWalkInUser = true;
             isRoomNoUiCalled = false;
         }
-        else
+        else if(frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 2 && frmTouchNumpad->INTResult > 0)
         {
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
             isRoomNoUiCalled = true;
@@ -15369,6 +15370,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                     inTransaction.Phoenix.FirstName = accIt->FirstName;
                     inTransaction.Phoenix.LastName = accIt->LastName;
                     inTransaction.SalesType = eRoomSale;
+                    inTransaction.Customer.RoomNumber = StrToInt(inTransaction.Phoenix.RoomNumber);
                     isRoomDetailsLoaded = true;
                 }
             }
