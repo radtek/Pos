@@ -1351,6 +1351,10 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 	}
 	else
 	{
+        if(TGlobalSettings::Instance().PMSType == SiHot)
+        {
+            OpenCashDrawer(PaymentTransaction);
+        }
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
@@ -4567,7 +4571,11 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					}
 
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -4694,7 +4702,11 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                                exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                              }
                             BuildXMLTransaction(PaymentTransaction);
-                            OpenCashDrawer(PaymentTransaction);
+                            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                            {
+                                OpenCashDrawer(PaymentTransaction);
+                            }
                             if(SplittedItem->OrderKey > 0)
                             {
                               //Calculate DWT , Tax on discount on remaining quantities
@@ -4853,7 +4865,11 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 						   exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                          }
 						BuildXMLTransaction(PaymentTransaction);
-                        OpenCashDrawer(PaymentTransaction);
+                        if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                          !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                        {
+                            OpenCashDrawer(PaymentTransaction);
+                        }
 
                         if(SplittedItem->OrderKey > 0)
                         {
@@ -4966,7 +4982,11 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             }
 
             BuildXMLTransaction(PaymentTransaction);
-            OpenCashDrawer(PaymentTransaction);
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            {
+                OpenCashDrawer(PaymentTransaction);
+            }
             RemoveOrders(PaymentTransaction);
         }
 
@@ -5019,7 +5039,11 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5094,7 +5118,11 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5178,7 +5206,11 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 					ProcessRewardSchemes(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
