@@ -1809,6 +1809,7 @@ void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 {
+    isRoomNoUiCalled = false;
 	if (CurrentTender != 0)
 	{
 		CurrentTender = 0;
@@ -4771,7 +4772,7 @@ void TfrmSelectDish::LockOutUser()
 			}
 			catch(Exception & E)
 			{
-				MessageBox("Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message, "Error", MB_OK + MB_ICONERROR);
+				//MessageBox("Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message, "Error", MB_OK + MB_ICONERROR);
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message);
 				Result = lsDenied;
 			}
