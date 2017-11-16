@@ -2487,10 +2487,12 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 	customerDisp.FirstVisit = false;
     TGlobalSettings::Instance().IsThorPay = true;
     tabKey=0;
+    bool showRoomNoUI = true;
 	if (CurrentTender != 0)
 	{
 		if (InitialMoney.PaymentDue > 0)
 		{
+            showRoomNoUI = false;
 			MessageBox("You must tender at least the total price of the goods. \r " + CurrToStrF(InitialMoney.PaymentDue, ffNumber, CurrencyDecimals) + " Still Owing", "Error",
 				MB_OK + MB_ICONERROR);
 		}
@@ -2586,7 +2588,9 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			showTablePicker();
 		}
 
-        DisplayRoomNoUI();
+        if(showRoomNoUI)
+            DisplayRoomNoUI();
+
 		//MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 	}
@@ -8171,6 +8175,8 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         {
            showTablePicker();
         }
+        if(!isExitPressed)
+            DisplayRoomNoUI();
         NagUserToSelectChit();
 
         tbtnDollar1->Caption = GetTenderStrValue( vmbtnDollar1 );
@@ -15282,7 +15288,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
             isWalkInUser = true;
             isRoomNoUiCalled = false;
         }
-        else if(frmTouchNumpad->BtnExit == 2 && frmTouchNumpad->INTResult > 0)
+        else if(frmTouchNumpad->BtnExit == 2 && abs(frmTouchNumpad->INTResult) > 0)
         {
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
             isRoomNoUiCalled = true;
