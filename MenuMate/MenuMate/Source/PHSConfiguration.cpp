@@ -150,6 +150,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRoundingCategory->Enabled = false;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
+        tbRevenueCodes->Enabled = false;
     }
     else if(PMSType == oracle)
     {
@@ -166,7 +167,6 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;
-//        tbRevenueCodes->Enabled = false;
     }
     else
     {
@@ -542,16 +542,18 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
 	}
 	else
 	{
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 5;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
-		frmTouchKeyboard->Caption = "Enter the Revenue Centre";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+		frmTouchNumpad->Caption = "Enter Revenue Centre.";
+		frmTouchNumpad->btnSurcharge->Caption = "Ok";
+		frmTouchNumpad->btnSurcharge->Visible = true;
+		frmTouchNumpad->btnDiscount->Visible = false;
+		frmTouchNumpad->Mode = pmNumber;
+		frmTouchNumpad->INTInitial = atoi(TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.c_str());
+        frmTouchNumpad->SetMaxLengthValue(5);
+		if (frmTouchNumpad->ShowModal() == mrOk)
 		{
-			TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchKeyboard->KeyboardText;
-			tbServiceCharge->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+			TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchNumpad->INTResult;
+			tbRevenueCentre->Caption = "P.O.S ID\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCentre,TDeviceRealTerminal::Instance().BasePMS->RevenueCentre);

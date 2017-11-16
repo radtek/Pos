@@ -791,9 +791,8 @@ void TImportMenu::InsertRevenueCodesInDB(int index, TLoadMenu* inMenu,
         {
             if( code != 0 )
             {
-                if( !RevenueCodeExists( inDBTransaction, code ) )
+                if( !RevenueCodeExists( inDBTransaction, code ) && description.Trim().Length() != 0)
                 {
-                    MessageBox(description,"insertion of code",MB_OK) ;
                     TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
                     qr->SQL->Text = "INSERT INTO REVENUECODEDETAILS ( REVENUECODE, REVENUECODE_DESCRIPTION ) "
                                     "VALUES ( :REVENUECODE, :REVENUECODE_DESCRIPTION ); ";

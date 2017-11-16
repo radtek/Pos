@@ -17,6 +17,7 @@ TOracleTCPIP::TOracleTCPIP()
 {
     tcpClient = new TIdTCPClient(NULL);
     CreateTCPClient();
+//    MessageBox("Client created","shivashu",MB_OK);
 }
 //---------------------------------------------------------------------------
 TOracleTCPIP::~TOracleTCPIP()
@@ -25,6 +26,7 @@ TOracleTCPIP::~TOracleTCPIP()
     {
         delete tcpClient;
         tcpClient = NULL;
+//        MessageBox("Client destroyed","shivashu",MB_OK);
     }
 }
 //---------------------------------------------------------------------------
@@ -45,10 +47,17 @@ bool TOracleTCPIP::Connect()
        if( tcpClient->Connected() )
 	   {
             Disconnect();
+            Sleep(12000);
             CreateTCPClient();
+            Sleep(1000);
        }
-       tcpClient->Connect();
-       retValue = true;
+//       MessageBox("before connect of OracleTCPIP ip address:" + tcpClient->Host + " port number " +tcpClient->Port + " ","shivashu",MB_OK);
+       if(! tcpClient->Connected())
+       {
+           tcpClient->Connect();
+//       MessageBox("after connect of OracleTCPIP","shivashu",MB_OK);
+           retValue = true;
+       }
 	}
 	catch( Exception& E)
 	{
@@ -61,9 +70,12 @@ bool TOracleTCPIP::Connect()
 //----------------------------------------------------------------------------
 bool TOracleTCPIP::Disconnect()
 {
+//    MessageBox("In Disconnect of connection","shivashu",MB_OK);
     if(tcpClient->Connected())
     {
+//        MessageBox("before Disconnect of connection","shivashu",MB_OK);
         tcpClient->Disconnect();
+//        MessageBox("after Disconnect of connection","shivashu",MB_OK);
     }
 }
 //---------------------------------------------------------------------------
@@ -79,7 +91,7 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
         }
         catch( Exception& exc)
         {
-            MessageBox("Could not communicate with server.","Error",MB_OK + MB_ICONERROR);
+            MessageBox("Could not communicate with server.\n" +exc.Message,"Error",MB_OK + MB_ICONERROR);
         }
 	}
     else if (!tcpClient->Connected())

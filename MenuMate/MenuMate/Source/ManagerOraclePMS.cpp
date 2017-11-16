@@ -54,18 +54,27 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
-        bool connectionMade = InitializeoracleTCP();
-
         if(Registered && TCPIPAddress != "")
         {
-            if(connectionMade && LoadRevenueCodes(DBTransaction) && LoadMealTimings(DBTransaction))
+            if(LoadRevenueCodes(DBTransaction))
             {
-                Enabled = GetLinkStatus();
+                if(Slots.size() > 0)
+                {
+                    if(InitializeoracleTCP())
+                    {
+                        Enabled = GetLinkStatus();
+                    }
+                }
+                else
+                {
+                    MessageBox("Serving Times are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
+                    Enabled = false;
+                }
             }
             else
             {
+                MessageBox("Revenue codes are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
                 Enabled = false;
-                MessageBox("Please Configure Revenue Codes and Serving Times to enable Oracle","Warning",MB_ICONWARNING);
             }
         }
         else
@@ -107,6 +116,7 @@ bool TManagerOraclePMS::LoadMealTimings(Database::TDBTransaction &DBTransaction)
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
 {
+//    MessageBox("Going to Initialize TCP","shivashu",MB_OK);
     bool retValue = TOracleTCPIP::Instance().Connect();
     return retValue;
 }

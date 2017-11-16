@@ -1615,6 +1615,7 @@ TEditorNode *TItemSizeNode::Duplicate()
 	NewNodeType->CanBePaidForUsingPoints = CanBePaidForUsingPoints;
 	NewNodeType->DefaultPatronCount = DefaultPatronCount;
     NewNodeType->CostForPoints = CostForPoints;
+    NewNodeType->RevenueCode = RevenueCode;
 	// Modified by DevPH
 	TaxProfileKeyIterator tpIT;
 
@@ -2489,21 +2490,25 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 
 	   	for (std::map <int,AnsiString> ::iterator itRevenue = revenueCodesMap.begin(); itRevenue != revenueCodesMap.end(); advance(itRevenue, 1))
 		{
-            AnsiString value = itRevenue->first;
-            value += "(";
-            value += itRevenue->second;
-            value += ")";
-			cbRevenueGroupCode->Items->Add(value);
+            if(itRevenue->second.Length() != 0)
+            {
+                AnsiString value = itRevenue->first;
+                value += "(";
+                value += itRevenue->second;
+                value += ")";
+                cbRevenueGroupCode->Items->Add(value);
+            }
 		}
 
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
         if(ItemSizeData->RevenueCode != 0)
         {
+            cbRevenueGroupCode->Text = "";
             AnsiString revenueCodeText = ItemSizeData->RevenueCode;
             revenueCodeText += "(";
-            revenueCodeText += revenueCodesMap[ItemSizeData->RevenueCode];//ItemSizeData->RevenueCodeDescription;
+            revenueCodeText += revenueCodesMap[ItemSizeData->RevenueCode];
             revenueCodeText += ")";
-            cbRevenueGroupCode->Text =  revenueCodeText;
+            cbRevenueGroupCode->ItemIndex = cbRevenueGroupCode->Items->IndexOf(revenueCodeText);
         }
         else
             cbRevenueGroupCode->Text =  "";
@@ -6120,6 +6125,7 @@ void TfrmMenuEdit::LoadServingCoursesPrior3Point4(TMenuNode *MenuData)
 		Menu::TServingCoursesInfo	ServingCoursesInfo;
 		if (MenuLoader.GetAvailableServingCourses(&ServingCoursesInfo))
 		AddServingCourses(&ServingCoursesInfo,ServingCoursesNode);
+        MenuLoader.GetAllRevenueCodesFromDB(revenueCodesMap);
 	}
 }
 
@@ -13768,7 +13774,7 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
     return priceExcl;
 }
 
-
+/*
 void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
 {
     int codeAlready = 0;
@@ -13812,6 +13818,7 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
         }
 	}
 }
+*/
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuRevenueCodes(TSaveMenu* inSaveMenu, TTreeNode* inMenuNode)
 {
@@ -13948,6 +13955,18 @@ void __fastcall TfrmMenuEdit::btnSyncRevenueCodeMenuClick(TObject *Sender)
             MenuEdited = true;
         }
     }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
+{
+	TItemSizeNode *itemSizeData = (TItemSizeNode *)tvMenu->Selected->Data;
+
+	if (cbRevenueGroupCode->ItemIndex > -1)
+	{
+        itemSizeData->RevenueCode =
+            StrToInt(cbRevenueGroupCode->Items->Strings[cbRevenueGroupCode->ItemIndex].SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
+	}
 }
 //---------------------------------------------------------------------------
 

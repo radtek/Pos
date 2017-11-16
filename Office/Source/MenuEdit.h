@@ -723,10 +723,11 @@ class TfrmMenuEdit : public TForm
     void __fastcall nePriceForPointExit(TObject *Sender);
     void __fastcall nePriceForPointChange(TObject *Sender);
     void __fastcall nePriceForPointEnter(TObject *Sender);
-    void __fastcall cbRevenueGroupCodeChange(TObject *Sender);
+    //void __fastcall cbRevenueGroupCodeChange(TObject *Sender);
 	void __fastcall btnSyncRevenueCodeItemClick(TObject *Sender);
 	void __fastcall btnSyncRevenueCodeCourseClick(TObject *Sender);
 	void __fastcall btnSyncRevenueCodeMenuClick(TObject *Sender);
+    void __fastcall cbRevenueGroupCodeSelect(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);

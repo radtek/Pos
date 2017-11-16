@@ -335,7 +335,7 @@ object frmMenuEdit: TfrmMenuEdit
                 Font.Height = -11
                 Font.Name = 'Tahoma'
                 Font.Style = []
-                ItemHeight = 0
+                ItemHeight = 13
                 ParentFont = False
                 TabOrder = 5
                 OnChange = cbServingCourseChange
@@ -553,7 +553,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     TabOrder = 0
                     OnChange = cbItemNameChange
@@ -2094,7 +2094,8 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 16
                     Top = 360
                     Width = 305
-                    Height = 21
+                    Height = 19
+                    Style = csOwnerDrawFixed
                     Anchors = [akLeft, akBottom]
                     Color = clInfoBk
                     Font.Charset = ANSI_CHARSET
@@ -2106,8 +2107,7 @@ object frmMenuEdit: TfrmMenuEdit
                     ParentFont = False
                     Sorted = True
                     TabOrder = 11
-                    Text = 'cbRevenueGroupCode'
-                    OnChange = cbRevenueGroupCodeChange
+                    OnSelect = cbRevenueGroupCodeSelect
                   end
                   object btnSyncRevenueCodeItem: TButton
                     Left = 16
@@ -2303,7 +2303,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     Sorted = True
                     TabOrder = 3

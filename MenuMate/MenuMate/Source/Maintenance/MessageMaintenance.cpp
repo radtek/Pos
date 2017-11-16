@@ -690,7 +690,7 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
             DBTransaction.StartTransaction();
 
             std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->MaxLength = 20;
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = true;
             frmTouchKeyboard->KeyboardText = "";
@@ -746,7 +746,7 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
             DBTransaction.StartTransaction();
 
             std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->MaxLength = 20;
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = true;
             frmTouchKeyboard->KeyboardText = managerPMSCodes->RevenueCodesMap[key];
