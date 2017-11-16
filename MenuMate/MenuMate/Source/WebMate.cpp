@@ -1089,224 +1089,245 @@ __fastcall TWebMate::ProcessMembership(Database::TDBTransaction &DBTransaction, 
 __fastcall TWebMate::AddProduct(Database::TDBTransaction &DBTransaction, int WebKey, UnicodeString WebGUID, _di_IXMLACCOUNTType Account, TList *OrderList,
 	_di_IXMLPRODUCTType Product, TMMContactInfo Member, int SetMenuGroup)
 {
-	UnicodeString PLU = Product->PRODUCT_PLU;
-	int SizeKey = TDBWebUtil::LoadItemSizeKeyFromThridPartyCode(DBTransaction, PLU);
+    try
+    {
+        UnicodeString PLU = Product->PRODUCT_PLU;
+        int SizeKey = TDBWebUtil::LoadItemSizeKeyFromThridPartyCode(DBTransaction, PLU);
 
-	_di_IXMLPRODUCTIDENTType Productident = NULL;
-	if (Product->ChildNodes->FindNode("PRODUCTIDENT") != NULL)
+        _di_IXMLPRODUCTIDENTType Productident = NULL;
+        if (Product->ChildNodes->FindNode("PRODUCTIDENT") != NULL)
+        {
+            Productident = Product->Get_PRODUCTIDENT();
+            if (SizeKey == 0 && Productident->ChildNodes->FindNode("SIZEKEY") != NULL)
+            {
+                SizeKey = StrToInt(Productident->SIZEKEY);
+            }
+        }
+
+        if (SizeKey == 0)
+        {
+            throw Exception("Item Not Found, Check Product PLU", xmlResultErr);
+        }
+
+        if (!TDBWebUtil::CheckItemCompleteEnabled(DBTransaction, SizeKey))
+        { // Check for Duplication
+            throw Exception("Item Ordered is Disabled or Missing in Menu.", xmlResultErr);
+        }
+
+        TItemComplete *Order = new TItemComplete();
+        if (TDBWebUtil::LoadItemComplete(DBTransaction, Order, SizeKey))
+        {
+            OrderList->Add(Order);
+
+            Order->TabName = Account->Get_NAME();
+            Order->TransNo = Product->Get_GUID();
+            Order->Terminal = "WebMate";
+            Order->OrderedLocation = "WebMate";
+
+            if (Product->Get_TYPE().LowerCase() == "parent")
+            {
+                Order->SetMenuGroup = TDBOrder::GetNextSetMenuGroupNumber(DBTransaction);
+                if (TST_PROMO_MASTER(Order->SetMenuMask)) // Is a master.
+                {
+                    Order->SetMenuMaster = true;
+                }
+            }
+            else
+            {
+                Order->SetMenuGroup = SetMenuGroup;
+            }
+
+            if (Member.Valid())
+            {
+                Order->PartyName = Member.Name;
+                Order->Loyalty_Key = Member.ContactKey;
+            }
+            else
+            {
+                Order->PartyName = Order->TabName;
+            }
+
+            Order->WebKey = WebKey;
+            Order->TabType = TabWeb;
+            Order->WebID = WebGUID;
+
+            SetPrice(Product, Order);
+            TDBWebUtil::LoadSalesRecipes(DBTransaction, Order->SalesRecipesToApply, SizeKey, Order->GetQty());
+            // Process Options.
+            _di_IXMLOPTIONTypeList OptionList = Product->Get_OPTION();
+            for (int j = 0; j < OptionList->Count; j++)
+            {
+                _di_IXMLOPTIONType WebOption = OptionList->Get_Item(j);
+                TItemOption *Option = new TItemOption();
+                Option->OptionKey = WebOption->Get_Key();
+                if (!TDBWebUtil::LoadItemOption(DBTransaction, *Option))
+                {
+                    Option->Name = WebOption->Get_Name();
+                    Option->KitchenName = Option->Name;
+                }
+                Option->Owner = Order->OptionsSelected;
+                Order->OptionsSelected->OptionAdd(Option);
+            }
+
+            // Notes
+            Order->Note = Product->Get_PRODUCT_COMMENT();
+            // Fix Serving Course.
+            int ServingCourseKey = 0;
+            if (Productident != NULL)
+            {
+                ServingCourseKey = StrToInt(Productident->Get_SERVINGCOURSEKEY());
+                if (ServingCourseKey != 0)
+                {
+                    Order->ServingCourse = TDBMenu::GetServingCourseFromDB(DBTransaction, ServingCourseKey);
+                }
+            }
+
+            if (Order->ServingCourse.ServingCourseKey < 1)
+            {
+                Order->ServingCourse = TDBMenu::LoadDefaultServingCourse(DBTransaction);
+            }
+
+            _di_IXMLPRODUCTTypeList ProductList = Product->Get_PRODUCT();
+            for (int j = 0; j < ProductList->Count; j++)
+            {
+                _di_IXMLPRODUCTType SideProduct = ProductList->Get_Item(j);
+                UnicodeString PLU = SideProduct->PRODUCT_PLU;
+                if (SideProduct->Get_TYPE().LowerCase() == "child")
+                {
+                    AddProduct(DBTransaction, WebKey, WebGUID, Account, OrderList, SideProduct, Member, Order->SetMenuGroup);
+                }
+                else
+                {
+                    AddSides(DBTransaction, Account, Order, SideProduct, Member);
+                }
+            }
+        }
+        else
+        {
+            delete Order;
+            throw Exception("Loading Item. More than One Item or no Item Found.", xmlResultErr);
+        }
+    }
+    catch(Exception & E)
 	{
-		Productident = Product->Get_PRODUCTIDENT();
-		if (SizeKey == 0 && Productident->ChildNodes->FindNode("SIZEKEY") != NULL)
-		{
-			SizeKey = StrToInt(Productident->SIZEKEY);
-		}
-	}
-
-	if (SizeKey == 0)
-	{
-		throw Exception("Item Not Found, Check Product PLU", xmlResultErr);
-	}
-
-	if (!TDBWebUtil::CheckItemCompleteEnabled(DBTransaction, SizeKey))
-	{ // Check for Duplication
-		throw Exception("Item Ordered is Disabled or Missing in Menu.", xmlResultErr);
-	}
-
-	TItemComplete *Order = new TItemComplete();
-	if (TDBWebUtil::LoadItemComplete(DBTransaction, Order, SizeKey))
-	{
-		OrderList->Add(Order);
-
-		Order->TabName = Account->Get_NAME();
-		Order->TransNo = Product->Get_GUID();
-		Order->Terminal = "WebMate";
-		Order->OrderedLocation = "WebMate";
-
-		if (Product->Get_TYPE().LowerCase() == "parent")
-		{
-			Order->SetMenuGroup = TDBOrder::GetNextSetMenuGroupNumber(DBTransaction);
-			if (TST_PROMO_MASTER(Order->SetMenuMask)) // Is a master.
-			{
-				Order->SetMenuMaster = true;
-			}
-		}
-		else
-		{
-			Order->SetMenuGroup = SetMenuGroup;
-		}
-
-		if (Member.Valid())
-		{
-			Order->PartyName = Member.Name;
-			Order->Loyalty_Key = Member.ContactKey;
-		}
-		else
-		{
-			Order->PartyName = Order->TabName;
-		}
-
-        Order->WebKey = WebKey;
-        Order->TabType = TabWeb;
-        Order->WebID = WebGUID;
-
-		SetPrice(Product, Order);
-		TDBWebUtil::LoadSalesRecipes(DBTransaction, Order->SalesRecipesToApply, SizeKey, Order->GetQty());
-		// Process Options.
-		_di_IXMLOPTIONTypeList OptionList = Product->Get_OPTION();
-		for (int j = 0; j < OptionList->Count; j++)
-		{
-			_di_IXMLOPTIONType WebOption = OptionList->Get_Item(j);
-			TItemOption *Option = new TItemOption();
-			Option->OptionKey = WebOption->Get_Key();
-			if (!TDBWebUtil::LoadItemOption(DBTransaction, *Option))
-			{
-				Option->Name = WebOption->Get_Name();
-				Option->KitchenName = Option->Name;
-			}
-			Option->Owner = Order->OptionsSelected;
-			Order->OptionsSelected->OptionAdd(Option);
-		}
-
-		// Notes
-		Order->Note = Product->Get_PRODUCT_COMMENT();
-		// Fix Serving Course.
-		int ServingCourseKey = 0;
-		if (Productident != NULL)
-		{
-			ServingCourseKey = StrToInt(Productident->Get_SERVINGCOURSEKEY());
-			if (ServingCourseKey != 0)
-			{
-				Order->ServingCourse = TDBMenu::GetServingCourseFromDB(DBTransaction, ServingCourseKey);
-			}
-		}
-
-		if (Order->ServingCourse.ServingCourseKey < 1)
-		{
-			Order->ServingCourse = TDBMenu::LoadDefaultServingCourse(DBTransaction);
-		}
-
-		_di_IXMLPRODUCTTypeList ProductList = Product->Get_PRODUCT();
-		for (int j = 0; j < ProductList->Count; j++)
-		{
-			_di_IXMLPRODUCTType SideProduct = ProductList->Get_Item(j);
-			UnicodeString PLU = SideProduct->PRODUCT_PLU;
-			if (SideProduct->Get_TYPE().LowerCase() == "child")
-			{
-				AddProduct(DBTransaction, WebKey, WebGUID, Account, OrderList, SideProduct, Member, Order->SetMenuGroup);
-			}
-			else
-			{
-				AddSides(DBTransaction, Account, Order, SideProduct, Member);
-			}
-		}
-	}
-	else
-	{
-		delete Order;
-		throw Exception("Loading Item. More than One Item or no Item Found.", xmlResultErr);
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 __fastcall TWebMate::AddSides(Database::TDBTransaction &DBTransaction, _di_IXMLACCOUNTType Account, TItemComplete *MasterOrder, _di_IXMLPRODUCTType SideProduct,
 	TMMContactInfo Member)
 {
-	UnicodeString PLU = SideProduct->PRODUCT_PLU;
-	int SizeKey = TDBWebUtil::LoadItemSizeKeyFromThridPartyCode(DBTransaction, PLU);
+    try
+    {
+        UnicodeString PLU = SideProduct->PRODUCT_PLU;
+        int SizeKey = TDBWebUtil::LoadItemSizeKeyFromThridPartyCode(DBTransaction, PLU);
 
-	_di_IXMLPRODUCTIDENTType Productident = NULL;
-	if (SideProduct->ChildNodes->FindNode("PRODUCTIDENT") != NULL)
+        _di_IXMLPRODUCTIDENTType Productident = NULL;
+        if (SideProduct->ChildNodes->FindNode("PRODUCTIDENT") != NULL)
+        {
+            Productident = SideProduct->Get_PRODUCTIDENT();
+            if (SizeKey == 0 && Productident->ChildNodes->FindNode("SIZEKEY") != NULL)
+            {
+                SizeKey = StrToInt(Productident->SIZEKEY);
+            }
+        }
+
+        if (SizeKey == 0)
+        {
+            throw Exception("Side Not Found, Check Product PLU", xmlResultErr);
+        }
+
+        if (!TDBWebUtil::CheckItemCompleteEnabled(DBTransaction, SizeKey))
+        { // Check for Duplication
+            throw Exception("Side Ordered is Disabled or Missing in Menu.", xmlResultErr);
+        }
+
+        TItemCompleteSub *Order = new TItemCompleteSub();
+        if (TDBWebUtil::LoadItemComplete(DBTransaction, Order, SizeKey))
+        {
+            MasterOrder->SubOrders->SubOrderAdd(Order);
+            Order->OrderType = MasterOrder->OrderType;
+            Order->TransNo = SideProduct->Get_GUID();
+
+            if (Member.Valid())
+            {
+                Order->Loyalty_Key = Member.ContactKey;
+            }
+            SetPrice(SideProduct, Order);
+
+            // Fix Serving Course.
+            int ServingCourseKey = 0;
+            if (Productident != NULL)
+            {
+                ServingCourseKey = StrToInt(Productident->Get_SERVINGCOURSEKEY());
+                if (ServingCourseKey != 0)
+                {
+                    Order->ServingCourse = TDBMenu::GetServingCourseFromDB(DBTransaction, ServingCourseKey);
+                }
+            }
+
+            if (Order->ServingCourse.ServingCourseKey < 1)
+            {
+                Order->ServingCourse = MasterOrder->ServingCourse;
+            }
+        }
+        else
+        {
+            delete Order;
+            throw Exception("Loading Item. More than One Item or no Item Found.", xmlResultErr);
+        }
+    }
+    catch(Exception & E)
 	{
-		Productident = SideProduct->Get_PRODUCTIDENT();
-		if (SizeKey == 0 && Productident->ChildNodes->FindNode("SIZEKEY") != NULL)
-		{
-			SizeKey = StrToInt(Productident->SIZEKEY);
-		}
-	}
-
-	if (SizeKey == 0)
-	{
-		throw Exception("Side Not Found, Check Product PLU", xmlResultErr);
-	}
-
-	if (!TDBWebUtil::CheckItemCompleteEnabled(DBTransaction, SizeKey))
-	{ // Check for Duplication
-		throw Exception("Side Ordered is Disabled or Missing in Menu.", xmlResultErr);
-	}
-
-	TItemCompleteSub *Order = new TItemCompleteSub();
-	if (TDBWebUtil::LoadItemComplete(DBTransaction, Order, SizeKey))
-	{
-		MasterOrder->SubOrders->SubOrderAdd(Order);
-		Order->OrderType = MasterOrder->OrderType;
-		Order->TransNo = SideProduct->Get_GUID();
-
-		if (Member.Valid())
-		{
-			Order->Loyalty_Key = Member.ContactKey;
-		}
-		SetPrice(SideProduct, Order);
-
-		// Fix Serving Course.
-		int ServingCourseKey = 0;
-		if (Productident != NULL)
-		{
-			ServingCourseKey = StrToInt(Productident->Get_SERVINGCOURSEKEY());
-			if (ServingCourseKey != 0)
-			{
-				Order->ServingCourse = TDBMenu::GetServingCourseFromDB(DBTransaction, ServingCourseKey);
-			}
-		}
-
-		if (Order->ServingCourse.ServingCourseKey < 1)
-		{
-			Order->ServingCourse = MasterOrder->ServingCourse;
-		}
-	}
-	else
-	{
-		delete Order;
-		throw Exception("Loading Item. More than One Item or no Item Found.", xmlResultErr);
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 void __fastcall TWebMate::SetPrice(_di_IXMLPRODUCTType Product, TItemMinorComplete *Order)
 {
-	// Fix Pricing.
-	if (Product->GetChildNodes()->FindNode("PRICELEVEL") != NULL)
+    try
+    {
+        // Fix Pricing.
+        if (Product->GetChildNodes()->FindNode("PRICELEVEL") != NULL)
+        {
+            switch(Product->Get_PRICELEVEL())
+            {
+            case -1
+                :
+                {
+                    Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_CHARGE_PRICE());
+                    Order->SetPriceLevelCustom(MiscPrice);
+                    Order->SetQty(Product->Get_QTY());
+                }break;
+            case 0:
+                Order->SetPriceLevel0();
+                Order->SetQty(Product->Get_QTY());
+                break;
+            case 1:
+                Order->SetPriceLevel1();
+                Order->SetQty(Product->Get_QTY());
+                break;
+            }
+        }
+        else if (Product->GetChildNodes()->FindNode("PRODUCT_CHARGE_PRICE") != NULL)
+        {
+            Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_CHARGE_PRICE());
+            Order->SetPriceLevelCustom(MiscPrice / Currency(Product->Get_QTY()));
+            Order->SetQty(Product->Get_QTY());
+        }
+        else if (Product->GetChildNodes()->FindNode("PRODUCT_BASE_PRICE") != NULL)
+        {
+            Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_BASE_PRICE());
+            Order->SetPriceLevelCustom(MiscPrice);
+            Order->SetQty(Product->Get_QTY());
+        }
+        else
+        {
+            throw Exception("Order has no Pricing Info", xmlResultErr);
+        }
+    }
+    catch(Exception & E)
 	{
-		switch(Product->Get_PRICELEVEL())
-		{
-		case -1
-			:
-			{
-				Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_CHARGE_PRICE());
-				Order->SetPriceLevelCustom(MiscPrice);
-				Order->SetQty(Product->Get_QTY());
-			}break;
-		case 0:
-			Order->SetPriceLevel0();
-			Order->SetQty(Product->Get_QTY());
-			break;
-		case 1:
-			Order->SetPriceLevel1();
-			Order->SetQty(Product->Get_QTY());
-			break;
-		}
-	}
-	else if (Product->GetChildNodes()->FindNode("PRODUCT_CHARGE_PRICE") != NULL)
-	{
-		Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_CHARGE_PRICE());
-		Order->SetPriceLevelCustom(MiscPrice / Currency(Product->Get_QTY()));
-		Order->SetQty(Product->Get_QTY());
-	}
-	else if (Product->GetChildNodes()->FindNode("PRODUCT_BASE_PRICE") != NULL)
-	{
-		Currency MiscPrice = StrToCurr(Product->Get_PRODUCT_BASE_PRICE());
-		Order->SetPriceLevelCustom(MiscPrice);
-		Order->SetQty(Product->Get_QTY());
-	}
-	else
-	{
-		throw Exception("Order has no Pricing Info", xmlResultErr);
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }

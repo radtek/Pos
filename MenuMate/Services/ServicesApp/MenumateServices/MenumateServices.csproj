@@ -168,22 +168,10 @@
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TenderDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ItemDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_VoucherDetails.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
-    <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
-    <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
-    <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
-    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
@@ -194,7 +182,6 @@
     <Compile Include="Internal Classes\WalletPayments\WalletPaymentController.cs" />
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
-    <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
     <Compile Include="MenumateRunners\WalletPaymentsServiceRunner.cs" />
     <Compile Include="MenumateServiceAccounting.cs">
       <SubType>Component</SubType>
@@ -214,54 +201,6 @@
     <Compile Include="MenumateServiceSalesForce.Designer.cs">
       <DependentUpon>MenumateServiceSalesForce.cs</DependentUpon>
     </Compile>
-    <Compile Include="MenumateServiceThorlink.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceThorlink.Designer.cs">
-      <DependentUpon>MenumateServiceThorlink.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DTO\Clipp\ClippErrorDetail.cs" />
-    <Compile Include="DTO\Clipp\ClippTabDetail.cs" />
-    <Compile Include="MenumateServiceClippIntegration.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceClippIntegration.Designer.cs">
-      <DependentUpon>MenumateServiceClippIntegration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminalNamesResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrderResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrder.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateBooleanResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateDataTableResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateDateTimeResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerListResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateModelKeysResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrder.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroup.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroupResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOption.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItem.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOptionResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSide.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSideResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateStringResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminal.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerResponse.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalName.cs" />
-    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalNameType.cs" />
-    <Compile Include="DTO\Clipp\ClippMessage.cs" />
-    <Compile Include="DTO\Clipp\ClippMessageDetail.cs" />
-    <Compile Include="DTO\Clipp\ClippTabDetailRequest.cs" />
-    <Compile Include="DTO\Clipp\Discount.cs" />
-    <Compile Include="DTO\Clipp\Item.cs" />
-    <Compile Include="DTO\Clipp\MessageType.cs" />
-    <Compile Include="DTO\Clipp\Payment.cs" />
-    <Compile Include="DTO\Clipp\PaymentDetailRequest.cs" />
-    <Compile Include="DTO\Clipp\PaymentDetailResponse.cs" />
-    <Compile Include="DTO\Clipp\Sundry.cs" />
     <Compile Include="DTO\DTODevice.cs" />
     <Compile Include="DTO\DTOFactory.cs" />
     <Compile Include="DTO\DTOPrompt.cs" />
@@ -303,8 +242,6 @@
     <Compile Include="Internal Classes\WebMate\WebOrderResponsive.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderURLManager.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderXMLManager.cs" />
-    <Compile Include="MenumateRunners\ChefmateRunner.cs" />
-    <Compile Include="MenumateRunners\ClippIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\IMenumateRunner.cs" />
     <Compile Include="MenumateRunners\LoyaltymateRunner.cs" />
     <Compile Include="MenumateRunners\MenumateRunner.cs" />
@@ -349,12 +286,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MenumateServiceChefMate.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceChefMate.Designer.cs">
-      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\FileSupplier.cs" />
     <Compile Include="Tools\MenumateServiceLoader.cs" />
@@ -370,17 +301,10 @@
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
-    <Compile Include="WCFServices\WCFServiceThorlink.cs" />
-    <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
-    <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
-    <Compile Include="WCFServices\IClippIntergrationWebService.cs" />
-    <Compile Include="WCFServices\IWCFServiceThorlink.cs" />
-    <Compile Include="WCFServices\IWCFServiceChefMate.cs" />
     <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
-    <Compile Include="WCFServices\WCFServiceChefMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
@@ -468,10 +392,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MenumateServiceChefMate.resx">
-      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
       <SubType>Designer</SubType>

@@ -2142,20 +2142,17 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
                 if (WebOrdersPending)
                 {
                     if(TGlobalSettings::Instance().AutoAcceptWebOrders)
-                    { // MessageBox("Inside Timertick process weborder", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
+                    {
                         ProcessWebOrders(false);
                     }
                     else
                     {
-    //                    tbtnWebOrders->ButtonColor = 0x002193F6;
-    //                    tbtnWebOrders->Font->Color =clWhite;
-                           tbtnWebOrders->ButtonColor= clGreen;
-                           tbtnWebOrders->Font->Color =clWhite;
+                       tbtnWebOrders->ButtonColor= clGreen;
+                       tbtnWebOrders->Font->Color =clWhite;
                     }
                 }
                 else
                 {
-                   // tbtnWebOrders->ButtonColor = 0x00979492;
                      if(TGlobalSettings::Instance().ShowDarkBackground)
                      {
                         tbtnWebOrders->ButtonColor = 14342874;

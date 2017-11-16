@@ -18,7 +18,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In SaveMember LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 58, short.MaxValue);
+                //EventLog.WriteEntry("In SaveMember LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 58, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
             }
             return null;
         }
@@ -31,7 +32,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetMemberByUniqueId LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 59, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetMemberByUniqueId LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 59, short.MaxValue);
             }
             return null;
         }
@@ -44,7 +46,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetMemberByCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 60, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetMemberByCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 60, short.MaxValue);
             }
             return null;
         }
@@ -57,7 +60,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetMemberByEmail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 61, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetMemberByEmail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 61, short.MaxValue);
             }
             return null;
         }
@@ -70,7 +74,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In UpdateMemberCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 62, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In UpdateMemberCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 62, short.MaxValue);
             }
             return null;
         }
@@ -83,7 +88,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In PostTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 63, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In PostTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 63, short.MaxValue);
             }
             return null;
         }
@@ -96,7 +102,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetCompanyInformation LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 64, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetCompanyInformation LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 64, short.MaxValue);
             }
             return null;
         }
@@ -109,7 +116,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetGiftCardBalance LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 65, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetGiftCardBalance LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 65, short.MaxValue);
             }
             return null;
         }
@@ -122,7 +130,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetPocketVoucherDetail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 66, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In GetPocketVoucherDetail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 66, short.MaxValue);
             }
             return null;
         }
@@ -135,7 +144,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In ProcessVoucherTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 67, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In ProcessVoucherTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 67, short.MaxValue);
             }
             return null;
         }
@@ -148,7 +158,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In ReleaseVouchers LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 68, short.MaxValue);
+                ServiceLogger.LogException(exc.Message, exc);
+                //EventLog.WriteEntry("In ReleaseVouchers LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 68, short.MaxValue);
             }
             return null;
         }
