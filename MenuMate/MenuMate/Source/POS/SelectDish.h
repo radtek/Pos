@@ -479,6 +479,7 @@ private: // User declarations
     void DisplayRoomNoUI();
     void GetRoomDetails();
     bool LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &inTransaction);
+    bool CloseActiveForm();
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

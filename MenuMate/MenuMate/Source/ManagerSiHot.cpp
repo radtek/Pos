@@ -125,8 +125,8 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-      MessageBox("Sale could not get processed.Press OK to  process sale again","Error", MB_OK + MB_ICONERROR);
-      return false;
+      if(MessageBox("Sale could not get processed.Press OK to  process sale again","Error", MB_OK + MB_ICONERROR) == ID_OK);
+        return false;
     }
 }
 //---------------------------------------------------------------------------

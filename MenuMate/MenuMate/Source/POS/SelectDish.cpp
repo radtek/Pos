@@ -3684,6 +3684,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 bool isGuestExist = true;
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
                 {
+                    isRoomNoUiCalled = false;
+                    IsAutoLogOutInSelectDish = false;
                     if(isWalkInUser)
                     {
                         PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
@@ -3703,6 +3705,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
 
                 customerDisp.TierLevel = TGlobalSettings::Instance().TierLevelChange ;
+
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+                {
+                    IsAutoLogOutInSelectDish = true;
+                 }
 
 				if (PaymentComplete)
 				{
@@ -4755,12 +4762,7 @@ void TfrmSelectDish::LockOutUser()
                         if (CanClose)
                         {
                             Close();
-                            if(Screen->ActiveForm->ClassNameIs("TfrmTouchNumpad"))
-                            {
-                                isRoomNoUiCalled = false;
-                                IsAutoLogOutInSelectDish = false;
-                                Screen->ActiveForm->Close();
-                            }
+                            CloseActiveForm();
                         }
                         else
                         {
@@ -4775,6 +4777,7 @@ void TfrmSelectDish::LockOutUser()
 				//MessageBox("Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message, "Error", MB_OK + MB_ICONERROR);
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Auto-lockout Login Error Please write this down and report it to MenuMate Ltd :" + E.Message);
 				Result = lsDenied;
+                CloseActiveForm();
 			}
 		//}
 
@@ -15415,4 +15418,14 @@ void TfrmSelectDish::ShowSihotDetailsMessage()
 {
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
             MessageBox("SiHot Room Details will not be saved.", "Warning", MB_OK + MB_ICONWARNING);
+}
+//-------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::CloseActiveForm()
+{
+    if(Screen->ActiveForm->ClassNameIs("TfrmTouchNumpad"))
+    {
+        isRoomNoUiCalled = false;
+        IsAutoLogOutInSelectDish = false;
+        Screen->ActiveForm->Close();
+    }
 }
