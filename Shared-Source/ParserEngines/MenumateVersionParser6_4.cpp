@@ -55,6 +55,7 @@ void TApplyParser::update6_43Tables()
 {
     CreateTable6_43(_dbControl);
     Create6_43Generator(_dbControl);
+    AlterTableDiscount6_43(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -362,4 +363,14 @@ void TApplyParser::Create6_43Generator(TDBControl* const inDBControl)
     }
 }
 //--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableDiscount6_43(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+}
 }
