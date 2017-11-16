@@ -1809,7 +1809,6 @@ void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 {
-    isRoomNoUiCalled = false;
 	if (CurrentTender != 0)
 	{
 		CurrentTender = 0;
@@ -4731,7 +4730,10 @@ void TfrmSelectDish::LockOutUser()
                     if (Result == lsAccepted)
                     {
                         bool LogIn = false;
-                        isRoomNoUiCalled = true;
+                        if(Screen->ActiveForm->ClassNameIs("TfrmTouchNumpad"))
+                        {
+                            isRoomNoUiCalled = true;
+                        }
                         if (TDeviceRealTerminal::Instance().User.ContactKey != TempUserInfo.ContactKey)
                         {
                             if (!StaffChanged(TempUserInfo))
@@ -6817,7 +6819,6 @@ void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseBu
 {
 	btnTimer->Enabled = false;
 	bool SelectionRequired = false;
-    isRoomNoUiCalled = false;
 	if (tbtnToggleMenus->Tag == 0) // Toggle
 	{
 		if (TDeviceRealTerminal::Instance().Menus->Current->Count <= 2)
@@ -7699,7 +7700,6 @@ void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButto
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
 {
-    isRoomNoUiCalled = false; 
     std::auto_ptr<TStringList>get_list(new TStringList);
     //TStringList *get_list = new TStringList;
     Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -7756,7 +7756,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 {
 	try
 	{
-        isRoomNoUiCalled = false; 
 		std::auto_ptr<TfrmFunctions>frmFunctions(TfrmFunctions::Create<TfrmFunctions>(this));
 		if (TGlobalSettings::Instance().EnablePaxCount)
                 	frmFunctions->btnPaxCount->Show();
@@ -7847,7 +7846,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 {
 	OrderHeld = false;
-    isRoomNoUiCalled = false; 
 	if (!OrdersPending())
 	{ // Display Parked Sales.
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -8112,7 +8110,6 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 {
-    isRoomNoUiCalled = false;
 	IsSubSidizeProcessed=true;
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -8323,7 +8320,6 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 {
     IsSubSidizeProcessed=false;
-    isRoomNoUiCalled = false;
 	if(IsSubSidizeOrderCancil)
 	{
         IsSubSidizeOrderCancil=false;
@@ -8677,7 +8673,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 {
   try
   {
-    isRoomNoUiCalled = false;
 	if (SelectedTable == 0)
 	{
 		if (CurrentTender != 0)
@@ -10681,7 +10676,6 @@ void __fastcall TfrmSelectDish::webDisplayBeforeNavigate2(TObject *ASender, cons
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnWebOrdersMouseClick(TObject *Sender)
 {
-    isRoomNoUiCalled = false; 
     if(TGlobalSettings::Instance().WebMateEnabled)
     {
 	    ProcessWebOrders(true);
