@@ -6813,6 +6813,7 @@ void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseBu
 {
 	btnTimer->Enabled = false;
 	bool SelectionRequired = false;
+    isRoomNoUiCalled = false;
 	if (tbtnToggleMenus->Tag == 0) // Toggle
 	{
 		if (TDeviceRealTerminal::Instance().Menus->Current->Count <= 2)
@@ -8102,7 +8103,8 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
-{   isRoomNoUiCalled = false;
+{
+    isRoomNoUiCalled = false;
 	IsSubSidizeProcessed=true;
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -15290,8 +15292,8 @@ void TfrmSelectDish::DisplayRoomNoUI()
         }
         else if(frmTouchNumpad->BtnExit == 2 && abs(frmTouchNumpad->INTResult) > 0)
         {
+            isRoomNoUiCalled = false;
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
-            isRoomNoUiCalled = true;
             DisplayRoomNoUI();
         }
     }
