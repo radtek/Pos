@@ -15313,6 +15313,7 @@ void TfrmSelectDish::GetRoomDetails()
 {
     try
     {
+        isRoomNoUiCalled = false;
         SiHotAccount = TSiHotAccounts();
         std::vector<TSiHotAccounts> SiHotAccounts;
         TSiHotAccounts guestAccount;
