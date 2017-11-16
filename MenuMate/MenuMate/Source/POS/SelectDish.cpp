@@ -7997,6 +7997,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		TDBSaleTimes::VoidSaleTime(DBTransaction, CurrentTimeKey);
 		DBTransaction.Commit();
 		CurrentTimeKey = 0;
+        DisplayRoomNoUI();
 		ResetPOS();
 	}
       AutoLogOut();
