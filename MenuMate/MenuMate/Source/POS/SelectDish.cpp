@@ -3483,26 +3483,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
             BevTabName = TabName;
             BevTabKey = SelectedTab;
         }
-        UnicodeString AccNo = "", FirstName = "", LastName = "", RoomNumber = "";
-        if(SiHotAccount.AccountDetails.size() || isWalkInUser)
-        {
-            if(isWalkInUser)
-            {
-                AccNo = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
-                FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-            }
-            else
-            {
-                for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
-                {
-                    AccNo = SiHotAccount.AccountNumber;
-                    FirstName = accIt->FirstName;
-                    LastName = accIt->LastName;
-                    RoomNumber = accIt->RoomNumber;
-                }
-            }
-        }
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
@@ -3536,7 +3516,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 Order->IdName = TGlobalSettings::Instance().TabPrintName;
                 Order->IdNumber = TGlobalSettings::Instance().TabPrintPhone;
 				Order->TabType = TabType;
-				Order->RoomNo = RoomNo;
+                if(!TDeviceRealTerminal::Instance().BasePMS->Enabled)
+				    Order->RoomNo = RoomNo;
 				Order->TableNo = TableNo;
 				Order->SeatNo = (iSeat == 0) ? SeatNo : SeatOrders[iSeat]->SeatNumber;
                 if(TabType == TabDelayedPayment)
@@ -3557,11 +3538,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				    Order->TabName = BevTabName;
                     Order->TabContainerName = BevTabName;
                 }
-                Order->AccNo = AccNo;
-                Order->FirstName = FirstName;
-                Order->LastName = LastName;
-                Order->RoomNo = StrToInt(RoomNumber);
-
 
 				OrdersList->Add(Order);
 
@@ -5444,7 +5420,8 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
             Order->IdNumber = TGlobalSettings::Instance().TabPrintPhone;
 			Order->TabType = TabType;
 			Order->ContainerTabType = TabType;
-			Order->RoomNo = RoomNo;
+			if(!TDeviceRealTerminal::Instance().BasePMS->Enabled)
+				Order->RoomNo = RoomNo;
 			Order->TableNo = TableNo;
 			Order->SeatNo = (iSeat == 0) ? SeatNo : SeatOrders[iSeat]->SeatNumber;
 			Order->OrderType = NormalOrder;
@@ -13084,8 +13061,40 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 {
 
     CheckLastAddedItem(); // check any added item in list;
-
+    UnicodeString AccNo = "", RoomNo = "", FirstName = "", LastName = "";
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
+    if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser))
+    {
+        if(isWalkInUser)
+        {
+            AccNo = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+            FirstName = TManagerVariable::Instance().GetStr(inDBTransaction,vmSiHotDefaultTransactionName);
+            RoomNo = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        }
+        else
+        {
+            for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+            {
+                AccNo = SiHotAccount.AccountNumber;
+                FirstName = accIt->FirstName;
+                LastName = accIt->LastName;
+                RoomNo = accIt->RoomNumber;
+            }
+        }
+    }
+    else if(SeatOrders[SelectedSeat]->Orders->Count)
+    {
+        TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[0];
+        AccNo = Order->AccNo;
+        FirstName = Order->FirstName;
+        LastName = Order->LastName;
+        RoomNo = IntToStr(Order->RoomNo);
+    }
+    Order->AccNo = AccNo;
+    Order->FirstName = FirstName;
+    Order->LastName = LastName;
+    Order->RoomNo = StrToInt(RoomNo);
+
 	if (inPrice != 0)
 	{
 		Order->SetPriceLevelCustom(inPrice);
