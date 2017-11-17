@@ -3483,15 +3483,24 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
             BevTabName = TabName;
             BevTabKey = SelectedTab;
         }
-        UnicodeString AccNo= "", FirstName = "", LastName ="", RoomNumber = "";
+        UnicodeString AccNo = "", FirstName = "", LastName = "", RoomNumber = "";
         if(SiHotAccount.AccountDetails.size() || isWalkInUser)
         {
-            for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+            if(isWalkInUser)
             {
-                AccNo = SiHotAccount.AccountNumber;
-                FirstName = accIt->FirstName;
-                LastName = accIt->LastName;
-                RoomNumber = accIt->RoomNumber;
+                AccNo = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+                FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+                RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            }
+            else
+            {
+                for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+                {
+                    AccNo = SiHotAccount.AccountNumber;
+                    FirstName = accIt->FirstName;
+                    LastName = accIt->LastName;
+                    RoomNumber = accIt->RoomNumber;
+                }
             }
         }
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
@@ -12631,6 +12640,7 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
             if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
             {
                 // Unlock Old Tab.
+                DisplayRoomNoUI();
                 TTableSeat OldTableSeat;
                 OldTableSeat.TableNo = SelectedTable;
                 OldTableSeat.SeatNo = SelectedSeat;
@@ -12696,6 +12706,9 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
         TotalCosts();
         UpdateExternalDevices();
         CloseSidePanel();
+
+        if(!NewTabKey && !SeatOrders[SelectedSeat]->Orders->Count)
+            DisplayRoomNoUI();
     }
     catch(Exception & E)
     {
@@ -15407,9 +15420,6 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 Order->TabName = inTransaction.Phoenix.RoomNumber;
                 Order->TabType = TabRoom;
                 Order->RoomNo = atoi(inTransaction.Phoenix.AccountNumber.t_str());
-                Order->AccNo = inTransaction.Phoenix.AccountNumber;
-                Order->FirstName = inTransaction.Phoenix.FirstName;
-                Order->LastName = inTransaction.Phoenix.LastName;
             }
         }
     }
