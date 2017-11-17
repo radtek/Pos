@@ -56,6 +56,7 @@ void TApplyParser::update6_43Tables()
     CreateTable6_43(_dbControl);
     Create6_43Generator(_dbControl);
     AlterTableDiscount6_43(_dbControl);
+    AlterTableOrders6_43(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -339,8 +340,8 @@ void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
 		"( "
 		"   GUEST_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   INVOICE_NUMBER VARCHAR(50), "
-		"   ACC_NUMBER INTEGER,"
-        "   ROOM_NUMBER INTEGER, "
+		"   ACC_NUMBER VARCHAR(20),"
+        "   ROOM_NUMBER VARCHAR(20), "
         "   FIRST_NAME VARCHAR(50),"
         "   LAST_NAME VARCHAR(50), "
         "   AMOUNT  NUMERIC(15,4) "
@@ -372,5 +373,37 @@ void TApplyParser::AlterTableDiscount6_43(TDBControl* const inDBControl)
         "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
 		inDBControl);
 	}
+}
+//-----------------------------------------------------------------------------------
+void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "ORDERS", "ROOM_NO", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ROOM_NO VARCHAR(20) ",
+        inDBControl);
+    }
+     if ( !fieldExists( "ORDERS", "ACC_NO", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ACC_NO VARCHAR(20) ",
+        inDBControl);
+    }
+     if ( !fieldExists( "ORDERS", "FIRST_NAME", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD FIRST_NAME VARCHAR(50) ",
+        inDBControl);
+    }
+    if ( !fieldExists( "ORDERS", "LAST_NAME", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD LAST_NAME VARCHAR(50) ",
+        inDBControl);
+    }
 }
 }

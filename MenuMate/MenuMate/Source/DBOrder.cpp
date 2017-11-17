@@ -1101,7 +1101,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "ORDER_IDENTIFICATION_NUMBER, "
             "IS_MANUALLY_ENTERED_WEIGHT, "
             "PRICE_INCL, "
-            "PRICE_ADJUST "
+            "PRICE_ADJUST, "
+            "ROOM_NO, "
+            "ACC_NO, "
+            "FIRST_NAME, "
+            "LAST_NAME "
           ") "
 			"VALUES "
 			"( "
@@ -1177,7 +1181,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":ORDER_IDENTIFICATION_NUMBER, "
             ":IS_MANUALLY_ENTERED_WEIGHT, "
             ":PRICE_INCL, "
-            ":PRICE_ADJUST "
+            ":PRICE_ADJUST, "
+            ":ROOM_NO, "
+            ":ACC_NO, "
+            ":FIRST_NAME, "
+            ":LAST_NAME "
           	");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
@@ -1270,7 +1278,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
             IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
             IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
-
+            IBInternalQuery->ParamByName("ROOM_NO")->AsString =  IntToStr(Order->RoomNo);
+            IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
+            IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
+            
 			if(Order->ItemOrderedFrom != NULL)
 			{
 				IBInternalQuery->ParamByName("MENU_ITEM_KEY")->AsInteger = Order->ItemOrderedFrom->ItemKey;
@@ -1482,7 +1494,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "ORDER_IDENTIFICATION_NUMBER, "
                 "IS_MANUALLY_ENTERED_WEIGHT, "
                 "PRICE_INCL, "
-                "PRICE_ADJUST "
+                "PRICE_ADJUST, "
+                "ROOM_NO, "
+                "ACC_NO, "
+                "FIRST_NAME, "
+                "LAST_NAME "
 		   	") "
 				"VALUES "
 				"( "
@@ -1558,7 +1574,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":ORDER_IDENTIFICATION_NUMBER, "
                 ":IS_MANUALLY_ENTERED_WEIGHT, "
                 ":PRICE_INCL,"
-                ":PRICE_ADJUST "
+                ":PRICE_ADJUST, "
+                ":ROOM_NO, "
+                ":ACC_NO, "
+                ":FIRST_NAME, "
+                ":LAST_NAME "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1661,6 +1681,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
                 IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
                 IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
+                IBInternalQuery->ParamByName("ROOM_NO")->AsString =  IntToStr(Order->RoomNo);
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+                IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
+                IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
 
 				IBInternalQuery->ExecQuery();
 
