@@ -1392,32 +1392,41 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
                         PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
                     }
-                    std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
-                    if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
+                    // check if guest details already present
+                    if(!IsSavedSavesWithSiHot(CurrentTransaction))
                     {
-                        CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
-                        CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
-                        [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
-                        CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
-                        CurrentTransaction.SalesType = eRoomSale;
-                        RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-                        CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-                        if(TGlobalSettings::Instance().PMSType != SiHot)
+                        std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
+                        if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
                         {
-                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
-                            TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+                            [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+                            CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+                            CurrentTransaction.SalesType = eRoomSale;
+                            RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
+                            CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+                                TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+                            }
+                            else
+                            {
+                                CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
+                                CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].FirstName;
+                                CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
+                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
                         }
                         else
                         {
-                            CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
-                            CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].FirstName;
-                            CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
-                            TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            GuestMasterOk = false;
                         }
                     }
                     else
                     {
-                        GuestMasterOk = false;
+                        CurrentTransaction.SalesType = eRoomSale;
+                        //TabName = "";
                     }
                 }
                 else
@@ -1506,6 +1515,20 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
     {
         btnCancel->SetFocus();
     }
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::IsSavedSavesWithSiHot(TPaymentTransaction &CurrentTransaction)
+{
+    bool retValue = false;
+    if((CurrentTransaction.SalesType == eTableSeat || CurrentTransaction.SalesType == eTab || CurrentTransaction.SalesType == eAccount)
+       && TGlobalSettings::Instance().PMSType == SiHot)
+    {
+        if(CurrentTransaction.Orders->Count > 0)
+        {
+            retValue = ((TItemComplete*)CurrentTransaction.Orders->Items[0])->RoomNo != 0;
+        }
+    }
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)

@@ -142,6 +142,38 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
 {
     bool retValue = false;
-    retValue = RoomChargePost(paymentTransaction) ;
+    //Call of GetRoomStatus for saved sales
+    if(!paymentTransaction.WasSavedSales)
+        retValue = RoomChargePost(paymentTransaction);
+    else
+    {
+        // Make a room request and check credit limit
+        std::vector<TSiHotAccounts> siHotAccounts;
+        siHotAccounts.clear();
+        TSiHotAccounts account;
+        account.AccountNumber = _paymentTransaction.Phoenix.RoomNumber;  // enter room number
+        siHotAccounts.push_back(account);
+        GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+        for(int i = 0; i < siHotAccounts.size(); i++)
+        {
+            if(siHotAccounts[i].AccountNumber == "")//AccountNumber as per item)
+            {
+                for(int j = 0; j < siHotAccounts[i].AccountDetails.size(); j++)
+                {
+                        // payment transaction total and credit limit should match;
+//                        if(_paymentTransaction.Phoenix.AccountNumber)
+//                        {
+////                            retValue = RoomChargePost(paymentTransaction);
+//                        }
+//                        else
+//                        {
+//                            MessageBox("Credit Limit exceeded !","Error", MB_OK + MB_ICONERROR);
+//                            retValue = false;
+//                        }
+                }
+            }
+        }
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------

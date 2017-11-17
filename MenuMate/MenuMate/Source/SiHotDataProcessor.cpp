@@ -42,26 +42,12 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
         {
             TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
-//            if(_paymentTransaction.SalesType = eTab)
-//                MessageBox("Tab type","",MB_OK);
-//            if(_paymentTransaction.SalesType = eTableSeat)
-//                MessageBox("TableSeat","",MB_OK);
-//            MessageBox(Order->TabType,"Tab Type",MB_OK);
-//            MessageBox(_paymentTransaction.SalesType,"SalesType",MB_OK);
-//            MessageBox(_paymentTransaction.Type,"Type",MB_OK);
             if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                 break;
-//            if(Order->TabType == TabNone || Order->TabType == TabCashAccount)
-//            {
-                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
-                Order->RoomNo = atoi(_paymentTransaction.Phoenix.AccountNumber.t_str());
-//            }
-//            else
-//            {
-//                break;
-//            }
+            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabType = TabRoom;
+            Order->RoomNo = atoi(_paymentTransaction.Phoenix.AccountNumber.t_str());
         }
     }
 
