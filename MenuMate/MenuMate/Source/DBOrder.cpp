@@ -2461,8 +2461,8 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
             Order.ItemType 	  = (TItemType)IBInternalQuery->FieldByName("ITEM_TYPE")->AsInteger;
-            Order.RoomNo      = IBInternalQuery->FieldByName("RoomNo")->AsString;
-            Order.AccNo      = IBInternalQuery->FieldByName("AccNo")->AsString;
+            Order.RoomNumber      = IBInternalQuery->FieldByName("RoomNo")->AsString;
+            Order.AccNumber      = IBInternalQuery->FieldByName("AccNo")->AsString;
             Order.FirstName      = IBInternalQuery->FieldByName("FirstName")->AsString;
             Order.LastName      = IBInternalQuery->FieldByName("LastName")->AsString;
 
