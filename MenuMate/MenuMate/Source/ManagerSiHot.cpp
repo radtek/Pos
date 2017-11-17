@@ -151,7 +151,7 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         std::vector<TSiHotAccounts> siHotAccounts;
         siHotAccounts.clear();
         TSiHotAccounts account;
-        account.AccountNumber = _paymentTransaction.Phoenix.RoomNumber;  // enter room number
+        account.AccountNumber = paymentTransaction.Phoenix.RoomNumber;  // enter room number
         siHotAccounts.push_back(account);
         GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
         for(int i = 0; i < siHotAccounts.size(); i++)
