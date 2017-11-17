@@ -151,25 +151,20 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         std::vector<TSiHotAccounts> siHotAccounts;
         siHotAccounts.clear();
         TSiHotAccounts account;
-        account.AccountNumber = paymentTransaction.Phoenix.RoomNumber;  // enter room number
+        account.AccountNumber = ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNo;  // enter room number
         siHotAccounts.push_back(account);
         GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
         for(int i = 0; i < siHotAccounts.size(); i++)
         {
-            if(siHotAccounts[i].AccountNumber == "")//AccountNumber as per item)
+            MessageBox(siHotAccounts[i].AccountNumber,"Account number from vector",MB_OK);
+            if(siHotAccounts[i].AccountNumber == ((TItemComplete*)paymentTransaction.Orders->Items[0])->AccNo)//AccountNumber as per item)
             {
                 for(int j = 0; j < siHotAccounts[i].AccountDetails.size(); j++)
                 {
-                        // payment transaction total and credit limit should match;
-//                        if(_paymentTransaction.Phoenix.AccountNumber)
-//                        {
-////                            retValue = RoomChargePost(paymentTransaction);
-//                        }
-//                        else
-//                        {
-//                            MessageBox("Credit Limit exceeded !","Error", MB_OK + MB_ICONERROR);
-//                            retValue = false;
-//                        }
+                    if(1000 <= StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit))
+                      int i = 0;
+                    else
+                      MessageBox("Credit Limit exceeded","Error",MB_OK +MBICONERROR);
                 }
             }
         }
