@@ -3697,10 +3697,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                         PaymentTransaction.SalesType = eRoomSale;
                         PaymentTransaction.Customer.RoomNumber = StrToInt(PaymentTransaction.Phoenix.RoomNumber);
                     }
-                    else
-                    {
-                        isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
-                    }
+                    isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
                 }
 
                 if(isGuestExist)
@@ -15368,7 +15365,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
     bool isRoomDetailsLoaded = false;
     try
     {
-        if(SiHotAccount.AccountDetails.size())
+        if(SiHotAccount.AccountDetails.size() || isWalkInUser)
         {
             for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
             {
@@ -15381,6 +15378,9 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 inTransaction.Customer.RoomNumber = StrToInt(inTransaction.Phoenix.RoomNumber);
                 isRoomDetailsLoaded = true;
             }
+
+            if(isWalkInUser)
+              isRoomDetailsLoaded = true;
 
             for (int i = 0; i < inTransaction.Orders->Count; i++)
             {
