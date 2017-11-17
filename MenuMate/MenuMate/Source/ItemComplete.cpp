@@ -60,7 +60,6 @@ TItemComplete::TItemComplete()
 	Cost = 0;
 	Palm_ID = 0;
 	TableNo = 0;
-	RoomNo = 0;
 	SeatNo = 0;
 	WebKey = 0;
 	ItemType = eFoodItem;
@@ -181,10 +180,6 @@ TItemComplete::operator=(
    ContactsKey = rhs.ContactsKey;
 
    _activeChitNumberKey = rhs._activeChitNumberKey;
-   AccNo = rhs.AccNo;
-   FirstName = rhs.FirstName;
-   LastName = rhs.LastName;
-
 }
 
 void TItemComplete::Assign(TItemMinor *BaseItem)
@@ -235,9 +230,5 @@ void TItemComplete::Assign(TItemMinor *BaseItem)
         //MM2038
        RetItem->IdName = IdName;
        RetItem->IdNumber = IdNumber;
-       RetItem->AccNo = AccNo;
-       RetItem->FirstName = FirstName;
-       RetItem->LastName = LastName;
-
     }
 }

@@ -8333,7 +8333,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 	}
 	if (SeatOrders[0]->Orders->Count > 0)
 	{
-       // ShowSihotDetailsMessage();
 		TotalCosts();
 		UpdateExternalDevices();
 
@@ -8679,15 +8678,13 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-       // ShowSihotDetailsMessage();
 		showTablePicker();
 	}
 	else
 	{
         bool OrderConfimOk = true;
 		if (!OrdersPending())
-		{
-            //ShowSihotDetailsMessage();
+		{   
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
@@ -8756,7 +8753,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 		}
 		else
 		{
-
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -12617,7 +12613,7 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
             if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
             {
                 // Unlock Old Tab.
-                DisplayRoomNoUI();
+                //DisplayRoomNoUI();
                 TTableSeat OldTableSeat;
                 OldTableSeat.TableNo = SelectedTable;
                 OldTableSeat.SeatNo = SelectedSeat;
@@ -13063,37 +13059,24 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
     CheckLastAddedItem(); // check any added item in list;
     UnicodeString AccNo = "", RoomNo = "", FirstName = "", LastName = "";
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
-    if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser))
+
+
+
+     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+            TGlobalSettings::Instance().EnableCustomerJourney)
     {
-        if(isWalkInUser)
+        UnicodeString defaultTransaction = TManagerVariable::Instance().GetStr(inDBTransaction,vmSiHotDefaultTransactionName);
+        std::vector<UnicodeString> GuestDetails = LoadGuestDetails(defaultTransaction);
+
+        if(GuestDetails.size())
         {
-            AccNo = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
-            FirstName = TManagerVariable::Instance().GetStr(inDBTransaction,vmSiHotDefaultTransactionName);
-            RoomNo = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        }
-        else
-        {
-            for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
-            {
-                AccNo = SiHotAccount.AccountNumber;
-                FirstName = accIt->FirstName;
-                LastName = accIt->LastName;
-                RoomNo = accIt->RoomNumber;
-            }
+            Order->AccNo = GuestDetails.at(0);
+            Order->RoomNo = StrToInt(GuestDetails.at(1));
+            Order->FirstName = GuestDetails.at(2);
+            if(GuestDetails.size() > 3)
+                Order->LastName = GuestDetails.at(3);
         }
     }
-    else if(SeatOrders[SelectedSeat]->Orders->Count)
-    {
-        TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[0];
-        AccNo = Order->AccNo;
-        FirstName = Order->FirstName;
-        LastName = Order->LastName;
-        RoomNo = IntToStr(Order->RoomNo);
-    }
-    Order->AccNo = AccNo;
-    Order->FirstName = FirstName;
-    Order->LastName = LastName;
-    Order->RoomNo = StrToInt(RoomNo);
 
 	if (inPrice != 0)
 	{
@@ -15446,10 +15429,48 @@ void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
 }
 //-----------------------------------------------------------------------------------------------------
-void TfrmSelectDish::ShowSihotDetailsMessage()
+std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaultTransaction)
 {
-    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
-            MessageBox("SiHot Room Details will not be saved.", "Warning", MB_OK + MB_ICONWARNING);
+    std::vector<UnicodeString> guestDetails;
+    if(SeatOrders[SelectedSeat]->Orders->CompressedCount)
+    {
+        isWalkInUser = false;
+        SiHotAccount.AccountDetails.clear();
+        TItemRedirector *ItemRedirector = (TItemRedirector*)lbDisplay->Items->Objects[0];
+        TItemComplete *CompressedOrder = (TItemComplete*)ItemRedirector->CompressedContainer->ItemsList[0];
+        guestDetails.push_back(CompressedOrder->AccNo);
+        guestDetails.push_back(IntToStr(CompressedOrder->RoomNo));
+        guestDetails.push_back(CompressedOrder->FirstName);
+        guestDetails.push_back(CompressedOrder->LastName);
+    }
+    else if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser))
+    {
+        if(isWalkInUser)
+        {
+            guestDetails.push_back(TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber);
+            guestDetails.push_back(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount);
+            guestDetails.push_back(defaultTransaction);
+        }
+        else
+        {
+            for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+            {
+                guestDetails.push_back(SiHotAccount.AccountNumber);
+                guestDetails.push_back(accIt->RoomNumber);
+                guestDetails.push_back(accIt->FirstName);
+                guestDetails.push_back(accIt->LastName);
+            }
+        }
+    }
+    else if(SeatOrders[SelectedSeat]->Orders->Count)
+    {
+        TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[0];
+        guestDetails.push_back(Order->AccNo);
+        guestDetails.push_back(IntToStr(Order->RoomNo));
+        guestDetails.push_back(Order->FirstName);
+        guestDetails.push_back(Order->LastName);
+    }
+    return guestDetails;
 }
 //-------------------------------------------------------------------------------------------------------------------------
 bool TfrmSelectDish::CloseActiveForm()
