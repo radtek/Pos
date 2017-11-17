@@ -48,14 +48,10 @@ namespace MenumateServices.Config
             this.label4 = new System.Windows.Forms.Label();
             this.lbUniqueDBServerDescription = new System.Windows.Forms.Label();
             this.lbDBSettingsDescription = new System.Windows.Forms.Label();
-            this.btnChefmateDBFolderBrowse = new System.Windows.Forms.Button();
             this.btnWebmateDBFolderBrowse = new System.Windows.Forms.Button();
             this.btnUniqueDBFolderBrowse = new System.Windows.Forms.Button();
-            this.lbChefmate = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.tbDBServerChefmateFolder = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.tbDBServerChefmateName = new System.Windows.Forms.TextBox();
             this.lbWebmate = new System.Windows.Forms.Label();
             this.rbDatabaseServers = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
@@ -70,10 +66,6 @@ namespace MenumateServices.Config
             this.tbpIPAddresses = new System.Windows.Forms.TabPage();
             this.gbIpAddressesSettings = new System.Windows.Forms.GroupBox();
             this.lbIpAddress = new System.Windows.Forms.Label();
-            this.lbClippServer = new System.Windows.Forms.Label();
-            this.tbClippServerIpAddress = new System.Windows.Forms.TextBox();
-            this.lbClippPort = new System.Windows.Forms.Label();
-            this.tbClippServerPort = new System.Windows.Forms.TextBox();
             this.fbdDatabase = new System.Windows.Forms.FolderBrowserDialog();
             this.tlpMain.SuspendLayout();
             this.gbTop.SuspendLayout();
@@ -242,14 +234,10 @@ namespace MenumateServices.Config
             this.gbDatabaseSettings.Controls.Add(this.label4);
             this.gbDatabaseSettings.Controls.Add(this.lbUniqueDBServerDescription);
             this.gbDatabaseSettings.Controls.Add(this.lbDBSettingsDescription);
-            this.gbDatabaseSettings.Controls.Add(this.btnChefmateDBFolderBrowse);
             this.gbDatabaseSettings.Controls.Add(this.btnWebmateDBFolderBrowse);
             this.gbDatabaseSettings.Controls.Add(this.btnUniqueDBFolderBrowse);
-            this.gbDatabaseSettings.Controls.Add(this.lbChefmate);
             this.gbDatabaseSettings.Controls.Add(this.label5);
-            this.gbDatabaseSettings.Controls.Add(this.tbDBServerChefmateFolder);
             this.gbDatabaseSettings.Controls.Add(this.label6);
-            this.gbDatabaseSettings.Controls.Add(this.tbDBServerChefmateName);
             this.gbDatabaseSettings.Controls.Add(this.lbWebmate);
             this.gbDatabaseSettings.Controls.Add(this.rbDatabaseServers);
             this.gbDatabaseSettings.Controls.Add(this.label2);
@@ -312,22 +300,9 @@ namespace MenumateServices.Config
             this.lbDBSettingsDescription.Name = "lbDBSettingsDescription";
             this.lbDBSettingsDescription.Size = new System.Drawing.Size(797, 49);
             this.lbDBSettingsDescription.TabIndex = 22;
-            this.lbDBSettingsDescription.Text = "Webmate and Chefmate services database location\r\nSet both the server name or IP a" +
+            this.lbDBSettingsDescription.Text = "Webmate services database location\r\nSet both the server name or IP a" +
                 "ddress and the folder where the databases are located";
             this.lbDBSettingsDescription.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnChefmateDBFolderBrowse
-            // 
-            this.btnChefmateDBFolderBrowse.BackColor = System.Drawing.Color.DimGray;
-            this.btnChefmateDBFolderBrowse.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnChefmateDBFolderBrowse.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnChefmateDBFolderBrowse.ForeColor = System.Drawing.Color.White;
-            this.btnChefmateDBFolderBrowse.Location = new System.Drawing.Point(706, 400);
-            this.btnChefmateDBFolderBrowse.Name = "btnChefmateDBFolderBrowse";
-            this.btnChefmateDBFolderBrowse.Size = new System.Drawing.Size(83, 23);
-            this.btnChefmateDBFolderBrowse.TabIndex = 19;
-            this.btnChefmateDBFolderBrowse.Text = "Browse ...";
-            this.btnChefmateDBFolderBrowse.UseVisualStyleBackColor = false;
             // 
             // btnWebmateDBFolderBrowse
             // 
@@ -355,16 +330,6 @@ namespace MenumateServices.Config
             this.btnUniqueDBFolderBrowse.Text = "Browse ...";
             this.btnUniqueDBFolderBrowse.UseVisualStyleBackColor = false;
             // 
-            // lbChefmate
-            // 
-            this.lbChefmate.AutoSize = true;
-            this.lbChefmate.ForeColor = System.Drawing.Color.DarkOrange;
-            this.lbChefmate.Location = new System.Drawing.Point(42, 345);
-            this.lbChefmate.Name = "lbChefmate";
-            this.lbChefmate.Size = new System.Drawing.Size(69, 16);
-            this.lbChefmate.TabIndex = 16;
-            this.lbChefmate.Text = "Chefmate";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -375,15 +340,6 @@ namespace MenumateServices.Config
             this.label5.TabIndex = 15;
             this.label5.Text = "Database folder";
             // 
-            // tbDBServerChefmateFolder
-            // 
-            this.tbDBServerChefmateFolder.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbDBServerChefmateFolder.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbDBServerChefmateFolder.Location = new System.Drawing.Point(198, 400);
-            this.tbDBServerChefmateFolder.Name = "tbDBServerChefmateFolder";
-            this.tbDBServerChefmateFolder.Size = new System.Drawing.Size(496, 22);
-            this.tbDBServerChefmateFolder.TabIndex = 14;
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -393,15 +349,6 @@ namespace MenumateServices.Config
             this.label6.Size = new System.Drawing.Size(153, 16);
             this.label6.TabIndex = 13;
             this.label6.Text = "Host name / IP address";
-            // 
-            // tbDBServerChefmateName
-            // 
-            this.tbDBServerChefmateName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbDBServerChefmateName.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbDBServerChefmateName.Location = new System.Drawing.Point(198, 370);
-            this.tbDBServerChefmateName.Name = "tbDBServerChefmateName";
-            this.tbDBServerChefmateName.Size = new System.Drawing.Size(496, 22);
-            this.tbDBServerChefmateName.TabIndex = 12;
             // 
             // lbWebmate
             // 
@@ -526,10 +473,6 @@ namespace MenumateServices.Config
             // 
             this.gbIpAddressesSettings.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.gbIpAddressesSettings.Controls.Add(this.lbIpAddress);
-            this.gbIpAddressesSettings.Controls.Add(this.lbClippServer);
-            this.gbIpAddressesSettings.Controls.Add(this.tbClippServerIpAddress);
-            this.gbIpAddressesSettings.Controls.Add(this.lbClippPort);
-            this.gbIpAddressesSettings.Controls.Add(this.tbClippServerPort);
             this.gbIpAddressesSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbIpAddressesSettings.ForeColor = System.Drawing.Color.Black;
             this.gbIpAddressesSettings.Location = new System.Drawing.Point(0, 0);
@@ -547,46 +490,6 @@ namespace MenumateServices.Config
             this.lbIpAddress.Size = new System.Drawing.Size(75, 16);
             this.lbIpAddress.TabIndex = 2;
             this.lbIpAddress.Text = "IP Address";
-            // 
-            // lbClippServer
-            // 
-            this.lbClippServer.AutoSize = true;
-            this.lbClippServer.ForeColor = System.Drawing.Color.DarkOrange;
-            this.lbClippServer.Location = new System.Drawing.Point(28, 18);
-            this.lbClippServer.Name = "lbClippServer";
-            this.lbClippServer.Size = new System.Drawing.Size(87, 16);
-            this.lbClippServer.TabIndex = 11;
-            this.lbClippServer.Text = "Clipp Server";
-            // 
-            // tbClippServerIpAddress
-            // 
-            this.tbClippServerIpAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbClippServerIpAddress.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbClippServerIpAddress.Location = new System.Drawing.Point(198, 40);
-            this.tbClippServerIpAddress.Name = "tbClippServerIpAddress";
-            this.tbClippServerIpAddress.Size = new System.Drawing.Size(496, 22);
-            this.tbClippServerIpAddress.TabIndex = 14;
-            this.tbClippServerIpAddress.TextChanged += new System.EventHandler(this.tbClippServerIpAddress_TextChanged);
-            // 
-            // lbClippPort
-            // 
-            this.lbClippPort.AutoSize = true;
-            this.lbClippPort.ForeColor = System.Drawing.Color.DarkGray;
-            this.lbClippPort.Location = new System.Drawing.Point(42, 70);
-            this.lbClippPort.Name = "lbClippPort";
-            this.lbClippPort.Size = new System.Drawing.Size(34, 16);
-            this.lbClippPort.TabIndex = 2;
-            this.lbClippPort.Text = "Port";
-            // 
-            // tbClippServerPort
-            // 
-            this.tbClippServerPort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbClippServerPort.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbClippServerPort.Location = new System.Drawing.Point(198, 70);
-            this.tbClippServerPort.Name = "tbClippServerPort";
-            this.tbClippServerPort.Size = new System.Drawing.Size(496, 22);
-            this.tbClippServerPort.TabIndex = 14;
-            this.tbClippServerPort.TextChanged += new System.EventHandler(this.tbClippServerPort_TextChanged);
             // 
             // MainForm
             // 
@@ -639,14 +542,10 @@ namespace MenumateServices.Config
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lbUniqueDBServerDescription;
         private System.Windows.Forms.Label lbDBSettingsDescription;
-        private System.Windows.Forms.Button btnChefmateDBFolderBrowse;
         private System.Windows.Forms.Button btnWebmateDBFolderBrowse;
         private System.Windows.Forms.Button btnUniqueDBFolderBrowse;
-        private System.Windows.Forms.Label lbChefmate;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tbDBServerChefmateFolder;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox tbDBServerChefmateName;
         private System.Windows.Forms.Label lbWebmate;
         private System.Windows.Forms.RadioButton rbDatabaseServers;
         private System.Windows.Forms.Label label2;
@@ -660,10 +559,6 @@ namespace MenumateServices.Config
         private System.Windows.Forms.TextBox tbUniqueDBserverName;
         private System.Windows.Forms.GroupBox gbIpAddressesSettings;
         private System.Windows.Forms.Label lbIpAddress;
-        private System.Windows.Forms.Label lbClippServer;
-        private TextBox tbClippServerIpAddress;
-        private System.Windows.Forms.Label lbClippPort;
-        private TextBox tbClippServerPort;
     }
 }
 

@@ -108,8 +108,9 @@ namespace MenumateServices.WebMate.InternalClasses
                 result.Parameters.AddWithValue("@contactskey", inInfo.ContactKey);
             }
             catch (Exception e)
-            {                
-              EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 260, short.MaxValue);
+            {
+                ServiceLogger.LogException(@"in CreateSaveWebOrderCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 260, short.MaxValue);
             }
 
             //....................................................
@@ -167,7 +168,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 172, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateSaveWebDataCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 172, short.MaxValue);
             }
 
             //....................................................
@@ -223,7 +225,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 171, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateItemSizeKeyFromThridPartyCodeKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 171, short.MaxValue);
             }
             //....................................................
 
@@ -264,7 +267,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 173, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateCheckItemCompleteEnabledCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 173, short.MaxValue);
             }
 
             //....................................................
@@ -363,7 +367,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 174, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateCheckItemCompleteEnabledCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 174, short.MaxValue);
             }
 
             //....................................................
@@ -407,7 +412,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+                ServiceLogger.LogException(@"in LoadBreakDownCategoriesCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
             }
 
             //.......................................................
@@ -453,7 +459,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 176, short.MaxValue);
+                ServiceLogger.LogException(@"in LoadSalesRecipesCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 176, short.MaxValue);
             }
 
             //.......................................................
@@ -510,7 +517,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 177, short.MaxValue);
+                ServiceLogger.LogException(@"in LoadItemOptionCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 177, short.MaxValue);
             }
 
             //.......................................................
@@ -550,7 +558,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
+                ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
             }
 
             //.........................................................
@@ -591,7 +600,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 179, short.MaxValue);
+                ServiceLogger.LogException(@"in CloseSaleStartTimeCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 179, short.MaxValue);
             }
 
             //.........................................................
@@ -633,7 +643,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 180, short.MaxValue);
+                ServiceLogger.LogException(@"in SetWebOrderTimeKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 180, short.MaxValue);
             }
 
             //............................................
@@ -673,7 +684,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+                ServiceLogger.LogException(@"in GetTabKeyByWebOrderKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
             //............................................
@@ -734,7 +746,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateTabCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
             }
 
             //............................................
@@ -775,7 +788,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 183, short.MaxValue);
+                ServiceLogger.LogException(@"in CreditTabCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 183, short.MaxValue);
             }
 
             //............................................
@@ -815,7 +829,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 184, short.MaxValue);
+                ServiceLogger.LogException(@"in SetTabKeyForWebOrderCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 184, short.MaxValue);
             }
 
             //............................................
@@ -854,7 +869,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 185, short.MaxValue);
+                ServiceLogger.LogException(@"in GetTimeKeyByWebOrderKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 185, short.MaxValue);
                 
             }
             return command;
@@ -899,8 +915,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 186, short.MaxValue);
-                
+                ServiceLogger.LogException(@"in CreateTimeCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 186, short.MaxValue);
             }
 
             //............................................
@@ -939,8 +955,9 @@ namespace MenumateServices.WebMate.InternalClasses
                 command.Parameters.AddWithValue("@webOrderKey", inWebOrderKey);
             }
             catch (Exception e)
-            {                
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 187, short.MaxValue);
+            {
+                ServiceLogger.LogException(@"in SetTimeKeyForWebOrderCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 187, short.MaxValue);
             }
 
             //............................................
@@ -979,7 +996,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 188, short.MaxValue);
+                ServiceLogger.LogException(@"in GetContactKeyByWebOrderKeyCmd " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 188, short.MaxValue);
             }
 
             //............................................
@@ -1096,7 +1114,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 189, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateContactCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 189, short.MaxValue);
             }
 
             //....................................................
@@ -1137,7 +1156,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 190, short.MaxValue);
+                ServiceLogger.LogException(@"in GetContactInDBCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 190, short.MaxValue);
             }
 
             //............................................
@@ -1178,7 +1198,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 191, short.MaxValue);
+                ServiceLogger.LogException(@"in SetContactsKeyForWebOrderCmd " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 191, short.MaxValue);
             }
 
             //............................................
@@ -1218,7 +1239,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 192, short.MaxValue);
+                ServiceLogger.LogException(@"in GetArchiveCategoryCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 192, short.MaxValue);
             }
             //............................................
             return command;
@@ -1255,7 +1277,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 193, short.MaxValue);
+                ServiceLogger.LogException(@"in GetGuidFromOrderKeyCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 193, short.MaxValue);
             }
 
             //............................................
@@ -1306,7 +1329,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 194, short.MaxValue);
+                ServiceLogger.LogException(@"in CheckDuplicateOrderCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 194, short.MaxValue);
             }
 
             //............................................
@@ -1521,7 +1545,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 195, short.MaxValue);
+                ServiceLogger.LogException(@"in SetOrderCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 195, short.MaxValue);
             }
 
             //............................................
@@ -1566,8 +1591,9 @@ namespace MenumateServices.WebMate.InternalClasses
                 command.Parameters.AddWithValue("@CATEGORY_KEY", category.CategoryKey);
             }
             catch (Exception e)
-            {                
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+            {
+                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
             }
 
             //......................................................
@@ -1625,7 +1651,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 215, short.MaxValue);
+                ServiceLogger.LogException(@"in SetOrderRecipeCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 215, short.MaxValue);
             }
 
             //......................................................
@@ -1683,7 +1710,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 216, short.MaxValue);
+                ServiceLogger.LogException(@"in SetOrderRecipeCmd " + e.Message, e); 
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 216, short.MaxValue);
             }
 
             //......................................................
@@ -1712,7 +1740,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 217, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateWebOrderAcceptedCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 217, short.MaxValue);
             }
 
             //......................................................
@@ -1768,7 +1797,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 218, short.MaxValue);
+                ServiceLogger.LogException(@"in CreateReadThirdPartyCodeKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 218, short.MaxValue);
             }
             //......................................................
 
@@ -1802,7 +1832,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 219, short.MaxValue);
+                ServiceLogger.LogException(@"in GetChitDetailsCmd " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 219, short.MaxValue);
             }
 
             return command;
@@ -1829,7 +1860,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 220, short.MaxValue);
+                ServiceLogger.LogException(@"in GetMenuKeyCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 220, short.MaxValue);
             }
             //......................................................
 
@@ -1852,7 +1884,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 221, short.MaxValue);
+                ServiceLogger.LogException(@"in GetWebmateInterfaceCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 221, short.MaxValue);
             }
 
             return command;
@@ -1876,7 +1909,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 222, short.MaxValue);
+                ServiceLogger.LogException(@"in UpdateToNotifyWebmateInterfaceEnableOrDisableCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 222, short.MaxValue);
             }
             return command;
         }

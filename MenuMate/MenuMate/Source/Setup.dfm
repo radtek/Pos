@@ -741,8 +741,7 @@ object frmSetup: TfrmSetup
           'MenuMate Loyalty.'
           'MenuMate Club Membership'
           'E-Bet Gaming Membership'
-          'Casino External Membership'
-          'Thorlink Membership')
+          'Casino External Membership')
         ParentBackground = False
         ParentColor = False
         TabOrder = 3

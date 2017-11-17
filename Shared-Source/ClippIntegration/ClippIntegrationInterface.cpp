@@ -27,10 +27,17 @@ TClippIntegrationInterface::~TClippIntegrationInterface()
 
 void TClippIntegrationInterface::InitializeWebClient()
 {
-    bool useWSDL = false;
-    AnsiString clippIntegrationServicePath = AnsiString("http://localhost:8736/MenumateServices/ClippService/");
+    try
+    {
+        bool useWSDL = false;
+        AnsiString clippIntegrationServicePath = AnsiString("http://localhost:8736/MenumateServices/ClippService/");
 
-    _clippIntegrationWebClient = GetIClippIntergrationWebService(_useWsdl, clippIntegrationServicePath, NULL);
+        _clippIntegrationWebClient = GetIClippIntergrationWebService(_useWsdl, clippIntegrationServicePath, NULL);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -72,10 +79,9 @@ CLIPP_MESSAGE_MAP TClippIntegrationInterface::GetClippMessages(MMClippMessageVer
 
 void TClippIntegrationInterface::SendTabDetails(MMClippTabDetail mmClippTabDetail)
 {
-    ClippTabDetailRequest* clippTabDetailRequest = CreateClippTabDetailRequest(mmClippTabDetail);
-
     try
     {
+        ClippTabDetailRequest* clippTabDetailRequest = CreateClippTabDetailRequest(mmClippTabDetail);
         CoInitialize(NULL);
 
         //Invoke the web service client with the required parameters..
@@ -93,10 +99,9 @@ void TClippIntegrationInterface::SendTabDetails(MMClippTabDetail mmClippTabDetai
 void TClippIntegrationInterface::SendTabDetails(UnicodeString clippTabRef, UnicodeString recievedMessageId, UnicodeString errorCode,
                                                      UnicodeString errorDescription, Currency totalPaymentAmount)
 {
-    ClippErrorDetail* clippErrorDetail = CreateClippErrorDetail(clippTabRef, recievedMessageId, errorCode, errorDescription, totalPaymentAmount);
-
     try
     {
+        ClippErrorDetail* clippErrorDetail = CreateClippErrorDetail(clippTabRef, recievedMessageId, errorCode, errorDescription, totalPaymentAmount);
         CoInitialize(NULL);
 
         _clippIntegrationWebClient->UpdateTabDetailsOnError(clippErrorDetail);
@@ -112,10 +117,9 @@ void TClippIntegrationInterface::SendTabDetails(UnicodeString clippTabRef, Unico
 
 MMClippMessageDetail TClippIntegrationInterface::CloseTab(MMClippTabDetail mmClippTabDetail)
 {
-    ClippTabDetailRequest* clippTabDetailRequest = CreateClippTabDetailRequest(mmClippTabDetail);
-
     try
     {
+        ClippTabDetailRequest* clippTabDetailRequest = CreateClippTabDetailRequest(mmClippTabDetail);
         CoInitialize(NULL);
 
         //Invoke the web service client with the required parameters..
@@ -136,11 +140,10 @@ MMClippMessageDetail TClippIntegrationInterface::CloseTab(MMClippTabDetail mmCli
 void TClippIntegrationInterface::CloseTab(UnicodeString clippTabRef, UnicodeString recievedMessageId, UnicodeString errorCode,
                                                             UnicodeString errorDescription, Currency totalPaymentAmount)
 {
-    ClippErrorDetail* clippErrorDetail = CreateClippErrorDetail(clippTabRef, recievedMessageId, errorCode, errorDescription, totalPaymentAmount);
-
     try
     {
-        CoInitialize(NULL);
+        ClippErrorDetail* clippErrorDetail = CreateClippErrorDetail(clippTabRef, recievedMessageId, errorCode, errorDescription, totalPaymentAmount);
+		CoInitialize(NULL);
 
         _clippIntegrationWebClient->CloseTabOnError(clippErrorDetail);
 
@@ -155,10 +158,9 @@ void TClippIntegrationInterface::CloseTab(UnicodeString clippTabRef, UnicodeStri
 
 MMPaymentDetailResponse TClippIntegrationInterface::RequestTabPayment(MMPaymentDetailRequest mmPaymentDetailRequest)
 {
-    PaymentDetailRequest* paymentDetailRequest = CreatePaymentDetailRequest(mmPaymentDetailRequest);
-
     try
     {
+        PaymentDetailRequest* paymentDetailRequest = CreatePaymentDetailRequest(mmPaymentDetailRequest);
         CoInitialize(NULL);
 
         //Invoke the web service client with the required parameters..

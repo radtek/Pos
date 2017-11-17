@@ -6,6 +6,5 @@
     <Service id="3" name="EFTPOS"         load="NO"   asWebService="YES"/>
     <Service id="4" name="Accounting"             load="YES"  asWebService="NO"/>
     <Service id="5" name="WebMate"      load="YES"  asWebService="YES"/>
-    <Service id="8" name="ClippIntegration"      load="YES"  asWebService="YES"/>
   </Services>
 </ServiceLoader>
