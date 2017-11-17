@@ -2397,7 +2397,8 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		IBInternalQuery->SQL->Clear();
 		IBInternalQuery->SQL->Text =
         "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
-        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE "
+        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE, "
+        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME "
         " FROM ORDERS a inner join SIZES b  "
         " on a.SIZE_NAME = b.SIZE_NAME  "
         " WHERE a.TAB_KEY = :TAB_KEY "
@@ -2460,6 +2461,10 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
             Order.ItemType 	  = (TItemType)IBInternalQuery->FieldByName("ITEM_TYPE")->AsInteger;
+            Order.RoomNo      = IBInternalQuery->FieldByName("RoomNo")->AsString;
+            Order.AccNo      = IBInternalQuery->FieldByName("AccNo")->AsString;
+            Order.FirstName      = IBInternalQuery->FieldByName("FirstName")->AsString;
+            Order.LastName      = IBInternalQuery->FieldByName("LastName")->AsString;
 
             if(isSCDOrPWDDiscountExist)
             {
