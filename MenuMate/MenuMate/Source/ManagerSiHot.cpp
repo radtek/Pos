@@ -125,8 +125,10 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-      if(MessageBox("Sale could not get processed.Press OK to  process sale again","Error", MB_OK + MB_ICONERROR) == ID_OK);
-        return false;
+        if(roomResponse.ResponseMessage == "")
+			roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
+        if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+            return false;
     }
 }
 //---------------------------------------------------------------------------
