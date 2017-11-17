@@ -15372,23 +15372,14 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
         {
             for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
             {
-                double CreditLimit = (double)((StrToCurr)(accIt->CreditLimit));
-                if(((double)inTransaction.Money.RoundedGrandTotal > CreditLimit) && (CreditLimit != 0.0))
-                {
-                    MessageBox("Credit Limit Exceeded","Info",MB_OK);
-                    break;
-                }
-                else
-                {
-                    inTransaction.Phoenix.AccountNumber = SiHotAccount.AccountNumber;
-                    inTransaction.Phoenix.AccountName = accIt->FirstName + " " + accIt->LastName;
-                    inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
-                    inTransaction.Phoenix.FirstName = accIt->FirstName;
-                    inTransaction.Phoenix.LastName = accIt->LastName;
-                    inTransaction.SalesType = eRoomSale;
-                    inTransaction.Customer.RoomNumber = StrToInt(inTransaction.Phoenix.RoomNumber);
-                    isRoomDetailsLoaded = true;
-                }
+                inTransaction.Phoenix.AccountNumber = SiHotAccount.AccountNumber;
+                inTransaction.Phoenix.AccountName = accIt->FirstName + " " + accIt->LastName;
+                inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
+                inTransaction.Phoenix.FirstName = accIt->FirstName;
+                inTransaction.Phoenix.LastName = accIt->LastName;
+                inTransaction.SalesType = eRoomSale;
+                inTransaction.Customer.RoomNumber = StrToInt(inTransaction.Phoenix.RoomNumber);
+                isRoomDetailsLoaded = true;
             }
 
             for (int i = 0; i < inTransaction.Orders->Count; i++)
