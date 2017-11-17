@@ -194,6 +194,7 @@ class TPaymentTransaction
         void makeLogFile(UnicodeString str);
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
+        bool WasSavedSales;
 };
 
 #endif

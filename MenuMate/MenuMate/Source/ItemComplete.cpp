@@ -78,7 +78,9 @@ TItemComplete::TItemComplete()
     //MM2038
     IdName="";
     IdNumber="";
-
+    AccNo = 0;
+    FirstName = "";
+    LastName = "";
 }
 
 __fastcall TItemComplete::~TItemComplete()
@@ -87,9 +89,7 @@ __fastcall TItemComplete::~TItemComplete()
 
 }
 
-TItemComplete::TItemComplete(
-  const TItemComplete &initializer)
-  : TItemMinorComplete(initializer)
+TItemComplete::TItemComplete(const TItemComplete &initializer) : TItemMinorComplete(initializer)
 {
    Course_Key = initializer.Course_Key;
    Course_ID = initializer.Course_ID;
@@ -181,6 +181,9 @@ TItemComplete::operator=(
    ContactsKey = rhs.ContactsKey;
 
    _activeChitNumberKey = rhs._activeChitNumberKey;
+   AccNo = rhs.AccNo;
+   FirstName = rhs.FirstName;
+   LastName = rhs.LastName;
 
 }
 
@@ -232,6 +235,9 @@ void TItemComplete::Assign(TItemMinor *BaseItem)
         //MM2038
        RetItem->IdName = IdName;
        RetItem->IdNumber = IdNumber;
+       RetItem->AccNo = AccNo;
+       RetItem->FirstName = FirstName;
+       RetItem->LastName = LastName;
 
     }
 }

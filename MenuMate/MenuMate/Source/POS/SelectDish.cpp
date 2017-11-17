@@ -3483,6 +3483,17 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
             BevTabName = TabName;
             BevTabKey = SelectedTab;
         }
+        UnicodeString AccNo= "", FirstName = "", LastName ="", RoomNumber = "";
+        if(SiHotAccount.AccountDetails.size() || isWalkInUser)
+        {
+            for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+            {
+                AccNo = SiHotAccount.AccountNumber;
+                FirstName = accIt->FirstName;
+                LastName = accIt->LastName;
+                RoomNumber = accIt->RoomNumber;
+            }
+        }
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
@@ -3537,6 +3548,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				    Order->TabName = BevTabName;
                     Order->TabContainerName = BevTabName;
                 }
+                Order->AccNo = AccNo;
+                Order->FirstName = FirstName;
+                Order->LastName = LastName;
+                Order->RoomNo = StrToInt(RoomNumber);
+
 
 				OrdersList->Add(Order);
 
@@ -8331,7 +8347,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 	}
 	if (SeatOrders[0]->Orders->Count > 0)
 	{
-        ShowSihotDetailsMessage();
+       // ShowSihotDetailsMessage();
 		TotalCosts();
 		UpdateExternalDevices();
 
@@ -8677,7 +8693,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-        ShowSihotDetailsMessage();
+       // ShowSihotDetailsMessage();
 		showTablePicker();
 	}
 	else
@@ -8685,7 +8701,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
-            ShowSihotDetailsMessage();
+            //ShowSihotDetailsMessage();
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
@@ -15391,6 +15407,9 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 Order->TabName = inTransaction.Phoenix.RoomNumber;
                 Order->TabType = TabRoom;
                 Order->RoomNo = atoi(inTransaction.Phoenix.AccountNumber.t_str());
+                Order->AccNo = inTransaction.Phoenix.AccountNumber;
+                Order->FirstName = inTransaction.Phoenix.FirstName;
+                Order->LastName = inTransaction.Phoenix.LastName;
             }
         }
     }
