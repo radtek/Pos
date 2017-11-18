@@ -9042,7 +9042,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			showTablePicker();
 		}
 
-        DisplayRoomNoUI();
+        if(OrderConfimOk)
+            DisplayRoomNoUI();
 		//MM-1647: Ask for chit if it is enabled for every order.
 		NagUserToSelectChit();
 
