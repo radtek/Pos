@@ -2217,7 +2217,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 		" PRICE,DISCOUNT,SECURITY_REF,ORDERS.SERVINGCOURSES_KEY,PRICE_LEVEL0,PRICE_LEVEL1,"
 		" ORDER_TYPE_MESSAGE, CONTACTS_KEY, SERVINGCOURSES.*, patron_count, CANCEL_BASE_PRICE, "
 		" CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE, CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
-        " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO "
+        " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
 		" FROM ORDERS "
 		" LEFT JOIN SERVINGCOURSES ON ORDERS.SERVINGCOURSES_KEY = SERVINGCOURSES.SERVINGCOURSES_KEY "
 		" WHERE "
@@ -2244,6 +2244,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
             PrevItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
             PrevItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
             PrevItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+            PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 			if (PrevItem->SetMenuMask)
 			{
 				if (TST_PROMO_MASTER(IBInternalQuery->FieldByName("SETMENU_MASK")->AsInteger))
@@ -2280,7 +2281,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			" SELECT ORDER_KEY,QTY,ITEM_NAME,SIZE_NAME,SETMENU_MASK,SETMENU_GROUP,MENU_NAME,"
 			" PRICE, CANCEL_BASE_PRICE, CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE,"
 			" CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
-            " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO "
+            " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
             " FROM ORDERS "
 			" WHERE "
 			" SIDE_ORDER_KEY = :SIDE_ORDER_KEY";
@@ -2306,6 +2307,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
                 SubItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
                 SubItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
                 SubItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+                PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 				LoadOrderCategories(DBTransaction,SubItem->OrderKey,SubItem->Categories);
 				LoadOrderDiscounts(DBTransaction,SubItem);
 				PrevItem->SubOrders->SubOrderAdd(SubItem);

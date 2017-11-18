@@ -8803,6 +8803,32 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
 				}
 
+                UnicodeString OldAccNumber = "", NewAccNo = "";
+                int tabNumber;
+
+                if(SeatOrders[SelectedSeat]->Orders->Count)
+                {
+                    TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[SelectedSeat]->Orders->Items[0]);
+                    NewAccNo = order->AccNo;
+                }
+
+                for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
+                {
+                    TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
+                    tabNumber = CompressedItems->ItemsList[0]->TabKey;
+                    if(tabNumber)
+                    {
+                        OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
+                        break;
+                    }
+                }
+
+                if(OldAccNumber.Compare(NewAccNo))
+                {
+                    MessageBox("Order with different room no can't be saved..", "Print error", MB_OK + MB_ICONERROR);
+                    return;
+                }
+
 				if (frmConfirmOrder->ShowModal() != mrOk)
 				{
 					OrderConfimOk = false;
@@ -9647,6 +9673,14 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                      {
 	                    OrderContainer.Location["TMMDisplayMode"] = SelectionForm->DisplayMode;
 	                    OrderContainer.Location["TMMTabType"] = SelectionForm->SelectedTabType;
+                        UnicodeString AccNumber = "";
+                        int TabNo;
+                        if(SeatOrders[0]->Orders->Count)
+                        {
+                            TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[0]->Orders->Items[0]);
+                            AccNumber = order->AccNo;
+							OrderContainer.Location["AccNo"] = AccNumber;
+                        }
 
 	                    switch(int(OrderContainer.Location["TMMTabType"]))
 	                    {
@@ -9808,7 +9842,7 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                            // Runs new web app of floorPlan
                                 if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
 //	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
-	                            {
+	                            {   
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
 	                                OrderContainer.Location["ContainerName"] = floorPlanReturnParams.TabContainerName;
@@ -10182,6 +10216,12 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 
 				if (Retval == mrOk)
 				{
+                    if(TDBTab::GetAccountNumber(DBTransaction, OrderContainer.Location["TabKey"]).Compare(OrderContainer.Location["AccNo"]))
+                    {
+                        MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+                        return mrAbort;
+                    }
+
 					if (!TGlobalSettings::Instance().DisableConfirmationOnSave)
 					{
 						OrderContainer.Values.push_back(TSaveOrdersTo::StringValuePair("Total", InitialMoney.GrandTotal));
@@ -10307,6 +10347,13 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
+
+                if((TDBTab::GetAccountNumber(DBTransaction, TabKey).Compare(OrderContainer.Location["AccNo"])))
+                {
+                    MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+                    return mrAbort;
+                }
+
 				OrderContainer.Location["TabKey"] = TabKey;
 				OrderContainer.Location["SelectedSeat"] = SelectedItem.Properties["SelectedSeat"];
 				OrderContainer.Location["TabName"] = SelectedItem.Properties["TabName"];
@@ -13057,7 +13104,6 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 {
 
     CheckLastAddedItem(); // check any added item in list;
-    UnicodeString AccNo = "", RoomNo = "", FirstName = "", LastName = "";
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
 
 
@@ -15432,7 +15478,7 @@ void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
 std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaultTransaction)
 {
     std::vector<UnicodeString> guestDetails;
-    if(SeatOrders[SelectedSeat]->Orders->CompressedCount)
+    if(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0 )
     {
         isWalkInUser = false;
         SiHotAccount.AccountDetails.clear();

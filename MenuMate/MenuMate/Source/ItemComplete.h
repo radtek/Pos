@@ -36,7 +36,6 @@ class TItemComplete : public TItemMinorComplete
     long Palm_ID;
     int TableNo;
     int SeatNo;
-    int TabKey;
     int TimeKey;
     int MenuKey;
     int WebKey;

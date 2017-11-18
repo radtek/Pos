@@ -224,6 +224,7 @@ TItemMinorComplete::TItemMinorComplete() {
     AccNo = "";
     FirstName = "";
     LastName = "";
+    TabKey = 0;
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -283,6 +284,7 @@ TItemMinorComplete::TItemMinorComplete(
     AccNo = initializer.AccNo;
     FirstName = initializer.FirstName;
     LastName = initializer.LastName;
+    TabKey = initializer.TabKey;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -332,6 +334,7 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     AccNo = rhs.AccNo;
     FirstName = rhs.FirstName;
     LastName = rhs.LastName;
+    TabKey = rhs.TabKey;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -382,6 +385,7 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->AccNo = AccNo;
         RetItem->FirstName = FirstName;
         RetItem->LastName = LastName;
+        RetItem->TabKey = TabKey;
     }
 }
 

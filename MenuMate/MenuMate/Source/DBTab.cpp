@@ -2196,3 +2196,28 @@ AnsiString TDBTab::GetInvoiceNoFromTabKey(Database::TDBTransaction &dbTransactio
         throw;
     }
 }
+//-------------------------------------------------------------------------------
+UnicodeString TDBTab::GetAccountNumber(Database::TDBTransaction &dbTransaction, int tabKey)
+{
+    UnicodeString AccNo = "";
+    try
+    {
+        TIBSQL *selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT ACC_NO FROM ORDERS A WHERE TAB_KEY = :TAB_KEY "
+                                  "GROUP BY 1 ";
+
+        selectQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+            AccNo = selectQuery->FieldByName("ACC_NO")->AsString;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return AccNo;
+}
