@@ -13127,7 +13127,7 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 
 
      if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-            TGlobalSettings::Instance().EnableCustomerJourney)
+            TGlobalSettings::Instance().EnableCustomerJourney && Order != NULL)
     {
         UnicodeString defaultTransaction = TManagerVariable::Instance().GetStr(inDBTransaction,vmSiHotDefaultTransactionName);
         std::vector<UnicodeString> GuestDetails = LoadGuestDetails(defaultTransaction);
