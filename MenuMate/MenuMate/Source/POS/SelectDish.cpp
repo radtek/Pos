@@ -8803,30 +8803,34 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
 				}
 
-                UnicodeString OldAccNumber = "", NewAccNo = "";
-                int tabNumber;
-
-                if(SeatOrders[SelectedSeat]->Orders->Count)
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                TGlobalSettings::Instance().EnableCustomerJourney)
                 {
-                    TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[SelectedSeat]->Orders->Items[0]);
-                    NewAccNo = order->AccNo;
-                }
+                    UnicodeString OldAccNumber = "", NewAccNo = "";
+                    int tabNumber;
 
-                for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
-                {
-                    TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
-                    tabNumber = CompressedItems->ItemsList[0]->TabKey;
-                    if(tabNumber)
+                    if(SeatOrders[SelectedSeat]->Orders->Count)
                     {
-                        OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
-                        break;
+                        TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[SelectedSeat]->Orders->Items[0]);
+                        NewAccNo = order->AccNo;
                     }
-                }
 
-                if(OldAccNumber.Compare(NewAccNo))
-                {
-                    MessageBox("Order with different room no can't be saved..", "Print error", MB_OK + MB_ICONERROR);
-                    return;
+                    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
+                    {
+                        TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
+                        tabNumber = CompressedItems->ItemsList[0]->TabKey;
+                        if(tabNumber)
+                        {
+                            OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
+                            break;
+                        }
+                    }
+
+                    if(OldAccNumber != "" && OldAccNumber.Compare(NewAccNo))
+                    {
+                        MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+                        return;
+                    }
                 }
 
 				if (frmConfirmOrder->ShowModal() != mrOk)
