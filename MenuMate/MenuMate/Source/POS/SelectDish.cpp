@@ -4226,6 +4226,9 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
     }
 
 	showTablePicker();
+
+    if(!(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0))
+        DisplayRoomNoUI();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateTableButton()
@@ -7926,7 +7929,6 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		RedrawSeatOrders();
 		TotalCosts();
 		UpdateExternalDevices();
-
 		DBTransaction.Commit();
 	}
 	else
@@ -9043,7 +9045,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			showTablePicker();
 		}
 
-        if(OrderConfimOk)
+        if(OrderConfimOk && !(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0) )
             DisplayRoomNoUI();
 		//MM-1647: Ask for chit if it is enabled for every order.
 		NagUserToSelectChit();
@@ -12677,7 +12679,7 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, boo
         if (NewTabKey != 0)
         {
             if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
-            {    
+            {   
                 // Unlock Old Tab.
                 TTableSeat OldTableSeat;
                 OldTableSeat.TableNo = SelectedTable;
@@ -12745,6 +12747,11 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, boo
         TotalCosts();
         UpdateExternalDevices();
         CloseSidePanel();
+
+        if(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0 )
+        { 
+            isTabLocked = false;
+        }
 
         if(((!NewTabKey || isTabLocked) && !SeatOrders[SelectedSeat]->Orders->Count) && isCalledFromGuestSeat)
             DisplayRoomNoUI();
@@ -15489,9 +15496,12 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
 }
 //-------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
-{
+{    
     tiPMSRoom->Enabled = false;
-    DisplayRoomNoUI();
+    if(!(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0) )
+    { 
+        DisplayRoomNoUI();
+    }
     tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit;
 }
 //-----------------------------------------------------------------------------------------------------
@@ -15515,7 +15525,7 @@ std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaul
         }
     }
     if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser) && !isGuestDetailsLoaded)
-    {    
+    {
         if(isWalkInUser)
         {
             guestDetails.push_back(TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber);
