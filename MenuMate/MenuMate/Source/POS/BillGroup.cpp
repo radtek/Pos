@@ -398,7 +398,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 	{
 		if (!SelectedItems.empty())
 		{
-            MessageBox("1","1",MB_OK);
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -533,7 +532,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 		}
 		else
 		{
-                               MessageBox("2","2",MB_OK);
                     // If TransferTableOnPrintPrelim and no item is selected then move all items to tab
                     if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && CurrentDisplayMode == eTables)
                      {

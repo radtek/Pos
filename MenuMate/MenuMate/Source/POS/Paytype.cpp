@@ -1430,7 +1430,6 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         {
                             if(((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo != 0)
                             {
-                                MessageBox(((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo,"((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo",MB_OK);
                                 CurrentTransaction.Customer.RoomNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo;
                                 CurrentTransaction.Phoenix.FirstName =  ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->FirstName;
                                 CurrentTransaction.Phoenix.LastName =  ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->LastName;
@@ -1537,8 +1536,6 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 bool TfrmPaymentType::IsSavedSavesWithSiHot(TPaymentTransaction &CurrentTransaction)
 {
     bool retValue = false;
-    MessageBox(((TItemComplete*)CurrentTransaction.Orders->Items[0])->RoomNo,"((TItemComplete*)CurrentTransaction.Orders->Items[0])->RoomNo",MB_OK);
-    MessageBox(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,"default",MB_OK);
     if(/*CurrentTransaction.SalesType == eTableSeat || CurrentTransaction.SalesType == eTab || CurrentTransaction.SalesType == eAccount || */CurrentTransaction.WasSavedSales
        || (CurrentTransaction.SalesType == eRoomSale)
        && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)

@@ -8823,9 +8823,9 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                     }
                 }
 
-                if(OldAccNumber.Compare(NewAccNo))
+                if(OldAccNumber != "" && OldAccNumber.Compare(NewAccNo))
                 {
-                    MessageBox("Order with different room no can't be saved..", "Print error", MB_OK + MB_ICONERROR);
+                    MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
                     return;
                 }
 
