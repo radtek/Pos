@@ -398,6 +398,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 	{
 		if (!SelectedItems.empty())
 		{
+            MessageBox("1","1",MB_OK);
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -532,6 +533,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 		}
 		else
 		{
+                               MessageBox("2","2",MB_OK);
                     // If TransferTableOnPrintPrelim and no item is selected then move all items to tab
                     if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && CurrentDisplayMode == eTables)
                      {
@@ -865,40 +867,45 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 				}
 				else
 				{
-                   if(totalDivision > 0 && CurrentDisplayMode == eTables)
-                   {
-                       int ptrCount = 0;
-                       if((!TGlobalSettings::Instance().PromptForPatronCount)&&(!TGlobalSettings::Instance().PromptPatronCountOnTableSales))
+                    if(!CheckBillEntireWithCustomerJourney())
+                    {
+                        MessageBox("Multiple SiHot accounts can not be billed at same time","Error",MB_OK + MB_ICONERROR);
+                    }
+                    else
+                    {
+                       if(totalDivision > 0 && CurrentDisplayMode == eTables)
                        {
-                          PatronCount = TDBTables::GetPatronNumbers(DBTransaction,CurrentTable);
+                           int ptrCount = 0;
+                           if((!TGlobalSettings::Instance().PromptForPatronCount)&&(!TGlobalSettings::Instance().PromptPatronCountOnTableSales))
+                           {
+                              PatronCount = TDBTables::GetPatronNumbers(DBTransaction,CurrentTable);
+                           }
+                           else
+                           {
+                              UpdateBilledPatronCount(DBTransaction,CurrentTable);
+                           }
                        }
                        else
                        {
-                          UpdateBilledPatronCount(DBTransaction,CurrentTable);
-                       }
-                   }
-                   else
-                   {
 
-                     if((!TGlobalSettings::Instance().PromptForPatronCount))
-                       {
-                          PatronCount = TabsToLock.size();
+                         if((!TGlobalSettings::Instance().PromptForPatronCount))
+                           {
+                              PatronCount = TabsToLock.size();
+                           }
+                           else
+                           {
+                             UpdateBilledPatronCount(DBTransaction,CurrentTable);
+                           }
                        }
-                       else
+                       if (PatronCount <= 0)
+                             PatronCount = 1;
+                       if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
                        {
-                         UpdateBilledPatronCount(DBTransaction,CurrentTable);
+                          CheckLoyalty(ItemsToBill);
                        }
-                   }
-                   if (PatronCount <= 0)
-                         PatronCount = 1;
-                   if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
-                   {
-                      CheckLoyalty(ItemsToBill);
-                   }
-                   BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
+                       BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
+                    }
 				}
-
-
 			}
 		}
 		else
@@ -915,6 +922,36 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 			"\r\rPlease check this Table is not in use.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+}
+//----------------------------------------------------------------------------
+bool TfrmBillGroup::CheckBillEntireWithCustomerJourney()
+{
+    bool retValue = true;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try{
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT DISTINCT ACC_NO FROM ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = CurrentTable;
+        IBInternalQuery->ExecQuery();
+        int i = 0;
+        for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
+        {
+            i++;
+        }
+        if(i > 1)
+        {
+           retValue = false;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
@@ -943,6 +980,28 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 
 			if (Proceed)
 			{
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+                {
+                    UnicodeString accountNumber = "";
+                    bool canProceed = true;
+                    for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+						advance(itItem, 1))
+					{
+					    accountNumber = itItem->second.AccNumber;
+                        break;
+					}
+                    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+						advance(itItem, 1))
+					{
+					    if(accountNumber != itItem->second.AccNumber)
+                        {
+                            canProceed = false;
+                            MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
+                        }
+					}
+                    if(!canProceed)
+                        return;
+                }
 				DBTransaction.StartTransaction();
 				Proceed = TabStaffAccessOk(DBTransaction);
 				if (Proceed)
@@ -971,7 +1030,8 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					CreditTransaction.TabCredit[CurrentSelectedTab] = Credit;
                     CreditTransaction.IgnoreLoyaltyKey = false;
 					CreditTransaction.Recalc();
-
+                    if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)CreditTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
+                    CustomizeForSiHot(CreditTransaction);
 					TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
 					TDBTab::SetTabCreditLimit(DBTransaction, CurrentSelectedTab, -1);
 				}
@@ -985,6 +1045,28 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 		}
 		else
 		{
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+            {
+                UnicodeString accountNumber = 0;
+                bool canProceed = true;
+                for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+                    advance(itItem, 1))
+                {
+                    accountNumber = itItem->second.AccNumber;
+                    break;
+                }
+                for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+                    advance(itItem, 1))
+                {
+                    if(accountNumber != itItem->second.AccNumber)
+                    {
+                        canProceed = false;
+                        MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
+                    }
+                }
+                if(!canProceed)
+                    return;
+            }
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -1572,11 +1654,20 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	{
 		TGridButton *GridButton = tgridContainerList->Buttons[i][CONTAINER_LIST_FUNC_COLUMN];
 		int SelectedTab = GridButton->Tag;
+
 		if (AddToSelectedTabs(DBTransaction, SelectedTab))
 		{
 			ItemSetAddItems(DBTransaction, SelectedTab);
 			CurrentSelectedTab = SelectedTab;
 		}
+        else
+        {
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+            {
+                if(SelectedItems.size() > 0)
+                    break;
+            }
+        }
 	}
 	UpdateRightButtonDisplay(Sender);
 	IgnoreItemThreshhold = false;
@@ -1648,6 +1739,7 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 				if (DropDown->ShowModal() == mrOk)
 				{
 					int TabTransferTo = DropDown->Result;
+                    int sourceAccNumber = 0;
 					std::auto_ptr <TList> OrdersList(new TList);
 					std::set <__int64> ItemsToBeMoved;
 					for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
@@ -1655,7 +1747,20 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 					{
 						ItemsToBeMoved.insert(itItem->first);
                         source_key = itItem->first;
+                        sourceAccNumber = atoi(itItem->second.AccNumber.t_str());
 					}
+
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                       TGlobalSettings::Instance().EnableCustomerJourney )
+                    {
+                        if(!CanMoveItemToOtherTab(sourceAccNumber, TabTransferTo))
+                        {
+                            MessageBox("Destination has items for different SiHot account number","Error", MB_OK + MB_ICONERROR);
+                            DBTransaction.Commit();
+                            return;
+                        }
+                    }
+
 					TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeMoved);
 					if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), TabTransferTo))
 					{
@@ -1708,6 +1813,30 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+}
+//----------------------------------------------------------------------------
+bool TfrmBillGroup::CanMoveItemToOtherTab(int sourceAccNumber, int TabTransferTo)
+{
+    bool retValue = true;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try{
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT ACC_NO FROM ORDERS WHERE TAB_KEY = :TAB_KEY AND ACC_NO <> :ACC_NO";
+        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabTransferTo;
+        IBInternalQuery->ParamByName("ACC_NO")->AsInteger = sourceAccNumber;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+           retValue = false;
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
@@ -2557,6 +2686,11 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                         {
                             SplitItemsInSet(DBTransaction,tab_key);
                             ItemSetAddItems(DBTransaction,tab_key);
+                        }
+                        else
+                        {
+                            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+                                break;
                         }
                     }
                     CurrentSelectedTab = SelectedTab;
@@ -3949,8 +4083,28 @@ void TfrmBillGroup::ShowReceipt()
 bool TfrmBillGroup::AddToSelectedTabs(Database::TDBTransaction &DBTransaction, long TabKey)
 {
 	bool retval = false;
+
 	if (TabKey != -1)
 	{
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+        {
+            UnicodeString accountNumber = "";
+            bool canProceed = true;
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+                advance(itItem, 1))
+            {
+                accountNumber = itItem->second.AccNumber;
+                break;
+            }
+            if(accountNumber != "")
+            {
+                if(!CanMoveItemToOtherTab(atoi(accountNumber.t_str()), TabKey))
+                {
+                    MessageBox("Tabs with different SiHot Accounts can not be selected at same time.","Error",MB_OK);
+                    return false;
+                }
+            }
+        }
 		if (SelectedTabs.find(TabKey) == SelectedTabs.end())
 		{
 			if (TabInUseOk(TabKey))
@@ -4298,6 +4452,10 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             {
                 // use the InvoicePaymentSystem as it allows paying multiple invoices and acts different on partial n split payments
                 std::auto_ptr<TMMInvoicePaymentSystem> invoicePaymentSystem( new TMMInvoicePaymentSystem() );
+
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
+                    CustomizeForSiHot(PaymentTransaction);
+
                 invoicePaymentSystem->ProcessTransaction(PaymentTransaction);
 
                             // display last receipt if any
@@ -4305,6 +4463,8 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             }
             else
             {
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
+                    CustomizeForSiHot(PaymentTransaction);
                 isPaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
                 // display last receipt if any
                 _displayLastReceipt( DBTransaction, TDeviceRealTerminal::Instance().PaymentSystem->LastReceipt );
@@ -4359,6 +4519,27 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		throw;
 	}
 	return retVal;
+}
+//----------------------------------------------------------------------------
+void TfrmBillGroup::CustomizeForSiHot(TPaymentTransaction &PaymentTransaction)
+{
+    PaymentTransaction.WasSavedSales = true;
+    PaymentTransaction.SalesType = eRoomSale;
+    for(int orderIndex = 0; orderIndex <  PaymentTransaction.Orders->Count; orderIndex++)
+    {
+        if(((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo != 0)
+        {
+            PaymentTransaction.Customer.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo;
+            PaymentTransaction.Phoenix.FirstName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->FirstName;
+            PaymentTransaction.Phoenix.LastName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->LastName;
+            PaymentTransaction.Phoenix.AccountNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->AccNo;
+            PaymentTransaction.Phoenix.AccountName = PaymentTransaction.Phoenix.FirstName + " " +
+                                                     PaymentTransaction.Phoenix.LastName;
+            PaymentTransaction.Phoenix.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo;
+            break;
+        }
+    }
+
 }
 // ---------------------------------------------------------------------------
 std::pair<int, int> TfrmBillGroup::CalculatePatronCount()

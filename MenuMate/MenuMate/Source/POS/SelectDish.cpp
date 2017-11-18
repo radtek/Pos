@@ -15428,7 +15428,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
                 Order->TabName = inTransaction.Phoenix.RoomNumber;
                 Order->TabType = TabRoom;
-                Order->RoomNo = atoi(inTransaction.Phoenix.AccountNumber.t_str());
+                Order->RoomNo = atoi(inTransaction.Phoenix.RoomNumber.t_str());
             }
         }
     }

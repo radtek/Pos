@@ -80,6 +80,7 @@ __fastcall TPaymentTransaction::~TPaymentTransaction()
 TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransaction)
 : DBTransaction(OtherTransaction.DBTransaction) , PaymentList(new TList)
 {
+
 	Type = OtherTransaction.Type;
 	SalesType = OtherTransaction.SalesType;
 	Orders = new TList;
@@ -128,6 +129,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
 {
 	delete Orders;
+
 	PaymentsClear();
 	Type 					= OtherTransaction.Type;
 	SalesType 				= OtherTransaction.SalesType;

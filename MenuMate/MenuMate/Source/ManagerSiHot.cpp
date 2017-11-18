@@ -141,9 +141,17 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
 {
+    bool roomChargeSelected = false;
+    for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+    {
+       TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+       if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+       {
+           roomChargeSelected = true;
+       }
+    }
     bool retValue = false;
-    //Call of GetRoomStatus for saved sales
-    if(!paymentTransaction.WasSavedSales)
+    if(!paymentTransaction.WasSavedSales || !roomChargeSelected)
         retValue = RoomChargePost(paymentTransaction);
     else
     {
@@ -153,21 +161,48 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         TSiHotAccounts account;
         account.AccountNumber = ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNo;  // enter room number
         siHotAccounts.push_back(account);
+//        MessageBox("found true","Account number from vector",MB_OK);
         GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+        bool checkedCreditLimit = false;
+        bool creditLimitViolated = false;
+        Currency roomTender = 0;
         for(int i = 0; i < siHotAccounts.size(); i++)
         {
-            MessageBox(siHotAccounts[i].AccountNumber,"Account number from vector",MB_OK);
+//            MessageBox(siHotAccounts[i].AccountNumber,"Account number from vector",MB_OK);
             if(siHotAccounts[i].AccountNumber == ((TItemComplete*)paymentTransaction.Orders->Items[0])->AccNo)//AccountNumber as per item)
             {
                 for(int j = 0; j < siHotAccounts[i].AccountDetails.size(); j++)
                 {
-                    if(1000 <= StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit))
-                      int i = 0;
-                    else
-                      MessageBox("Credit Limit exceeded","Error",MB_OK +MBICONERROR);
+//                    MessageBox("inside second loop","123",MB_OK);
+                    for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+                    {
+                        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+//                        MessageBox(payment->GetPayTendered(),"payment->GetPayTendered()",MB_OK);
+//                        MessageBox(StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit),"1",MB_OK);
+                        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && (double)payment->GetPayTendered() > 0)
+                        {
+//                            MessageBox(StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit),"StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit)",MB_OK);
+                            if((payment->GetPayTendered() > StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit)) &&
+                              StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit) != 0)
+                            {
+                               creditLimitViolated = true;
+                               checkedCreditLimit = true;
+                               MessageBox("Credit Limit exceeded","Error",MB_OK + MB_ICONERROR);
+                            }
+                            else
+                                checkedCreditLimit = true;
+                            break;
+                        }
+                    }
+                    if(checkedCreditLimit)
+                        break;
                 }
             }
+            if(checkedCreditLimit)
+                break;
         }
+        if(checkedCreditLimit && !creditLimitViolated)
+          retValue = RoomChargePost(paymentTransaction);
     }
     return retValue;
 }
