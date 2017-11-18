@@ -54,13 +54,11 @@ TItemComplete::shallow_compare(TItemComplete &other_item)
 TItemComplete::TItemComplete()
 {
 	ClearPrice();
-	TabKey = 0;
 	MenuKey = 0;
 	TimeKey = 0;
 	Cost = 0;
 	Palm_ID = 0;
 	TableNo = 0;
-	RoomNo = 0;
 	SeatNo = 0;
 	WebKey = 0;
 	ItemType = eFoodItem;
@@ -99,7 +97,6 @@ TItemComplete::TItemComplete(const TItemComplete &initializer) : TItemMinorCompl
    Palm_ID = initializer.Palm_ID;
    TableNo = initializer.TableNo;
    SeatNo = initializer.SeatNo;
-   TabKey = initializer.TabKey;
    MenuKey = initializer.MenuKey;
    OrderType = initializer.OrderType;
    OrderedLocation = initializer.OrderedLocation;
@@ -147,7 +144,6 @@ TItemComplete::operator=(
    Palm_ID = rhs.Palm_ID;
    TableNo = rhs.TableNo;
    SeatNo = rhs.SeatNo;
-   TabKey = rhs.TabKey;
    MenuKey = rhs.MenuKey;
    OrderType = rhs.OrderType;
    OrderedLocation = rhs.OrderedLocation;
@@ -181,10 +177,6 @@ TItemComplete::operator=(
    ContactsKey = rhs.ContactsKey;
 
    _activeChitNumberKey = rhs._activeChitNumberKey;
-   AccNo = rhs.AccNo;
-   FirstName = rhs.FirstName;
-   LastName = rhs.LastName;
-
 }
 
 void TItemComplete::Assign(TItemMinor *BaseItem)
@@ -204,7 +196,6 @@ void TItemComplete::Assign(TItemMinor *BaseItem)
         RetItem->Palm_ID = Palm_ID;
         RetItem->TableNo = TableNo;
         RetItem->SeatNo = SeatNo;
-        RetItem->TabKey = TabKey;
         RetItem->MenuKey = MenuKey;
         RetItem->OrderType = OrderType;
 
@@ -235,9 +226,5 @@ void TItemComplete::Assign(TItemMinor *BaseItem)
         //MM2038
        RetItem->IdName = IdName;
        RetItem->IdNumber = IdNumber;
-       RetItem->AccNo = AccNo;
-       RetItem->FirstName = FirstName;
-       RetItem->LastName = LastName;
-
     }
 }

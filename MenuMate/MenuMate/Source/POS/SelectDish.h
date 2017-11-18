@@ -252,7 +252,6 @@ __published: // IDE-managed Components
    void __fastcall tedtSearchItemKeyPress(TObject *Sender, wchar_t &Key);
    void __fastcall tbtnSearchMouseClick(TObject *Sender);
    void __fastcall tiPMSRoomInputTimer(TObject *Sender);
-   void ShowSihotDetailsMessage();
 private: // User declarations
     AnsiString SouceTableForDelayedPayment;
     AnsiString CustName;
@@ -480,6 +479,7 @@ private: // User declarations
     void GetRoomDetails();
     bool LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &inTransaction);
     bool CloseActiveForm();
+    std::vector<UnicodeString> LoadGuestDetails(UnicodeString defaultTransaction);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

@@ -2228,7 +2228,8 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 		" SELECT MENU_ITEM_KEY, ORDER_KEY, QTY, ITEM_NAME,SIZE_NAME,SETMENU_MASK,SETMENU_GROUP,MENU_NAME,"
 		" PRICE,DISCOUNT,SECURITY_REF,ORDERS.SERVINGCOURSES_KEY,PRICE_LEVEL0,PRICE_LEVEL1,"
 		" ORDER_TYPE_MESSAGE, CONTACTS_KEY, SERVINGCOURSES.*, patron_count, CANCEL_BASE_PRICE, "
-		" CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE, CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT "
+		" CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE, CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
+        " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
 		" FROM ORDERS "
 		" LEFT JOIN SERVINGCOURSES ON ORDERS.SERVINGCOURSES_KEY = SERVINGCOURSES.SERVINGCOURSES_KEY "
 		" WHERE "
@@ -2251,6 +2252,11 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			PrevItem->PriceLevel1 = IBInternalQuery->FieldByName("PRICE_LEVEL1")->AsCurrency;
 			PrevItem->OrderTypeMessage = IBInternalQuery->FieldByName("ORDER_TYPE_MESSAGE")->AsString;
 			PrevItem->ContactsKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            PrevItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
+            PrevItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
+            PrevItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+            PrevItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+            PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 			if (PrevItem->SetMenuMask)
 			{
 				if (TST_PROMO_MASTER(IBInternalQuery->FieldByName("SETMENU_MASK")->AsInteger))
@@ -2286,7 +2292,9 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			IBInternalQuery->SQL->Text =
 			" SELECT ORDER_KEY,QTY,ITEM_NAME,SIZE_NAME,SETMENU_MASK,SETMENU_GROUP,MENU_NAME,"
 			" PRICE, CANCEL_BASE_PRICE, CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE,"
-			" CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT FROM ORDERS "
+			" CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
+            " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
+            " FROM ORDERS "
 			" WHERE "
 			" SIDE_ORDER_KEY = :SIDE_ORDER_KEY";
 			IBInternalQuery->ParamByName("SIDE_ORDER_KEY")->AsInteger = OrderKey;
@@ -2307,6 +2315,11 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 				SubItem->CancelledBillCalcResult.FinalPrice = IBInternalQuery->FieldByName("CANCEL_FINAL_PRICE")->AsCurrency;
 				SubItem->CancelledBillCalcResult.TotalTax = IBInternalQuery->FieldByName("CANCEL_TOTAL_TAX")->AsCurrency;
 				SubItem->CancelledBillCalcResult.TotalDiscount = IBInternalQuery->FieldByName("CANCEL_TOTAL_DISCOUNT")->AsCurrency;
+                SubItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
+                SubItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
+                SubItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+                SubItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+                PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 				LoadOrderCategories(DBTransaction,SubItem->OrderKey,SubItem->Categories);
 				LoadOrderDiscounts(DBTransaction,SubItem);
 				PrevItem->SubOrders->SubOrderAdd(SubItem);

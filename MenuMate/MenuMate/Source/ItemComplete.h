@@ -36,8 +36,6 @@ class TItemComplete : public TItemMinorComplete
     long Palm_ID;
     int TableNo;
     int SeatNo;
-    int RoomNo;
-    int TabKey;
     int TimeKey;
     int MenuKey;
     int WebKey;
@@ -60,10 +58,6 @@ class TItemComplete : public TItemMinorComplete
     UnicodeString IdName;
     UnicodeString IdNumber;  //the variable here is following the name in database itself (get permission to use this one not creating the new one)
     TListOptionContainer *OptionsSelected;
-    UnicodeString AccNo;
-    UnicodeString FirstName;
-    UnicodeString LastName;
-
 
     TItemComplete();
     virtual __fastcall ~TItemComplete();

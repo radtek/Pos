@@ -330,6 +330,11 @@ class TItemMinorComplete : public TItemMinor
     bool IsTaxTypeExist( BillCalculator::TTaxType taxType );
     bool wasOpenItem;
     void ClearAllDiscounts();
+    int RoomNo;
+    UnicodeString AccNo;
+    UnicodeString FirstName;
+    UnicodeString LastName;
+    int TabKey;
 
 private:
         bool is_being_returned_to_stock_;
