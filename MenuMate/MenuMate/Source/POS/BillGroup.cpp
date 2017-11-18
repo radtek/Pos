@@ -1671,7 +1671,7 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
         {
             if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
             {
-                if(SelectedItems.size() > 0)
+                if(i > 1)
                     break;
             }
         }

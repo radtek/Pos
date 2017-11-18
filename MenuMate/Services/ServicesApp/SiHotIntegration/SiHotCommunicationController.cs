@@ -72,7 +72,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 20000;
+                    request.Timeout = 50000;
                     //request.ContentType = "text/plain";
 
                     // Get the request stream.  
@@ -98,8 +98,10 @@ namespace SiHotIntegration
             List<string> stringList = GetDetailsList(roomChargeDetails);
             RoomChargeResponse response = new RoomChargeResponse();
             SiHotSerializer serializer = new SiHotSerializer();
-            SiHotDesrializer deserializer = new SiHotDesrializer();            
-            try 
+            SiHotDesrializer deserializer = new SiHotDesrializer();
+            string responseText = "Unsuccessful";
+            string exceptionMessage = "";
+            try
             {
                 string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);
                 var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
@@ -108,24 +110,27 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 20000;
+                request.Timeout = 50000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse webResponse = request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 response = deserializer.DesrializeRoomPostResponse(memberStream.ReadToEnd());
-                //-------------------------------------------------------------------------------------//
-                stringList.Add("Response Date                        " + DateTime.Now.ToString("ddMMMyyyy"));
-                stringList.Add("Response Time                        " + DateTime.Now.ToString("hhmmss"));
-                string responseText = "Unsuccessful";
                 if (response.IsSuccessful)
                     responseText = "Successful";
-                stringList.Add("Response                             " + responseText);
-                WriteToFile(stringList);
             }
             catch (Exception ex)
             {
-		        ServiceLogger.Log("Exception in sending Room request" + ex.Message);
+                ServiceLogger.Log("Exception in sending Room Post" + ex.Message);
+                exceptionMessage = ex.Message;
+            }
+            finally
+            {
+                //-------------------------------------------------------------------------------------//
+                stringList.Add("Response Date                        " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("Response Time                        " + DateTime.Now.ToString("hhmmss"));
+                stringList.Add("Response                             " + responseText + " " + exceptionMessage);
+                WriteToFile(stringList);                    
             }
             return response;
         }
@@ -144,7 +149,7 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetValidateContent(transno);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 20000;
+                request.Timeout = 50000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse wr = request.GetResponse();
