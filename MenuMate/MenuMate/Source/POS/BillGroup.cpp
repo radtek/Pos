@@ -929,30 +929,34 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 //----------------------------------------------------------------------------
 bool TfrmBillGroup::CheckBillEntireWithCustomerJourney()
 {
+
     bool retValue = true;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    try{
-        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT DISTINCT ACC_NO FROM ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER";
-        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = CurrentTable;
-        IBInternalQuery->ExecQuery();
-        int i = 0;
-        for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
-        {
-            i++;
-        }
-        if(i > 1)
-        {
-           retValue = false;
-        }
-        DBTransaction.Commit();
-    }
-    catch(Exception &ex)
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
     {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        DBTransaction.Rollback();
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        try{
+            TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text = "SELECT DISTINCT ACC_NO FROM ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER";
+            IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = CurrentTable;
+            IBInternalQuery->ExecQuery();
+            int i = 0;
+            for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
+            {
+                i++;
+            }
+            if(i > 1)
+            {
+               retValue = false;
+            }
+            DBTransaction.Commit();
+        }
+        catch(Exception &ex)
+        {
+            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+            DBTransaction.Rollback();
+        }
     }
     return retValue;
 }
