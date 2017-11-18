@@ -8540,6 +8540,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                     delete frmBillGroup;
                     frmBillGroup = NULL;
 				}
+                DisplayRoomNoUI();
 			}
 		}
 		else
@@ -8592,6 +8593,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					CurrentTender = 0;
 					tbtnTender->Caption = "Tender";
 					tbtnCashSale->Caption = "Cash Sale";
+                    DisplayRoomNoUI();
 				}
 			}
 			else
@@ -8607,7 +8609,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 		}
        AutoLogOut();
 
-       DisplayRoomNoUI();
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
 	}
@@ -8658,7 +8659,7 @@ void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButt
         }
         else
         {
-           GetItemsFromTable(tgridSeats->Col(GridButton), GridButton);
+           GetItemsFromTable(tgridSeats->Col(GridButton), GridButton, true);
         }
     }
     catch(Exception & E)
@@ -12661,7 +12662,7 @@ void TfrmSelectDish::CheckMandatoryMembershipCardSetting(TObject * Sender)
 
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
+void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, bool isCalledFromGuestSeat)
 {
     try
     {
@@ -12745,7 +12746,7 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
         UpdateExternalDevices();
         CloseSidePanel();
 
-        if(((!NewTabKey || isTabLocked) && !SeatOrders[SelectedSeat]->Orders->Count))
+        if(((!NewTabKey || isTabLocked) && !SeatOrders[SelectedSeat]->Orders->Count) && isCalledFromGuestSeat)
             DisplayRoomNoUI();
     }
     catch(Exception & E)
@@ -15497,19 +15498,24 @@ void __fastcall TfrmSelectDish::tiPMSRoomInputTimer(TObject *Sender)
 std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaultTransaction)
 {
     std::vector<UnicodeString> guestDetails;
+    bool isGuestDetailsLoaded = false;
     if(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0 )
     {
-        isWalkInUser = false;
-        SiHotAccount.AccountDetails.clear();
         TItemRedirector *ItemRedirector = (TItemRedirector*)lbDisplay->Items->Objects[0];
-        TItemComplete *CompressedOrder = (TItemComplete*)ItemRedirector->CompressedContainer->ItemsList[0];
-        guestDetails.push_back(CompressedOrder->AccNo);
-        guestDetails.push_back(IntToStr(CompressedOrder->RoomNo));
-        guestDetails.push_back(CompressedOrder->FirstName);
-        guestDetails.push_back(CompressedOrder->LastName);
+        if(ItemRedirector->ItemType.Contains(itNormalItem))
+        {
+            isWalkInUser = false;
+            SiHotAccount.AccountDetails.clear();
+            TItemComplete *CompressedOrder = (TItemComplete*)ItemRedirector->CompressedContainer->ItemsList[0];
+            guestDetails.push_back(CompressedOrder->AccNo);
+            guestDetails.push_back(IntToStr(CompressedOrder->RoomNo));
+            guestDetails.push_back(CompressedOrder->FirstName);
+            guestDetails.push_back(CompressedOrder->LastName);
+            isGuestDetailsLoaded = true;
+        }
     }
-    else if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser))
-    {
+    if(!SeatOrders[SelectedSeat]->Orders->Count && (SiHotAccount.AccountDetails.size() || isWalkInUser) && !isGuestDetailsLoaded)
+    {    
         if(isWalkInUser)
         {
             guestDetails.push_back(TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber);
@@ -15527,8 +15533,8 @@ std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaul
             }
         }
     }
-    else if(SeatOrders[SelectedSeat]->Orders->Count)
-    {
+    else if(SeatOrders[SelectedSeat]->Orders->Count && !isGuestDetailsLoaded)
+    {     
         TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[0];
         guestDetails.push_back(Order->AccNo);
         guestDetails.push_back(IntToStr(Order->RoomNo));

@@ -447,7 +447,7 @@ private: // User declarations
     void RemoveDiscountList(TStringList *List);
     bool CheckPromptForChit;
     void CheckMandatoryMembershipCardSetting(TObject * Sender);
-    void GetItemsFromTable(int seatkey, TGridButton *GridButton);
+    void GetItemsFromTable(int seatkey, TGridButton *GridButton, bool isCalledFromGuestSeat = false);
     //change here..
     UnicodeString SetPartyNameOnChitSettings(Database::TDBTransaction &DBTransaction, AnsiString PartyName, int tableNo, bool setPartyName = false);
     UnicodeString TfrmSelectDish::PrepareAddress(UnicodeString str_name);
