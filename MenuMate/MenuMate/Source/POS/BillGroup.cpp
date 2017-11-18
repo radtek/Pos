@@ -385,6 +385,11 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
        tbtnSelectAll->Enabled = false;
        btnTransfer->Enabled = false;
     }
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+    {
+      btnTransfer->Color = clSilver;
+      btnTransfer->Enabled = false;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)

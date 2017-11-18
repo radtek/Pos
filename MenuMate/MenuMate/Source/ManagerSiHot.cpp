@@ -148,6 +148,7 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
        {
            roomChargeSelected = true;
+           break;
        }
     }
     bool retValue = false;
