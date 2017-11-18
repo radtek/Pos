@@ -852,6 +852,8 @@ namespace MenumateVersionParser
 
         void upgrade6_42Tables();
         void update6_42Tables();
+        
+
         void Create6_42Generator(TDBControl* const inDBControl);
 
         void upgrade6_43Tables();
@@ -860,6 +862,8 @@ namespace MenumateVersionParser
         void Create6_43Generator(TDBControl* const inDBControl);
         void AlterTableDiscount6_43(TDBControl* const inDBControl);
         void AlterTableOrders6_43(TDBControl* const inDBControl);
+        void AlterTableTIMECLOCKLOCATIONS6_43(TDBControl* const inDBControl);
+        void AlterTableCONTACTTIME6_43(TDBControl* const inDBControl);
     }; // class
 } // namespace
 
