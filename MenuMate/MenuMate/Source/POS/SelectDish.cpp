@@ -8820,12 +8820,16 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
                     for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
                     {
-                        TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
-                        tabNumber = CompressedItems->ItemsList[0]->TabKey;
-                        if(tabNumber)
+                        TItemRedirector *ItemRedirector = (TItemRedirector*)lbDisplay->Items->Objects[i];
+                        if(ItemRedirector->ItemType.Contains(itNormalItem))
                         {
-                            OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
-                            break;
+                            TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
+                            tabNumber = CompressedItems->ItemsList[0]->TabKey;
+                            if(tabNumber)
+                            {
+                                OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
+                                break;
+                            }
                         }
                     }
 
