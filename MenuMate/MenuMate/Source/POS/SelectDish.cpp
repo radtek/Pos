@@ -8804,7 +8804,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				}
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-                TGlobalSettings::Instance().EnableCustomerJourney)
+                    TGlobalSettings::Instance().EnableCustomerJourney)
                 {
                     UnicodeString OldAccNumber = "", NewAccNo = "";
                     int tabNumber;
@@ -9677,13 +9677,15 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                      {
 	                    OrderContainer.Location["TMMDisplayMode"] = SelectionForm->DisplayMode;
 	                    OrderContainer.Location["TMMTabType"] = SelectionForm->SelectedTabType;
-                        UnicodeString AccNumber = "";
-                        int TabNo;
-                        if(SeatOrders[0]->Orders->Count)
+
+                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney && SeatOrders[0]->Orders->Count)
                         {
-                            TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[0]->Orders->Items[0]);
-                            AccNumber = order->AccNo;
-							OrderContainer.Location["AccNo"] = AccNumber;
+                                UnicodeString AccNumber = "";
+                                int TabNo;
+                                TItemComplete *order = reinterpret_cast<TItemComplete *>(SeatOrders[0]->Orders->Items[0]);
+                                AccNumber = order->AccNo;
+                                OrderContainer.Location["AccNo"] = AccNumber;
                         }
 
 	                    switch(int(OrderContainer.Location["TMMTabType"]))
@@ -10220,10 +10222,15 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 
 				if (Retval == mrOk)
 				{
-                    if(TDBTab::GetAccountNumber(DBTransaction, OrderContainer.Location["TabKey"]).Compare(OrderContainer.Location["AccNo"]))
+                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney )
                     {
-                        MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
-                        return mrAbort;
+                        UnicodeString AccountNumber = TDBTab::GetAccountNumber(DBTransaction, OrderContainer.Location["TabKey"]);
+                        if(AccountNumber != "" && AccountNumber.Compare(OrderContainer.Location["AccNo"]) )
+                        {
+                            MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+                            return mrAbort;
+                        }
                     }
 
 					if (!TGlobalSettings::Instance().DisableConfirmationOnSave)
@@ -10352,10 +10359,15 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
 
-                if((TDBTab::GetAccountNumber(DBTransaction, TabKey).Compare(OrderContainer.Location["AccNo"])))
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney )
                 {
-                    MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
-                    return mrAbort;
+                    UnicodeString AccountNumber = TDBTab::GetAccountNumber(DBTransaction, TabKey);
+                    if(AccountNumber != "" && AccountNumber.Compare(OrderContainer.Location["AccNo"]) )
+                    {
+                        MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+                        return mrAbort;
+                    }
                 }
 
 				OrderContainer.Location["TabKey"] = TabKey;
@@ -12659,12 +12671,12 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
         TTableSeat TableSeat;
         // Find its tab.
         __int64 NewTabKey = TDBTables::GetTabKey(DBTransaction, SelectedTable, seatkey);
+        bool isTabLocked = false;
         if (NewTabKey != 0)
         {
             if (TDBTab::LockTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, NewTabKey))
-            {
+            {    
                 // Unlock Old Tab.
-                //DisplayRoomNoUI();
                 TTableSeat OldTableSeat;
                 OldTableSeat.TableNo = SelectedTable;
                 OldTableSeat.SeatNo = SelectedSeat;
@@ -12675,9 +12687,10 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
                 }
                 // Move on to New (Locked)Seat.
                 SelectedSeat = seatkey;
+                isTabLocked = true;
             }
             else
-            {
+            {    
                 GridButton->Latched = false;
                 GridButton->Color = ButtonColors[BUTTONTYPE_LOCKED][ATTRIB_BUTTONCOLOR];
 
@@ -12731,7 +12744,7 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton)
         UpdateExternalDevices();
         CloseSidePanel();
 
-        if(!NewTabKey && !SeatOrders[SelectedSeat]->Orders->Count)
+        if(((!NewTabKey || isTabLocked) && !SeatOrders[SelectedSeat]->Orders->Count))
             DisplayRoomNoUI();
     }
     catch(Exception & E)
@@ -15351,6 +15364,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
         frmTouchNumpad->Mode = pmNumber;
         frmTouchNumpad->CURInitial = 0;
         isRoomNoUiCalled = true;
+		SiHotAccount.AccountDetails.clear();
         if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
         {
             selectedRoomNumber = frmTouchNumpad->INTResult;
@@ -15358,7 +15372,7 @@ void TfrmSelectDish::DisplayRoomNoUI()
             GetRoomDetails();
         }
         else if(frmTouchNumpad->INTResult == 0 && frmTouchNumpad->BtnExit == 2)
-        {
+        {            
             isWalkInUser = true;
         }
         else if(frmTouchNumpad->BtnExit == 2 && abs(frmTouchNumpad->INTResult) > 0)
