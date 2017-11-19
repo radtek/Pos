@@ -8818,16 +8818,16 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         NewAccNo = order->AccNo;
                     }
 
-                    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->CompressedCount; i++)
+                    for (int i = 0; i < lbDisplay->Count; i++)
                     {
                         TItemRedirector *ItemRedirector = (TItemRedirector*)lbDisplay->Items->Objects[i];
-                        if(ItemRedirector->ItemType.Contains(itNormalItem))
+                        if(ItemRedirector->ItemType.Contains(itNormalItem) || ItemRedirector->ItemType.Contains(itPrevItem))
                         {
-                            TItemsCompleteCompressed* CompressedItems = SeatOrders[SelectedSeat]->Orders->CompressedItems[i];
-                            tabNumber = CompressedItems->ItemsList[0]->TabKey;
+                          TItemComplete* item = (TItemComplete*)ItemRedirector->ParentRedirector->ItemObject;
+                            tabNumber = item->TabKey;
                             if(tabNumber)
-                            {
-                                OldAccNumber = CompressedItems->ItemsList[0]->AccNo;
+                            {         
+                                OldAccNumber = item->AccNo;
                                 break;
                             }
                         }
