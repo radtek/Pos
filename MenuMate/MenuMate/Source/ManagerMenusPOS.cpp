@@ -511,11 +511,14 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 AnsiString Description = NextWord;
 					 TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Code, Description, tpItemSize);
-					 if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
-					 {
-						throw Exception("Unable to Import Menu " + NewMenuName + ". The Third Party Code : " + Code +
-						   " is not found in the PMS System");
-					 }
+                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Phoenix)
+                     {
+                         if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
+                         {
+                            throw Exception("Unable to Import Menu " + NewMenuName + ". The Third Party Code : " + Code +
+                               " is not found in the PMS System");
+                         }
+                     }
 				  }break;
 			   case RCourse:
 
