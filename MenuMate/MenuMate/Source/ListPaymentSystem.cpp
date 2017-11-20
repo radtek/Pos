@@ -3666,6 +3666,10 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
                            TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
                            EftPos->AcquirerRefSmartPay.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
+                        else if(TGlobalSettings::Instance().EnableEftPosSmartConnect &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefSmartConnect.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}
@@ -6163,16 +6167,6 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
     }
 }
 //-------------------------------------------------------------------------------------
-UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList *_receipt)
-{
-    UnicodeString _lastreceipt = "";
-    for(int i = 0; i < _receipt->Count; i++)
-    {
-       _lastreceipt += _receipt->Strings[i] + '\n';
-    }
-    return _lastreceipt;
-}
-//-----------------------------------------------------------------------------------
 void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
 {
     TDBPanasonic* dbPanasonic = new TDBPanasonic();

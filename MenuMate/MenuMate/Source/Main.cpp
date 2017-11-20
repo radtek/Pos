@@ -349,8 +349,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		}
         else if (TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPosRegiestered)
 		{
-//			EftPos = new TEftPosSmartConnect();
-//			EftPos->Initialise();
+			EftPos = new TEftPosSmartConnect();
+			EftPos->Initialise();
 		}
 		else
 		{

@@ -89,11 +89,11 @@ void TEftPosSmartLink::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPur
                     case TransactionType_INQUIRY :
                          TEftPosTransaction *EftTrans = GetTransactionEvent();
                          if(EftTrans != NULL)
-                            {
-                               EftTrans->Result = eManualQuery;
-                               EftTrans->ResultText = "Confirm Eftpos Transaction.";
-                               EftTrans->EventCompleted = true;
-                            }
+                         {
+                           EftTrans->Result = eManualQuery;
+                           EftTrans->ResultText = "Confirm Eftpos Transaction.";
+                           EftTrans->EventCompleted = true;
+                         }
                     break;
                   }
                   if(wcfResponse->Successful)

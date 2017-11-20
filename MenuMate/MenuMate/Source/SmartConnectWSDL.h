@@ -102,18 +102,12 @@ __published:
 // ************************************************************************ //
 class POSDetails : public TRemotable {
 private:
-  UnicodeString   FIpAddress;
-  bool            FIpAddress_Specified;
   UnicodeString   FPosBusinessName;
   bool            FPosBusinessName_Specified;
   UnicodeString   FPosRegisterId;
   bool            FPosRegisterId_Specified;
   UnicodeString   FPosVendorName;
   bool            FPosVendorName_Specified;
-  void __fastcall SetIpAddress(int Index, UnicodeString _prop_val)
-  {  FIpAddress = _prop_val; FIpAddress_Specified = true;  }
-  bool __fastcall IpAddress_Specified(int Index)
-  {  return FIpAddress_Specified;  } 
   void __fastcall SetPosBusinessName(int Index, UnicodeString _prop_val)
   {  FPosBusinessName = _prop_val; FPosBusinessName_Specified = true;  }
   bool __fastcall PosBusinessName_Specified(int Index)
@@ -127,7 +121,6 @@ private:
   bool __fastcall PosVendorName_Specified(int Index)
   {  return FPosVendorName_Specified;  } 
 __published:
-  __property UnicodeString  IpAddress = { index=(IS_OPTN|IS_NLBL), read=FIpAddress, write=SetIpAddress, stored = IpAddress_Specified };
   __property UnicodeString PosBusinessName = { index=(IS_OPTN|IS_NLBL), read=FPosBusinessName, write=SetPosBusinessName, stored = PosBusinessName_Specified };
   __property UnicodeString PosRegisterId = { index=(IS_OPTN|IS_NLBL), read=FPosRegisterId, write=SetPosRegisterId, stored = PosRegisterId_Specified };
   __property UnicodeString PosVendorName = { index=(IS_OPTN|IS_NLBL), read=FPosVendorName, write=SetPosVendorName, stored = PosVendorName_Specified };

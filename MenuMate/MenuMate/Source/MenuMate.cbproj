@@ -3387,7 +3387,7 @@
 			</CppCompile>
 			<CppCompile Include="SmartConnectWSDL.cpp">
 				<DependentOn>SmartConnectWSDL.h</DependentOn>
-				<BuildOrder>771</BuildOrder>
+				<BuildOrder>773</BuildOrder>
 			</CppCompile>
 			<FormResources Include="Maintenance\PrinterMaintenance.dfm"/>
 			<FormResources Include="DeskTop\VerticalSelect.dfm"/>

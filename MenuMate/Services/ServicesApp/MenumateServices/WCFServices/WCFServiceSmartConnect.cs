@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using SmartConnectIntegration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace MenumateServices.WCFServices
 {
@@ -378,52 +379,100 @@ namespace MenumateServices.WCFServices
         private string GetPutOrPostData(IDictionary<string, string> parameters)
         {
             StringBuilder buffer = new StringBuilder();
-            if (!(parameters == null || parameters.Count == 0))
+            try
             {
-                int i = 0;
-                foreach (string key in parameters.Keys)
+                if (!(parameters == null || parameters.Count == 0))
                 {
-                    if (i > 0)
+                    int i = 0;
+                    foreach (string key in parameters.Keys)
                     {
-                        buffer.AppendFormat("&{0}={1}", key, parameters[key]);
+                        if (i > 0)
+                        {
+                            buffer.AppendFormat("&{0}={1}", key, parameters[key]);
+                        }
+                        else
+                        {
+                            buffer.AppendFormat("{0}={1}", key, parameters[key]);
+                        }
+                        i++;
                     }
-                    else
-                    {
-                        buffer.AppendFormat("{0}={1}", key, parameters[key]);
-                    }
-                    i++;
                 }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
             }
             return buffer.ToString();
         }
 
         public string PutOrPostResponse(string url, string putData, bool isPostData)
         {
-            if (url.StartsWith("https"))
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-
-            HttpContent httpContent = new StringContent(putData, Encoding.UTF8);
-            httpContent.Headers.ContentType = new MediaTypeHeaderValue(SmartConnectConstraints.ContentType);
-
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                HttpResponseMessage response;
-                if (isPostData)
-                {
-                    response = httpClient.PostAsync(url, httpContent).Result;
-                }
-                else
-                {
-                    response = httpClient.PutAsync(url, httpContent).Result;
-                }
+            /*  ASCIIEncoding encoding = new ASCIIEncoding();
+              string postData =
+                  "POSRegisterID=7444ae07-dc63-e49c-33e3-59a7c108cc80&POSRegisterName=MainHelloRegister&POSBusinessName=toys4nzABC&POSVendorName=Till2Go";
 
-                if (response.IsSuccessStatusCode)
+
+              byte[] data = encoding.GetBytes(postData);
+
+              // Prepare web request...
+              HttpWebRequest myRequest =
+                  (HttpWebRequest)WebRequest.Create("https://api-dev.smart-connect.cloud/POS/Pairing/81517031");
+              myRequest.Method = "PUT";
+              myRequest.ContentType = "application/x-www-form-urlencoded";
+              myRequest.ContentLength = data.Length;
+              Stream newStream = myRequest.GetRequestStream();
+              // Send the data.
+              newStream.Write(data, 0, data.Length);
+              var def = myRequest.GetResponse();
+              newStream.Close();
+              if (url.StartsWith("https"))
+                  System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+
+              ASCIIEncoding encoding = new ASCIIEncoding();
+              byte[] data = encoding.GetBytes(putData);
+
+              HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
+              myRequest.Method = "PUT";
+              myRequest.ContentType = SmartConnectConstraints.ContentType;
+              myRequest.ContentLength = data.Length;
+              Stream newStream = myRequest.GetRequestStream();
+              // Send the data.
+              newStream.Write(data, 0, data.Length);
+              var def = myRequest.GetResponse();
+              newStream.Close();*/
+
+
+                HttpContent httpContent = new StringContent(putData, Encoding.UTF8);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue(SmartConnectConstraints.ContentType);
+
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    return result;
+                    HttpResponseMessage response;
+                    if (isPostData)
+                    {
+                        response = httpClient.PostAsync(url, httpContent).Result;
+                    }
+                    else
+                    {
+                        response = httpClient.PutAsync(url, httpContent).Result;
+                    }
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        return result;
+                    }                    
                 }
-                return null;
             }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
+            } 
+            return null;
         }
 
         public IDictionary<string, string> AddApiParameters(TransactionTypes transactionParam)
@@ -440,41 +489,49 @@ namespace MenumateServices.WCFServices
         public SmartConnectResponse DeSerializeResponse(string response)
         {
             var smartConnectResponse = new SmartConnectResponse();
-            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
-            if (jo["errno"] != null)
+            try
             {
-                if (int.Parse(jo["errno"].ToString()) == 0)
+                JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+                if (jo["errno"] != null)
                 {
-                    var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
-                    if (info != null)
+                    if (int.Parse(jo["errno"].ToString()) == 0)
                     {
-                        smartConnectResponse.TransactionId = info["TransactionId"].ToString();
-                        smartConnectResponse.TransactionTime = (DateTimeOffset)info["transactionTimeStamp"];
-                        smartConnectResponse.MerchantId = info["MerchantId"].ToString();
-                        smartConnectResponse.DeviceId = info["DeviceID"].ToString();
-                        smartConnectResponse.SmartConnectData.TransactionResult = info["TransactionResult"].ToString();
-                        smartConnectResponse.SmartConnectData.Receipt = info["Receipt"].ToString();
-                        smartConnectResponse.SmartConnectData.RequestId = info["RequestId"].ToString();
-                        smartConnectResponse.SmartConnectData.AcquirerRef = info["TransactionResult"].ToString();
-                        smartConnectResponse.SmartConnectData.AccountType = info["TransactionResult"].ToString();
-                        smartConnectResponse.SmartConnectData.Timestamp = (DateTime)info["Timestamp"];
-                        smartConnectResponse.SmartConnectData.Result = info["Result"].ToString();
-                        smartConnectResponse.SmartConnectData.Function = info["Function"].ToString();
-                        smartConnectResponse.SmartConnectData.AuthId = info["AuthId"].ToString();
-                        smartConnectResponse.SmartConnectData.CardPan = info["CardPan"].ToString();
-                        smartConnectResponse.SmartConnectData.AmountTotal = info["AmountTotal"].ToString();
-                        smartConnectResponse.SmartConnectData.Merchant = info["Merchant"].ToString();
-                        smartConnectResponse.SmartConnectData.CardType = info["CardType"].ToString();
-                        smartConnectResponse.SmartConnectData.TerminalRef = info["TerminalRef"].ToString();
-                        smartConnectResponse.SmartConnectData.AmountSurcharge = info["AmountSurcharge"].ToString();
-                        smartConnectResponse.SmartConnectData.AmountTip = info["AmountTip"].ToString();
+                        var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
+                        if (info != null)
+                        {
+                            smartConnectResponse.TransactionId = info["TransactionId"].ToString();
+                            smartConnectResponse.TransactionTime = (DateTimeOffset)info["transactionTimeStamp"];
+                            smartConnectResponse.MerchantId = info["MerchantId"].ToString();
+                            smartConnectResponse.DeviceId = info["DeviceID"].ToString();
+                            smartConnectResponse.SmartConnectData.TransactionResult = info["TransactionResult"].ToString();
+                            smartConnectResponse.SmartConnectData.Receipt = info["Receipt"].ToString();
+                            smartConnectResponse.SmartConnectData.RequestId = info["RequestId"].ToString();
+                            smartConnectResponse.SmartConnectData.AcquirerRef = info["TransactionResult"].ToString();
+                            smartConnectResponse.SmartConnectData.AccountType = info["TransactionResult"].ToString();
+                            smartConnectResponse.SmartConnectData.Timestamp = (DateTime)info["Timestamp"];
+                            smartConnectResponse.SmartConnectData.Result = info["Result"].ToString();
+                            smartConnectResponse.SmartConnectData.Function = info["Function"].ToString();
+                            smartConnectResponse.SmartConnectData.AuthId = info["AuthId"].ToString();
+                            smartConnectResponse.SmartConnectData.CardPan = info["CardPan"].ToString();
+                            smartConnectResponse.SmartConnectData.AmountTotal = info["AmountTotal"].ToString();
+                            smartConnectResponse.SmartConnectData.Merchant = info["Merchant"].ToString();
+                            smartConnectResponse.SmartConnectData.CardType = info["CardType"].ToString();
+                            smartConnectResponse.SmartConnectData.TerminalRef = info["TerminalRef"].ToString();
+                            smartConnectResponse.SmartConnectData.AmountSurcharge = info["AmountSurcharge"].ToString();
+                            smartConnectResponse.SmartConnectData.AmountTip = info["AmountTip"].ToString();
+                        }
+                    }
+                    else
+                    {
+                        smartConnectResponse.ResponseSuccessful = false;
+                        smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
                     }
                 }
-                else
-                {
-                    smartConnectResponse.ResponseSuccessful = false;
-                    smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
             }
             return smartConnectResponse;
         }

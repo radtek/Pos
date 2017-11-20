@@ -2572,7 +2572,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 505
           Width = 497
           Height = 90
-          Caption = 'SmartPay Ip Address '
+          Caption = 'SmartLink Ip Address '
           TabOrder = 5
           object tbtnSmartLinkIp: TTouchBtn
             Left = 12
