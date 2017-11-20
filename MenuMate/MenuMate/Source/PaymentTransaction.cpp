@@ -171,47 +171,50 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 //-----------------------------------------------------------------------------
-bool TPaymentTransaction::UseDifferentPattern(TPayment* Payment1, TPayment* Payment2)
+bool __fastcall UseDifferentPattern(void *Item1,void *Item2)
 {
     bool retValue = false;
-    if((Payment1->Name.UpperCase() == "CASH" || Payment1->Name.UpperCase() == "DINING" || Payment1->Name.UpperCase() == "PTSBAL")
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH" || Payment1->Name.Trim().UpperCase() == "DINING" || Payment1->Name.Trim().UpperCase() == "PTSBAL")
                      &&
-       (Payment2->Name.UpperCase() == "CASH" || Payment2->Name.UpperCase() == "DINING" || Payment2->Name.UpperCase() == "PTSBAL"))
+       (Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "DINING" || Payment2->Name.Trim().UpperCase() == "PTSBAL"))
     {
-        retValue = true;
+        return true;
     }
     return retValue;
 }
 //-----------------------------------------------------------------------------
-int TPaymentTransaction::SortPaymentTypesForCasino(TPayment* Payment1, TPayment* Payment2)
+int __fastcall SortPaymentTypesForCasino(void *Item1,void *Item2)
 {
     bool retValue = 0;
-    if((Payment1->Name.UpperCase() == "CASH"))
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH"))
     {
-        if(Payment2->Name.UpperCase() == "PTSBAL" || Payment1->Name.UpperCase() == "DINING")
+        if(Payment2->Name.Trim().UpperCase() == "PTSBAL" || Payment1->Name.Trim().UpperCase() == "DINING")
         {
-            retValue = -1;
+            return -1;
         }
     }
-    if((Payment1->Name.UpperCase() == "PTSBAL"))
+    if((Payment1->Name.Trim().UpperCase() == "PTSBAL"))
     {
-        if(Payment2->Name.UpperCase() == "CASH")
+        if(Payment2->Name.Trim().UpperCase() == "CASH")
         {
-            retValue = 1;
+            return 1;
         }
-        if(Payment2->Name.UpperCase() == "DINING")
+        if(Payment2->Name.Trim().UpperCase() == "DINING")
         {
-            retValue = -1;
+            return -1;
         }
     }
-    if((Payment1->Name.UpperCase() == "DINING"))
+    if((Payment1->Name.Trim().UpperCase() == "DINING"))
     {
-        if(Payment2->Name.UpperCase() == "CASH" || Payment2->Name.UpperCase() == "PTSBAL")
+        if(Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "PTSBAL")
         {
-            retValue = 1;
+            return 1;
         }
     }
-    return retValue;
 }
 //-----------------------------------------------------------------------------
 int __fastcall PaymentCompare(void *Item1,void *Item2)
@@ -226,9 +229,9 @@ int __fastcall PaymentCompare(void *Item1,void *Item2)
 	else if(Payment1->DisplayOrder == Payment2->DisplayOrder)
 	{
         if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal &&
-            UseDifferentPattern(Payment1, Payment2) && Membership.Member.ContactKey != 0)
+            UseDifferentPattern(Item1, Item2))
         {
-            return SortPaymentTypesForCasino();
+            return SortPaymentTypesForCasino(Item1, Item2);
         }
         else
         {
