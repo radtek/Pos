@@ -33,11 +33,13 @@ namespace MenumateServices.WCFServices
                 outHandle = webOrder.Handle;
 
                 // WebOrder successfuly open
+                ServiceLogger.Log("In OpenWebOrder(out string outHandle) with handle as " + webOrder.Handle);
                 return createResponseNoError();
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In OpenWebOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 42, short.MaxValue);
+                ServiceLogger.LogException(@"in createResponse " + exc.Message, exc);
+                //EventLog.WriteEntry("In OpenWebOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 42, short.MaxValue);
                 outHandle = Guid.Empty.ToString();
 
                 // WebOrder: Failed to create an order
@@ -57,23 +59,27 @@ namespace MenumateServices.WCFServices
                 getWebOrder(inOrderHandle).Commit();
 
                 // WebOrder successfuly committed
+                ServiceLogger.Log("In CommitOrder(string inOrderHandle) after commit of order with " +  inOrderHandle);
                 return createResponseNoError();
             }
             catch (ExceptionOrderGUIDDuplicate exc)
             {
-                EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 43, short.MaxValue);
+                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 43, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.OrderGUIDDuplicate);
             }
             catch (ExceptionOrderEmpty exc)
             {
-                EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 44, short.MaxValue);
+                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 44, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.OrderEmpty);
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 45, short.MaxValue);
+                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 45, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.FailedToCommitOrder);
             }
@@ -106,7 +112,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In SaveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 46, short.MaxValue);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderHeaderSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In SaveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 46, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's header", exc.Message, ResponseCode.FailedToCreateOrderHeaderSection);
             }
@@ -139,7 +146,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In SaveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 47, short.MaxValue);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderFromSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In SaveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 47, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's from section", exc.Message, ResponseCode.FailedToCreateOrderFromSection);
             }
@@ -172,7 +180,8 @@ namespace MenumateServices.WCFServices
                 }
                 catch (Exception exc)
                 {
-                    EventLog.WriteEntry("In SaveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 48, short.MaxValue);
+                    ServiceLogger.LogException(@"in SaveIncompleteOrderAccountSection " + exc.Message, exc);
+                    //EventLog.WriteEntry("In SaveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 48, short.MaxValue);
                 }
 
                 if ((getWebOrder(inOrderHandle).AccountSection = intOrderAccountSection) != null)
@@ -190,7 +199,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In SaveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 49, short.MaxValue);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderAccountSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In SaveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 49, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's account section", exc.Message, ResponseCode.FailedToCreateOrderAccountSection);
             }
@@ -215,7 +225,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In RetrieveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 50, short.MaxValue);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderHeaderSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In RetrieveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 50, short.MaxValue);
                 //outHeaderSection = getWebOrder(inOrderHandle).EmptyHeaderSection;
                 outHeaderSection = null;
 
@@ -245,7 +256,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In RetrieveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 51, short.MaxValue);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderFromSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In RetrieveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 51, short.MaxValue);
                 //outFromSection = getWebOrder(inOrderHandle).EmptyFromSection;
                 outFromSection = null;
 
@@ -275,7 +287,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In RetrieveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 52, short.MaxValue);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderAccountSection " + exc.Message, exc);
+                //EventLog.WriteEntry("In RetrieveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 52, short.MaxValue);
                 //outAccountSection = getWebOrder(inOrderHandle).EmptyAccountSection;
                 outAccountSection = null;
 
@@ -307,7 +320,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In GetCommittedWebOrderStatus WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 53, short.MaxValue);
+                ServiceLogger.LogException(@"in GetCommittedWebOrderStatus " + exc.Message, exc);
+                //EventLog.WriteEntry("In GetCommittedWebOrderStatus WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 53, short.MaxValue);
                 outStatus = WebOrderStatus.Unknown;
 
                 // WebOrder: Failed to retrieve an order's account section
@@ -345,7 +359,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In openWebOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 54, short.MaxValue);
+                ServiceLogger.LogException(@"in openWebOrder " + exc.Message, exc);
+                //EventLog.WriteEntry("In openWebOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 54, short.MaxValue);
             }
             return null;
         }
@@ -363,8 +378,8 @@ namespace MenumateServices.WCFServices
             {
                 return order;
             }
-
-            EventLog.WriteEntry("In getWebOrder WebMate", "Invalid order handle" + "Trace" + "Invalid order handle", EventLogEntryType.Error, 56, short.MaxValue);
+            ServiceLogger.Log(@"in getWebOrder " + "");
+            //EventLog.WriteEntry("In getWebOrder WebMate", "Invalid order handle" + "Trace" + "Invalid order handle", EventLogEntryType.Error, 56, short.MaxValue);
             throw new Exception(@"Invalid order handle");
         }
 
@@ -382,7 +397,8 @@ namespace MenumateServices.WCFServices
                 removeIncompleteOrder(order);
                 return order;
             }
-            EventLog.WriteEntry("In popWebOrder WebMate", "Invalid order handle" + "Trace" + "Invalid order handle", EventLogEntryType.Error, 57, short.MaxValue);
+            ServiceLogger.Log(@"in popWebOrder ");
+            //EventLog.WriteEntry("In popWebOrder WebMate", "Invalid order handle" + "Trace" + "Invalid order handle", EventLogEntryType.Error, 57, short.MaxValue);
             throw new Exception(@"Invalid order handle");
         }
 
@@ -470,7 +486,8 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                EventLog.WriteEntry("In createResponse WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 55, short.MaxValue);
+                ServiceLogger.LogException(@"in createResponse " + exc.Message, exc);
+                //EventLog.WriteEntry("In createResponse WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 55, short.MaxValue);
             }
 
             //..................................................

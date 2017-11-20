@@ -34,10 +34,7 @@ namespace MenumateServices
             this.serviceInstallerAccounting = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerLoyaltyMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWebMate = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerChefMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartLink = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerClippIntegration = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerThorLink = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerPocketVoucher = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
@@ -73,34 +70,12 @@ namespace MenumateServices
             this.serviceInstallerWebMate.ServiceName = "MenumateServiceWebMate";
             this.serviceInstallerWebMate.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
-            // serviceInstallerChefMate
-            // 
-            this.serviceInstallerChefMate.Description = "Menumate Chefmate server: Provide all the Chefmate terminals with database access" +
-                "";
-            this.serviceInstallerChefMate.DisplayName = "Menumate Chefmate";
-            this.serviceInstallerChefMate.ServiceName = "MenumateServiceChefMate";
-            this.serviceInstallerChefMate.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
             // serviceInstallerSmartLink
             // 
             this.serviceInstallerSmartLink.Description = "Menumate SmartLink Server";
             this.serviceInstallerSmartLink.DisplayName = "Menumate SmartLink";
             this.serviceInstallerSmartLink.ServiceName = "MenumateServiceSmartLink";
             this.serviceInstallerSmartLink.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
-            // serviceInstallerClippIntegration
-            // 
-            this.serviceInstallerClippIntegration.Description = "Menumate Clipp Integration";
-            this.serviceInstallerClippIntegration.DisplayName = "MenumateServiceClippIntegration";
-            this.serviceInstallerClippIntegration.ServiceName = "MenumateServiceClippIntegration";
-            this.serviceInstallerClippIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
-            // 
-            // serviceInstallerThorLink
-            // 
-            this.serviceInstallerThorLink.Description = "Menumate Thor Link Integration";
-            this.serviceInstallerThorLink.DisplayName = "MenumateThorLinkIntegration";
-            this.serviceInstallerThorLink.ServiceName = "MenumateServiceThorlink";
-            this.serviceInstallerThorLink.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // serviceInstallerPocketVoucher
             // 
@@ -128,7 +103,7 @@ namespace MenumateServices
             this.serviceInstallerWalletPayments.Description = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
-            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Disabled;
             // 
             // serviceInstallerSmartConnect
             // 
@@ -144,10 +119,7 @@ namespace MenumateServices
             this.serviceInstallerAccounting,
             this.serviceInstallerLoyaltyMate,
             this.serviceInstallerWebMate,
-            this.serviceInstallerChefMate,
             this.serviceInstallerSmartLink,
-            this.serviceInstallerClippIntegration,
-            this.serviceInstallerThorLink,
             this.serviceInstallerPocketVoucher,
             this.serviceInstallerSalesForceIntegration,
             this.serviceInstallerSiHotIntegration,
@@ -192,10 +164,7 @@ namespace MenumateServices
         private System.ServiceProcess.ServiceInstaller serviceInstallerAccounting;
         private System.ServiceProcess.ServiceInstaller serviceInstallerLoyaltyMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerWebMate;
-        private System.ServiceProcess.ServiceInstaller serviceInstallerChefMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerSmartLink;
-        private ServiceInstaller serviceInstallerClippIntegration;
-        private ServiceInstaller serviceInstallerThorLink;
         private ServiceInstaller serviceInstallerPocketVoucher;
         private ServiceInstaller serviceInstallerSalesForceIntegration;
         private ServiceInstaller serviceInstallerSiHotIntegration;

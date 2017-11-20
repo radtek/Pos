@@ -78,7 +78,7 @@ public:
     static TMMContactInfo autoAddWebMembers(Database::TDBTransaction &DBTransaction, TStringList *WebOrderDetails, TStringList *WebMemberAddress, int web_key);
     static TMMContactInfo checkAppliedChit(TChitNumber WebOrderChitNumber, TMMContactInfo webMemberInfo, TStringList *WebMemberAddress);
     static void TDBWebUtil::getWebOrderData(Database::TDBTransaction &DBTransaction, TStringList *webDeliveryDetails, TStringList *webPaymentDetials, TStringList *webComments,  int web_key);
-    static TChitNumber InitializeChit(int web_key, TChitNumber &WebOrderChitNumber);//,TChitNumberController &ChitNumberController);
+    static void InitializeChit(int web_key, TChitNumber &WebOrderChitNumber);//,TChitNumberController &ChitNumberController);
     static void AssignChitNumber(Database::TDBTransaction &DBTransaction, TChitNumber &chit_number, TChitNumber &WebOrderChitNumber);//, TChitNumberController &ChitNumberController);
     static TMMContactInfo LoadMemberDetails(Database::TDBTransaction &DBTransaction, int webKey);
     static UnicodeString LoadPaymentStatus(Database::TDBTransaction &DBTransaction, int webKey);
