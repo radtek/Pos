@@ -71,7 +71,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     {
 
         TItemComplete *itemComplete = ((TItemComplete*)_paymentTransaction.Orders->Items[i]);
-        double currentVAT = GetVATpercentage(itemComplete);
+//        double currentVAT = GetVATpercentage(itemComplete);
 
         // Cancelled orders should not get posted
         if(itemComplete->OrderType == CanceledOrder)
@@ -297,27 +297,45 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
 double TSiHotDataProcessor::GetVATpercentage(TItemComplete *itemComplete)
 {
     double percentage = 0.0;
-    int taxIndex = 0;
-    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
-          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
+    double taxPercentage = 0.0;
+//    int taxIndex = 0;
+//    for(std::vector<BillCalculator::TTaxResult>::iterator tax = itemComplete->BillCalcResult.Tax.begin();
+//          tax != itemComplete->BillCalcResult.Tax.end() ; ++tax)
+//    {
+//        if(tax->Value != 0)
+//            percentage += (double)tax->Percentage;
+//    }
+//    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
+//    {
+//        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
+//        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
+//        {
+//            taxIndex = 0;
+//            if(((serviceCharge->taxProfileType == ServiceCharge))
+//               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
+//            {
+//                percentage += (double)serviceCharge->taxPercentage;
+//            }
+//        }
+//    }
+    for(int taxIndex = 0; taxIndex < itemComplete->TaxProfiles.size(); taxIndex++)
     {
-        if(tax->Value != 0)
-            percentage += (double)tax->Percentage;
+         TaxProfile tp = itemComplete->TaxProfiles[taxIndex];
+         if(itemComplete->RemovedTaxes->IndexOf(tp.taxProfileName) != 0)
+         {
+             taxPercentage += (double)tp.taxPercentage;
+             MessageBox(tp.taxPercentage,"Percentage",MB_OK);
+             MessageBox(tp.taxProfileName,"tax Name",MB_OK);
+//             if(tp.taxProfileType == ServiceCharge)
+//                MessageBox("ServiceCharge","Type",MB_OK);
+//             else if(tp.taxProfileType == SalesTax)
+//                MessageBox("Salestax","Type",MB_OK);
+         }
+         else
+           MessageBox("not found",tp.taxProfileName,MB_OK);
     }
-    if(itemComplete->BillCalcResult.ServiceCharge.Value != 0.0)
-    {
-        for(std::vector<TaxProfile>::iterator serviceCharge = itemComplete->TaxProfiles.begin();
-        serviceCharge != itemComplete->TaxProfiles.end(); ++serviceCharge)
-        {
-            taxIndex = 0;
-            if(((serviceCharge->taxProfileType == ServiceCharge))
-               && (!itemComplete->RemovedTaxes->Find(serviceCharge->taxProfileName,taxIndex)))
-            {
-                percentage += (double)serviceCharge->taxPercentage;
-            }
-        }
-    }
-    return percentage;
+    return taxPercentage;
+//    return percentage;
 }
 //----------------------------------------------------------------------------
 UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _paymentTransaction)

@@ -140,5 +140,6 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 {
     bool retValue = false;
     retValue = RoomChargePost(paymentTransaction) ;
+    return retValue;
 }
 //---------------------------------------------------------------------------
