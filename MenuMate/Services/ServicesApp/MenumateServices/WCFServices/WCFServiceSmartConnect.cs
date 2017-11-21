@@ -168,7 +168,7 @@ namespace MenumateServices.WCFServices
             {                
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(purchaseType);
-                parameters.Add("AmountTotal", System.Convert.ToString(amount)); 
+                parameters.Add("AmountTotal", GetAmount(amount)); 
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
@@ -188,8 +188,8 @@ namespace MenumateServices.WCFServices
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(purchasePlusCashType);
-                parameters.Add("AmountTotal", System.Convert.ToString(totalAmount));
-                parameters.Add("AmountCash", System.Convert.ToString(cashAmount));
+                parameters.Add("AmountTotal", GetAmount(totalAmount + cashAmount));
+                parameters.Add("AmountCash", GetAmount(cashAmount));
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
@@ -209,7 +209,7 @@ namespace MenumateServices.WCFServices
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(cashOutOnlyType);
-                parameters.Add("AmountTotal", System.Convert.ToString(cashAmount));
+                parameters.Add("AmountTotal", GetAmount(cashAmount));
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
@@ -229,7 +229,7 @@ namespace MenumateServices.WCFServices
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(refundType);
-                parameters.Add("AmountTotal", System.Convert.ToString(refAmount));
+                parameters.Add("AmountTotal", GetAmount(refAmount));
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
@@ -249,7 +249,7 @@ namespace MenumateServices.WCFServices
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(authoriseType);
-                parameters.Add("AmountAuth", System.Convert.ToString(amountAuth));
+                parameters.Add("AmountAuth", GetAmount(amountAuth));
                 parameters.Add("TransactionReference", transactionRef);
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
@@ -270,7 +270,7 @@ namespace MenumateServices.WCFServices
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters = AddApiParameters(finaliseType);
-                parameters.Add("AmountFinal", System.Convert.ToString(amountFinal));
+                parameters.Add("AmountFinal", GetAmount(amountFinal));
                 parameters.Add("TransactionReference", transactionRef);
                 string putData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
@@ -412,47 +412,11 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-            /*  ASCIIEncoding encoding = new ASCIIEncoding();
-              string postData =
-                  "POSRegisterID=7444ae07-dc63-e49c-33e3-59a7c108cc80&POSRegisterName=MainHelloRegister&POSBusinessName=toys4nzABC&POSVendorName=Till2Go";
-
-
-              byte[] data = encoding.GetBytes(postData);
-
-              // Prepare web request...
-              HttpWebRequest myRequest =
-                  (HttpWebRequest)WebRequest.Create("https://api-dev.smart-connect.cloud/POS/Pairing/81517031");
-              myRequest.Method = "PUT";
-              myRequest.ContentType = "application/x-www-form-urlencoded";
-              myRequest.ContentLength = data.Length;
-              Stream newStream = myRequest.GetRequestStream();
-              // Send the data.
-              newStream.Write(data, 0, data.Length);
-              var def = myRequest.GetResponse();
-              newStream.Close();
-              if (url.StartsWith("https"))
-                  System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-
-              ASCIIEncoding encoding = new ASCIIEncoding();
-              byte[] data = encoding.GetBytes(putData);
-
-              HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
-              myRequest.Method = "PUT";
-              myRequest.ContentType = SmartConnectConstraints.ContentType;
-              myRequest.ContentLength = data.Length;
-              Stream newStream = myRequest.GetRequestStream();
-              // Send the data.
-              newStream.Write(data, 0, data.Length);
-              var def = myRequest.GetResponse();
-              newStream.Close();*/
-
-
                 HttpContent httpContent = new StringContent(putData, Encoding.UTF8);
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue(SmartConnectConstraints.ContentType);
 
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    //httpClient.Timeout = 120000; 
                     HttpResponseMessage response;
                     if (isPostData)
                     {
@@ -496,47 +460,14 @@ namespace MenumateServices.WCFServices
             {
                 smartConnectResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
 
-                if (smartConnectResponse.data.Result == "OK")
+                if (smartConnectResponse.data.TransactionResult == "OK-ACCEPTED")
                 {
                     smartConnectResponse.ResponseSuccessful = true;
                 }
                 else
                 {
                     smartConnectResponse.ResponseSuccessful = false;
-                }
-                      /* if (int.Parse(jo["errno"].ToString()) == 0)
-                       {
-                           var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
-                           if (info != null)
-                           {
-                               //smartConnectResponse.TransactionId = info["transactionId"].ToString();
-                               //smartConnectResponse.TransactionTime = (DateTimeOffset)info["transactionTimeStamp"];
-                               //smartConnectResponse.MerchantId = info["merchantId"].ToString();
-                               //smartConnectResponse.DeviceId = info["deviceID"].ToString();
-                               //smartConnectResponse.SmartConnectData.TransactionResult = info["transactionResult"].ToString();
-                               //smartConnectResponse.SmartConnectData.Receipt = info["Receipt"].ToString();
-                               //smartConnectResponse.SmartConnectData.RequestId = info["RequestId"].ToString();
-                               //smartConnectResponse.SmartConnectData.AcquirerRef = info["TransactionResult"].ToString();
-                               //smartConnectResponse.SmartConnectData.AccountType = info["TransactionResult"].ToString();
-                               //smartConnectResponse.SmartConnectData.Timestamp = (DateTime)info["Timestamp"];
-                               //smartConnectResponse.SmartConnectData.Result = info["Result"].ToString();
-                               //smartConnectResponse.SmartConnectData.Function = info["Function"].ToString();
-                               //smartConnectResponse.SmartConnectData.AuthId = info["AuthId"].ToString();
-                               //smartConnectResponse.SmartConnectData.CardPan = info["CardPan"].ToString();
-                               //smartConnectResponse.SmartConnectData.AmountTotal = info["AmountTotal"].ToString();
-                               //smartConnectResponse.SmartConnectData.Merchant = info["Merchant"].ToString();
-                               //smartConnectResponse.SmartConnectData.CardType = info["CardType"].ToString();
-                               //smartConnectResponse.SmartConnectData.TerminalRef = info["TerminalRef"].ToString();
-                               //smartConnectResponse.SmartConnectData.AmountSurcharge = info["AmountSurcharge"].ToString();
-                               //smartConnectResponse.SmartConnectData.AmountTip = info["AmountTip"].ToString();
-                           }
-                       }
-                       else
-                       {
-                           smartConnectResponse.ResponseSuccessful = false;
-                           smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                       }
-                   }*/
+                }                    
                 
             }
             catch (Exception ex)
@@ -545,6 +476,21 @@ namespace MenumateServices.WCFServices
                 ServiceLogger.LogException("Exception in Deserialize Response", ex);
             }
             return smartConnectResponse;
+        }
+
+        private string GetAmount(double amount)
+        {
+            uint retAmount = 0;
+            try
+            {
+                Decimal decAmount = Convert.ToDecimal(amount);
+                retAmount = (uint)(decAmount * 100);                
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in GetAmount", ex);
+            }
+            return System.Convert.ToString(retAmount);
         }
     }
 }
