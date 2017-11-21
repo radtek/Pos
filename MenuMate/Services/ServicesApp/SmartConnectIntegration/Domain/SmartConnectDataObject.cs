@@ -19,7 +19,7 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public string AccountType { get; set; }
         [DataMember]
-        public DateTime Timestamp { get; set; }
+        public string Timestamp { get; set; }
         [DataMember]
         public string Result { get; set; }
         [DataMember]

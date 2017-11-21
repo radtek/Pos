@@ -5,11 +5,10 @@
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?wsdl>0
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd0
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd2
-//  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd3
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (13/10/2017 4:13:44 p.m. - - $Rev: 25127 $)
+// (21/11/2017 7:51:33 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -49,20 +48,9 @@ _di_IWCFSmartConnect GetIWCFSmartConnect(bool useWSDL, AnsiString addr, THTTPRIO
 }
 
 
-__fastcall DateTimeOffset::~DateTimeOffset()
-{
-  delete FDateTime;
-}
-
 __fastcall SmartConnectResponse::~SmartConnectResponse()
 {
-  delete FSmartConnectData;
-  delete FTransactionTime;
-}
-
-__fastcall SmartConnectDataObject::~SmartConnectDataObject()
-{
-  delete FTimestamp;
+  delete Fdata;
 }
 
 // ************************************************************************ //
@@ -74,10 +62,6 @@ static void RegTypes()
   InvRegistry()->RegisterInterface(__delphirtti(IWCFSmartConnect), L"http://tempuri.org/", L"utf-8");
   InvRegistry()->RegisterDefaultSOAPAction(__delphirtti(IWCFSmartConnect), L"http://tempuri.org/IWCFSmartConnect/%operationName%");
   InvRegistry()->RegisterInvokeOptions(__delphirtti(IWCFSmartConnect), ioDocument);
-  /* DateTimeOffset */
-  RemClassRegistry()->RegisterXSClass(__classid(DateTimeOffset), L"http://schemas.datacontract.org/2004/07/System", L"DateTimeOffset");
-  /* DateTimeOffset */
-  RemClassRegistry()->RegisterXSClass(__classid(DateTimeOffset2), L"http://schemas.datacontract.org/2004/07/System", L"DateTimeOffset2", L"DateTimeOffset");
   /* POSDetails */
   RemClassRegistry()->RegisterXSClass(__classid(POSDetails), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"POSDetails");
   /* PairingTerminal */
@@ -101,5 +85,6 @@ static void RegTypes()
 }
 #pragma startup RegTypes 32
 
-};     // NS__
+};     // NS__SmartConnnectWSDL
+
 

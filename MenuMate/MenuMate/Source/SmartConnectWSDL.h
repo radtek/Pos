@@ -5,11 +5,10 @@
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?wsdl>0
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd0
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd2
-//  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd3
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (12/10/2017 9:42:58 p.m. - - $Rev: 25127 $)
+// (21/11/2017 7:51:33 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SmartConnectWSDLH
@@ -41,17 +40,13 @@ namespace NS__SmartConnnectWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also 
+// typically map to predefined/known XML or Embarcadero types; however, they could also
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:short           - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
-class SOAP_REMOTABLE_CLASS DateTimeOffset;
-class SOAP_REMOTABLE_CLASS DateTimeOffset2;
 class SOAP_REMOTABLE_CLASS POSDetails;
 class SOAP_REMOTABLE_CLASS PairingTerminal;
 class SOAP_REMOTABLE_CLASS SmartConnectResponse;
@@ -62,37 +57,6 @@ class SOAP_REMOTABLE_CLASS POSDetails2;
 class SOAP_REMOTABLE_CLASS SmartConnectResponse2;
 class SOAP_REMOTABLE_CLASS SmartConnectDataObject2;
 class SOAP_REMOTABLE_CLASS TransactionTypes2;
-
-
-
-// ************************************************************************ //
-// XML       : DateTimeOffset, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/System
-// ************************************************************************ //
-class DateTimeOffset : public TRemotable {
-private:
-  TXSDateTime*    FDateTime;
-  short           FOffsetMinutes;
-
-public:
-  __fastcall ~DateTimeOffset();
-__published:
-  __property TXSDateTime*   DateTime = { read=FDateTime, write=FDateTime };
-  __property short      OffsetMinutes = { read=FOffsetMinutes, write=FOffsetMinutes };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : DateTimeOffset, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/System
-// ************************************************************************ //
-class DateTimeOffset2 : public DateTimeOffset {
-private:
-__published:
-};
-
 
 
 
@@ -111,15 +75,15 @@ private:
   void __fastcall SetPosBusinessName(int Index, UnicodeString _prop_val)
   {  FPosBusinessName = _prop_val; FPosBusinessName_Specified = true;  }
   bool __fastcall PosBusinessName_Specified(int Index)
-  {  return FPosBusinessName_Specified;  } 
+  {  return FPosBusinessName_Specified;  }
   void __fastcall SetPosRegisterId(int Index, UnicodeString _prop_val)
   {  FPosRegisterId = _prop_val; FPosRegisterId_Specified = true;  }
   bool __fastcall PosRegisterId_Specified(int Index)
-  {  return FPosRegisterId_Specified;  } 
+  {  return FPosRegisterId_Specified;  }
   void __fastcall SetPosVendorName(int Index, UnicodeString _prop_val)
   {  FPosVendorName = _prop_val; FPosVendorName_Specified = true;  }
   bool __fastcall PosVendorName_Specified(int Index)
-  {  return FPosVendorName_Specified;  } 
+  {  return FPosVendorName_Specified;  }
 __published:
   __property UnicodeString PosBusinessName = { index=(IS_OPTN|IS_NLBL), read=FPosBusinessName, write=SetPosBusinessName, stored = PosBusinessName_Specified };
   __property UnicodeString PosRegisterId = { index=(IS_OPTN|IS_NLBL), read=FPosRegisterId, write=SetPosRegisterId, stored = PosRegisterId_Specified };
@@ -142,11 +106,11 @@ private:
   void __fastcall SetPairingCode(int Index, UnicodeString _prop_val)
   {  FPairingCode = _prop_val; FPairingCode_Specified = true;  }
   bool __fastcall PairingCode_Specified(int Index)
-  {  return FPairingCode_Specified;  } 
+  {  return FPairingCode_Specified;  }
   void __fastcall SetPosRegisterName(int Index, UnicodeString _prop_val)
   {  FPosRegisterName = _prop_val; FPosRegisterName_Specified = true;  }
   bool __fastcall PosRegisterName_Specified(int Index)
-  {  return FPosRegisterName_Specified;  } 
+  {  return FPosRegisterName_Specified;  }
 __published:
   __property UnicodeString PairingCode = { index=(IS_OPTN|IS_NLBL), read=FPairingCode, write=SetPairingCode, stored = PairingCode_Specified };
   __property UnicodeString PosRegisterName = { index=(IS_OPTN|IS_NLBL), read=FPosRegisterName, write=SetPosRegisterName, stored = PosRegisterName_Specified };
@@ -169,46 +133,46 @@ private:
   bool            FResponseMessage_Specified;
   bool            FResponseSuccessful;
   bool            FResponseSuccessful_Specified;
-  SmartConnectDataObject* FSmartConnectData;
-  bool            FSmartConnectData_Specified;
   UnicodeString   FTransactionId;
   bool            FTransactionId_Specified;
   UnicodeString   FTransactionStatus;
   bool            FTransactionStatus_Specified;
-  DateTimeOffset* FTransactionTime;
-  bool            FTransactionTime_Specified;
+  UnicodeString   FTransactionTimeStamp;
+  bool            FTransactionTimeStamp_Specified;
+  SmartConnectDataObject* Fdata;
+  bool            Fdata_Specified;
   void __fastcall SetDeviceId(int Index, UnicodeString _prop_val)
   {  FDeviceId = _prop_val; FDeviceId_Specified = true;  }
   bool __fastcall DeviceId_Specified(int Index)
-  {  return FDeviceId_Specified;  } 
+  {  return FDeviceId_Specified;  }
   void __fastcall SetMerchantId(int Index, UnicodeString _prop_val)
   {  FMerchantId = _prop_val; FMerchantId_Specified = true;  }
   bool __fastcall MerchantId_Specified(int Index)
-  {  return FMerchantId_Specified;  } 
+  {  return FMerchantId_Specified;  }
   void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
   {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
   bool __fastcall ResponseMessage_Specified(int Index)
-  {  return FResponseMessage_Specified;  } 
+  {  return FResponseMessage_Specified;  }
   void __fastcall SetResponseSuccessful(int Index, bool _prop_val)
   {  FResponseSuccessful = _prop_val; FResponseSuccessful_Specified = true;  }
   bool __fastcall ResponseSuccessful_Specified(int Index)
-  {  return FResponseSuccessful_Specified;  } 
-  void __fastcall SetSmartConnectData(int Index, SmartConnectDataObject* _prop_val)
-  {  FSmartConnectData = _prop_val; FSmartConnectData_Specified = true;  }
-  bool __fastcall SmartConnectData_Specified(int Index)
-  {  return FSmartConnectData_Specified;  } 
+  {  return FResponseSuccessful_Specified;  }
   void __fastcall SetTransactionId(int Index, UnicodeString _prop_val)
   {  FTransactionId = _prop_val; FTransactionId_Specified = true;  }
   bool __fastcall TransactionId_Specified(int Index)
-  {  return FTransactionId_Specified;  } 
+  {  return FTransactionId_Specified;  }
   void __fastcall SetTransactionStatus(int Index, UnicodeString _prop_val)
   {  FTransactionStatus = _prop_val; FTransactionStatus_Specified = true;  }
   bool __fastcall TransactionStatus_Specified(int Index)
-  {  return FTransactionStatus_Specified;  } 
-  void __fastcall SetTransactionTime(int Index, DateTimeOffset* _prop_val)
-  {  FTransactionTime = _prop_val; FTransactionTime_Specified = true;  }
-  bool __fastcall TransactionTime_Specified(int Index)
-  {  return FTransactionTime_Specified;  } 
+  {  return FTransactionStatus_Specified;  }
+  void __fastcall SetTransactionTimeStamp(int Index, UnicodeString _prop_val)
+  {  FTransactionTimeStamp = _prop_val; FTransactionTimeStamp_Specified = true;  }
+  bool __fastcall TransactionTimeStamp_Specified(int Index)
+  {  return FTransactionTimeStamp_Specified;  }
+  void __fastcall Setdata(int Index, SmartConnectDataObject* _prop_val)
+  {  Fdata = _prop_val; Fdata_Specified = true;  }
+  bool __fastcall data_Specified(int Index)
+  {  return Fdata_Specified;  }
 
 public:
   __fastcall ~SmartConnectResponse();
@@ -217,10 +181,10 @@ __published:
   __property UnicodeString MerchantId = { index=(IS_OPTN|IS_NLBL), read=FMerchantId, write=SetMerchantId, stored = MerchantId_Specified };
   __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
   __property bool       ResponseSuccessful = { index=(IS_OPTN), read=FResponseSuccessful, write=SetResponseSuccessful, stored = ResponseSuccessful_Specified };
-  __property SmartConnectDataObject* SmartConnectData = { index=(IS_OPTN|IS_NLBL), read=FSmartConnectData, write=SetSmartConnectData, stored = SmartConnectData_Specified };
   __property UnicodeString TransactionId = { index=(IS_OPTN|IS_NLBL), read=FTransactionId, write=SetTransactionId, stored = TransactionId_Specified };
   __property UnicodeString TransactionStatus = { index=(IS_OPTN|IS_NLBL), read=FTransactionStatus, write=SetTransactionStatus, stored = TransactionStatus_Specified };
-  __property DateTimeOffset* TransactionTime = { index=(IS_OPTN), read=FTransactionTime, write=SetTransactionTime, stored = TransactionTime_Specified };
+  __property UnicodeString TransactionTimeStamp = { index=(IS_OPTN|IS_NLBL), read=FTransactionTimeStamp, write=SetTransactionTimeStamp, stored = TransactionTimeStamp_Specified };
+  __property SmartConnectDataObject*       data = { index=(IS_OPTN|IS_NLBL), read=Fdata, write=Setdata, stored = data_Specified };
 };
 
 
@@ -260,77 +224,74 @@ private:
   bool            FResult_Specified;
   UnicodeString   FTerminalRef;
   bool            FTerminalRef_Specified;
-  TXSDateTime*    FTimestamp;
+  UnicodeString   FTimestamp;
   bool            FTimestamp_Specified;
   UnicodeString   FTransactionResult;
   bool            FTransactionResult_Specified;
   void __fastcall SetAccountType(int Index, UnicodeString _prop_val)
   {  FAccountType = _prop_val; FAccountType_Specified = true;  }
   bool __fastcall AccountType_Specified(int Index)
-  {  return FAccountType_Specified;  } 
+  {  return FAccountType_Specified;  }
   void __fastcall SetAcquirerRef(int Index, UnicodeString _prop_val)
   {  FAcquirerRef = _prop_val; FAcquirerRef_Specified = true;  }
   bool __fastcall AcquirerRef_Specified(int Index)
-  {  return FAcquirerRef_Specified;  } 
+  {  return FAcquirerRef_Specified;  }
   void __fastcall SetAmountSurcharge(int Index, UnicodeString _prop_val)
   {  FAmountSurcharge = _prop_val; FAmountSurcharge_Specified = true;  }
   bool __fastcall AmountSurcharge_Specified(int Index)
-  {  return FAmountSurcharge_Specified;  } 
+  {  return FAmountSurcharge_Specified;  }
   void __fastcall SetAmountTip(int Index, UnicodeString _prop_val)
   {  FAmountTip = _prop_val; FAmountTip_Specified = true;  }
   bool __fastcall AmountTip_Specified(int Index)
-  {  return FAmountTip_Specified;  } 
+  {  return FAmountTip_Specified;  }
   void __fastcall SetAmountTotal(int Index, UnicodeString _prop_val)
   {  FAmountTotal = _prop_val; FAmountTotal_Specified = true;  }
   bool __fastcall AmountTotal_Specified(int Index)
-  {  return FAmountTotal_Specified;  } 
+  {  return FAmountTotal_Specified;  }
   void __fastcall SetAuthId(int Index, UnicodeString _prop_val)
   {  FAuthId = _prop_val; FAuthId_Specified = true;  }
   bool __fastcall AuthId_Specified(int Index)
-  {  return FAuthId_Specified;  } 
+  {  return FAuthId_Specified;  }
   void __fastcall SetCardPan(int Index, UnicodeString _prop_val)
   {  FCardPan = _prop_val; FCardPan_Specified = true;  }
   bool __fastcall CardPan_Specified(int Index)
-  {  return FCardPan_Specified;  } 
+  {  return FCardPan_Specified;  }
   void __fastcall SetCardType(int Index, UnicodeString _prop_val)
   {  FCardType = _prop_val; FCardType_Specified = true;  }
   bool __fastcall CardType_Specified(int Index)
-  {  return FCardType_Specified;  } 
+  {  return FCardType_Specified;  }
   void __fastcall SetFunction(int Index, UnicodeString _prop_val)
   {  FFunction = _prop_val; FFunction_Specified = true;  }
   bool __fastcall Function_Specified(int Index)
-  {  return FFunction_Specified;  } 
+  {  return FFunction_Specified;  }
   void __fastcall SetMerchant(int Index, UnicodeString _prop_val)
   {  FMerchant = _prop_val; FMerchant_Specified = true;  }
   bool __fastcall Merchant_Specified(int Index)
-  {  return FMerchant_Specified;  } 
+  {  return FMerchant_Specified;  }
   void __fastcall SetReceipt(int Index, UnicodeString _prop_val)
   {  FReceipt = _prop_val; FReceipt_Specified = true;  }
   bool __fastcall Receipt_Specified(int Index)
-  {  return FReceipt_Specified;  } 
+  {  return FReceipt_Specified;  }
   void __fastcall SetRequestId(int Index, UnicodeString _prop_val)
   {  FRequestId = _prop_val; FRequestId_Specified = true;  }
   bool __fastcall RequestId_Specified(int Index)
-  {  return FRequestId_Specified;  } 
+  {  return FRequestId_Specified;  }
   void __fastcall SetResult(int Index, UnicodeString _prop_val)
   {  FResult = _prop_val; FResult_Specified = true;  }
   bool __fastcall Result_Specified(int Index)
-  {  return FResult_Specified;  } 
+  {  return FResult_Specified;  }
   void __fastcall SetTerminalRef(int Index, UnicodeString _prop_val)
   {  FTerminalRef = _prop_val; FTerminalRef_Specified = true;  }
   bool __fastcall TerminalRef_Specified(int Index)
-  {  return FTerminalRef_Specified;  } 
-  void __fastcall SetTimestamp(int Index, TXSDateTime* _prop_val)
+  {  return FTerminalRef_Specified;  }
+  void __fastcall SetTimestamp(int Index, UnicodeString _prop_val)
   {  FTimestamp = _prop_val; FTimestamp_Specified = true;  }
   bool __fastcall Timestamp_Specified(int Index)
-  {  return FTimestamp_Specified;  } 
+  {  return FTimestamp_Specified;  }
   void __fastcall SetTransactionResult(int Index, UnicodeString _prop_val)
   {  FTransactionResult = _prop_val; FTransactionResult_Specified = true;  }
   bool __fastcall TransactionResult_Specified(int Index)
-  {  return FTransactionResult_Specified;  } 
-
-public:
-  __fastcall ~SmartConnectDataObject();
+  {  return FTransactionResult_Specified;  }
 __published:
   __property UnicodeString AccountType = { index=(IS_OPTN|IS_NLBL), read=FAccountType, write=SetAccountType, stored = AccountType_Specified };
   __property UnicodeString AcquirerRef = { index=(IS_OPTN|IS_NLBL), read=FAcquirerRef, write=SetAcquirerRef, stored = AcquirerRef_Specified };
@@ -346,7 +307,7 @@ __published:
   __property UnicodeString  RequestId = { index=(IS_OPTN|IS_NLBL), read=FRequestId, write=SetRequestId, stored = RequestId_Specified };
   __property UnicodeString     Result = { index=(IS_OPTN|IS_NLBL), read=FResult, write=SetResult, stored = Result_Specified };
   __property UnicodeString TerminalRef = { index=(IS_OPTN|IS_NLBL), read=FTerminalRef, write=SetTerminalRef, stored = TerminalRef_Specified };
-  __property TXSDateTime*  Timestamp = { index=(IS_OPTN), read=FTimestamp, write=SetTimestamp, stored = Timestamp_Specified };
+  __property UnicodeString  Timestamp = { index=(IS_OPTN|IS_NLBL), read=FTimestamp, write=SetTimestamp, stored = Timestamp_Specified };
   __property UnicodeString TransactionResult = { index=(IS_OPTN|IS_NLBL), read=FTransactionResult, write=SetTransactionResult, stored = TransactionResult_Specified };
 };
 
@@ -364,7 +325,7 @@ private:
   void __fastcall SetTransactiontype(int Index, UnicodeString _prop_val)
   {  FTransactiontype = _prop_val; FTransactiontype_Specified = true;  }
   bool __fastcall Transactiontype_Specified(int Index)
-  {  return FTransactiontype_Specified;  } 
+  {  return FTransactiontype_Specified;  }
 __published:
   __property UnicodeString Transactiontype = { index=(IS_OPTN|IS_NLBL), read=FTransactiontype, write=SetTransactiontype, stored = Transactiontype_Specified };
 };
@@ -444,21 +405,21 @@ __published:
 __interface INTERFACE_UUID("{B8C7CF94-2122-7657-2546-33A0DAD4D505}") IWCFSmartConnect : public IInvokable
 {
 public:
-  virtual SmartConnectResponse* Pairing(const PairingTerminal* param) = 0; 
-  virtual SmartConnectResponse* Logon(const TransactionTypes* logonType) = 0; 
-  virtual SmartConnectResponse* SettlementInquiry(const TransactionTypes* settlementEnquiryType) = 0; 
-  virtual SmartConnectResponse* SettlementCutover(const TransactionTypes* settlementCutoverType) = 0; 
-  virtual SmartConnectResponse* Purchase(const TransactionTypes* purchaseType, const double amount) = 0; 
-  virtual SmartConnectResponse* PurchasePlusCash(const TransactionTypes* purchasePlusCashType, const double totalAmount, const double cashAmount) = 0; 
-  virtual SmartConnectResponse* CashOutOnly(const TransactionTypes* cashOutOnlyType, const double cashAmount) = 0; 
-  virtual SmartConnectResponse* Refund(const TransactionTypes* refundType, const double refundAmount) = 0; 
-  virtual SmartConnectResponse* Authorise(const TransactionTypes* authoriseType, const double amountAuth, const UnicodeString transactionRef) = 0; 
-  virtual SmartConnectResponse* Finalise(const TransactionTypes* finaliseType, const double amountAuth, const UnicodeString transactionRef) = 0; 
-  virtual SmartConnectResponse* GetTransactionResult(const TransactionTypes* transResultType) = 0; 
-  virtual SmartConnectResponse* ReprintLastReceipt(const TransactionTypes* reprintReceiptType) = 0; 
-  virtual SmartConnectResponse* GetTerminalStatus(const TransactionTypes* terminalStatusType) = 0; 
-  virtual SmartConnectResponse* TerminalReadCard(const TransactionTypes* readCardType) = 0; 
-  virtual SmartConnectResponse* PrintReceipt(const TransactionTypes* printReceiptType) = 0; 
+  virtual SmartConnectResponse* Pairing(const PairingTerminal* param) = 0;
+  virtual SmartConnectResponse* Logon(const TransactionTypes* logonType) = 0;
+  virtual SmartConnectResponse* SettlementInquiry(const TransactionTypes* settlementEnquiryType) = 0;
+  virtual SmartConnectResponse* SettlementCutover(const TransactionTypes* settlementCutoverType) = 0;
+  virtual SmartConnectResponse* Purchase(const TransactionTypes* purchaseType, const double amount) = 0;
+  virtual SmartConnectResponse* PurchasePlusCash(const TransactionTypes* purchasePlusCashType, const double totalAmount, const double cashAmount) = 0;
+  virtual SmartConnectResponse* CashOutOnly(const TransactionTypes* cashOutOnlyType, const double cashAmount) = 0;
+  virtual SmartConnectResponse* Refund(const TransactionTypes* refundType, const double refundAmount) = 0;
+  virtual SmartConnectResponse* Authorise(const TransactionTypes* authoriseType, const double amountAuth, const UnicodeString transactionRef) = 0;
+  virtual SmartConnectResponse* Finalise(const TransactionTypes* finaliseType, const double amountAuth, const UnicodeString transactionRef) = 0;
+  virtual SmartConnectResponse* GetTransactionResult(const TransactionTypes* transResultType) = 0;
+  virtual SmartConnectResponse* ReprintLastReceipt(const TransactionTypes* reprintReceiptType) = 0;
+  virtual SmartConnectResponse* GetTerminalStatus(const TransactionTypes* terminalStatusType) = 0;
+  virtual SmartConnectResponse* TerminalReadCard(const TransactionTypes* readCardType) = 0;
+  virtual SmartConnectResponse* PrintReceipt(const TransactionTypes* printReceiptType) = 0;
 };
 typedef DelphiInterface<IWCFSmartConnect> _di_IWCFSmartConnect;
 
@@ -474,3 +435,4 @@ using  namespace NS__SmartConnnectWSDL;
 
 
 #endif // _H
+

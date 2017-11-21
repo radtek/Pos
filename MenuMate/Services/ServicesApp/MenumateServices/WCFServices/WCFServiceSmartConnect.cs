@@ -78,7 +78,9 @@ namespace MenumateServices.WCFServices
             string putData = GetPutOrPostData(parameters);
             string response = PutOrPostResponse(requesturl, putData, false);
 
-            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+            JObject jo = new JObject();
+            jo = (JObject)JsonConvert.DeserializeObject(response);
+
             if (jo["errno"] != null)
             {
                 if (int.Parse(jo["errno"].ToString()) == 0)
@@ -168,7 +170,7 @@ namespace MenumateServices.WCFServices
                 parameters = AddApiParameters(purchaseType);
                 parameters.Add("AmountTotal", System.Convert.ToString(amount)); 
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -189,7 +191,7 @@ namespace MenumateServices.WCFServices
                 parameters.Add("AmountTotal", System.Convert.ToString(totalAmount));
                 parameters.Add("AmountCash", System.Convert.ToString(cashAmount));
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -209,7 +211,7 @@ namespace MenumateServices.WCFServices
                 parameters = AddApiParameters(cashOutOnlyType);
                 parameters.Add("AmountTotal", System.Convert.ToString(cashAmount));
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -229,7 +231,7 @@ namespace MenumateServices.WCFServices
                 parameters = AddApiParameters(refundType);
                 parameters.Add("AmountTotal", System.Convert.ToString(refAmount));
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -250,7 +252,7 @@ namespace MenumateServices.WCFServices
                 parameters.Add("AmountAuth", System.Convert.ToString(amountAuth));
                 parameters.Add("TransactionReference", transactionRef);
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -271,7 +273,7 @@ namespace MenumateServices.WCFServices
                 parameters.Add("AmountFinal", System.Convert.ToString(amountFinal));
                 parameters.Add("TransactionReference", transactionRef);
                 string putData = GetPutOrPostData(parameters);
-                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, false);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
                 smartConnectResponse = DeSerializeResponse(response);
             }
             catch (Exception ex)
@@ -450,6 +452,7 @@ namespace MenumateServices.WCFServices
 
                 using (HttpClient httpClient = new HttpClient())
                 {
+                    //httpClient.Timeout = 120000; 
                     HttpResponseMessage response;
                     if (isPostData)
                     {
@@ -487,51 +490,59 @@ namespace MenumateServices.WCFServices
         }
 
         public SmartConnectResponse DeSerializeResponse(string response)
-        {
+        {            
             var smartConnectResponse = new SmartConnectResponse();
             try
             {
-                JObject jo = (JObject)JsonConvert.DeserializeObject(response);
-                if (jo["errno"] != null)
+                smartConnectResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
+
+                if (smartConnectResponse.data.Result == "OK")
                 {
-                    if (int.Parse(jo["errno"].ToString()) == 0)
-                    {
-                        var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
-                        if (info != null)
-                        {
-                            smartConnectResponse.TransactionId = info["TransactionId"].ToString();
-                            smartConnectResponse.TransactionTime = (DateTimeOffset)info["transactionTimeStamp"];
-                            smartConnectResponse.MerchantId = info["MerchantId"].ToString();
-                            smartConnectResponse.DeviceId = info["DeviceID"].ToString();
-                            smartConnectResponse.SmartConnectData.TransactionResult = info["TransactionResult"].ToString();
-                            smartConnectResponse.SmartConnectData.Receipt = info["Receipt"].ToString();
-                            smartConnectResponse.SmartConnectData.RequestId = info["RequestId"].ToString();
-                            smartConnectResponse.SmartConnectData.AcquirerRef = info["TransactionResult"].ToString();
-                            smartConnectResponse.SmartConnectData.AccountType = info["TransactionResult"].ToString();
-                            smartConnectResponse.SmartConnectData.Timestamp = (DateTime)info["Timestamp"];
-                            smartConnectResponse.SmartConnectData.Result = info["Result"].ToString();
-                            smartConnectResponse.SmartConnectData.Function = info["Function"].ToString();
-                            smartConnectResponse.SmartConnectData.AuthId = info["AuthId"].ToString();
-                            smartConnectResponse.SmartConnectData.CardPan = info["CardPan"].ToString();
-                            smartConnectResponse.SmartConnectData.AmountTotal = info["AmountTotal"].ToString();
-                            smartConnectResponse.SmartConnectData.Merchant = info["Merchant"].ToString();
-                            smartConnectResponse.SmartConnectData.CardType = info["CardType"].ToString();
-                            smartConnectResponse.SmartConnectData.TerminalRef = info["TerminalRef"].ToString();
-                            smartConnectResponse.SmartConnectData.AmountSurcharge = info["AmountSurcharge"].ToString();
-                            smartConnectResponse.SmartConnectData.AmountTip = info["AmountTip"].ToString();
-                        }
-                    }
-                    else
-                    {
-                        smartConnectResponse.ResponseSuccessful = false;
-                        smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                    }
+                    smartConnectResponse.ResponseSuccessful = true;
                 }
+                else
+                {
+                    smartConnectResponse.ResponseSuccessful = false;
+                }
+                      /* if (int.Parse(jo["errno"].ToString()) == 0)
+                       {
+                           var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
+                           if (info != null)
+                           {
+                               //smartConnectResponse.TransactionId = info["transactionId"].ToString();
+                               //smartConnectResponse.TransactionTime = (DateTimeOffset)info["transactionTimeStamp"];
+                               //smartConnectResponse.MerchantId = info["merchantId"].ToString();
+                               //smartConnectResponse.DeviceId = info["deviceID"].ToString();
+                               //smartConnectResponse.SmartConnectData.TransactionResult = info["transactionResult"].ToString();
+                               //smartConnectResponse.SmartConnectData.Receipt = info["Receipt"].ToString();
+                               //smartConnectResponse.SmartConnectData.RequestId = info["RequestId"].ToString();
+                               //smartConnectResponse.SmartConnectData.AcquirerRef = info["TransactionResult"].ToString();
+                               //smartConnectResponse.SmartConnectData.AccountType = info["TransactionResult"].ToString();
+                               //smartConnectResponse.SmartConnectData.Timestamp = (DateTime)info["Timestamp"];
+                               //smartConnectResponse.SmartConnectData.Result = info["Result"].ToString();
+                               //smartConnectResponse.SmartConnectData.Function = info["Function"].ToString();
+                               //smartConnectResponse.SmartConnectData.AuthId = info["AuthId"].ToString();
+                               //smartConnectResponse.SmartConnectData.CardPan = info["CardPan"].ToString();
+                               //smartConnectResponse.SmartConnectData.AmountTotal = info["AmountTotal"].ToString();
+                               //smartConnectResponse.SmartConnectData.Merchant = info["Merchant"].ToString();
+                               //smartConnectResponse.SmartConnectData.CardType = info["CardType"].ToString();
+                               //smartConnectResponse.SmartConnectData.TerminalRef = info["TerminalRef"].ToString();
+                               //smartConnectResponse.SmartConnectData.AmountSurcharge = info["AmountSurcharge"].ToString();
+                               //smartConnectResponse.SmartConnectData.AmountTip = info["AmountTip"].ToString();
+                           }
+                       }
+                       else
+                       {
+                           smartConnectResponse.ResponseSuccessful = false;
+                           smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
+                       }
+                   }*/
+                
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
-                ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
+                EventLog.WriteEntry("In Deserialize Response SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in Deserialize Response", ex);
             }
             return smartConnectResponse;
         }

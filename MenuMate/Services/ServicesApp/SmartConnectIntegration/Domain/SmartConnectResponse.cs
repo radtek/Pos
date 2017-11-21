@@ -15,7 +15,7 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public string TransactionId { get; set; }
         [DataMember]
-        public DateTimeOffset TransactionTime { get; set; }
+        public string TransactionTimeStamp { get; set; }
         [DataMember]
         public string MerchantId { get; set; }
         [DataMember]
@@ -23,6 +23,6 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public string TransactionStatus { get; set; }
         [DataMember]
-        public SmartConnectDataObject SmartConnectData { get; set; }
+        public SmartConnectDataObject data { get; set; }
     }
 }
