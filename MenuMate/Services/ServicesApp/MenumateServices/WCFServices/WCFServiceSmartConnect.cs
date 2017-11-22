@@ -67,38 +67,27 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse Pairing(PairingTerminal param)
         {
-            var smartConnectResponse = new SmartConnectResponse();    
-            string requesturl = SmartConnectConstraints.PairingBaseAddress + "/" + param.PairingCode;
-
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("POSRegisterID", param.PosRegisterId);
-            parameters.Add("POSRegisterName", param.PosRegisterName);
-            parameters.Add("POSBusinessName", param.PosBusinessName);
-            parameters.Add("POSVendorName", param.PosVendorName);
-            string putData = GetPutOrPostData(parameters);
-            string response = PutOrPostResponse(requesturl, putData, false);
-
-            JObject jo = new JObject();
-            jo = (JObject)JsonConvert.DeserializeObject(response);
-
-            if (jo["errno"] != null)
+            var smartConnectResponse = new SmartConnectResponse();  
+            try
             {
-                if (int.Parse(jo["errno"].ToString()) == 0)
-                {
-                    var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
-                    if (info != null)
-                    {
-                        smartConnectResponse.ResponseSuccessful = true;
-                    }
-                }
-                else
-                {
-                    smartConnectResponse.ResponseSuccessful = false;
-                    smartConnectResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                }
+                string requesturl = SmartConnectConstraints.PairingBaseAddress + "/" + param.PairingCode;
 
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("POSRegisterID", param.PosRegisterId);
+                parameters.Add("POSRegisterName", param.PosRegisterName);
+                parameters.Add("POSBusinessName", param.PosBusinessName);
+                parameters.Add("POSVendorName", param.PosVendorName);
+                string putData = GetPutOrPostData(parameters);
+                string response = PutOrPostResponse(requesturl, putData, false);
+
+                smartConnectResponse = DeSerializeResponse(response);
             }
-            return smartConnectResponse; ;
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In pairing  SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 1, short.MaxValue);
+                ServiceLogger.LogException("Exception in Logon", ex);
+            }
+            return smartConnectResponse;
         }
 
         public SmartConnectResponse Logon(TransactionTypes logonType) 
@@ -410,6 +399,7 @@ namespace MenumateServices.WCFServices
 
         public string PutOrPostResponse(string url, string putData, bool isPostData)
         {
+            string result = "";
             try
             {
                 HttpContent httpContent = new StringContent(putData, Encoding.UTF8);
@@ -429,8 +419,7 @@ namespace MenumateServices.WCFServices
 
                     if (response.IsSuccessStatusCode)
                     {
-                        string result = response.Content.ReadAsStringAsync().Result;
-                        return result;
+                        result = response.Content.ReadAsStringAsync().Result;
                     }                    
                 }
             }
@@ -439,7 +428,7 @@ namespace MenumateServices.WCFServices
                 EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
             } 
-            return null;
+            return result;
         }
 
         public IDictionary<string, string> AddApiParameters(TransactionTypes transactionParam)
@@ -454,21 +443,20 @@ namespace MenumateServices.WCFServices
         }
 
         public SmartConnectResponse DeSerializeResponse(string response)
-        {            
+        {                     
             var smartConnectResponse = new SmartConnectResponse();
             try
             {
-                smartConnectResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
+                smartConnectResponse.ResponseSuccessful = false;
+                if (!string.IsNullOrEmpty(response))
+                {
+                    smartConnectResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
 
-                if (smartConnectResponse.data.TransactionResult == "OK-ACCEPTED")
-                {
-                    smartConnectResponse.ResponseSuccessful = true;
+                    if (smartConnectResponse.data.TransactionResult == "OK-ACCEPTED")
+                    {
+                        smartConnectResponse.ResponseSuccessful = true;
+                    }
                 }
-                else
-                {
-                    smartConnectResponse.ResponseSuccessful = false;
-                }                    
-                
             }
             catch (Exception ex)
             {

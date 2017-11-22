@@ -490,6 +490,7 @@ public:
     bool IsBillSplittedByMenuType;
     UnicodeString CustomerId;
     bool EnableEftPosSmartConnect;
+    UnicodeString SmartConnectPairingCode;
 };
 
 #endif

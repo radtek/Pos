@@ -5,7 +5,8 @@
 #include "EftposSmartConnect.h"
 #include "GlobalSettings.h"
 #include "MMMessageBox.h"
-#include "SmartConnectDataObjects.h"
+#include "MMTouchKeyboard.h"
+#include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -64,74 +65,74 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
         try
         {
             SmartConnectResponse *wcfResponse;
-            CoInitialize(NULL);
-            TransactionTypes *transactionType = new TransactionTypes();
-
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.Purchase";
-
-            wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
-
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.PurchasePlusCash";
-
-            wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
-            MessageBox("Before Cash out only", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.CashAdvance";
-
-            wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
-            MessageBox("Before Refund ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.Refund";
-
-            wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
-
-
-
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.Authorise";
-
-            wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
-             MessageBox("Before Finalize ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Card.Finalise";
-
-            wcfResponse = smartConnectClient->Finalise(transactionType, AmtPurchase, TxnRef);   //todo add cahout amount also
-
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Journal.GetTransResult";
-
-            wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
-
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Terminal.GetStatus";
-
-            wcfResponse = smartConnectClient->GetTerminalStatus(transactionType);
-              MessageBox("Before  Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-            transactionType->PosBusinessName = "TCafe";
-            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            transactionType->PosVendorName = "MenumateIndia";
-            transactionType->Transactiontype = "Terminal.ReadCard";
-
-            wcfResponse = smartConnectClient->TerminalReadCard(transactionType);
-                    MessageBox("After Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+//            CoInitialize(NULL);
+//            TransactionTypes *transactionType = new TransactionTypes();
+//
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.Purchase";
+//
+//            wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
+//
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.PurchasePlusCash";
+//
+//            wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
+//            MessageBox("Before Cash out only", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.CashAdvance";
+//
+//            wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
+//            MessageBox("Before Refund ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.Refund";
+//
+//            wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
+//
+//
+//
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.Authorise";
+//
+//            wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
+//             MessageBox("Before Finalize ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Card.Finalise";
+//
+//            wcfResponse = smartConnectClient->Finalise(transactionType, AmtPurchase, TxnRef);   //todo add cahout amount also
+//
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Journal.GetTransResult";
+//
+//            wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
+//
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Terminal.GetStatus";
+//
+//            wcfResponse = smartConnectClient->GetTerminalStatus(transactionType);
+//              MessageBox("Before  Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+//            transactionType->PosBusinessName = "TCafe";
+//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+//            transactionType->PosVendorName = "MenumateIndia";
+//            transactionType->Transactiontype = "Terminal.ReadCard";
+//
+//            wcfResponse = smartConnectClient->TerminalReadCard(transactionType);
+//                    MessageBox("After Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
              //   }
 
 //            }
@@ -345,16 +346,41 @@ void __fastcall TEftPosSmartConnect::DoPairing()
 {
     try
     {
-        SmartConnectResponse *wcfResponse;
-        CoInitialize(NULL);
-        PairingTerminal  *pairingTerminal = new PairingTerminal();
-        pairingTerminal->PosBusinessName = "TCafe";
-        pairingTerminal->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-        pairingTerminal->PosRegisterName = "Main Register5";
-        pairingTerminal->PosVendorName = "MenumateIndia";
-        pairingTerminal->PairingCode = TGlobalSettings::Instance().EftPosSmartPayIp;
-        wcfResponse = smartConnectClient->Pairing(pairingTerminal);
-        delete pairingTerminal;
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (Screen->ActiveForm));
+        frmTouchKeyboard->MaxLength = 50;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = true;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().SmartConnectPairingCode;
+        frmTouchKeyboard->Caption = "Please enter pairing code.";
+        frmTouchKeyboard->lbeCaption->Font->Size = 18;
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+            SmartConnectResponse *wcfResponse;
+            CoInitialize(NULL);
+            PairingTerminal  *pairingTerminal = new PairingTerminal();
+            pairingTerminal->PosBusinessName = "TCafe";
+            pairingTerminal->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+            pairingTerminal->PosRegisterName = "Main Register5";
+            pairingTerminal->PosVendorName = "MenumateIndia";
+            pairingTerminal->PairingCode = TGlobalSettings::Instance().SmartConnectPairingCode;
+            wcfResponse = smartConnectClient->Pairing(pairingTerminal);
+            delete pairingTerminal;
+
+            if(wcfResponse->ResponseSuccessful)
+            {
+                TGlobalSettings::Instance().SmartConnectPairingCode = frmTouchKeyboard->KeyboardText;
+                Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+                TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+                dbTransaction.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmSmartConnectPairingCode,TGlobalSettings::Instance().SmartConnectPairingCode);
+                dbTransaction.Commit();
+            }
+            else
+            {
+                MessageBox("Invalid Pairing Code. Please make sure you entered the code correctly", "Error", MB_OK + MB_ICONERROR);
+            }
+        }
     }
     catch( Exception& E )
     {
