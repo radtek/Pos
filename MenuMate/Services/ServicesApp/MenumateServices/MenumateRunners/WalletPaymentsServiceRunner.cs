@@ -68,7 +68,7 @@ namespace MenumateServices.MenumateRunners
             {
                 ServiceLogger.Log(@"Wallet Payments Service endpoint is running ...");
 
-                // Any Chefmate initialization goes here!!!!!
+                // Any Wallet initialization goes here!!!!!
 
                 ServiceLogger.Log(@"Wallet Payments Service runner: Loyaltymate has started");
             }

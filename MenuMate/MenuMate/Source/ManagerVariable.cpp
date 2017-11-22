@@ -3232,6 +3232,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Split Bill on Menu type basis"
                  "Default is False.",
                   vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableCustomerJourney, "PMS Enable Customer Journey",
+		"when this is checked it will ask room number for every transaction./r"
+		"Default is false ",
+		vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

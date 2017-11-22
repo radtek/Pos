@@ -45,6 +45,10 @@ class TManagerTimeClock
     TDateTime GetRoundedLoginTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
     TDateTime GetRoundedLogOutTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
     void UpdateClockInOut(Database::TDBTransaction &DBTransaction, int contact_time_key, int contact_key);
+    bool ClockedInDep(Database::TDBTransaction &DBTransaction,int inContactKey);
+    void DelClockInDeptFromLoc(Database::TDBTransaction &DBTransaction,int Key);
+    bool CheckClockedIn(Database::TDBTransaction &DBTransaction,int Key);
+    void AddDepInLoc(Database::TDBTransaction &DBTransaction, AnsiString DeptName,int DeptCode);
 };
 
 

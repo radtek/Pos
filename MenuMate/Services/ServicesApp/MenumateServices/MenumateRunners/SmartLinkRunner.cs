@@ -139,8 +139,8 @@ namespace MenumateServices.MenumateRunners
                 ServiceInfo serviceInfo = ServiceInfo.Instance;
                 ServiceLogger.Log(string.Format(@"SmartLink: Server IpAddress: {0}", "127.0.0.1"));
                 ServiceLogger.Log(string.Format(@"SmartLink: Server Port: {0}", "11234"));
-                // Any Chefmate initialization goes here!!!!!
-                ServiceLogger.Log(@"SmartLink runner: Chefmate has started");
+                // Any SmartLink initialization goes here!!!!!
+                ServiceLogger.Log(@"SmartLink runner: SmartLink has started");
             }
             else
             {
