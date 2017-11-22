@@ -765,7 +765,8 @@ void TfrmReceiveInvoice::AddStockItem(AnsiString StockCode)
 	qrSupplier->Open();
 	frmReceiveStockItem->StockCode = StockCode;
 	frmReceiveStockItem->SupplierKey = qrSupplier->FieldByName("Contact_LK")->AsInteger;
-	if (frmReceiveStockItem->Execute() == mrOk)
+    frmReceiveStockItem->AllowNegativeQuantity = AllowNegativeStockQuantity;
+         if (frmReceiveStockItem->Execute() == mrOk)
 	{
 		PVirtualNode Node = vtvStockQty->GetFirst();
 		while (Node)

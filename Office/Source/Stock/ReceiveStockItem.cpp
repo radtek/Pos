@@ -571,7 +571,7 @@ void __fastcall TfrmReceiveStockItem::neCost4KeyPress(TObject *Sender,
 void __fastcall TfrmReceiveStockItem::neQtyKeyPress(TObject *Sender,
       char &Key)
 {
-   if(Key == '-')
+  if(Key == '-' && !AllowNegativeQuantity)
    {
       Key = NULL;
    }
