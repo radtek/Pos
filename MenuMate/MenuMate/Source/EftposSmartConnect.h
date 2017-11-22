@@ -40,6 +40,7 @@ public:
         void __fastcall DoSettlementEnquiry();
         void __fastcall DoLogon();
         void __fastcall ReprintReceipt();
+        void __fastcall DoPairing();
         AnsiString GetRefNumber();
 };
 #endif
