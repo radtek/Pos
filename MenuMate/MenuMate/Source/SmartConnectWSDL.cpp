@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (21/11/2017 7:51:33 p.m. - - $Rev: 25127 $)
+// (22/11/2017 10:30:44 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -31,7 +31,7 @@ _di_IWCFSmartConnect GetIWCFSmartConnect(bool useWSDL, AnsiString addr, THTTPRIO
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
-  rio->HTTPWebNode->SendTimeout = 120000;
+    rio->HTTPWebNode->SendTimeout = 120000;
   rio->HTTPWebNode->ReceiveTimeout = 120000;
   if (useWSDL) {
     rio->WSDLLocation = addr;

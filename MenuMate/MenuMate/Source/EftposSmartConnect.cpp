@@ -236,8 +236,6 @@ void __fastcall TEftPosSmartConnect::DoSettlementCutover()
         transactionType->PosBusinessName = "TCafe";
         transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
         transactionType->PosVendorName = "MenumateIndia";
-        transactionType->Transactiontype = "Acquirer.Settlement.Cutover";
-
         wcfResponse = smartConnectClient->SettlementCutover(transactionType);
     }
     catch( Exception& E )
@@ -277,8 +275,6 @@ void __fastcall TEftPosSmartConnect::DoSettlementEnquiry()
         transactionType->PosBusinessName = "TCafe";
         transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
         transactionType->PosVendorName = "MenumateIndia";
-        transactionType->Transactiontype = "Acquirer.Settlement.Inquiry";
-
         wcfResponse = smartConnectClient->SettlementInquiry(transactionType);
         delete transactionType;
     }
@@ -298,8 +294,6 @@ void __fastcall TEftPosSmartConnect::ReprintReceipt()
         transactionType->PosBusinessName = "TCafe";
         transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
         transactionType->PosVendorName = "MenumateIndia";
-        transactionType->Transactiontype = "Journal.ReprintReceipt";
-
         wcfResponse = smartConnectClient->ReprintLastReceipt(transactionType);
         delete transactionType;
     }
@@ -320,7 +314,6 @@ void __fastcall TEftPosSmartConnect::DoLogon()
         transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
         transactionType->PosVendorName = "MenumateIndia";
         transactionType->Transactiontype = "Acquirer.Logon";
-
         wcfResponse = smartConnectClient->Logon(transactionType);
         delete transactionType;
     }

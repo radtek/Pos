@@ -13,13 +13,14 @@ using SmartConnectIntegration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Smartpay.Eftpos;
 
 namespace MenumateServices.WCFServices
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class WCFServiceSmartConnect : IWCFSmartConnect
     {
-        private SmartConnectResponse _response;
+        private SmartConnectResponse smartConnectResponse;
         private bool _waitflag;
         private readonly HttpClientHandler _httpClientHandler;
         private string SampleText = "****** SAMPLE ******\n" +
@@ -37,37 +38,11 @@ namespace MenumateServices.WCFServices
         public WCFServiceSmartConnect()
         {
             _waitflag = false;
-            _response = new SmartConnectResponse();
-        }
-
-        public SmartConnectResponse PingTerminal(string ipAddress)
-        {
-            var response = new SmartConnectResponse();
-            try
-            {
-                using (var ping = new System.Net.NetworkInformation.Ping())
-                {
-                    System.Net.NetworkInformation.PingReply pingReply = ping.Send(ipAddress);
-                    response.ResponseSuccessful = (pingReply.Status == System.Net.NetworkInformation.IPStatus.Success);
-                    if (!response.ResponseSuccessful)
-                    {
-                        response.ResponseMessage = "Login Failed - " + Convert.ToString(pingReply.Status);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ResponseSuccessful = false;
-                response.ResponseMessage = ex.Message;
-                EventLog.WriteEntry("In PingTerminal SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 18, short.MaxValue);
-                ServiceLogger.LogException("Exception in PingTerminal", ex);
-            }
-            return response;
-        }
+            smartConnectResponse = new SmartConnectResponse();
+        }        
 
         public SmartConnectResponse Pairing(PairingTerminal param)
         {
-            var smartConnectResponse = new SmartConnectResponse();  
             try
             {
                 string requesturl = SmartConnectConstraints.PairingBaseAddress + "/" + param.PairingCode;
@@ -92,7 +67,6 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse Logon(TransactionTypes logonType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {             
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
@@ -112,10 +86,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse SettlementInquiry(TransactionTypes settlementEnquiryType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                settlementEnquiryType.Transactiontype = Function.SettlementInquiry;
                 parameters = AddApiParameters(settlementEnquiryType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);
@@ -132,10 +106,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse SettlementCutover(TransactionTypes settlementCutoverType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                settlementCutoverType.Transactiontype = Function.SettlementCutover;
                 parameters = AddApiParameters(settlementCutoverType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);
@@ -147,15 +121,15 @@ namespace MenumateServices.WCFServices
                 EventLog.WriteEntry("In SettlementCutover SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 3, short.MaxValue);
                 ServiceLogger.LogException("Exception in SettlementCutover", ex);
             }
-            return _response;
+            return smartConnectResponse;
         }
 
         public SmartConnectResponse Purchase(TransactionTypes purchaseType, double amount) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {                
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                purchaseType.Transactiontype = Function.Purchase;
                 parameters = AddApiParameters(purchaseType);
                 parameters.Add("AmountTotal", GetAmount(amount)); 
                 string putData = GetPutOrPostData(parameters);
@@ -172,10 +146,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse PurchasePlusCash(TransactionTypes purchasePlusCashType, double totalAmount, double cashAmount) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                purchasePlusCashType.Transactiontype = Function.PurchasePlusCash;
                 parameters = AddApiParameters(purchasePlusCashType);
                 parameters.Add("AmountTotal", GetAmount(totalAmount + cashAmount));
                 parameters.Add("AmountCash", GetAmount(cashAmount));
@@ -193,10 +167,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse CashOutOnly(TransactionTypes cashOutOnlyType, double cashAmount)
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                cashOutOnlyType.Transactiontype = Function.CashAdvance;
                 parameters = AddApiParameters(cashOutOnlyType);
                 parameters.Add("AmountTotal", GetAmount(cashAmount));
                 string putData = GetPutOrPostData(parameters);
@@ -213,10 +187,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse Refund(TransactionTypes refundType, double refAmount) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                refundType.Transactiontype = Function.Refund;
                 parameters = AddApiParameters(refundType);
                 parameters.Add("AmountTotal", GetAmount(refAmount));
                 string putData = GetPutOrPostData(parameters);
@@ -233,7 +207,6 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse Authorise(TransactionTypes authoriseType, double amountAuth, string transactionRef) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
@@ -254,7 +227,6 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse Finalise(TransactionTypes finaliseType, double amountFinal, string transactionRef) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
@@ -275,10 +247,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse GetTransactionResult(TransactionTypes transResultType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                transResultType.Transactiontype = Function.GetTransResult;
                 parameters = AddApiParameters(transResultType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);
@@ -295,10 +267,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse ReprintLastReceipt(TransactionTypes reprintReceiptType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                reprintReceiptType.Transactiontype = Function.ReprintReceipt;
                 parameters = AddApiParameters(reprintReceiptType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);
@@ -315,10 +287,10 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse GetTerminalStatus(TransactionTypes terminalStatusType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                terminalStatusType.Transactiontype = Function.GetStatus;
                 parameters = AddApiParameters(terminalStatusType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);
@@ -335,7 +307,6 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse TerminalReadCard(TransactionTypes readCardType) 
         {
-            var smartConnectResponse = new SmartConnectResponse();
             try
             {
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
@@ -364,7 +335,7 @@ namespace MenumateServices.WCFServices
                 EventLog.WriteEntry("In PrintReceipt SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in PrintReceipt", ex);
             }
-            return _response;
+            return smartConnectResponse;
         }
 
         private string GetPutOrPostData(IDictionary<string, string> parameters)
@@ -402,11 +373,13 @@ namespace MenumateServices.WCFServices
             string result = "";
             try
             {
-                HttpContent httpContent = new StringContent(putData, Encoding.UTF8);
+                HttpContent httpContent = new StringContent(putData, Encoding.UTF8);           
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue(SmartConnectConstraints.ContentType);
 
                 using (HttpClient httpClient = new HttpClient())
                 {
+                    TimeSpan ts = TimeSpan.FromMinutes(2);
+                    httpClient.Timeout = ts;
                     HttpResponseMessage response;
                     if (isPostData)
                     {
@@ -444,17 +417,17 @@ namespace MenumateServices.WCFServices
 
         public SmartConnectResponse DeSerializeResponse(string response)
         {                     
-            var smartConnectResponse = new SmartConnectResponse();
+            var deSerializeResponse = new SmartConnectResponse();
             try
             {
-                smartConnectResponse.ResponseSuccessful = false;
+                deSerializeResponse.ResponseSuccessful = false;
                 if (!string.IsNullOrEmpty(response))
                 {
-                    smartConnectResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
+                    deSerializeResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
 
-                    if (smartConnectResponse.data.TransactionResult == "OK-ACCEPTED")
+                    if (deSerializeResponse.data.TransactionResult == "OK-ACCEPTED")
                     {
-                        smartConnectResponse.ResponseSuccessful = true;
+                        deSerializeResponse.ResponseSuccessful = true;
                     }
                 }
             }
@@ -463,7 +436,7 @@ namespace MenumateServices.WCFServices
                 EventLog.WriteEntry("In Deserialize Response SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in Deserialize Response", ex);
             }
-            return smartConnectResponse;
+            return deSerializeResponse;
         }
 
         private string GetAmount(double amount)
