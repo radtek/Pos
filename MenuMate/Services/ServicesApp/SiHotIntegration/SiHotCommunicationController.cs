@@ -13,7 +13,8 @@ namespace SiHotIntegration
     public class SiHotCommunicationController
     {
         public SiHotCommunicationController()
-        { 
+        {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
         }
 
         public string URIRoomRequest(string ipAddress, int portNumber)
@@ -52,11 +53,12 @@ namespace SiHotIntegration
                 SiHotDesrializer deserializer = new SiHotDesrializer();
                 RoomDetails roomDetails = new RoomDetails();
                 try 
-	            {	        
+	            {
                     string uri = URIRoomRequest(roomRequest.IPAddress, roomRequest.PortNumber);
                     var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
                     request.Method = WebRequestMethods.Http.Post;
-                    request.ContentType = "text/plain"; 
+                    request.ServicePoint.Expect100Continue = false;
+                    request.ContentType = "text/plain";
                     List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
 
                     byte seperator = 29;
@@ -65,18 +67,25 @@ namespace SiHotIntegration
                     {
                         var str = detailsList[i];
                         byteList.AddRange(Encoding.UTF8.GetBytes(str).ToList<byte>());
-                        byteList.Add(seperator); 
+                        byteList.Add(seperator);
                     }
                     var bytes = byteList.ToArray<byte>();
-                    
+
                     request.ContentLength = bytes.Length;
                     request.Timeout = 50000;
-                    request.ContentType = "text/plain";
-                    request.GetRequestStream().Write(bytes, 0, bytes.Length);
-                    WebResponse wr = request.GetResponse();
+                    //request.ContentType = "text/plain";
+
+                    // Get the request stream.  
+                    Stream dataStream = request.GetRequestStream();
+                    // Write the data to the request stream.  
+                    dataStream.Write(bytes, 0, bytes.Length);
+                    // Close the Stream object.  
+                    dataStream.Close();
+
+                    HttpWebResponse wr = (HttpWebResponse)request.GetResponse();
                     var memberStream = new StreamReader(wr.GetResponseStream());
                     roomDetails = deserializer.DeserializeRoomResponse(memberStream.ReadToEnd());
-	            }
+                }
 	            catch (Exception ex)
 	            {
 		            ServiceLogger.Log("Exception in sending Room request" + ex.Message);
@@ -121,7 +130,7 @@ namespace SiHotIntegration
                 stringList.Add("Response Date                        " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Response Time                        " + DateTime.Now.ToString("hhmmss"));
                 stringList.Add("Response                             " + responseText + " " + exceptionMessage);
-                WriteToFile(stringList);
+                WriteToFile(stringList);                    
             }
             return response;
         }

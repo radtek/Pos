@@ -86,7 +86,7 @@ namespace SiHotIntegration.Utility
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashno:" + roomDetails.ItemList[i].Cashno).ToList<byte>());
                 bytesList.Add(fileSeparator);
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashier:" + roomDetails.ItemList[i].Cashier).ToList<byte>());
-                if (i != roomDetails.ItemList.Count - 1)
+                if (i != roomDetails.ItemList.Count)
                     bytesList.Add(groupSeparator);
                 else
                     bytesList.Add(fileSeparator);
@@ -108,7 +108,7 @@ namespace SiHotIntegration.Utility
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashno:" + roomDetails.PaymentList[i].Cashno).ToList<byte>());
                 bytesList.Add(fileSeparator);
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashier:" + roomDetails.PaymentList[i].Cashier).ToList<byte>());
-                if (i != roomDetails.PaymentList.Count -1)
+                if (i != roomDetails.PaymentList.Count)
                     bytesList.Add(groupSeparator);
                 else
                     bytesList.Add(fileSeparator);

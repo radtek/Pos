@@ -677,6 +677,12 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 				" ORDERS.SIDE_ORDER_KEY = NULL, "
 				" ORDERS.SETMENU_MASK = 0, "
 				" ORDERS.SETMENU_GROUP = 0 "
+
+//				" ORDERS.ROOM_NO = :ROOM_NO, "
+//				" ORDERS.ACC_NO = :ACC_NO, "
+//				" ORDERS.FIRST_NAME = :FIRST_NAME, "
+//				" ORDERS.LAST_NAME = :LAST_NAME "
+
 				" WHERE "
 				" ORDERS.ORDER_KEY = :ORDER_KEY;";
 				IBInternalQuery->ParamByName("TabDestKey")->AsInteger = TabDestKey;
@@ -688,6 +694,12 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName == "" ? TabName : TableName;
 				IBInternalQuery->ParamByName("PARTY_NAME")->AsString = PartyName;
 				IBInternalQuery->ParamByName("TAB_NAME")->AsString = TabName;
+//
+//                IBInternalQuery->ParamByName("ROOM_NO")->AsInteger = Item->RoomNo;
+//				IBInternalQuery->ParamByName("ACC_NO")->AsString = Item->AccNo;
+//				IBInternalQuery->ParamByName("FIRST_NAME")->AsString = Item->FirstName;
+//				IBInternalQuery->ParamByName("LAST_NAME")->AsString = Item->LastName;
+
 				IBInternalQuery->ExecQuery();
 
 				TSecurityReference *SecRef = new TSecurityReference;
@@ -1101,7 +1113,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "ORDER_IDENTIFICATION_NUMBER, "
             "IS_MANUALLY_ENTERED_WEIGHT, "
             "PRICE_INCL, "
-            "PRICE_ADJUST "
+            "PRICE_ADJUST, "
+            "ROOM_NO, "
+            "ACC_NO, "
+            "FIRST_NAME, "
+            "LAST_NAME "
           ") "
 			"VALUES "
 			"( "
@@ -1177,7 +1193,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":ORDER_IDENTIFICATION_NUMBER, "
             ":IS_MANUALLY_ENTERED_WEIGHT, "
             ":PRICE_INCL, "
-            ":PRICE_ADJUST "
+            ":PRICE_ADJUST, "
+            ":ROOM_NO, "
+            ":ACC_NO, "
+            ":FIRST_NAME, "
+            ":LAST_NAME "
           	");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
@@ -1270,7 +1290,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
             IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
             IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
-
+            IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNoStr;
+            IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
+            IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
+            
 			if(Order->ItemOrderedFrom != NULL)
 			{
 				IBInternalQuery->ParamByName("MENU_ITEM_KEY")->AsInteger = Order->ItemOrderedFrom->ItemKey;
@@ -1482,7 +1506,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "ORDER_IDENTIFICATION_NUMBER, "
                 "IS_MANUALLY_ENTERED_WEIGHT, "
                 "PRICE_INCL, "
-                "PRICE_ADJUST "
+                "PRICE_ADJUST, "
+                "ROOM_NO, "
+                "ACC_NO, "
+                "FIRST_NAME, "
+                "LAST_NAME "
 		   	") "
 				"VALUES "
 				"( "
@@ -1558,7 +1586,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":ORDER_IDENTIFICATION_NUMBER, "
                 ":IS_MANUALLY_ENTERED_WEIGHT, "
                 ":PRICE_INCL,"
-                ":PRICE_ADJUST "
+                ":PRICE_ADJUST, "
+                ":ROOM_NO, "
+                ":ACC_NO, "
+                ":FIRST_NAME, "
+                ":LAST_NAME "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1661,6 +1693,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
                 IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
                 IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
+                IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNoStr;
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+                IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
+                IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
 
 				IBInternalQuery->ExecQuery();
 
@@ -2192,7 +2228,8 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 		" SELECT MENU_ITEM_KEY, ORDER_KEY, QTY, ITEM_NAME,SIZE_NAME,SETMENU_MASK,SETMENU_GROUP,MENU_NAME,"
 		" PRICE,DISCOUNT,SECURITY_REF,ORDERS.SERVINGCOURSES_KEY,PRICE_LEVEL0,PRICE_LEVEL1,"
 		" ORDER_TYPE_MESSAGE, CONTACTS_KEY, SERVINGCOURSES.*, patron_count, CANCEL_BASE_PRICE, "
-		" CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE, CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT "
+		" CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE, CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
+        " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
 		" FROM ORDERS "
 		" LEFT JOIN SERVINGCOURSES ON ORDERS.SERVINGCOURSES_KEY = SERVINGCOURSES.SERVINGCOURSES_KEY "
 		" WHERE "
@@ -2215,6 +2252,11 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			PrevItem->PriceLevel1 = IBInternalQuery->FieldByName("PRICE_LEVEL1")->AsCurrency;
 			PrevItem->OrderTypeMessage = IBInternalQuery->FieldByName("ORDER_TYPE_MESSAGE")->AsString;
 			PrevItem->ContactsKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            PrevItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
+            PrevItem->RoomNoStr = IBInternalQuery->FieldByName("ROOM_NO")->AsString;
+            PrevItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+            PrevItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+            PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 			if (PrevItem->SetMenuMask)
 			{
 				if (TST_PROMO_MASTER(IBInternalQuery->FieldByName("SETMENU_MASK")->AsInteger))
@@ -2250,7 +2292,9 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			IBInternalQuery->SQL->Text =
 			" SELECT ORDER_KEY,QTY,ITEM_NAME,SIZE_NAME,SETMENU_MASK,SETMENU_GROUP,MENU_NAME,"
 			" PRICE, CANCEL_BASE_PRICE, CANCEL_GROSS_PRICE, CANCEL_FINAL_PRICE,"
-			" CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT FROM ORDERS "
+			" CANCEL_TOTAL_TAX, CANCEL_TOTAL_DISCOUNT, "
+            " FIRST_NAME, LAST_NAME, ROOM_NO, ACC_NO, TAB_KEY "
+            " FROM ORDERS "
 			" WHERE "
 			" SIDE_ORDER_KEY = :SIDE_ORDER_KEY";
 			IBInternalQuery->ParamByName("SIDE_ORDER_KEY")->AsInteger = OrderKey;
@@ -2271,6 +2315,11 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 				SubItem->CancelledBillCalcResult.FinalPrice = IBInternalQuery->FieldByName("CANCEL_FINAL_PRICE")->AsCurrency;
 				SubItem->CancelledBillCalcResult.TotalTax = IBInternalQuery->FieldByName("CANCEL_TOTAL_TAX")->AsCurrency;
 				SubItem->CancelledBillCalcResult.TotalDiscount = IBInternalQuery->FieldByName("CANCEL_TOTAL_DISCOUNT")->AsCurrency;
+                SubItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
+                SubItem->RoomNoStr = IBInternalQuery->FieldByName("ROOM_NO")->AsString;
+                SubItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+                SubItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+                PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
 				LoadOrderCategories(DBTransaction,SubItem->OrderKey,SubItem->Categories);
 				LoadOrderDiscounts(DBTransaction,SubItem);
 				PrevItem->SubOrders->SubOrderAdd(SubItem);
@@ -2368,16 +2417,16 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 	try
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Clear();
 		IBInternalQuery->SQL->Text =
         "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
-        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE "
+        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE, "
+        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME "
         " FROM ORDERS a inner join SIZES b  "
         " on a.SIZE_NAME = b.SIZE_NAME  "
         " WHERE a.TAB_KEY = :TAB_KEY "
-        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15  "
+        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19  "
         " ORDER BY a.ITEM_NAME,a.SIZE_NAME,a.Price,a.QTY ";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
@@ -2436,6 +2485,10 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
             Order.ItemType 	  = (TItemType)IBInternalQuery->FieldByName("ITEM_TYPE")->AsInteger;
+            Order.RoomNumber      = IBInternalQuery->FieldByName("ROOM_NO")->AsString;
+            Order.AccNumber      = IBInternalQuery->FieldByName("ACC_NO")->AsString;
+            Order.FirstName      = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+            Order.LastName      = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
 
             if(isSCDOrPWDDiscountExist)
             {
@@ -4107,6 +4160,10 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
         Order->isManuallyEnteredWeight = (OrderTable->FieldByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString == "T")?1:0;
         Order->ItemPriceForPointsOriginal = GetPriceForPoints(DBTransaction,Order);
         Order->ItemPriceForPoints = Order->ItemPriceForPointsOriginal;
+        Order->RoomNoStr = OrderTable->FieldByName("ROOM_NO")->AsString;
+        Order->AccNo = atoi(AnsiString(OrderTable->FieldByName("ACC_NO")->AsString).c_str());
+        Order->FirstName = (AnsiString(OrderTable->FieldByName("FIRST_NAME")->AsString));
+        Order->LastName = (AnsiString(OrderTable->FieldByName("LAST_NAME")->AsString));
  	}
 }
 

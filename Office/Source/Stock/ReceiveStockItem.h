@@ -135,7 +135,7 @@ public:		// User declarations
    	int	StockRequestSupplierKey;
    	AnsiString	CheckLocation;
 	TModalResult Execute();	// Call this - not Show()
-
+    bool AllowNegativeQuantity;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmReceiveStockItem *frmReceiveStockItem;

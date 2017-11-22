@@ -120,6 +120,7 @@ public:
     static int GetMaxAvailableSeatKey(Database::TDBTransaction &dbTransaction, int destTableKey);
     static int GetInvoiceNo(Database::TDBTransaction &dbTransaction, int invoiceKey);
     static AnsiString GetInvoiceNoFromTabKey(Database::TDBTransaction &dbTransaction, int tabKey);
+    static UnicodeString GetAccountNumber(Database::TDBTransaction &dbTransaction, int tabKey);
 };
 
 #endif

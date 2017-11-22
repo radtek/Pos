@@ -220,6 +220,12 @@ TItemMinorComplete::TItemMinorComplete() {
     printFreeSideForReceipt = false;
     wasOpenItem = false;
     SubItemType = eFoodItem;
+    RoomNo = 0;
+    AccNo = "";
+    FirstName = "";
+    LastName = "";
+    TabKey = 0;
+    RoomNoStr = "";
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -275,6 +281,12 @@ TItemMinorComplete::TItemMinorComplete(
     ItemPriceForPoints = initializer.ItemPriceForPoints;
     ItemPriceForPointsOriginal = initializer.ItemPriceForPointsOriginal;
     SubItemType = initializer.SubItemType;
+    RoomNo = initializer.RoomNo;
+    AccNo = initializer.AccNo;
+    FirstName = initializer.FirstName;
+    LastName = initializer.LastName;
+    TabKey = initializer.TabKey;
+    RoomNoStr = initializer.RoomNoStr;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -320,6 +332,12 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     ItemPriceForPoints = rhs.ItemPriceForPoints;
     ItemPriceForPointsOriginal = rhs.ItemPriceForPointsOriginal;
     SubItemType = rhs.SubItemType;
+    RoomNo = rhs.RoomNo;
+    AccNo = rhs.AccNo;
+    FirstName = rhs.FirstName;
+    LastName = rhs.LastName;
+    TabKey = rhs.TabKey;
+    RoomNoStr = rhs.RoomNoStr;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -366,6 +384,12 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->ItemPriceForPoints = ItemPriceForPoints;
         RetItem->ItemPriceForPointsOriginal = ItemPriceForPointsOriginal;
         RetItem->SubItemType = SubItemType;
+        RetItem->RoomNo = RoomNo;
+        RetItem->AccNo = AccNo;
+        RetItem->FirstName = FirstName;
+        RetItem->LastName = LastName;
+        RetItem->TabKey = TabKey;
+        RetItem->RoomNoStr = RoomNoStr;
     }
 }
 

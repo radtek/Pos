@@ -5,6 +5,7 @@
 #include "MMTouchNumpad.h"
  #include <sstream>
  #include <string>
+ #include "MMMessageBox.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -438,6 +439,10 @@ void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
        {
           STRResult = wrkStrAmount;
        }
+       else if(Mode == pmSTR)
+       {
+          NUMSTRResult = wrkNumStrAmount;
+       }
    }
    else
    {
@@ -606,7 +611,7 @@ void __fastcall TfrmTouchNumpad::btnOkMouseClick(TObject *Sender)
    }
    else if (Mode == pmSTR)
    {
-      NUMSTRResult = wrkNumStrAmount;
+      NUMSTRResult = wrkNumStrAmount;   MessageBox(NUMSTRResult,"NUMSTRResult",MB_OK);
    }
    BtnExit = 1;
    ModalResult = mrOk;
