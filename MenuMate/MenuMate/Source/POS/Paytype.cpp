@@ -1424,7 +1424,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                                 CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
                                 TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                             }
-                            CurrentTransaction.WasSavedSales = false;
+//                            CurrentTransaction.WasSavedSales = false;
                         }
                         else
                         {
@@ -1859,7 +1859,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                     CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
                                     TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                                 }
-                                CurrentTransaction.WasSavedSales = false;
+//                                CurrentTransaction.WasSavedSales = false;
                             }
                         }
                         else

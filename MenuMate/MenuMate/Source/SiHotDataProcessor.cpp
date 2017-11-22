@@ -47,7 +47,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
             Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
             Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
             Order->TabType = TabRoom;
-            Order->RoomNo = atoi(_paymentTransaction.Phoenix.AccountNumber.t_str());
+            Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
         }
     }
 
