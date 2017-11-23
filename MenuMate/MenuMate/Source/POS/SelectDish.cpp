@@ -15390,14 +15390,13 @@ void TfrmSelectDish::DisplayRoomNoUI()
         isRoomNoUiCalled = true;
 		SiHotAccount.AccountDetails.clear();
         if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
-        {
-//            selectedRoomNumber = atoi(frmTouchNumpad->NUMSTRResult.t_str());
+        {    
             selectedRoomNumberStr = frmTouchNumpad->NUMSTRResult;
             isWalkInUser = false;
             GetRoomDetails();
         }
-        else if(frmTouchNumpad->INTResult == 0 && frmTouchNumpad->BtnExit == 2)
-        {            
+        else if(atoi(frmTouchNumpad->NUMSTRResult.t_str()) == 0 && frmTouchNumpad->BtnExit == 2)
+        {
             isWalkInUser = true;
         }
         else if(frmTouchNumpad->BtnExit == 2 && abs(atoi(frmTouchNumpad->NUMSTRResult.t_str())) > 0)
@@ -15418,7 +15417,6 @@ void TfrmSelectDish::GetRoomDetails()
         SiHotAccount = TSiHotAccounts();
         std::vector<TSiHotAccounts> SiHotAccounts;
         TSiHotAccounts guestAccount;
-//        guestAccount.AccountNumber =  selectedRoomNumber;
         guestAccount.AccountNumber =  selectedRoomNumberStr;
         SiHotAccounts.push_back(guestAccount);
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
@@ -15450,7 +15448,6 @@ void TfrmSelectDish::GetRoomDetails()
                     for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
                     {
                         TAccountDetails accountDetails;
-//                        accountDetails.RoomNumber = IntToStr(selectedRoomNumber);
                         accountDetails.RoomNumber = selectedRoomNumberStr;
                         accountDetails.LastName = accIt->LastName;
                         accountDetails.FirstName = accIt->FirstName;
@@ -15483,7 +15480,6 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
             {
                 inTransaction.Phoenix.AccountNumber = SiHotAccount.AccountNumber;
                 inTransaction.Phoenix.AccountName = accIt->FirstName + " " + accIt->LastName;
-//                inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
                 inTransaction.Phoenix.RoomNumber = selectedRoomNumberStr;
                 inTransaction.Phoenix.FirstName = accIt->FirstName;
                 inTransaction.Phoenix.LastName = accIt->LastName;
@@ -15507,6 +15503,7 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 Order->FirstName = inTransaction.Phoenix.FirstName;
                 Order->LastName = inTransaction.Phoenix.LastName;
                 Order->AccNo = inTransaction.Phoenix.AccountNumber;
+                Order->RoomNo = inTransaction.Phoenix.RoomNumber != "" ? StrToInt(inTransaction.Phoenix.RoomNumber) : 0;
             }
         }
     }

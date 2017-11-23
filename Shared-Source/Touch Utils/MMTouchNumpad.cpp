@@ -417,6 +417,10 @@ void __fastcall TfrmTouchNumpad::btnDiscountClick(TObject *Sender)
    {
 	  INTResult = -wrkIntAmount;
    }
+   else if(Mode == pmSTR)
+   {
+      NUMSTRResult = wrkNumStrAmount;
+   }
    BtnExit = 2;
    ModalResult = mrOk;
 }

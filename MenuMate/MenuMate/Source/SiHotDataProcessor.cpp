@@ -445,7 +445,7 @@ void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, Un
     siHotService.PricePerUnit = pricePerUnit;//fabs((double)(_paymentTransaction.Money.ServiceCharge+_paymentTransaction.Money.ServiceChargeTax));
     siHotService.Amount = _paymentTransaction.Money.ServiceCharge < 0 ? "-1" : "1";
     double priceTotal = fabs((double)(_paymentTransaction.Money.ServiceCharge+_paymentTransaction.Money.ServiceChargeTax));
-    priceTotal = RoundTo(pricePerUnit,-2);
+    priceTotal = RoundTo(priceTotal,-2);
     siHotService.PriceTotal = priceTotal;//fabs((double)(_paymentTransaction.Money.ServiceCharge+_paymentTransaction.Money.ServiceChargeTax));
     if(TGlobalSettings::Instance().ApplyServiceChargeTax)
         siHotService.VATPercentage = TGlobalSettings::Instance().ServiceChargeTaxRate;
