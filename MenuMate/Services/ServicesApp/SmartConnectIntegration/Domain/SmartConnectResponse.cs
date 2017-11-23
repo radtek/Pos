@@ -23,6 +23,8 @@ namespace SmartConnectIntegration.Domain
         [DataMember]
         public string TransactionStatus { get; set; }
         [DataMember]
-        public SmartConnectDataObject data { get; set; }
+        public SmartConnectDataObject Data { get; set; }
+        [DataMember]
+        public string Result { get; set; }
     }
 }

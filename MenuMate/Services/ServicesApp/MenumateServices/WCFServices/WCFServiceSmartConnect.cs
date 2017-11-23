@@ -70,6 +70,7 @@ namespace MenumateServices.WCFServices
             try
             {             
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
+                logonType.Transactiontype = Function.Logon;
                 parameters = AddApiParameters(logonType);
                 string postData = GetPutOrPostData(parameters);
                 string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, postData, true);              
@@ -425,7 +426,7 @@ namespace MenumateServices.WCFServices
                 {
                     deSerializeResponse = JsonConvert.DeserializeObject<SmartConnectResponse>(response);
 
-                    if (deSerializeResponse.data.TransactionResult == "OK-ACCEPTED")
+                    if ((deSerializeResponse.Data != null && deSerializeResponse.Data.TransactionResult == "OK-ACCEPTED") || (deSerializeResponse.Result != null && deSerializeResponse.Result.ToLower() == "success"))
                     {
                         deSerializeResponse.ResponseSuccessful = true;
                     }

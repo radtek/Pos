@@ -14,12 +14,16 @@
 
 TEftPosSmartConnect::TEftPosSmartConnect()
 {
-  InitSmartConnectClient();
+    InitSmartConnectClient();
+    transactionType = new TransactionTypes();
+    transactionType->PosBusinessName = "TCafe";
+    transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
+    transactionType->PosVendorName = "MenumateIndia";
 }
 // ---------------------------------------------------------------------------
 TEftPosSmartConnect::~TEftPosSmartConnect()
 {
-//
+    delete transactionType;
 }
 // ---------------------------------------------------------------------------
 void TEftPosSmartConnect::Initialise()
@@ -64,43 +68,8 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    {
         try
         {
-            SmartConnectResponse *wcfResponse;
+         //   SmartConnectResponse *wcfResponse;
 //            CoInitialize(NULL);
-//            TransactionTypes *transactionType = new TransactionTypes();
-//
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Card.Purchase";
-//
-//            wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
-//
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Card.PurchasePlusCash";
-//
-//            wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
-//            MessageBox("Before Cash out only", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Card.CashAdvance";
-//
-//            wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
-//            MessageBox("Before Refund ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Card.Refund";
-//
-//            wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
-//
-//
-//
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
 //            transactionType->Transactiontype = "Card.Authorise";
 //
 //            wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
@@ -138,35 +107,35 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
 //            }
 //             else
 //                MessageBox("Response Unsuccessfull", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-           /*if(PingTerminal(TxnType))
-           {
+//           if(PingTerminal(TxnType))
+//           {
                SmartConnectResponse *wcfResponse;
-               CoInitialize(NULL);
-               switch (TxnType)
-                  {
-                    case TransactionType_PURCHASE :
-                        // wcfResponse = smartConnectClient->Purchase(TGlobalSettings::Instance().EftPosSmartPayIp,AmtPurchase);
+				CoInitialize(NULL);
 
-                    break;
+               switch (TxnType)
+               {
+                    case TransactionType_PURCHASE :
+                        wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
+                        break;
                     case TransactionType_CASH_ADVANCE :
-                         //wcfResponse = smartConnectClient->CashOnly(TGlobalSettings::Instance().EftPosSmartPayIp,AmtCash);
-                    break;
+                        wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
+                        break;
                     case TransactionType_PURCHASE_PLUS_CASH :
-                        // wcfResponse = smartConnectClient->PurchasePlusCash(TGlobalSettings::Instance().EftPosSmartPayIp,AmtPurchase,AmtCash);
-                    break;
+                         wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
+                        break;
                     case TransactionType_REFUND :
-                        // wcfResponse = smartConnectClient->Refund(TGlobalSettings::Instance().EftPosSmartPayIp,AmtPurchase);
-                    break;
+                         wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
+                        break;
                     case TransactionType_INQUIRY :
-//                         TEftPosTransaction *EftTrans = GetTransactionEvent();
-//                         if(EftTrans != NULL)
-//                            {
-//                               EftTrans->Result = eManualQuery;
-//                               EftTrans->ResultText = "Confirm Eftpos Transaction.";
-//                               EftTrans->EventCompleted = true;
-//                            }
+                         TEftPosTransaction *EftTrans = GetTransactionEvent();
+                         if(EftTrans != NULL)
+                            {
+                               EftTrans->Result = eManualQuery;
+                               EftTrans->ResultText = "Confirm Eftpos Transaction.";
+                               EftTrans->EventCompleted = true;
+                            }
                     break;
-                  }   */
+                }
                   if(wcfResponse->ResponseSuccessful)
                    {
                       AcquirerRefSmartConnect = wcfResponse->data->AcquirerRef;
@@ -177,7 +146,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           //EftTrans->FinalAmount = wcfResponse->data->AmountTotal;
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
-                          //EftTrans->TimeOut = wcfResponse->TimeOut;
+//                          EftTrans->TimeOut = wcfResponse->TimeOut;
                    }    }
                   else
                    {
@@ -232,10 +201,6 @@ void __fastcall TEftPosSmartConnect::DoSettlementCutover()
     {
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);
-        TransactionTypes *transactionType = new TransactionTypes();
-        transactionType->PosBusinessName = "TCafe";
-        transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-        transactionType->PosVendorName = "MenumateIndia";
         wcfResponse = smartConnectClient->SettlementCutover(transactionType);
     }
     catch( Exception& E )
@@ -271,12 +236,7 @@ void __fastcall TEftPosSmartConnect::DoSettlementEnquiry()
     {
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);
-        TransactionTypes *transactionType = new TransactionTypes();
-        transactionType->PosBusinessName = "TCafe";
-        transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-        transactionType->PosVendorName = "MenumateIndia";
         wcfResponse = smartConnectClient->SettlementInquiry(transactionType);
-        delete transactionType;
     }
     catch( Exception& E )
     {
@@ -290,12 +250,7 @@ void __fastcall TEftPosSmartConnect::ReprintReceipt()
     {
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);
-        TransactionTypes *transactionType = new TransactionTypes();
-        transactionType->PosBusinessName = "TCafe";
-        transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-        transactionType->PosVendorName = "MenumateIndia";
         wcfResponse = smartConnectClient->ReprintLastReceipt(transactionType);
-        delete transactionType;
     }
     catch( Exception& E )
     {
@@ -309,13 +264,7 @@ void __fastcall TEftPosSmartConnect::DoLogon()
    {
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);
-        TransactionTypes *transactionType = new TransactionTypes();
-        transactionType->PosBusinessName = "TCafe";
-        transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-        transactionType->PosVendorName = "MenumateIndia";
-        transactionType->Transactiontype = "Acquirer.Logon";
         wcfResponse = smartConnectClient->Logon(transactionType);
-        delete transactionType;
     }
     catch( Exception& E )
     {
@@ -356,7 +305,7 @@ void __fastcall TEftPosSmartConnect::DoPairing()
             pairingTerminal->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
             pairingTerminal->PosRegisterName = "Main Register5";
             pairingTerminal->PosVendorName = "MenumateIndia";
-            pairingTerminal->PairingCode = TGlobalSettings::Instance().SmartConnectPairingCode;
+            pairingTerminal->PairingCode = frmTouchKeyboard->KeyboardText;
             wcfResponse = smartConnectClient->Pairing(pairingTerminal);
             delete pairingTerminal;
 
