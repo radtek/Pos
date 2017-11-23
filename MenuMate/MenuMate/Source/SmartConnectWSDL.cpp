@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (22/11/2017 10:30:44 p.m. - - $Rev: 25127 $)
+// (23/11/2017 6:23:29 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -31,7 +31,7 @@ _di_IWCFSmartConnect GetIWCFSmartConnect(bool useWSDL, AnsiString addr, THTTPRIO
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
-    rio->HTTPWebNode->SendTimeout = 120000;
+  rio->HTTPWebNode->SendTimeout = 120000;
   rio->HTTPWebNode->ReceiveTimeout = 120000;
   if (useWSDL) {
     rio->WSDLLocation = addr;
@@ -50,7 +50,7 @@ _di_IWCFSmartConnect GetIWCFSmartConnect(bool useWSDL, AnsiString addr, THTTPRIO
 
 __fastcall SmartConnectResponse::~SmartConnectResponse()
 {
-  delete Fdata;
+  delete FData;
 }
 
 // ************************************************************************ //
@@ -66,10 +66,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(POSDetails), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"POSDetails");
   /* PairingTerminal */
   RemClassRegistry()->RegisterXSClass(__classid(PairingTerminal), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"PairingTerminal");
-  /* SmartConnectResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(SmartConnectResponse), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"SmartConnectResponse");
   /* SmartConnectDataObject */
   RemClassRegistry()->RegisterXSClass(__classid(SmartConnectDataObject), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"SmartConnectDataObject");
+  /* SmartConnectResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(SmartConnectResponse), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"SmartConnectResponse");
   /* TransactionTypes */
   RemClassRegistry()->RegisterXSClass(__classid(TransactionTypes), L"http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain", L"TransactionTypes");
   /* PairingTerminal */

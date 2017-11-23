@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8744/MenumateServices/SmartConnect/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (22/11/2017 10:30:44 p.m. - - $Rev: 25127 $)
+// (23/11/2017 6:23:29 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SmartConnectWSDLH
@@ -49,8 +49,8 @@ namespace NS__SmartConnnectWSDL {
 
 class SOAP_REMOTABLE_CLASS POSDetails;
 class SOAP_REMOTABLE_CLASS PairingTerminal;
-class SOAP_REMOTABLE_CLASS SmartConnectResponse;
 class SOAP_REMOTABLE_CLASS SmartConnectDataObject;
+class SOAP_REMOTABLE_CLASS SmartConnectResponse;
 class SOAP_REMOTABLE_CLASS TransactionTypes;
 class SOAP_REMOTABLE_CLASS PairingTerminal2;
 class SOAP_REMOTABLE_CLASS POSDetails2;
@@ -114,77 +114,6 @@ private:
 __published:
   __property UnicodeString PairingCode = { index=(IS_OPTN|IS_NLBL), read=FPairingCode, write=SetPairingCode, stored = PairingCode_Specified };
   __property UnicodeString PosRegisterName = { index=(IS_OPTN|IS_NLBL), read=FPosRegisterName, write=SetPosRegisterName, stored = PosRegisterName_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SmartConnectResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain
-// ************************************************************************ //
-class SmartConnectResponse : public TRemotable {
-private:
-  UnicodeString   FDeviceId;
-  bool            FDeviceId_Specified;
-  UnicodeString   FMerchantId;
-  bool            FMerchantId_Specified;
-  UnicodeString   FResponseMessage;
-  bool            FResponseMessage_Specified;
-  bool            FResponseSuccessful;
-  bool            FResponseSuccessful_Specified;
-  UnicodeString   FTransactionId;
-  bool            FTransactionId_Specified;
-  UnicodeString   FTransactionStatus;
-  bool            FTransactionStatus_Specified;
-  UnicodeString   FTransactionTimeStamp;
-  bool            FTransactionTimeStamp_Specified;
-  SmartConnectDataObject* Fdata;
-  bool            Fdata_Specified;
-  void __fastcall SetDeviceId(int Index, UnicodeString _prop_val)
-  {  FDeviceId = _prop_val; FDeviceId_Specified = true;  }
-  bool __fastcall DeviceId_Specified(int Index)
-  {  return FDeviceId_Specified;  }
-  void __fastcall SetMerchantId(int Index, UnicodeString _prop_val)
-  {  FMerchantId = _prop_val; FMerchantId_Specified = true;  }
-  bool __fastcall MerchantId_Specified(int Index)
-  {  return FMerchantId_Specified;  }
-  void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
-  {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
-  bool __fastcall ResponseMessage_Specified(int Index)
-  {  return FResponseMessage_Specified;  }
-  void __fastcall SetResponseSuccessful(int Index, bool _prop_val)
-  {  FResponseSuccessful = _prop_val; FResponseSuccessful_Specified = true;  }
-  bool __fastcall ResponseSuccessful_Specified(int Index)
-  {  return FResponseSuccessful_Specified;  }
-  void __fastcall SetTransactionId(int Index, UnicodeString _prop_val)
-  {  FTransactionId = _prop_val; FTransactionId_Specified = true;  }
-  bool __fastcall TransactionId_Specified(int Index)
-  {  return FTransactionId_Specified;  }
-  void __fastcall SetTransactionStatus(int Index, UnicodeString _prop_val)
-  {  FTransactionStatus = _prop_val; FTransactionStatus_Specified = true;  }
-  bool __fastcall TransactionStatus_Specified(int Index)
-  {  return FTransactionStatus_Specified;  }
-  void __fastcall SetTransactionTimeStamp(int Index, UnicodeString _prop_val)
-  {  FTransactionTimeStamp = _prop_val; FTransactionTimeStamp_Specified = true;  }
-  bool __fastcall TransactionTimeStamp_Specified(int Index)
-  {  return FTransactionTimeStamp_Specified;  }
-  void __fastcall Setdata(int Index, SmartConnectDataObject* _prop_val)
-  {  Fdata = _prop_val; Fdata_Specified = true;  }
-  bool __fastcall data_Specified(int Index)
-  {  return Fdata_Specified;  }
-
-public:
-  __fastcall ~SmartConnectResponse();
-__published:
-  __property UnicodeString   DeviceId = { index=(IS_OPTN|IS_NLBL), read=FDeviceId, write=SetDeviceId, stored = DeviceId_Specified };
-  __property UnicodeString MerchantId = { index=(IS_OPTN|IS_NLBL), read=FMerchantId, write=SetMerchantId, stored = MerchantId_Specified };
-  __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
-  __property bool       ResponseSuccessful = { index=(IS_OPTN), read=FResponseSuccessful, write=SetResponseSuccessful, stored = ResponseSuccessful_Specified };
-  __property UnicodeString TransactionId = { index=(IS_OPTN|IS_NLBL), read=FTransactionId, write=SetTransactionId, stored = TransactionId_Specified };
-  __property UnicodeString TransactionStatus = { index=(IS_OPTN|IS_NLBL), read=FTransactionStatus, write=SetTransactionStatus, stored = TransactionStatus_Specified };
-  __property UnicodeString TransactionTimeStamp = { index=(IS_OPTN|IS_NLBL), read=FTransactionTimeStamp, write=SetTransactionTimeStamp, stored = TransactionTimeStamp_Specified };
-  __property SmartConnectDataObject*       data = { index=(IS_OPTN|IS_NLBL), read=Fdata, write=Setdata, stored = data_Specified };
 };
 
 
@@ -309,6 +238,84 @@ __published:
   __property UnicodeString TerminalRef = { index=(IS_OPTN|IS_NLBL), read=FTerminalRef, write=SetTerminalRef, stored = TerminalRef_Specified };
   __property UnicodeString  Timestamp = { index=(IS_OPTN|IS_NLBL), read=FTimestamp, write=SetTimestamp, stored = Timestamp_Specified };
   __property UnicodeString TransactionResult = { index=(IS_OPTN|IS_NLBL), read=FTransactionResult, write=SetTransactionResult, stored = TransactionResult_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : SmartConnectResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/SmartConnectIntegration.Domain
+// ************************************************************************ //
+class SmartConnectResponse : public TRemotable {
+private:
+  SmartConnectDataObject* FData;
+  bool            FData_Specified;
+  UnicodeString   FDeviceId;
+  bool            FDeviceId_Specified;
+  UnicodeString   FMerchantId;
+  bool            FMerchantId_Specified;
+  UnicodeString   FResponseMessage;
+  bool            FResponseMessage_Specified;
+  bool            FResponseSuccessful;
+  bool            FResponseSuccessful_Specified;
+  UnicodeString   FResult;
+  bool            FResult_Specified;
+  UnicodeString   FTransactionId;
+  bool            FTransactionId_Specified;
+  UnicodeString   FTransactionStatus;
+  bool            FTransactionStatus_Specified;
+  UnicodeString   FTransactionTimeStamp;
+  bool            FTransactionTimeStamp_Specified;
+  void __fastcall SetData(int Index, SmartConnectDataObject* _prop_val)
+  {  FData = _prop_val; FData_Specified = true;  }
+  bool __fastcall Data_Specified(int Index)
+  {  return FData_Specified;  }
+  void __fastcall SetDeviceId(int Index, UnicodeString _prop_val)
+  {  FDeviceId = _prop_val; FDeviceId_Specified = true;  }
+  bool __fastcall DeviceId_Specified(int Index)
+  {  return FDeviceId_Specified;  }
+  void __fastcall SetMerchantId(int Index, UnicodeString _prop_val)
+  {  FMerchantId = _prop_val; FMerchantId_Specified = true;  }
+  bool __fastcall MerchantId_Specified(int Index)
+  {  return FMerchantId_Specified;  }
+  void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
+  {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
+  bool __fastcall ResponseMessage_Specified(int Index)
+  {  return FResponseMessage_Specified;  }
+  void __fastcall SetResponseSuccessful(int Index, bool _prop_val)
+  {  FResponseSuccessful = _prop_val; FResponseSuccessful_Specified = true;  }
+  bool __fastcall ResponseSuccessful_Specified(int Index)
+  {  return FResponseSuccessful_Specified;  }
+  void __fastcall SetResult(int Index, UnicodeString _prop_val)
+  {  FResult = _prop_val; FResult_Specified = true;  }
+  bool __fastcall Result_Specified(int Index)
+  {  return FResult_Specified;  }
+  void __fastcall SetTransactionId(int Index, UnicodeString _prop_val)
+  {  FTransactionId = _prop_val; FTransactionId_Specified = true;  }
+  bool __fastcall TransactionId_Specified(int Index)
+  {  return FTransactionId_Specified;  }
+  void __fastcall SetTransactionStatus(int Index, UnicodeString _prop_val)
+  {  FTransactionStatus = _prop_val; FTransactionStatus_Specified = true;  }
+  bool __fastcall TransactionStatus_Specified(int Index)
+  {  return FTransactionStatus_Specified;  }
+  void __fastcall SetTransactionTimeStamp(int Index, UnicodeString _prop_val)
+  {  FTransactionTimeStamp = _prop_val; FTransactionTimeStamp_Specified = true;  }
+  bool __fastcall TransactionTimeStamp_Specified(int Index)
+  {  return FTransactionTimeStamp_Specified;  }
+
+public:
+  __fastcall ~SmartConnectResponse();
+__published:
+  __property SmartConnectDataObject*       Data = { index=(IS_OPTN|IS_NLBL), read=FData, write=SetData, stored = Data_Specified };
+  __property UnicodeString   DeviceId = { index=(IS_OPTN|IS_NLBL), read=FDeviceId, write=SetDeviceId, stored = DeviceId_Specified };
+  __property UnicodeString MerchantId = { index=(IS_OPTN|IS_NLBL), read=FMerchantId, write=SetMerchantId, stored = MerchantId_Specified };
+  __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
+  __property bool       ResponseSuccessful = { index=(IS_OPTN), read=FResponseSuccessful, write=SetResponseSuccessful, stored = ResponseSuccessful_Specified };
+  __property UnicodeString     Result = { index=(IS_OPTN|IS_NLBL), read=FResult, write=SetResult, stored = Result_Specified };
+  __property UnicodeString TransactionId = { index=(IS_OPTN|IS_NLBL), read=FTransactionId, write=SetTransactionId, stored = TransactionId_Specified };
+  __property UnicodeString TransactionStatus = { index=(IS_OPTN|IS_NLBL), read=FTransactionStatus, write=SetTransactionStatus, stored = TransactionStatus_Specified };
+  __property UnicodeString TransactionTimeStamp = { index=(IS_OPTN|IS_NLBL), read=FTransactionTimeStamp, write=SetTransactionTimeStamp, stored = TransactionTimeStamp_Specified };
 };
 
 

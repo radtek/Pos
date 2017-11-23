@@ -68,8 +68,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    {
         try
         {
-         //   SmartConnectResponse *wcfResponse;
-//            CoInitialize(NULL);
+
 //            transactionType->Transactiontype = "Card.Authorise";
 //
 //            wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
@@ -101,16 +100,9 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
 //            transactionType->Transactiontype = "Terminal.ReadCard";
 //
 //            wcfResponse = smartConnectClient->TerminalReadCard(transactionType);
-//                    MessageBox("After Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-             //   }
 
-//            }
-//             else
-//                MessageBox("Response Unsuccessfull", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-//           if(PingTerminal(TxnType))
-//           {
                SmartConnectResponse *wcfResponse;
-				CoInitialize(NULL);
+               CoInitialize(NULL);
 
                switch (TxnType)
                {
@@ -137,8 +129,8 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                     break;
                 }
                   if(wcfResponse->ResponseSuccessful)
-                   {
-                      AcquirerRefSmartConnect = wcfResponse->data->AcquirerRef;
+                   {    
+                      AcquirerRefSmartConnect = wcfResponse->Data->AcquirerRef;
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                        {
@@ -149,14 +141,13 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
 //                          EftTrans->TimeOut = wcfResponse->TimeOut;
                    }    }
                   else
-                   {
-//                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
+                   {                      
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                        {
                           EftTrans->EventCompleted = true;
                           EftTrans->Result = eDeclined;
-                          EftTrans->ResultText = wcfResponse->data->Result;
+                          EftTrans->ResultText = wcfResponse->Data->Result;
                          // EftTrans->TimeOut = wcfResponse->TimeOut;
                        }
                    }
