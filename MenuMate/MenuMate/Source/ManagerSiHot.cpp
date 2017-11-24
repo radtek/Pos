@@ -83,7 +83,7 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
 {
     std::auto_ptr<TfrmProcessing>
     (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
-    Processing->Message = "Getting Room Details , Please Wait...";
+    Processing->Message = "Syncing in progress , Please Wait...";
     Processing->Show();
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     TRoomRequest roomRequest;
