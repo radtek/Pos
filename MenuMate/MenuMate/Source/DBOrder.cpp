@@ -1290,8 +1290,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
             IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
             IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
-            IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNoStr;
-            IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            if(Order->RoomNo)
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNo;
+                else
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  "";
+
+            if(Order->AccNo !="0")
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            else
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
+
             IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
             IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
             
@@ -1693,8 +1701,17 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
                 IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
                 IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
-                IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNoStr;
-                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+
+                if(Order->RoomNo)
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNo;
+                else
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  "";
+
+                if(Order->AccNo !="0")
+                    IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+                else
+                    IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
+
                 IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
                 IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
 
