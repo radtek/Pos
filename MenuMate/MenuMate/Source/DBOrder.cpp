@@ -1290,8 +1290,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
             IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
             IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
-            IBInternalQuery->ParamByName("ROOM_NO")->AsString =  IntToStr(Order->RoomNo);
-            IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            if(Order->RoomNo)
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNo;
+                else
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  "";
+
+            if(Order->AccNo !="0")
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+            else
+                IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
+
             IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
             IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
             
@@ -1693,8 +1701,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString = Order->isManuallyEnteredWeight? "T" : "F";
                 IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
                 IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
-                IBInternalQuery->ParamByName("ROOM_NO")->AsString =  IntToStr(Order->RoomNo);
-                IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+                if(Order->RoomNo)
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  Order->RoomNo;
+                else
+                    IBInternalQuery->ParamByName("ROOM_NO")->AsString =  "";
+
+                if(Order->AccNo !="0")
+                    IBInternalQuery->ParamByName("ACC_NO")->AsString =  Order->AccNo;
+                else
+                    IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
+
                 IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
                 IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
 
@@ -2253,7 +2269,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 			PrevItem->OrderTypeMessage = IBInternalQuery->FieldByName("ORDER_TYPE_MESSAGE")->AsString;
 			PrevItem->ContactsKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
             PrevItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
-            PrevItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
+            PrevItem->RoomNo = IBInternalQuery->FieldByName("ROOM_NO")->AsString != "" ? StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString) : 0;
             PrevItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
             PrevItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
             PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
@@ -2316,7 +2332,7 @@ void TDBOrder::GetPrevOrder(Database::TDBTransaction &DBTransaction,int OrderKey
 				SubItem->CancelledBillCalcResult.TotalTax = IBInternalQuery->FieldByName("CANCEL_TOTAL_TAX")->AsCurrency;
 				SubItem->CancelledBillCalcResult.TotalDiscount = IBInternalQuery->FieldByName("CANCEL_TOTAL_DISCOUNT")->AsCurrency;
                 SubItem->AccNo = IBInternalQuery->FieldByName("ACC_NO")->AsString;
-                SubItem->RoomNo = StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString);
+                SubItem->RoomNo = IBInternalQuery->FieldByName("ROOM_NO")->AsString != "" ? StrToInt(IBInternalQuery->FieldByName("ROOM_NO")->AsString) : 0;
                 SubItem->FirstName = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
                 SubItem->LastName = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
                 PrevItem->TabKey = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
