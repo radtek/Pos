@@ -17,7 +17,6 @@ class TEftPosSmartConnect : public TEftPos
         // Private Members
         _di_IWCFSmartConnect smartConnectClient;
         void InitSmartConnectClient();
-        bool  PingTerminal(eEFTTransactionType TxnType);
         TransactionTypes *transactionType;
 public:
         TEftPosSmartConnect();

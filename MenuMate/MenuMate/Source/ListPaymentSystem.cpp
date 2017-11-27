@@ -1280,7 +1280,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 AnsiString cardtype = EftTrans->CardType;
 								Payment->CardType = TStringTools::Instance()->UpperCaseWithNoSpace(cardtype); // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
-
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);

@@ -135,7 +135,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       if(EftTrans != NULL)
                        {
                           EftTrans->EventCompleted = true;
-                          //EftTrans->FinalAmount = wcfResponse->data->AmountTotal;
+                          EftTrans->FinalAmount = wcfResponse->Data->AmountTotal;
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
 //                          EftTrans->TimeOut = wcfResponse->TimeOut;
@@ -166,26 +166,6 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    }
 }
 //----------------------------------------------------------------------------
-bool  TEftPosSmartConnect::PingTerminal(eEFTTransactionType TxnType)
-{
-   bool retVal = false;
-//   SmartConnectResponse *wcfResponse;
-//   CoInitialize(NULL);
-//   wcfResponse = smartLinkClient->PingTerminal(TGlobalSettings::Instance().EftPosSmartPayIp);
-//   retVal = wcfResponse->Successful;
-//   if(!wcfResponse->Successful)
-//   {
-//      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-//      if(EftTrans != NULL)
-//       {
-//          EftTrans->EventCompleted = true;
-//          EftTrans->Result = eDeclined;
-//          EftTrans->ResultText = wcfResponse->ErrorText;
-//       }
-//   }
-   return retVal ;
-}
-// ---------------------------------------------------------------------------
 void __fastcall TEftPosSmartConnect::DoSettlementCutover()
 {
     try
