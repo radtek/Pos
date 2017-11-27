@@ -19,31 +19,16 @@ namespace SiHotIntegration
 
         public string URIRoomRequest(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //     uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/roomrequest" + @"/";
-            //else
-            //     uri = @"http://" + ipAddress + @"/roomrequest" + @"/";
             string uri = ipAddress + @"/roomrequest" + @"/";
             return uri;
         }
         public string URIRoomChargePost(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //    uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/accountbook" + @"/";
-            //else
-            //    uri = @"http://" + ipAddress + @"/accountbook" + @"/";
             string uri = ipAddress + @"/accountbook" + @"/";
             return uri;
         }
         public string URIValidate(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //    uri = @"http://" + ipAddress + @":" + portNumber + @"/RMS" + @"/paymenttype" + @"/";
-            //else
-            //    uri = @"http://" + ipAddress + @"/paymenttype" + @"/";
             string uri = ipAddress + @"/paymenttype" + @"/";
             return uri;
         }
@@ -105,29 +90,8 @@ namespace SiHotIntegration
             string exceptionMessage = "";
             try
             {
-                string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);
-
-
-                //var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
-                //request.Method = WebRequestMethods.Http.Post;
-                //request.ContentType = "text/plain";
-                //List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
-                //byte[] bytes = bytesList.ToArray<byte>();
-                //request.ContentLength = bytes.Length;
-                //request.Timeout = 50000;
-                //request.ContentType = "text/plain";
-                //request.GetRequestStream().Write(bytes, 0, bytes.Length);
-                //WebResponse webResponse = request.GetResponse();
-                //var memberStream = new StreamReader(webResponse.GetResponseStream());
-                //response = deserializer.DesrializeRoomPostResponse(memberStream.ReadToEnd());
-                //if (response.IsSuccessful)
-                //    responseText = "Successful";
-                //webResponse.Close();
-
-
-
-               
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
+                string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);  
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
                 request.ServicePoint.Expect100Continue = false;
                 // Set the Method property of the request to POST.  
                 request.Method = "POST";
@@ -137,11 +101,6 @@ namespace SiHotIntegration
                 request.ContentLength = bytes.Length;
                 request.Timeout = 50000;
                 request.ContentType = "text/plain";
-            //    request.GetRequestStream().Write(bytes, 0, bytes.Length);
-
-               // request.ContentType = "text/plain";
-                // Set the ContentLength property of the WebRequest.  
-               // request.ContentLength = byteArray.Length;
                 // Get the request stream.  
                 Stream dataStream = request.GetRequestStream();
                 // Write the data to the request stream.  
@@ -152,7 +111,6 @@ namespace SiHotIntegration
                 HttpWebResponse responseNew = (HttpWebResponse)request.GetResponse();
                 // Display the status.  
                 var status = ((HttpWebResponse)responseNew).StatusDescription;
-                //  Console.WriteLine(((HttpWebResponse)response).StatusDescription);
                 // Get the stream containing content returned by the server.  
                 dataStream = responseNew.GetResponseStream();
                 // Open the stream using a StreamReader for easy access.  
@@ -192,6 +150,7 @@ namespace SiHotIntegration
             {
                 string uri = URIValidate(address, port);
                 var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
+                request.ServicePoint.Expect100Continue = false;
                 request.Method = WebRequestMethods.Http.Post;
                 request.ContentType = "text/plain";
                 List<byte> bytesList = serializer.GetValidateContent(transno);
