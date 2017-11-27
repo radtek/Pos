@@ -50,7 +50,6 @@ private:
 	UnicodeString		GenerateRegistrationKey(TMachineInfo *Info);
 	UnicodeString		GenerateHardwareKey();
 	int				GetVolumeSerial();
-	UnicodeString		GetMACAddress();
 	UnicodeString		GetNetbiosMACAddress();
 	UnicodeString		GetHlpMACAddress();
 	UnicodeString		GetSystemInformation(UnicodeString Query);
@@ -78,6 +77,7 @@ public:
 	UnicodeString		GenerateCustomerKey(TMachineInfo *Info);
 
 	static bool IsMagicMemories(Database::TDBTransaction &DBTransaction);
+    UnicodeString		GetMACAddress();
 };
 //---------------------------------------------------------------------------
 //UnicodeString KeyToFriendlyKey(UnicodeString Key, int ProductID, int Index);

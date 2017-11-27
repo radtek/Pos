@@ -15,15 +15,13 @@
 TEftPosSmartConnect::TEftPosSmartConnect()
 {
     InitSmartConnectClient();
-    transactionType = new TransactionTypes();
-    transactionType->PosBusinessName = "TCafe";
-    transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-    transactionType->PosVendorName = "MenumateIndia";
+    InitializeProperties();
 }
 // ---------------------------------------------------------------------------
 TEftPosSmartConnect::~TEftPosSmartConnect()
 {
     delete transactionType;
+    delete pairingTerminal;
 }
 // ---------------------------------------------------------------------------
 void TEftPosSmartConnect::Initialise()
@@ -138,6 +136,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->FinalAmount = wcfResponse->Data->AmountTotal;
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
+                          //EftTrans->CardType = wcfResponse->Data->CardType;
 //                          EftTrans->TimeOut = wcfResponse->TimeOut;
                    }    }
                   else
@@ -271,14 +270,8 @@ void __fastcall TEftPosSmartConnect::DoPairing()
         {
             SmartConnectResponse *wcfResponse;
             CoInitialize(NULL);
-            PairingTerminal  *pairingTerminal = new PairingTerminal();
-            pairingTerminal->PosBusinessName = "TCafe";
-            pairingTerminal->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-            pairingTerminal->PosRegisterName = "Main Register5";
-            pairingTerminal->PosVendorName = "MenumateIndia";
             pairingTerminal->PairingCode = frmTouchKeyboard->KeyboardText;
             wcfResponse = smartConnectClient->Pairing(pairingTerminal);
-            delete pairingTerminal;
 
             if(wcfResponse->ResponseSuccessful)
             {
@@ -299,6 +292,34 @@ void __fastcall TEftPosSmartConnect::DoPairing()
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
+}
+//------------------------------------------------------------------------------------------------
+void TEftPosSmartConnect::InitializeProperties()
+{
+    transactionType = new TransactionTypes();
+    Database::TDBControl DBControl;
+    TRegInfo regInfo(DBControl);
+    transactionType->PosRegisterId = regInfo.GetMACAddress();
+
+    pairingTerminal = new PairingTerminal();
+    pairingTerminal->PosRegisterId = transactionType->PosRegisterId;
+    pairingTerminal->PosRegisterName = TDeviceRealTerminal::Instance().ID.Name;
+
+    bool Registered = false;
+    UnicodeString pRegisteredName = "";
+    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    if(Registered)
+    {
+        transactionType->PosBusinessName  = pRegisteredName;
+        pairingTerminal->PosBusinessName = pRegisteredName;
+    }
+    else
+    {
+        transactionType->PosBusinessName =  "Menumate Demo";
+        pairingTerminal->PosBusinessName =  "Menumate Demo";
+    }
+    transactionType->PosVendorName = "Menumate Ltd.";
+     pairingTerminal->PosVendorName = "Menumate Ltd.";
 }
 
 

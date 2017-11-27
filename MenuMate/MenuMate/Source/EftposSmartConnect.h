@@ -18,6 +18,8 @@ class TEftPosSmartConnect : public TEftPos
         _di_IWCFSmartConnect smartConnectClient;
         void InitSmartConnectClient();
         TransactionTypes *transactionType;
+        void InitializeProperties();
+        PairingTerminal  *pairingTerminal;
 public:
         TEftPosSmartConnect();
         ~TEftPosSmartConnect();
