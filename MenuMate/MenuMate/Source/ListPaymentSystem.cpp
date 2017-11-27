@@ -1340,7 +1340,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction)
 {
-	bool RetVal = true;
+	bool RetVal = false;
 
 	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
@@ -1351,6 +1351,10 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 	}
 	else
 	{
+        if(TGlobalSettings::Instance().PMSType == SiHot)
+        {
+            OpenCashDrawer(PaymentTransaction);
+        }
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
@@ -1365,6 +1369,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		}
 		else
 		{
+            RetVal = true;
 			AnsiString TransactionRef = TDeviceRealTerminal::Instance().BasePMS->GetLastTransactionRef();
 			PaymentTransaction.References.push_back(RefRefType(TransactionRef,
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
@@ -1523,6 +1528,9 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
+
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        SaveRoomGuestDetails(PaymentTransaction);
 
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
@@ -4567,7 +4575,11 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					}
 
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -4694,7 +4706,11 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                                exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                              }
                             BuildXMLTransaction(PaymentTransaction);
-                            OpenCashDrawer(PaymentTransaction);
+                            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                            {
+                                OpenCashDrawer(PaymentTransaction);
+                            }
                             if(SplittedItem->OrderKey > 0)
                             {
                               //Calculate DWT , Tax on discount on remaining quantities
@@ -4853,7 +4869,11 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 						   exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                          }
 						BuildXMLTransaction(PaymentTransaction);
-                        OpenCashDrawer(PaymentTransaction);
+                        if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                          !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                        {
+                            OpenCashDrawer(PaymentTransaction);
+                        }
 
                         if(SplittedItem->OrderKey > 0)
                         {
@@ -4966,7 +4986,11 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             }
 
             BuildXMLTransaction(PaymentTransaction);
-            OpenCashDrawer(PaymentTransaction);
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            {
+                OpenCashDrawer(PaymentTransaction);
+            }
             RemoveOrders(PaymentTransaction);
         }
 
@@ -5019,7 +5043,11 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5094,7 +5122,11 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5178,7 +5210,11 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 					ProcessRewardSchemes(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -6177,4 +6213,53 @@ void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeStri
 
     dbPanasonic->UniDataBaseConnection->Commit();
     dbPanasonic->UniDataBaseConnection->Close();
+}
+//-----------------------------------------------------------------------------------
+void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_GUEST_DETAILS_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int guestDetailsKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamCheck = true;
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+        "INSERT INTO ROOM_GUEST_DETAILS ("
+        "GUEST_DETAILS_KEY,"
+        "INVOICE_NUMBER,"
+        "ACC_NUMBER,"
+        "ROOM_NUMBER,"
+        "FIRST_NAME, "
+        "LAST_NAME, "
+        "AMOUNT "
+        ")"
+        " VALUES "
+        "("
+        ":GUEST_DETAILS_KEY, "
+        ":INVOICE_NUMBER, "
+        ":ACC_NUMBER,"
+        ":ROOM_NUMBER,"
+        ":FIRST_NAME, "
+        ":LAST_NAME, "
+        ":AMOUNT "
+        ");";
+
+        IBInternalQuery->ParamByName("GUEST_DETAILS_KEY")->AsInteger = guestDetailsKey;
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = paymentTransaction.InvoiceNumber;
+        IBInternalQuery->ParamByName("ACC_NUMBER")->AsString = paymentTransaction.Phoenix.AccountNumber;
+        IBInternalQuery->ParamByName("ROOM_NUMBER")->AsInteger =atoi(paymentTransaction.Phoenix.RoomNumber.t_str());
+        IBInternalQuery->ParamByName("FIRST_NAME")->AsString = paymentTransaction.Phoenix.FirstName;
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = paymentTransaction.Phoenix.LastName;
+        IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = paymentTransaction.Money.RoundedGrandTotal;
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
 }

@@ -190,7 +190,8 @@ void __fastcall TfrmReceiveOrder::btnNewInvoiceClick(TObject *Sender)
 			frmReceiveInvoice->OrderKey = int(tvOrders->Selected->Data);
 			frmReceiveInvoice->InvoiceReference = NewInvoiceRef;
                         frmReceiveInvoice->IsPurchaseOrderMode = true;
-                        //frmReceiveInvoice->SupplierKey=
+                        frmReceiveInvoice->AllowNegativeStockQuantity = false;
+                           //frmReceiveInvoice->SupplierKey=
 			frmReceiveInvoice->ShowModal();
 			if (Transaction->InTransaction) Transaction->Commit();
 			FormShow(NULL);

@@ -396,6 +396,7 @@ TGlobalSettings::TGlobalSettings()
     MembershipType = 0;
     IsBillSplittedByMenuType = false;
     CustomerId = "";
+    EnableCustomerJourney = false;
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
 }

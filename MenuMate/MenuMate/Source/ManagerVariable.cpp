@@ -3240,6 +3240,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
          "Pairing code by which terminal is paired to machine.\r"
          "Default is ",
          vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction,vmEnableCustomerJourney, "PMS Enable Customer Journey",
+		"when this is checked it will ask room number for every transaction./r"
+		"Default is false ",
+		vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

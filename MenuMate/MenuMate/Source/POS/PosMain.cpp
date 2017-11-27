@@ -83,7 +83,8 @@ void __fastcall TfrmPOSMain::FormShow(TObject *Sender)
 	tbEftPosManager->Visible = EftPos->Enabled;
 	tbSendHeldOrders->Visible = TGlobalSettings::Instance().EnableHoldSend;
     btnDelayedPayment->Visible = TGlobalSettings::Instance().TransferTableOnPrintPrelim ;
-	//tbtnBilling->Enabled = !TGlobalSettings::Instance().EnableWaiterStation;
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        tbtnTransfer->Enabled = false;
     MenuEdited = false;
 }
 //---------------------------------------------------------------------------
