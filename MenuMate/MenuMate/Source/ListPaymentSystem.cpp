@@ -3525,7 +3525,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
-
+       RetVal = true;
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
 	   return RetVal;
@@ -4256,7 +4256,7 @@ bool TListPaymentSystem::ProcessCSVRoomExport( TPaymentTransaction &PaymentTrans
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && (Payment->RMSRoom.AccountNo != -1) &&
+            if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && (Payment->RMSRoom.AccountNo != -1) &&
                ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
 			{
 				AnsiString File = ExtractFilePath(Payment->CVSWriteLocation) + "SYSNET" + Now().FormatString("ddmmyy")+ ".csv";
@@ -4300,11 +4300,15 @@ bool TListPaymentSystem::ProcessCSVNewBookExport( TPaymentTransaction &PaymentTr
         int	InvoiceNumber = IBInternalQuery->Fields[0]->AsInteger;
         AnsiString File;
         AnsiString roomnumber,GuestName;
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+
+
+        for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
-            {
+
+               TPayment *Payment = PaymentTransaction.PaymentGet(i);
+
+           if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
+                {
                 ExtractFilePath(Payment->CVSWriteLocation);
                 File = Payment->CVSWriteLocation + "\\ROOM-" + Payment->NewBookRoom.RoomNo + ".csv";
                 roomnumber= Payment->NewBookRoom.RoomNo;
