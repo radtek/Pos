@@ -428,7 +428,7 @@ namespace MenumateServices.WCFServices
 
                     if ((deSerializeResponse.Data != null && deSerializeResponse.Data.TransactionResult == "OK-ACCEPTED") || (deSerializeResponse.Result != null && deSerializeResponse.Result.ToLower() == "success"))
                     {
-                        if(!string.IsNullOrEmpty(deSerializeResponse.Data.AmountTotal))
+                        if(deSerializeResponse.Data != null)
                             deSerializeResponse.Data.AmountTotal = Convert.ToString(Convert.ToDouble(deSerializeResponse.Data.AmountTotal) / 100);
                         deSerializeResponse.ResponseSuccessful = true;
                     }

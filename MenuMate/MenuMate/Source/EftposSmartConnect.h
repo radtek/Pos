@@ -20,6 +20,11 @@ class TEftPosSmartConnect : public TEftPos
         TransactionTypes *transactionType;
         void InitializeProperties();
         PairingTerminal  *pairingTerminal;
+        void AuthoriseTransaction();
+        void FinalizeTransaction();
+        void GetTransResult();
+        void GetStatus();
+        void ReadCard();
 public:
         TEftPosSmartConnect();
         ~TEftPosSmartConnect();

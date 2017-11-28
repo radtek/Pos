@@ -66,39 +66,6 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    {
         try
         {
-
-//            transactionType->Transactiontype = "Card.Authorise";
-//
-//            wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
-//             MessageBox("Before Finalize ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Card.Finalise";
-//
-//            wcfResponse = smartConnectClient->Finalise(transactionType, AmtPurchase, TxnRef);   //todo add cahout amount also
-//
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Journal.GetTransResult";
-//
-//            wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
-//
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Terminal.GetStatus";
-//
-//            wcfResponse = smartConnectClient->GetTerminalStatus(transactionType);
-//              MessageBox("Before  Terminal Read Card ", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
-//            transactionType->PosBusinessName = "TCafe";
-//            transactionType->PosRegisterId = "7444ae07-dc63-e49c-33e3-59a7c108cc80";
-//            transactionType->PosVendorName = "MenumateIndia";
-//            transactionType->Transactiontype = "Terminal.ReadCard";
-//
-//            wcfResponse = smartConnectClient->TerminalReadCard(transactionType);
-
                SmartConnectResponse *wcfResponse;
                CoInitialize(NULL);
 
@@ -136,8 +103,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->FinalAmount = wcfResponse->Data->AmountTotal;
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
-                          //EftTrans->CardType = wcfResponse->Data->CardType;
-//                          EftTrans->TimeOut = wcfResponse->TimeOut;
+                          EftTrans->CardType = wcfResponse->Data->CardType;
                    }    }
                   else
                    {                      
@@ -147,10 +113,8 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->EventCompleted = true;
                           EftTrans->Result = eDeclined;
                           EftTrans->ResultText = wcfResponse->Data->Result;
-                         // EftTrans->TimeOut = wcfResponse->TimeOut;
                        }
                    }
-             //}
         }
         catch( Exception& exc )
         {
@@ -321,5 +285,78 @@ void TEftPosSmartConnect::InitializeProperties()
     transactionType->PosVendorName = "Menumate Ltd.";
      pairingTerminal->PosVendorName = "Menumate Ltd.";
 }
-
-
+//---------------------------------------------------------------------
+void TEftPosSmartConnect::AuthoriseTransaction()
+{
+    try
+    {
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+        transactionType->Transactiontype = "Card.Authorise";
+        //wcfResponse = smartConnectClient->Authorise(transactionType, AmtPurchase, TxnRef);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+//---------------------------------------------------------------------
+void TEftPosSmartConnect::FinalizeTransaction()
+{
+    try
+    {
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+        transactionType->Transactiontype = "Card.Finalise";
+        //wcfResponse = smartConnectClient->Finalise(transactionType, AmtPurchase, TxnRef);   //todo add cahout amount also
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+//---------------------------------------------------------------------
+void TEftPosSmartConnect::GetTransResult()
+{
+    try
+    {
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+        transactionType->Transactiontype = "Journal.GetTransResult";
+        //wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+//---------------------------------------------------------------------
+void TEftPosSmartConnect::GetStatus()
+{
+    try
+    {
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+        transactionType->Transactiontype = "Terminal.GetStatus";
+//            wcfResponse = smartConnectClient->GetTerminalStatus(transactionType);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+//---------------------------------------------------------------------
+void TEftPosSmartConnect::ReadCard()
+{
+    try
+    {
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+        transactionType->Transactiontype = "Terminal.ReadCard";
+//        wcfResponse = smartConnectClient->TerminalReadCard(transactionType);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
