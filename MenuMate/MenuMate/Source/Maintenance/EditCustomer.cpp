@@ -104,6 +104,10 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    if(TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate || !TGlobalSettings::Instance().LoyaltyMateEnabled)
    {
         cbNoEmail->Visible = false;
+        if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+              edEmail->Enabled= true;
+        }
    }
    btnRemoveCard->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
    tbtnClearAllCards->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;

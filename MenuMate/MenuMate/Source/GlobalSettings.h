@@ -491,6 +491,7 @@ public:
     ePMSType PMSType;
     bool IsBillSplittedByMenuType;
     UnicodeString CustomerId;
+    bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
 };
 

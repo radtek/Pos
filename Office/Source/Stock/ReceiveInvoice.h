@@ -253,7 +253,8 @@ public:		// User declarations
     int Decimalpalaces ;
     bool IsPrintReport;
     bool IsSavedPackingSlip;
-    bool AllowNegativeValue; 
+    bool AllowNegativeValue;
+    bool AllowNegativeStockQuantity;
 
 };
 //---------------------------------------------------------------------------

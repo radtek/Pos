@@ -32,6 +32,11 @@ void TApplyParser::upgrade6_43Tables()
 {
     update6_43Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_44Tables()
+{
+    update6_44Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -42,23 +47,35 @@ void TApplyParser::update6_40Tables()
 void TApplyParser::update6_41Tables()
 {
     AlterTable6_41(_dbControl);
-    UpdateMallSalesBySalesType(_dbControl);
+   UpdateMallSalesBySalesType(_dbControl);
     UpdateTablePatronCountTable(_dbControl);
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
+  
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_43Tables()
 {
-    InsertIntoMallExportSettings6_43(_dbControl, 27, "MEZZANINE_AREA", "btnMezzanineArea", 'T');
+    CreateTable6_43(_dbControl);
+    Create6_43Generator(_dbControl);
+    AlterTableDiscount6_43(_dbControl);
+    AlterTableOrders6_43(_dbControl);
+
+   AlterTableTIMECLOCKLOCATIONS6_43(_dbControl);
+   AlterTableCONTACTTIME6_43(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_44Tables()
+{
+    InsertIntoMallExportSettings6_44(_dbControl, 27, "MEZZANINE_AREA", "btnMezzanineArea", 'T');
     int settingID[1] = {27};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 1, 2);
-    InsertInTo_MallExport_Settings_Values6_43(_dbControl, 27, 2);
-    CreateMezzanineAreaTable6_43(_dbControl);
-    CreateMezzanineSalesTable6_43(_dbControl);
+    InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
+    CreateMezzanineAreaTable6_44(_dbControl);
+    CreateMezzanineSalesTable6_44(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -234,6 +251,33 @@ void TApplyParser::AlterTable6_41(TDBControl* const inDBControl)
     }
 }
 //--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableTIMECLOCKLOCATIONS6_43(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "TIMECLOCKLOCATIONS", "DATE_CREATED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE TIMECLOCKLOCATIONS "
+         "ADD DATE_CREATED TIMESTAMP;",
+        inDBControl);
+    }
+   if ( !fieldExists( "TIMECLOCKLOCATIONS", "STATUS", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE TIMECLOCKLOCATIONS ADD STATUS CHAR(1) DEFAULT 'T' NOT NULL;",
+		inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableCONTACTTIME6_43(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "CONTACTTIME", "STATUS", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE CONTACTTIME ADD STATUS CHAR(1) DEFAULT 'T' NOT NULL;",
+         inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------
 void TApplyParser::UpdateMallSalesBySalesType(TDBControl* const inDBControl)
 {
     TDBTransaction transaction( *inDBControl );
@@ -332,9 +376,83 @@ void TApplyParser::Create6_42Generator(TDBControl* const inDBControl)
         );
     }
 }
-//-------------------------------------------------------------------------------
-void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName, char isUIRequired)
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_43(TDBControl* const inDBControl)
 {
+    if ( !tableExists( "ROOM_GUEST_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE ROOM_GUEST_DETAILS "
+		"( "
+		"   GUEST_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+        "   INVOICE_NUMBER VARCHAR(50), "
+		"   ACC_NUMBER VARCHAR(20),"
+        "   ROOM_NUMBER VARCHAR(20), "
+        "   FIRST_NAME VARCHAR(50),"
+        "   LAST_NAME VARCHAR(50), "
+        "   AMOUNT  NUMERIC(15,4) "
+		");",
+		inDBControl );
+    }
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::Create6_43Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_GUEST_DETAILS_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_GUEST_DETAILS_KEY;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_GUEST_DETAILS_KEY TO 0;", inDBControl
+        );
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTableDiscount6_43(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+}
+//-----------------------------------------------------------------------------------
+void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "ORDERS", "ROOM_NO", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ROOM_NO VARCHAR(20) ",
+        inDBControl);
+    }
+     if ( !fieldExists( "ORDERS", "ACC_NO", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ACC_NO VARCHAR(20) ",
+        inDBControl);
+    }
+     if ( !fieldExists( "ORDERS", "FIRST_NAME", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD FIRST_NAME VARCHAR(50) ",
+        inDBControl);
+    }
+    if ( !fieldExists( "ORDERS", "LAST_NAME", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD LAST_NAME VARCHAR(50) ",
+        inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------void TApplyParser::InsertIntoMallExportSettings6_44(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName, char isUIRequired){
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try
@@ -358,7 +476,7 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
     {
         transaction.Rollback();
     }
-}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_43(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
+}//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_AREA_TABLES "
 		"( "
@@ -376,7 +494,7 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_TABLE_ID TO 0;", inDBControl
         );
-    }}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineSalesTable6_43(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_SALES", _dbControl ) )	{
+    }}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineSalesTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_SALES", _dbControl ) )	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_SALES "
 		"( "
@@ -403,7 +521,7 @@ void TApplyParser::InsertIntoMallExportSettings6_43(TDBControl* const inDBContro
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_SALES_ID TO 0;", inDBControl
         );
-    }}//------------------------------------------------------------------------------------------void TApplyParser::InsertInTo_MallExport_Settings_Values6_43(TDBControl* const inDBControl, int settingId, int mallId){    TDBTransaction transaction( *inDBControl );    transaction.StartTransaction();
+    }}//------------------------------------------------------------------------------------------void TApplyParser::InsertInTo_MallExport_Settings_Values6_44(TDBControl* const inDBControl, int settingId, int mallId){    TDBTransaction transaction( *inDBControl );    transaction.StartTransaction();
 
     try
     {
