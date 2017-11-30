@@ -1875,23 +1875,17 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         CurrentTransaction.SalesType = eRoomSale;
                         for(int orderIndex = 0; orderIndex <  CurrentTransaction.Orders->Count; orderIndex++)
                         {
-                            if(((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo != 0)
+                            if(((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNoStr != "")
                             {
-//                                CurrentTransaction.Customer.RoomNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo;
                                 CurrentTransaction.Customer.RoomNumberStr = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNoStr;
                                 CurrentTransaction.Phoenix.FirstName =  ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->FirstName;
                                 CurrentTransaction.Phoenix.LastName =  ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->LastName;
-                                TabName = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo;
-//                                RoomNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo;
+                                TabName = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNoStr;
                                 RoomNumberStr = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNoStr;
                                 CurrentTransaction.Phoenix.AccountNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->AccNo;
                                 CurrentTransaction.Phoenix.AccountName = CurrentTransaction.Phoenix.FirstName + " " +
                                                                          CurrentTransaction.Phoenix.LastName;
-//                                MessageBox(CurrentTransaction.Phoenix.FirstName,"CurrentTransaction.Phoenix.FirstName",MB_OK);
-//                                MessageBox(CurrentTransaction.Phoenix.LastName,"CurrentTransaction.Phoenix.LastName",MB_OK);
                                 CurrentTransaction.Phoenix.RoomNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNoStr;
-
-//                                CurrentTransaction.WasSavedSales = true;
                                 break;
                             }
                         }
@@ -1934,10 +1928,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                             Order->RoomNoStr = CurrentTransaction.Customer.RoomNumberStr;
                             Order->FirstName = CurrentTransaction.Phoenix.FirstName;
                             Order->LastName = CurrentTransaction.Phoenix.LastName;
+                            Order->AccNo = CurrentTransaction.Phoenix.AccountNumber;
                         }
                         else
                             Order->RoomNo = RoomNumber;
-//                        MessageBox(Order->RoomNo,"ROom No",MB_OK);
                     }
                 }
             }
