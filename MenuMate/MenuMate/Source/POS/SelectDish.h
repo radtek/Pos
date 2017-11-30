@@ -320,6 +320,7 @@ private: // User declarations
     bool itemSearch;
     bool isWalkInUser;
     int selectedRoomNumber;
+    UnicodeString selectedRoomNumberStr;
     TSiHotAccounts SiHotAccount;
     bool isRoomNoUiCalled;
     bool IsAutoLogOutInSelectDish;

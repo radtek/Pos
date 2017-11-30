@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using SiHotIntegration.Domain;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -72,10 +72,10 @@ namespace SiHotIntegration.Utility
                 bytesList.AddRange(Encoding.UTF8.GetBytes("amount:" + roomDetails.ItemList[i].Amount.ToString()).ToList<byte>());
                 //bytesList.AddRange(Encoding.UTF8.GetBytes("amount:" + roomDetails.ItemList[i].Amount.ToString().Replace(".", ",")).ToList<byte>());
                 bytesList.Add(fileSeparator);
-                bytesList.AddRange(Encoding.UTF8.GetBytes("priceperunit:" + roomDetails.ItemList[i].PricePerUnit.ToString()).ToList<byte>());
+                bytesList.AddRange(Encoding.UTF8.GetBytes("priceperunit:" + Math.Round(Convert.ToDecimal(roomDetails.ItemList[i].PricePerUnit),2).ToString()).ToList<byte>());
                 //bytesList.AddRange(Encoding.UTF8.GetBytes("priceperunit:" + roomDetails.ItemList[i].PricePerUnit.ToString().Replace(".",",")).ToList<byte>());
                 bytesList.Add(fileSeparator);
-                bytesList.AddRange(Encoding.UTF8.GetBytes("pricetotal:" + roomDetails.ItemList[i].PriceTotal.ToString()).ToList<byte>());
+                bytesList.AddRange(Encoding.UTF8.GetBytes("pricetotal:" + Math.Round(Convert.ToDecimal(roomDetails.ItemList[i].PriceTotal),2).ToString()).ToList<byte>());
                 //bytesList.AddRange(Encoding.UTF8.GetBytes("pricetotal:" + roomDetails.ItemList[i].PriceTotal.ToString().Replace(".", ",")).ToList<byte>());
                 bytesList.Add(fileSeparator);
                 bytesList.AddRange(Encoding.UTF8.GetBytes("billno:" + roomDetails.ItemList[i].Billno).ToList<byte>());
@@ -108,7 +108,7 @@ namespace SiHotIntegration.Utility
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashno:" + roomDetails.PaymentList[i].Cashno).ToList<byte>());
                 bytesList.Add(fileSeparator);
                 bytesList.AddRange(Encoding.UTF8.GetBytes("cashier:" + roomDetails.PaymentList[i].Cashier).ToList<byte>());
-                if (i != roomDetails.ItemList.Count)
+                if (i != roomDetails.PaymentList.Count)
                     bytesList.Add(groupSeparator);
                 else
                     bytesList.Add(fileSeparator);
