@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 445
+  ClientHeight = 492
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,13 +21,13 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 8
     Top = 8
     Width = 600
-    Height = 435
+    Height = 481
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
     DesignSize = (
       600
-      435)
+      481)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -303,7 +303,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbEnableCustomerJourney: TCheckBox
       Left = 558
-      Top = 369
+      Top = 367
       Width = 27
       Height = 58
       Anchors = [akLeft]
@@ -317,12 +317,31 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       TabOrder = 0
       OnClick = cbEnableCustomerJourneyClick
     end
+    object tbFiscalStorage: TTouchBtn
+      Left = 16
+      Top = 423
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Fiscal Storage'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbFiscalStorageMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 615
     Top = 8
     Width = 137
-    Height = 435
+    Height = 481
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

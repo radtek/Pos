@@ -396,6 +396,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
         TGlobalSettings::Instance().EnableCustomerJourney = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableCustomerJourney, false);
+        TGlobalSettings::Instance().IsFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFiscalStorageEnabled, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

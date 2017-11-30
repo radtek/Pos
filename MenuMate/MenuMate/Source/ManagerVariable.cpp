@@ -3236,6 +3236,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",
 		vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmIsFiscalStorageEnabled, "PMS Enable Fiscal Storage",
+		"when this is enabled data will be stored to Fiscal Box./r"
+		"Default is false ",
+		vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

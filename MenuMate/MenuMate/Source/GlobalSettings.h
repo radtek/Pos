@@ -490,6 +490,7 @@ public:
     bool IsBillSplittedByMenuType;
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
+    bool IsFiscalStorageEnabled;
 };
 
 #endif
