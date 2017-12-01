@@ -83,7 +83,7 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
 {
     std::auto_ptr<TfrmProcessing>
     (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
-    Processing->Message = "Getting Room Details , Please Wait...";
+    Processing->Message = "Syncing in progress , Please Wait...";
     Processing->Show();
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     TRoomRequest roomRequest;
@@ -120,7 +120,7 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     if(roomResponse.IsSuccessful)
     {
         _paymentTransaction.Customer.Name = _paymentTransaction.Phoenix.AccountName;
-        _paymentTransaction.Customer.RoomNumber = atoi(_paymentTransaction.Phoenix.RoomNumber.t_str());
+        _paymentTransaction.Customer.RoomNumberStr = _paymentTransaction.Phoenix.RoomNumber;
       return true;
     }
     else
@@ -160,29 +160,23 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         std::vector<TSiHotAccounts> siHotAccounts;
         siHotAccounts.clear();
         TSiHotAccounts account;
-        account.AccountNumber = ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNo;  // enter room number
+        account.AccountNumber = ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr;  // enter room number
         siHotAccounts.push_back(account);
-//        MessageBox("found true","Account number from vector",MB_OK);
         GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
         bool checkedCreditLimit = false;
         bool creditLimitViolated = false;
         Currency roomTender = 0;
         for(int i = 0; i < siHotAccounts.size(); i++)
         {
-//            MessageBox(siHotAccounts[i].AccountNumber,"Account number from vector",MB_OK);
             if(siHotAccounts[i].AccountNumber == ((TItemComplete*)paymentTransaction.Orders->Items[0])->AccNo)//AccountNumber as per item)
             {
                 for(int j = 0; j < siHotAccounts[i].AccountDetails.size(); j++)
                 {
-//                    MessageBox("inside second loop","123",MB_OK);
                     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
                     {
                         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-//                        MessageBox(payment->GetPayTendered(),"payment->GetPayTendered()",MB_OK);
-//                        MessageBox(StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit),"1",MB_OK);
                         if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && (double)payment->GetPayTendered() > 0)
                         {
-//                            MessageBox(StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit),"StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit)",MB_OK);
                             if((payment->GetPayTendered() > StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit)) &&
                               StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit) != 0)
                             {

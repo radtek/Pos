@@ -1157,11 +1157,21 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 
 	UnicodeString ItemName = ThisInstruction->Caption;
 /************MM-5048***************************/
-
-	if( PrintJob->Transaction->Customer.RoomNumber != 0 )
+	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
+		pPrinter->AddLine();
+	}
+    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" && TGlobalSettings::Instance().PMSType == SiHot)
+	{
+        AnsiString RoomNumber = "";
+		    RoomNumber = PrintJob->Transaction->Customer.RoomNumberStr;
 		pPrinter->Line->ColCount = 1;
 		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
 		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
