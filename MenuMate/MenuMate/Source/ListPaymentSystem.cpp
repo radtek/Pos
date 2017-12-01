@@ -803,6 +803,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
+        
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -812,10 +813,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 			break;
 		case eTransQuickSale:
 			_processQuickTransaction( PaymentTransaction );
-			break;
+            break;
 		case eTransCreditPurchase:
 			_processCreditTransaction( PaymentTransaction );
-			break;
+            break;
 		case eTransEFTPOSRecovery:
 			_processEftposRecoveryTransaction( PaymentTransaction ); 	// similar to eTransRewardsRecovery ?
 			break;
@@ -3525,11 +3526,10 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
-       RetVal = true;
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
-	   return RetVal;
-
+       return RetVal;
+     
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
@@ -3587,7 +3587,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(!RMSCSVRoomExport)
 	   return RetVal;
-
     if(TGlobalSettings::Instance().NewBook == 2)
     {
         if(ProcessCSVNewBookExport(PaymentTransaction))
@@ -3597,6 +3596,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         else
         {
             NewBookCSVRoomExport = false;
+            RetVal=true;
         }
     }
     if(!NewBookCSVRoomExport)
