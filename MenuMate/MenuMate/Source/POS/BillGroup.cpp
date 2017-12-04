@@ -410,9 +410,13 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
 			ReceiptTransaction.ApplyMembership(Membership);
 			TempReceipt->Transaction = &ReceiptTransaction;
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                 TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+              TempReceipt->Transaction->Customer = TCustomer("",0,"");
+
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
@@ -586,9 +590,12 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                                 }
 
                                 TempReceipt->Transaction = &ReceiptTransaction;
-                                if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                                if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                                    (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                                     TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+                                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+                                    TempReceipt->Transaction->Customer = TCustomer("",0,"");
 
                                 if(ReceiptTransaction.Orders->Count > 0)
                                 {
@@ -794,9 +801,13 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 					Request->Waiter = CancelUserInfo.Name;
 					Request->Transaction->Money.Recalc(*Request->Transaction);
 
-                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                        (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                         Request->Transaction->Customer = TCustomer(0,0,"");
+
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+                        Request->Transaction->Customer = TCustomer("",0,"");
+
                     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
 					Kitchen->Initialise(DBTransaction);
 					Kitchen->GetPrintouts(DBTransaction, Request.get());
@@ -1037,8 +1048,8 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					CreditTransaction.TabCredit[CurrentSelectedTab] = Credit;
                     CreditTransaction.IgnoreLoyaltyKey = false;
 					CreditTransaction.Recalc();
-                    if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)CreditTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
-                    CustomizeForSiHot(CreditTransaction);
+                    if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)CreditTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
+                        CustomizeForSiHot(CreditTransaction);
 					TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
 					TDBTab::SetTabCreditLimit(DBTransaction, CurrentSelectedTab, -1);
 				}
@@ -3939,9 +3950,13 @@ void TfrmBillGroup::ShowReceipt()
 				TempReceipt->Transaction->Customer = TDBContacts::GetCustomerAndRoomNumber( DBTransaction, CurrentInvoiceKey );
 			}
 
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)||
                (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                 TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+                        TempReceipt->Transaction->Customer = TCustomer("",0,"");
+
 			TPrinterPhysical DefaultScreenPrinter;
 			DefaultScreenPrinter.NormalCharPerLine = 30;
 			DefaultScreenPrinter.BoldCharPerLine = 30;
@@ -3959,9 +3974,12 @@ void TfrmBillGroup::ShowReceipt()
 
 			TempReceipt->Transaction = &ReceiptTransaction;
 
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)||
                (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                 TempReceipt->Transaction->Customer = TCustomer(0,0,"");
+
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+                        TempReceipt->Transaction->Customer = TCustomer("",0,"");
 
 			ReceiptTransaction.Money.CreditAvailable = TDBOrder::LoadCreditFromOrders(DBTransaction, ReceiptTransaction.Orders);
 			ReceiptTransaction.Money.Recalc(ReceiptTransaction);
@@ -4460,7 +4478,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                 // use the InvoicePaymentSystem as it allows paying multiple invoices and acts different on partial n split payments
                 std::auto_ptr<TMMInvoicePaymentSystem> invoicePaymentSystem( new TMMInvoicePaymentSystem() );
 
-                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
                     CustomizeForSiHot(PaymentTransaction);
 
                 invoicePaymentSystem->ProcessTransaction(PaymentTransaction);
@@ -4470,7 +4488,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             }
             else
             {
-                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNo != 0 && TGlobalSettings::Instance().EnableCustomerJourney)
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
                     CustomizeForSiHot(PaymentTransaction);
                 isPaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
                 // display last receipt if any
@@ -4534,15 +4552,15 @@ void TfrmBillGroup::CustomizeForSiHot(TPaymentTransaction &PaymentTransaction)
     PaymentTransaction.SalesType = eRoomSale;
     for(int orderIndex = 0; orderIndex <  PaymentTransaction.Orders->Count; orderIndex++)
     {
-        if(((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo != 0)
+        if(((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr != "")
         {
-            PaymentTransaction.Customer.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo;
+            PaymentTransaction.Customer.RoomNumberStr = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
             PaymentTransaction.Phoenix.FirstName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->FirstName;
             PaymentTransaction.Phoenix.LastName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->LastName;
             PaymentTransaction.Phoenix.AccountNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->AccNo;
             PaymentTransaction.Phoenix.AccountName = PaymentTransaction.Phoenix.FirstName + " " +
                                                      PaymentTransaction.Phoenix.LastName;
-            PaymentTransaction.Phoenix.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNo;
+            PaymentTransaction.Phoenix.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
             break;
         }
     }
