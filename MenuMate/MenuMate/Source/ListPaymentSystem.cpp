@@ -67,7 +67,7 @@
 #include "MallFactory.h"
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
-
+#include "ManagerMallSetup.h"
 
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
@@ -1539,12 +1539,14 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     {
         bool canContinue = true;
 
-        //Check if mall type is deananddeluca then table shoul not be mezzanine.
+        //Check if mall type is dean and deluca
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
         {
             TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
             if(item->TableNo)
             {
+                TGlobalSettings::Instance().MezzanineTablesMap.clear();
+                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
                 int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
                 std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
                 if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
