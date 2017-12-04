@@ -1105,6 +1105,10 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
                 int day = DayOf(date);
                 fileName = fileName + "." + month + IntToStr(day);
             }
+            else if(IBInternalQuery->Fields[0]->AsInteger == 1)
+            {
+                fileName = fileName + "" + (IBInternalQuery->Fields[2]->AsString).SubString(0,4);
+            }
             else
             {
                 fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
