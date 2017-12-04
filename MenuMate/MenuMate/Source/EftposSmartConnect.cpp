@@ -104,7 +104,8 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
                           EftTrans->CardType = wcfResponse->Data->CardType;
-                   }    }
+                        }
+                   }
                   else
                    {                      
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
@@ -151,17 +152,17 @@ void TEftPosSmartConnect::ChequeVerify( Currency AmtPurchase, AnsiString ChequeS
 // ---------------------------------------------------------------------------
 bool TEftPosSmartConnect::CheckChequeBranch(AnsiString Branch)
 {
- //
+    return false;
 }
 // ---------------------------------------------------------------------------
 bool TEftPosSmartConnect::CheckChequeSerial(AnsiString ChequeSerial)
 {
- //
+    return false;
 }
 // ---------------------------------------------------------------------------
 bool TEftPosSmartConnect::CheckChequeAccount(AnsiString ChequeAccount)
 {
- //
+    return false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TEftPosSmartConnect::DoSettlementEnquiry()
