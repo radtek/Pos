@@ -840,7 +840,7 @@ void TContactPoints::CalcEarned(TList *OrdersList)
             {
                 TItemMinorComplete *Order = (TItemMinorComplete *) OrdersList->Items[i];
                 /* If the Order earns Points Added it */
-                if(Order->PointsPercent != 0)
+                if(Order->PointsPercent >= 0)
                 {
                    SortedOrdersByPointsPercent->Add(Order);
                 }
