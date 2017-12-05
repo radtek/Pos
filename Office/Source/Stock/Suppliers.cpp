@@ -49,7 +49,7 @@ void __fastcall TfrmSuppliers::FormShow(TObject *Sender)
 	ResizeGrids();
 	edFind->SetFocus();*/
 	int MYOBAcountSystem = AnsiPos("MYOB",CurrentConnection.AccountSystem); // now different versions
-	btnImport->Visible = (Modules & eOfficeMYOB) && (MYOBAcountSystem > 0) ;
+	btnImport->Visible = (Modules & eAccounting) && (MYOBAcountSystem > 0) ;
 	if (btnImport->Visible)
 	{
 		btnImport->Caption = "Import From " + CurrentConnection.AccountSystem;

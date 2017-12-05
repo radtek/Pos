@@ -57,10 +57,10 @@ __fastcall TfrmStockMain::TfrmStockMain(TComponent* Owner)
 void __fastcall TfrmStockMain::FormShow(TObject *Sender)
 {
 	frmMain->Visible = false;
-	if (Modules & eOfficeMYOB)
+	if (Modules & eAccounting)
 	{
       // TODO implement bulk export of invoices to Xero
-		btnExport->Enabled = (Modules & eOfficeMYOB);
+		btnExport->Enabled = (Modules & eAccounting);
 		if (CurrentConnection.AccountSystem == "")
 		{
 			btnExport->Caption = "Accounts Export";
