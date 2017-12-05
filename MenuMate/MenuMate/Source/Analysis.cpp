@@ -2761,9 +2761,9 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
             TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 			ReportManager reportManager;
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
-
-            CompleteZed = zedReport->DisplayAndPrint(ZedToArchive);
-
+             
+             CompleteZed = zedReport->DisplayAndPrint(ZedToArchive);
+              
 			// Mall Export added variabnle
 			ZedCompleted =  CompleteZed;
 			ZedCancel    = !CompleteZed;
@@ -2810,7 +2810,7 @@ Zed:
 					if(TGlobalSettings::Instance().EnablePaxCount)
 					UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
 					if (TGlobalSettings::Instance().EnableBlindBalances)
-					    PrintBlindBalance(DBTransaction, Balances, DeviceName);
+                    PrintBlindBalance(DBTransaction, Balances, DeviceName);
 					DBTransaction.Commit();
 					return;
 				}
@@ -4830,29 +4830,29 @@ AnsiString DeviceName)
 		}
 		else
 		{
-			IBInternalQuery->SQL->Text = "SELECT"
-                                                " CATEGORYGROUPS.NAME,"
-                                                " CATEGORYGROUPS.CATEGORYGROUPS_KEY,"
-                                                " ARCCATEGORIES.CATEGORY,"
-                                                " ARCCATEGORIES.CATEGORY_KEY,"
-                                                " DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, "
-                                                " CAST (SUM (SALES_TAX.TAX_TOTAL) AS NUMERIC(15, 4)) SALES_TAX_TOTAL, "
-                                                " CAST (SUM (SC_TAX.TAX_TOTAL) AS NUMERIC(15, 4)) SC_TAX_TOTAL, "
-                                                " CAST (SUM (SC.SC_TOTAL) AS NUMERIC(15, 4)) SC_TOTAL, "
-                                                " CAST (SUM (LOCAL_TAX.LOCAL_TAX_TOTAL) AS NUMERIC(15, 4)) LOCAL_TAX_TOTAL, "
-                                                " CAST (SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)) AS NUMERIC(15, 4))  TOTAL, "
-                                                " CAST (SUM (DAYARCHIVE.PRICE * DAYARCHIVE.QTY) AS NUMERIC(15, 4)) RAWTOTAL, "
-                                                " CAST (SUM (DAYARCHIVE.COST * DAYARCHIVE.QTY) AS NUMERIC(15, 4)) COST, "
-                                                " CAST (SUM (DAYARCHIVE.QTY) AS NUMERIC(15, 4)) TOTALQTY"
-                                            " FROM  CATEGORYGROUPS"
-                                            " INNER JOIN ARCCATEGORIES ON CATEGORYGROUPS.CATEGORYGROUPS_KEY = ARCCATEGORIES.CATEGORYGROUPS_KEY"
-                                            " INNER JOIN DAYARCHIVE ON ARCCATEGORIES.CATEGORY_KEY = DAYARCHIVE.CATEGORY_KEY"
-                                            " left JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY"
-                                            " left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY"
-                                            " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 0 GROUP BY ARCHIVE_KEY) SALES_TAX ON DAYARCHIVE.ARCHIVE_KEY = SALES_TAX.ARCHIVE_KEY"
-                                            " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 3 GROUP BY ARCHIVE_KEY) SC_TAX ON DAYARCHIVE.ARCHIVE_KEY = SC_TAX.ARCHIVE_KEY"
-                                            " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) SC_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 2 GROUP BY ARCHIVE_KEY) SC ON DAYARCHIVE.ARCHIVE_KEY = SC.ARCHIVE_KEY"
-                                            " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) LOCAL_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 4 GROUP BY ARCHIVE_KEY) LOCAL_TAX ON DAYARCHIVE.ARCHIVE_KEY = LOCAL_TAX.ARCHIVE_KEY"
+			IBInternalQuery->SQL->Text =    "SELECT "
+                                                 "CATEGORYGROUPS.NAME, "
+                                                 "CATEGORYGROUPS.CATEGORYGROUPS_KEY, "
+                                                 "ARCCATEGORIES.CATEGORY,      "
+                                                 "ARCCATEGORIES.CATEGORY_KEY,  "
+                                                 "DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, "
+                                                 "CAST (SUM (COALESCE(SALES_TAX.TAX_TOTAL,0)) AS NUMERIC(15, 4)) SALES_TAX_TOTAL, "
+                                                 "CAST (SUM (COALESCE(SC_TAX.TAX_TOTAL,0)) AS NUMERIC(15, 4)) SC_TAX_TOTAL, "
+                                                 "CAST (SUM (COALESCE(SC.SC_TOTAL,0)) AS NUMERIC(15, 4)) SC_TOTAL,  "
+                                                 "CAST (SUM (COALESCE(LOCAL_TAX.LOCAL_TAX_TOTAL,0)) AS NUMERIC(15, 4)) LOCAL_TAX_TOTAL, "
+                                                 "CAST (SUM ((CAST(DAYARCHIVE.PRICE AS NUMERIC(17,4)) * DAYARCHIVE.QTY)) AS NUMERIC(17, 4))  TOTAL, "
+                                                 "CAST (SUM (CAST(DAYARCHIVE.PRICE AS NUMERIC(17,4)) * DAYARCHIVE.QTY) AS NUMERIC(17, 4)) RAWTOTAL, "
+                                                 "CAST (SUM (CAST(CAST(DAYARCHIVE.COST AS NUMERIC(17,4)) * CAST(DAYARCHIVE.QTY AS NUMERIC(17,4)) AS NUMERIC(17,4))) AS NUMERIC(17, 4)) COST, "
+                                                 "CAST (SUM (DAYARCHIVE.QTY) AS NUMERIC(15, 4)) TOTALQTY "
+                                             "FROM  CATEGORYGROUPS "
+                                             "INNER JOIN ARCCATEGORIES ON CATEGORYGROUPS.CATEGORYGROUPS_KEY = ARCCATEGORIES.CATEGORYGROUPS_KEY "
+                                             "INNER JOIN DAYARCHIVE ON ARCCATEGORIES.CATEGORY_KEY = DAYARCHIVE.CATEGORY_KEY "
+                                             "left JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY       "
+                                             "left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+                                             "LEFT JOIN (SELECT ARCHIVE_KEY, SUM(COALESCE(TAX_VALUE,0)) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 0 GROUP BY ARCHIVE_KEY) SALES_TAX ON DAYARCHIVE.ARCHIVE_KEY = SALES_TAX.ARCHIVE_KEY "
+                                             "LEFT JOIN (SELECT ARCHIVE_KEY, SUM(COALESCE(TAX_VALUE,0)) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 3 GROUP BY ARCHIVE_KEY) SC_TAX ON DAYARCHIVE.ARCHIVE_KEY = SC_TAX.ARCHIVE_KEY "
+                                             "LEFT JOIN (SELECT ARCHIVE_KEY, SUM(COALESCE(TAX_VALUE,0)) SC_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 2 GROUP BY ARCHIVE_KEY) SC ON DAYARCHIVE.ARCHIVE_KEY = SC.ARCHIVE_KEY  "
+                                             "LEFT JOIN (SELECT ARCHIVE_KEY, SUM(COALESCE(TAX_VALUE,0)) LOCAL_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 4 GROUP BY ARCHIVE_KEY) LOCAL_TAX ON DAYARCHIVE.ARCHIVE_KEY = LOCAL_TAX.ARCHIVE_KEY "
                                             " WHERE (( DAYARCBILL.DISCOUNT = 0 ) or DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE <> 0 ) and "	+ Text +
                                             " ( ORDER_TYPE = " + IntToStr(NormalOrder) + " " " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
                                             " GROUP BY CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY, ARCCATEGORIES.CATEGORY, ARCCATEGORIES.CATEGORY_KEY,DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ";
@@ -4965,7 +4965,6 @@ AnsiString DeviceName)
 			FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = TotalSalesCategoryGroup;
 		}
 		IBInternalQuery->Close();
-
 		TDateTime PrevZedTime = Now();
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text = "SELECT " "MAX(TIME_STAMP)TIME_STAMP FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME";
@@ -5050,7 +5049,6 @@ AnsiString DeviceName)
 			//FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = TotalSalesCategoryGroup;
 		}
 		IBInternalQuery->Close();
-
 		// Fix Bill ,Saved and Total totals.
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text = "SELECT COUNT (DISTINCT DAYARCBILL.ARCBILL_KEY) QTYTOTAL " "FROM DAYARCBILL "
