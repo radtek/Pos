@@ -5,6 +5,8 @@
 
 #include "PointsRulesSet.h"
 #include "Mall.h"
+#include <map>
+#include <set>
 #include <memory>
 #include <Classes.hpp>
 #include <Graphics.hpp>
@@ -490,6 +492,7 @@ public:
     bool IsBillSplittedByMenuType;
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
+    std::map<int, std::set<int> > MezzanineTablesMap;
 };
 
 #endif

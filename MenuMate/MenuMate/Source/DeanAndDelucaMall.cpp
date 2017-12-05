@@ -50,6 +50,16 @@ void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
    _totalSCDAndPWDAmount = totalSCDAndPWDAmount;
 }
 //------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetSCDDiscount(double totalSCDAmount)
+{
+   _scdAmount = totalSCDAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetPWDDiscount(double totalPWDAmount)
+{
+   _pwdAmount = totalPWDAmount;
+}
+//------------------------------------------------------------------------------------------
  void TDeanAndDelucaMallField::SetOtherDiscount(double totalOtherDiscount)
 {
     _totalOtherDiscount = totalOtherDiscount;
@@ -68,6 +78,11 @@ void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
  void TDeanAndDelucaMallField::SetServiceCharge(double totalServiceCharge)
 {
     _totalServiceCharge = totalServiceCharge;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetNonTaxableServiceCharge(double totalServiceCharge)
+{
+    _totalNonTaxableSC = _totalNonTaxableSC;
 }
 //------------------------------------------------------------------------------------------
  void TDeanAndDelucaMallField::SetNetSaleAmount(double totalNetSaleAmount)
@@ -1090,6 +1105,10 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
                 int day = DayOf(date);
                 fileName = fileName + "." + month + IntToStr(day);
             }
+            else if(IBInternalQuery->Fields[0]->AsInteger == 1)
+            {
+                fileName = fileName + "" + (IBInternalQuery->Fields[2]->AsString).SubString(0,4);
+            }
             else
             {
                 fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
@@ -1201,6 +1220,8 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     discounts.scdDiscount = order->GetQty() > 0.00 ? fabs(discounts.scdDiscount) : discounts.scdDiscount*-1;
     discounts.pwdDiscount = order->GetQty() > 0.00 ? fabs(discounts.pwdDiscount) : discounts.pwdDiscount*-1;
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
+    fieldData.TotalSCDAmount += discounts.scdDiscount;
+    fieldData.TotalPWDAmount += discounts.pwdDiscount;
     fieldData.TotalOtherDiscount += order->GetQty() > 0.00 ? fabs(discounts.otherDiscount) : discounts.otherDiscount*-1;
     fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
     fieldData.TotalServiceCharge += taxes.serviceCharge;
@@ -1217,6 +1238,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     else
     {
        fieldData.NonTaxableSaleAmount += (salesBySalesType + discounts.scdDiscount + discounts.pwdDiscount - taxes.serviceCharge);
+       fieldData.TotalNonTaxableSC += taxes.serviceCharge;
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";

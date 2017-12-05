@@ -6,7 +6,6 @@
 #include "Processing.h"
 #include "TableManager.h"
 #include "DeviceRealTerminal.h"
-
 #include "DBTables.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -18,14 +17,27 @@
 __fastcall TfrmSelectTable::TfrmSelectTable(TComponent* Owner, Database::TDBControl &inIBDatabase)
 	: TZForm(Owner) , IBDatabase(inIBDatabase)
 {
+    TableMode = eNormalNode;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSelectTable::FormShow(TObject *Sender)
 {
 	FormResize(this);
-	// Reset all the tables.
+
+    if(TableMode)
+    {
+        TMezzanineTable tableDetails;
+        tableDetails.FloorplanVer = 1;
+        tableDetails.LocationId = 0;
+        AssignedMezzanineTable = TDBTables::GetMezzanineAreaTables(tableDetails);
+    }
+    else
+    {
+        tiUpdateTableReq->Enabled = true;
+    }
+
+    // Reset all the tables.
     UpdateFloorPlanSheet();
-    tiUpdateTableReq->Enabled = true;
 }
 
 void TfrmSelectTable::SetTablesColor(Database::TDBTransaction &DBTransaction)
@@ -146,6 +158,13 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 {
 	if (GridButton->Tag == 100)
 	{
+        if(TableMode)
+        {
+            TDBTables::SaveMezzanineAreaTables(MezzanineTables);
+            MezzanineTables.clear();
+            AssignedMezzanineTable.clear();
+        }
+
 		ModalResult = mrCancel;
 	}
 	else
@@ -156,8 +175,34 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 		SelectedTabContainerNumber = GridButton->Tag;
 		SelectedPartyName = TDBTables::GetPartyName(DBTransaction,SelectedTabContainerNumber);
 		SelectedTabContainerName = TDBTables::GetTableName(DBTransaction,SelectedTabContainerNumber);
-		DBTransaction.Commit();		
-		ModalResult = mrOk;
+		DBTransaction.Commit();
+
+        if(!TableMode)
+        {
+		    ModalResult = mrOk;
+        }
+        else
+        {
+            std::map<int, std::vector<TMezzanineTable> >::iterator outerit = MezzanineTables.find(SelectedTabContainerNumber);
+            std::set<int>::iterator it = AssignedMezzanineTable.find(SelectedTabContainerNumber);
+            bool isTableSelected;
+
+            if(outerit != MezzanineTables.end())
+            {
+                isTableSelected = it != AssignedMezzanineTable.end();
+                MezzanineTables.erase(SelectedTabContainerNumber);
+            }
+            else
+            {
+                isTableSelected = !(it != AssignedMezzanineTable.end());
+                TMezzanineTable mezzanineTableDetails;
+                mezzanineTableDetails.FloorplanVer = 1;
+                mezzanineTableDetails.SelectionType = isTableSelected == true ? eSelected : eDeSelected;
+                mezzanineTableDetails.LocationId = 0;
+                MezzanineTables[SelectedTabContainerNumber].push_back(mezzanineTableDetails);
+            }
+             UpdateColor(SelectedTabContainerNumber, isTableSelected);
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -183,7 +228,7 @@ void TfrmSelectTable::UpdateFloorPlanSheet()
 
 			if(TableNo == 100)
 			{
-				tgridTables->Buttons[Row][Col]->Caption				= "Cancel";
+				tgridTables->Buttons[Row][Col]->Caption				= TableMode == false ? "Cancel" : "Ok";
 				tgridTables->Buttons[Row][Col]->Color				= clMaroon;
 				tgridTables->Buttons[Row][Col]->FontColor			= clWhite;
 			}
@@ -233,7 +278,15 @@ void TfrmSelectTable::UpdateFloorPlanSheet()
             GridButton->Caption	 		= TableCaption;
         }
 	}
-     SetTablesColor(DBTransaction);
+
+    if(!TableMode)
+    {
+        SetTablesColor(DBTransaction);
+    }
+    else
+    {
+        SetMezzanineTablesColor();
+    }
 	if (SelectedTabContainerNumber == 0)
 	{
 		SelectedTabContainerNumber		= 1;
@@ -241,6 +294,37 @@ void TfrmSelectTable::UpdateFloorPlanSheet()
 		SelectedPartyName					= "";
 	}
 	DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmSelectTable::SetMezzanineTablesColor()
+{
+    for (std::set<int> ::iterator it = AssignedMezzanineTable.begin(); it != AssignedMezzanineTable.end(); ++it)
+    {
+		UpdateColor(*it, true);
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectTable::UpdateColor(int tableNo, bool isSelected)
+{
+    int Row = tableNo / tgridTables->RowCount;
+    int Col = (tableNo % tgridTables->ColCount) - 1;
+
+    if(Row < tgridTables->RowCount && Col < tgridTables->ColCount)
+    {
+        TGridButton *GridButton = tgridTables->Buttons[Row][Col];
+        GridButton->Enabled = true;
+
+        if(isSelected)
+        {
+            GridButton->Color = clGray;
+            GridButton->FontColor	= clWhite;
+        }
+        else
+        {
+            GridButton->Color = clWhite;
+            GridButton->FontColor	= clBlack;
+        }
+    }
 }
 
 

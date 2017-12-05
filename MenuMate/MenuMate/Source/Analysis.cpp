@@ -8599,7 +8599,22 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int field
 
         IBInternalQuery->ExecQuery();
 
+		//For Mezzanine Sales if any.
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {   
+            TIBSQL *IBMezzanineSalesQuery =   DBTransaction.Query(DBTransaction.AddQuery());
+            IBMezzanineSalesQuery->Close();
+            IBMezzanineSalesQuery->SQL->Text = "UPDATE MEZZANINE_SALES a SET A.Z_KEY = :Z_KEY WHERE A.Z_KEY = :EXISTING_KEY ";
+            if(!isMasterTerminal)
+            {
+                IBMezzanineSalesQuery->SQL->Text = IBMezzanineSalesQuery->SQL->Text + "AND A.TERMINAL_NAME = :TERMINAL_NAME ";
+                IBMezzanineSalesQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+            }
+            IBMezzanineSalesQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+            IBMezzanineSalesQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+            IBMezzanineSalesQuery->ExecQuery();
 
+        }
 
         DBTransaction.Commit();
     }

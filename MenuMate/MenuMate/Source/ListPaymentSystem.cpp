@@ -67,7 +67,7 @@
 #include "MallFactory.h"
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
-
+#include "ManagerMallSetup.h"
 
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
@@ -1537,10 +1537,37 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        //Instantiation is happenning in a factory based on the active mall in database
-        TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-        delete mall;
+        bool canContinue = true;
+
+        //Check if mall type is dean and deluca
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {
+            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
+            if(item->TableNo)
+            {
+                TGlobalSettings::Instance().MezzanineTablesMap.clear();
+                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    canContinue = (innerit == outerit->second.end());
+                }
+            }
+        }
+
+        if(canContinue)
+        {
+            //Instantiation is happenning in a factory based on the active mall in database
+            TMallExport* mall = TMallFactory::GetMallType();
+            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+            delete mall;
+        }
+        else
+        {
+            InsertMezzanineSales(PaymentTransaction);
+        }
     }
 }
 
@@ -6268,4 +6295,96 @@ void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransa
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
+}
+//--------------------------------------------------------------------------------------
+void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        Currency totalPaidAmount = 0.00;
+        TDeanAndDelucaMall *mallField = new TDeanAndDelucaMall();
+        TDeanAndDelucaMallField *fieldData = new TDeanAndDelucaMallField();
+        int tableNumber;
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+                TItemComplete *order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+                mallField->PrepareDataByItem(paymentTransaction.DBTransaction, order, *fieldData);
+                tableNumber = order->TableNo;
+                for (int i = 0; i < order->SubOrders->Count; i++)
+				{
+					TItemCompleteSub *currentSubOrder = (TItemCompleteSub*)order->SubOrders->Items[i];
+                    mallField->PrepareDataByItem(paymentTransaction.DBTransaction, currentSubOrder, *fieldData);
+                }
+        }
+
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
+			if (SubPayment->GetPay() != 0)
+			{
+                totalPaidAmount += (double)(SubPayment->GetPayTendered() - SubPayment->GetChange() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
+            }
+        }
+
+        fieldData->TotalNetSaleAmount =  totalPaidAmount;
+        fieldData->GrossSaleAmount =  fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + totalPaidAmount;
+
+        TIBSQL *incrementGenerator = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        TIBSQL *insertQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MEZZANINE_SALES_ID, 1) FROM RDB$DATABASE";
+        incrementGenerator->ExecQuery();
+        //MessageBox("The screen was left idle for 5 minutes. Do you wish to continue?","Information",MB_YESNO + MB_ICONQUESTION);
+        insertQuery->Close();
+        insertQuery->SQL->Clear();
+        insertQuery->SQL->Text =
+            "INSERT INTO MEZZANINE_SALES "
+                "(SALES_ID, "
+                "TABLE_NUMBER, "
+                "GROSS_SALES, "
+                "TIME_STAMP_BILLED, "
+                "PWD, "
+                "SCD, "
+                "OTHER_DISCOUNTS, "
+                "VAT_EXEMPT_SALES, "
+                "SERVICE_CHARGE, "
+                "VAT, "
+                "LOCATION_ID, "
+                "TERMINAL_NAME, "
+                "Z_KEY ) "
+            "VALUES ( "
+                ":SALES_ID, "
+                ":TABLE_NUMBER, "
+                ":GROSS_SALES, "
+                ":TIME_STAMP_BILLED, "
+                ":PWD, "
+                ":SCD, "
+                ":OTHER_DISCOUNTS, "
+                ":VAT_EXEMPT_SALES, "
+                ":SERVICE_CHARGE, "
+                ":VAT, "
+                ":LOCATION_ID, "
+                ":TERMINAL_NAME,  "
+                ":Z_KEY )";
+            insertQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+            insertQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+            insertQuery->ParamByName("GROSS_SALES")->AsCurrency = fieldData->GrossSaleAmount;
+            insertQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
+            insertQuery->ParamByName("PWD")->AsCurrency = fieldData->TotalPWDAmount;
+            insertQuery->ParamByName("SCD")->AsCurrency = fieldData->TotalSCDAmount;
+            insertQuery->ParamByName("OTHER_DISCOUNTS")->AsCurrency = fieldData->TotalOtherDiscount;
+            insertQuery->ParamByName("VAT_EXEMPT_SALES")->AsCurrency = (fieldData->NonTaxableSaleAmount - fieldData->TotalNonTaxableSC - fieldData->TotalPWDAmount - fieldData->TotalSCDAmount);
+            insertQuery->ParamByName("SERVICE_CHARGE")->AsCurrency = fieldData->TotalServiceCharge;
+            insertQuery->ParamByName("VAT")->AsCurrency = fieldData->TotalTax;
+            insertQuery->ParamByName("LOCATION_ID")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+            insertQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+            insertQuery->ParamByName("Z_KEY")->AsInteger = 0;
+            insertQuery->ExecQuery();
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
