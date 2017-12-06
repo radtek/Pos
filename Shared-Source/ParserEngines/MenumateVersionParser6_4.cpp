@@ -37,6 +37,11 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -76,6 +81,13 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+    Insert6_39Malls(_dbControl, 3, "Evia ", "F");
+    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 3);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
