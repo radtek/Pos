@@ -265,6 +265,8 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TRvDataSetConnection *ravSubsReport;
     TIBQuery *qrSubsReport;
     TIBQuery *qrTurnAroundExcel;
+    TIBQuery *qrMezzanine;
+    TRvDataSetConnection *ravMezzanine;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
@@ -436,6 +438,7 @@ public:		// User declarations
     AnsiString tinNumber;
     AnsiString serialNo;
     void SetupSubsReport(TDateTime StartTime, TDateTime EndTime);
+	void SetupMezzanineSales(TDateTime StartTime, TDateTime EndTime);
 };
 
 
