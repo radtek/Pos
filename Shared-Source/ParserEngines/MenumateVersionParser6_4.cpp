@@ -86,7 +86,7 @@ void TApplyParser::update6_44Tables()
 void TApplyParser::update6_45Tables()
 {
     Insert6_39Malls(_dbControl, 3, "Evia ", "F");
-    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    int settingID[10] = {1, 2, 6, 7, 16, 18, 19, 20, 24, 25};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 3);
 }
 //----------------------------------------------------

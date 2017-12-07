@@ -6,6 +6,7 @@
 #include "PaymentTransaction.h"
 #include "MallExportData.h"
 #include "IExporterInterface.h"
+#include <DateUtils.hpp>
 //---------------------------------------------------------------------------
 class TMallExport: public TMallExportInterface
 {
@@ -15,6 +16,11 @@ private:
 
     //Get OldAccumulated Sale
     double GetOldAccumulatedSales(int fieldIndex);
+
+    //Generate SalesKey for MallExport_sales Table
+    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
+
+    TDateTime BilledTimeStamp;
 
 protected:
 
@@ -33,6 +39,10 @@ protected:
     //if sales type is assigned to items then sales total according to sales type will get stored in new table
     virtual void InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey,
                                                 TDateTime billedTime);
+
+    //Insert field in to list so that it can be inserted in db later.
+    virtual void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
+                    UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey);
 
 public:
 

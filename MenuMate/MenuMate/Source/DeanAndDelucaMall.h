@@ -4,7 +4,6 @@
 #define DeanAndDelucaMallH
 #include "MallExport.h"
 #include "MallExportTextFile.h"
-#include <DateUtils.hpp>
 //---------------------------------------------------------------------------
 class TDeanAndDelucaMallField;
 
@@ -41,13 +40,6 @@ private:
 
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
-
-    //Generate SalesKey for MallExport_sales Table
-    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
-
-    //Insert Data into MallExport_sales table
-    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
-                                UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
 
     //Fetch Mall Setting for file writing
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,

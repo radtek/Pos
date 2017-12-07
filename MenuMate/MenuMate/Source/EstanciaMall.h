@@ -248,13 +248,6 @@ private:
     //Get OldAccumulated Sale
     double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
 
-    //Generate SalesKey for MallExport_sales Table
-    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
-
-    //Insert Data into MallExport_sales table
-    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
-                                UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
-
     //Fetch Mall Setting for file writing
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
                                 int index, int zKey = 0);

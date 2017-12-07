@@ -309,53 +309,6 @@ void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransac
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Hour Code", "int", IntToStr(hourCode), 21, arcBillKey);
 }
 //-----------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
-{
-    try
-    {
-        TMallExportSalesData salesData;
-        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-        salesData.DataValue = fieldValue;
-        salesData.Field = field;
-        salesData.DataValueType = dataType;
-        salesData.FieldIndex = fieldIndex;
-        salesData.DateCreated = billedTime;
-        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-        salesData.ArcBillKey = arcBillKey;
-        salesData.ZKey = 0;
-        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        mallExportSalesData.push_back(salesData);
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//--------------------------------------------------------------------------------------------------------
-long TDeanAndDelucaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    long saleKey;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SALE_KEY, 1) FROM RDB$DATABASE";
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-            saleKey = IBInternalQuery->Fields[0]->AsInteger;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return saleKey;
-}
-//---------------------------------------------------------------------------------
 int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
 {
     int totalPatronCount = 0;
