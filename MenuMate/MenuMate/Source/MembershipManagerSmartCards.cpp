@@ -1041,10 +1041,26 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
 
         if (MembershipSystem->GetContactType(DBTransaction, SmartCardContact.ContactKey) == eDeletedMember)
         {
+
             if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
                         "Undelete", "Leave Deleted") == IDOK)
             {
-                MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+               if(TGlobalSettings::Instance().LoyaltyMateEnabled )
+                {
+                    MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+                }
+                else
+                {
+                    if(!ValidateEmailInDB(SmartCardContact))
+                    {
+                        MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
+                        CheckForCardInDB = false;
+                    }
+                    else
+                    {
+                       MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+                    }
+                }
             }
             else
             {
@@ -2416,6 +2432,32 @@ void TManagerMembershipSmartCards::ValidateCardExistance(Database::TDBTransactio
    {
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
    }
+}
+
+bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    bool isEmailValid  = true;
+    DBTransaction.StartTransaction();
+    int emailcount = 0;
+
+
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";
+      IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
+
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = Info.ContactKey;
+      IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail;
+      IBInternalQuery->ExecQuery();
+      DBTransaction.Commit();
+      emailcount = IBInternalQuery->Fields[0]->AsInteger;
+      if(emailcount > 0)
+      {
+        isEmailValid = false;
+      }
+
+      return isEmailValid;
 }
 
 int TManagerMembershipSmartCards::ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
