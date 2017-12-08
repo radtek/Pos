@@ -1045,29 +1045,21 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
                         "Undelete", "Leave Deleted") == IDOK)
             {
-               if(TGlobalSettings::Instance().LoyaltyMateEnabled )
-                {
+               if(!ValidateEmailInDB(SmartCardContact))
+               {
+                    MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
+                    CheckForCardInDB = false;
+               }
+               else
+               {
                     MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
-                }
-                else
-                {
-                    if(!ValidateEmailInDB(SmartCardContact))
-                    {
-                        MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
-                        CheckForCardInDB = false;
-                    }
-                    else
-                    {
-                       MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
-                    }
-                }
-            }
+               }
+             }
             else
             {
                 CheckForCardInDB = false;
             }
         }
-
         if (CheckForCardInDB)
         {
             switch(GetSmartCardStatus(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.ATRStr))
@@ -2440,8 +2432,8 @@ bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
     bool isEmailValid  = true;
     DBTransaction.StartTransaction();
     int emailcount = 0;
-
-
+    try
+    {
       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";
@@ -2456,8 +2448,13 @@ bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
       {
         isEmailValid = false;
       }
-
-      return isEmailValid;
+    }
+    catch(Exception & E)
+    {
+        isEmailValid = false;
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+    }
+    return isEmailValid;
 }
 
 int TManagerMembershipSmartCards::ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
