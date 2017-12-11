@@ -649,6 +649,9 @@ public: // User declarations
     void SaveTabData(TSaveOrdersTo &OrderContainer);
     void PaintItemToDisplay(long itemKey, int sizesKey);
     void PaintItemToDisplay(long itemKey, long sizesKey , AnsiString qtyValue , AnsiString billValue);
+    bool CloseChitForm();
+    bool CanClose;
+    bool IsChitPromptFormActive;
 
    //:::::::::::::::::::::::::::::::::::::::::::::::
    // Parked Sales
