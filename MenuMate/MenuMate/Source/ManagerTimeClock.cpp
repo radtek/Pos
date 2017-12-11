@@ -20,9 +20,16 @@ void TManagerTimeClock::SetDefaultDept(Database::TDBTransaction &DBTransaction)
 //---------------------------------------------------------------------------
 void TManagerTimeClock::AddClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode)
 {
+
    if(GetClockInDept(DBTransaction,DeptName,DeptCode) == 0)
    {
       SetClockInDept(DBTransaction,DeptName,DeptCode);
+   }
+   else
+
+   {
+   AddDepInLoc(DBTransaction,DeptName,DeptCode);
+   //AddDepInLoc(Database::TDBTransaction &DBTransaction, AnsiString DeptName,int DeptCode)
    }
 }
 //---------------------------------------------------------------------------
@@ -46,24 +53,58 @@ void TManagerTimeClock::SetClockInDept(Database::TDBTransaction &DBTransaction,A
 				"DISPLAY_ORDER, "
 				"NAME, "
 				"CODE, "
-				"RATE) "
+				"RATE, "
+                "DATE_CREATED, "
+              "STATUS) "
 			"VALUES ("
 				":TIMECLOCKLOCATIONS_KEY, "
 				":DISPLAY_ORDER, "
 				":NAME, "
 				":CODE, "
-				":RATE)";
+				":RATE,"
+                ":DATE_CREATED,"
+                ":STATUS);";
 		IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = TimeClockKey;
 		IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger 	      = TimeClockKey;
 		IBInternalQuery->ParamByName("NAME")->AsString         		      = DeptName;
 		IBInternalQuery->ParamByName("CODE")->AsInteger 			         = DeptCode;
-   	IBInternalQuery->ParamByName("RATE")->AsCurrency                  = 0;
+        IBInternalQuery->ParamByName("RATE")->AsCurrency                  = 0;
+        IBInternalQuery->ParamByName("STATUS")->AsString = "T";
+        IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = Now();
 		IBInternalQuery->ExecQuery();
 	}
 	catch (Exception &E)
 	{
 		throw;
 	}
+}
+//-------------------------------------------------------------------------
+void TManagerTimeClock::AddDepInLoc(Database::TDBTransaction &DBTransaction, AnsiString DeptName,int DeptCode)
+{
+	try
+	{
+		if(DeptName != 0)
+		{
+            TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+			IBInternalQuery1->Close();
+			IBInternalQuery1->SQL->Text =
+			"UPDATE "
+			" TIMECLOCKLOCATIONS"
+			" SET"
+			" STATUS = 'T', "
+            " DATE_CREATED = :DATE_CREATED "
+			" WHERE NAME = :NAME AND CODE = :CODE;";
+            IBInternalQuery1->ParamByName("DATE_CREATED")->AsDateTime = Now();
+            IBInternalQuery1->ParamByName("NAME")->AsString = DeptName;
+            IBInternalQuery1->ParamByName("CODE")->AsInteger = DeptCode;
+            IBInternalQuery1->ExecQuery();
+             }
+             }
+   catch(Exception &E)
+	{
+		throw;
+	}
+	//return Key;
 }
 //---------------------------------------------------------------------------
 void TManagerTimeClock::UpdateClockInDept(Database::TDBTransaction &DBTransaction,AnsiString DeptName,int DeptCode,int DeptKey)
@@ -170,23 +211,8 @@ int TManagerTimeClock::GetClockInDeptCode(Database::TDBTransaction &DBTransactio
 	}
    return DeptCode;
 }
-//---------------------------------------------------------------------------
-void TManagerTimeClock::DelClockInDept(Database::TDBTransaction &DBTransaction,int Key)
-{
-   try
-   {
-      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-      IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text = "DELETE FROM TIMECLOCKLOCATIONS WHERE TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY;";
-      IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = Key;
-      IBInternalQuery->ExecQuery();
-	}
-	catch (Exception &E)
-	{
-		throw Exception("Unable to remove department, as users have clocked into it previously.");
-	}
-}
+
 //---------------------------------------------------------------------------
 void TManagerTimeClock::GetClockInDeptList(Database::TDBTransaction &DBTransaction,TStringList *DeptList)
 {
@@ -199,6 +225,7 @@ void TManagerTimeClock::GetClockInDeptList(Database::TDBTransaction &DBTransacti
       " SELECT *"
       " FROM"
       "  TIMECLOCKLOCATIONS"
+       " WHERE STATUS = 'T'"
       " ORDER BY DISPLAY_ORDER ";
       IBInternalQuery->ExecQuery();
       if(IBInternalQuery->RecordCount && DeptList != NULL)
@@ -235,21 +262,24 @@ void TManagerTimeClock::ClockIn(Database::TDBTransaction &DBTransaction,int inCo
          "LOGIN_DATETIME,"
          "TIMECLOCKLOCATIONS_KEY,"
          "MODIFIED,"
-         "EXPORTED) "
+         "EXPORTED,"
+         "STATUS) "
       "VALUES ("
          ":CONTACTTIME_KEY,"
          ":CONTACTS_KEY,"
          ":LOGIN_DATETIME,"
          ":TIMECLOCKLOCATIONS_KEY,"
          ":MODIFIED,"
-         ":EXPORTED);";
+         ":EXPORTED,"
+         ":STATUS);";
       IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = ContactTimeKey;
       IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
       IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = LogInTime;
       IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = DeptKey;
-		IBInternalQuery->ParamByName("MODIFIED")->AsString = "F";
+      IBInternalQuery->ParamByName("MODIFIED")->AsString = "F";
       IBInternalQuery->ParamByName("EXPORTED")->AsString = "F";
-		IBInternalQuery->ExecQuery();
+       IBInternalQuery->ParamByName("STATUS")->AsString = "T";
+     IBInternalQuery->ExecQuery();
 	}
    catch(Exception &E)
    {
@@ -280,6 +310,8 @@ bool TManagerTimeClock::ClockedIn(Database::TDBTransaction &DBTransaction,int in
 	}
 	return LoggedIn;
 }
+
+
 //---------------------------------------------------------------------------
 int TManagerTimeClock::ClockedCount(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
@@ -304,6 +336,8 @@ int TManagerTimeClock::ClockedCount(Database::TDBTransaction &DBTransaction,int 
    }
 	return Count;
 }
+
+
 //---------------------------------------------------------------------------
 
 TDateTime TManagerTimeClock::ClockedInDateTime(Database::TDBTransaction &DBTransaction,int inContactKey)
@@ -796,4 +830,120 @@ void TManagerTimeClock::UpdateClockInOut(Database::TDBTransaction &DBTransaction
 		throw;
 	}
 }
+//-----------------------------------------------------------------------------
+bool TManagerTimeClock::ClockedInDep(Database::TDBTransaction &DBTransaction,int inContactKey)
+{
+   bool LoggedIn = false;
+   try
+   {
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text = "Select CONTACTTIME_KEY from CONTACTTIME where LOGIN_DATETIME is not null and LOGOUT_DATETIME is null and TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY";
+		IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger	= inContactKey;
+		IBInternalQuery->ExecQuery();
+		if (IBInternalQuery->RecordCount)
+		{
+			LoggedIn = true;
+		}
+		IBInternalQuery->Close();
+	}
+	catch(Exception &E)
+	{
+		throw;
+	}
+	return LoggedIn;
+}
+//----------------------------------------------------------------------------------
+bool TManagerTimeClock::CheckClockedIn(Database::TDBTransaction &DBTransaction,int inContactKey)
+{
+   bool LoggedIn = false;
+   try
+   {
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text = " Select CONTACTTIME_KEY from CONTACTTIME where TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY ";
+		IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger	= inContactKey;
+		IBInternalQuery->ExecQuery();
+		if (IBInternalQuery->RecordCount)
+		{
+			LoggedIn = true;
+		}
+		IBInternalQuery->Close();
+	}
+	catch(Exception &E)
+	{
+		throw;
+	}
+	return LoggedIn;
+}
 //---------------------------------------------------------------------------
+void TManagerTimeClock::DelClockInDept(Database::TDBTransaction &DBTransaction,int Key)
+{
+   try
+   {
+     /* TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "DELETE FROM CONTACTTIME WHERE TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY;";
+      IBInternalQuery->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = Key;
+
+
+
+      IBInternalQuery->ExecQuery();  */
+      	if(Key != 0)
+		{
+			TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+			IBInternalQuery1->Close();
+			IBInternalQuery1->SQL->Text =
+			"UPDATE "
+			" CONTACTTIME"
+			" SET"
+			" STATUS = 'F' "
+			" WHERE TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY";
+			IBInternalQuery1->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = Key;
+           // IBInternalQuery1->TimeStamp    = IBInternalQuery1->FieldByName("TIME_STAMP")->AsDateTime;
+            IBInternalQuery1->ExecQuery();
+
+           }
+	}
+	catch (Exception &E)
+	{
+	throw;
+	}
+
+}
+
+//-------------------------------------------------------------------------
+void TManagerTimeClock::DelClockInDeptFromLoc(Database::TDBTransaction &DBTransaction, int Key)
+{
+	try
+	{
+		if(Key != 0)
+		{
+            TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+			IBInternalQuery1->Close();
+			IBInternalQuery1->SQL->Text =
+			"UPDATE "
+			" TIMECLOCKLOCATIONS"
+			" SET"
+			" STATUS = 'F', "
+            " DATE_CREATED = :DATE_CREATED "
+			" WHERE TIMECLOCKLOCATIONS_KEY = :TIMECLOCKLOCATIONS_KEY";
+			 IBInternalQuery1->ParamByName("TIMECLOCKLOCATIONS_KEY")->AsInteger = Key;
+             IBInternalQuery1->ParamByName("DATE_CREATED")->AsDateTime = Now();
+            //IBInternalQuery1->ParamByName("DATE_CREATED")->AsDateTime = LogOutTime;
+            IBInternalQuery1->ExecQuery();
+             }
+             }
+
+catch(Exception &E)
+	{
+		throw;
+	}
+	//return Key;
+}
+//----------------------------------------------------------------------
+
+

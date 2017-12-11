@@ -130,14 +130,14 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
 
 	tbtnLocations->Caption  = "Location \r" + TDeviceRealTerminal::Instance().ID.Location;
-    if((TDeviceRealTerminal::Instance().IMManager->Registered))
-    {
-    TouchBtnThorlink->Enabled = true;
-    }
-    else
-    {
-    TouchBtnThorlink->Enabled = false;
-    }
+//    if((TDeviceRealTerminal::Instance().IMManager->Registered))
+//    {
+//    TouchBtnThorlink->Enabled = true;
+//    }
+//    else
+//    {
+//    TouchBtnThorlink->Enabled = false;
+//    }
 
 	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
@@ -197,6 +197,14 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	btnChangeTable->Caption = "Edit Tables";
 
 	tbtnSmartCards->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Registered"]);
+    if(TDeviceRealTerminal::Instance().Modules.Status[eAccounting]["Registered"] )
+    {
+        btnAccountingInterface->Enabled=true;
+    }
+    else
+    {
+        btnAccountingInterface->Enabled=false;
+    }
 
 	Pages->ActivePage = tsMaintenance;
 	RedrawButtons(tbtnMaintenance);
@@ -3381,7 +3389,7 @@ void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsClippIntegrationEnabled,TGlobalSettings::Instance().IsClippIntegrationEnabled);
 					DBTransaction.Commit();
-                    }
+                }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
@@ -3407,7 +3415,6 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     Item2.Properties["Action"] = IntToStr(2);
     Item2.Properties["Color"] = TGlobalSettings::Instance().IsXeroEnabled ? IntToStr(clGreen) : IntToStr(clRed);
     Item2.CloseSelection = true;
- //   Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item2);
 
     TVerticalSelection Item3;
@@ -3415,7 +3422,6 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     Item3.Properties["Action"] = IntToStr(3);
     Item3.Properties["Color"] = TGlobalSettings::Instance().IsMYOBEnabled ? IntToStr(clGreen) : IntToStr(clRed);
     Item3.CloseSelection = true;
-    Item3.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item3);
 
     TVerticalSelection Item4;
@@ -3423,7 +3429,6 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     Item4.Properties["Action"] = IntToStr(4);
     Item4.Properties["Color"] = TGlobalSettings::Instance().IsEnabledPeachTree ? IntToStr(clGreen) : IntToStr(clRed);
     Item4.CloseSelection = true;
-    //Item4.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item4);
 
     SelectionForm->ShowModal();

@@ -157,7 +157,8 @@ void __fastcall TfrmInvoices::btnNewInvoiceClick(TObject *Sender)
 		frmReceiveInvoice->InvoiceReference	= NewInvoiceRef;
         InvoiceRef=   NewInvoiceRef;
         frmReceiveInvoice->IsPurchaseOrderMode = false;
-		if (frmReceiveInvoice->ShowModal() == mrOk)
+        frmReceiveInvoice->AllowNegativeStockQuantity = true;
+        if (frmReceiveInvoice->ShowModal() == mrOk)
 		{
 			try
 			{
@@ -191,6 +192,7 @@ void __fastcall TfrmInvoices::btnUpdateInvoiceClick(TObject *Sender)
     AnsiString newInvoiceRef = "";
     bool RetVal;
     bool isInvoiceEditable = false;
+
 	if (qrInvoice->IsEmpty())
 	{
 		Application->MessageBox("There is no invoice to update.\r"
@@ -274,7 +276,7 @@ void __fastcall TfrmInvoices::btnUpdateInvoiceClick(TObject *Sender)
                 frmReceiveInvoice->dtpInvoiceDate->Time	= qrInvoice->FieldByName("Created")->AsDateTime - frmReceiveInvoice->dtpInvoiceDate->Date;
                 frmReceiveInvoice->IsPackingSlipUpdateMode = (transactionType == "Packing Slip");
                 frmReceiveInvoice->BatchKey = (qrInvoiceDetail->FieldByName("BATCH_KEY")->AsInteger);
-
+                frmReceiveInvoice->AllowNegativeStockQuantity = true;
 
              qrSupplier->Close();
             qrSupplier->ParamByName("Supplier_Key")->AsInteger = ContactKey;

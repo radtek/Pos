@@ -141,7 +141,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 670, short.MaxValue);
+                ServiceLogger.LogException(@"in LoadComplete " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 670, short.MaxValue);
             }
         }
 
@@ -285,7 +286,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 600, short.MaxValue);
+                ServiceLogger.LogException(@"in LoadIncompleteAccountSection " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 600, short.MaxValue);
             }
         }
 
@@ -1034,7 +1036,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 500, short.MaxValue);
+                ServiceLogger.LogException(@"in loadEmptyWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 500, short.MaxValue);
             }
         }
 
@@ -1057,7 +1060,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 501, short.MaxValue);
+                ServiceLogger.LogException(@"in loadWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 501, short.MaxValue);
             }
         }
 
@@ -1076,7 +1080,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 502, short.MaxValue);
+                ServiceLogger.LogException(@"in loadWebOrderComplete " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 502, short.MaxValue);
             }
         }
 
@@ -1096,7 +1101,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 503, short.MaxValue);
+                ServiceLogger.LogException(@"in setOrderRootNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 503, short.MaxValue);
             }
 
             //....................................................................................
@@ -1149,7 +1155,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 504, short.MaxValue);
+                ServiceLogger.LogException(@"in addHeaderNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 504, short.MaxValue);
             }
 
             //....................................................................................
@@ -1180,7 +1187,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 505, short.MaxValue);
+                ServiceLogger.LogException(@"in addFromNode " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 505, short.MaxValue);
             }
 
             //....................................................................................
@@ -1225,7 +1233,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 506, short.MaxValue);
+                ServiceLogger.LogException(@"in addAccountNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 506, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1271,7 +1280,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 507, short.MaxValue);
+                ServiceLogger.LogException(@"in addDeliveryNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 507, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1332,7 +1342,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 508, short.MaxValue);
+                ServiceLogger.LogException(@"in addCommentsNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 508, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1396,7 +1407,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 509, short.MaxValue);
+                ServiceLogger.LogException(@"in addItemNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 509, short.MaxValue);
             }
 
 
@@ -1431,7 +1443,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 510, short.MaxValue);
+                ServiceLogger.LogException(@"in addOptionsNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 510, short.MaxValue);
             }
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1463,7 +1476,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 511, short.MaxValue);
+                ServiceLogger.LogException(@"in addSidesNode " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 511, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1498,7 +1512,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 512, short.MaxValue);
+                ServiceLogger.LogException(@"in addItemOptionNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 512, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1534,7 +1549,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 513, short.MaxValue);
+                ServiceLogger.LogException(@"in addItemSideNode " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 513, short.MaxValue);
             }
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1571,7 +1587,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 514, short.MaxValue);
+                ServiceLogger.LogException(@"in readHeaderSection " + e.Message, e);
+               //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 514, short.MaxValue);
             }
 
             //............................................................
@@ -1597,7 +1614,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 515, short.MaxValue);
+                ServiceLogger.LogException(@"in readFromSection " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 515, short.MaxValue);
             }
 
             //............................................................
@@ -1652,7 +1670,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 516, short.MaxValue);
+                ServiceLogger.LogException(@"in readAccountSection " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 516, short.MaxValue);
             }
 
             //............................................................
@@ -1690,7 +1709,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 517, short.MaxValue);
+                ServiceLogger.LogException(@"in readWebOrderDelivery " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 517, short.MaxValue);
             }
         }
 
@@ -1710,7 +1730,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 518, short.MaxValue);
+                ServiceLogger.LogException(@"in readWebOrderPayments " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 518, short.MaxValue);
             }
         }
 
@@ -1737,7 +1758,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 519, short.MaxValue);
+                ServiceLogger.LogException(@"in readWebOrderComments " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 519, short.MaxValue);
             }
         }
 
@@ -1774,7 +1796,8 @@ namespace MenumateServices.WebMate.InternalClasses
             }
             catch (Exception e)
             {
-                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 520, short.MaxValue);
+                ServiceLogger.LogException(@"in readWebOrderItems " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 520, short.MaxValue);
             }
         }
 

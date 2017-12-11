@@ -86,35 +86,48 @@ void TfrmProcessWebOrder::Execute()
 
 void __fastcall TfrmProcessWebOrder::WebOrder(TMessage& Message)
 {
-	UnicodeString OrderID = WebOrderContainer.Current.GUID;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-	WebOrderContainer.find(OrderID);
-	DBTransaction.Commit();
-	UpdateDisplay();
+    try
+    {
+        UnicodeString OrderID = WebOrderContainer.Current.GUID;
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+        WebOrderContainer.find(OrderID);
+        DBTransaction.Commit();
+        UpdateDisplay();
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 void __fastcall TfrmProcessWebOrder::UpdateDisplay()
 {
-
-    if(!TGlobalSettings::Instance().AutoAcceptWebOrders)
+    try
     {
-       if(WebOrderContainer.Current.WebKey > 0)
-       {
-          TDBWebUtil::InitializeChit(WebOrderContainer.Current.WebKey, WebOrderChitNumber); // initialize chit here..
-       }
+        if(!TGlobalSettings::Instance().AutoAcceptWebOrders)
+        {
+           if(WebOrderContainer.Current.WebKey > 0)
+           {
+              TDBWebUtil::InitializeChit(WebOrderContainer.Current.WebKey, WebOrderChitNumber); // initialize chit here..
+           }
+        }
+        UpdateButtons();
+        if (WebOrderContainer.empty())
+        {
+            memReceipt->Lines->Clear();
+            memReceipt->Lines->Add("There are no more Web Orders pending.");
+        }
+        else
+        {
+            ShowReceipt();
+        }
     }
-	UpdateButtons();
-	if (WebOrderContainer.empty())
+    catch(Exception & E)
 	{
-		memReceipt->Lines->Clear();
-		memReceipt->Lines->Add("There are no more Web Orders pending.");
-	}
-	else
-	{
-		ShowReceipt();
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 void TfrmProcessWebOrder::ShowReceipt()
@@ -387,6 +400,7 @@ void __fastcall TfrmProcessWebOrder::autoAcceptWebOrdersTheadTerminate( TObject*
 
 void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
 {
+    UnicodeString str = "";
     try
     {
         if(!autoAcceptingWebOrders)
@@ -439,6 +453,7 @@ void __fastcall TAcceptWebOrdersThread::Execute()
 
 void TAcceptWebOrdersThread::acceptWebOrder()
 {
+    UnicodeString str = "";
 	try
 	{  
 		// Load the Order.
@@ -480,7 +495,7 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 	}
 	catch(EAbort & E)
 	{
-		//MessageBox(E.Message, "Abort", MB_OK + MB_ICONERROR);
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 	catch(Exception & E)
 	{

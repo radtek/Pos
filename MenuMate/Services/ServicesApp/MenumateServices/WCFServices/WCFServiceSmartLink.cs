@@ -51,7 +51,7 @@ namespace MenumateServices.WCFServices
             {
                 response.Successful = false;
                 response.ErrorText = ex.Message;
-                EventLog.WriteEntry("In PingTerminal Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 18, short.MaxValue);
+                //EventLog.WriteEntry("In PingTerminal Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 18, short.MaxValue);
                 ServiceLogger.LogException("Exception in PingTerminal", ex);
             }
             return response;
@@ -68,7 +68,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Login Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 19, short.MaxValue);
+                //EventLog.WriteEntry("In Login Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 19, short.MaxValue);
                 ServiceLogger.LogException("Exception in Login", ex);
             }
             return _response;
@@ -86,7 +86,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In SettlementInquiry Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 20, short.MaxValue);
+                //EventLog.WriteEntry("In SettlementInquiry Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 20, short.MaxValue);
                 ServiceLogger.LogException("Exception in SettlementInquiry", ex);
             }
             return _response;
@@ -104,7 +104,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In SettlementCutover Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 21, short.MaxValue);
+                //EventLog.WriteEntry("In SettlementCutover Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 21, short.MaxValue);
                 ServiceLogger.LogException("Exception in SettlementCutover", ex);
             }
             return _response;
@@ -121,7 +121,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Purchase Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 22, short.MaxValue);
+                //EventLog.WriteEntry("In Purchase Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 22, short.MaxValue);
                 ServiceLogger.LogException("Exception in Purchase", ex);
             }
             return _response;
@@ -138,7 +138,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In PurchasePlusCash Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 23, short.MaxValue);
+                //EventLog.WriteEntry("In PurchasePlusCash Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 23, short.MaxValue);
                 ServiceLogger.LogException("Exception in PurchasePlusCash", ex);
             }
             return _response;
@@ -155,7 +155,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In CashOnly Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 24, short.MaxValue);
+                //EventLog.WriteEntry("In CashOnly Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 24, short.MaxValue);
                 ServiceLogger.LogException("Exception in CashOnly", ex);
             }
             return _response;
@@ -172,7 +172,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Refund Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 25, short.MaxValue);
+                //EventLog.WriteEntry("In Refund Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 25, short.MaxValue);
                 ServiceLogger.LogException("Exception in Refund", ex);
             }
             return _response;
@@ -189,7 +189,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In ReprintLastReceipt Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 26, short.MaxValue);
+                //EventLog.WriteEntry("In ReprintLastReceipt Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 26, short.MaxValue);
                 ServiceLogger.LogException("Exception in ReprintLastReceipt", ex);
             }
             return _response;
@@ -206,7 +206,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In PrintReceipt Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 27, short.MaxValue); 
+                //EventLog.WriteEntry("In PrintReceipt Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 27, short.MaxValue); 
                 ServiceLogger.LogException("Exception in PrintReceipt", ex);
             }
             return _response;
@@ -243,7 +243,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In WaitForResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
+                //EventLog.WriteEntry("In WaitForResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
                 ServiceLogger.LogException("Exception in WaitForResponse", ex);
             }
         }
@@ -261,7 +261,7 @@ namespace MenumateServices.WCFServices
                 _waitflag = false;
                 _response.Successful = false;
                 _response.ErrorText = ex.Message;
-                EventLog.WriteEntry("In CallPaymentProvider Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 29, short.MaxValue);
+                //EventLog.WriteEntry("In CallPaymentProvider Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 29, short.MaxValue);
                 ServiceLogger.LogException("Exception in CallPaymentProvider", ex);
             }
         }
@@ -278,7 +278,7 @@ namespace MenumateServices.WCFServices
                 _response.Successful = false;
                 _response.TransactionResult = "Failed";
                 _response.ErrorText = ex.Message;
-                EventLog.WriteEntry("In Provider_OnResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 30, short.MaxValue);
+                //EventLog.WriteEntry("In Provider_OnResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 30, short.MaxValue);
                 ServiceLogger.LogException("Exception in Provider_OnResponse", ex);
             }
 
@@ -304,7 +304,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In ParseResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 31, short.MaxValue);
+                //EventLog.WriteEntry("In ParseResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 31, short.MaxValue);
                 ServiceLogger.LogException("Exception in ParseResponse", ex);
             }
         }
@@ -319,7 +319,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In GetAmount Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 32, short.MaxValue);
+                //EventLog.WriteEntry("In GetAmount Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 32, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetAmount", ex);
             }
             return retAmount;

@@ -68,6 +68,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     ServiceChargeWithTax = 0;
     IsVouchersProcessed = false;
     IgnoreLoyaltyKey = false;
+    WasSavedSales = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -84,6 +85,7 @@ TPMSClientDetails::TPMSClientDetails()
 TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransaction)
 : DBTransaction(OtherTransaction.DBTransaction) , PaymentList(new TList)
 {
+
 	Type = OtherTransaction.Type;
 	SalesType = OtherTransaction.SalesType;
 	Orders = new TList;
@@ -126,11 +128,13 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
+    WasSavedSales = OtherTransaction.WasSavedSales;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
 {
 	delete Orders;
+
 	PaymentsClear();
 	Type 					= OtherTransaction.Type;
 	SalesType 				= OtherTransaction.SalesType;
@@ -174,6 +178,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
+    WasSavedSales = OtherTransaction.WasSavedSales;
 }
 
 int __fastcall PaymentCompare(void *Item1,void *Item2)

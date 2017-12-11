@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 503
+  ClientHeight = 560
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -14,6 +14,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -21,10 +22,13 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 8
     Top = 8
     Width = 600
-    Height = 490
+    Height = 545
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
+    DesignSize = (
+      600
+      545)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -34,6 +38,19 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clMaroon
       Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label1: TLabel
+      Left = 310
+      Top = 384
+      Width = 242
+      Height = 22
+      Caption = 'Enable Customer Journey'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
@@ -229,8 +246,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbRoundingCategoryClick
     end
     object tbTipAccount: TTouchBtn
-      Left = 310
-      Top = 367
+      Left = 16
+      Top = 422
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -285,9 +302,25 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbServiceChargeMouseClick
     end
+    object cbEnableCustomerJourney: TCheckBox
+      Left = 558
+      Top = 367
+      Width = 27
+      Height = 58
+      Anchors = [akLeft]
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 0
+      OnClick = cbEnableCustomerJourneyClick
+    end
     object tbRevenueCodes: TTouchBtn
       Left = 16
-      Top = 423
+      Top = 477
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -347,7 +380,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 615
     Top = 8
     Width = 137
-    Height = 490
+    Height = 545
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

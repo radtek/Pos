@@ -145,6 +145,8 @@ class TPaymentTransaction
                 UnicodeString ReferenceNumber;
                 int FolderNumber;
                 UnicodeString RoomNumber;
+                UnicodeString FirstName;
+                UnicodeString LastName;
         } Phoenix;
 
         std::vector<TPatronType> Patrons;
@@ -207,6 +209,7 @@ class TPaymentTransaction
         void makeLogFile(UnicodeString str);
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
+        bool WasSavedSales;
         TPMSClientDetails PMSClientDetails;
 };
 

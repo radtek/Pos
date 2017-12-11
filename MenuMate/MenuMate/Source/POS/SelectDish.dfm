@@ -27,6 +27,8 @@ object frmSelectDish: TfrmSelectDish
   OnHide = FormHide
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 19
   object tgridSeats: TTouchGrid
@@ -1148,7 +1150,7 @@ object frmSelectDish: TfrmSelectDish
             object Label2: TLabel
               Left = 5
               Top = 5
-              Width = 560
+              Width = 33
               Height = 19
               Align = alTop
               Caption = 'Note'
@@ -1158,7 +1160,6 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              ExplicitWidth = 33
             end
             object memNote: TMemo
               Left = 5
@@ -1316,7 +1317,7 @@ object frmSelectDish: TfrmSelectDish
             object Label3: TLabel
               Left = 5
               Top = 5
-              Width = 560
+              Width = 88
               Height = 19
               Align = alTop
               Caption = 'Item History'
@@ -1326,7 +1327,6 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              ExplicitWidth = 88
             end
             object memOverview: TMemo
               Left = 5
@@ -3301,12 +3301,19 @@ object frmSelectDish: TfrmSelectDish
     Left = 945
     Top = 180
   end
+  object tiPMSRoom: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tiPMSRoomInputTimer
+    Left = 945
+    Top = 211
+  end
   object tmPosRefresh: TTimer
     Enabled = False
     Interval = 4000
     OnTimer = tmPosRefreshTimer
-    Left = 945
-    Top = 180
+    Left = 905
+    Top = 204
   end
   object tiClock: TTimer
     Enabled = False

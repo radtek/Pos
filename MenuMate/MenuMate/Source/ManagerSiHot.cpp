@@ -84,7 +84,7 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
 {
     std::auto_ptr<TfrmProcessing>
     (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
-    Processing->Message = "Getting Room Details , Please Wait...";
+    Processing->Message = "Syncing in progress , Please Wait...";
     Processing->Show();
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     TRoomRequest roomRequest;
@@ -121,13 +121,15 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     if(roomResponse.IsSuccessful)
     {
         _paymentTransaction.Customer.Name = _paymentTransaction.Phoenix.AccountName;
-        _paymentTransaction.Customer.RoomNumber = atoi(_paymentTransaction.Phoenix.RoomNumber.t_str());
+        _paymentTransaction.Customer.RoomNumberStr = _paymentTransaction.Phoenix.RoomNumber;
       return true;
     }
     else
     {
-      MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR);
-      return false;
+        if(roomResponse.ResponseMessage == "")
+			roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
+        if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+            return false;
     }
 }
 //---------------------------------------------------------------------------
@@ -136,10 +138,68 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
      // Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
      return siHotInterface->SendRoomRequest(_roomRequest);
-}//---------------------------------------------------------------------------
+}
+//---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
 {
+    bool roomChargeSelected = false;
+    for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+    {
+       TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+       if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+       {
+           roomChargeSelected = true;
+           break;
+       }
+    }
     bool retValue = false;
-    retValue = RoomChargePost(paymentTransaction) ;
+    if(!paymentTransaction.WasSavedSales || !roomChargeSelected)
+        retValue = RoomChargePost(paymentTransaction);
+    else
+    {
+        // Make a room request and check credit limit
+        std::vector<TSiHotAccounts> siHotAccounts;
+        siHotAccounts.clear();
+        TSiHotAccounts account;
+        account.AccountNumber = ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr;  // enter room number
+        siHotAccounts.push_back(account);
+        GetRoomStatus(siHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+        bool checkedCreditLimit = false;
+        bool creditLimitViolated = false;
+        Currency roomTender = 0;
+        for(int i = 0; i < siHotAccounts.size(); i++)
+        {
+            if(siHotAccounts[i].AccountNumber == ((TItemComplete*)paymentTransaction.Orders->Items[0])->AccNo)//AccountNumber as per item)
+            {
+                for(int j = 0; j < siHotAccounts[i].AccountDetails.size(); j++)
+                {
+                    for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+                    {
+                        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+                        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && (double)payment->GetPayTendered() > 0)
+                        {
+                            if((payment->GetPayTendered() > StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit)) &&
+                              StrToCurr(siHotAccounts[i].AccountDetails[j].CreditLimit) != 0)
+                            {
+                               creditLimitViolated = true;
+                               checkedCreditLimit = true;
+                               MessageBox("Credit Limit exceeded","Error",MB_OK + MB_ICONERROR);
+                            }
+                            else
+                                checkedCreditLimit = true;
+                            break;
+                        }
+                    }
+                    if(checkedCreditLimit)
+                        break;
+                }
+            }
+            if(checkedCreditLimit)
+                break;
+        }
+        if(checkedCreditLimit && !creditLimitViolated)
+          retValue = RoomChargePost(paymentTransaction);
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------

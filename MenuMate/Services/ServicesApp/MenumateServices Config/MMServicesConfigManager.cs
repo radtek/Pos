@@ -112,24 +112,6 @@ namespace MenumateServices_Config
         /// <summary>
         /// 
         /// </summary>
-        public string DBServerChefmateName
-        {
-            set { db_server_chefmate_name = value; }
-            get { return db_server_chefmate_name; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string DBServerChefmateFolder
-        {
-            set { db_server_chefmate_folder = value; }
-            get { return db_server_chefmate_folder; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public void SaveSettings()
         {
             if( file_uri != @"" )
@@ -139,7 +121,6 @@ namespace MenumateServices_Config
                 XmlNode dbServersNode = getDBServersNode();
 
                 XmlNode webmateDBServerNode = dbServersNode.FirstChild;
-                XmlNode chefmateDBServerNode = dbServersNode.FirstChild.NextSibling;
 
                 XMLDocManager.SetAttribute( uniqueDBServerNode, @"checked", Convert.ToString(unique_db_server));
                 XMLDocManager.SetAttribute( uniqueDBServerNode, @"name", unique_db_server_name);
@@ -149,9 +130,6 @@ namespace MenumateServices_Config
 
                 XMLDocManager.SetAttribute( webmateDBServerNode, @"name",   db_server_webmate_name);
                 XMLDocManager.SetAttribute( webmateDBServerNode, @"folder", db_server_webmate_folder);
-
-                XMLDocManager.SetAttribute( chefmateDBServerNode, @"name", db_server_chefmate_name);
-                XMLDocManager.SetAttribute( chefmateDBServerNode, @"folder", db_server_chefmate_folder);
 
                 //::::::::::::::::::::::::::::::
 
@@ -176,8 +154,6 @@ namespace MenumateServices_Config
         bool database_servers = false;
         string db_server_webmate_name = DEFAULT_DB_SERVER_NAME;
         string db_server_webmate_folder = DEFAULT_DB_FOLDER;
-        string db_server_chefmate_name = DEFAULT_DB_SERVER_NAME;
-        string db_server_chefmate_folder = DEFAULT_DB_FOLDER;
 
         /// <summary>
         /// 
@@ -241,7 +217,6 @@ namespace MenumateServices_Config
             XmlNode dbServersNode = XMLDocManager.AddNode(config_file_doc, databasesNode, @"DBServers");
 
             XmlNode webmateDBServerNode = XMLDocManager.AddNode(config_file_doc, dbServersNode, @"WebmateDBServer");
-            XmlNode chefmateDBServerNode = XMLDocManager.AddNode(config_file_doc, dbServersNode, @"ChefmateDBServer");
 
             XMLDocManager.AddAttribute(config_file_doc, uniqueDBServerNode, @"checked", @"true");
             XMLDocManager.AddAttribute(config_file_doc, uniqueDBServerNode, @"name", DEFAULT_DB_SERVER_NAME);
@@ -251,9 +226,6 @@ namespace MenumateServices_Config
 
             XMLDocManager.AddAttribute(config_file_doc, webmateDBServerNode, @"name", DEFAULT_DB_SERVER_NAME);
             XMLDocManager.AddAttribute(config_file_doc, webmateDBServerNode, @"folder", DEFAULT_DB_FOLDER);
-
-            XMLDocManager.AddAttribute(config_file_doc, chefmateDBServerNode, @"name", DEFAULT_DB_SERVER_NAME);
-            XMLDocManager.AddAttribute(config_file_doc, chefmateDBServerNode, @"folder", DEFAULT_DB_FOLDER);
 
             //::::::::::::::::::::::::::::::
 
@@ -272,8 +244,6 @@ namespace MenumateServices_Config
             database_servers = readDatabaseServers();
             string db_server_webmate_name = readDBServerWebmateName();
             string db_server_webmate_folder = readDBServerWebmateFolder();
-            string db_server_chefmate_name = readDBServerChefmateName();
-            string db_server_chefmate_folder = readDBServerChefmateFolder();
         }
 
         /// <summary>
@@ -421,60 +391,6 @@ namespace MenumateServices_Config
             {
                 XmlNode dbServersNode = getDBServersNode();
                 XmlNode webmateDBServerNode = dbServersNode.FirstChild;
-
-                result = XMLDocManager.GetAttribute(webmateDBServerNode, @"folder", DEFAULT_DB_FOLDER);
-            }
-            catch
-            {
-                result = DEFAULT_DB_FOLDER;
-            }
-
-            //:::::::::::::::::::::::::::::::::
-
-            return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string readDBServerChefmateName()
-        {
-            string result = DEFAULT_DB_SERVER_NAME;
-
-            //:::::::::::::::::::::::::::::::::
-
-            try
-            {
-                XmlNode dbServersNode = getDBServersNode();
-                XmlNode webmateDBServerNode = dbServersNode.FirstChild.NextSibling;
-
-                result = XMLDocManager.GetAttribute(webmateDBServerNode, @"name", DEFAULT_DB_SERVER_NAME);
-            }
-            catch
-            {
-                result = DEFAULT_DB_SERVER_NAME;
-            }
-
-            //:::::::::::::::::::::::::::::::::
-
-            return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private string readDBServerChefmateFolder()
-        {
-            string result = DEFAULT_DB_FOLDER;
-
-            //:::::::::::::::::::::::::::::::::
-
-            try
-            {
-                XmlNode dbServersNode = getDBServersNode();
-                XmlNode webmateDBServerNode = dbServersNode.FirstChild.NextSibling;
 
                 result = XMLDocManager.GetAttribute(webmateDBServerNode, @"folder", DEFAULT_DB_FOLDER);
             }

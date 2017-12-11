@@ -275,7 +275,6 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\NLog.config";                 DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AccountingConfig.exe";              DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\Loyaltymate.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\Thorlink.Net.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SplitButton.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion; 
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\FirebirdSql.Data.FirebirdClient.dll"; DestDir: "{app}\Menumate Services\"; Flags: ignoreversion; 
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\MenumateUtils.dll";           DestDir: "{app}\Menumate Services\"; Flags: ignoreversion; 

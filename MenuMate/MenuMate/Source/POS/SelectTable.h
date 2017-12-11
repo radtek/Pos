@@ -15,6 +15,7 @@
 #include "TouchControls.h"
 #include "TouchGrid.h"
 #include <set>
+#include "MezzanineDetails.h"
 
 #include "MM_DBCore.h"
 #include "ZForm.h"
@@ -42,6 +43,10 @@ private:	// User declarations
     void SetColorAsPerNoServiceTime(TGridButton *GridButton,TDateTime OrderTime);
     void UpdateFloorPlanSheet();
 //    TfrmSelectTable *frmSelectTable;
+    void SetMezzanineTablesColor();
+    void UpdateColor(int tableNo, bool isSelected);
+    std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
+    std::set<int> AssignedMezzanineTable;
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	BEGIN_MESSAGE_MAP
@@ -54,7 +59,9 @@ public:		// User declarations
    AnsiString SelectedTabContainerName;
    AnsiString SelectedPartyName;
    bool ShowAll;
-   bool ChangingName;	
+   bool ChangingName;
+   //For Mezzanine
+   int TableMode;
 };
 //---------------------------------------------------------------------------
 class TTableSelector : public TObject
