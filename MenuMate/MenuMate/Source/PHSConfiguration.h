@@ -60,7 +60,6 @@ __published:	// IDE-managed Components
     void __fastcall tbRevenueCodesClick(TObject *Sender);
     void __fastcall tbServingTimeMouseClick(TObject *Sender);
     void __fastcall tbRevenueCentreMouseClick(TObject *Sender);
-    void __fastcall FormCreate(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
