@@ -8539,7 +8539,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 			}
 			frmProcessing->Close();
 
-			if (!OrdersPending()) // All Orders Posted No Exceptions
+			if (!OrdersPending() && IsChitPromptFormActive) // All Orders Posted No Exceptions
 			{
                 if( (OrderContainer.Location["BillOff"] ) && (OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp ))
                 {
@@ -9033,8 +9033,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
                 }
 
-				if (!OrdersPending()) // All Orders Posted No Exceptions
-				{
+				if (!OrdersPending() && IsChitPromptFormActive) // All Orders Posted No Exceptions
+				{    
 					if (OrderContainer.Location["BillOff"])
 					{
 					    TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
