@@ -12747,7 +12747,7 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     {
         qrSalesSummaryB->SQL->Text = qrSalesSummaryB->SQL->Text +
         "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
-    }
+    }                                                                    s
 
     qrSalesSummaryB->SQL->Text = qrSalesSummaryB->SQL->Text +
     // Total Discount
