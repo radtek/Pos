@@ -1302,8 +1302,8 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
             DBTransaction.Commit();
         }
 
-		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected))
-		{
+		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected) && IsChitPromptFormActive)
+		{     
               if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
               {
                  MessageBox("No Item Found, Press OK to continue.", "No Item Found", MB_OK + MB_ICONWARNING);
@@ -4841,7 +4841,7 @@ bool TfrmSelectDish::CloseChitForm()
         (Screen->ActiveForm->Name == "frmChitList")         ||
         (Screen->ActiveForm->Name == "frmMessageBox") ||
         Screen->ActiveForm->ClassNameIs("TfrmSelectDateTime"))
-    {
+    {    
         CloseChitRetval=true;
     }
     return CloseChitRetval;
@@ -14877,7 +14877,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
-{
+{    
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
     bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
