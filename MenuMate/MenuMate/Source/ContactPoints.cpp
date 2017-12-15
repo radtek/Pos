@@ -747,11 +747,11 @@ void TContactPoints::toHTML(TStringList *Report)
     Report->Add(TempRow);
 }
 
-void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction)
+void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction,bool IsallowtoEarn)
 {
      if(((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && memberType == 1) || (TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate )) && (!isRefundTransaction))
     {
-        CalcEarned(OrdersList);
+         CalcEarned(OrdersList, IsallowtoEarn);
     }
      else if(isRefundTransaction)
     {
@@ -814,9 +814,10 @@ Currency TContactPoints::CalcLoadedPointsValue(TList *OrdersList)
 and updates the PointsStore.
 
 This Order List is Flattened no special case for sides is required or should be called.*/
-void TContactPoints::CalcEarned(TList *OrdersList)
+void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
 {
     Currency TotalPointsEarned = 0;
+    IsallowtoEarnPoints= IsallowtoEarns;
     if(OrdersList->Count > 0)
     {
        /* You can earn point on either protion of ProductValue
@@ -832,7 +833,7 @@ void TContactPoints::CalcEarned(TList *OrdersList)
         bool OnlyEarnsOnPointsSpend = PointsRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
         bool AllowedToEarnOnPointsSpend_Global = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
         bool OnlyEarnsOnPointsSpend_Global = TGlobalSettings::Instance().SystemRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
-
+        bool ShowScreentoSelectItemForPoint = TGlobalSettings::Instance().ShowScreenToSelectItemForPoint ;
         if(AllowedToEarnPoints)
         {
             std::auto_ptr<TList> SortedOrdersByPointsPercent(new TList);
@@ -840,7 +841,7 @@ void TContactPoints::CalcEarned(TList *OrdersList)
             {
                 TItemMinorComplete *Order = (TItemMinorComplete *) OrdersList->Items[i];
                 /* If the Order earns Points Added it */
-                if(Order->PointsPercent != 0 || ( !AllowedToEarnOnPointsSpend_Global && Order->PointsPercent == 0))
+                if(Order->PointsPercent != 0)
                 {
                    SortedOrdersByPointsPercent->Add(Order);
                 }
@@ -918,15 +919,28 @@ void TContactPoints::CalcEarned(TList *OrdersList)
                         {
                             MaxPointsForThisItem = double(Order->PointsPercent * double(Order->TotalPriceAdjustment()) / 100.0);
                         }
-
-                        Order->PointsEarned = MaxPointsForThisItem;
-                        TotalPointsEarned += Order->PointsEarned;
+                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend))
+                        {
+                           Order->PointsEarned = 0;
+                        }
+                        else
+                        {
+                            Order->PointsEarned = MaxPointsForThisItem;
+                            TotalPointsEarned += Order->PointsEarned;
+                        }
                         TotalAssableValue -= Order->TotalPriceAdjustment();
                     }
                     else if(TotalAssableValue > 0)
                     {
-                        Order->PointsEarned = double(Order->PointsPercent * double(TotalAssableValue) / 100.0);
-                        TotalPointsEarned += Order->PointsEarned;
+                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend))
+                        {
+                           Order->PointsEarned = 0;
+                        }
+                        else
+                        {
+                            Order->PointsEarned = double(Order->PointsPercent * double(TotalAssableValue) / 100.0);
+                            TotalPointsEarned += Order->PointsEarned;
+                        }
                         TotalAssableValue -= TotalAssableValue;
                     }
                     else

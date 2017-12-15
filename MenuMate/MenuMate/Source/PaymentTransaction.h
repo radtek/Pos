@@ -16,6 +16,7 @@
 #include "Payment.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
+#include "ContactPoints.h"
 
 
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};
@@ -195,6 +196,7 @@ class TPaymentTransaction
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
         bool WasSavedSales;
+        bool IsallowtoEarn;
 };
 
 #endif
