@@ -152,16 +152,6 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRoundingCategory->Enabled = false;
         cbEnableCustomerJourney->Enabled = true;
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
-        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
-        {
-           tbFiscalStorage->Caption = "Fiscal Storage\rEnabled";
-           tbFiscalStorage->ButtonColor = clGreen;
-        }
-        else
-        {
-           tbFiscalStorage->Caption = "Fiscal Storage\rDisabled";
-           tbFiscalStorage->ButtonColor = clRed;
-        }
     }
     else
     {
@@ -170,7 +160,6 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
-        tbFiscalStorage->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -544,40 +533,6 @@ void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Send
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableCustomerJourney, TGlobalSettings::Instance().EnableCustomerJourney);
     DBTransaction.Commit();
-}
-
-void __fastcall TfrmPHSConfiguration::tbFiscalStorageMouseClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-    TVerticalSelection Item;
-
-    TVerticalSelection Item1;
-    Item1.Title = "Enable";
-    Item1.Properties["Action"] = IntToStr(1);
-    Item1.Properties["Color"] = IntToStr(clGreen);
-    Item1.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item1);
-
-    TVerticalSelection Item2;
-    Item2.Title = "Disable";
-    Item2.Properties["Action"] = IntToStr(2);
-    Item2.Properties["Color"] = IntToStr(clRed);
-    Item2.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item2);
-
-    TVerticalSelection Item3;
-    Item1.Title = "IP Address";
-    Item1.Properties["Action"] = IntToStr(3);
-    Item1.Properties["Color"] = IntToStr(clGreen);
-    Item1.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item1);
-
-    TVerticalSelection Item4;
-    Item2.Title = "Port Number";
-    Item2.Properties["Action"] = IntToStr(4);
-    Item2.Properties["Color"] = IntToStr(clRed);
-    Item2.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item2);
 }
 //---------------------------------------------------------------------------
 

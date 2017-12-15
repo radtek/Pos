@@ -3533,6 +3533,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
+    bool FiscalTransaction = true;
 
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
@@ -3561,6 +3562,12 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if(!PhoenixHSOk)
 	   return RetVal;
 
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        FiscalTransaction = true; // Send Data to Fiscal Box
+    }
+    if(!FiscalTransaction)
+        return RetVal;
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)
@@ -3614,8 +3621,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
-             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
+             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction && FiscalTransaction;
 	return RetVal;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::SendDataToFiscalBox(TPaymentTransaction &paymentTransaction)
+{
+
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessChequePayment(TPaymentTransaction &PaymentTransaction)

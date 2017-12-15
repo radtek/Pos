@@ -42,7 +42,7 @@ object frmSetup: TfrmSetup
     Top = 1
     Width = 918
     Height = 726
-    ActivePage = tsApplications
+    ActivePage = tsPrinters
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack

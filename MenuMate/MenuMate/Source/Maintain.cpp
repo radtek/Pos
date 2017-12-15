@@ -73,6 +73,8 @@
 
 #include "SetupGlCodes.h"
 #include "ManagerClippIntegration.h"
+#include "FiscalDataManager.h"
+#include "SetUpPosPlus.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -226,6 +228,16 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
     {
         TouchBtnRunRateBoard->ButtonColor = clRed;
        TouchBtnRunRateBoard->Caption = "Run Rate Board\r[Disabled]";
+    }
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        TouchBtnFiscalStorage->ButtonColor = clGreen;
+        TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+    }
+    else
+    {
+        TouchBtnFiscalStorage->ButtonColor = clRed;
+        TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
     }
 }
 //---------------------------------------------------------------------------
@@ -4083,6 +4095,184 @@ bool TfrmMaintain::SetUpPhoenix()
         tbPHSInterface->ButtonColor = clRed;
     }
     return keepFormAlive;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
+{
+     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+     DBTransaction.StartTransaction();
+     try
+     {
+    	TMMContactInfo TempUserInfo;
+    	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+    	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+    	DBTransaction.Commit();
+
+    	if (Result == lsAccepted)
+    	{
+            DBTransaction.StartTransaction();
+//    		while(DisplayFiscalSettings() != false);
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->ShowModal();
+            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            {
+                TouchBtnFiscalStorage->ButtonColor = clGreen;
+                TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+            }
+            else
+            {
+                TouchBtnFiscalStorage->ButtonColor = clRed;
+                TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
+            }
+    	}
+    	else if (Result == lsDenied)
+    	{
+    		MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+    	}
+    	else if (Result == lsPINIncorrect)
+    	{
+    		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+    	}
+     }
+     catch (Exception &Exc)
+     {
+         DBTransaction.Rollback();
+         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+     }
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::DisplayFiscalSettings()
+{
+    bool keepFormAlive = true;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "Configure\r";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+//
+//        TVerticalSelection Item2;
+//        Item2.Title = "Server Port Number\r" + IntToStr(TGlobalSettings::Instance().FiscalServerPortNumber);
+//        Item2.Properties["Action"] = IntToStr(2);
+//        Item2.Properties["Color"] = IntToStr(clNavy);
+//        Item2.CloseSelection = true;
+//        SelectionForm->Items.push_back(Item2);
+
+
+        TVerticalSelection Item3;
+        Item3.Title = "Enable/Disable";
+        Item3.Properties["Action"] = IntToStr(3);
+        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            Item3.Properties["Color"] = IntToStr(clGreen);
+        else
+            Item3.Properties["Color"] = IntToStr(clRed);
+        Item3.CloseSelection = true;
+        SelectionForm->Items.push_back(Item3);
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            switch(Action)
+            {
+                case 1:
+                {
+//                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+//                    frmTouchKeyboard->MaxLength = 20;
+//                    frmTouchKeyboard->AllowCarriageReturn = false;
+//                    frmTouchKeyboard->StartWithShiftDown = false;
+//                    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().FiscalServerIP;
+//                    frmTouchKeyboard->Caption = "Enter Server IP Address.";
+//                    if (frmTouchKeyboard->ShowModal() == mrOk)
+//                    {
+//                        TGlobalSettings::Instance().FiscalServerIP = frmTouchKeyboard->KeyboardText;
+//                        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmFiscalServerIP,TGlobalSettings::Instance().FiscalServerIP);
+//                        DBTransaction.Commit();
+//                        DBTransaction.StartTransaction();
+//                    }
+
+
+                    break;
+                }
+                case 2:
+                {
+                    std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+                    frmTouchNumpad->Caption = "Enter Server Port Number.";
+                    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                    frmTouchNumpad->btnSurcharge->Visible = true;
+                    frmTouchNumpad->btnDiscount->Visible = false;
+                    frmTouchNumpad->Mode = pmNumber;
+                    frmTouchNumpad->SetMaxLengthValue(5);
+                    frmTouchNumpad->INTInitial = TGlobalSettings::Instance().FiscalServerPortNumber;
+                    if (frmTouchNumpad->ShowModal() == mrOk)
+                    {
+                        TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
+                        TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,TGlobalSettings::Instance().FiscalServerPortNumber);
+                        DBTransaction.Commit();
+                        DBTransaction.StartTransaction();
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                    {
+                        TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsFiscalStorageEnabled,TGlobalSettings::Instance().IsFiscalStorageEnabled);
+                    }
+                    else
+                    {
+                        if(TGlobalSettings::Instance().FiscalServerPortNumber == 0)
+                        {
+                            MessageBox("Fiscal Storage functionality can not be enabled without providing configuration details","Error", MB_OK + MB_ICONERROR);
+                        }
+                        else
+                        {
+                            if(ConnectToFiscalServer())
+                            {
+                                TGlobalSettings::Instance().IsFiscalStorageEnabled = true;
+                                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsFiscalStorageEnabled,TGlobalSettings::Instance().IsFiscalStorageEnabled);
+                                keepFormAlive = false;
+                                DBTransaction.Commit();
+                                DBTransaction.StartTransaction();
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        else
+          keepFormAlive = false;
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+        MessageBox(Exc.Message,"Error",MB_OK);
+        DBTransaction.Rollback();
+    }
+    DBTransaction.Commit();
+    return keepFormAlive;
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::ConnectToFiscalServer()
+{
+    std::auto_ptr<TFiscalDataManager> fiscalManager(new TFiscalDataManager());
+    bool retValue = fiscalManager->CheckFiscalDetails();
+    return retValue;
 }
 //---------------------------------------------------------------------------
 

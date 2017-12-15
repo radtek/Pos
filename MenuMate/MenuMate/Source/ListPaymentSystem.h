@@ -221,6 +221,7 @@ protected:
      bool ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt);
      bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
      void SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction);
+     bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
 };
 
 #endif

@@ -491,6 +491,16 @@ public:
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
     bool IsFiscalStorageEnabled;
+    int FiscalServerPortNumber;
+    int FiscalBaudRate;
+    int FiscalDataBits;
+    int FiscalStopBits;
+    int FiscalParityBits;
+    int FiscalRTSFlowControl;
+    bool FiscalOutCTSFlow;
+    bool FiscalXonXoffOut;
+    bool FiscalXonXoffIn;
+    bool FiscalAsync;
 };
 
 #endif

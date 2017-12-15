@@ -3236,9 +3236,54 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",
 		vmg3rdPartyInterface, false);
-        SetVarBool(DBTransaction,vmIsFiscalStorageEnabled, "PMS Enable Fiscal Storage",
-		"when this is enabled data will be stored to Fiscal Box./r"
-		"Default is false ",
+
+        SetVarBool(DBTransaction,vmIsFiscalStorageEnabled,"Fiscal Storage Enabling",
+        "When this is enabled, bill details will get stored to Fiscal Box.\r"
+        "Default is false",
+        vmg3rdPartyInterface, false);
+
+		SetVarInt(DBTransaction,vmFiscalServerPortNumber, "Fiscal Server Port Number",
+		"Fiscal Server IP Address.\r"
+		"Default is 0.",
+		vmg3rdPartyInterface, 0);
+
+		SetVarInt(DBTransaction,vmFiscalBaudRate, "Fiscal Port Baud Rate",
+		"The serial port Baud Rate.\r"
+		"Default is 57600, (ENUM of an internal List)",
+		vmg3rdPartyInterface, br57600);
+
+		SetVarInt(DBTransaction,vmFiscalDataBits, "Fiscal Port Databits",
+		"The serial port Databits.\r"
+		"Default is 8, (ENUM of an internal List)",
+		vmg3rdPartyInterface, dbEight);
+
+		SetVarInt(DBTransaction,vmFiscalStopBits, "Fiscal Port Stop Bits",
+		"The serial port Stop Bits.\r"
+		"Default is 1, (ENUM of an internal List)",
+		vmg3rdPartyInterface, sbOneStopBit);
+
+		SetVarInt(DBTransaction,vmFiscalParityBits, "Fiscal Port Parity Bits",
+		"Default is None",
+		vmg3rdPartyInterface, prNone);
+
+		SetVarInt(DBTransaction,vmFiscalRTSFlowControl, "Fiscal Port RTS Control",
+		"Default is Handshaking",
+		vmg3rdPartyInterface, rtsHandshake);
+
+		SetVarBool(DBTransaction,vmFiscalOutCTSFlow, "Fiscal Port CTS Control",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalXonXoffOut, "Fiscal Port Xon Xoff Out Control",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalAsync, "Fiscal Port runs Asynchronously",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalXonXoffIn, "Fiscal Port Xon Xoff In Control",
+		"Default is false",
 		vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)

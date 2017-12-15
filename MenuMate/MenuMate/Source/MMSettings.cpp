@@ -395,8 +395,22 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
+
         TGlobalSettings::Instance().EnableCustomerJourney = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableCustomerJourney, false);
-        TGlobalSettings::Instance().IsFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFiscalStorageEnabled, false);
+//        TGlobalSettings::Instance().IsFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction,vmIsFiscalStorageEnabled,false);
+
+//        TGlobalSettings::Instance().FiscalServerPortNumber = TManagerVariable::Instance().GetInt(DBTransaction, vmFiscalServerPortNumber, 0);
+//
+//        TGlobalSettings::Instance().FiscalBaudRate       = TManagerVariable::Instance().GetInt(DBTransaction, vmFiscalBaudRate, 0);
+//        TGlobalSettings::Instance().FiscalDataBits       = TManagerVariable::Instance().GetStr(DBTransaction, vmFiscalDataBits, 0);
+//        TGlobalSettings::Instance().FiscalStopBits       = TManagerVariable::Instance().GetInt(DBTransaction, vmFiscalStopBits, 0);
+//        TGlobalSettings::Instance().FiscalParityBits     = TManagerVariable::Instance().GetStr(DBTransaction, vmFiscalParityBits, 0);
+//        TGlobalSettings::Instance().FiscalRTSFlowControl = TManagerVariable::Instance().GetInt(DBTransaction, vmFiscalRTSFlowControl, 0);
+//
+//        TGlobalSettings::Instance().FiscalOutCTSFlow     = TManagerVariable::Instance().GetBool(DBTransaction, vmFiscalServerIP, false);
+//        TGlobalSettings::Instance().FiscalXonXoffOut     = TManagerVariable::Instance().GetBool(DBTransaction, vmFiscalServerPortNumber, false);
+//        TGlobalSettings::Instance().FiscalXonXoffIn      = TManagerVariable::Instance().GetBool(DBTransaction, vmFiscalServerIP, false);
+//        TGlobalSettings::Instance().FiscalAsync          = TManagerVariable::Instance().GetBool(DBTransaction, vmFiscalAsync, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
@@ -437,5 +451,5 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName);
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths);
     TManagerVariable::Instance().GetProfileBool(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport);
-    }
+}
 

@@ -32,7 +32,10 @@ void TApplyParser::upgrade6_43Tables()
 {
     update6_43Tables();
 }
-
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -437,4 +440,56 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         inDBControl);
     }
 }
+//------------------------------------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+    CreateGenerator6_45(_dbControl);
+    CreateTableFiscalData6_45(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateGenerator6_45(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_FISCAL_DATA_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_FISCAL_DATA_KEY;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_FISCAL_DATA_KEY TO 0;", inDBControl
+        );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTableFiscalData6_45(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "FISCAL_DATA", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE FISCAL_DATA "
+		"( "
+		"   FISCAL_DATA_KEY INT NOT NULL PRIMARY KEY,"
+        "   INVOICE_NUMBER VARCHAR(50), "
+		"   DATETIME VARCHAR(12),"
+        "   CASH_REGISTER_ID VARCHAR(16), "
+        "   SERIAL_NUMBER VARCHAR(12),"
+        "   TYPE VARCHAR(10), "
+        "   AMOUNT  VARCHAR(15), "
+        "   VAT_RATE1 VARCHAR(15), "
+        "   VAT_AMOUNT1  VARCHAR(15), "
+        "   VAT_RATE2 VARCHAR(15), "
+        "   VAT_AMOUNT2  VARCHAR(15), "
+        "   VAT_RATE3 VARCHAR(15), "
+        "   VAT_AMOUNT3  VARCHAR(15), "
+        "   VAT_RATE4 VARCHAR(15), "
+        "   VAT_AMOUNT4  VARCHAR(15), "
+        "   CRC_VALUE VARCHAR(15), "
+        "   VAT_AMOUNT4  VARCHAR(15), "
+        "   RESPONSE_CODE VARCHAR(5), "
+        "   IS_POSTED_TO_POSPLUS char(1) default 'F'"
+		");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
 }

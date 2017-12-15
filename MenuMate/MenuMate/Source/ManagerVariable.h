@@ -214,7 +214,9 @@ enum vmVariables
 
      //Panasonic Integration
     vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,
-    vmPMSType,vmIsFiscalStorageEnabled,
+    vmPMSType, vmIsFiscalStorageEnabled, vmFiscalServerPortNumber,
+    vmFiscalBaudRate, vmFiscalDataBits,vmFiscalStopBits,vmFiscalParityBits,
+    vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync
 };
 
 // ---------------------------------------------------------------------------

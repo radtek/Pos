@@ -66,6 +66,8 @@ public:		// User declarations
    bool XonXoffOut;
    bool XonXoffIn;
    bool Async;
+//   void AssignFiscalSettings();
+//   void LoadFiscalSettings();
 };
 //---------------------------------------------------------------------------
 #endif
