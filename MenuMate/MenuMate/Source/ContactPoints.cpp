@@ -907,7 +907,6 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                     if(fabs(TotalAssableValue) >= fabs(Order->TotalPriceAdjustment()))
                     {
                         Currency MaxPointsForThisItem;
-
                         bool isWeightedItem = Order->WeightedPrice.WeightedItem;
                         if(isWeightedItem && TGlobalSettings::Instance().EarntPointsOnWeight)
                         {
@@ -919,7 +918,7 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                         {
                             MaxPointsForThisItem = double(Order->PointsPercent * double(Order->TotalPriceAdjustment()) / 100.0);
                         }
-                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend))
+                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
                         {
                            Order->PointsEarned = 0;
                         }
@@ -932,7 +931,7 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                     }
                     else if(TotalAssableValue > 0)
                     {
-                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend))
+                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
                         {
                            Order->PointsEarned = 0;
                         }
