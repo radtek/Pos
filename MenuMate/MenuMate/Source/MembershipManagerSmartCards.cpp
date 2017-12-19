@@ -983,9 +983,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
              LoyaltymateCardInsertedHandler(Sender);
            else
-           {
              LocalCardInsertedHandler(Sender);
-           }
 		}
 		__finally
 		{
