@@ -983,7 +983,9 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
              LoyaltymateCardInsertedHandler(Sender);
            else
+           {
              LocalCardInsertedHandler(Sender);
+           }
 		}
 		__finally
 		{
@@ -993,7 +995,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 	catch(Exception & E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-	}	//
+	}
 }
 
 void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sender)
@@ -1014,7 +1016,6 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
     // are held points to be saved to the card.
     TDateTime SmartCardLastModified = SmartCardContact.LastModified;
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
-
     if (SmartCardContact.ContactKey == 0)
     {
         if(SmartCardContact.MemberType == 0)
@@ -1028,7 +1029,14 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
                SmartCardContact.MemberType = 1;
             }
         }
-        MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        if(!ValidateEmailInDB(SmartCardContact))
+        {
+            MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
+            MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        }
         DBTransaction.Commit();
         DBTransaction.StartTransaction();
     }
@@ -1128,7 +1136,6 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
 
         }
     }
-
     DBTransaction.Commit();
 }
 
