@@ -458,7 +458,6 @@ void TPaymentTransaction::ProcessPoints()
    // Put all the orders in a list includeing there sides so there is no special
    // code for sides.
    std::auto_ptr<TList> PointsOrdersList(new TList);
-   std::auto_ptr<TContactPoints> ContactPoints(new TContactPoints);
    IsallowtoEarn = false;
    bool isRefundTransaction = false;
    if(Orders != NULL)

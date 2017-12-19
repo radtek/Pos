@@ -907,6 +907,7 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                     if(fabs(TotalAssableValue) >= fabs(Order->TotalPriceAdjustment()))
                     {
                         Currency MaxPointsForThisItem;
+
                         bool isWeightedItem = Order->WeightedPrice.WeightedItem;
                         if(isWeightedItem && TGlobalSettings::Instance().EarntPointsOnWeight)
                         {
