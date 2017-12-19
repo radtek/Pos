@@ -747,11 +747,11 @@ void TContactPoints::toHTML(TStringList *Report)
     Report->Add(TempRow);
 }
 
-void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction,bool IsallowtoEarn)
+void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction,bool HasReedeempoints)
 {
      if(((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && memberType == 1) || (TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate )) && (!isRefundTransaction))
     {
-         CalcEarned(OrdersList, IsallowtoEarn);
+         CalcEarned(OrdersList, HasReedeempoints);
     }
      else if(isRefundTransaction)
     {
@@ -814,10 +814,11 @@ Currency TContactPoints::CalcLoadedPointsValue(TList *OrdersList)
 and updates the PointsStore.
 
 This Order List is Flattened no special case for sides is required or should be called.*/
-void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
+void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarnWhileRedeem)
 {
     Currency TotalPointsEarned = 0;
-    IsallowtoEarnPoints= IsallowtoEarns;
+    bool IsallowtoEarnWhileRedeeming;
+    IsallowtoEarnWhileRedeeming = IsallowtoEarnWhileRedeem;
     if(OrdersList->Count > 0)
     {
        /* You can earn point on either protion of ProductValue
@@ -919,7 +920,7 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                         {
                             MaxPointsForThisItem = double(Order->PointsPercent * double(Order->TotalPriceAdjustment()) / 100.0);
                         }
-                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
+                        if((IsallowtoEarnWhileRedeeming && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnWhileRedeeming && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
                         {
                            Order->PointsEarned = 0;
                         }
@@ -932,7 +933,7 @@ void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarns)
                     }
                     else if(TotalAssableValue > 0)
                     {
-                        if((IsallowtoEarnPoints && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnPoints && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
+                        if((IsallowtoEarnWhileRedeeming && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnWhileRedeeming && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
                         {
                            Order->PointsEarned = 0;
                         }
