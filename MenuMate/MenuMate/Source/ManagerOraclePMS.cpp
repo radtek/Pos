@@ -214,6 +214,7 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
         TPostRoomInquiry postRoomRequest;
         postRoomRequest.InquiryInformation = _roomNumber;
         oracledata->CreatePostRoomInquiry(postRoomRequest);
+//        MessageBox(postRoomRequest.WorkstationId,"WORKSTATIONID12",MB_OK);
         TiXmlDocument doc = oracledata->CreateRoomInquiryXML(postRoomRequest);
         AnsiString resultData = "";
         AnsiString data = oracledata->SerializeOut(doc);

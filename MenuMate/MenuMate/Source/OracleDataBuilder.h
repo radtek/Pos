@@ -46,10 +46,13 @@ class TOracleDataBuilder
         void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &postRequest);
         void AddInvoiceAttrs(TiXmlElement *rootNode,TPostRoomInquiry &postRoomInquiry);
         void ExtractDiscount(std::map<int, double> &discMap, TItemComplete *itemComplete,double portion);
-        void ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,TItemComplete *itemComplete,double portion);
+        void ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,
+                             std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap,
+                             TItemComplete *itemComplete,double portion);
         void ExtractTaxes(TItemComplete *itemComplete,std::vector<TTax> &taxVector,double portion);
         void ExtractServiceCharges(std::vector<TServiceCharge> serviceChargeVector, TItemComplete *itemComplete);
-        double CalculateTotal(std::map<int,double> subtotals,std::vector<TTax> taxVector,std::map<int, double> discMap);
+        double CalculateTotal(std::map<int,double> subtotals,std::map<int, double> discMap,
+                              std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap );
         void ExtractServiceCharge();
         TiXmlDocument PrepareXMLDocument();
 };

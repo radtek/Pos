@@ -55,8 +55,12 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         postRoomInquiry.Time = Now().FormatString( "HHMMSS");
         postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         postRoomInquiry.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
-//                                   TDeviceRealTerminal::Instance().User.Surname;
-        postRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().BasePMS->POSID;
+                                   TDeviceRealTerminal::Instance().User.Surname;
+        char* id = new char[20];
+        itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
+        postRoomInquiry.WorkstationId = id;//TDeviceRealTerminal::Instance().BasePMS->POSID;
+//        MessageBox(TDeviceRealTerminal::Instance().BasePMS->POSID,"TDeviceRealTerminal::Instance().BasePMS->POSID",MB_OK);
+//        MessageBox(postRoomInquiry.WorkstationId,"WORKSTATIONID1",MB_OK);
         DBTransaction.Commit();
     }
 	catch(Exception &E)
@@ -80,30 +84,22 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         discMap.clear();
         std::vector<TTax> taxVector;
         std::map<int,double> subtotals;
+        std::map<int,double> taxMap;
+        std::map<int,double> serviceChargeMap;
+        taxMap.clear();
+        serviceChargeMap.clear();
         taxVector.clear();
         subtotals.clear();
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
         {
             TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
             // calculation of subtotal
-            ExtractSubTotal(subtotals,discMap, itemComplete, portion);
-            // calculation of taxes
-            if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
-                ExtractTaxes(itemComplete,taxVector,portion);
-            // calculation of service Charge
-            if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-                serviceCharge += (double)itemComplete->BillCalcResult.ServiceCharge.Value;
+            ExtractSubTotal(subtotals,discMap,taxMap,serviceChargeMap, itemComplete, portion);
             for(int k = 0; k < itemComplete->SubOrders->Count; k++)
             {
                 TItemComplete *itemCompleteSub = (TItemComplete*)itemComplete->SubOrders->Items[k];
                 // calculation of subtotal
-                ExtractSubTotal(subtotals,discMap, itemCompleteSub, portion);
-                // calculation of taxes
-                if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
-                    ExtractTaxes(itemCompleteSub,taxVector,portion);
-                // calculation of service Charge
-                if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-                    serviceCharge += (double)itemCompleteSub->BillCalcResult.ServiceCharge.Value;
+                ExtractSubTotal(subtotals,discMap,taxMap, serviceChargeMap, itemCompleteSub, portion);
             }
         }
 
@@ -113,8 +109,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         paymentMethod = payment->PaymentThirdPartyID;
 
 
-        double total = CalculateTotal(subtotals,taxVector,discMap);
-        total += serviceCharge;
+        double total = CalculateTotal(subtotals,discMap, taxMap, serviceChargeMap);
         total += tip;
         total += (double)payment->GetAdjustment();
         Currency patronCount = 0;
@@ -184,25 +179,36 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
            }
            postRequest.Discount.push_back(str);
         }
-
-        data = RoundTo((double)serviceCharge, -2);
-        data = data * 100;
-        postRequest.ServiceCharge.push_back(data);
-        for(int i = 0; i < taxVector.size(); i++)
+        std::map<int,double>::iterator itTaxMap =  taxMap.begin();
+        for(;itTaxMap != taxMap.end(); advance(itTaxMap,1))
         {
-            double value = RoundTo(taxVector[i].Value * 100,-2);
-            AnsiString str = (AnsiString)value;
-            if(str.Pos(".") != 0)
-            {
-                str = str.SubString(1,str.Pos(".")-1);
-            }
-            postRequest.Tax.push_back(str);
+           double value = RoundTo((double)itTaxMap->second, -2) * 100;
+           AnsiString str = (AnsiString)value;
+           if(str.Pos(".") != 0)
+           {
+              str = str.SubString(1,str.Pos(".")-1);
+           }
+           postRequest.Tax.push_back(str);
+        }
+
+        std::map<int,double>::iterator itServiceChargeMap =  serviceChargeMap.begin();
+        for(;itServiceChargeMap != serviceChargeMap.end(); advance(itServiceChargeMap,1))
+        {
+           double value = RoundTo((double)itServiceChargeMap->second, -2) * 100;
+           AnsiString str = (AnsiString)value;
+           if(str.Pos(".") != 0)
+           {
+              str = str.SubString(1,str.Pos(".")-1);
+           }
+           postRequest.ServiceCharge.push_back(str);
         }
         postRequest.Date = Now().FormatString( "YYMMDD");
         postRequest.Time = Now().FormatString( "HHMMSS");
         postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                TDeviceRealTerminal::Instance().User.Surname;
-        postRequest.WorkstationId = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        char* id = new char[20];
+        itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
+        postRequest.WorkstationId = id;//TDeviceRealTerminal::Instance().BasePMS->POSID;
     }
 	catch(Exception &E)
 	{
@@ -236,6 +242,7 @@ TiXmlDocument TOracleDataBuilder::CreateRoomInquiryXML(TPostRoomInquiry &postReq
     	// add root node ( Oracle )
         TiXmlElement *rootNode = new TiXmlElement("PostInquiry");
         doc.LinkEndChild( rootNode );
+//        MessageBox(postRequest.WorkstationId,"WORKSTATIONID xml",MB_OK);
         AddInvoiceAttrs( rootNode,postRequest);
     }
     catch( Exception &E )
@@ -613,27 +620,35 @@ void TOracleDataBuilder::ExtractDiscount(std::map<int, double> &discMap, TItemCo
 }
 //----------------------------------------------------------------------------
 void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,
+                                         std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap,
                                          TItemComplete *itemComplete, double portion)
 {
     double priceExclusive = 0;
-//    priceExclusive = ((double)itemComplete->BillCalcResult.FinalPrice -
-//                      (double)itemComplete->BillCalcResult.ServiceCharge.Value -
-//                      (double)itemComplete->BillCalcResult.TotalDiscount -
-//                      (double)itemComplete->BillCalcResult.TotalTax);
+    double taxValue = 0;
+    double serviceCharge = 0;
     priceExclusive = ((double)itemComplete->BillCalcResult.FinalPrice -
                       (double)itemComplete->BillCalcResult.TotalDiscount);
-//    MessageBox(priceExclusive, "priceExclusive discount removed only",MB_OK);
     if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+    {
         priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.ServiceCharge.Value;
-//    MessageBox(priceExclusive, "priceExclusive service charge removed only",MB_OK);
+        serviceCharge = (double)itemComplete->BillCalcResult.ServiceCharge.Value;
+    }
+//    MessageBox(itemComplete->BillCalcResult.ServiceCharge.TaxValue,"itemComplete->BillCalcResult.ServiceCharge.TaxValue",MB_OK);
+//    MessageBox(itemComplete->BillCalcResult.TotalTax,"itemComplete->BillCalcResult.TotalTax",MB_OK);
     if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
+    {
         priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.TotalTax;
-//    MessageBox(priceExclusive, "priceExclusive tax removed only",MB_OK);
+        taxValue = (double)itemComplete->BillCalcResult.TotalTax;
+    }
     priceExclusive = priceExclusive * portion;
+    serviceCharge  = serviceCharge * portion;
+    taxValue       = taxValue * portion;
 
     if(subtotals.size() == 0)
     {
         subtotals.insert(std::pair<int,double>(itemComplete->RevenueCode,priceExclusive));
+        taxMap.insert(std::pair<int,double>(itemComplete->RevenueCode,taxValue));
+        serviceChargeMap.insert(std::pair<int,double>(itemComplete->RevenueCode,serviceCharge));
     }
     else
     {
@@ -642,37 +657,45 @@ void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::m
         {
             priceExclusive += itsubtotals->second;
             subtotals[itemComplete->RevenueCode] = priceExclusive;
+            std::map<int,double>::iterator itTaxMap = taxMap.find(itemComplete->RevenueCode);
+            if(itTaxMap != taxMap.end())
+            {
+                taxValue += itTaxMap->second;
+                taxMap[itemComplete->RevenueCode] = taxValue;
+            }
+            std::map<int,double>::iterator itServiceChargeMap = serviceChargeMap.find(itemComplete->RevenueCode);
+            if(itServiceChargeMap != serviceChargeMap.end())
+            {
+                serviceCharge += itServiceChargeMap->second;
+                serviceChargeMap[itemComplete->RevenueCode] = serviceCharge;
+            }
         }
         else
         {
             subtotals.insert(std::pair<int,double>(itemComplete->RevenueCode,priceExclusive));
+            taxMap.insert(std::pair<int,double>(itemComplete->RevenueCode,taxValue));
+            serviceChargeMap.insert(std::pair<int,double>(itemComplete->RevenueCode,serviceCharge));
         }
     }
-
-//    for(int i = 0; i < itemComplete->BillCalcResult.Discount.size(); i++)
-//    {
-        if(discMap.size() == 0)
+    if(discMap.size() == 0)
+    {
+        discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
+                                             (double)(itemComplete->BillCalcResult.TotalDiscount * portion)));
+    }
+    else
+    {
+        std::map<int,double>::iterator itDisc = discMap.find(itemComplete->RevenueCode);
+        if(itDisc != discMap.end())
         {
-            discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
-                                                 (double)(itemComplete->BillCalcResult.TotalDiscount * portion)));
+            double newValue = itDisc->second + double((itemComplete->BillCalcResult.TotalDiscount * portion));
+            discMap[itemComplete->RevenueCode] = newValue;
         }
         else
         {
-            std::map<int,double>::iterator itDisc = discMap.find(itemComplete->RevenueCode);
-            if(itDisc != discMap.end())
-            {
-                double newValue = itDisc->second + double((itemComplete->BillCalcResult.TotalDiscount * portion));
-                discMap[itemComplete->RevenueCode] = newValue;
-            }
-            else
-            {
-                discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
-                             double(itemComplete->BillCalcResult.TotalDiscount * portion)));
-            }
+            discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
+                         double(itemComplete->BillCalcResult.TotalDiscount * portion)));
         }
-//    }
-
-//    MessageBox(subtotals.size(),"size of subtotals", MB_OK);
+    }
 }
 //----------------------------------------------------------------------------
 void TOracleDataBuilder::ExtractTaxes(TItemComplete *itemComplete,
@@ -728,14 +751,10 @@ void TOracleDataBuilder::ExtractTaxes(TItemComplete *itemComplete,
     }
 }
 //----------------------------------------------------------------------------
-double TOracleDataBuilder::CalculateTotal(std::map<int,double> subtotals,std::vector<TTax> taxVector,
-                                            std::map<int, double> discMap)
+double TOracleDataBuilder::CalculateTotal(std::map<int,double> subtotals, std::map<int, double> discMap,
+                                          std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap )
 {
     double totalValue = 0;
-    for(int i = 0; i < taxVector.size(); i++)
-    {
-        totalValue += taxVector[i].Value;
-    }
     for(std::map<int,double>::iterator itdisc = discMap.begin(); itdisc != discMap.end();advance(itdisc,1))
     {
         totalValue += itdisc->second;
@@ -743,6 +762,15 @@ double TOracleDataBuilder::CalculateTotal(std::map<int,double> subtotals,std::ve
     for(std::map<int,double>::iterator itsubtotals = subtotals.begin(); itsubtotals != subtotals.end();advance(itsubtotals,1))
     {
         totalValue += itsubtotals->second;
+    }
+    for(std::map<int,double>::iterator itTaxMap = taxMap.begin(); itTaxMap != taxMap.end();advance(itTaxMap,1))
+    {
+        totalValue += itTaxMap->second;
+    }
+    for(std::map<int,double>::iterator itserviceChargeMap = serviceChargeMap.begin();
+        itserviceChargeMap != serviceChargeMap.end();advance(itserviceChargeMap,1))
+    {
+        totalValue += itserviceChargeMap->second;
     }
     return totalValue;
 }

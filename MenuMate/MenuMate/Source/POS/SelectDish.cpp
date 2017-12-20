@@ -13642,6 +13642,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyKey = Item->Sizes->SizeGet(SelectedSize)->ThirdPartyKey;
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(SelectedSize)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(SelectedSize)->PLU;
+        NewSubOrder->RevenueCode = Item->Sizes->SizeGet(SelectedSize)->RevenueCode;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(SelectedSize)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(SelectedSize)->Cost; // Get default cost if assigned.
@@ -13717,6 +13718,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyKey = Item->Sizes->SizeGet(0)->ThirdPartyKey;
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(0)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(0)->PLU;
+        NewSubOrder->RevenueCode = Item->Sizes->SizeGet(0)->RevenueCode;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(0)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(0)->Cost; // Get default cost if assigned.
@@ -13771,7 +13773,6 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 	SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
 	SecRef.TimeStamp = Now();
 	NewSubOrder->Security->SecurityUpdate(secOrderedBy, SecRef);
-
 	MasterOrder->SubOrders->SubOrderAdd(NewSubOrder);
 	MasterOrder->MasterContainer = MasterOrder->Size;
     if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
