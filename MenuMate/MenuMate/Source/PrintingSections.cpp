@@ -1157,7 +1157,8 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 
 	UnicodeString ItemName = ThisInstruction->Caption;
 /************MM-5048***************************/
-	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
+	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot &&
+        TGlobalSettings::Instance().PMSType != Oracle)
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
@@ -1179,6 +1180,18 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}
+    else if(PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType == Oracle &&
+            PrintJob->Transaction->Phoenix.AccountName != "")
+    {
+        AnsiString RoomNumber = "";
+		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
+		pPrinter->AddLine();
+    }
 }
 
 int __fastcall SortTableTab(void *Item1, void *Item2) // TKitchens Sort Function.
