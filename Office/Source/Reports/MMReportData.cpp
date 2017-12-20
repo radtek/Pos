@@ -16968,6 +16968,32 @@ void TdmMMReportData::SetupSubsReport(TDateTime StartTime, TDateTime EndTime)
     qrSubsReport->ParamByName("ISLOCAL_MEMBER")->AsString	= "T";
 
 }
+//---------------------------------------------------------------------
+void TdmMMReportData::SetupMezzanineSales(TDateTime StartTime, TDateTime EndTime)
+{
+    qrMezzanine->Close();
+	qrMezzanine->SQL->Text =
+           "SELECT a.TIME_STAMP_BILLED , "
+                "a.TABLE_NUMBER,      "
+                "a.GROSS_SALES,       "
+                "a.PWD,               "
+                "a.SCD,               "
+                "a.OTHER_DISCOUNTS,   "
+                "a.VAT_EXEMPT_SALES,  "
+                "a.SERVICE_CHARGE,    "
+                "a.LOCATION_ID,       "
+                "a.TERMINAL_NAME,     "
+                "CAST((a.GROSS_SALES - a.PWD - a.SCD - a.OTHER_DISCOUNTS - a.VAT_EXEMPT_SALES - a.SERVICE_CHARGE) AS NUMERIC(17,4)) SALE_SUB_TO_VAT,          "
+                "CAST((a.GROSS_SALES - a.PWD - a.SCD - a.OTHER_DISCOUNTS - a.VAT_EXEMPT_SALES - a.SERVICE_CHARGE - A.VAT) AS NUMERIC(17,4)) NET_VATABLE_SALE, "
+                "CAST(((a.GROSS_SALES - a.PWD - a.SCD - a.OTHER_DISCOUNTS - a.VAT_EXEMPT_SALES - a.SERVICE_CHARGE - A.VAT) + A.VAT_EXEMPT_SALES) AS NUMERIC(17,4)) NET_SALE_SUB_PERCENT,   "
+                "CAST(((a.GROSS_SALES - a.PWD - a.SCD - a.OTHER_DISCOUNTS - a.VAT_EXEMPT_SALES - a.SERVICE_CHARGE - A.VAT) + A.VAT_EXEMPT_SALES)*.03 AS NUMERIC(17,4)) PERCENT_OF_NET_SALE "
+            "FROM MEZZANINE_SALES a  "
+            "WHERE A.TIME_STAMP_BILLED >= :StartTime AND A.TIME_STAMP_BILLED < :EndTime AND A.Z_KEY <> 0      "
+            "ORDER BY a.TIME_STAMP_BILLED , a.TABLE_NUMBER, a.LOCATION_ID, a.TERMINAL_NAME ";
+
+    qrMezzanine->ParamByName("StartTime")->AsDateTime	= StartTime;
+    qrMezzanine->ParamByName("EndTime")->AsDateTime	= EndTime;
+} 
 
 
 

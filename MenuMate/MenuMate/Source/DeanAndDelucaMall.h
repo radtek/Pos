@@ -69,19 +69,13 @@ private:
     //prepare SCD, PWD and others discount
     TDeanAndDelucaDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
 
-    //Prepare DataBy Item initilize mall field by item
-    void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);
-
-    //Check Whether Item is vatable
-    bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &delucaTaxes);
-
     //Check whether item is assigned to any sales type..
     int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
 
     //Get Max Zed Key Present in mall Table..
     int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
 
-    protected:
+protected:
 
     //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
     TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
@@ -117,6 +111,12 @@ public:
     //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);
 
+     //Check Whether Item is vatable
+    bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &delucaTaxes);
+
+    //Prepare DataBy Item initilize mall field by item
+    void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);
+
 };
 
 class TDeanAndDelucaMallField
@@ -133,11 +133,14 @@ private:
     double _totalRefundAmount;
     double _totalTax;
     double _totalServiceCharge;
+    double _totalNonTaxableSC;
     double _totalNetSaleAmount;
     double _totalCashSales;
     double _totalChargedSales;
     double _totalGCSales;
     double _totalVoidAmount;
+    double _scdAmount;
+    double _pwdAmount;
     int _customerCount;
     int _salesCount;
     int _hourCode;
@@ -161,11 +164,14 @@ private:
     void SetTotalChargedSales(double chargedSales);
     void SetTotalGCSales(double gcSales);
     void SetVoidAmount(double voidAmount);
+    void SetSCDDiscount(double scdAmount);
+    void SetPWDDiscount(double pwdAmount);
     void SetCustomerCount(int customerCount);
     void SetSalesCount(int salesCount);
     void SetHourCode(int hourCode);
     void SetZKey(int zKey);
     void SetSalesBySalesType(std::map<int, double> salesBySalestype);
+    void SetNonTaxableServiceCharge(double nonTaxableServiceCharge);
 
 public:
     __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
@@ -179,11 +185,14 @@ public:
     __property double TotalRefundAmount = {read = _totalRefundAmount, write = SetRefundAmount};
     __property double TotalTax = {read = _totalTax, write = SetTax};
     __property double TotalServiceCharge = {read = _totalServiceCharge, write = SetServiceCharge};
+    __property double TotalNonTaxableSC = {read = _totalNonTaxableSC, write = SetNonTaxableServiceCharge};
     __property double TotalNetSaleAmount = {read = _totalNetSaleAmount, write = SetNetSaleAmount};
     __property double TotalCashSales = {read = _totalCashSales, write = SetCashSales};
     __property double TotalChargedSales = {read = _totalChargedSales, write = SetTotalChargedSales};
     __property double TotalGCSales = {read = _totalGCSales, write = SetTotalGCSales};
     __property double TotalVoidAmount = {read = _totalVoidAmount, write = SetVoidAmount};
+    __property double TotalSCDAmount = {read = _scdAmount, write = SetSCDDiscount};
+    __property double TotalPWDAmount = {read = _pwdAmount, write = SetPWDDiscount};
     __property int CustomerCount = {read = _customerCount, write = SetCustomerCount};
     __property int SalesCount = {read = _salesCount, write = SetSalesCount};
     __property int HourCode = {read = _hourCode, write = SetHourCode};

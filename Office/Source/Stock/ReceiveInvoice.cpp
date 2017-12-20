@@ -1057,7 +1057,7 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
 					bool Registered = false;
 					unsigned int Modules = 0;
 					dmMMData->Registered(&Registered, &Modules);
-					if (Modules & eOfficeMYOB) {
+					if (Modules & eAccounting) {
 						if( ( CurrentConnection.AccountSystem == "Xero" ) && ( XeroIntegrationIsInstalled() ) )
 						{
 							if( TXeroInvoiceBuilder::Instance().BuildXeroInvoice( BatchInfo.Supplier_Name, InvoiceReference, "", dtpInvoiceDate->Date, dtpInvoiceDate->Date, InvoiceItems ) )
@@ -2061,7 +2061,7 @@ void  TfrmReceiveInvoice::CommitInvoice()
 					bool Registered = false;
 					unsigned int Modules = 0;
 					dmMMData->Registered(&Registered, &Modules);
-					if (Modules & eOfficeMYOB) {
+					if (Modules & eAccounting) {
 						if( ( CurrentConnection.AccountSystem == "Xero" ) && ( XeroIntegrationIsInstalled() ) )
 						{
 							if( TXeroInvoiceBuilder::Instance().BuildXeroInvoice( BatchInfo.Supplier_Name, InvoiceReference, "", dtpInvoiceDate->Date, dtpInvoiceDate->Date, InvoiceItems ) )
