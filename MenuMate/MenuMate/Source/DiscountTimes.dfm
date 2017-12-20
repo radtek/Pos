@@ -1036,6 +1036,7 @@ object frmDiscountTimes: TfrmDiscountTimes
         ScrollBtnRight.LatchedColor = -2147483633
         ScrollBtnRight.DisabledColor = -2147483633
         ScrollBtnRight.LatchedFontColor = -2147483640
+        VertScrollDistance = 15
         Buttons = {04000000}
       end
     end
