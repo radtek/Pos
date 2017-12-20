@@ -724,6 +724,7 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
     try
     {
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+      try{
         DBTransaction.StartTransaction();
         if(!NotifyLastWebOrder(DBTransaction))
         {
@@ -735,6 +736,7 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
             }
             else if (Prompt)
             {
+
                 MessageBox("No Web Orders Pending", "No Web Orders Pending", MB_OK + MB_ICONWARNING);
             }
             //after processing web order again load chit specific to terminal
@@ -744,7 +746,12 @@ void __fastcall TfrmSelectDish::ProcessWebOrders(bool Prompt)
         else
         {
            DBTransaction.Commit();
-        }
+        }  }
+
+    catch(Exception & E)
+    {       DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
     }
     catch(Exception & E)
     {

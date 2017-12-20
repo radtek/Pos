@@ -57,7 +57,7 @@ void __fastcall TfrmProcessWebOrder::FormShow(TObject *Sender)
 // ---------------------------------------------------------------------------
 
 void TfrmProcessWebOrder::Execute()
-{
+{   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     try
     {
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
@@ -67,7 +67,7 @@ void TfrmProcessWebOrder::Execute()
         }
         else
         {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+
             DBTransaction.StartTransaction();
 
             TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
@@ -79,8 +79,9 @@ void TfrmProcessWebOrder::Execute()
         ShowModal();
     }
     catch(Exception & E)
-	{
+	{   DBTransaction.Rollback();
 	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        //throw;
 	}
 }
 
@@ -381,6 +382,7 @@ void TfrmProcessWebOrder::autoAcceptAllWebOrders()
     catch(Exception & E)
 	{
 	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 }
 
@@ -408,10 +410,19 @@ void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
             if(acceptAll)
             {
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-                DBTransaction.StartTransaction();
-                TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
-                WebOrderContainer.first();
-                DBTransaction.Commit();
+                try
+                {
+                    DBTransaction.StartTransaction();
+                    TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
+                    WebOrderContainer.first();
+                    DBTransaction.Commit();
+                 }
+                catch(Exception & E)
+                {       DBTransaction.Rollback();
+                    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+                    //throw;
+                }
+
             }
            func_ptr ptr = &acceptWebOrder;
            TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
@@ -448,6 +459,7 @@ void __fastcall TAcceptWebOrdersThread::Execute()
     catch(Exception & E)
 	{
 	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 }
 
@@ -496,11 +508,13 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 	catch(EAbort & E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 	catch(Exception & E)
 	{
 		//MessageBox("Unable to process this order.\r" "Please report the following message to your service provider :\r\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 }
 
@@ -516,6 +530,7 @@ void TAcceptWebOrdersThread::acceptAllWebOrders()
     catch(Exception & E)
 	{
 	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
 	}
 }
 

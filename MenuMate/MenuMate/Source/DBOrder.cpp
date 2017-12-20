@@ -4711,33 +4711,17 @@ UnicodeString TDBOrder::GetContactName(Database::TDBTransaction &DBTransaction, 
 
 void TDBOrder::UpdateOrderTableForWebOrders(Database::TDBTransaction &DBTransaction, TItemComplete *Order)
 {
-
-   TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
-   IBUpdateQuery->Close();
-   IBUpdateQuery->SQL->Text =
-			"UPDATE "
-			"ORDERS "
-			"SET "
-			"ACTIVECHITNUMBER_KEY = :ACTIVECHITNUMBER_KEY "
-			"WHERE "
-			"ORDER_KEY = :ORDER_KEY";
-
-        if(Order->GetActiveChitNumberKey() == 0)
-        {
-            IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->Clear();
-        }
-        else
-        {
-            IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
-        }
-        IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = Order->OrderKey;
-
-        IBUpdateQuery->ExecQuery();
-        IBUpdateQuery->Close();
-
-        for (int i = 0; i < Order->SubOrders->Count; i++)
-        {
-            TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
+   try
+   {
+       TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBUpdateQuery->Close();
+       IBUpdateQuery->SQL->Text =
+                "UPDATE "
+                "ORDERS "
+                "SET "
+                "ACTIVECHITNUMBER_KEY = :ACTIVECHITNUMBER_KEY "
+                "WHERE "
+                "ORDER_KEY = :ORDER_KEY";
 
             if(Order->GetActiveChitNumberKey() == 0)
             {
@@ -4747,12 +4731,36 @@ void TDBOrder::UpdateOrderTableForWebOrders(Database::TDBTransaction &DBTransact
             {
                 IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
             }
-            IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = SubOrder->OrderKey;
+            IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = Order->OrderKey;
 
             IBUpdateQuery->ExecQuery();
             IBUpdateQuery->Close();
-        }
-    //}
+
+            for (int i = 0; i < Order->SubOrders->Count; i++)
+            {
+                TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
+
+                if(Order->GetActiveChitNumberKey() == 0)
+                {
+                    IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->Clear();
+                }
+                else
+                {
+                    IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
+                }
+                IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = SubOrder->OrderKey;
+
+                IBUpdateQuery->ExecQuery();
+                IBUpdateQuery->Close();
+            }
+        //}
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+
 }
 
 Currency TDBOrder::GetPriceForPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order)
