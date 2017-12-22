@@ -64,6 +64,7 @@ enum TTreeIndex {
                     DEPT_SALES_SUMMARY                        ,
                     PROFIT_LOSS_REPORT                       ,
                     SALES_SUMMARY_D_INDEX                     ,
+                    MEZZANINE_SALES_INDEX                     ,
 
 			SALES_INDEX													,
 					CONSUMPTION_INDEX									,
@@ -791,6 +792,7 @@ private:	// User declarations
     void GetStockReceiptList(TReportFilter *ReportFilter);
     void PrintProfitLossSummary(TReportControl *ReportControl);
     void GetStockSupplierList(TReportFilter *ReportFilter);
+    void PrintMezzanineSales(TReportControl *ReportControl);
 public:		// User declarations
 	__fastcall TfrmReports(TComponent* Owner);
     bool SaveReportToFile(AnsiString &EmailFileName );

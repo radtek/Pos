@@ -331,6 +331,7 @@ class TItemMinorComplete : public TItemMinor
     bool wasOpenItem;
     void ClearAllDiscounts();
     int RoomNo;
+    UnicodeString RoomNoStr;
     UnicodeString AccNo;
     UnicodeString FirstName;
     UnicodeString LastName;

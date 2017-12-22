@@ -32,12 +32,26 @@ namespace MenumateServices.WCFServices
         }
         public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
         {
+            int retryCount = 1;
+            bool retryPosting = true;
             RoomChargeResponse roomChargeReponse = new RoomChargeResponse();
             try
             {
                 SiHotCommunicationController siCommController = new SiHotCommunicationController();
-                roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails);
-                return roomChargeReponse;
+                while (retryPosting)
+                {
+                    roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails,retryCount);
+                    if (!roomChargeReponse.IsSuccessful && (roomChargeReponse.Response == "" || roomChargeReponse.Response == null) && retryCount < 3)
+                    {
+                        retryCount += 1;
+                        retryPosting = true;
+                        roomChargeReponse = new RoomChargeResponse();
+                    }
+                    else
+                    {
+                        retryPosting = false;
+                    }
+                }
             }
             catch (Exception ex )
             {

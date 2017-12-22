@@ -3696,7 +3696,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                         PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
                         PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
                         PaymentTransaction.SalesType = eRoomSale;
-                        PaymentTransaction.Customer.RoomNumber = StrToInt(PaymentTransaction.Phoenix.RoomNumber);
+                        PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
                     }
                     isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
                 }
@@ -3929,12 +3929,23 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             {
                                 if(PaymentTransaction.Phoenix.AccountName != "")
                                 {
-                                    PrintTransaction->Customer.RoomNumber = PaymentTransaction.Customer.RoomNumber;
-                                    PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                                    if(TGlobalSettings::Instance().PMSType != SiHot)
+                                    {
+                                        PrintTransaction->Customer.RoomNumber = PaymentTransaction.Customer.RoomNumber;
+                                        PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                                    }
+                                    else if(TGlobalSettings::Instance().PMSType == SiHot)
+                                    {
+                                        PrintTransaction->Customer.RoomNumberStr = PaymentTransaction.Customer.RoomNumberStr;
+                                        PrintTransaction->Phoenix.AccountName = PaymentTransaction.Phoenix.AccountName;
+                                    }
                                 }
                                 else
                                 {
-                                    PrintTransaction->Customer = TCustomer(0,0,"");
+                                    if(TGlobalSettings::Instance().PMSType != SiHot)
+                                        PrintTransaction->Customer = TCustomer(0,0,"");
+                                    else
+                                        PrintTransaction->Customer = TCustomer("",0,"");
                                 }
                             }
                             else if(!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
@@ -13147,7 +13158,7 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
         if(GuestDetails.size())
         {
             Order->AccNo = GuestDetails.at(0);
-            Order->RoomNo = StrToInt(GuestDetails.at(1));
+            Order->RoomNoStr = GuestDetails.at(1);
             Order->FirstName = GuestDetails.at(2);
             if(GuestDetails.size() > 3)
                 Order->LastName = GuestDetails.at(3);
@@ -15374,24 +15385,31 @@ void TfrmSelectDish::DisplayRoomNoUI()
         frmTouchNumpad->btnDiscount->Visible = true;
         frmTouchNumpad->btnSurcharge->Visible = true;
         frmTouchNumpad->btnDiscount->Color = clGreen;
-        frmTouchNumpad->Mode = pmNumber;
-        frmTouchNumpad->CURInitial = 0;
+        frmTouchNumpad->Mode = pmSTR;
+        frmTouchNumpad->NUMSTRInitial = "";
         isRoomNoUiCalled = true;
 		SiHotAccount.AccountDetails.clear();
-        if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1)
+        if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1 && frmTouchNumpad->NUMSTRResult != "")
         {
-            selectedRoomNumber = frmTouchNumpad->INTResult;
+//            MessageBox(frmTouchNumpad->NUMSTRResult,"frmTouchNumpad->NUMSTRResult",MB_OK);
+            selectedRoomNumberStr = frmTouchNumpad->NUMSTRResult;
             isWalkInUser = false;
             GetRoomDetails();
         }
-        else if(frmTouchNumpad->INTResult == 0 && frmTouchNumpad->BtnExit == 2)
-        {            
+        else if(atoi(frmTouchNumpad->NUMSTRResult.t_str()) == 0 && frmTouchNumpad->BtnExit == 2)
+        {
+//            MessageBox(atoi(frmTouchNumpad->NUMSTRResult.t_str()),"atoi(frmTouchNumpad->NUMSTRResult.t_str()",MB_OK);
             isWalkInUser = true;
         }
-        else if(frmTouchNumpad->BtnExit == 2 && abs(frmTouchNumpad->INTResult) > 0)
+        else if(frmTouchNumpad->BtnExit == 2 && abs(atoi(frmTouchNumpad->NUMSTRResult.t_str())) > 0)
         {
             isRoomNoUiCalled = false;
             MessageBox("Walkin cannot be selected with room number.", "Error", MB_OK + MB_ICONERROR);
+            DisplayRoomNoUI();
+        }
+        else if(frmTouchNumpad->BtnExit == 1 && frmTouchNumpad->NUMSTRResult == "")
+        {
+            MessageBox("No Guest was selected","Error",MB_OK);
             DisplayRoomNoUI();
         }
     }
@@ -15406,7 +15424,7 @@ void TfrmSelectDish::GetRoomDetails()
         SiHotAccount = TSiHotAccounts();
         std::vector<TSiHotAccounts> SiHotAccounts;
         TSiHotAccounts guestAccount;
-        guestAccount.AccountNumber =  selectedRoomNumber;
+        guestAccount.AccountNumber =  selectedRoomNumberStr;
         SiHotAccounts.push_back(guestAccount);
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
 
@@ -15437,7 +15455,7 @@ void TfrmSelectDish::GetRoomDetails()
                     for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
                     {
                         TAccountDetails accountDetails;
-                        accountDetails.RoomNumber = IntToStr(selectedRoomNumber);
+                        accountDetails.RoomNumber = selectedRoomNumberStr;
                         accountDetails.LastName = accIt->LastName;
                         accountDetails.FirstName = accIt->FirstName;
                         accountDetails.CreditLimit = accIt->CreditLimit;
@@ -15469,11 +15487,11 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
             {
                 inTransaction.Phoenix.AccountNumber = SiHotAccount.AccountNumber;
                 inTransaction.Phoenix.AccountName = accIt->FirstName + " " + accIt->LastName;
-                inTransaction.Phoenix.RoomNumber = IntToStr(selectedRoomNumber);
+                inTransaction.Phoenix.RoomNumber = selectedRoomNumberStr;
                 inTransaction.Phoenix.FirstName = accIt->FirstName;
                 inTransaction.Phoenix.LastName = accIt->LastName;
                 inTransaction.SalesType = eRoomSale;
-                inTransaction.Customer.RoomNumber = StrToInt(inTransaction.Phoenix.RoomNumber);
+                inTransaction.Customer.RoomNumberStr = inTransaction.Phoenix.RoomNumber;
                 isRoomDetailsLoaded = true;
             }
 
@@ -15488,10 +15506,11 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
                 Order->TabName = inTransaction.Phoenix.RoomNumber;
                 Order->TabType = TabRoom;
-                Order->RoomNo = atoi(inTransaction.Phoenix.RoomNumber.t_str());
+                Order->RoomNoStr = inTransaction.Phoenix.RoomNumber;
                 Order->FirstName = inTransaction.Phoenix.FirstName;
                 Order->LastName = inTransaction.Phoenix.LastName;
                 Order->AccNo = inTransaction.Phoenix.AccountNumber;
+                Order->RoomNo = inTransaction.Phoenix.RoomNumber != "" ? StrToInt(inTransaction.Phoenix.RoomNumber) : 0;
             }
         }
     }
@@ -15525,7 +15544,7 @@ std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaul
             SiHotAccount.AccountDetails.clear();
             TItemComplete *CompressedOrder = (TItemComplete*)ItemRedirector->CompressedContainer->ItemsList[0];
             guestDetails.push_back(CompressedOrder->AccNo);
-            guestDetails.push_back(IntToStr(CompressedOrder->RoomNo));
+            guestDetails.push_back(CompressedOrder->RoomNoStr);
             guestDetails.push_back(CompressedOrder->FirstName);
             guestDetails.push_back(CompressedOrder->LastName);
             isGuestDetailsLoaded = true;
@@ -15554,7 +15573,7 @@ std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaul
     {     
         TItemComplete *Order = SeatOrders[SelectedSeat]->Orders->Items[0];
         guestDetails.push_back(Order->AccNo);
-        guestDetails.push_back(IntToStr(Order->RoomNo));
+        guestDetails.push_back(Order->RoomNoStr);
         guestDetails.push_back(Order->FirstName);
         guestDetails.push_back(Order->LastName);
     }
