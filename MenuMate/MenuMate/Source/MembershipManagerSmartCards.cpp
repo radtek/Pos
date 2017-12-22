@@ -1027,7 +1027,7 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
                SmartCardContact.MemberType = 1;
             }
         }
-        if(!ValidateEmailInDB(SmartCardContact))
+        if(!SmartCardContact.ValidateCheckedDuplicateEmail())
         {
             MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
         }
@@ -1051,7 +1051,7 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
                         "Undelete", "Leave Deleted") == IDOK)
             {
-               if(!ValidateEmailInDB(SmartCardContact))
+                if(!SmartCardContact.ValidateCheckedDuplicateEmail())
                {
                     MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
                     CheckForCardInDB = false;
@@ -2430,7 +2430,7 @@ void TManagerMembershipSmartCards::ValidateCardExistance(Database::TDBTransactio
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
    }
 }
-
+/*
 bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -2461,7 +2461,7 @@ bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
     }
     return isEmailValid;
 }
-
+*/
 int TManagerMembershipSmartCards::ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
 {
    int retVal = 0;

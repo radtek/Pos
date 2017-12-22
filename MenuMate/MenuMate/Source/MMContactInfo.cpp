@@ -13,6 +13,7 @@
 #include "SmartCardVer6API.h"
 #include <ctype.h>
 #include "GlobalSettings.h"
+#include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -88,8 +89,43 @@ void TMMContactInfo::Clear()
 
 bool TMMContactInfo::Valid()
 {
-	return SiteID != 0
-	       && MembershipNumber.Length();
+    bool retValue = false;
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        retValue = SiteID != 0 && MembershipNumber.Length();
+    else
+     	retValue = SiteID != 0 && MembershipNumber.Length() && ValidateCheckedDuplicateEmail();
+    return retValue;
+}
+
+bool TMMContactInfo::ValidateCheckedDuplicateEmail()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    bool isEmailValid  = true;
+    DBTransaction.StartTransaction();
+    int emailcount = 0;
+    try
+    {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";
+      IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
+
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
+      IBInternalQuery->ParamByName("EMAIL")->AsString = EMail;
+      IBInternalQuery->ExecQuery();
+      DBTransaction.Commit();
+      emailcount = IBInternalQuery->Fields[0]->AsInteger;
+      if(emailcount > 0)
+      {
+        isEmailValid = false;
+      }
+    }
+    catch(Exception & E)
+    {
+        isEmailValid = false;
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+    }
+    return isEmailValid;
 }
 
 bool TMMContactInfo::ValidEmail()
