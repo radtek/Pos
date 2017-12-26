@@ -1484,7 +1484,7 @@ namespace MenumateServices.WebMate.InternalClasses
                 command.Parameters.AddWithValue("@ITEM_NAME", orderDbItem.ItemName);
                 command.Parameters.AddWithValue("@ITEM_ID", orderDbItem.ItemId);
                 command.Parameters.AddWithValue("@SIZE_NAME", orderDbItem.SizeName);
-                command.Parameters.AddWithValue("@NOTE", orderDbItem.Note);
+                command.Parameters.AddWithValue("@NOTE", QueryUtilities.GetSubstring(orderDbItem.Note, 0, 78));//orderDbItem.Note);
                 command.Parameters.AddWithValue("@PARTY_NAME", orderDbItem.PartyName);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", orderDbItem.TableNumber);
                 command.Parameters.AddWithValue("@TABLE_NAME", QueryUtilities.GetSubstring(orderDbItem.TabContainerName, 1, 25));
