@@ -3244,6 +3244,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",
 		vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction, vmIsAutoLoggedOut, "Is user auto logged out",
+                 "If this setting is on means user is auto logged out "
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

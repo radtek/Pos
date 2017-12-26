@@ -493,6 +493,7 @@ public:
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
+    bool IsAutoLoggedOut;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
 };
