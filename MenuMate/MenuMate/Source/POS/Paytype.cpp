@@ -288,6 +288,11 @@ void TfrmPaymentType::Reset()
               tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
            }
+           else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+           {
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+           }
            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
@@ -1971,6 +1976,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         {
            ProcessWalletTransaction(Payment);
         }
+        else if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+        {
+           Payment->SetPay(wrkPayAmount);
+        }
 
         //apply changes here..
         if(CheckOnlinePaidOrNot())
@@ -2019,7 +2028,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
        if(!CurrentTransaction.IsQuickPayTransaction)
             btnCancel->SetFocus();
     }
-}// ---------------------------------------------------------------------------
+}
 // ---------------------------------------------------------------------------
 void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {
@@ -4471,4 +4480,34 @@ bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
         lastChar = currentChar;
     }
     return true;
+}
+//-------------------------------------------------------------------------------------------
+void TfrmPaymentType::ProcessSmartConnectQRTransaction(TPayment *Payment)
+{
+//    if(ValidateWalletAccount(Payment))
+//    {
+//        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+//        frmTouchKeyboard->MaxLength = 50;
+//        frmTouchKeyboard->AllowCarriageReturn = false;
+//        frmTouchKeyboard->StartWithShiftDown = false;
+//        frmTouchKeyboard->MustHaveValue = true;
+//        frmTouchKeyboard->KeyboardText = "";
+//        frmTouchKeyboard->Caption = "Enter/Scan QrCode";
+//        if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+//        {
+//          Payment->WalletQrCode = frmTouchKeyboard->KeyboardText.Trim();
+//          Payment->SetPay(wrkPayAmount);
+//        }
+//        else
+//        {
+//           Payment->WalletQrCode = "";
+//           Payment->SetPay(0);
+//        }
+//    }
+//    else
+//    {
+//       MessageBox("Wallet Account information is not set. Please set up account information to use this payment type.", "Error", MB_OK + MB_ICONINFORMATION);
+//       Payment->WalletQrCode = "";
+//       Payment->SetPay(0);
+//    }
 }

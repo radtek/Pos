@@ -40,6 +40,11 @@ namespace MenumateServices.WCFServices
         SmartConnectResponse TerminalReadCard(TransactionTypes readCardType);
         [OperationContract]
         SmartConnectResponse PrintReceipt(TransactionTypes printReceiptType);
-        
+        [OperationContract]
+        SmartConnectResponse MerchantPurchaseWithQRCode(TransactionTypes purchaseType, double amount);
+        [OperationContract]
+        SmartConnectResponse ConsumerPurchaseWithQRCode(TransactionTypes purchaseType, double amount);
+        [OperationContract]
+        SmartConnectResponse QRCodeRefund(TransactionTypes refundType, double refundAmount);
     }
 }

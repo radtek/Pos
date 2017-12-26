@@ -90,6 +90,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.TabKey  =TabKey;
         Payment.GLCode = GLCode;
         Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
+        Payment.SmartConnectQREnabled = cbSmartConnectQR->Checked;
 
         Payment.SetPaymentAttribute(ePayTypeCustomSurcharge,cbIsTip->Checked);
         Payment.SetPaymentAttribute(ePayTypeOpensCashDrawer,cbOpendrawer->Checked);
@@ -120,6 +121,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
         if (Reason != "")
         {
             Payment.AdjustmentReason = Reason;
@@ -190,7 +192,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         TabKey  = Payment.TabKey;
         GLCode  = Payment.GLCode;
         cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;;
-
+        cbSmartConnectQR->Checked = Payment.SmartConnectQREnabled;
 
         if (Payment.PercentAdjust != 0)
         {
@@ -1274,4 +1276,11 @@ void __fastcall TfrmNewPaymentType::cbWalletPaymentsClick(TObject *Sender)
   btnWalletConfig->Enabled = cbWalletPayments->Checked;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
+{
+//  btnWalletType->Enabled = cbWalletPayments->Checked;
+//  btnWalletConfig->Enabled = cbWalletPayments->Checked;
+}
+//---------------------------------------------------------------------------
+
 

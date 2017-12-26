@@ -98,10 +98,12 @@ __published:	// IDE-managed Components
         TTouchBtn *tbTabLink;
         TTouchBtn *tbGLCode;
         TCheckBox *cbAutoPopulateBlindBalance;
-    TGroupBox *grpPaymentWallet;
-    TCheckBox *cbWalletPayments;
-    TTouchBtn *btnWalletType;
-    TTouchBtn *btnWalletConfig;
+        TGroupBox *grpPaymentWallet;
+        TCheckBox *cbWalletPayments;
+        TTouchBtn *btnWalletType;
+        TTouchBtn *btnWalletConfig;
+        TCheckBox *cbSmartConnectQR;
+        TGroupBox *GrpSmartConnect;
         void __fastcall pnlOkClick(TObject *Sender);
         void __fastcall Panel20Click(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
@@ -142,9 +144,10 @@ __published:	// IDE-managed Components
         void __fastcall tbRMSWriteLocationMouseClick(TObject *Sender);
         void __fastcall tbTabLinkMouseClick(TObject *Sender);
         void __fastcall tbGLCodeMouseClick(TObject *Sender);
-    void __fastcall btnWalletConfigMouseClick(TObject *Sender);
-    void __fastcall btnWalletTypeMouseClick(TObject *Sender);
-    void __fastcall cbWalletPaymentsClick(TObject *Sender);
+        void __fastcall btnWalletConfigMouseClick(TObject *Sender);
+        void __fastcall btnWalletTypeMouseClick(TObject *Sender);
+        void __fastcall cbWalletPaymentsClick(TObject *Sender);
+        void __fastcall cbSmartConnectQRClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmNewPaymentType(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey = 0);

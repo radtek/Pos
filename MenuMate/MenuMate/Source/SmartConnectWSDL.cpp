@@ -87,4 +87,3 @@ static void RegTypes()
 
 };     // NS__SmartConnnectWSDL
 
-

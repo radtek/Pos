@@ -1031,6 +1031,38 @@ object frmNewPaymentType: TfrmNewPaymentType
             OnClick = tbRoomPaymentClick
           end
         end
+        object GrpSmartConnect: TGroupBox
+          Left = 265
+          Top = 597
+          Width = 240
+          Height = 70
+          Caption = 'Smart Connect'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentBackground = False
+          ParentFont = False
+          TabOrder = 8
+          object cbSmartConnectQR: TCheckBox
+            Left = 10
+            Top = 24
+            Width = 220
+            Height = 33
+            Caption = 'Smart Connect QR'
+            Color = clNavy
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentColor = False
+            ParentFont = False
+            TabOrder = 0
+            OnClick = cbSmartConnectQRClick
+          end
+        end
         object GroupBox10: TGroupBox
           Left = 510
           Top = 48

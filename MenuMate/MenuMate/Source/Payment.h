@@ -53,6 +53,7 @@ enum ePaymentAttribute
     ePayTypeAllowTips,             //32
     ePayTypeClipp,                 //33
     ePayTypeWallet,                //34
+    ePayTypeSmartConnectQR,
 };
 
 enum eWalletType{eNoWallet,eWeChatWallet,eJioWallet,};
@@ -127,6 +128,7 @@ public:
     UnicodeString WalletPassword;
     UnicodeString WalletSecurityToken;
     UnicodeString WalletQrCode;
+    bool SmartConnectQREnabled;
     void Reset();
     void Failed();
     void SetAssignedGroups( std::vector<TPaymentTypeGroup> groups );

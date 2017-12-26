@@ -423,6 +423,87 @@ namespace MenumateServices.WCFServices
             return smartConnectResponse;
         }
 
+        public SmartConnectResponse MerchantPurchaseWithQRCode(TransactionTypes purchaseType, double amount)
+        {
+            try
+            {
+                stringList.Add("====================PurchaseWithQRCode=========================================================");
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                purchaseType.Transactiontype = "QR.Merchant.Purchase";
+                parameters = AddApiParameters(purchaseType);
+                parameters.Add("AmountTotal", GetAmount(amount));
+                string putData = GetPutOrPostData(parameters);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
+                stringList.Add("Purchase Response: " + response);
+                smartConnectResponse = DeSerializeResponse(response);
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In PurchaseWithQRCode SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                ServiceLogger.LogException("Exception in Purchase", ex);
+                stringList.Add("Exception in  Purchase: ");
+            }
+            finally
+            {
+                WriteAndClearStringList();
+            }
+            return smartConnectResponse;
+        }
+
+        public SmartConnectResponse ConsumerPurchaseWithQRCode(TransactionTypes purchaseType, double amount)
+        {
+            try
+            {
+                stringList.Add("====================PurchaseWithQRCode=========================================================");
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                purchaseType.Transactiontype = "QR.Consumer.Purchase";
+                parameters = AddApiParameters(purchaseType);
+                parameters.Add("AmountTotal", GetAmount(amount));
+                string putData = GetPutOrPostData(parameters);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
+                stringList.Add("Purchase Response: " + response);
+                smartConnectResponse = DeSerializeResponse(response);
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In PurchaseWithQRCode SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                ServiceLogger.LogException("Exception in Purchase", ex);
+                stringList.Add("Exception in  Purchase: ");
+            }
+            finally
+            {
+                WriteAndClearStringList();
+            }
+            return smartConnectResponse;
+        }
+
+        public SmartConnectResponse QRCodeRefund(TransactionTypes refundType, double refAmount)
+        {
+            try
+            {
+                stringList.Add("====================Refund=========================================================");
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                refundType.Transactiontype = "QR.Refund";
+                parameters = AddApiParameters(refundType);
+                parameters.Add("AmountTotal", GetAmount(refAmount));
+                string putData = GetPutOrPostData(parameters);
+                string response = PutOrPostResponse(SmartConnectConstraints.TransactionBaseAddress, putData, true);
+                stringList.Add("Refund Response: " + response);
+                smartConnectResponse = DeSerializeResponse(response);
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In Refund SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 7, short.MaxValue);
+                ServiceLogger.LogException("Exception in Refund", ex);
+                stringList.Add("Exception in  Refund: ");
+            }
+            finally
+            {
+                WriteAndClearStringList();
+            }
+            return smartConnectResponse;
+        }
+
         private string GetPutOrPostData(IDictionary<string, string> parameters)
         {
             StringBuilder buffer = new StringBuilder();
