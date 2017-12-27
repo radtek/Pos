@@ -367,20 +367,18 @@ void TEftPosSmartConnect::ReadCard()
 bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
 {
     try
-    {   MessageBox("Inside paytype check", "EFTPOS Response",MB_RETRYCANCEL);
+    {
         bool retval = false;
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);
 
         if(Payment.GetPayTendered() > 0)
         {
-            transactionType->Transactiontype = "QR.Merchant.Purchase";
             wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, Payment.GetPayTendered());
         }
         else
         {
-            transactionType->Transactiontype = "QR.Refund";
-            wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, Payment.GetPayTendered());
+            wcfResponse = smartConnectClient->QRCodeRefund(transactionType, Payment.GetPayTendered());
         }
 
         if(wcfResponse->ResponseSuccessful)
