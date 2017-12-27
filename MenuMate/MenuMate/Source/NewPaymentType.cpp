@@ -191,7 +191,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         UniPass = Payment.UniVoucherPass;
         TabKey  = Payment.TabKey;
         GLCode  = Payment.GLCode;
-        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;;
+        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;
         cbSmartConnectQR->Checked = Payment.SmartConnectQREnabled;
 
         if (Payment.PercentAdjust != 0)
@@ -356,6 +356,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 
 	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
 	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;
+      GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect && Payment.GetPaymentAttribute(ePayTypeSmartConnectQR);
    }
    else
    {
@@ -368,6 +369,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled && Payment.GetPaymentAttribute(ePayTypeChargeToAccount);
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
+      GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect;
    }
 }
 // ---------------------------------------------------------------------------
