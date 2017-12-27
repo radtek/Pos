@@ -37,6 +37,12 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
+//-------------------------------------------------------------
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
+
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -76,6 +82,14 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+
+AlterTablePaymentType6_45(_dbControl);
+Updatetable_PaymentTypes6_45(_dbControl);
+
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -574,4 +588,32 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-    return index + 1;}}
+    return index + 1;}//---------------------------------------------------------------------------------------------------void TApplyParser::AlterTablePaymentType6_45(TDBControl* const inDBControl)
+{
+
+   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
+		inDBControl);
+    }
+}//--------------------------------------------------------------------------------------------------------void TApplyParser::Updatetable_PaymentTypes6_45(TDBControl* const inDBControl){
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}}
