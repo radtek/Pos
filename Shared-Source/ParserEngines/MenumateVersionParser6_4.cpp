@@ -87,8 +87,8 @@ void TApplyParser::update6_44Tables()
 void TApplyParser::update6_45Tables()
 {
 
-AlterTablePaymentType6_45(_dbControl);
-Updatetable_PaymentTypes6_45(_dbControl);
+	AlterTablePaymentType6_45(_dbControl);
+	Updatetable_PaymentTypes6_45(_dbControl);
 
 }
 //----------------------------------------------------
