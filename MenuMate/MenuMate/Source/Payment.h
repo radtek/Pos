@@ -53,7 +53,7 @@ enum ePaymentAttribute
     ePayTypeAllowTips,             //32
     ePayTypeClipp,                 //33
     ePayTypeWallet,                //34
-    ePayTypeSmartConnectQR,
+    ePayTypeSmartConnectQR,        //35
 };
 
 enum eWalletType{eNoWallet,eWeChatWallet,eJioWallet,};
