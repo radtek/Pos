@@ -367,7 +367,7 @@ void TEftPosSmartConnect::ReadCard()
 bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
 {
     try
-    {
+    {   MessageBox("Inside paytype check", "EFTPOS Response",MB_RETRYCANCEL);
         bool retval = false;
         SmartConnectResponse *wcfResponse;
         CoInitialize(NULL);

@@ -6406,7 +6406,7 @@ bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &P
 	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = PaymentTransaction.PaymentGet(i);
-		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
+		if (Payment->GetPaymentAttribute(ePayTypeSmartConnectQR) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
 		{
            paymentComplete = EftPos->DoQRCodeTransaction(*Payment);
            if(paymentComplete)

@@ -1848,9 +1848,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                 CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
                                 CurrentTransaction.SalesType = eRoomSale;
                                 RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-//                                MessageBox(RoomNumber,"Room No",MB_OK);
                                 CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-//                                MessageBox(CurrentTransaction.Phoenix.RoomNumber,"Curr Room Number",MB_OK);
                                 if(TGlobalSettings::Instance().PMSType != SiHot)
                                 {
                                     CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -1858,13 +1856,11 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                 }
                                 else
                                 {
-//                                    CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
                                     CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                                     CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].FirstName;
                                     CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
                                     TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                                 }
-//                                CurrentTransaction.WasSavedSales = false;
                             }
                         }
                         else
@@ -1973,7 +1969,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
 
         if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
-        {
+        {  
            ProcessWalletTransaction(Payment);
         }
         else if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
