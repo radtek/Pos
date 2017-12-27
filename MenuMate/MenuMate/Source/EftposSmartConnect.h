@@ -49,5 +49,6 @@ public:
         void __fastcall ReprintReceipt();
         void __fastcall DoPairing();
         AnsiString GetRefNumber();
+        bool DoQRCodeTransaction(TPayment &Payment);
 };
 #endif

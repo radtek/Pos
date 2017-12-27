@@ -3567,8 +3567,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
+    bool SmartConnectQRTransaction = true;
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
+       return RetVal;
+
+    SmartConnectQRTransaction = ProcessSmartConnectQRTransaction(PaymentTransaction);
+    if (!SmartConnectQRTransaction)
        return RetVal;
      
     ChequesOk = ProcessChequePayment(PaymentTransaction);
@@ -6392,3 +6397,22 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         throw;
     }
 }
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+
+   // TEftPosSmartConnect* smartConnectQR = new TWalletPaymentsInterface();
+	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *Payment = PaymentTransaction.PaymentGet(i);
+		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
+		{
+           paymentComplete = EftPos->DoQRCodeTransaction(*Payment);
+           if(paymentComplete)
+              break;
+		}
+	}
+    return paymentComplete;
+}
+//------------------------------------------------------------------------------

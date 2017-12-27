@@ -363,3 +363,38 @@ void TEftPosSmartConnect::ReadCard()
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
+//-----------------------------------------------------------------------
+bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
+{
+    try
+    {
+        bool retval = false;
+        SmartConnectResponse *wcfResponse;
+        CoInitialize(NULL);
+
+        if(Payment.GetPayTendered() > 0)
+        {
+            transactionType->Transactiontype = "QR.Merchant.Purchase";
+            wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, Payment.GetPayTendered());
+        }
+        else
+        {
+            transactionType->Transactiontype = "QR.Refund";
+            wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, Payment.GetPayTendered());
+        }
+
+        if(wcfResponse->ResponseSuccessful)
+        {
+            retval = true;
+        }
+        else
+        {
+            if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                DoQRCodeTransaction(Payment);
+        }
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}

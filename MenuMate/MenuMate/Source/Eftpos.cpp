@@ -295,3 +295,9 @@ std::vector<AnsiString> TEftPos::GetTippableCardTypes()
 {
     return TippableCardTypes;
 }
+//--------------------------------------------------------------------------
+bool TEftPos::DoQRCodeTransaction(TPayment &Payment)
+{
+	return false;
+}
+//--------------------------------------------------------------------------
