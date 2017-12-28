@@ -236,8 +236,6 @@ private:
     void SelectPMSType();
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
-    bool DisplayFiscalSettings();
-    bool ConnectToFiscalServer();
 public: // User declarations
 };
 #endif

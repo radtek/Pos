@@ -113,7 +113,7 @@ namespace SiHotIntegration
             return roomDetails;
         }
 
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount)
         {
             List<string> stringList = GetDetailsList(roomChargeDetails);
             RoomChargeResponse response = new RoomChargeResponse();
@@ -135,7 +135,8 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 50000;
+                //request.Timeout = 5000;
+                request.Timeout = 5000;
                 request.ContentType = "text/plain";
                 // Get the request stream.  
                 dataStream = request.GetRequestStream();
@@ -173,6 +174,7 @@ namespace SiHotIntegration
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hhmmss"));
                 stringList.Add("Post Response:                            " + responseText);
+                stringList.Add("No of Times tried:                        " + retryCount);
                 if (exceptionMessage.Length != 0)
                     stringList.Add("Post Exception message:                   " + exceptionMessage);
                 if (!response.IsSuccessful)

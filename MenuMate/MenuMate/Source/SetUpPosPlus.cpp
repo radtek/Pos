@@ -33,6 +33,7 @@ void __fastcall TfrmSetUpPosPlus::FormShow(TObject *Sender)
 void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
 {
    	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
     try
     {
@@ -102,6 +103,7 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
     if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
     {
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
         DBTransaction1.StartTransaction();
         TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
         try
@@ -143,6 +145,7 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
 void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
 {
     Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
     DBTransaction1.StartTransaction();
     TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
     try

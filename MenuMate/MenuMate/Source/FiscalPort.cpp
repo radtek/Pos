@@ -185,23 +185,19 @@ AnsiString TFiscalPort::GetFiscalData()
    {
 	  try
 	  {
-//         MessageBox("Inside Get Data", "Shivashu",MB_OK);
 		 Port->ClearBuffer(false, true);
 #define Max_Bytes 300
 		 int CurrentTime, TimeOut;
 		 unsigned char TempBuffer[Max_Bytes];
 		 ZeroMemory(TempBuffer, Max_Bytes);
 		 int BytesRead = Port->Read(TempBuffer, Max_Bytes);
-//         MessageBox(BytesRead,"BytesRead",MB_OK);
 		 UnicodeString Temp = UnicodeString((const char*)(TempBuffer), BytesRead);
-//         MessageBox(Temp,"Temp",MB_OK);
 		 LastData = Temp.Trim();
          response = LastData;
 	  }
 	  __finally
 	  {
 		 Port->ClearBuffer(true, false);
-//         MessageBox(LastData,"LastData finally",MB_OK);
 	  }
    }
    catch(Exception & E)

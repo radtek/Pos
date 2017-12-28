@@ -13,6 +13,7 @@
 #include "DBSecurity.h"
 #include "PosMain.h"
 #include "StringTools.h"
+#include "FiscalDataUtility.h"
 TManagerReceipt *ManagerReceipt;
 // ---------------------------------------------------------------------------
 
@@ -808,13 +809,12 @@ void TManagerReceipt::Print()
         TMallExportUpdateAdaptor exportUpdateAdaptor;
         exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
 
-
-          TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
-          SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
-          TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
-
-
-
+        TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
+        SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
+        TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
+        std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+        AnsiString data = dataUtility->GetPOSPlusData(InvoiceNumber);
+        AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(data, eFiscalCopyReceipt);
       }
       __finally
       {

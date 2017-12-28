@@ -1477,13 +1477,13 @@ PARSER_ERROR TApplyParser::apply6_43( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
-//-----------------------------------------------------------------------------
-PARSER_ERROR TApplyParser::apply6_45( TDBControl* const inDBControl )
+//-----------------------------------------------------------------------------------
+PARSER_ERROR TApplyParser::apply6_44( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;
 	_errorMsg.clear();
-	current_version  = "6.45";
-	previous_version = "6.44";
+	current_version  = "6.44";
+	previous_version = "6.43";
 	// Previous Version.
 	if( !updateAlreadyApplied( previous_version,  _dbControl ) )
 	{
@@ -1498,7 +1498,7 @@ PARSER_ERROR TApplyParser::apply6_45( TDBControl* const inDBControl )
 	}
 	try
 	{
-		upgrade6_45Tables();
+		upgrade6_44Tables();
 		updateVersionNumber( current_version, _dbControl );
 		_errorMsg.append( "Updates have been succesfully applied." );
 		return PE_VERSION_UPGRADE_SUCCEED;
@@ -1509,4 +1509,5 @@ PARSER_ERROR TApplyParser::apply6_45( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
+//-----------------------------------------------------------------------------
 }

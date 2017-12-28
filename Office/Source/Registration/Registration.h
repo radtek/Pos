@@ -9,7 +9,7 @@
 
 enum eRegisteredModules {eRegKitchenScreen = 0x0001,eRegRooms = 0x0002,eRegSaleTurnAround = 0x0004,eRegMembers = 0x0008,
 								 eMenuMateDirect = 0x0010,eEFTPOS = 0x0020,eExpires = 0x0040,
-								 eOfficeMYOB = 0x1000};
+								 eAccounting = 0x1000};
 //---------------------------------------------------------------------------
 typedef struct _ASTAT_
 {

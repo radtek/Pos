@@ -17,6 +17,7 @@
 #include "TouchBtn.h"
 
 #include "PlanController.h"
+#include "DBTables.h"
 #include <Graphics.hpp>
 #include <jpeg.hpp>
 
@@ -43,21 +44,27 @@ __published:	// IDE-managed Components
     void __fastcall tiUpdateFloorPlanRefreshTimer(TObject *Sender);
     void __fastcall FormClose(TObject *Sender);
 
-
-	private:	// User declarations
+private:	// User declarations
 	Database::TDBControl &_iBDatabase;
     void UpdateTableFloorPlan();
     void UpdateTableOnFormShow();
     void UpdateTableOnFormPaint();
+    std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
+    std::set<int> AssignedMezzanineTables;
+    void DrawMezzanineArea(bool isLoadTime = true, bool isTableSelected = true);
+    std::set<int> LoadMizzanineTables();
+    void SaveLocationId(int locationId);
 public:		// User declarations
     std::auto_ptr<TablePlan::PlanController> _controller;
 	__fastcall TFrmSelectTable2(TComponent* Owner, Database::TDBControl &IBDatabase);
 
-	void AssociateWithController(std::auto_ptr<TablePlan::PlanController> c);
-   UnicodeString SelectedTabContainerName;
-   UnicodeString SelectedPartyName;
-   int SelectedTabContainerNumber;
-   bool NeedToReopen;
+    void AssociateWithController(std::auto_ptr<TablePlan::PlanController> c);
+    UnicodeString SelectedTabContainerName;
+    UnicodeString SelectedPartyName;
+    int SelectedTabContainerNumber;
+    bool NeedToReopen;
+    //Mezzanine Area
+    int TableMode;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TFrmSelectTable2 *frmSelectTable2;

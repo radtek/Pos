@@ -4748,4 +4748,18 @@ object dmMMReportData: TdmMMReportData
         ParamType = ptUnknown
       end>
   end
+  object qrMezzanine: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1637
+    Top = 821
+  end
+  object ravMezzanine: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrMezzanine
+    Left = 1706
+    Top = 827
+  end
 end
