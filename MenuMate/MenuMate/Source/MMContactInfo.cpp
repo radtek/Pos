@@ -107,11 +107,12 @@ bool TMMContactInfo::ValidateCheckedDuplicateEmail()
     {
       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
       IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";
+      IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE AND CARD_CREATION_DATE <> :CARD_CREATION_DATE";
       IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
 
       IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
       IBInternalQuery->ParamByName("EMAIL")->AsString = EMail;
+      IBInternalQuery->ParamByName("CARD_CREATION_DATE")->AsDateTime = CardCreationDate;
       IBInternalQuery->ExecQuery();
       DBTransaction.Commit();
       emailcount = IBInternalQuery->Fields[0]->AsInteger;
