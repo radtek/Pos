@@ -356,7 +356,6 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 
 	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
 	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;
-      GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect && Payment.GetPaymentAttribute(ePayTypeSmartConnectQR);
    }
    else
    {
@@ -369,8 +368,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled && Payment.GetPaymentAttribute(ePayTypeChargeToAccount);
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
-      GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect;
    }
+   GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
