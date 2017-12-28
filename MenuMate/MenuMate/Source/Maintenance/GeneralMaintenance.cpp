@@ -452,7 +452,9 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
     cbFloatWithdrawFromCash->Checked = TGlobalSettings::Instance().FloatWithdrawFromCash;
     cbSplitBillByMenuType->Checked = TGlobalSettings::Instance().IsBillSplittedByMenuType;
+    cbIntegratedEftposSmartConnect->OnClick = NULL;
     cbIntegratedEftposSmartConnect->Checked = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     FormResize(this);
 }
 
@@ -4473,4 +4475,4 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	cbIntegratedEftposSmartPay->Enabled = true;
 
 	if(cbIntegratedEftposSmartConnect->Checked)
-	    cbIntegratedEftposSmartPay->Enabled = false;}
+	    cbIntegratedEftposSmartPay->Enabled = false;    MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);}

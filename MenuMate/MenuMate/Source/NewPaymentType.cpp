@@ -369,7 +369,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
    }
-   GrpSmartConnect->Visible = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+   cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
