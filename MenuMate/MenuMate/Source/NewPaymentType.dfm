@@ -1045,7 +1045,6 @@ object frmNewPaymentType: TfrmNewPaymentType
           ParentBackground = False
           ParentFont = False
           TabOrder = 8
-          Visible = False
           object cbSmartConnectQR: TCheckBox
             Left = 10
             Top = 24
