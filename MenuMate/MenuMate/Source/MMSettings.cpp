@@ -380,6 +380,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
         TGlobalSettings::Instance().MembershipPaid = TManagerVariable::Instance().GetBool(DBTransaction, vmMembershipPaid, false);
+        TGlobalSettings::Instance().OrganizationNumber = TManagerVariable::Instance().GetInt(DBTransaction, vmOrganizationNumber, 0);
          int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
          if(mallIndex != 0)
             TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);

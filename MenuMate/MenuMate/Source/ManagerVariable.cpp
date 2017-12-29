@@ -3285,6 +3285,11 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction,vmFiscalXonXoffIn, "Fiscal Port Xon Xoff In Control",
 		"Default is false",
 		vmg3rdPartyInterface, false);
+
+        SetVarInt(DBTransaction,vmOrganizationNumber, "Organization Number",
+		"Organization Number.\r"
+		"Default is 0.",
+		vmg3rdPartyInterface, 0);
 	}
 	catch(Exception &E)
 	{
