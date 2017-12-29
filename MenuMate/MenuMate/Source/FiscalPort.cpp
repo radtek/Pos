@@ -20,10 +20,11 @@ TFiscalPort::TFiscalPort()
    Port->Buffer->OutputSize = 16384;
    Port->DiscardNull = false;
    Port->OnRxChar = NULL;//GetData;
-   Port->Timeouts->ReadInterval = 200;
-   Port->Timeouts->ReadTotalMultiplier = 200;
-   Port->Timeouts->WriteTotalMultiplier = 200;
-   Port->Timeouts->ReadTotalConstant = 300;
+   Port->Timeouts->ReadInterval = 10;
+   Port->Timeouts->ReadTotalMultiplier = 10;
+   Port->Timeouts->WriteTotalMultiplier = 10;
+   Port->Timeouts->ReadTotalConstant = 10;//30;
+   Port->Timeouts->WriteTotalConstant = 10;
    Port->FlowControl->ControlDTR = dtrEnable;
    Port->FlowControl->ControlRTS = rtsHandshake;
    Port->FlowControl->OutCTSFlow = false;
@@ -292,7 +293,6 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 			   InitAsync(ptr);
 			   Port->WriteStrAsync(Data, ptr);
 			   writeAsyncPtrList.push_back(ptr);
-//               MessageBox("Wrote in async mode", "Shivashu", MB_OK);
 			}
 			else
 			{
@@ -315,6 +315,7 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 			}
 			__finally
 			{
+               makeLogFile(Data, response);
 			   delete Stream;
 			}
 		 }
@@ -325,6 +326,24 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 	  Busy = false;
    }
    return response;
+}
+//-----------------------------------------------------------------------------
+void TFiscalPort::makeLogFile(AnsiString str1, AnsiString str2)
+{
+     AnsiString fileName = ExtractFilePath(Application->ExeName) + "FiscalLogs.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+
+    List->Add("Request- "+ str1 +  "\n");
+    List->Add("Response- "+ str2 +  "\n");
+    List->Add("=============================================================================================================");
+    List->Add("\n");
+
+    List->SaveToFile(fileName );
 }
 //-----------------------------------------------------------------------------
 void __fastcall TFiscalPort::PortTxEmpty(TObject *Sender)

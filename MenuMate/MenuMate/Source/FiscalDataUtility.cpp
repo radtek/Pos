@@ -39,7 +39,10 @@ bool TFiscalDataUtility::AnalyzeResponse(AnsiString inData, PostType type)
         case eFiscalPracticeReceipt:
         case eFiscalProofReceipt:
         {
-            retValue = AnalyzePostResponse(inData, type);
+            if(inData.Trim().Length() != 0)
+                retValue = AnalyzePostResponse(inData, type);
+            else
+                MessageBox("No Response Received from POSPlus.","Error",MB_OK + MB_ICONERROR);
             break;
         }
         default:

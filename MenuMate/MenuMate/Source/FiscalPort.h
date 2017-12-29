@@ -37,5 +37,6 @@ class TFiscalPort
          TComPort *GetTComPort();
          void Initialise(Database::TDBTransaction &DBTransaction);
          void SaveSettings(Database::TDBTransaction &DBTransaction);
+         void makeLogFile(AnsiString str1, AnsiString str2);
 	};
 #endif
