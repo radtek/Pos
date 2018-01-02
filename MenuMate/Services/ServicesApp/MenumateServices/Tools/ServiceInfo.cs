@@ -83,16 +83,6 @@ namespace MenumateServices
                 configurationManager.UniqueDatabaseServerFolder : configurationManager.WebmateDatabaseServerFolder;
         }
 
-        public string ChefmateDatabaseLocation()
-        {
-            MenumateServicesConfigurationManager configurationManager = MenumateServicesConfigurationManager.Instance;
-
-            ReloadConfigurationFile();
-
-            return configurationManager.UniqueDatabaseServer ?
-                configurationManager.UniqueDatabaseServerFolder : configurationManager.ChefmateDatabaseServerFolder;
-        }
-
         public string WebmateDatabaseServerPath()
         {
             MenumateServicesConfigurationManager configurationManager = MenumateServicesConfigurationManager.Instance;
@@ -101,16 +91,6 @@ namespace MenumateServices
 
             return configurationManager.UniqueDatabaseServer ?
                 configurationManager.UniqueDatabaseServerName : configurationManager.WebmateDatabaseServerName;
-        }
-
-        public string ChefmateDatabaseServerPath()
-        {
-            MenumateServicesConfigurationManager configurationManager = MenumateServicesConfigurationManager.Instance;
-
-            ReloadConfigurationFile();
-
-            return configurationManager.UniqueDatabaseServer ?
-                configurationManager.UniqueDatabaseServerName : configurationManager.ChefmateDatabaseServerName;
         }
     }
 }

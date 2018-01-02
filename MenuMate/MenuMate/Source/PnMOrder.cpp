@@ -28,6 +28,10 @@ TPnMOrder::TPnMOrder( const TPnMOrder& inOther )
     TimeKey   = inOther.TimeKey;
     PatronCount = inOther.PatronCount;
     ItemType = inOther.ItemType;
+    RoomNumber = inOther.RoomNumber;
+    AccNumber = inOther.AccNumber;
+    FirstName = inOther.FirstName;
+    LastName = inOther.LastName;
 }
 //---------------------------------------------------------------------------
 

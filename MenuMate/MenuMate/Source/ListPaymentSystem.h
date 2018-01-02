@@ -220,6 +220,8 @@ protected:
      bool ProcessPocketVoucherPayment(TPaymentTransaction &PaymentTransaction);
      bool ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt);
      bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
+     void SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction);
+     void InsertMezzanineSales(TPaymentTransaction &paymentTransaction);
 };
 
 #endif

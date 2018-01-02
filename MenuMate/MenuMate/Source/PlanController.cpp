@@ -77,7 +77,7 @@ bool PlanController::IsInitOk()
 }
 
 // -----------------------------------------------------------------------------------------------
-void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
+void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction, bool isNormalArea)
 {
 	// save canvas brush
 	TBrushRecall *savedBrush = new TBrushRecall(image->Canvas->Brush);
@@ -111,14 +111,14 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
 						if (ScreenRect.Height() > 0 && BackGndRect.Height() > 0)
 							YScaleFactor = double(ScreenRect.Height()) / double(BackGndRect.Height());
 
-                                                if(XScaleFactor < YScaleFactor)
-                                                {
-                                                    ScaleFactor = XScaleFactor;
-                                                }
-                                                else
-                                                {
-                                                    ScaleFactor = YScaleFactor;
-                                                }
+                        if(XScaleFactor < YScaleFactor)
+                        {
+                            ScaleFactor = XScaleFactor;
+                        }
+                        else
+                        {
+                            ScaleFactor = YScaleFactor;
+                        }
 
 						TRect ScaledRect = TRect(0, 0, BckGnd->Width * ScaleFactor, BckGnd->Height * ScaleFactor);
 						image->Canvas->StretchDraw(ScaledRect, BckGnd.get());
@@ -135,7 +135,6 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
                 std::map<int,UnicodeString> TableStatus;
                 TDBTables::GetTableStatus(DBTransaction, TableStatus);
 
-
                 // render each table
                 for (int i = 0; i < tables.Length; i++)
                 {
@@ -149,10 +148,10 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
                     OrigHeight = ((double)OrigHeight) * ScaleFactor;
                     TRect rect(OrigX, OrigY, OrigX + OrigWidth , OrigY + OrigHeight );
 
-                    if(!TGlobalSettings::Instance().FloorPlanTransparentTables)
+                    if(!TGlobalSettings::Instance().FloorPlanTransparentTables )
                     {
                         image->Canvas->Brush->Style = bsClear;
-                        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus)
+                        if(TGlobalSettings::Instance().UpdateTableGUIOnOrderStatus && isNormalArea)
                         {
                           int status = TDBTables::GetTableBillingStatus(DBTransaction,tables[i]->Number);
                            switch(status)
@@ -187,16 +186,14 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction)
                         }
                         else
                         {
-                           //image->Canvas->Brush->Color = TGlobalSettings::Instance().FloorPlanTableColour;
-                           //image->Canvas->Font->Color =  TGlobalSettings::Instance().FloorPlanTextColour;
-                            if(TDBTables::IsEmpty(DBTransaction,tables[i]->Number))
+                            if(TDBTables::IsEmpty(DBTransaction,tables[i]->Number) || (!isNormalArea))
                             {
                                 image->Canvas->Brush->Color = clSilver;
                                 image->Canvas->Font->Color =  clBlack;
                             }
                             else
                             {
-                                SetColorAsPerNoServiceTime(DBTransaction,tables[i]->Number);
+                               SetColorAsPerNoServiceTime(DBTransaction,tables[i]->Number);
                             }
                         }
                         if (tables[i]->Shape == "r")

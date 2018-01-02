@@ -809,11 +809,11 @@ void __fastcall TfrmMain::cbMYOBClick(TObject *Sender)
 {
    if (cbMYOB->Checked)
    {
-	  MenuMateModules |= eOfficeMYOB;
+	  MenuMateModules |= eAccounting;
    }
    else
    {
-	  MenuMateModules &= ~eOfficeMYOB;
+	  MenuMateModules &= ~eAccounting;
    }
 }
 // ---------------------------------------------------------------------------

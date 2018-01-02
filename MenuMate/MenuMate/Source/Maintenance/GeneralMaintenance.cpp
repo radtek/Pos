@@ -1010,6 +1010,7 @@ void __fastcall TfrmGeneralMaintenance::tbStaffClick(TObject *Sender)
 {
 	Pages->ActivePage = tsStaffOptions;
 	RedrawButtons(Sender);
+
 }
 //---------------------------------------------------------------------------
 
@@ -1632,17 +1633,57 @@ TObject *Sender)
 		if(tbgTimeCodes->Buttons[i][0]->Latched)
 		{
 			DelKey = tbgTimeCodes->Buttons[i][0]->Tag;
+
 		}
 	}
+            TMMContactInfo TempUserInfo;
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+            std::auto_ptr<TManagerTimeClock> ManagerTimeClock( new TManagerTimeClock);
+            TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckPINChange);
+	       if (Result == lsAccepted)
+          {
+            if(ManagerTimeClock->ClockedInDep(DBTransaction,DelKey))
+            {
+              MessageBox("Department is already Logged In,you can't delete department until department is Logged Out. ", "Error", MB_OK + MB_ICONERROR);
+            }
 
-	if(DelKey != 0)
+            else
+              {
+              if (ManagerTimeClock->CheckClockedIn(DBTransaction,DelKey))
+             {
+                ManagerTimeClock->DelClockInDept(DBTransaction,DelKey);
+                ManagerTimeClock->DelClockInDeptFromLoc(DBTransaction,DelKey);
+                DBTransaction.Commit();
+                UpdateTimeClockGrid(true);
+              }
+                 else
+              {
+
+                 ManagerTimeClock->DelClockInDeptFromLoc(DBTransaction,DelKey);
+                 DBTransaction.Commit();
+                 UpdateTimeClockGrid(true);
+             }
+             }
+             }
+    else if (Result == lsDenied)
 	{
-		try
-		{
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			std::auto_ptr<TManagerTimeClock> ManagerTimeClock( new TManagerTimeClock);
-			ManagerTimeClock->DelClockInDept(DBTransaction,DelKey);
+		MessageBox("You require change PIN rights to Clock In.", "Error", MB_OK + MB_ICONERROR);
+	}
+	else if (Result == lsPINIncorrect)
+	{
+		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+	}
+
+
+
+   /*      if(DelKey != 0)
+       {
+	     	try
+      {
+        MessageBox("elsecase", "Error", MB_OK + MB_ICONERROR);
+        ManagerTimeClock->DelClockInDept(DBTransaction,DelKey);
 			DBTransaction.Commit();
 			UpdateTimeClockGrid(true);
 		}
@@ -1650,8 +1691,11 @@ TObject *Sender)
 		{
 			MessageBox(E.Message, "Error",MB_ICONWARNING + MB_OK);
 		}
-	}
-}
+	}   */
+
+
+  }
+
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmGeneralMaintenance::tbtnAddDeptMouseClick(
@@ -1679,12 +1723,12 @@ TObject *Sender)
 			if (frmTouchNumpad->ShowModal() == mrOk)
 			{
 				int DeptCode = frmTouchNumpad->INTResult;
-
+             //   AnsiString DeptName = frmTouchKeyboard->KeyboardText;
 				Database::TDBTransaction DBTransaction(DBControl);
 				DBTransaction.StartTransaction();
-				std::auto_ptr<TManagerTimeClock> ManagerTimeClock( new TManagerTimeClock);
-				ManagerTimeClock->AddClockInDept(DBTransaction,DeptName,DeptCode);
-				DBTransaction.Commit();
+                std::auto_ptr<TManagerTimeClock> ManagerTimeClock( new TManagerTimeClock);
+                ManagerTimeClock->AddClockInDept(DBTransaction,DeptName,DeptCode);
+                DBTransaction.Commit();
 				UpdateTimeClockGrid(true);
 			}
 		}
@@ -1848,6 +1892,7 @@ TObject *Sender)
 				if (frmTouchNumpad->ShowModal() == mrOk)
 				{
 					int DeptCode = frmTouchNumpad->INTResult;
+
 					ManagerTimeClock->UpdateClockInDept(DBTransaction,DeptName,DeptCode,DeptKey);
 					UpdateTimeClockGrid(true);
 				}

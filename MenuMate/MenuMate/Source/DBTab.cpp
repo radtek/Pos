@@ -1261,7 +1261,7 @@ void TDBTab::GetOrderKeysExcludeSides(Database::TDBTransaction &DBTransaction,in
 		"  ORDERS "
 		" WHERE "
 		"  TAB_KEY = :TAB_KEY AND "
-		" SIDE_ORDER_KEY IS NULL";
+		" (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0)";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -2195,4 +2195,29 @@ AnsiString TDBTab::GetInvoiceNoFromTabKey(Database::TDBTransaction &dbTransactio
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+//-------------------------------------------------------------------------------
+UnicodeString TDBTab::GetAccountNumber(Database::TDBTransaction &dbTransaction, int tabKey)
+{
+    UnicodeString AccNo = "";
+    try
+    {
+        TIBSQL *selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT ACC_NO FROM ORDERS A WHERE TAB_KEY = :TAB_KEY "
+                                  "GROUP BY 1 ";
+
+        selectQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+            AccNo = selectQuery->FieldByName("ACC_NO")->AsString;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return AccNo;
 }

@@ -172,6 +172,9 @@ private:	// User declarations
     void DisableToggleGSTButton(Database::TDBTransaction &DBTransaction);
     void RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys);
     AnsiString VoucherCode;
+    bool CanMoveItemToOtherTab(int sourceAccNumber, int TabTransferTo);
+    bool CheckBillEntireWithCustomerJourney();
+    void CustomizeForSiHot(TPaymentTransaction &PaymentTransaction);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

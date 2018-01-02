@@ -58,7 +58,7 @@ enum vmVariables
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
    vmIntaMateTerminalID, vmIntaMateIPTimeOut, vmPocketVoucherURL, vmMembershipTillID,
    vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,vmPMSTipAccount,vmPMSExpensesAccount,vmPMSServiceChargeAccount,
-   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName,
+   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName, vmEnableCustomerJourney,
 
 	// Stock Master ----------------------------------------------------------------
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,
@@ -123,6 +123,7 @@ enum vmVariables
 	vmCashDenominationEntry,
     vmReportExportPath,
     vmIsBillSplittedByMenuType,
+    vmIsAutoLoggedOut,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,

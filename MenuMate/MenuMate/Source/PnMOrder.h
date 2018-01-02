@@ -52,6 +52,10 @@ public:
     int TimeKey;    // Time key value that is same as for orders placed at the same time. Used for chefmate cancellations.
     int PatronCount;
     int ItemType;
+    UnicodeString RoomNumber;
+    UnicodeString AccNumber;
+    UnicodeString FirstName;
+    UnicodeString LastName;
 
 	// Selected for billing therefore not shown in orders list
 	bool operator < (const TPnMOrder & rhs)

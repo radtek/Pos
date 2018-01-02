@@ -67,7 +67,7 @@
 #include "MallFactory.h"
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
-
+#include "ManagerMallSetup.h"
 
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
@@ -807,6 +807,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
+        
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -816,10 +817,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 			break;
 		case eTransQuickSale:
 			_processQuickTransaction( PaymentTransaction );
-			break;
+            break;
 		case eTransCreditPurchase:
 			_processCreditTransaction( PaymentTransaction );
-			break;
+            break;
 		case eTransEFTPOSRecovery:
 			_processEftposRecoveryTransaction( PaymentTransaction ); 	// similar to eTransRewardsRecovery ?
 			break;
@@ -1344,7 +1345,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction)
 {
-	bool RetVal = true;
+	bool RetVal = false;
 
 	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
@@ -1355,6 +1356,10 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 	}
 	else
 	{
+        if(TGlobalSettings::Instance().PMSType == SiHot)
+        {
+            OpenCashDrawer(PaymentTransaction);
+        }
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
@@ -1372,6 +1377,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 			AnsiString TransactionRef = TDeviceRealTerminal::Instance().BasePMS->GetLastTransactionRef();
 			PaymentTransaction.References.push_back(RefRefType(TransactionRef,
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
+            RetVal = true;
 		}
 	}
 	return RetVal;
@@ -1528,15 +1534,45 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
 
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
+        SaveRoomGuestDetails(PaymentTransaction);
+
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        //Instantiation is happenning in a factory based on the active mall in database
-        TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-        delete mall;
+        bool canContinue = true;
+
+        //Check if mall type is dean and deluca
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {
+            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
+            if(item->TableNo)
+            {
+                TGlobalSettings::Instance().MezzanineTablesMap.clear();
+                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    canContinue = (innerit == outerit->second.end());
+                }
+            }
+        }
+
+        if(canContinue)
+        {
+            //Instantiation is happenning in a factory based on the active mall in database
+            TMallExport* mall = TMallFactory::GetMallType();
+            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+            delete mall;
+        }
+        else
+        {
+            InsertMezzanineSales(PaymentTransaction);
+        }
     }
 }
 
@@ -3529,11 +3565,10 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
-
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
-	   return RetVal;
-
+       return RetVal;
+     
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
@@ -3591,7 +3626,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(!RMSCSVRoomExport)
 	   return RetVal;
-
     if(TGlobalSettings::Instance().NewBook == 2)
     {
         if(ProcessCSVNewBookExport(PaymentTransaction))
@@ -3601,6 +3635,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         else
         {
             NewBookCSVRoomExport = false;
+            RetVal=true;
         }
     }
     if(!NewBookCSVRoomExport)
@@ -4260,7 +4295,7 @@ bool TListPaymentSystem::ProcessCSVRoomExport( TPaymentTransaction &PaymentTrans
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && (Payment->RMSRoom.AccountNo != -1) &&
+            if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && (Payment->RMSRoom.AccountNo != -1) &&
                ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
 			{
 				AnsiString File = ExtractFilePath(Payment->CVSWriteLocation) + "SYSNET" + Now().FormatString("ddmmyy")+ ".csv";
@@ -4304,11 +4339,15 @@ bool TListPaymentSystem::ProcessCSVNewBookExport( TPaymentTransaction &PaymentTr
         int	InvoiceNumber = IBInternalQuery->Fields[0]->AsInteger;
         AnsiString File;
         AnsiString roomnumber,GuestName;
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+
+
+        for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
-            {
+
+               TPayment *Payment = PaymentTransaction.PaymentGet(i);
+
+           if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
+                {
                 ExtractFilePath(Payment->CVSWriteLocation);
                 File = Payment->CVSWriteLocation + "\\ROOM-" + Payment->NewBookRoom.RoomNo + ".csv";
                 roomnumber= Payment->NewBookRoom.RoomNo;
@@ -4567,7 +4606,11 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					}
 
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -4694,7 +4737,11 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                                exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                              }
                             BuildXMLTransaction(PaymentTransaction);
-                            OpenCashDrawer(PaymentTransaction);
+                            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                            {
+                                OpenCashDrawer(PaymentTransaction);
+                            }
                             if(SplittedItem->OrderKey > 0)
                             {
                               //Calculate DWT , Tax on discount on remaining quantities
@@ -4853,7 +4900,11 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 						   exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                          }
 						BuildXMLTransaction(PaymentTransaction);
-                        OpenCashDrawer(PaymentTransaction);
+                        if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                          !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                        {
+                            OpenCashDrawer(PaymentTransaction);
+                        }
 
                         if(SplittedItem->OrderKey > 0)
                         {
@@ -4966,7 +5017,11 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             }
 
             BuildXMLTransaction(PaymentTransaction);
-            OpenCashDrawer(PaymentTransaction);
+            if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+              !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            {
+                OpenCashDrawer(PaymentTransaction);
+            }
             RemoveOrders(PaymentTransaction);
         }
 
@@ -5019,7 +5074,11 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5094,7 +5153,11 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -5178,7 +5241,11 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 					ProcessRewardSchemes(PaymentTransaction);
 					BuildXMLTransaction(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-					OpenCashDrawer(PaymentTransaction);
+                    if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
+                      !TDeviceRealTerminal::Instance().BasePMS->Enabled)
+                    {
+					    OpenCashDrawer(PaymentTransaction);
+                    }
 					RemoveOrders(PaymentTransaction);
 					AdjustCredit(PaymentTransaction);
 				}
@@ -6187,4 +6254,145 @@ void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeStri
 
     dbPanasonic->UniDataBaseConnection->Commit();
     dbPanasonic->UniDataBaseConnection->Close();
+}
+//-----------------------------------------------------------------------------------
+void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_GUEST_DETAILS_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int guestDetailsKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamCheck = true;
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+        "INSERT INTO ROOM_GUEST_DETAILS ("
+        "GUEST_DETAILS_KEY,"
+        "INVOICE_NUMBER,"
+        "ACC_NUMBER,"
+        "ROOM_NUMBER,"
+        "FIRST_NAME, "
+        "LAST_NAME, "
+        "AMOUNT "
+        ")"
+        " VALUES "
+        "("
+        ":GUEST_DETAILS_KEY, "
+        ":INVOICE_NUMBER, "
+        ":ACC_NUMBER,"
+        ":ROOM_NUMBER,"
+        ":FIRST_NAME, "
+        ":LAST_NAME, "
+        ":AMOUNT "
+        ");";
+
+        IBInternalQuery->ParamByName("GUEST_DETAILS_KEY")->AsInteger = guestDetailsKey;
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = paymentTransaction.InvoiceNumber;
+        IBInternalQuery->ParamByName("ACC_NUMBER")->AsString = paymentTransaction.Phoenix.AccountNumber;
+        IBInternalQuery->ParamByName("ROOM_NUMBER")->AsInteger =atoi(paymentTransaction.Phoenix.RoomNumber.t_str());
+        IBInternalQuery->ParamByName("FIRST_NAME")->AsString = paymentTransaction.Phoenix.FirstName;
+        IBInternalQuery->ParamByName("LAST_NAME")->AsString = paymentTransaction.Phoenix.LastName;
+        IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = paymentTransaction.Money.RoundedGrandTotal;
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//--------------------------------------------------------------------------------------
+void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        Currency totalPaidAmount = 0.00;
+        TDeanAndDelucaMall *mallField = new TDeanAndDelucaMall();
+        TDeanAndDelucaMallField *fieldData = new TDeanAndDelucaMallField();
+        int tableNumber;
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+                TItemComplete *order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+                mallField->PrepareDataByItem(paymentTransaction.DBTransaction, order, *fieldData);
+                tableNumber = order->TableNo;
+                for (int i = 0; i < order->SubOrders->Count; i++)
+				{
+					TItemCompleteSub *currentSubOrder = (TItemCompleteSub*)order->SubOrders->Items[i];
+                    mallField->PrepareDataByItem(paymentTransaction.DBTransaction, currentSubOrder, *fieldData);
+                }
+        }
+
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
+			if (SubPayment->GetPay() != 0)
+			{
+                totalPaidAmount += (double)(SubPayment->GetPayTendered() - SubPayment->GetChange() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
+            }
+        }
+
+        fieldData->TotalNetSaleAmount =  totalPaidAmount;
+        fieldData->GrossSaleAmount =  fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + totalPaidAmount;
+
+        TIBSQL *incrementGenerator = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        TIBSQL *insertQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MEZZANINE_SALES_ID, 1) FROM RDB$DATABASE";
+        incrementGenerator->ExecQuery();
+        //MessageBox("The screen was left idle for 5 minutes. Do you wish to continue?","Information",MB_YESNO + MB_ICONQUESTION);
+        insertQuery->Close();
+        insertQuery->SQL->Clear();
+        insertQuery->SQL->Text =
+            "INSERT INTO MEZZANINE_SALES "
+                "(SALES_ID, "
+                "TABLE_NUMBER, "
+                "GROSS_SALES, "
+                "TIME_STAMP_BILLED, "
+                "PWD, "
+                "SCD, "
+                "OTHER_DISCOUNTS, "
+                "VAT_EXEMPT_SALES, "
+                "SERVICE_CHARGE, "
+                "VAT, "
+                "LOCATION_ID, "
+                "TERMINAL_NAME, "
+                "Z_KEY ) "
+            "VALUES ( "
+                ":SALES_ID, "
+                ":TABLE_NUMBER, "
+                ":GROSS_SALES, "
+                ":TIME_STAMP_BILLED, "
+                ":PWD, "
+                ":SCD, "
+                ":OTHER_DISCOUNTS, "
+                ":VAT_EXEMPT_SALES, "
+                ":SERVICE_CHARGE, "
+                ":VAT, "
+                ":LOCATION_ID, "
+                ":TERMINAL_NAME,  "
+                ":Z_KEY )";
+            insertQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+            insertQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+            insertQuery->ParamByName("GROSS_SALES")->AsCurrency = fieldData->GrossSaleAmount;
+            insertQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
+            insertQuery->ParamByName("PWD")->AsCurrency = fieldData->TotalPWDAmount;
+            insertQuery->ParamByName("SCD")->AsCurrency = fieldData->TotalSCDAmount;
+            insertQuery->ParamByName("OTHER_DISCOUNTS")->AsCurrency = fieldData->TotalOtherDiscount;
+            insertQuery->ParamByName("VAT_EXEMPT_SALES")->AsCurrency = (fieldData->NonTaxableSaleAmount - fieldData->TotalNonTaxableSC - fieldData->TotalPWDAmount - fieldData->TotalSCDAmount);
+            insertQuery->ParamByName("SERVICE_CHARGE")->AsCurrency = fieldData->TotalServiceCharge;
+            insertQuery->ParamByName("VAT")->AsCurrency = fieldData->TotalTax;
+            insertQuery->ParamByName("LOCATION_ID")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+            insertQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+            insertQuery->ParamByName("Z_KEY")->AsInteger = 0;
+            insertQuery->ExecQuery();
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }

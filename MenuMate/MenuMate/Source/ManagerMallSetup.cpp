@@ -308,20 +308,20 @@ void TManagerMallSetup::InsertSettingValuesForDeanAndDeluca(Database::TDBTransac
 
         if(!isRecordExist)
         {
-            const int numberOfFields = 10;
+            const int numberOfFields = 11;
              UnicodeString fieldTypes[numberOfFields] =
              {
-                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool"
+                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool", "bool"
              };
 
              UnicodeString fieldValues[numberOfFields] =
              {
-                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true"
+                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true", "true"
              };
 
              int settingID[numberOfFields] =
              {
-                1, 2, 7, 9, 16, 18, 19, 20, 24, 25
+                1, 2, 7, 9, 16, 18, 19, 20, 24, 25, 27
              };
 
             TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );
@@ -379,3 +379,31 @@ bool TManagerMallSetup::IsSettingExistInDB(Database::TDBTransaction &dbTransacti
     }
     return isSettingExist;
 }
+//------------------------------------------------------------------------------------------------------------
+std::map<int, std::set<int> > TManagerMallSetup::LoadMezzanineAreaTablesByLocations(Database::TDBTransaction &dbTransaction)
+{
+    std::map<int, std::set<int> >mezzanineTables;
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text = "SELECT a.LOCATION_ID,a.TABLE_NUMBER  FROM MEZZANINE_AREA_TABLES a "
+                            " WHERE  a.FLOORPLAN_VER = :FLOORPLAN_VER  "
+                            "ORDER BY 1 ASC ";
+
+        query->ParamByName("FLOORPLAN_VER")->AsInteger = TGlobalSettings::Instance().ReservationsEnabled == true ? 0 : 1;
+        query->ExecQuery();
+
+        while(!query->Eof)
+        {
+            mezzanineTables[query->FieldByName("LOCATION_ID")->AsInteger].insert(query->FieldByName("TABLE_NUMBER")->AsInteger);
+            query->Next();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+
+    return mezzanineTables;
+}
+

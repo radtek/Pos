@@ -926,8 +926,8 @@ object frmMaintain: TfrmMaintain
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
+            Enabled = False
             LatchingProperties = [lkLatchColor, lkStayDown]
-            OnMouseClick = TouchBtnClipInterfaceMouseClick
           end
           object TouchBtnRunRateBoard: TTouchBtn
             Left = 28
@@ -960,8 +960,8 @@ object frmMaintain: TfrmMaintain
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
+            Enabled = False
             LatchingProperties = [lkLatchColor, lkStayDown]
-            OnMouseClick = TouchBtnThorlinkClick
           end
           object TouchBtnSecurity: TTouchBtn
             Left = 247

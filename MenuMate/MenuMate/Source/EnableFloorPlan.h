@@ -11,7 +11,8 @@
 //---------------------------------------------------------------------------
 enum eFloorPlanVer { eNewFloorPlan, eOldFloorPlan };
 
-struct TFloorPlanReturnParams {
+struct TFloorPlanReturnParams
+{
 	UnicodeString TabContainerName;
 	UnicodeString PartyName;
 	int TabContainerNumber;
@@ -28,7 +29,7 @@ class TEnableFloorPlan
 		bool Run(
                                  TForm* inOwner,
                                   bool  inShowAll,
-                TFloorPlanReturnParams& inFloorPlanReturnParams );
+                TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea = true );
 
         void SetChangingName(bool inChangingName);
 		unsigned __int32 GetMaxTableCount();
@@ -40,12 +41,12 @@ class TEnableFloorPlan
 
 		bool runNewFloorPlan(
                                  TForm* inOwner,
-                TFloorPlanReturnParams& inFloorPlanReturnParams );
+                TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea);
 
 		bool runBackupFloorPlan(
                                  TForm* inOwner,
                                   bool  inShowAll,
-                TFloorPlanReturnParams& inFloorPlanReturnParams );
+                TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea );
 
 		bool initialiseFloorPlan();
 

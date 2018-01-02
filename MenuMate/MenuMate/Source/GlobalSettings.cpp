@@ -396,5 +396,7 @@ TGlobalSettings::TGlobalSettings()
     MembershipType = 0;
     IsBillSplittedByMenuType = false;
     CustomerId = "";
+    EnableCustomerJourney = false;
+    IsAutoLoggedOut = false;
 }
 
