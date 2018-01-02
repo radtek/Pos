@@ -290,7 +290,7 @@ void TfrmPaymentType::Reset()
            }
            else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
            {
-              //tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;//!CurrentTransaction.CreditTransaction;
               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
            }
            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
