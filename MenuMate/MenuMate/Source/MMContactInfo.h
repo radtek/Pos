@@ -140,19 +140,24 @@ class TCustomer: public TMMContactInfo
 	: FRoomNumber(inRoomNumber), FInvoiceKey(inInvoiceKey){}
 	TCustomer( int inRoomNumber, int inInvoiceKey, AnsiString inName )
 	: FRoomNumber(inRoomNumber), FInvoiceKey(inInvoiceKey), TMMContactInfo(inName){}
+	TCustomer( UnicodeString inRoomNumberStr, int inInvoiceKey, AnsiString inName )
+	: FRoomNumberStr(inRoomNumberStr), FInvoiceKey(inInvoiceKey), TMMContactInfo(inName){}
 
 	__property int RoomNumber = { read = GetRoomNumber, write = SetRoomNumber };
 	__property int InvoiceKey = { read = GetInvoiceKey, write = SetInvoiceKey };
+    __property UnicodeString RoomNumberStr = { read = GetRoomNumberStr, write = SetRoomNumberStr };
 
 
 	private:
 	int FRoomNumber;
 	int FInvoiceKey;
-
+    UnicodeString FRoomNumberStr;
 	int GetRoomNumber( void ){ return FRoomNumber; }
 	void SetRoomNumber( const int inRoomNumber ) { FRoomNumber = inRoomNumber; }
 	int GetInvoiceKey( void ){ return FInvoiceKey; }
 	void SetInvoiceKey( const int inInvoiceKey ) { FInvoiceKey = inInvoiceKey; }
+	UnicodeString GetRoomNumberStr( void ){ return FRoomNumberStr; }
+	void SetRoomNumberStr( const UnicodeString inRoomNumberStr ) { FRoomNumberStr = inRoomNumberStr; }
 };
 
 #endif

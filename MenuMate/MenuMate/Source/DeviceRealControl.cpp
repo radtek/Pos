@@ -1282,7 +1282,7 @@ void TDeviceRealControl::StatusReport(TStringList *html)
 			case eIntaMate:
 				ModName = "IntaMate System";
 				break;
-			case eOfficeMYOB:
+			case eAccounting:
 				ModName = "MYOB Interface";
 				break;
 			case eSmartCardSystem:
@@ -1348,6 +1348,9 @@ TDeviceRealControl::LoadRegistrationConfig()
 	SmartCardsRegistered = MembersRegistered;
 	Modules.Status[eSmartCardSystem]["Registered"] = SmartCardsRegistered;
 
+    bool AccountinterfaceRegistered = false;
+	RegisteredModule(&AccountinterfaceRegistered, eAccounting);
+	Modules.Status[eAccounting]["Registered"] = AccountinterfaceRegistered ;
 }
 
 int TDeviceRealControl::SumStrings(TStrings *Strings)

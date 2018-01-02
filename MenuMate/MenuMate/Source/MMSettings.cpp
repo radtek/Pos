@@ -396,6 +396,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
         TGlobalSettings::Instance().EnableCustomerJourney = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableCustomerJourney, false);
+        if(mallIndex == 2)
+            TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(DBTransaction);
+        TGlobalSettings::Instance().IsAutoLoggedOut = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAutoLoggedOut, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

@@ -168,14 +168,14 @@ get_chit_option(const chit_key_t chit_key)
 	std::auto_ptr<TfrmChitList> menu(new TfrmChitList(0x0, *names));
 
 	menu->Caption = "Select a chit option";
-
+    TGlobalSettings::Instance().IsAutoLoggedOut = true;
 	if (menu->ShowModal() == mrCancel)
 	{
 		return L"";
 	}
 
 	UnicodeString selectedChitName = menu->SelectedChitName;
-
+    TGlobalSettings::Instance().IsAutoLoggedOut = false;
     return selectedChitName.c_str();
 }
 
@@ -197,8 +197,9 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
          ChitNumberReturned = ChitOk;
 
 		 if (!ChitNumber.Assigned())
+         {
 			ChitNumberReturned = GetNextChitNumber(ChitNumber);
-
+         }
          if (ChitNumber.Format == ectList)
             ChitNumber.ActiveOption(
 			  get_chit_option(ChitNumber.ChitNumberKey).c_str());
@@ -228,6 +229,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 			SelectionForm->Items.push_back(Item);
 		 }
 
+         TGlobalSettings::Instance().IsAutoLoggedOut = true;
 		 SelectionForm->ShowModal();
 		 TVerticalSelection SelectedItem;
 		 if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
@@ -247,6 +249,7 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
 
 
 		 }
+         TGlobalSettings::Instance().IsAutoLoggedOut = false;
 	  }
    }
    else if (ChitNumber.Valid())
@@ -276,8 +279,9 @@ ChitResult TChitNumberController::GetChitNumber(bool Prompt, TChitNumber &ChitNu
    return ChitNumberReturned;
 }
 
-ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWebOrder)
+ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isNormalOrder)
 {
+    bool isChitFormatChanged = false;
     ChitResult ChitNumberReturned = ChitCancelled;
     if (Chit.Type == ectAuto || Chit.Format == ectList || Chit.OnlineDeliveryOrder)
     {
@@ -293,21 +297,28 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWe
         }
     }
 
-    if(isWebOrder)
+    if(isNormalOrder)
     {
         if (Chit.Format == ectNumeric)
         {
              std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (DisplayOwner));
              frmTouchNumpad->Caption = "Enter the " + Chit.Name + " Number";
+             TGlobalSettings::Instance().IsAutoLoggedOut = true;
              frmTouchNumpad->btnSurcharge->Caption = "Ok";
              frmTouchNumpad->btnSurcharge->Visible = true;
              frmTouchNumpad->btnDiscount->Visible = false;
              frmTouchNumpad->Mode = pmNumber;
              frmTouchNumpad->INTInitial = 0;
+             isChitFormatChanged = true;
              if (frmTouchNumpad->ShowModal() == mrOk)
              {
+                isChitFormatChanged = false;
                 Chit.ChitNumber = IntToStr(frmTouchNumpad->INTResult);
                 ChitNumberReturned = ChitOk;
+             }
+             if(isChitFormatChanged)
+             {
+                Chit.Format = ectNumeric;
              }
         }
         else
@@ -317,14 +328,23 @@ ChitResult TChitNumberController::GetNextChitNumber(TChitNumber &Chit, bool isWe
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = false;
             frmTouchKeyboard->KeyboardText = "";
+            frmTouchKeyboard->Name = "frmTouchKeyboard";
             frmTouchKeyboard->Caption = "Enter the " + Chit.Name + " Text/Number";
 
+			TGlobalSettings::Instance().IsAutoLoggedOut = true;
+            isChitFormatChanged = true;
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
+                isChitFormatChanged = false;
                 Chit.ChitNumber = frmTouchKeyboard->KeyboardText;
                 ChitNumberReturned = ChitOk;
+          }
+            if(TGlobalSettings::Instance().AutoLogoutPOS && isChitFormatChanged && Chit.Format == ectList )
+            {
+                Chit.Format = ectAlphaNumeric;
             }
         }
+        TGlobalSettings::Instance().IsAutoLoggedOut = false;
     }
     return ChitNumberReturned;
 }

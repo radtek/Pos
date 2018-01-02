@@ -45,6 +45,7 @@
 #include "Mall.h"
 #include "GUIDiscount.h"
 #include "MallSalesTypeAssignment.h"
+#include "EnableFloorPlan.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -2418,6 +2419,33 @@ void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
 {
     std::auto_ptr <TfrmMallSalesTypeAssignment> mallSalesTypeAssignment(new TfrmMallSalesTypeAssignment(this));
     mallSalesTypeAssignment->ShowModal();
+}
+//---------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnMezzanineAreaMouseClick(TObject *Sender)
+{
+    ShowMezzanineArea();
+}
+//------------------------------------------------------------------------------------------
+void TfrmSetup::ShowMezzanineArea()
+{
+    try
+    {
+        TFloorPlanReturnParams floorPlanReturnParams;
+        std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
+        floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams, false );
+
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TGlobalSettings::Instance().MezzanineTablesMap.clear();
+        TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(dbTransaction);
+        dbTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+         MessageBox(E.Message,"",MB_OK);
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 
