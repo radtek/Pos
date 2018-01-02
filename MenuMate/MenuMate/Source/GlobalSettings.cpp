@@ -408,5 +408,6 @@ TGlobalSettings::TGlobalSettings()
     FiscalXonXoffOut = false;
     FiscalXonXoffIn = false;
     FiscalAsync = false;
+    OrganizationNumber = "";
 }
 

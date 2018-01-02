@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
 #include <MMTouchNumpad.h>
+#include "MMTouchKeyboard.h"
 #include "SerialConfig.h"
 #include "FiscalDataUtility.h"
 //---------------------------------------------------------------------------
@@ -28,6 +29,8 @@ void __fastcall TfrmSetUpPosPlus::FormShow(TObject *Sender)
     else
         tbtnConfigure->ButtonColor = clRed;
     tbtnPortNumber->Caption = "Port Number/r" + TGlobalSettings::Instance().FiscalServerPortNumber;
+
+    tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
@@ -191,3 +194,34 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
         Close();
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+	DBTransaction.StartTransaction();
+    try
+    {
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        frmTouchNumpad->Caption = "Enter Organization Number.";
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->Mode = pmNumber;
+        frmTouchNumpad->INTInitial = atoi(TGlobalSettings::Instance().OrganizationNumber.t_str());
+
+        if (frmTouchNumpad->ShowModal() == mrOk)
+        {
+            TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResult;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,  vmOrganizationNumber, TGlobalSettings::Instance().OrganizationNumber);
+             DBTransaction.Commit();
+             tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+        }
+
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+    }
+
+}

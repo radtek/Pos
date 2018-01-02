@@ -504,6 +504,7 @@ public:
     bool FiscalXonXoffOut;
     bool FiscalXonXoffIn;
     bool FiscalAsync;
+    UnicodeString OrganizationNumber;
 };
 
 #endif

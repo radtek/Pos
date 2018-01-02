@@ -23,10 +23,13 @@ __published:	// IDE-managed Components
     TLabel *labelConfigure;
     TLabel *labelValidate;
     TTouchBtn *tbtnPortNumber;
+    TLabel *labelOrganization;
+    TTouchBtn *tbtnOrganizationNumber;
     void __fastcall tbtnPortNumberMouseClick(TObject *Sender);
     void __fastcall tbtnConfigureMouseClick(TObject *Sender);
     void __fastcall tbtnValidateMouseClick(TObject *Sender);
     void __fastcall tbtnCloseMouseClick(TObject *Sender);
+    void __fastcall tbtnOrganizationNumberMouseClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
     __fastcall TfrmSetUpPosPlus(TComponent* Owner);
