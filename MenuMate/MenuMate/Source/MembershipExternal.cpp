@@ -311,8 +311,7 @@ void TMembershipExternal::GetExternalContactDetails
 	}
 }
 
-int TMembershipExternal::GetContactByCard
-		(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
+int TMembershipExternal::GetContactByCard(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
 {
 	if (!fEnabled)
 		return 0;

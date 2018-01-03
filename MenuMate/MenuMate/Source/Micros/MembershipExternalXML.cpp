@@ -3,6 +3,9 @@
 #include "MembershipExternalXML.h"
 #include <SysUtils.hpp>
 #include <tchar.h>
+#include <DateUtils.hpp>
+#include <system.hpp>
+#include <Forms.hpp>
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -135,6 +138,7 @@ TMSXMLEnquiry::TMSXMLEnquiry() : TMSXMLBase()
 
 void TMSXMLEnquiry::Parse()
 {
+    AnsiString TextToWrite = "----------------------------------Text Begins From here------------------------------";
 	TiXmlHandle hDoc(&ResultDoc);
 	TiXmlElement* pElement = NULL;
 	pElement = hDoc.FirstChild(_T("Response")).ToElement();
@@ -168,6 +172,24 @@ void TMSXMLEnquiry::Parse()
 				pElement->QueryIntAttribute(_T(xmlAttrPoints),&PointsBalance);
 				pElement->QueryIntAttribute(_T(xmlAttrComp),&CompBalance);
 				pElement->QueryIntAttribute(_T(xmlAttrAuth),&Authorised);
+                TiXmlDocument  *document = new TiXmlDocument();
+                document = pElement->GetDocument();
+
+                TiXmlText *xmlText = NULL;
+                xmlText = pElement->ToText();
+                TextToWrite += "XML Document ---------------" + UnicodeString(document->Value());
+                TextToWrite += "GET TEXT() function ---------------" + UnicodeString(pElement->GetText());
+                //TextToWrite += "ValueTStr() function ---------------" + UnicodeString(pElement->ValueTStr());
+                //TextToWrite += "ToDocument() function ---------------" + document1->ge;
+                TextToWrite += "ToText() function ---------------" + UnicodeString(xmlText->Value());
+                TextToWrite += "Value() function ---------------" + UnicodeString(pElement->Value());
+//                TextToWrite += "-------------------------------------------Before Writing XML ---------------" ;
+                MakeXMLLogFile(TextToWrite);
+                TiXmlDocument doc;
+                UnicodeString fileName = "CasinoResponseLogs";
+                doc.SaveFile(UnicodeString(ExtractFileName(Application->ExeName) + "." + fileName + ".xml").t_str());
+
+
 			}
 			else
 			{
@@ -266,7 +288,7 @@ void TMSXMLTransaction::Build()
 }
 
 void TMSXMLTransaction::Parse()
-{
+{  AnsiString TextToWrite = "----------------------------------Text Begins From here For Second Parse------------------------------";
 	TiXmlHandle hDoc(&ResultDoc);
 	TiXmlElement* pElement = NULL;
 	pElement = hDoc.FirstChild(_T("Response")).ToElement();
@@ -292,6 +314,23 @@ void TMSXMLTransaction::Parse()
 			if(ResponseStatus == "ACK")
 			{
 				Result = eMSAccepted;
+
+                     TiXmlDocument  *document = new TiXmlDocument();
+                document = pElement->GetDocument();
+
+                TiXmlText *xmlText = NULL;
+                xmlText = pElement->ToText();
+                TextToWrite += "XML Document ---------------" + UnicodeString(document->Value());
+                TextToWrite += "GET TEXT() function ---------------" + UnicodeString(pElement->GetText());
+                //TextToWrite += "ValueTStr() function ---------------" + UnicodeString(pElement->ValueTStr());
+                //TextToWrite += "ToDocument() function ---------------" + document1->ge;
+                TextToWrite += "ToText() function ---------------" + UnicodeString(xmlText->Value());
+                TextToWrite += "Value() function ---------------" + UnicodeString(pElement->Value());
+                MakeXMLLogFile(TextToWrite);
+
+                TiXmlDocument doc;
+                UnicodeString fileName = "CasinoResponseLogs";
+                doc.SaveFile(UnicodeString(ExtractFileName(Application->ExeName) + "." + fileName + ".xml").t_str());
 			}
 			else
 			{
@@ -309,4 +348,21 @@ void TMSXMLTransaction::Parse()
 		Result = eMSFailed;
 		ResultText = "Incorrect XML format ";
 	}
+}
+//------------------------------------------
+void TMSXMLEnquiry::MakeXMLLogFile(AnsiString str)
+{
+     AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoXMLParseLogs.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+
+
+    List->Add("Response:- "+ str +  "\n");
+
+
+    List->SaveToFile(fileName );
 }

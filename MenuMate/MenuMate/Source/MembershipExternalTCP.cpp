@@ -109,18 +109,14 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 				Length.sprintf("%10.10d",Size);
 				Data = Length + Data;
 
-//                MessageBox("Checking connection","",MB_OK);
 				if(!fTCPClient->Connected())
 				{
-//                    MessageBox("Not Connected","",MB_OK);
 					fTCPClient->Host = HostAddress;
 					fTCPClient->Port = Port;
 					fTCPClient->BoundPort = 0;
 					fTCPClient->ReadTimeout = ReadTimeOut;
 					fTCPClient->ConnectTimeout = ConnectTimeOut;
- //                   MessageBox("Going to connect","",MB_OK);
 					fTCPClient->Connect();
- //                   MessageBox("Connect triggered","",MB_OK);
 				}
 
 				if(fTCPClient->Connected())
@@ -129,7 +125,6 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Write Length :" + IntToStr(Data.Length()));
 					fTCPClient->IOHandler->WriteLn(Data);
 					Data = "";
-					//Data =  fTCPClient->IOHandler->ReadLnWait();
 
                    TByteDynArray Incomming;
                    fTCPClient->IOHandler->ReadBytes(Incomming, 10, false);
