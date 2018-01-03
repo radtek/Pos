@@ -1314,6 +1314,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                  {
                                     if(EftTrans->ResultText == "")
                                         EftTrans->ResultText = "Transaction Failed.";
+                                    else if(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftTrans->ResultText.UpperCase().Pos("ACCESS") != 0)
+                                        EftTrans->ResultText = "Please Configure the EFTPOS properly";
                                     MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
                                  }
                             }

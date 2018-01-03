@@ -116,7 +116,6 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->ResultText = wcfResponse->Data->TransactionResult;
                           if(wcfResponse->Data->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
                             EftTrans->TimeOut = true;
-                        MessageBox(wcfResponse->Data->TransactionResult.UpperCase(),"Error",MB_OK);
                        }
                    }
         }
