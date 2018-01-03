@@ -23,7 +23,7 @@
 #define TP_Column_Type 2
 //-- to be incorpotated in future--//
 //#define TP_Column_TaxCode 3
-#define TP_Column_Priority 4
+#define TP_Column_Priority 3
 
 //---------------------------------------------------------------------------
 

@@ -55,5 +55,7 @@ class TOracleDataBuilder
                               std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap );
         void ExtractServiceCharge();
         TiXmlDocument PrepareXMLDocument();
+        void GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+        std::vector<TPayment> PaymentLoad(Database::TDBTransaction &DBTransaction);
 };
 #endif

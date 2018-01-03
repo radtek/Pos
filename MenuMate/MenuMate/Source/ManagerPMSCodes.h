@@ -23,6 +23,12 @@ struct TTimeSlots
     AnsiString MealName;
     TDateTime StartTime;
     TDateTime EndTime;
+    bool IsDefault;
+};
+struct TRevenueCodeDetails
+{
+    bool IsDefault;
+    AnsiString RevenueCodeDescription;
 };
 class TManagerPMSCodes
 {
@@ -31,20 +37,20 @@ class TManagerPMSCodes
         TManagerPMSCodes();
         ~TManagerPMSCodes();
         std::map<int,TaxCodesDetails> TaxCodesMap;
-        std::map<int,AnsiString> RevenueCodesMap;
+        std::map<int,TRevenueCodeDetails> RevenueCodesMap;
         void GetTaxCodesDetails(Database::TDBTransaction &DBTransaction, TStringGrid * StringGrid,
                                 std::map<int,TaxCodesDetails> &TaxCodesMap);
         void GetRevenueCodesDetails(Database::TDBTransaction &DBTransaction, TStringGrid * StringGrid,
-                                std::map<int,AnsiString> &RevenueCodesMap);
+                                std::map<int,TRevenueCodeDetails> &RevenueCodesMap);
         void GetTaxCodesFromDB(Database::TDBTransaction &DBTransaction,
                                std::map<int,TaxCodesDetails> TaxCodesMap);
         void GetRevenueCodesFromDB(Database::TDBTransaction &DBTransaction,
-                               std::map<int,AnsiString> &RevenueCodeMap);
+                               std::map<int,TRevenueCodeDetails> &RevenueCodeMap);
         void PopulateTaxesToGrid(std::map<int,TaxCodesDetails> &TaxCodesMap,TStringGrid * StringGrid);
-        void PopulateRevenuesToGrid(std::map<int,AnsiString> &RevenueCodeMap,TStringGrid * StringGrid);
-        void SaveRevenueCodesToDB(Database::TDBTransaction &DBTransaction,std::map<int,AnsiString> &RevenueCodeMap);
+        void PopulateRevenuesToGrid(std::map<int,TRevenueCodeDetails> &RevenueCodeMap,TStringGrid * StringGrid);
+        void SaveRevenueCodesToDB(Database::TDBTransaction &DBTransaction,std::map<int,TRevenueCodeDetails> &RevenueCodeMap);
         void DeleteRevenueCode(Database::TDBTransaction &DBTransaction, int key);
-        void EditRevenueCode(Database::TDBTransaction &DBTransaction,int key, int newCode, AnsiString newDescription);
+        void EditRevenueCode(Database::TDBTransaction &DBTransaction,int key, int newCode, TRevenueCodeDetails codeDetails);
         void InsertTimeSlots(Database::TDBTransaction &DBTransaction,TTimeSlots mealDetails);
         std::vector<TTimeSlots> TimeSlots;
         void GetMealDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::vector<TTimeSlots> &TimeSlots);

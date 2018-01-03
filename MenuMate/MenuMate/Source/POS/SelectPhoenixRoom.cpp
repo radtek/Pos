@@ -398,6 +398,8 @@ void TfrmPhoenixRoom::QuickSearch()
 	SelectedRoom.AccountNumber = edSearch->Text;
     if(TGlobalSettings::Instance().PMSType == Oracle)
     {
+//        MessageBox(roomResult.RoomInquiryItem.size(),"size()",MB_OK);
+        roomResult.RoomInquiryItem.clear();
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(edSearch->Text,roomResult);
     }
     else if(TGlobalSettings::Instance().PMSType == SiHot)

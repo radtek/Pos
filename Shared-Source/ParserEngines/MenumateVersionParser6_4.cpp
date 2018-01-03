@@ -640,7 +640,8 @@ void TApplyParser::UpdateRevenueCodes(TDBControl* const inDBControl)
 		"CREATE TABLE REVENUECODEDETAILS "
 		"( "
         "   REVENUECODE INT NOT NULL PRIMARY KEY, "
-		"   REVENUECODE_DESCRIPTION VARCHAR(20)"
+		"   REVENUECODE_DESCRIPTION VARCHAR(20), "
+        "   ISDEFAULT_REVENUECODE CHAR(1) DEFAULT 'F' "
 		");",
 		inDBControl );
     }
@@ -690,7 +691,8 @@ void TApplyParser::UpdateServingTimes(TDBControl* const inDBControl)
         "   SERVINGTIMES_KEY INT NOT NULL PRIMARY KEY, "
         "   MEALIDENTIFIER INT,"
 		"   STARTTIME TIMESTAMP,"
-        "   ENDTIME   TIMESTAMP "
+        "   ENDTIME   TIMESTAMP, "
+        "   ISDEFAULT_SERVINGTIME CHAR(1) DEFAULT 'F' "
 		");",
 		inDBControl );
     }

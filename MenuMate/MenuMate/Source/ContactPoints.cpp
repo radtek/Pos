@@ -747,11 +747,11 @@ void TContactPoints::toHTML(TStringList *Report)
     Report->Add(TempRow);
 }
 
-void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction)
+void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransaction,bool HasReedeempoints)
 {
      if(((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && memberType == 1) || (TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate )) && (!isRefundTransaction))
     {
-        CalcEarned(OrdersList);
+         CalcEarned(OrdersList, HasReedeempoints);
     }
      else if(isRefundTransaction)
     {
@@ -814,9 +814,11 @@ Currency TContactPoints::CalcLoadedPointsValue(TList *OrdersList)
 and updates the PointsStore.
 
 This Order List is Flattened no special case for sides is required or should be called.*/
-void TContactPoints::CalcEarned(TList *OrdersList)
+void TContactPoints::CalcEarned(TList *OrdersList , bool IsallowtoEarnWhileRedeem)
 {
     Currency TotalPointsEarned = 0;
+    bool IsallowtoEarnWhileRedeeming;
+    IsallowtoEarnWhileRedeeming = IsallowtoEarnWhileRedeem;
     if(OrdersList->Count > 0)
     {
        /* You can earn point on either protion of ProductValue
@@ -832,7 +834,7 @@ void TContactPoints::CalcEarned(TList *OrdersList)
         bool OnlyEarnsOnPointsSpend = PointsRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
         bool AllowedToEarnOnPointsSpend_Global = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
         bool OnlyEarnsOnPointsSpend_Global = TGlobalSettings::Instance().SystemRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
-
+        bool ShowScreentoSelectItemForPoint = TGlobalSettings::Instance().ShowScreenToSelectItemForPoint ;
         if(AllowedToEarnPoints)
         {
             std::auto_ptr<TList> SortedOrdersByPointsPercent(new TList);
@@ -918,15 +920,28 @@ void TContactPoints::CalcEarned(TList *OrdersList)
                         {
                             MaxPointsForThisItem = double(Order->PointsPercent * double(Order->TotalPriceAdjustment()) / 100.0);
                         }
-
-                        Order->PointsEarned = MaxPointsForThisItem;
-                        TotalPointsEarned += Order->PointsEarned;
+                        if((IsallowtoEarnWhileRedeeming && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnWhileRedeeming && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
+                        {
+                           Order->PointsEarned = 0;
+                        }
+                        else
+                        {
+                            Order->PointsEarned = MaxPointsForThisItem;
+                            TotalPointsEarned += Order->PointsEarned;
+                        }
                         TotalAssableValue -= Order->TotalPriceAdjustment();
                     }
                     else if(TotalAssableValue > 0)
                     {
-                        Order->PointsEarned = double(Order->PointsPercent * double(TotalAssableValue) / 100.0);
-                        TotalPointsEarned += Order->PointsEarned;
+                        if((IsallowtoEarnWhileRedeeming && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend) || (IsallowtoEarnWhileRedeeming && ShowScreentoSelectItemForPoint && !AllowedToEarnOnPointsSpend_Global && !AllowedToEarnOnPointsSpend && !OnlyEarnsOnPointsSpend ))
+                        {
+                           Order->PointsEarned = 0;
+                        }
+                        else
+                        {
+                            Order->PointsEarned = double(Order->PointsPercent * double(TotalAssableValue) / 100.0);
+                            TotalPointsEarned += Order->PointsEarned;
+                        }
                         TotalAssableValue -= TotalAssableValue;
                     }
                     else

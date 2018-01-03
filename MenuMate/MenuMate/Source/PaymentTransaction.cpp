@@ -463,6 +463,8 @@ void TPaymentTransaction::ProcessPoints()
    // Put all the orders in a list includeing there sides so there is no special
    // code for sides.
    std::auto_ptr<TList> PointsOrdersList(new TList);
+   bool IsReedeemingpoints;
+   IsReedeemingpoints = false;
    bool isRefundTransaction = false;
    if(Orders != NULL)
    {
@@ -548,6 +550,7 @@ void TPaymentTransaction::ProcessPoints()
                 if(Redeemed != 0 && Payment->Name != "Dining")
                 {
                   SetRedeemPoints(Redeemed);
+                  IsReedeemingpoints = true;
                 }
 
                 /* Add the Purcashed Amounts amount*/
@@ -569,7 +572,8 @@ void TPaymentTransaction::ProcessPoints()
                 }
             }
         }
-        Membership.Member.Points.Recalc(PointsOrdersList.get(),Membership.Member.MemberType,isRefundTransaction);
+        Membership.Member.Points.Recalc(PointsOrdersList.get(),Membership.Member.MemberType,isRefundTransaction,IsReedeemingpoints);
+        IsReedeemingpoints = false;
 
 	}
 	else
@@ -577,7 +581,7 @@ void TPaymentTransaction::ProcessPoints()
 		Membership.Member.Points.Clear();
         if(TGlobalSettings::Instance().IsRunRateBoardEnabled && !TGlobalSettings::Instance().IsMemberSalesOnlyEnabled)
         {
-            Membership.Member.Points.Recalc(PointsOrdersList.get(), 1 , false);
+            Membership.Member.Points.Recalc(PointsOrdersList.get(), 1 , false , false);
         }
 	}
 }

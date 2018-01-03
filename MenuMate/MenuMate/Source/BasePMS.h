@@ -38,7 +38,7 @@ class TBasePMS
 
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
-        std::map<int,AnsiString> RevenueCodesMap;
+        std::map<int,TRevenueCodeDetails> RevenueCodesMap;
         public :
         bool Registered;
         bool nabled;

@@ -93,24 +93,27 @@ void TManagerOraclePMS::Initialise()
 bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
 {
     bool retValue = false;
-    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
-    SelectQuery->Close();
-    SelectQuery->SQL->Text = "SELECT REVENUECODE,REVENUECODE_DESCRIPTION FROM REVENUECODEDETAILS";
-    SelectQuery->ExecQuery();
-    if(SelectQuery->RecordCount > 0)
+//    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+//    SelectQuery->Close();
+//    SelectQuery->SQL->Text = "SELECT REVENUECODE,REVENUECODE_DESCRIPTION FROM REVENUECODEDETAILS";
+//    SelectQuery->ExecQuery();
+//    if(SelectQuery->RecordCount > 0)
+//        retValue = true;
+//    return retValue;
+
+    RevenueCodesMap.clear();
+    std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+    TIBSQL* queryRevenue = managerDB->LoadRevenueCodes(DBTransaction);
+    for(;!queryRevenue->Eof;queryRevenue->Next())
+    {
+        TRevenueCodeDetails codeDetails;
+        codeDetails.IsDefault = queryRevenue->FieldByName("ISDEFAULT_REVENUECODE")->AsString == "T" ?
+                                true : false;
+        codeDetails.RevenueCodeDescription = queryRevenue->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
+        RevenueCodesMap[queryRevenue->FieldByName("REVENUECODE")->AsInteger] =
+            codeDetails;
         retValue = true;
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TManagerOraclePMS::LoadMealTimings(Database::TDBTransaction &DBTransaction)
-{
-    bool retValue = false;
-    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
-    SelectQuery->Close();
-    SelectQuery->SQL->Text = "SELECT a.SERVINGTIMES_KEY, a.MEALIDENTIFIER, a.STARTTIME, a.ENDTIME FROM SERVINGTIMESDETAILS a";
-    SelectQuery->ExecQuery();
-    if(SelectQuery->RecordCount > 0)
-        retValue = true;
+    }
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -146,6 +149,8 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
         slots.MealName = queryMeals->FieldByName("MEALIDENTIFIER")->AsInteger;
         slots.StartTime = queryMeals->FieldByName("STARTTIME")->AsTime;
         slots.EndTime   = queryMeals->FieldByName("ENDTIME")->AsDateTime;
+        slots.IsDefault = queryMeals->FieldByName("ISDEFAULT_SERVINGTIME")->AsString == "T" ?
+                          true : false;
         Slots.push_back(slots);
     }
 }
@@ -153,6 +158,8 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
 bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                                     int StaffId)
 {
+    if(_paymentTransaction.Orders->Count == 0)
+        return true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
     bool retValue = false;
@@ -179,11 +186,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             TPayment *payment = _paymentTransaction.PaymentGet(i);
             double amount = (double)payment->GetPayTendered();
             double portion = 0;
+            tip += (double)payment->TipAmount;
             if((amount != 0)
                   && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
             {
                 portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
-                double tipPortion = tip * portion;
+                double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
                 postRequest.CheckNumber = checkNumber;
                 TiXmlDocument doc = oracledata->CreatePostXML(postRequest);

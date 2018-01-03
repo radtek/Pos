@@ -170,6 +170,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;
+        cbEnableCustomerJourney->Enabled = false;
     }
     else
     {
@@ -181,6 +182,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbServingTime->Enabled = false;
         tbRevenueCodes->Enabled = false;
         tbRevenueCentre->Enabled = false;
+        cbEnableCustomerJourney->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;

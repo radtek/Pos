@@ -86,6 +86,7 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
         case eRevenueCodes:
         {
             managerPMSCodes = new TManagerPMSCodes();
+            managerPMSCodes->RevenueCodesMap.clear();
             pnlLabel->Caption = "Revenue Codes";
             break;
         }
@@ -680,7 +681,7 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Visible = true;
     frmTouchNumpad->INTInitial = 0;
 
-    std::map<int, AnsiString>::iterator iter;
+    std::map<int, TRevenueCodeDetails>::iterator iter;
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult < 17)
     {
         iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
@@ -698,10 +699,23 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
 
             if(frmTouchKeyboard->ShowModal() == mrOk)
             {
-                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
-                std::map<int,AnsiString> localMap;
-                localMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
+                TRevenueCodeDetails globalDetails;
+                if(managerPMSCodes->RevenueCodesMap.size() == 0)
+                   globalDetails.IsDefault = true;
+                globalDetails.RevenueCodeDescription = frmTouchKeyboard->KeyboardText;
+                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,TRevenueCodeDetails>(frmTouchNumpad->INTResult,globalDetails));
+                std::map<int,TRevenueCodeDetails> localMap;
+                localMap.clear();
+                TRevenueCodeDetails localDetails;
+                if(managerPMSCodes->RevenueCodesMap.size() == 1)
+                    localDetails.IsDefault = true;
+                else
+                    localDetails.IsDefault = false;
+                localDetails.RevenueCodeDescription = frmTouchKeyboard->KeyboardText;
+                localMap.insert(std::pair<int,TRevenueCodeDetails>(frmTouchNumpad->INTResult,localDetails));
                 managerPMSCodes->SaveRevenueCodesToDB(DBTransaction,localMap);
+                if(localDetails.IsDefault)
+                    MessageBox("Being first Revenue code, it will be saved as default one","Information",MB_OK + MB_ICONINFORMATION);
             }
             DBTransaction.Commit();
             ShowMessages();
@@ -736,7 +750,7 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
     frmTouchNumpad->btnSurcharge->Visible = true;
     frmTouchNumpad->INTInitial = key;
 
-    std::map<int, AnsiString>::iterator iter;
+    std::map<int, TRevenueCodeDetails>::iterator iter;
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult < 17)
     {
         iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
@@ -749,13 +763,16 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
             frmTouchKeyboard->MaxLength = 20;
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = true;
-            frmTouchKeyboard->KeyboardText = managerPMSCodes->RevenueCodesMap[key];
+            frmTouchKeyboard->KeyboardText = managerPMSCodes->RevenueCodesMap[key].RevenueCodeDescription;
             frmTouchKeyboard->Caption = "Enter Revenue Code Description";
 
             if(frmTouchKeyboard->ShowModal() == mrOk)
             {
-                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,AnsiString>(frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText));
-                managerPMSCodes->EditRevenueCode(DBTransaction,key,frmTouchNumpad->INTResult,frmTouchKeyboard->KeyboardText);
+                TRevenueCodeDetails codeDetails;
+                codeDetails.IsDefault = false;
+                codeDetails.RevenueCodeDescription = frmTouchKeyboard->KeyboardText;
+                managerPMSCodes->RevenueCodesMap.insert(std::pair<int,TRevenueCodeDetails>(frmTouchNumpad->INTResult,codeDetails));
+                managerPMSCodes->EditRevenueCode(DBTransaction,key,frmTouchNumpad->INTResult,codeDetails);
             }
             DBTransaction.Commit();
             ShowMessages();
@@ -814,6 +831,13 @@ void TfrmMessageMaintenance::AddServingTime(TObject *Sender)
                         slots.MealName = mealName;
                         slots.StartTime = frmServingTime->Time1;
                         slots.EndTime  =  frmServingTime->Time2;
+                        if(managerPMSCodes->TimeSlots.size() == 0)
+                        {
+                            slots.IsDefault = true;
+                            MessageBox("Being first Serving Time, it will be saved as default one","Information",MB_OK + MB_ICONINFORMATION);
+                        }
+                        else
+                            slots.IsDefault = false;
                         managerPMSCodes->TimeSlots.push_back(slots);
                         InsertMealSlotToDB(slots);
                     }

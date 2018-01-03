@@ -6,6 +6,7 @@
 #include "OracleDataBuilder.h"
 #include "OracleManagerDB.h"
 #include "ManagerPMSCodes.h"
+#include "DBThirdPartyCodes.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -51,6 +52,16 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         postRoomInquiry.MaximumReturnedMatches = "16";
         postRoomInquiry.RequestType = "4";
         postRoomInquiry.PaymentMethod = "Room";
+        std::vector<TPayment> paymentsVector =  PaymentLoad(DBTransaction);
+        for(int i = 0; i < paymentsVector.size(); i++)
+        {
+            TPayment payment = paymentsVector[i];
+            if(payment.GetPaymentAttribute(ePayTypeRoomInterface))
+            {
+               postRoomInquiry.PaymentMethod = payment.PaymentThirdPartyID;
+               break;
+            }
+        }
         postRoomInquiry.Date = Now().FormatString( "YYMMDD");
         postRoomInquiry.Time = Now().FormatString( "HHMMSS");
         postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
@@ -70,12 +81,79 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
 	}
 }
 //----------------------------------------------------------------------------
+void TOracleDataBuilder::GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "SELECT * FROM PAYMENT_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+   for (; !AttributeQuery->Eof;)
+   {
+     Payment.SetPaymentAttribute(AttributeQuery->FieldByName("ATTRIBUTE_VALUE")->AsInteger);
+     AttributeQuery->Next();
+   }
+}
+//---------------------------------------------------------------------------
+std::vector<TPayment> TOracleDataBuilder::PaymentLoad(Database::TDBTransaction &DBTransaction)
+{
+    std::vector<TPayment> paymentTypesVector;
+    paymentTypesVector.clear();
+	try
+	{
+		// Used by the Payment Editor see PaymentsLoadTypes for the Payment System Loader.
+		Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+		DBTransaction.RegisterQuery(IBInternalQuery);
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES "  " ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
+		IBInternalQuery->ExecQuery();
+		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+		{
+            TPayment Payment;
+            int key = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+			Payment.Name = IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString;
+			//Payment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
+            GetPaymentAttributes(DBTransaction,key,Payment);
+			Payment.DisplayOrder = IBInternalQuery->FieldByName("DISPLAY_ORDER")->AsInteger;
+			Payment.Colour = IBInternalQuery->FieldByName("COLOUR")->AsInteger;
+			Payment.AmountAdjust = IBInternalQuery->FieldByName("AMOUNT_ADJUST")->AsFloat;
+			Payment.PercentAdjust = IBInternalQuery->FieldByName("PERCENT_ADJUST")->AsFloat;
+			Payment.RoundTo = IBInternalQuery->FieldByName("ROUNDTO")->AsCurrency;
+			Payment.TaxRate = IBInternalQuery->FieldByName("TAX_RATE")->AsFloat;
+			Payment.AdjustmentReason = IBInternalQuery->FieldByName("ADJUST_REASON")->AsString;
+			Payment.GroupNumber = IBInternalQuery->FieldByName("GROUP_NUMBER")->AsInteger;
+			Payment.SecondaryPMSIPAddress = IBInternalQuery->FieldByName("DEST_IP")->AsString;
+			Payment.SecondaryPMSPortNumber = IBInternalQuery->FieldByName("DEST_PORT")->AsInteger;
+			Payment.Export = IBInternalQuery->FieldByName("INVOICE_EXPORT")->AsInteger;
+			Payment.VoucherMerchantID = IBInternalQuery->FieldByName("VOUCHER_MERCHANT_ID")->AsString;
+			Payment.PaymentThirdPartyID = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
+			IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
+			Payment.UniVoucherUser	=	IBInternalQuery->FieldByName("VOUCHER_USER")->AsString;
+			Payment.UniVoucherPass	=	IBInternalQuery->FieldByName("VOUCHER_PASS")->AsString;
+			Payment.CVSReadLocation	=	IBInternalQuery->FieldByName("CSV_READ_LOCATION")->AsString;
+			Payment.CVSWriteLocation=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
+            Payment.TabKey =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
+            Payment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+            Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
+            paymentTypesVector.push_back(Payment);
+		}
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
+    return paymentTypesVector;
+}
+//----------------------------------------------------------------------------
 /* The method runs for one payment type and extracts the details depending upon the portion
 of amount received through that particular payment type*/
 //----------------------------------------------------------------------------
 TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex, double tip)
 {
     TPostRequest postRequest;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
     try
     {
         double serviceCharge = 0;
@@ -131,6 +209,18 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
                 break;
             }
         }
+        if(mealName == "1")
+        {
+            std::vector<TTimeSlots>::iterator itMeal = TDeviceRealTerminal::Instance().BasePMS->Slots.begin();
+            for(;itMeal !=TDeviceRealTerminal::Instance().BasePMS->Slots.end(); ++itMeal)
+            {
+                if(itMeal->IsDefault)
+                {
+                    mealName = itMeal->MealName;
+                    break;
+                }
+            }
+        }
         postRequest.RoomNumber = paymentTransaction.PMSClientDetails.RoomNumber;
         postRequest.ReservationId = paymentTransaction.PMSClientDetails.ReservationID;
         postRequest.ProfileId = paymentTransaction.PMSClientDetails.ProfileID;
@@ -142,8 +232,10 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
             postRequest.RequestType = "1";
         postRequest.InquiryInformation = paymentTransaction.PMSClientDetails.RoomNumber;
         postRequest.MatchfromPostList = paymentTransaction.PMSClientDetails.MatchIdentifier;
-        postRequest.SequenceNumber = paymentTransaction.PMSClientDetails.SequenceNumber;
-        double totalValue = RoundTo((double)total,-2);
+        std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
+        postRequest.SequenceNumber = managerDB->GetSequenceNumber(DBTransaction1);
+        DBTransaction1.Commit();
+        double totalValue = (double)total;
         totalValue = totalValue * 100;
         postRequest.TotalAmount = totalValue;
         postRequest.CreditLimitOverride = "N";
@@ -151,7 +243,6 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         postRequest.Covers = CurrToStrF(patronCount,ffFixed,0);
         postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         postRequest.ServingTime = mealName;//"BreakFast";
-        tip = RoundTo((double)tip, -2);
         tip = tip * 100;
         postRequest.Tip = tip;
         double data = 0;
@@ -159,7 +250,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         std::map<int,double>::iterator itsubtotals =  subtotals.begin();
         for(;itsubtotals != subtotals.end(); advance(itsubtotals,1))
         {
-           double value = RoundTo((double)itsubtotals->second, -2) * 100;
+           double value = (double)itsubtotals->second * 100;
            AnsiString str = (AnsiString)value;
            if(str.Pos(".") != 0)
            {
@@ -171,7 +262,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         std::map<int,double>::iterator itDisc =  discMap.begin();
         for(;itDisc != discMap.end(); advance(itDisc,1))
         {
-           double value = RoundTo((double)itDisc->second, -2) * 100;
+           double value = (double)itDisc->second * 100;
            AnsiString str = (AnsiString)value;
            if(str.Pos(".") != 0)
            {
@@ -182,7 +273,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         std::map<int,double>::iterator itTaxMap =  taxMap.begin();
         for(;itTaxMap != taxMap.end(); advance(itTaxMap,1))
         {
-           double value = RoundTo((double)itTaxMap->second, -2) * 100;
+           double value = (double)itTaxMap->second * 100;
            AnsiString str = (AnsiString)value;
            if(str.Pos(".") != 0)
            {
@@ -194,7 +285,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         std::map<int,double>::iterator itServiceChargeMap =  serviceChargeMap.begin();
         for(;itServiceChargeMap != serviceChargeMap.end(); advance(itServiceChargeMap,1))
         {
-           double value = RoundTo((double)itServiceChargeMap->second, -2) * 100;
+           double value = (double)itServiceChargeMap->second * 100;
            AnsiString str = (AnsiString)value;
            if(str.Pos(".") != 0)
            {
@@ -213,6 +304,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 	catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction1.Rollback();
         MessageBox(E.Message,"Exception in creating XML",MB_OK);
 	}
     return postRequest;
@@ -269,7 +361,16 @@ TiXmlDocument TOracleDataBuilder::PrepareXMLDocument()
 //----------------------------------------------------------------------------
 void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TLinkDescription linkDescription)
 {
-
+    try
+    {
+    SetNodeAttr( rootNode, "Date",      linkDescription.Date );
+    SetNodeAttr( rootNode, "Time",  linkDescription.Time );
+    SetNodeAttr( rootNode, "VerNum",  linkDescription.VerNum );
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
 }
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -389,6 +490,7 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &po
                 nodeName += j;
                 SetNodeAttr( rootNode, nodeName,             postRequest.ServiceCharge[i].c_str() );
                 j += 1;
+                i += 1;
             }
 //            SetNodeAttr( rootNode, "ServiceCharge1",             postRequest.ServiceCharge[0].c_str() );
         }
@@ -619,6 +721,94 @@ void TOracleDataBuilder::ExtractDiscount(std::map<int, double> &discMap, TItemCo
 //    }
 }
 //----------------------------------------------------------------------------
+//void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,
+//                                         std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap,
+//                                         TItemComplete *itemComplete, double portion)
+//{
+//    double priceExclusive = 0;
+//    double taxValue = 0;
+//    double serviceCharge = 0;
+//    double finalPrice = 0;
+//    double discount = 0;
+//    //*************Data Rounding to 2 decimal places*********//
+//    finalPrice =
+//    //*******************************************************//
+//    priceExclusive = ((double)itemComplete->BillCalcResult.FinalPrice -
+//                      (double)itemComplete->BillCalcResult.TotalDiscount);
+//    if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+//    {
+//        priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.ServiceCharge.Value;
+//        serviceCharge = (double)itemComplete->BillCalcResult.ServiceCharge.Value;
+//    }
+////    MessageBox(itemComplete->BillCalcResult.ServiceCharge.TaxValue,"itemComplete->BillCalcResult.ServiceCharge.TaxValue",MB_OK);
+////    MessageBox(itemComplete->BillCalcResult.TotalTax,"itemComplete->BillCalcResult.TotalTax",MB_OK);
+//    if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
+//    {
+//        priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.TotalTax;
+//        taxValue = (double)itemComplete->BillCalcResult.TotalTax;
+//    }
+//    priceExclusive = RoundTo(priceExclusive * portion,-2);
+//    serviceCharge  = RoundTo(serviceCharge * portion,-2);
+//    taxValue       = RoundTo(taxValue * portion,-2);
+//    MessageBox(priceExclusive,"Shivashu subtotal TManagerOraclePMS",MB_OK);
+//    MessageBox(serviceCharge,"Shivashu serviceCharge TManagerOraclePMS",MB_OK);
+//    MessageBox(taxValue,"Shivashu taxValue TManagerOraclePMS",MB_OK);
+//    MessageBox(itemComplete->Item,"Shivashu itemComplete->Item TManagerOraclePMS",MB_OK);
+//
+//    if(subtotals.size() == 0)
+//    {
+//        subtotals.insert(std::pair<int,double>(itemComplete->RevenueCode,priceExclusive));
+//        taxMap.insert(std::pair<int,double>(itemComplete->RevenueCode,taxValue));
+//        serviceChargeMap.insert(std::pair<int,double>(itemComplete->RevenueCode,serviceCharge));
+//    }
+//    else
+//    {
+//        std::map<int,double>::iterator itsubtotals = subtotals.find(itemComplete->RevenueCode);
+//        if(itsubtotals != subtotals.end())
+//        {
+//            priceExclusive += itsubtotals->second;
+//            subtotals[itemComplete->RevenueCode] = priceExclusive;
+//            std::map<int,double>::iterator itTaxMap = taxMap.find(itemComplete->RevenueCode);
+//            if(itTaxMap != taxMap.end())
+//            {
+//                taxValue += itTaxMap->second;
+//                taxMap[itemComplete->RevenueCode] = taxValue;
+//            }
+//            std::map<int,double>::iterator itServiceChargeMap = serviceChargeMap.find(itemComplete->RevenueCode);
+//            if(itServiceChargeMap != serviceChargeMap.end())
+//            {
+//                serviceCharge += itServiceChargeMap->second;
+//                serviceChargeMap[itemComplete->RevenueCode] = serviceCharge;
+//            }
+//        }
+//        else
+//        {
+//            subtotals.insert(std::pair<int,double>(itemComplete->RevenueCode,priceExclusive));
+//            taxMap.insert(std::pair<int,double>(itemComplete->RevenueCode,taxValue));
+//            serviceChargeMap.insert(std::pair<int,double>(itemComplete->RevenueCode,serviceCharge));
+//        }
+//    }
+//    if(discMap.size() == 0)
+//    {
+//        discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
+//                                             (double)(itemComplete->BillCalcResult.TotalDiscount * portion)));
+//    }
+//    else
+//    {
+//        std::map<int,double>::iterator itDisc = discMap.find(itemComplete->RevenueCode);
+//        if(itDisc != discMap.end())
+//        {
+//            double newValue = itDisc->second + double((itemComplete->BillCalcResult.TotalDiscount * portion));
+//            discMap[itemComplete->RevenueCode] = newValue;
+//        }
+//        else
+//        {
+//            discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
+//                         double(itemComplete->BillCalcResult.TotalDiscount * portion)));
+//        }
+//    }
+//}
+//----------------------------------------------------------------------------
 void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::map<int, double> &discMap,
                                          std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap,
                                          TItemComplete *itemComplete, double portion)
@@ -626,23 +816,42 @@ void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::m
     double priceExclusive = 0;
     double taxValue = 0;
     double serviceCharge = 0;
-    priceExclusive = ((double)itemComplete->BillCalcResult.FinalPrice -
-                      (double)itemComplete->BillCalcResult.TotalDiscount);
+    double finalPrice = 0;
+    double discount = 0;
+    if(itemComplete->RevenueCode == 0)
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               itemComplete->RevenueCode = itRev->first;
+               break;
+            }
+        }
+    }
+    //*************Data Rounding to 2 decimal places*********//
+    finalPrice      = RoundTo((double)itemComplete->BillCalcResult.FinalPrice * portion,-2);
+    discount        = RoundTo((double)itemComplete->BillCalcResult.TotalDiscount * portion,-2);
+    taxValue        = RoundTo((double)itemComplete->BillCalcResult.TotalTax * portion,-2);
+    serviceCharge   = RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2);
+    //*******************************************************//
+    priceExclusive = finalPrice - discount;
+
     if(!TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
-    {
-        priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.ServiceCharge.Value;
-        serviceCharge = (double)itemComplete->BillCalcResult.ServiceCharge.Value;
-    }
-//    MessageBox(itemComplete->BillCalcResult.ServiceCharge.TaxValue,"itemComplete->BillCalcResult.ServiceCharge.TaxValue",MB_OK);
-//    MessageBox(itemComplete->BillCalcResult.TotalTax,"itemComplete->BillCalcResult.TotalTax",MB_OK);
+        priceExclusive = priceExclusive - serviceCharge;
+    else
+       serviceCharge = 0;
+
     if(!TGlobalSettings::Instance().ItemPriceIncludeTax)
-    {
-        priceExclusive = priceExclusive - (double)itemComplete->BillCalcResult.TotalTax;
-        taxValue = (double)itemComplete->BillCalcResult.TotalTax;
-    }
-    priceExclusive = priceExclusive * portion;
-    serviceCharge  = serviceCharge * portion;
-    taxValue       = taxValue * portion;
+        priceExclusive = priceExclusive - taxValue;
+    else
+        taxValue = 0;
+
+//    MessageBox(priceExclusive,"Shivashu subtotal TManagerOraclePMS",MB_OK);
+//    MessageBox(serviceCharge,"Shivashu serviceCharge TManagerOraclePMS",MB_OK);
+//    MessageBox(taxValue,"Shivashu taxValue TManagerOraclePMS",MB_OK);
+//    MessageBox(itemComplete->Item,"Shivashu itemComplete->Item TManagerOraclePMS",MB_OK);
 
     if(subtotals.size() == 0)
     {
@@ -679,21 +888,19 @@ void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::m
     }
     if(discMap.size() == 0)
     {
-        discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
-                                             (double)(itemComplete->BillCalcResult.TotalDiscount * portion)));
+        discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,discount));
     }
     else
     {
         std::map<int,double>::iterator itDisc = discMap.find(itemComplete->RevenueCode);
         if(itDisc != discMap.end())
         {
-            double newValue = itDisc->second + double((itemComplete->BillCalcResult.TotalDiscount * portion));
+            double newValue = itDisc->second + discount;
             discMap[itemComplete->RevenueCode] = newValue;
         }
         else
         {
-            discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,
-                         double(itemComplete->BillCalcResult.TotalDiscount * portion)));
+            discMap.insert(std::pair<int,double>(itemComplete->RevenueCode,discount));
         }
     }
 }

@@ -26,7 +26,7 @@ void TManagerPMSCodes::GetTaxCodesDetails(Database::TDBTransaction &DBTransactio
 }
 //----------------------------------------------------------------------------
 void TManagerPMSCodes::GetRevenueCodesDetails(Database::TDBTransaction &DBTransaction, TStringGrid * StringGrid,
-                        std::map<int,AnsiString> &RevenueCodesMap)
+                        std::map<int,TRevenueCodeDetails> &RevenueCodesMap)
 {
     GetRevenueCodesFromDB(DBTransaction,RevenueCodesMap);
     PopulateRevenuesToGrid(RevenueCodesMap,StringGrid);
@@ -45,7 +45,7 @@ void TManagerPMSCodes::GetTaxCodesFromDB(Database::TDBTransaction &DBTransaction
 }
 //----------------------------------------------------------------------------
 void TManagerPMSCodes::GetRevenueCodesFromDB(Database::TDBTransaction &DBTransaction,
-                                             std::map<int,AnsiString> &RevenueCodesMap)
+                                             std::map<int,TRevenueCodeDetails> &RevenueCodesMap)
 {
     TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
     SelectQuery->SQL->Text =
@@ -54,8 +54,15 @@ void TManagerPMSCodes::GetRevenueCodesFromDB(Database::TDBTransaction &DBTransac
     RevenueCodesMap.clear();
     for(;!SelectQuery->Eof; SelectQuery->Next())
     {
+       TRevenueCodeDetails revenueCodeDetail;
+       if(SelectQuery->FieldByName("ISDEFAULT_REVENUECODE")->AsString == "F")
+           revenueCodeDetail.IsDefault = false;
+       else
+           revenueCodeDetail.IsDefault = true;
+       revenueCodeDetail.RevenueCodeDescription = SelectQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
+
        RevenueCodesMap[SelectQuery->FieldByName("REVENUECODE")->AsInteger] =
-       SelectQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
+                                                           revenueCodeDetail;
     }
 }
 //----------------------------------------------------------------------------
@@ -64,7 +71,7 @@ void TManagerPMSCodes::PopulateTaxesToGrid(std::map<int,TaxCodesDetails> &TaxCod
 
 }
 //----------------------------------------------------------------------------
-void TManagerPMSCodes::PopulateRevenuesToGrid(std::map<int,AnsiString> &RevenueCodeMap,TStringGrid * StringGrid)
+void TManagerPMSCodes::PopulateRevenuesToGrid(std::map<int,TRevenueCodeDetails> &RevenueCodeMap,TStringGrid * StringGrid)
 {
    if(RevenueCodeMap.size() < 2)
    {
@@ -77,27 +84,35 @@ void TManagerPMSCodes::PopulateRevenuesToGrid(std::map<int,AnsiString> &RevenueC
     std::map<int,AnsiString>::iterator it;
     int i = 0;
     int Index = 0;
-    for(std::map <int,AnsiString>::iterator iter = RevenueCodeMap.begin(); iter != RevenueCodeMap.end(); ++iter)
+    for(std::map <int,TRevenueCodeDetails>::iterator iter = RevenueCodeMap.begin(); iter != RevenueCodeMap.end(); ++iter)
     {
+        AnsiString value = "";
         Index = StringGrid->Cols[0]->Add(iter->first);
         StringGrid->Cols[0]->Objects[Index] = (TObject*)iter->first;
-        Index = StringGrid->Cols[1]->Add(iter->second);
+        value = iter->second.RevenueCodeDescription;
+        if(iter->second.IsDefault)
+            value += "(default)";
+        Index = StringGrid->Cols[1]->Add(value);
         StringGrid->Cols[1]->Objects[Index] = (TObject*)iter->first;
     }
 }
 //-----------------------------------------------------------------------------
 void TManagerPMSCodes::SaveRevenueCodesToDB(Database::TDBTransaction &DBTransaction,
-                                            std::map<int,AnsiString> &RevenueCodeMap)
+                                            std::map<int,TRevenueCodeDetails> &RevenueCodeMap)
 {
     try
     {
         TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
         InsertQuery->SQL->Text =
-                   "INSERT INTO REVENUECODEDETAILS ( REVENUECODE, REVENUECODE_DESCRIPTION ) VALUES "
-                   "( :REVENUECODE, :REVENUECODE_DESCRIPTION ) ";
-        std::map<int,AnsiString>::iterator it = RevenueCodeMap.begin();
+                   "INSERT INTO REVENUECODEDETAILS ( REVENUECODE, REVENUECODE_DESCRIPTION, ISDEFAULT_REVENUECODE ) VALUES "
+                   "( :REVENUECODE, :REVENUECODE_DESCRIPTION, :ISDEFAULT_REVENUECODE ) ";
+        std::map<int,TRevenueCodeDetails>::iterator it = RevenueCodeMap.begin();
         InsertQuery->ParamByName("REVENUECODE")->AsInteger = it->first;
-        InsertQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->second;
+        InsertQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->second.RevenueCodeDescription;
+        if(it->second.IsDefault)
+           InsertQuery->ParamByName("ISDEFAULT_REVENUECODE")->AsString = "T";
+        else
+           InsertQuery->ParamByName("ISDEFAULT_REVENUECODE")->AsString = "F";
         InsertQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -108,13 +123,41 @@ void TManagerPMSCodes::SaveRevenueCodesToDB(Database::TDBTransaction &DBTransact
 //-----------------------------------------------------------------------------
 void TManagerPMSCodes::DeleteRevenueCode(Database::TDBTransaction &DBTransaction,int key)
 {
+    bool isDefault = false;
     try
     {
+        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text =
+                   "SELECT * FROM REVENUECODEDETAILS WHERE REVENUECODE = :REVENUECODE";
+        SelectQuery->ParamByName("REVENUECODE")->AsInteger = key;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->FieldByName("ISDEFAULT_REVENUECODE")->AsString == "T")
+           isDefault = true;
         TIBSQL *DeleteQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        DeleteQuery->Close();
         DeleteQuery->SQL->Text =
                    "DELETE FROM REVENUECODEDETAILS WHERE REVENUECODE = :REVENUECODE";
         DeleteQuery->ParamByName("REVENUECODE")->AsInteger = key;
         DeleteQuery->ExecQuery();
+        if(isDefault)
+        {
+            TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            UpdateQuery->Close();
+            for(std::map<int,TRevenueCodeDetails>::iterator itrev = RevenueCodesMap.begin();
+               itrev != RevenueCodesMap.end(); advance(itrev,1))
+            {
+                if(itrev->first != key)
+                {
+                    UpdateQuery->SQL->Text = "UPDATE REVENUECODEDETAILS SET ISDEFAULT_REVENUECODE = :ISDEFAULT_REVENUECODE "
+                    "WHERE REVENUECODE = :REVENUECODE";
+                    UpdateQuery->ParamByName("ISDEFAULT_REVENUECODE")->AsString = "T";
+                    UpdateQuery->ParamByName("REVENUECODE")->AsInteger = itrev->first;
+                    UpdateQuery->ExecQuery();
+                    break;
+                }
+            }
+        }
     }
     catch(Exception &E)
     {
@@ -122,7 +165,7 @@ void TManagerPMSCodes::DeleteRevenueCode(Database::TDBTransaction &DBTransaction
     }
 }
 //-----------------------------------------------------------------------------
-void TManagerPMSCodes::EditRevenueCode(Database::TDBTransaction &DBTransaction,int key, int newCode, AnsiString newDescription)
+void TManagerPMSCodes::EditRevenueCode(Database::TDBTransaction &DBTransaction,int key, int newCode, TRevenueCodeDetails codeDetails)
 {
     try
     {
@@ -132,7 +175,7 @@ void TManagerPMSCodes::EditRevenueCode(Database::TDBTransaction &DBTransaction,i
                    " WHERE REVENUECODE = :REVENUECODEOLD";
         UpdateQuery->ParamByName("REVENUECODEOLD")->AsInteger = key;
         UpdateQuery->ParamByName("REVENUECODE")->AsInteger = newCode;
-        UpdateQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = newDescription;
+        UpdateQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = codeDetails.RevenueCodeDescription;
         UpdateQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -154,12 +197,13 @@ void TManagerPMSCodes::InsertTimeSlots(Database::TDBTransaction &DBTransaction,T
 
         TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
         InsertQuery->SQL->Text =
-                   " INSERT INTO SERVINGTIMESDETAILS ( SERVINGTIMES_KEY, MEALIDENTIFIER, STARTTIME, ENDTIME) "
-                   " VALUES ( :SERVINGTIMES_KEY, :MEALIDENTIFIER, :STARTTIME, :ENDTIME ) " ;
+                   " INSERT INTO SERVINGTIMESDETAILS ( SERVINGTIMES_KEY, MEALIDENTIFIER, STARTTIME, ENDTIME, ISDEFAULT_SERVINGTIME) "
+                   " VALUES ( :SERVINGTIMES_KEY, :MEALIDENTIFIER, :STARTTIME, :ENDTIME, :ISDEFAULT_SERVINGTIME ) " ;
         InsertQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = mealKey;
         InsertQuery->ParamByName("MEALIDENTIFIER")->AsInteger = atoi(mealDetails.MealName.c_str());
         InsertQuery->ParamByName("STARTTIME")->AsDateTime = mealDetails.StartTime;
         InsertQuery->ParamByName("ENDTIME")->AsDateTime = mealDetails.EndTime;
+        InsertQuery->ParamByName("ISDEFAULT_SERVINGTIME")->AsString = mealDetails.IsDefault ? "T" : "F";
         InsertQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -174,7 +218,7 @@ void TManagerPMSCodes::GetMealDetails(Database::TDBTransaction &DBTransaction,TS
     {
         TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
         SelectQuery->SQL->Text =
-                   " Select SERVINGTIMES_KEY,MEALIDENTIFIER,STARTTIME,ENDTIME FROM SERVINGTIMESDETAILS " ;
+                   " Select SERVINGTIMES_KEY,MEALIDENTIFIER,STARTTIME,ENDTIME, ISDEFAULT_SERVINGTIME FROM SERVINGTIMESDETAILS " ;
 
         SelectQuery->ExecQuery();
         TimeSlots.clear();
@@ -185,6 +229,7 @@ void TManagerPMSCodes::GetMealDetails(Database::TDBTransaction &DBTransaction,TS
            meals.MealName = SelectQuery->FieldByName("MEALIDENTIFIER")->AsInteger;
            meals.StartTime = SelectQuery->FieldByName("STARTTIME")->AsDateTime;
            meals.EndTime = SelectQuery->FieldByName("ENDTIME")->AsDateTime;
+           meals.IsDefault = SelectQuery->FieldByName("ISDEFAULT_SERVINGTIME")->AsString == "T" ? true : false;
            TimeSlots.push_back(meals);
         }
         PopulateMealsToGrid(StringGrid, TimeSlots);
@@ -215,6 +260,7 @@ void TManagerPMSCodes::PopulateMealsToGrid(TStringGrid * StringGrid,std::vector<
         AnsiString value = iter->StartTime.TimeString();
         value += " to ";
         value += iter->EndTime.TimeString();
+        value += iter->IsDefault ? "(default)" : "";
         Index = StringGrid->Cols[1]->Add(value);
         StringGrid->Cols[1]->Objects[Index] = (TObject*)iter->key;
     }
@@ -223,11 +269,40 @@ void TManagerPMSCodes::PopulateMealsToGrid(TStringGrid * StringGrid,std::vector<
 //----------------------------------------------------------------------------
 void TManagerPMSCodes::DeleteMealDetails(Database::TDBTransaction &DBTransaction,int key)
 {
+    bool isDefault = false;
+    TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    SelectQuery->Close();
+    SelectQuery->SQL->Text =
+               "SELECT * FROM SERVINGTIMESDETAILS WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
+    SelectQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = key;
+    SelectQuery->ExecQuery();
+    if(SelectQuery->FieldByName("ISDEFAULT_SERVINGTIME")->AsString == "T")
+       isDefault = true;
+
     TIBSQL *DeleteQuery = DBTransaction.Query(DBTransaction.AddQuery());
     DeleteQuery->SQL->Text =
                " DELETE FROM SERVINGTIMESDETAILS WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
     DeleteQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = key;
     DeleteQuery->ExecQuery();
+
+    if(isDefault)
+    {
+        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        UpdateQuery->Close();
+        for(std::vector<TTimeSlots>::iterator itTime = TimeSlots.begin();
+           itTime != TimeSlots.end(); advance(itTime,1))
+        {
+            if(itTime->key != key)
+            {
+                UpdateQuery->SQL->Text = "UPDATE SERVINGTIMESDETAILS SET ISDEFAULT_SERVINGTIME = :ISDEFAULT_SERVINGTIME "
+                "WHERE SERVINGTIMES_KEY = :SERVINGTIMES_KEY";
+                UpdateQuery->ParamByName("ISDEFAULT_SERVINGTIME")->AsString = "T";
+                UpdateQuery->ParamByName("SERVINGTIMES_KEY")->AsInteger = itTime->key;
+                UpdateQuery->ExecQuery();
+                break;
+            }
+        }
+    }
 }
 //----------------------------------------------------------------------------
 void TManagerPMSCodes::EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlots slots)
