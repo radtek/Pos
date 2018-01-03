@@ -13,7 +13,11 @@
 #include "SmartCardVer6API.h"
 #include <ctype.h>
 #include "GlobalSettings.h"
+#ifdef MenuMate
 #include "DeviceRealTerminal.h"
+#endif
+
+
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -99,8 +103,9 @@ bool TMMContactInfo::Valid()
 
 bool TMMContactInfo::ValidateCheckedDuplicateEmail()
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     bool isEmailValid  = true;
+    #ifdef MenuMate
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     int emailcount = 0;
     try
@@ -126,6 +131,7 @@ bool TMMContactInfo::ValidateCheckedDuplicateEmail()
         isEmailValid = false;
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
     }
+    #endif
     return isEmailValid;
 }
 
