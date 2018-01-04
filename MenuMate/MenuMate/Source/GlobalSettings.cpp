@@ -409,5 +409,6 @@ TGlobalSettings::TGlobalSettings()
     FiscalXonXoffIn = false;
     FiscalAsync = false;
     OrganizationNumber = "";
+    POSPlusSerialNumber = "";
 }
 

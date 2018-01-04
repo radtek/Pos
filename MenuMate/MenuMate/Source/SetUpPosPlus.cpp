@@ -49,6 +49,10 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
         frmTouchNumpad->INTInitial = TGlobalSettings::Instance().FiscalServerPortNumber;
         if (frmTouchNumpad->ShowModal() == mrOk)
         {
+            if(TGlobalSettings::Instance().FiscalServerPortNumber != frmTouchNumpad->INTResult)
+            {
+                TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+            }
             TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
             TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,TGlobalSettings::Instance().FiscalServerPortNumber);
             if(TGlobalSettings::Instance().FiscalServerPortNumber == 0)
@@ -223,5 +227,4 @@ void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Send
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
     }
-
 }

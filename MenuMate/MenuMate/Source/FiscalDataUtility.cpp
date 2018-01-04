@@ -6,6 +6,7 @@
 #include "FiscalDataUtility.h"
 #include "MMMessageBox.h"
 #include "CrcTable.h"
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -31,7 +32,15 @@ bool TFiscalDataUtility::AnalyzeResponse(AnsiString inData, PostType type)
         case eFiscalVerNumber:
         {
             if(inData.Pos("0") == 1)
+            {
                 retValue = true;
+                AnsiString serialNumber =  ReverseString(inData);
+
+                serialNumber = serialNumber.SubString(serialNumber.Pos(" "), serialNumber.Length() - serialNumber.Pos(" ")).Trim();
+                serialNumber = serialNumber.SubString(1,serialNumber.Pos(" "));
+                serialNumber = ReverseString(serialNumber).Trim();
+                TGlobalSettings::Instance().POSPlusSerialNumber = serialNumber;
+            }
             break;
         }
         case eFiscalNormalReceipt:
@@ -190,7 +199,7 @@ AnsiString TFiscalDataUtility::PrepareDataForPOSPlus(TPaymentTransaction &paymen
 
         std::auto_ptr<TFiscalData> fiscalData(new TFiscalData());
         fiscalData->FiscalDateTime = dateTime; // Call code for DateTime as string
-        fiscalData->FiscalRegisterID = "1234567890";
+        fiscalData->FiscalRegisterID = TGlobalSettings::Instance().OrganizationNumber;//"1234567890";
         //"1234567890"; // Register ID
         if(paymentTransaction.CreditTransaction)
         {
@@ -673,17 +682,17 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
             "LEFT JOIN                          "
             "DAYARCORDERTAXES dt                "
             "on da.ARCHIVE_KEY = dt.ARCHIVE_KEY "
-            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER" ;
-//                        "UNION ALL"
-//            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, dt.TAX_VALUE, dt.TAX_TYPE "
-//            "FROM ARCBILL a                  "
-//            "Left Join                          "
-//            "ARCHIVE da                      "
-//            "on a.ARCBILL_KEY = da.ARCBILL_KEY  "
-//            "LEFT JOIN                          "
-//            "ARCORDERTAXES dt                "
-//            "on da.ARCHIVE_KEY = dt.ARCHIVE_KEY "
-//            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER";
+            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER "
+                        "UNION ALL "
+            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, dt.TAX_VALUE, dt.TAX_TYPE "
+            "FROM ARCBILL a                  "
+            "Left Join                          "
+            "ARCHIVE da                      "
+            "on a.ARCBILL_KEY = da.ARCBILL_KEY  "
+            "LEFT JOIN                          "
+            "ARCORDERTAXES dt                "
+            "on da.ARCHIVE_KEY = dt.ARCHIVE_KEY "
+            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER ";
        IBSelectQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
        IBSelectQuery->ExecQuery();
        if(IBSelectQuery->RecordCount > 0)
@@ -696,7 +705,7 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
           fiscalData->FiscalSerialNumber = invoiceNumber;
           fiscalData->FiscalDateTime = Now().CurrentDateTime().FormatString("YYYYMMDDhhmm");
           fiscalData->FiscalReceiptType = "kopia";
-          fiscalData->FiscalRegisterID =  "1234567890";
+          fiscalData->FiscalRegisterID =  TGlobalSettings::Instance().OrganizationNumber;//"1234567890";
           //"1234567890";
 
           TaxVector.clear();

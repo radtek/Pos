@@ -505,6 +505,7 @@ public:
     bool FiscalXonXoffIn;
     bool FiscalAsync;
     UnicodeString OrganizationNumber;
+    UnicodeString POSPlusSerialNumber;
 };
 
 #endif

@@ -4120,6 +4120,7 @@ void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
             std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
             frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
             frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
             frmsetUpPosPlus->ShowModal();
             if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
             {

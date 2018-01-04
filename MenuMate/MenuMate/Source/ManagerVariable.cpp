@@ -3286,10 +3286,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Default is false",
 		vmg3rdPartyInterface, false);
 
-        SetVarInt(DBTransaction,vmOrganizationNumber, "Organization Number",
+        SetVarStr(DBTransaction,vmOrganizationNumber, "Organization Number",
 		"Organization Number.\r"
-		"Default is 0.",
-		vmg3rdPartyInterface, 0);
+		"Default is 1234567890.",
+		vmg3rdPartyInterface, "1234567890");
 	}
 	catch(Exception &E)
 	{
