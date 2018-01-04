@@ -325,3 +325,19 @@ void TMSXMLTransaction::Parse()
 	}
 }
 //------------------------------------------
+void TMSXMLEnquiry::MakeXMLLogFile(AnsiString str)
+{
+     AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoXMLParseLogs.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+
+
+    List->Add("Response:- "+ str +  "\n");
+
+
+    List->SaveToFile(fileName );
+}
