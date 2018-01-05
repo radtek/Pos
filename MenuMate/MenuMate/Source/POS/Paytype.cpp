@@ -278,10 +278,7 @@ void TfrmPaymentType::Reset()
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
 
-                if(Payment->Name == "PtsBal")
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrentTransaction.Membership.Member.Points.getPointsBalance();
-                else
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + TGlobalSettings::Instance().DiningBal;
+
             }
 
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Grams")
@@ -382,10 +379,6 @@ void TfrmPaymentType::Reset()
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
 
-                if(Payment->Name == "PtsBal")
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrentTransaction.Membership.Member.Points.getPointsBalance();
-                else
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + TGlobalSettings::Instance().DiningBal;
             }
             ButtonPos++;
         }
