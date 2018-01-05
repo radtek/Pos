@@ -3240,6 +3240,67 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "If this setting is on means user is auto logged out "
                  "Default is False.",
                   vmgPOS, false);
+
+        SetVarBool(DBTransaction,vmIsFiscalStorageEnabled,"Fiscal Storage Enabling",
+        "When this is enabled, bill details will get stored to Fiscal Box.\r"
+        "Default is false",
+        vmg3rdPartyInterface, false);
+
+		SetVarInt(DBTransaction,vmFiscalServerPortNumber, "Fiscal Server Port Number",
+		"Fiscal Server IP Address.\r"
+		"Default is 0.",
+		vmg3rdPartyInterface, 0);
+
+		SetVarInt(DBTransaction,vmFiscalBaudRate, "Fiscal Port Baud Rate",
+		"The serial port Baud Rate.\r"
+		"Default is 57600, (ENUM of an internal List)",
+		vmg3rdPartyInterface, br57600);
+
+		SetVarInt(DBTransaction,vmFiscalDataBits, "Fiscal Port Databits",
+		"The serial port Databits.\r"
+		"Default is 8, (ENUM of an internal List)",
+		vmg3rdPartyInterface, dbEight);
+
+		SetVarInt(DBTransaction,vmFiscalStopBits, "Fiscal Port Stop Bits",
+		"The serial port Stop Bits.\r"
+		"Default is 1, (ENUM of an internal List)",
+		vmg3rdPartyInterface, sbOneStopBit);
+
+		SetVarInt(DBTransaction,vmFiscalParityBits, "Fiscal Port Parity Bits",
+		"Default is None",
+		vmg3rdPartyInterface, prNone);
+
+		SetVarInt(DBTransaction,vmFiscalRTSFlowControl, "Fiscal Port RTS Control",
+		"Default is Handshaking",
+		vmg3rdPartyInterface, rtsHandshake);
+
+		SetVarBool(DBTransaction,vmFiscalOutCTSFlow, "Fiscal Port CTS Control",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalXonXoffOut, "Fiscal Port Xon Xoff Out Control",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalAsync, "Fiscal Port runs Asynchronously",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+		SetVarBool(DBTransaction,vmFiscalXonXoffIn, "Fiscal Port Xon Xoff In Control",
+		"Default is false",
+		vmg3rdPartyInterface, false);
+
+        SetVarStr(DBTransaction,vmOrganizationNumber, "Organization Number",
+		"Organization Number.\r"
+		"Default is 1234567890.",
+		vmg3rdPartyInterface, "1234567890");
+		SetVarBool(DBTransaction, vmShowCashDrawerOpeningsCount, "Show Cash Drawer Opening",
+		"Show Cash Drawer Opening count when Zed is made ",
+		vmgPOS, false);
+		SetVarBool(DBTransaction, vmShowReprintReceiptDetails, "Show Reprint Details",
+		"Shows Reprint Details with number of reprints and amount"
+		"when closing the til.",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

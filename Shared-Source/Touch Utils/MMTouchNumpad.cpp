@@ -19,7 +19,7 @@ __fastcall TfrmTouchNumpad::TfrmTouchNumpad(TComponent* Owner) : TZForm(Owner)
    IsInitialized = true;
    PreSelect = true;
    Format = pmCurrency;
-   MaxLength = 9; // Default length is 9
+   MaxLength = 10; // Default length is 9
 }
 
 // ---------------------------------------------------------------------------
