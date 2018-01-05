@@ -583,10 +583,13 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
 
-                if(Payment->Name == "PtsBal")
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrentTransaction.Membership.Member.Points.getPointsBalance();
-                else
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + TGlobalSettings::Instance().DiningBal;
+                if(Payment->GetAdjustment() == 0.00)
+                {
+                    if(Payment->Name == "PtsBal")
+                        tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrentTransaction.Membership.Member.Points.getPointsBalance();
+                    else
+                        tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + TGlobalSettings::Instance().DiningBal;
+                }
             }
 			ButtonPos++;
 		}
@@ -2169,6 +2172,10 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
             wrkPayAmount = PointsTransaction.Money.GrandTotal;
             HasWrkPayAmountChanged = true;
         }
+        if(Payment->Name == "Dining")
+        {
+            RoundedPoints = TGlobalSettings::Instance().DiningBal;
+        }
         if (PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
         {
                 MessageBox(AnsiString("You cannot redeem points at this time.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
@@ -2190,8 +2197,8 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
         }
         else if ((((TGlobalSettings::Instance().UseTierLevels && TotalPoints > RoundedPoints)||
                  (!TGlobalSettings::Instance().UseTierLevels && wrkPayAmount > RoundedPoints )) &&
-                 (TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
-                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive))) ||
+                 //(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
+                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive)) ||
                  (PointsTransaction.Membership.Member.MemberType == 2 && (wrkPayAmount > RoundedPoints)))
         {
             if (RoundedPoints <= 0)

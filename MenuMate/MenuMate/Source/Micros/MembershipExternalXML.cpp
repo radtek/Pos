@@ -197,7 +197,7 @@ void TMSXMLEnquiry::Parse()
     }
     catch(Exception &E)
     {
-        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+        //TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
     }
 }
 
