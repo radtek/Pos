@@ -494,7 +494,9 @@ public:
     bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
     bool IsAutoLoggedOut;
+    double DiningBal;
 };
 
 #endif
+
 

@@ -9,6 +9,7 @@
 #include "Rounding.h"
 #include "MMContactInfo.h"
 #include "MembershipExternalXML.h"
+#include "GlobalSettings.h"
 //#include "StringTableRes.h"
 #include "StringTableVariables.h"
 #include "DBContacts.h"
@@ -228,12 +229,13 @@ This fuction returns the internal contacts key.
 It is responible for retrieving the Members details.
  */
 
-void TMembershipExternal::GetExternalContactDetails
-		(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info) {
+void TMembershipExternal::GetExternalContactDetails(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
+{
 	if (!fEnabled)
 		return;
 	bool UpdateLocalInfo = false;
-	try {
+	try
+    {
 		if (Info.CardStr != "")
 		{
 			std::auto_ptr<TMSXMLEnquiry> request(new TMSXMLEnquiry());
@@ -258,6 +260,8 @@ void TMembershipExternal::GetExternalContactDetails
 
                     Info.Points.Clear();
 					double int64Points = request->PointsBalance;
+                    TGlobalSettings::Instance().DiningBal = request->PromoBalance;
+                    TGlobalSettings::Instance().DiningBal = double(TGlobalSettings::Instance().DiningBal) / double(100);
                     TPointsTypePair typepair(pttEarned,ptstLoyalty);
                     TPointsType type(pasDatabase, typepair,pesExported);
                     Info.Points.Load(type,Currency(int64Points) / Currency(100));

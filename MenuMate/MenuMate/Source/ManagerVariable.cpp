@@ -3240,6 +3240,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "If this setting is on means user is auto logged out "
                  "Default is False.",
                   vmgPOS, false);
+        SetVarNum(DBTransaction,vmDiningBal, "Dining Balance",
+                  "Member's Dining Point Balance",
+                  vmgPOS,
+                  0.00);
 	}
 	catch(Exception &E)
 	{

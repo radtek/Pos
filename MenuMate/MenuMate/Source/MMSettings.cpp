@@ -399,6 +399,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         if(mallIndex == 2)
             TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(DBTransaction);
         TGlobalSettings::Instance().IsAutoLoggedOut = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAutoLoggedOut, false);
+        TGlobalSettings::Instance().DiningBal =  TManagerVariable::Instance().GetNum(DBTransaction, vmDiningBal, 0.00);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

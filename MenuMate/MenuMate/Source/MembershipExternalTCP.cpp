@@ -142,7 +142,8 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
                         fTCPClient->IOHandler->ReadBytes(Incomming, -1, false);
                         Data = AnsiString((char *)&Incomming[0],Incomming.Length);
                    }
-                    AnsiString Data2 = Data;
+                    AnsiString Data2 = "-------------------" + Now().FormatString("yyyy-mm-dd - hh-nn-ss") + "-------------";
+                    Data2 = Data2 + Data;
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read : " + Data);
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read Length :" + IntToStr(Data.Length()));
 

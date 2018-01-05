@@ -398,5 +398,6 @@ TGlobalSettings::TGlobalSettings()
     CustomerId = "";
     EnableCustomerJourney = false;
     IsAutoLoggedOut = false;
+    DiningBal = 0;
 }
 

@@ -68,7 +68,7 @@ class TMSXMLEnquiry : public TMSXMLBase
 	   int PointsBalance;
 	   int CompBalance;
 	   int Authorised; // (0 == false)
-
+       int PromoBalance;
 	   void Build();
 	   void Parse();
        void MakeXMLLogFile(AnsiString str);
@@ -87,7 +87,7 @@ class TMSXMLTransaction : public TMSXMLEnquiry
 	   int PointsBalance;
 	   int CompBalance;
 	   int Authorised; // (0 == false)
-
+       int PromoBalance;
 	   void Build();
 	   void Parse();
 };

@@ -168,7 +168,6 @@ private:	// User declarations
     AnsiString GetVoucherNumber(AnsiString inPaymentName,AnsiString inReferenceNumber,bool isLoyaltyVoucher);
     bool IsGiftCardNumberValid(AnsiString inGiftCardNumber);
     bool IsSavedSavesWithSiHot(TPaymentTransaction &CurrentTransaction);
-    void makeCasinoLogFile(AnsiString str);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);
