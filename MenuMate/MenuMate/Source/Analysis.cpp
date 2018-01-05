@@ -7796,25 +7796,33 @@ void TfrmAnalysis::MallExportReadFromDB(UnicodeString DataQuery, std::map<Unicod
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    query->Close();
+   try
+   {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
 
-    query->SQL->Text = DataQuery;
-    query->ExecQuery();
+        query->SQL->Text = DataQuery;
+        query->ExecQuery();
 
-    while(!query->Eof)
-    {
-		MallExportKey = query->FieldByName("MALLEXPORT_KEY")->AsInteger;
-        FieldName = query->FieldByName("FIELD_NAME")->AsString;
-		StringValue = query->FieldByName("STRING_VALUE")->AsString;
-        IntegerValue = query->FieldByName("INTEGER_VALUE")->AsInteger;
-        CurrencyValue = query->FieldByName("CURRENCY_VALUE")->AsCurrency;
-        TimeStampValue = query->FieldByName("TIMESTAMP_VALUE")->AsDateTime;
+        while(!query->Eof)
+        {
+            MallExportKey = query->FieldByName("MALLEXPORT_KEY")->AsInteger;
+            FieldName = query->FieldByName("FIELD_NAME")->AsString;
+            StringValue = query->FieldByName("STRING_VALUE")->AsString;
+            IntegerValue = query->FieldByName("INTEGER_VALUE")->AsInteger;
+            CurrencyValue = query->FieldByName("CURRENCY_VALUE")->AsCurrency;
+            TimeStampValue = query->FieldByName("TIMESTAMP_VALUE")->AsDateTime;
 
-        DataRead[FieldName] = MallExportCheckValue(StringValue, IntegerValue, CurrencyValue, TimeStampValue, query);
-        query->Next();
+            DataRead[FieldName] = MallExportCheckValue(StringValue, IntegerValue, CurrencyValue, TimeStampValue, query);
+            query->Next();
+        }
+        DBTransaction.Commit();
     }
-    DBTransaction.Commit();
+	catch(Exception &E)
+	{
+		DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
 }
 //---------------------------------------------------------------------------
 UnicodeString TfrmAnalysis::MallExportCheckValue(UnicodeString StringValue, int IntegerValue,
@@ -8264,6 +8272,7 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        throw;
     }
 }
 
