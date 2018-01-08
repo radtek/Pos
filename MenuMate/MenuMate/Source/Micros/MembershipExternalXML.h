@@ -71,7 +71,6 @@ class TMSXMLEnquiry : public TMSXMLBase
        int PromoBalance;
 	   void Build();
 	   void Parse();
-       void MakeXMLLogFile(AnsiString str);
 };
 
 typedef std::map<int,int> TCodeCurrency;
