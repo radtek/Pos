@@ -37,6 +37,11 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -53,7 +58,7 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
-  
+
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_43Tables()
@@ -75,6 +80,12 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+    AlterDayArcBillTable6_45(_dbControl);
+    AlterArcBillTable6_45(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -609,6 +620,35 @@ int TApplyParser::GetMallExportSettingValueKey(TDBControl* const inDBControl)
         transaction.Rollback();
     }
     return index + 1;
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterDayArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "DAYARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE DAYARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+void TApplyParser::AlterArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "ARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE ARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
 }
 }
 //------------------------------------------------------------------------------

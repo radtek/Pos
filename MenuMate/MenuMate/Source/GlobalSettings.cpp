@@ -410,5 +410,7 @@ TGlobalSettings::TGlobalSettings()
     FiscalAsync = false;
     OrganizationNumber = "";
     POSPlusSerialNumber = "";
+    ShowCashDrawerOpeningsCount = false;
+    ShowReprintReceiptDetails = false;
 }
 

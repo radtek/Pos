@@ -36,6 +36,7 @@
 #include "ZCashDenominationReportSection.h"
 #include "ZMasterCashDenominationReportSection.h"
 #include "ZStaffHoursDetailsReportSectionForConsolidatedZed.h"
+#include "XReprintReceiptDetailsSection.h"
 
 ConsolidatedZedReportSectionFactory::ConsolidatedZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSectionFactory(dbTransaction, globalSettings, startTime, endTime)
@@ -162,6 +163,9 @@ IReportSection* ConsolidatedZedReportSectionFactory::CreateReportSection(ReportS
             break;
         case mmMasterCashDenominationDetailsSection:
             reportSection = new ZMasterCashDenominationReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
+            break;
+        case mmReprintReceiptDetailsSection:
+            reportSection = new XReprintReceiptDetailsSection(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         default:
             reportSection = NULL;

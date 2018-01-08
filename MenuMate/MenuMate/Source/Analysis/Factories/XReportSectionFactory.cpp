@@ -33,6 +33,7 @@
 #include "MallExportConsolidatedReceipt.h"
 #include "XReportDateTimeReportSection.h"
 #include "XCancelsAndRefundDetailsForBIRReportSection.h"
+#include "XReprintReceiptDetailsSection.h"
 
 XReportSectionFactory::XReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
@@ -151,8 +152,9 @@ IReportSection* XReportSectionFactory::CreateReportSection(ReportSectionType rep
         case mmRefundCancelDetailsSections:
             reportSection = new XCancelsAndRefundDetailsForBIRReportSection(_dbTransaction, _globalSettings);
             break;
-
-
+        case mmReprintReceiptDetailsSection:
+            reportSection = new XReprintReceiptDetailsSection(_dbTransaction, _globalSettings);
+            break;
         default:
             reportSection = NULL;
             break;

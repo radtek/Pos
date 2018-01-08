@@ -506,6 +506,8 @@ public:
     bool FiscalAsync;
     UnicodeString OrganizationNumber;
     UnicodeString POSPlusSerialNumber;
+    bool ShowCashDrawerOpeningsCount;
+    bool ShowReprintReceiptDetails;
 };
 
 #endif

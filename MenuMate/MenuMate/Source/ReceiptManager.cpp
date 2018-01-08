@@ -879,38 +879,42 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
 {
     try
     {
-//        TPrintout *Printout = new TPrintout;
-//        Printout->Printer = TComms::Instance().ReceiptPrinter;
-        std::auto_ptr <TStringList> StringReceipt(new TStringList);
-        Get(StringReceipt.get());
-//        DuplicateReceipt->Position = 0;
-//        StringReceipt->SaveToStream(DuplicateReceipt);
-//        Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
-//        delete Printout;
-
-
-        TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
-        TempReceipt->JobType = pjReceiptReceipt;
-        TPrintout *Printout1 = new TPrintout;
-        Printout1->Printer = TComms::Instance().ReceiptPrinter;
-        TempReceipt->Printouts->Add(Printout1);
-
-        for(int i = 0; i < StringReceipt->Count; i++)
+        if(TGlobalSettings::Instance().ReprintReceiptLabel.Trim().Length() == 0)
         {
-           Printout1->PrintFormat->Line->ColCount = 1;
-           if(StringReceipt->Strings[i].Trim() != TGlobalSettings::Instance().ReprintReceiptLabel.Trim())
-           {
-                Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-           }
-           else
-           {
-                Printout1->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
-           }
-           Printout1->PrintFormat->Line->Columns[0]->Width = Printout1->PrintFormat->Width;
-           Printout1->PrintFormat->Line->Columns[0]->Text = StringReceipt->Strings[i];
-           Printout1->PrintFormat->AddLine();
+            TPrintout *Printout = new TPrintout;
+            Printout->Printer = TComms::Instance().ReceiptPrinter;
+            Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
+            delete Printout;
         }
-        Printout1->PrintFormat->PartialCut();
+        else
+        {
+            std::auto_ptr <TStringList> StringReceipt(new TStringList);
+            Get(StringReceipt.get());
+            TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
+            TempReceipt->JobType = pjReceiptReceipt;
+            TPrintout *Printout1 = new TPrintout;
+            Printout1->Printer = TComms::Instance().ReceiptPrinter;
+            TempReceipt->Printouts->Add(Printout1);
+
+            for(int i = 0; i < StringReceipt->Count; i++)
+            {
+               Printout1->PrintFormat->Line->ColCount = 1;
+               if(StringReceipt->Strings[i].Trim() != TGlobalSettings::Instance().ReprintReceiptLabel.Trim())
+               {
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+               }
+               else
+               {
+                  if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+                  else
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+               }
+               Printout1->PrintFormat->Line->Columns[0]->Width = Printout1->PrintFormat->Width;
+               Printout1->PrintFormat->Line->Columns[0]->Text = StringReceipt->Strings[i];
+               Printout1->PrintFormat->AddLine();
+            }
+            Printout1->PrintFormat->PartialCut();
         ///////////////////////////////////////////////////////////////////
 
 //	  TSectionInstructStorage Template;
@@ -934,7 +938,8 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
 //      if(isCutAvailable)
 //         Printout1->PrintFormat->PartialCut();
         ///////////////////////////////////////////////////////////////////
-        TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        }
     }
     catch(Exception &Exc)
     {

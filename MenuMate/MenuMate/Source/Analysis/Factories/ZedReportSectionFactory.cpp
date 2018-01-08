@@ -35,6 +35,7 @@
 #include "XCancelsAndRefundDetailsForBIRReportSection.h"
 #include "ZCashDenominationReportSection.h"
 #include "ZMasterCashDenominationReportSection.h"
+#include "XReprintReceiptDetailsSection.h"
 
 ZedReportSectionFactory::ZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
@@ -161,6 +162,9 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
             break;
         case mmMasterCashDenominationDetailsSection:
             reportSection = new ZMasterCashDenominationReportSection(_dbTransaction, _globalSettings);
+            break;
+        case mmReprintReceiptDetailsSection:
+            reportSection = new XReprintReceiptDetailsSection(_dbTransaction, _globalSettings);
             break;
         default:
             reportSection = NULL;

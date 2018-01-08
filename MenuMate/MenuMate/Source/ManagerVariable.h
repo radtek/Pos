@@ -216,7 +216,7 @@ enum vmVariables
     vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,
     vmPMSType, vmIsFiscalStorageEnabled, vmFiscalServerPortNumber,
     vmFiscalBaudRate, vmFiscalDataBits,vmFiscalStopBits,vmFiscalParityBits,
-    vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,vmOrganizationNumber
+    vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails
 };
 
 // ---------------------------------------------------------------------------

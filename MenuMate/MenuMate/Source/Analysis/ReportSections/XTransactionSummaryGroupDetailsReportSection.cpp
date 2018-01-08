@@ -155,6 +155,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                             printOut->PrintFormat->Line->Columns[1]->Line();
                             printOut->PrintFormat->AddLine();
                             printOut->PrintFormat->Add( "Cash In Drawer Total|" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal + skimCalculations.CashWithdrawl) );
+
                             printOut->PrintFormat->NewLine();
                         }
                     }
@@ -779,6 +780,13 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                 groupGrandTotal += skimCalculations.CashWithdrawl;
                 total_payment += skimCalculations.CashWithdrawlCount;
                 DisplayCashWithdrawlSection(printOut, skimCalculations, 0.00);
+        }
+        if(TGlobalSettings::Instance().ShowCashDrawerOpeningsCount)
+        {
+            printOut->PrintFormat->Line->Columns[0]->Text = "Cash Drawer Open Count";
+            AnsiString value = dataCalculationUtilities->GetCashDrawerOpenCount(*_dbTransaction,_globalSettings, deviceName, *_startTime, *_endTime, IsConsolidatedZed);
+            printOut->PrintFormat->Line->Columns[1]->Text = value;
+            printOut->PrintFormat->AddLine();
         }
     }
     catch(Exception &E)

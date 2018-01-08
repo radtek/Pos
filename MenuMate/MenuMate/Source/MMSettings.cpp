@@ -221,6 +221,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsCloudSynced, TGlobalSettings::Instance().IsCloudSyncedForDiscount);
             InitializeMallExportConfig(DBTransaction);
             TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmShowReprintReceiptDetails, TGlobalSettings::Instance().ShowReprintReceiptDetails);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmShowCashDrawerOpeningsCount, TGlobalSettings::Instance().ShowCashDrawerOpeningsCount);
 
         }
 

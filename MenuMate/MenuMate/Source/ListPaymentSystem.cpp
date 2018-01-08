@@ -1999,7 +1999,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		{
 			IBInternalQuery->ParamByName("RECEIPT")->Clear();
 		}
-
 		IBInternalQuery->ExecQuery();
 
 		IBInternalQuery->Close();
@@ -3014,9 +3013,32 @@ void TListPaymentSystem::OpenCashDrawer(TPaymentTransaction &PaymentTransaction)
 	if (PaymentTransaction.TransOpenCashDraw())
 	{
 		TComms::Instance().KickLocalDraw(PaymentTransaction.DBTransaction);
+        PaymentTransaction.IsCashDrawerOpened = true;
+        SetCashDrawerStatus(PaymentTransaction);
 	}
 }
-
+//------------------------------------------------------------------------------
+void TListPaymentSystem::SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction)
+{
+    try
+    {
+      TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text ="UPDATE DAYARCBILL a SET a.CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED "
+                                  "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER";
+      if(PaymentTransaction.IsCashDrawerOpened)
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
+      else
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "F";
+	  IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = PaymentTransaction.InvoiceNumber;
+      IBInternalQuery->ExecQuery();
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//------------------------------------------------------------------------------
 void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction, bool &RequestEFTPOSReceipt)
 {
 	if (LastReceipt != NULL)

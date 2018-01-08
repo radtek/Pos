@@ -3290,6 +3290,13 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Organization Number.\r"
 		"Default is 1234567890.",
 		vmg3rdPartyInterface, "1234567890");
+		SetVarBool(DBTransaction, vmShowCashDrawerOpeningsCount, "Show Cash Drawer Opening",
+		"Show Cash Drawer Opening count when Zed is made ",
+		vmgPOS, false);
+		SetVarBool(DBTransaction, vmShowReprintReceiptDetails, "Show Reprint Details",
+		"Shows Reprint Details with number of reprints and amount"
+		"when closing the til.",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
