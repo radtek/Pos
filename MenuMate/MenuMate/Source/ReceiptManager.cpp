@@ -862,7 +862,6 @@ bool TManagerReceipt::CanReprintReceipt(Database::TDBTransaction &DBTransaction,
     for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
     {
        i++;
-       MessageBox(i,"i",MB_OK);
        if(i >= 1)
        {
             retValue = false;

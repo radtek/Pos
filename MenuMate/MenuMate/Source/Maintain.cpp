@@ -4116,11 +4116,13 @@ void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
     	if (Result == lsAccepted)
     	{
             DBTransaction.StartTransaction();
-//    		while(DisplayFiscalSettings() != false);
             std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
             frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
             frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
             frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            frmsetUpPosPlus->labelPortNumber->Caption = "Port Number\r" + TGlobalSettings::Instance().FiscalServerPortNumber;
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
             frmsetUpPosPlus->ShowModal();
             if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
             {

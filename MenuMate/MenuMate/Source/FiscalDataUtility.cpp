@@ -230,21 +230,6 @@ AnsiString TFiscalDataUtility::PrepareDataForPOSPlus(TPaymentTransaction &paymen
     }
     return retValue;
 }
-////---------------------------------------------------------------------------
-//AnsiString TFiscalDataUtility::ConvertDataToString(std::auto_ptr<TFiscalData> &fiscalData, TPaymentTransaction &paymentTransaction)
-//{
-//    AnsiString retValue = "";
-//    bool isRefundReceipt = paymentTransaction.CreditTransaction;
-//    try
-//    {
-//        retValue = ConvertDataToString(fiscalData, isRefundReceipt);
-//    }
-//    catch(Exception &Exc)
-//    {
-//        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
-//    }
-//    return retValue;
-//}
 //--------------------------------------------------------------------------
 AnsiString TFiscalDataUtility::ConvertDataToString(std::auto_ptr<TFiscalData> fiscalData, bool isRefundReceipt)
 {

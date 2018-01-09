@@ -331,7 +331,6 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 void TFiscalPort::makeLogFile(AnsiString str1, AnsiString str2)
 {
      AnsiString fileName = ExtractFilePath(Application->ExeName) + "FiscalLogs.txt" ;
-
     std::auto_ptr<TStringList> List(new TStringList);
     if (FileExists(fileName) )
     {

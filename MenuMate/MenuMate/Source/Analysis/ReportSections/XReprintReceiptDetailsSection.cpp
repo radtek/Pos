@@ -54,7 +54,7 @@ void XReprintReceiptDetailsSection::GetOutput(TPrintout* printout)
             printout->PrintFormat->AddLine();
         }
         printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        double totalDiscount = 0;
+        Currency totalDiscount = 0;
         if(!IsConsolidatedZed)
         {
             printout->PrintFormat->Line->ColCount = 2;
@@ -85,11 +85,9 @@ void XReprintReceiptDetailsSection::GetOutput(TPrintout* printout)
                 column += " #";
                 column += qrInvoice->FieldByName("Note")->AsString;
                 printout->PrintFormat->Line->Columns[0]->Text = column;
-                double amount = qrInvoice->FieldByName("TOTAL")->AsFloat;
-                amount = RoundTo(amount,-2);
-                totalDiscount += amount;
-                AnsiString value = amount;
-                printout->PrintFormat->Line->Columns[1]->Text = value;
+                Currency value = qrInvoice->FieldByName("TOTAL")->AsCurrency;
+                totalDiscount += value;
+                printout->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(value);
                 printout->PrintFormat->AddLine();
             }
         }
@@ -131,31 +129,34 @@ void XReprintReceiptDetailsSection::GetOutput(TPrintout* printout)
                 AnsiString count = "x";
                 count += qrInvoice->FieldByName("INSTANCES")->AsInteger;
                 printout->PrintFormat->Line->Columns[1]->Text = count;
-                double amount = qrInvoice->FieldByName("TOTAL")->AsFloat;
-                amount = RoundTo(amount,-2);
+                Currency amount = qrInvoice->FieldByName("TOTAL")->AsCurrency;
+                double value = (double)amount;
+                value = value * qrInvoice->FieldByName("INSTANCES")->AsInteger;
+                amount = value;
                 totalDiscount += amount;
-                AnsiString value = amount;
-                printout->PrintFormat->Line->Columns[2]->Text = value;
+                printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(amount);//value;
                 printout->PrintFormat->AddLine();
             }
         }
-        printout->PrintFormat->Line->ColCount = 2;
-        printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
-        printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-        printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width -
-                                                         printout->PrintFormat->Line->Columns[1]->Width;
-        printout->PrintFormat->Line->Columns[0]->Text = "";
-        printout->PrintFormat->Line->Columns[1]->DoubleLine();
-        printout->PrintFormat->AddLine();
-        printout->PrintFormat->Line->ColCount = 2;
-        printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
-        printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-        printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width -
-                                                         printout->PrintFormat->Line->Columns[1]->Width;
-        printout->PrintFormat->Line->Columns[0]->Text = "Total";
-        AnsiString total = totalDiscount;
-        printout->PrintFormat->Line->Columns[1]->Text = total;
-        printout->PrintFormat->AddLine();
+        if(qrInvoice->RecordCount > 0)
+        {
+            printout->PrintFormat->Line->ColCount = 2;
+            printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
+            printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+            printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width -
+                                                             printout->PrintFormat->Line->Columns[1]->Width;
+            printout->PrintFormat->Line->Columns[0]->Text = "";
+            printout->PrintFormat->Line->Columns[1]->DoubleLine();
+            printout->PrintFormat->AddLine();
+            printout->PrintFormat->Line->ColCount = 2;
+            printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
+            printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+            printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width -
+                                                             printout->PrintFormat->Line->Columns[1]->Width;
+            printout->PrintFormat->Line->Columns[0]->Text = "Total";
+            printout->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(totalDiscount);
+            printout->PrintFormat->AddLine();
+        }
     }
     catch(Exception &Exc)
     {
@@ -235,7 +236,6 @@ void XReprintReceiptDetailsSection::ReprintReceiptForConsolidatedZed( TIBSQL* qr
         }
         qrInvoice->ParamByName("START_TIME")->AsDateTime = *startTime;
         qrInvoice->ParamByName("END_TIME")->AsDateTime = *endTime;
-        MessageBox(query,"query",MB_OK);
         qrInvoice->ExecQuery();
     }
     catch(Exception &Exc)

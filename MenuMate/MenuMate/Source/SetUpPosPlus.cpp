@@ -52,6 +52,7 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
             if(TGlobalSettings::Instance().FiscalServerPortNumber != frmTouchNumpad->INTResult)
             {
                 TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+                tbtnConfigure->ButtonColor = clRed;
             }
             TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
             TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,TGlobalSettings::Instance().FiscalServerPortNumber);
@@ -74,39 +75,7 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-//void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender)
-//{
-//    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-//    DBTransaction1.StartTransaction();
-//    try
-//    {
-//        std::auto_ptr<TfrmSerialConfig> frmSerialConfig(TfrmSerialConfig::Create<TfrmSerialConfig>(this));
-//        frmSerialConfig->LoadSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
-//        if(frmSerialConfig->ShowModal() == mrOk)
-//        {
-////            MessageBox("Form Closed","Shivashu",MB_OK);
-//            TDeviceRealTerminal::Instance().FiscalPort->Close();
-////            MessageBox("Connection Closed","Shivashu",MB_OK);
-//            frmSerialConfig->AssignSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
-////            MessageBox("Assigned","Shivashu",MB_OK);
-//            MessageBox(TDeviceRealTerminal::Instance().FiscalPort->PortNumber,"Shivashu port number",MB_OK);
-//            if(!TDeviceRealTerminal::Instance().FiscalPort->Open(TDeviceRealTerminal::Instance().FiscalPort->PortNumber))
-//            {
-////                MessageBox("Not Opened","Shivashu",MB_OK);
-//                MessageBox(TDeviceRealTerminal::Instance().FiscalPort->LastError, "Error",MB_OK + MB_ICONERROR);
-//            }
-//            TDeviceRealTerminal::Instance().FiscalPort->SaveSettings(DBTransaction1);
-//            DBTransaction1.Commit();
-//            TDeviceRealTerminal::Instance().FiscalPort->SetData("ver 0000");
-//        }
-//    }
-//    catch(Exception &E)
-//    {
-//        DBTransaction1.Rollback();
-//        MessageBox(E.Message, "Error",MB_OK + MB_ICONERROR);
-//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//    }
-//}//-----------------------------------------------------------------------------void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
+void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
     if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
     {
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
@@ -118,16 +87,13 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
             std::auto_ptr<TfrmSerialConfig> frmSerialConfig(TfrmSerialConfig::Create<TfrmSerialConfig>(this));
             TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
             frmSerialConfig->LoadSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
+            frmSerialConfig->cbAsync->Enabled = false;
             if(frmSerialConfig->ShowModal() == mrOk)
             {
-    //            MessageBox("Form Closed","Shivashu",MB_OK);
                 DBTransaction1.Commit();
                 DBTransaction1.StartTransaction();
                 TDeviceRealTerminal::Instance().FiscalPort->Close();
-    //            MessageBox("Connection Closed","Shivashu",MB_OK);
                 frmSerialConfig->AssignSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
-    //            MessageBox("Assigned","Shivashu",MB_OK);
-    //            MessageBox(TDeviceRealTerminal::Instance().FiscalPort->PortNumber,"Shivashu port number",MB_OK);
                 TDeviceRealTerminal::Instance().FiscalPort->SaveSettings(DBTransaction1);
                 DBTransaction1.Commit();
                 DBTransaction1.StartTransaction();
@@ -135,7 +101,6 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
                 DBTransaction1.Commit();
                 tbtnConfigure->ButtonColor = clRed;
                 MessageBox("Please validate the settings to enable PosPlus communication.","Information",MB_OK + MB_ICONINFORMATION);
-    //            MessageBox("Sending data of ver 0000",  "Shivashu", MB_OK);
             }
         }
         catch(Exception &E)
