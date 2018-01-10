@@ -1228,10 +1228,6 @@
 				<DependentOn>SetUpPosPlus.h</DependentOn>
 				<BuildOrder>775</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="TCPFiscal.cpp">
-				<DependentOn>TCPFiscal.h</DependentOn>
-				<BuildOrder>771</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="Analysis\Factories\ConsolidatedZedReportSectionFactory.cpp">
 				<DependentOn>Analysis\Factories\ConsolidatedZedReportSectionFactory.h</DependentOn>
 				<BuildOrder>739</BuildOrder>
