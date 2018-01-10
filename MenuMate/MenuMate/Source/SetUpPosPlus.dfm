@@ -141,6 +141,7 @@ object frmSetUpPosPlus: TfrmSetUpPosPlus
       Font.Style = []
       Color = clNavy
       ParentFont = False
+      Caption = '1234567890'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace

@@ -4,7 +4,6 @@
 #include "SecurityReference.h"
 #include "ReportUtilities.h"
 #include "ManagerReports.h"
-#include "MMMessageBox.h"
 
 XReprintReceiptDetailsSection::XReprintReceiptDetailsSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSection(mmXReport, mmReprintReceiptDetailsSection, dbTransaction, globalSettings)

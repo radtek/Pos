@@ -399,16 +399,6 @@ TGlobalSettings::TGlobalSettings()
     EnableCustomerJourney = false;
     IsAutoLoggedOut = false;
     IsFiscalStorageEnabled = false;
-    FiscalServerPortNumber = 0;
-    FiscalBaudRate = 0;
-    FiscalDataBits = 0;
-    FiscalStopBits = 0;
-    FiscalParityBits = 0;
-    FiscalRTSFlowControl = 0;
-    FiscalOutCTSFlow = false;
-    FiscalXonXoffOut = false;
-    FiscalXonXoffIn = false;
-    FiscalAsync = false;
     OrganizationNumber = "";
     POSPlusSerialNumber = "";
     ShowCashDrawerOpeningsCount = false;

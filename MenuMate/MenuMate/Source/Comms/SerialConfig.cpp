@@ -122,24 +122,7 @@ void __fastcall TfrmSerialConfig::LoadSettings(TComPort *Port,bool inAsync)
    DrawButtons();
 
 }
-//----------------------------------------------------------------------------
-//void TfrmSerialConfig::LoadFiscalSettings()
-//{
-//   BaudRate = TGlobalSettings::Instance().FiscalBaudRate;
-//   DataBits = TGlobalSettings::Instance().FiscalDataBits;
-//   StopBits = TGlobalSettings::Instance().FiscalStopBits;
-//   ParityBits = TGlobalSettings::Instance().FiscalParityBits;
-//
-//   RTSFlowControl = TGlobalSettings::Instance().FiscalRTSFlowControl;
-//   OutCTSFlow = TGlobalSettings::Instance().FiscalOutCTSFlow;
-//   XonXoffOut = TGlobalSettings::Instance().FiscalXonXoffOut;
-//   XonXoffIn = TGlobalSettings::Instance().FiscalXonXoffIn;
-//
-//   Async     = TGlobalSettings::Instance().FiscalAsync;
-//
-//   DrawButtons();
-//}
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void __fastcall TfrmSerialConfig::AssignSettings(TComPort *Port, bool &inAsync)
 {
    if(Port != NULL)
@@ -156,21 +139,6 @@ void __fastcall TfrmSerialConfig::AssignSettings(TComPort *Port, bool &inAsync)
       inAsync = Async;
    }
 }
-
-//----------------------------------------------------------------------------
-//void TfrmSerialConfig::AssignSettings()
-//{
-//  TGlobalSettings::Instance().FiscalBaudRate = BaudRate;
-//  TGlobalSettings::Instance().FiscalDataBits = DataBits;
-//  TGlobalSettings::Instance().FiscalStopBits = StopBits;
-//  TGlobalSettings::Instance().FiscalParityBits = ParityBits;
-//
-//  TGlobalSettings::Instance().FiscalRTSFlowControl = RTSFlowControl;
-//  TGlobalSettings::Instance().FiscalOutCTSFlow = OutCTSFlow;
-//  TGlobalSettings::Instance().FiscalXonXoffOut = XonXoffOut;
-//  TGlobalSettings::Instance().FiscalXonXoffIn = XonXoffIn;
-//  TGlobalSettings::Instance().FiscalAsync = Async;
-//}
 //----------------------------------------------------------------------------
 int TfrmSerialConfig::BaudRateToInt(TBaudRate Baud)
 {

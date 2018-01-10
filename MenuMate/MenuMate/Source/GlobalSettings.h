@@ -495,16 +495,6 @@ public:
     std::map<int, std::set<int> > MezzanineTablesMap;
     bool IsAutoLoggedOut;
     bool IsFiscalStorageEnabled;
-    int FiscalServerPortNumber;
-    int FiscalBaudRate;
-    int FiscalDataBits;
-    int FiscalStopBits;
-    int FiscalParityBits;
-    int FiscalRTSFlowControl;
-    bool FiscalOutCTSFlow;
-    bool FiscalXonXoffOut;
-    bool FiscalXonXoffIn;
-    bool FiscalAsync;
     UnicodeString OrganizationNumber;
     UnicodeString POSPlusSerialNumber;
     bool ShowCashDrawerOpeningsCount;

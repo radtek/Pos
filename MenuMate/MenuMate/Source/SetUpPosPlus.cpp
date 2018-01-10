@@ -28,7 +28,6 @@ void __fastcall TfrmSetUpPosPlus::FormShow(TObject *Sender)
         tbtnConfigure->ButtonColor = clGreen;
     else
         tbtnConfigure->ButtonColor = clRed;
-    tbtnPortNumber->Caption = "Port Number/r" + TGlobalSettings::Instance().FiscalServerPortNumber;
 
     tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
 }
@@ -46,17 +45,17 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
         frmTouchNumpad->btnSurcharge->Visible = true;
         frmTouchNumpad->btnDiscount->Visible = false;
         frmTouchNumpad->Mode = pmNumber;
-        frmTouchNumpad->INTInitial = TGlobalSettings::Instance().FiscalServerPortNumber;
+        frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().FiscalPort->PortNumber;
         if (frmTouchNumpad->ShowModal() == mrOk)
         {
-            if(TGlobalSettings::Instance().FiscalServerPortNumber != frmTouchNumpad->INTResult)
+            if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != frmTouchNumpad->INTResult)
             {
                 TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
                 tbtnConfigure->ButtonColor = clRed;
             }
-            TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,TGlobalSettings::Instance().FiscalServerPortNumber);
-            if(TGlobalSettings::Instance().FiscalServerPortNumber == 0)
+//            TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,frmTouchNumpad->INTResult);//TGlobalSettings::Instance().FiscalServerPortNumber);
+            if(frmTouchNumpad->INTResult == 0)
             {
                TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
                tbtnConfigure->ButtonColor = clRed;

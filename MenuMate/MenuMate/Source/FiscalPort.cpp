@@ -105,18 +105,15 @@ bool TFiscalPort::Open(int PortNum)
 	  if (!OpeningPort)
 	  {
 		 OpeningPort = true;
-//         MessageBox("Opening port set to true","Shivashu",MB_OK);
 		 try
 		 {
 			if (PortNum > 0)
 			{
-//               MessageBox("Port not 0","Shivashu",MB_OK);
 			   if (Port->Connected && Port->Port != ("COM" + IntToStr(PortNum)))
 			   { // Comports Changed.
 				  Port->Close();
 				  Port->Port = "COM" + IntToStr(PortNum);
 				  Port->Open();
-//                  MessageBox("if of Port not 0","Shivashu",MB_OK);
 				  Success = true;
 				  PortNumber = PortNum;
 			   }
@@ -124,22 +121,18 @@ bool TFiscalPort::Open(int PortNum)
 			   {
 				  Port->Port = "COM" + IntToStr(PortNum);
 				  Port->Open();
-//                  MessageBox("else if of Port not 0","Shivashu",MB_OK);
 				  Success = true;
 				  PortNumber = PortNum;
 			   }
 			   else // Port already open and on the right commport.
 			   {
 				  Success = true;
-//                  MessageBox("else  of Port not 0","Shivashu",MB_OK);
 			   }
 			}
 			else
 			{
-//               MessageBox("port 0","Shivashu",MB_OK);
 			   if (Port->Connected)
 			   {
-//                  MessageBox("closing in else part","Shivashu",MB_OK);
 				  Port->Close();
 			   }
 
@@ -215,29 +208,18 @@ void __fastcall TFiscalPort::GetData(TObject *Sender, int count)
    {
 	  try
 	  {
-//         MessageBox("Inside Get Data", "Shivashu",MB_OK);
 		 Port->ClearBuffer(false, true);
 #define Max_Bytes 300
 		 int CurrentTime, TimeOut;
 		 unsigned char TempBuffer[Max_Bytes];
 		 ZeroMemory(TempBuffer, Max_Bytes);
 		 int BytesRead = Port->Read(TempBuffer, Max_Bytes);
-//         MessageBox(BytesRead,"BytesRead",MB_OK);
 		 UnicodeString Temp = UnicodeString((const char*)(TempBuffer), BytesRead);
-//         MessageBox(Temp,"Temp",MB_OK);
 		 LastData = Temp.Trim();
-//         Response = LastData;
-//         IsSuccessful = AnalyzeData(Response);
-//         if(IsSuccessful)
-//            MessageBox("found successful","shivashu check bool return",MB_OK);
-
-//         MessageBox(LastData,"LastData",MB_OK);
-		 // PostMessage(Screen->ActiveForm->Handle, UWM_CARDSWIPE, (UINT)&LastData, NULL);
 	  }
 	  __finally
 	  {
 		 Port->ClearBuffer(true, false);
-//         MessageBox(LastData,"LastData finally",MB_OK);
 	  }
    }
    catch(Exception & E)
@@ -311,7 +293,6 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 			   Stream->Position = 0;
 			   Port->Write((unsigned char*)(Stream->Memory), Stream->Size);
                response = GetFiscalData();
-//               MessageBox("Wrote in sync mode", "Shivashu", MB_OK);
 			}
 			__finally
 			{

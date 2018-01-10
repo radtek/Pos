@@ -356,7 +356,6 @@ void TFiscalDataUtility::ExtractVatDetails(TPaymentTransaction paymentTransactio
      }
      catch(Exception &Exc)
      {
-         MessageBox("in catch of extract tax","Shivashu",MB_OK);
          TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
      }
 }
