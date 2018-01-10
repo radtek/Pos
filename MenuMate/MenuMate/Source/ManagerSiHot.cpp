@@ -62,6 +62,10 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = true;
         Enabled = GetRoundingandDefaultAccount();
+        if(Enabled)
+        {
+           DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+        }
 	}
 	else
 	{
@@ -114,6 +118,8 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomCharge roomCharge;
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
+    if(roomCharge.AccountNumber.Trim() == "")
+        return false;
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
     roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
     Processing->Close();

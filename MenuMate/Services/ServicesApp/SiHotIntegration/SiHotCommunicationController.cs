@@ -92,6 +92,15 @@ namespace SiHotIntegration
                     stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hhmmss"));
                     memberStream = new StreamReader(webResponse.GetResponseStream());
                     roomDetails = deserializer.DeserializeRoomResponse(memberStream.ReadToEnd());
+                    stringList.Add("Room Number:  " + roomRequest.RoomNumber);
+                    for (int guestList = 0; guestList < roomDetails.GuestDetailsList.Count; guestList++)
+                    {
+                        stringList.Add("Account Number:  " + roomDetails.GuestDetailsList[guestList].AccountNo);
+                        stringList.Add("Name:            " + roomDetails.GuestDetailsList[guestList].FirstName + " "
+                                                           + roomDetails.GuestDetailsList[guestList].LastName);
+                    }
+                    if(roomDetails.GuestDetailsList.Count == 0)
+                        stringList.Add("Guest List:  " + "0");    
                 }
                 catch (Exception ex)
                 {

@@ -31,24 +31,35 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     double discountValue = 0.0;
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
-    if(_roomCharge.AccountNumber == "")
-    {
-        _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
-        _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-        _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
-        _paymentTransaction.SalesType = eRoomSale;
 
-        for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
-        {
-            TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
-            if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
-                break;
-            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabType = TabRoom;
-            Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
-        }
+    if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
+    {
+        /*
+        Added code to check the account details for default room number(stored in DefaultTransactionAccount)
+        The change is required to mitigate the risk if the default room number is having a new check in
+        with different account number(stored in )
+        */
+         if(GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0))
+         {
+            _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+            _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+            _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
+            _paymentTransaction.SalesType = eRoomSale;
+
+            for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
+            {
+                TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
+                if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
+                    break;
+                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->TabType = TabRoom;
+                Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
+            }
+         }
+         else
+             MessageBox("Default Room is not checked in.","Error",MB_OK + MB_ICONERROR);
     }
 
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
@@ -595,6 +606,12 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
                 TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransaction,roomresponse.GuestsInformation[0].AccountNumber);
                 TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmSiHotDefaultTransactionName,roomresponse.GuestsInformation[0].FirstName + " " +
                                                           roomresponse.GuestsInformation[0].LastName);
+
+                DBTransaction.Commit();
+                DBTransaction.Start();
+                TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber =
+                               TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+                TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
                 DBTransaction.Commit();
                 return true;
             }
