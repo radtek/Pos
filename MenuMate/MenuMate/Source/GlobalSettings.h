@@ -493,6 +493,7 @@ public:
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
+    bool IsAutoLoggedOut;
     bool IsFiscalStorageEnabled;
     int FiscalServerPortNumber;
     int FiscalBaudRate;

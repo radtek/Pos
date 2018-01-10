@@ -3236,6 +3236,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",
 		vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction, vmIsAutoLoggedOut, "Is user auto logged out",
+                 "If this setting is on means user is auto logged out "
+                 "Default is False.",
+                  vmgPOS, false);
 
         SetVarBool(DBTransaction,vmIsFiscalStorageEnabled,"Fiscal Storage Enabling",
         "When this is enabled, bill details will get stored to Fiscal Box.\r"

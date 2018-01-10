@@ -397,6 +397,7 @@ TGlobalSettings::TGlobalSettings()
     IsBillSplittedByMenuType = false;
     CustomerId = "";
     EnableCustomerJourney = false;
+    IsAutoLoggedOut = false;
     IsFiscalStorageEnabled = false;
     FiscalServerPortNumber = 0;
     FiscalBaudRate = 0;

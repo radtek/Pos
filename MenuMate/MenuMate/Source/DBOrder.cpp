@@ -3260,7 +3260,7 @@ void TDBOrder::GetOrderIncludingSidesFromOrderKey(Database::TDBTransaction &DBTr
 				if(IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger != LastOrderKey)
 				{
 					LastOrderKey = IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger;
-					if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->IsNull)
+					if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->IsNull || IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger == 0)
 					{
 						LoadOrder(DBTransaction,IBInternalQuery,Order);
 						LoadOrderCategories(DBTransaction,Order->OrderKey,Order->Categories);
@@ -3475,7 +3475,7 @@ void TDBOrder::GetOrdersIncludingSidesFromTabKeys(Database::TDBTransaction &DBTr
 		"ORDERS "
 		"WHERE "
 		"TAB_KEY IN (" + KeysList->DelimitedText + ") "
-		"AND SIDE_ORDER_KEY IS NULL "
+		"AND (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0)"
 		"ORDER BY TAB_KEY,ORDER_KEY";
 		IBInternalQuery->ExecQuery();
 		if (IBInternalQuery->RecordCount)
