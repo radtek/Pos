@@ -190,24 +190,29 @@ AnsiString TFiscalDataUtility::PrepareDataForPOSPlus(TPaymentTransaction &paymen
     try
     {
         AnsiString dateTime = Now().CurrentDateTime().FormatString("YYYYMMDDhhmm");
-        double amountValue = paymentTransaction.Money.PaymentAmount;
+        double amountValue = 0;
+            amountValue = paymentTransaction.Money.RoundedGrandTotal;
+            //paymentTransaction.Money.PaymentAmount - paymentTransaction.Money.Change + paymentTransaction.Money.PaymentRounding;
+
         amountValue = RoundTo(amountValue,-2);
         AnsiString amountStr = amountValue;
         amountStr = StringReplace(amountStr,UnicodeString("."),UnicodeString(","), TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
         if(amountStr.Pos(",") == 0)
             amountStr += ",00";
+        if(amountStr.Pos(",") != 0 &&
+            (amountStr.Length() - amountStr.Pos(",")) == 1)
+        {
+            amountStr += "0";
+        }
 
         std::auto_ptr<TFiscalData> fiscalData(new TFiscalData());
         fiscalData->FiscalDateTime = dateTime; // Call code for DateTime as string
         fiscalData->FiscalRegisterID = TGlobalSettings::Instance().OrganizationNumber;//"1234567890";
         //"1234567890"; // Register ID
-        if(paymentTransaction.CreditTransaction)
-        {
-//            fiscalData->FiscalSerialNumber = paymentTransaction.RefundRefReceipt;
-            fiscalData->FiscalSerialNumber = GetInvoiceNumber(paymentTransaction);
-        }
-        else
-            fiscalData->FiscalSerialNumber = GetInvoiceNumber(paymentTransaction);
+//        fiscalData->FiscalSerialNumber = (AnsiString)paymentTransaction.InvoiceNumber != "" ?
+//                                         (AnsiString)paymentTransaction.InvoiceNumber :
+        fiscalData->FiscalSerialNumber =
+                                         GetInvoiceNumber(paymentTransaction);
         fiscalData->FiscalReceiptType = "Normal";
         fiscalData->FiscalAmount = amountStr;
         fiscalData->FiscalVatRate1 = "";
@@ -244,27 +249,15 @@ AnsiString TFiscalDataUtility::ConvertDataToString(std::auto_ptr<TFiscalData> fi
       retValue += fiscalData->FiscalReceiptType + " ";
       if(isRefundReceipt)
       {
-          retValue += fiscalData->FiscalAmount + " ";
-          if(fiscalData->FiscalAmount.Pos(",") == 0)
-              retValue += ",00";
-          if(fiscalData->FiscalAmount.Pos(",") != 0 &&
-            (fiscalData->FiscalAmount.Length() - fiscalData->FiscalAmount.Pos(",")) == 1)
-          {
-              retValue += "0";
-          }
-          retValue += "0,00 ";
+          retValue += fiscalData->FiscalAmount;
+          retValue += " ";
+          retValue += " 0,00 ";
       }
       else
       {
           retValue += "0,00 ";
-          retValue += fiscalData->FiscalAmount + " ";
-          if(fiscalData->FiscalAmount.Pos(",") == 0)
-              retValue += ",00";
-          if(fiscalData->FiscalAmount.Pos(",") != 0 &&
-            (fiscalData->FiscalAmount.Length() - fiscalData->FiscalAmount.Pos(",")) == 1)
-          {
-              retValue += "0";
-          }
+          retValue += fiscalData->FiscalAmount;
+          retValue += " ";
       }
       retValue += fiscalData->FiscalVatRate1 != "" ? fiscalData->FiscalVatRate1 : (AnsiString)"0,00";
       retValue += ";";
@@ -559,39 +552,25 @@ void TFiscalDataUtility::ExtractVatDetailsOnItemBasis(TItemComplete *itemComplet
 AnsiString TFiscalDataUtility::GetInvoiceNumber(TPaymentTransaction paymentTransaction)
 {
     UnicodeString invoiceNumber = "";
+    AnsiString delayedPaymentInvoiceNumber = "";
+    if(paymentTransaction.Orders->Count > 0)
+    {
+        delayedPaymentInvoiceNumber =
+        ((TItemComplete*)paymentTransaction.Orders->Items[0])->DelayedInvoiceNumber;
+    }
+    if(delayedPaymentInvoiceNumber != "")
+        return delayedPaymentInvoiceNumber;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
     {
+        int identificationNumber = 0;
         TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQueryGenerator->Close();
-        switch(paymentTransaction.TypeOfSale)
-        {
-           case 1:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "Comp " + IntToStr(number);
-                break;
-           }
-           case 2:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "NC "+ IntToStr(number);
-                break;
-           }
-           default:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = IntToStr(number);
-                break;
-           }
-        }
+        IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+        IBInternalQueryGenerator->ExecQuery();
+        int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+        invoiceNumber = IntToStr(number);
         DBTransaction.Commit();
     }
     catch(Exception &ex)
@@ -658,7 +637,7 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
         TIBSQL *IBSelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
         IBSelectQuery->Close();
         IBSelectQuery->SQL->Text =
-            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, dt.TAX_VALUE, dt.TAX_TYPE "
+            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, SUM(dt.TAX_VALUE) TAXVALUE, dt.TAX_TYPE "
             "FROM DAYARCBILL a                  "
             "Left Join                          "
             "DAYARCHIVE da                      "
@@ -667,8 +646,9 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
             "DAYARCORDERTAXES dt                "
             "on da.ARCHIVE_KEY = dt.ARCHIVE_KEY "
             "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER "
+            "Group by 1,2,3,4,5,7 "
                         "UNION ALL "
-            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, dt.TAX_VALUE, dt.TAX_TYPE "
+            "Select a.TERMINAL_NAME, a.REFUND_REFRECEIPT,a.INVOICE_NUMBER,a.TOTAL, dt.TAX_NAME, SUM(dt.TAX_VALUE) TAXVALUE, dt.TAX_TYPE "
             "FROM ARCBILL a                  "
             "Left Join                          "
             "ARCHIVE da                      "
@@ -676,13 +656,22 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
             "LEFT JOIN                          "
             "ARCORDERTAXES dt                "
             "on da.ARCHIVE_KEY = dt.ARCHIVE_KEY "
-            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER ";
+            "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER "
+            "Group by 1,2,3,4,5,7 ";
        IBSelectQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
        IBSelectQuery->ExecQuery();
        if(IBSelectQuery->RecordCount > 0)
        {
           AnsiString amountValue = FloatToStrF(IBSelectQuery->FieldByName("TOTAL")->AsFloat,ffNumber,15,2);
+          amountValue = StringReplace(amountValue,UnicodeString(","),UnicodeString(""), TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
           amountValue = StringReplace(amountValue,UnicodeString("."),UnicodeString(","), TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
+          if(amountValue.Pos(",") == 0)
+              amountValue += ",00";
+          if(amountValue.Pos(",") != 0 &&
+              (amountValue.Length() - amountValue.Pos(",")) == 1)
+          {
+              amountValue += "0";
+          }
           fiscalData->FiscalAmount = amountValue;
           if(IBSelectQuery->FieldByName("REFUND_REFRECEIPT")->AsString != "")
               isRefundReceipt = true;
@@ -698,7 +687,7 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
               TFiscalTax tax;
               tax.Type = IBSelectQuery->FieldByName("TAX_TYPE")->AsInteger;
               tax.Name = IBSelectQuery->FieldByName("TAX_NAME")->AsString;
-              tax.Value = RoundTo(IBSelectQuery->FieldByName("TAX_VALUE")->AsFloat,-2);
+              tax.Value = RoundTo(IBSelectQuery->FieldByName("TAXVALUE")->AsFloat,-2);
               TaxVector.push_back(tax);
           }
           GetTaxPercentageFromDB(DBTransaction);

@@ -84,6 +84,7 @@ void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
         try
         {
             std::auto_ptr<TfrmSerialConfig> frmSerialConfig(TfrmSerialConfig::Create<TfrmSerialConfig>(this));
+            frmSerialConfig->Caption = "POS Plus Port Configuration";
             TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
             frmSerialConfig->LoadSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
             frmSerialConfig->cbAsync->Enabled = false;
@@ -134,6 +135,8 @@ void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
             {
                 TGlobalSettings::Instance().IsFiscalStorageEnabled = true;
                 tbtnConfigure->ButtonColor = clGreen;
+                TGlobalSettings::Instance().CaptureRefundRefNo = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmCaptureRefundRefNo, TGlobalSettings::Instance().CaptureRefundRefNo);
             }
             else
                 MessageBox("Details are not correct for successful PosPlus communication. Please Check.","Error",MB_OK + MB_ICONERROR);

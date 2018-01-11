@@ -774,13 +774,13 @@ void TManagerReceipt::PrintLastReceipt()
 			Database::TDBTransaction DBTransaction(DBControl);
 	  		DBTransaction.StartTransaction();
             bool proceed = true;
+            GetLastReceipt(DBTransaction);
             if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
             {
                 proceed = CanReprintReceipt(DBTransaction,InvoiceNumber);
             }
             if(proceed)
             {
-                GetLastReceipt(DBTransaction);
                 Receipt->Position = 0;
                 PrintDuplicateReceipt(Receipt);
                 TMallExportUpdateAdaptor exportUpdateAdaptor;

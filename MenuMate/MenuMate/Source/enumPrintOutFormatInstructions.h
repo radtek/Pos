@@ -92,7 +92,6 @@ enum ePrintOutFormatInstructions{
                                  epofiPrintReceiptVoidFooter,
                                  epofiPrintBIRSalesTax,
                                  epofiPrintPOSPlusSerialNumber,
-                                 epofiPrintDuplicateSerialNumber,
                                  epofiPrintOrganizationNumber,
 								 };
 

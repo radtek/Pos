@@ -20,11 +20,11 @@ TFiscalPort::TFiscalPort()
    Port->Buffer->OutputSize = 16384;
    Port->DiscardNull = false;
    Port->OnRxChar = NULL;//GetData;
-   Port->Timeouts->ReadInterval = 10;
-   Port->Timeouts->ReadTotalMultiplier = 10;
-   Port->Timeouts->WriteTotalMultiplier = 10;
-   Port->Timeouts->ReadTotalConstant = 10;//30;
-   Port->Timeouts->WriteTotalConstant = 10;
+   Port->Timeouts->ReadInterval = 30;
+   Port->Timeouts->ReadTotalMultiplier = 30;
+   Port->Timeouts->WriteTotalMultiplier = 30;
+   Port->Timeouts->ReadTotalConstant = 30;//30;
+   Port->Timeouts->WriteTotalConstant = 30;
    Port->FlowControl->ControlDTR = dtrEnable;
    Port->FlowControl->ControlRTS = rtsHandshake;
    Port->FlowControl->OutCTSFlow = false;
@@ -311,12 +311,14 @@ AnsiString TFiscalPort::SetFiscalData(AnsiString Data,FiscalRequestType requestT
 //-----------------------------------------------------------------------------
 void TFiscalPort::makeLogFile(AnsiString str1, AnsiString str2)
 {
-     AnsiString fileName = ExtractFilePath(Application->ExeName) + "FiscalLogs.txt" ;
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/PosPlus Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = Now().CurrentDate().FormatString("DDMMYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "/" + name;
     std::auto_ptr<TStringList> List(new TStringList);
     if (FileExists(fileName) )
-    {
       List->LoadFromFile(fileName);
-    }
 
     List->Add("Request- "+ str1 +  "\n");
     List->Add("Response- "+ str2 +  "\n");

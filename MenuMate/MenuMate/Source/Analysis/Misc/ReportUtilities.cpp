@@ -73,8 +73,6 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
     int count = 0;
     try
     {
-        Currency totalVoidSales = 0;
-        TDateTime previousZedTime = Now();
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
         ibInternalQuery->Close();
@@ -91,6 +89,34 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
             ibInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
             ibInternalQuery->ExecQuery();
             count = ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+
+            // Time Stamp for last ZED.
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = " SELECT FIRST 1 a.TIME_STAMP FROM ZEDS a ";
+            if(!globalSettings->EnableDepositBagNum)
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " WHERE a.TERMINAL_NAME = :TERMINAL_NAME ";
+
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " ORDER BY "
+                                           " a.TIME_STAMP DESC ";
+            if(!globalSettings->EnableDepositBagNum)
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            ibInternalQuery->ExecQuery();
+            TDateTime dt ;
+            dt = ibInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+
+            // Count For Manually opened cash Drawer.
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = " SELECT COUNT(a.SECURITY_KEY) COUNTVALUE2 FROM SECURITY a "
+                                         " WHERE a.TIME_STAMP >= :TIME_STAMP AND a.SECURITY_EVENT = :SECURITY_EVENT ";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND a.TERMINAL_NAME = :TERMINAL_NAME ";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+            ibInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = dt;
+            ibInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Manually Opened Cash Drawer";
+            ibInternalQuery->ExecQuery();
+            count += ibInternalQuery->FieldByName("COUNTVALUE2")->AsInteger;
         }
         else
         {
@@ -109,7 +135,25 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
             ibInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
             ibInternalQuery->ExecQuery();
             count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = "SELECT COUNT(a.SECURITY_KEY) COUNTVALUE FROM SECURITY a"
+                                         " WHERE a.TIME_STAMP >= :TIME_STAMPSTART AND "
+                                         " TIME_STAMP <= :TIME_STAMPEND AND "
+                                         " a.SECURITY_EVENT = :SECURITY_EVENT ";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND TERMINAL_NAME = :TERMINAL_NAME;";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+            ibInternalQuery->ParamByName("TIME_STAMPSTART")->AsDateTime = startTime;
+            ibInternalQuery->ParamByName("TIME_STAMPEND")->AsDateTime = endTime;
+            ibInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Manually Opened Cash Drawer";
+            ibInternalQuery->ExecQuery();
+            count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+
         }
+
 
         return count;
     }
