@@ -314,7 +314,7 @@ void TFiscalPort::makeLogFile(AnsiString str1, AnsiString str2)
     AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/PosPlus Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
-    AnsiString name = Now().CurrentDate().FormatString("DDMMYYY")+ ".txt";
+    AnsiString name = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
     AnsiString fileName =  directoryName + "/" + name;
     std::auto_ptr<TStringList> List(new TStringList);
     if (FileExists(fileName) )
