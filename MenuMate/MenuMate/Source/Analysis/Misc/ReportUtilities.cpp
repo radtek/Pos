@@ -68,7 +68,7 @@ TCalculatedTotals DataCalculationUtilities::GetCashDrawerOpenTotals(Database::TD
 }
 //------------------------------------------------------------------------------
 int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &dbTransaction,TGlobalSettings* globalSettings, UnicodeString deviceName,
-                                                        TDateTime startTime, TDateTime endTime, bool consolidated)
+                                                        TDateTime &startTime, TDateTime &endTime, bool consolidated)
 {
     int count = 0;
     try
@@ -78,7 +78,7 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
         ibInternalQuery->Close();
         if(!consolidated)
         {
-            ibInternalQuery->SQL->Text = "SELECT COUNT(CASH_DRAWER_OPENED) COUNTVALUE FROM DAYARCBILL WHERE "
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(CASH_DRAWER_OPENED),0) COUNTVALUE FROM DAYARCBILL WHERE "
                                         "CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED";
             if(!globalSettings->EnableDepositBagNum)
             {
@@ -106,7 +106,7 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
 
             // Count For Manually opened cash Drawer.
             ibInternalQuery->Close();
-            ibInternalQuery->SQL->Text = " SELECT COUNT(a.SECURITY_KEY) COUNTVALUE2 FROM SECURITY a "
+            ibInternalQuery->SQL->Text = " SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE2 FROM SECURITY a "
                                          " WHERE a.TIME_STAMP >= :TIME_STAMP AND a.SECURITY_EVENT = :SECURITY_EVENT ";
             if(!globalSettings->EnableDepositBagNum)
             {
@@ -120,7 +120,7 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
         }
         else
         {
-            ibInternalQuery->SQL->Text = "SELECT COUNT(a.CASH_DRAWER_OPENED) COUNTVALUE FROM ARCBILL a"
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE FROM ARCBILL a"
                                          " WHERE a.Z_KEY in "
                                          " (SELECT z.Z_KEY FROM ZEDS z WHERE z.TIME_STAMP >= :TIME_STAMPSTART "
                                          " AND z.TIME_STAMP <= :TIME_STAMPEND) "
@@ -137,7 +137,7 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
             count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
 
             ibInternalQuery->Close();
-            ibInternalQuery->SQL->Text = "SELECT COUNT(a.SECURITY_KEY) COUNTVALUE FROM SECURITY a"
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE FROM SECURITY a"
                                          " WHERE a.TIME_STAMP >= :TIME_STAMPSTART AND "
                                          " TIME_STAMP <= :TIME_STAMPEND AND "
                                          " a.SECURITY_EVENT = :SECURITY_EVENT ";
@@ -151,10 +151,8 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
             ibInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Manually Opened Cash Drawer";
             ibInternalQuery->ExecQuery();
             count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
-
         }
-
-
+//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Shivashu002" + count);
         return count;
     }
     catch(Exception &E)

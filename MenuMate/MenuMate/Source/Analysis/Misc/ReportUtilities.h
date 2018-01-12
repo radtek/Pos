@@ -248,7 +248,7 @@ public:
     Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime, bool showendingbal = false);
     int GetZedNumber(Database::TDBTransaction &dbTransaction);
     Currency CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName);
-    int GetCashDrawerOpenCount(Database::TDBTransaction &dbTransaction, TGlobalSettings* globalSettings,UnicodeString deviceName, TDateTime startTime, TDateTime endTime, bool consolidated);
+    int GetCashDrawerOpenCount(Database::TDBTransaction &dbTransaction,TGlobalSettings* globalSettings, UnicodeString deviceName,TDateTime &startTime, TDateTime &endTime, bool consolidated);
 };
 
 

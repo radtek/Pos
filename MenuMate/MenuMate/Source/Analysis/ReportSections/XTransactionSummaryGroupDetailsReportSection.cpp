@@ -783,18 +783,22 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
         }
         if(TGlobalSettings::Instance().ShowCashDrawerOpeningsCount)
         {
-            printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+            printOut->PrintFormat->NewLine();
             printOut->PrintFormat->Line->ColCount = 2;
-            printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-            printOut->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+            printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
             printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width/3;
             printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width -
                                               printOut->PrintFormat->Line->Columns[1]->Width;
+            printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+            printOut->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
             printOut->PrintFormat->Line->Columns[0]->Text = "Cash Drawer Open Count";
             AnsiString value = "";
-            value = IntToStr(dataCalculationUtilities->GetCashDrawerOpenCount(*_dbTransaction,_globalSettings, deviceName, *_startTime, *_endTime, IsConsolidatedZed));
-            printOut->PrintFormat->Line->Columns[1]->Text = value;
-            printOut->PrintFormat->AddLine();
+           int value2 = 0;
+
+           value2 = dataCalculationUtilities->GetCashDrawerOpenCount(*_dbTransaction,_globalSettings, deviceName, *_startTime, *_endTime, IsConsolidatedZed);
+           value = IntToStr(value2);
+           printOut->PrintFormat->Line->Columns[1]->Text = value;
+           printOut->PrintFormat->AddLine();
         }
     }
     catch(Exception &E)
