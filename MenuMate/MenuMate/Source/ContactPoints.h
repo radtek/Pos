@@ -26,7 +26,7 @@ class TContactPoints
 
     /* Works though the Orders List and recalculates the amount of earned points
     and updates the PointsStore. */
-	void CalcEarned(TList *OrdersList);
+	void CalcEarned(TList *OrdersList , bool IsallowtoEarnWhileRedeem);
         Currency CalcLoadedPointsValue(TList *OrdersList);
     /*From the Points Store retrives the amount of points redeemed and spreads them
     across all items prioritised based on whether those items earn them points */
@@ -123,7 +123,7 @@ class TContactPoints
         3) (this would be messy) Have the discount engine spend and refund points from the DB and then call
             reload on this structure.
     */
-    void Recalc(TList *OrdersList,int memberType,bool isRefundTransaction);
+    void Recalc(TList *OrdersList,int memberType,bool isRefundTransaction,bool HasReedeempoints);
 
     void LoadFromStreamVer1(TMemoryStream *Stream);
     void LoadFromStream(int CardVersion,TMemoryStream *Stream);
