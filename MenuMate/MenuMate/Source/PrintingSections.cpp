@@ -9032,11 +9032,12 @@ void TPrintSection::PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob)
     }
     if(SerialNumber != "")
     {
-        pPrinter->Line->ColCount = 1;
         pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
-        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-        pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + SerialNumber;
+        pPrinter->Line->ColCount = 2;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width/1.7;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2.3;
+        pPrinter->Line->Columns[0]->Text  = ItemName+ ": ";
+        pPrinter->Line->Columns[1]->Text  = SerialNumber;
         pPrinter->AddLine();
     }
     else
@@ -9045,7 +9046,7 @@ void TPrintSection::PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob)
 //------------------------------------------------------------------------------
 void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 {
-	UnicodeString OrgName = "Organization Number:";
+	UnicodeString OrgName = "Organization Number: ";
 
 	if (TGlobalSettings::Instance().OrganizationNumber == "")
 	{
@@ -9053,14 +9054,15 @@ void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 	}
 	else
 	{
-        OrgName += TGlobalSettings::Instance().OrganizationNumber;
-		pPrinter->Line->ColCount = 1;
-		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-		pPrinter->Line->Columns[0]->Alignment = taCenter;
-
-		pPrinter->Line->Columns[0]->Text = OrgName;
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->ColCount = 2;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+		pPrinter->Line->Columns[0]->Text  = OrgName;
+        pPrinter->Line->Columns[1]->Text  = TGlobalSettings::Instance().OrganizationNumber;
 		pPrinter->AddLine();
+        Empty = false;
     }
 }
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
