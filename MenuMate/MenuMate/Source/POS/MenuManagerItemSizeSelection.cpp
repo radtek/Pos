@@ -248,16 +248,18 @@ TfrmItemSizeSelection::TfrmItemSizeSelection(TComponent *owner, const UnicodeStr
 void __fastcall
 TfrmItemSizeSelection::saveChangesClicked(TObject *sender)
 {
+
     for (TSizePropertiesMap::iterator i = properties_.begin(); i != properties_.end(); ++i)
     {
         if (i->second.HavePropertiesChanged())
         {
+
             const TSizeProperties &properties = i->second;
             const i_size_definition &currentSizeDefinition = itemDefinition_.get_size_definition(properties.GetSizeID());
             const i_size_definition_factory &sizeDefinitionFactory = currentSizeDefinition.get_size_definition_factory();
             std::auto_ptr<i_size_definition> updatedSizeDefinition(sizeDefinitionFactory.create(currentSizeDefinition));
 
-            updatedSizeDefinition->set_all(properties.GetAvailableQuantity(),
+           updatedSizeDefinition->set_all(properties.GetAvailableQuantity(),
                                            properties.GetDefaultQuantity(),
                                            0,
                                            std::fabs(properties.GetAvailableQuantity()) != 0,
@@ -269,15 +271,18 @@ TfrmItemSizeSelection::saveChangesClicked(TObject *sender)
                                            properties.GetSpecialPrice(),
                                            properties.GetWarningQuantity());
 
-            itemDefinition_.update_size_definition(*updatedSizeDefinition);
-        }
-    }
+                itemDefinition_.set_enabled(cbItemAvailable->Checked);
+                itemDefinition_.update_size_definition(*updatedSizeDefinition);
+
+
+         }
+      }
     checkItemAvailable(); // check item avalibility..
     itemDefinition_.set_enabled(cbItemAvailable->Checked);
 
     frmSelectDish->RedrawCourses();
     ModalResult = mrOk;
-}
+ }
 
 
 void __fastcall
@@ -327,8 +332,7 @@ TfrmItemSizeSelection::populateSizeSelectionData()
    for (TSizeDefinitionMap::const_iterator i = availableSizes.begin();
         i != availableSizes.end(); ++i) {
       const i_size_definition &size_definition = *i->second;
-
-      tgridAvailableSizes->Buttons[y][0]->Caption = size_definition.get_name();
+    tgridAvailableSizes->Buttons[y][0]->Caption = size_definition.get_name();
 
       properties_.insert(
         TSizePropertiesMap::value_type(
@@ -354,16 +358,19 @@ TfrmItemSizeSelection::checkItemAvailable()
         if(i->second.GetAvailableQuantity() == 0)
         {
             IsItemAvailable = false;
+
         }
         else
         {
             IsItemAvailable = true;
+
             break;
         }
     }
     if(!IsItemAvailable)
     {
         cbItemAvailable->Checked = false;
+
     }
 }
 
