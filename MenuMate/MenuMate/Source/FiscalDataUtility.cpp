@@ -660,6 +660,20 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
             "Group by 1,2,3,4,5,7 ";
        IBSelectQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
        IBSelectQuery->ExecQuery();
+       TIBSQL *IBSelectQuery2= DBTransaction.Query(DBTransaction.AddQuery());
+       IBSelectQuery2->SQL->Text = " SELECT a.QTY FROM DAYARCHIVE a "
+                                   " LEFT JOIN DAYARCBILL b ON "
+                                   " a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                   " WHERE b.INVOICE_NUMBER = :INVOICE_NUMBER"
+                                   " UNION ALL "
+                                   " SELECT a.QTY FROM ARCHIVE a "
+                                   " LEFT JOIN ARCBILL b ON "
+                                   " a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                   " WHERE b.INVOICE_NUMBER = :INVOICE_NUMBER";
+       IBSelectQuery2->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+       IBSelectQuery2->ExecQuery();
+       if(IBSelectQuery2->FieldByName("QTY")->AsFloat < 0)
+           isRefundReceipt = true;
        if(IBSelectQuery->RecordCount > 0)
        {
           AnsiString amountValue = FloatToStrF(IBSelectQuery->FieldByName("TOTAL")->AsFloat,ffNumber,15,2);
@@ -673,8 +687,8 @@ AnsiString TFiscalDataUtility::GetBillData(AnsiString invoiceNumber)
               amountValue += "0";
           }
           fiscalData->FiscalAmount = amountValue;
-          if(IBSelectQuery->FieldByName("REFUND_REFRECEIPT")->AsString != "")
-              isRefundReceipt = true;
+//          if(IBSelectQuery->FieldByName("REFUND_REFRECEIPT")->AsString != "")
+//              isRefundReceipt = true;
           fiscalData->FiscalSerialNumber = invoiceNumber;
           fiscalData->FiscalDateTime = Now().CurrentDateTime().FormatString("YYYYMMDDhhmm");
           fiscalData->FiscalReceiptType = "kopia";
