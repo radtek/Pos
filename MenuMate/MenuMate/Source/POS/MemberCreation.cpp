@@ -233,6 +233,7 @@ void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
   {
     cbNoEmail->Visible = false;
   }
+  TouchBtn2->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::FormResize(TObject *Sender)
@@ -285,7 +286,6 @@ void __fastcall TfrmMemberCreation::TouchBtn2MouseClick(TObject *Sender)
              MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
           }
        }
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::tbtnDayMouseClick(TObject *Sender)
