@@ -120,7 +120,7 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
         }
         else
         {
-            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE FROM ARCBILL a"
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.ARCBILL_KEY),0) COUNTVALUE FROM ARCBILL a"
                                          " WHERE a.Z_KEY in "
                                          " (SELECT z.Z_KEY FROM ZEDS z WHERE z.TIME_STAMP >= :TIME_STAMPSTART "
                                          " AND z.TIME_STAMP <= :TIME_STAMPEND) "
@@ -152,7 +152,6 @@ int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &d
             ibInternalQuery->ExecQuery();
             count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
         }
-//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Shivashu002" + count);
         return count;
     }
     catch(Exception &E)
