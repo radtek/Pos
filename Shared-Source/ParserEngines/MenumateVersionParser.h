@@ -11,6 +11,7 @@
 #define vTaxRemoval          0x80000000
 #define FinancialPaid        0x0000080
 #define DiscountsAllowed     0x0000040
+#define vReprintReceipt 	 0x020000000
 //---------------------------------------------------------------------------
 
 namespace MenumateVersionParser
@@ -875,7 +876,7 @@ namespace MenumateVersionParser
         void CreateMezzanineSalesTable6_44(TDBControl* const inDBControl);
         int GetMallExportSettingValueKey(TDBControl* const inDBControl);
         void InsertInTo_MallExport_Settings_Values6_44(TDBControl* const inDBControl, int settingId, int mallId);
-
+        void UpdateReprintReceiptToContacts6_01(TDBControl* const inDBControl);
         void upgrade6_45Tables();
         void update6_45Tables();
         void AlterDayArcBillTable6_45(TDBControl* const inDBControl);
