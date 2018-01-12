@@ -183,6 +183,18 @@ void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Send
         if (frmTouchNumpad->ShowModal() == mrOk)
         {
             TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResult;
+            int offset = 10 -TGlobalSettings::Instance().OrganizationNumber.Length();
+            UnicodeString value = "";
+            if(offset > 0)
+            {
+                for(int i = 1; i <= offset; i++)
+                {
+                   value += "0";
+                }
+                MessageBox("0 will be added in front of Organization Number","Information",MB_OK);
+            }
+            TGlobalSettings::Instance().OrganizationNumber = value;
+            TGlobalSettings::Instance().OrganizationNumber += IntToStr(frmTouchNumpad->INTResult);
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,  vmOrganizationNumber, TGlobalSettings::Instance().OrganizationNumber);
              DBTransaction.Commit();
              tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
