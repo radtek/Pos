@@ -66,6 +66,101 @@ TCalculatedTotals DataCalculationUtilities::GetCashDrawerOpenTotals(Database::TD
         throw;
     }
 }
+//------------------------------------------------------------------------------
+int DataCalculationUtilities::GetCashDrawerOpenCount(Database::TDBTransaction &dbTransaction,TGlobalSettings* globalSettings, UnicodeString deviceName,
+                                                        TDateTime &startTime, TDateTime &endTime, bool consolidated)
+{
+    int count = 0;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+        ibInternalQuery->Close();
+        if(!consolidated)
+        {
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(CASH_DRAWER_OPENED),0) COUNTVALUE FROM DAYARCBILL WHERE "
+                                        "CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND TERMINAL_NAME = :TERMINAL_NAME;";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+
+            ibInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
+            ibInternalQuery->ExecQuery();
+            count = ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+
+            // Time Stamp for last ZED.
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = " SELECT FIRST 1 a.TIME_STAMP FROM ZEDS a ";
+            if(!globalSettings->EnableDepositBagNum)
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " WHERE a.TERMINAL_NAME = :TERMINAL_NAME ";
+
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " ORDER BY "
+                                           " a.TIME_STAMP DESC ";
+            if(!globalSettings->EnableDepositBagNum)
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            ibInternalQuery->ExecQuery();
+            TDateTime dt ;
+            dt = ibInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+
+            // Count For Manually opened cash Drawer.
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = " SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE2 FROM SECURITY a "
+                                         " WHERE a.TIME_STAMP >= :TIME_STAMP AND a.SECURITY_EVENT = :SECURITY_EVENT ";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND a.TERMINAL_NAME = :TERMINAL_NAME ";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+            ibInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = dt;
+            ibInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Manually Opened Cash Drawer";
+            ibInternalQuery->ExecQuery();
+            count += ibInternalQuery->FieldByName("COUNTVALUE2")->AsInteger;
+        }
+        else
+        {
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE FROM ARCBILL a"
+                                         " WHERE a.Z_KEY in "
+                                         " (SELECT z.Z_KEY FROM ZEDS z WHERE z.TIME_STAMP >= :TIME_STAMPSTART "
+                                         " AND z.TIME_STAMP <= :TIME_STAMPEND) "
+                                         " AND CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND TERMINAL_NAME = :TERMINAL_NAME;";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+            ibInternalQuery->ParamByName("TIME_STAMPSTART")->AsDateTime = startTime;
+            ibInternalQuery->ParamByName("TIME_STAMPEND")->AsDateTime = endTime;
+            ibInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
+            ibInternalQuery->ExecQuery();
+            count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text = "SELECT coalesce(COUNT(a.SECURITY_KEY),0) COUNTVALUE FROM SECURITY a"
+                                         " WHERE a.TIME_STAMP >= :TIME_STAMPSTART AND "
+                                         " TIME_STAMP <= :TIME_STAMPEND AND "
+                                         " a.SECURITY_EVENT = :SECURITY_EVENT ";
+            if(!globalSettings->EnableDepositBagNum)
+            {
+                ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND TERMINAL_NAME = :TERMINAL_NAME;";
+                ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+            }
+            ibInternalQuery->ParamByName("TIME_STAMPSTART")->AsDateTime = startTime;
+            ibInternalQuery->ParamByName("TIME_STAMPEND")->AsDateTime = endTime;
+            ibInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Manually Opened Cash Drawer";
+            ibInternalQuery->ExecQuery();
+            count += ibInternalQuery->FieldByName("COUNTVALUE")->AsInteger;
+        }
+//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Shivashu002" + count);
+        return count;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
 //-----------------------------------------------------------------------------------------------------------------------------------
 Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction)
 {
@@ -1605,7 +1700,12 @@ Currency DataCalculationUtilities::CalculateCashWithdrawl(TIBSQL *ibInternalQuer
     }
     return cashWithdrawl;
 }
-
+TReprintDetails::TReprintDetails()
+{
+    InvoiceNumber= "";
+    Total = 0;
+    TimeStamp = "";
+}
 
 
 

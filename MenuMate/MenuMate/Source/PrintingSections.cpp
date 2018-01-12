@@ -308,6 +308,12 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintBIRSalesTax, "BIR Sales Tax");
 	DefaultCaption[epofiPrintBIRSalesTax] = "BIR Sales Tax";
+
+    Instructions[i++] = InstructionPair(epofiPrintPOSPlusSerialNumber, "POSPlus Serial Number");
+	DefaultCaption[epofiPrintPOSPlusSerialNumber] = "POSPlus Serial Number";
+
+    Instructions[i++] = InstructionPair(epofiPrintOrganizationNumber, "Organization Number");
+	DefaultCaption[epofiPrintOrganizationNumber] = "Organization Number";
 }
 
 
@@ -485,6 +491,8 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiCurrentYearPts:
     case epofiPrintReceiptVoidFooter:
     case epofiPrintBIRSalesTax:
+    case epofiPrintPOSPlusSerialNumber:
+    case epofiPrintOrganizationNumber:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -757,6 +765,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 		case epofiPrintSeat:
 			PrintSeat(PrintJob);
 			break;
+        case epofiPrintOrganizationNumber:
+            PrintOrganizationNumber(PrintJob);
+            break;
 		case epofiPrintServingCourse:
 			PrintServingCourse(PrintJob);
 			break;
@@ -990,6 +1001,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintBIRSalesTax:
 			PrintBIRSalesTax(PrintJob);
+			break;
+        case epofiPrintPOSPlusSerialNumber:
+			PrintPOSPlusSerialNumber(PrintJob);
 			break;
 		default:
 			break;
@@ -9006,3 +9020,47 @@ bool TPrintSection::IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_L
 	}
 	return isDiplomatApplied;
 }
+//------------------------------------------------------------------------------
+void TPrintSection::PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob)
+{
+    TSectionInstructStorage::iterator i = ThisInstruction;
+    AnsiString ItemName = ThisInstruction->Caption;
+    AnsiString SerialNumber = "";
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        SerialNumber = TGlobalSettings::Instance().POSPlusSerialNumber;
+    }
+    if(SerialNumber != "")
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+        pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + SerialNumber;
+        pPrinter->AddLine();
+    }
+    else
+        Empty = true;
+}
+//------------------------------------------------------------------------------
+void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
+{
+	UnicodeString OrgName = "Organization Number:";
+
+	if (TGlobalSettings::Instance().OrganizationNumber == "")
+	{
+		Empty = true;
+	}
+	else
+	{
+        OrgName += TGlobalSettings::Instance().OrganizationNumber;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+		pPrinter->Line->Columns[0]->Text = OrgName;
+		pPrinter->AddLine();
+    }
+}
+ //-----------------------------------------------------------------------------
