@@ -195,6 +195,7 @@ class TPaymentTransaction
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
         bool WasSavedSales;
+        bool IsCashDrawerOpened;
 };
 
 #endif

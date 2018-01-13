@@ -359,6 +359,7 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
     {
         TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQueryGenerator->Close();
+
         switch(_paymentTransaction.TypeOfSale)
         {
            case 1:

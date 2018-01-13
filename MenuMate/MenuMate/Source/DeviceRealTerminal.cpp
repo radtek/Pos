@@ -13,6 +13,7 @@
 #include "ListCourse.h"
 #include "ItemSize.h"
 #include "ItemRecipe.h"
+#include "FiscalDataUtility.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -26,8 +27,9 @@ TDeviceRealTerminal::TDeviceRealTerminal()
 	                                             Modules)),
     Scales(new TScaleModel),
     PocketVouchers(new TManagerPocketVoucher),
-	 IMManager(new TIMManager),
-	 ManagerGeneralLedger(new TManagerGeneralLedger)
+	IMManager(new TIMManager),
+	ManagerGeneralLedger(new TManagerGeneralLedger),
+    FiscalPort(new TFiscalPort)
 {
    PaymentSystem = new TListPaymentSystem;
 
@@ -367,11 +369,31 @@ void TDeviceRealTerminal::Initialise(Database::TDBTransaction &DBTransaction)
    PoleDisplay->Open(PoleDisplay->PortNumber);
 
    Scales->Initialise(DBTransaction);
+   FiscalPort->Initialise(DBTransaction);
    if (!Scales->Open(TDeviceRealTerminal::Instance().Scales->PortNumber))
    {
 	  MessageBox("Scales Error : " + TDeviceRealTerminal::Instance().Scales->LastError, "Scales will not work", MB_OK + MB_ICONERROR);
    }
 
+   TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+   if(FiscalPort->PortNumber != 0)
+   {
+       if(FiscalPort->Open(FiscalPort->PortNumber))
+       {
+            AnsiString response = FiscalPort->SetFiscalData("ver 0000", eFiscalVerNumber);
+            std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+            bool isSuccessful = dataUtility->AnalyzeResponse(response, eFiscalVerNumber);
+            if(isSuccessful)
+                TGlobalSettings::Instance().IsFiscalStorageEnabled = true;
+            else
+                MessageBox("Details are not correct for successful PosPlus communication. Please Check.","Error",MB_OK + MB_ICONERROR);
+       }
+       else
+       {
+          MessageBox("Unable to open Port for PosPlus. Please check details.", "Error",MB_OK + MB_ICONERROR);
+       }
+   }
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
    Timer->Enabled = true;
 
    if (Modules.Status[eIntaMate]["Registered"])

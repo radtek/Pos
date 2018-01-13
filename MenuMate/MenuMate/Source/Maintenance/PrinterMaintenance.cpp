@@ -312,6 +312,8 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 tbChefMateIP->Enabled = false;
 	  }
 	  DBTransaction.Commit();
+      if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+          cbCaptureRefundReference->Enabled = false;
       cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
       cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
       cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
