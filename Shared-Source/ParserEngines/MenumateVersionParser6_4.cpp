@@ -42,6 +42,11 @@ void TApplyParser::upgrade6_45Tables()
 {
     update6_45Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_46Tables()
+{
+    update6_46Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -84,7 +89,11 @@ void TApplyParser::update6_44Tables()
 //----------------------------------------------------
 void TApplyParser::update6_45Tables()
 {
-    Create6_45Generators(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_46Tables()
+{
+    Create6_46Generators(_dbControl);
     UpdateItemSize(_dbControl);
     UpdateRevenueCodes(_dbControl);
     UpdateServingTimes(_dbControl);
@@ -647,7 +656,7 @@ void TApplyParser::UpdateRevenueCodes(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_45Generators(TDBControl* const inDBControl)
+void TApplyParser::Create6_46Generators(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_SERVINGTIMES", _dbControl))
     {
