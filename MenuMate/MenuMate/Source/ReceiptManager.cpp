@@ -13,6 +13,7 @@
 #include "DBSecurity.h"
 #include "PosMain.h"
 #include "StringTools.h"
+#include "FiscalDataUtility.h"
 TManagerReceipt *ManagerReceipt;
 // ---------------------------------------------------------------------------
 
@@ -772,16 +773,29 @@ void TManagerReceipt::PrintLastReceipt()
 	  {
 			Database::TDBTransaction DBTransaction(DBControl);
 	  		DBTransaction.StartTransaction();
-			GetLastReceipt(DBTransaction);
-			Receipt->Position = 0;
-            PrintDuplicateReceipt(Receipt);
-            TMallExportUpdateAdaptor exportUpdateAdaptor;
-            exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
+            bool proceed = true;
+            GetLastReceipt(DBTransaction);
+            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            {
+                proceed = CanReprintReceipt(DBTransaction,InvoiceNumber);
+            }
+            if(proceed)
+            {
+                Receipt->Position = 0;
+                PrintDuplicateReceipt(Receipt);
+                TMallExportUpdateAdaptor exportUpdateAdaptor;
+                exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
 
-         TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
-          SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
-          TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
-
+                TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
+                SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
+                TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
+                if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                {
+                    std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+                    AnsiString data = dataUtility->GetPOSPlusData(InvoiceNumber);
+                    AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(data, eFiscalCopyReceipt);
+                }
+            }
             DBTransaction.Commit();
 	  }
 	  __finally
@@ -803,18 +817,28 @@ void TManagerReceipt::Print()
 	  DBTransaction.StartTransaction();
       try
       {
-        Receipt->Position = 0;
-        PrintDuplicateReceipt(Receipt);
-        TMallExportUpdateAdaptor exportUpdateAdaptor;
-        exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
+        bool proceed = true;
+        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+        {
+            proceed = CanReprintReceipt(DBTransaction,InvoiceNumber);
+        }
+        if(proceed)
+        {
+            Receipt->Position = 0;
+            PrintDuplicateReceipt(Receipt);
+            TMallExportUpdateAdaptor exportUpdateAdaptor;
+            exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
 
-
-          TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
-          SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
-          TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
-
-
-
+            TDBSecurity::ProcessSecurityFill(DBTransaction, Sec_Ref, TDeviceRealTerminal::Instance().User.LatestLoginContactKey,
+            SecurityTypes[secReprintReceipt], TDeviceRealTerminal::Instance().User.LatestLoginName,
+            TDeviceRealTerminal::Instance().User.Initials, Now(),TDeviceRealTerminal::Instance().ID.Name,InvoiceNumber);
+            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            {
+                std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+                AnsiString data = dataUtility->GetPOSPlusData(InvoiceNumber);
+                AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(data, eFiscalCopyReceipt);
+            }
+        }
       }
       __finally
       {
@@ -823,13 +847,104 @@ void TManagerReceipt::Print()
 	  DBTransaction.Commit();
    }
 }
-
+//------------------------------------------------------------------------------
+bool TManagerReceipt::CanReprintReceipt(Database::TDBTransaction &DBTransaction, AnsiString InvoiceNumber)
+{
+    bool retValue = true;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT SECURITY_KEY FROM SECURITY a WHERE "
+                                 "a.NOTE = :NOTE AND a.SECURITY_EVENT = :SECURITY_EVENT ";
+    IBInternalQuery->ParamByName("NOTE")->AsString = InvoiceNumber;
+    IBInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Reprint Receipt";
+    IBInternalQuery->ExecQuery();
+    int i = 0;
+    for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+       i++;
+       if(i >= 1)
+       {
+            retValue = false;
+            MessageBox("This Receipt has been printed more than once.\n"
+                       "This operation can be performed only once when PosPlus is enabled",
+                       "Warning", MB_OK + MB_ICONWARNING);
+            break;
+       }
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------
 void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
 {
-    TPrintout *Printout = new TPrintout;
-    Printout->Printer = TComms::Instance().ReceiptPrinter;
-    Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
-    delete Printout;
+    try
+    {
+        if(TGlobalSettings::Instance().ReprintReceiptLabel.Trim().Length() == 0)
+        {
+            TPrintout *Printout = new TPrintout;
+            Printout->Printer = TComms::Instance().ReceiptPrinter;
+            Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
+            delete Printout;
+        }
+        else
+        {
+            std::auto_ptr <TStringList> StringReceipt(new TStringList);
+            Get(StringReceipt.get());
+            TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
+            TempReceipt->JobType = pjReceiptReceipt;
+            TPrintout *Printout1 = new TPrintout;
+            Printout1->Printer = TComms::Instance().ReceiptPrinter;
+            TempReceipt->Printouts->Add(Printout1);
+
+            for(int i = 0; i < StringReceipt->Count; i++)
+            {
+               Printout1->PrintFormat->Line->ColCount = 1;
+               if(StringReceipt->Strings[i].Trim() != TGlobalSettings::Instance().ReprintReceiptLabel.Trim())
+               {
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+               }
+               else
+               {
+                  if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+                  else
+                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+               }
+               Printout1->PrintFormat->Line->Columns[0]->Width = Printout1->PrintFormat->Width;
+               Printout1->PrintFormat->Line->Columns[0]->Text = StringReceipt->Strings[i];
+               Printout1->PrintFormat->AddLine();
+            }
+            Printout1->PrintFormat->PartialCut();
+        ///////////////////////////////////////////////////////////////////
+
+//	  TSectionInstructStorage Template;
+//	  TPtrSectionInstructStorage TemplateSection;
+//             Database::TDBTransaction DBTransaction(DBControl);
+//             DBTransaction.StartTransaction();
+//      std::auto_ptr<TReceipt>Receipt1(new TReceipt());
+//	  Receipt1->LoadTemplate(DBTransaction, Printout1->Printer.PhysicalPrinterKey, Template);
+//
+//	  TSectionInstructStorage::iterator itInstruction = Template.begin();
+//      bool isCutAvailable = false;
+//	  while (itInstruction != Template.end())
+//	  {
+//		 if(itInstruction->Cut)
+//         {
+//            isCutAvailable = true;
+//            break;
+//         }
+//         advance(itInstruction, 1);
+//	  }
+//      if(isCutAvailable)
+//         Printout1->PrintFormat->PartialCut();
+        ///////////////////////////////////////////////////////////////////
+            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        }
+    }
+    catch(Exception &Exc)
+    {
+        MessageBox(Exc.Message,"Exception",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+    }
 }
 
 bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymentRefNumber,Currency &outOriginalVisaPaymentAmount,int &outArcbillKey)

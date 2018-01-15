@@ -398,6 +398,11 @@ TGlobalSettings::TGlobalSettings()
     CustomerId = "";
     EnableCustomerJourney = false;
     IsAutoLoggedOut = false;
+    IsFiscalStorageEnabled = false;
+    OrganizationNumber = "";
+    POSPlusSerialNumber = "";
+    ShowCashDrawerOpeningsCount = false;
+    ShowReprintReceiptDetails = false;
     DiningBal = 0;
 }
 

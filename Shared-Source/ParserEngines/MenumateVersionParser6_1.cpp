@@ -706,6 +706,7 @@ void TApplyParser::UpdateTabHistoryTable6_13(TDBControl* const inDBControl)
 void TApplyParser::update6_14Tables()
 {
     UpdateContacts_Access_Level6_14(_dbControl);
+    UpdateReprintReceiptToContacts6_01(_dbControl);
 }
 //---------------------------------------------------------------------------
 void TApplyParser::UpdateContacts_Access_Level6_14(TDBControl* const inDBControl)
@@ -1562,5 +1563,39 @@ void TApplyParser::UpdateChitNumberTableForPickupAndDeliveryChit6_19( TDBControl
 
 
 }
+//---------------------------------------------------------------------------------------------
+void TApplyParser::UpdateReprintReceiptToContacts6_01(TDBControl* const inDBControl)
+{   TDBTransaction transaction( *inDBControl );
+	try
+	{
+		transaction.StartTransaction();
+		TIBSQL *contactsAccessLevelQuery   = transaction.Query(transaction.AddQuery());
+		contactsAccessLevelQuery->SQL->Text = "SELECT C.CONTACTS_KEY, C.ACCESS_LEVEL FROM CONTACTS C  WHERE C.ACCESS_LEVEL <> '57978387327' AND C.ACCESS_LEVEL <> '53561719664' AND C.ACCESS_LEVEL <> '18924709888' AND C.ACCESS_LEVEL <> '17850968064' ";
+        contactsAccessLevelQuery->ExecQuery();
+		for (; !contactsAccessLevelQuery->Eof; contactsAccessLevelQuery->Next())
+		{
+            int contactKey = contactsAccessLevelQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+			int contactAccessLevel =  contactsAccessLevelQuery->FieldByName("ACCESS_LEVEL")->AsInteger;
+            unsigned int isReprintAccessAllowed =  (contactAccessLevel & vReprintReceipt) ? 1 : 0;
+			if(isReprintAccessAllowed != 1)
+			{
+				TIBSQL *contactsAccessLevelUpdateQuery   = transaction.Query(transaction.AddQuery());
+				contactsAccessLevelUpdateQuery->SQL->Text = "UPDATE CONTACTS SET ACCESS_LEVEL = :ACCESS_LEVEL WHERE CONTACTS_KEY = :CONTACTS_KEY";
+				contactsAccessLevelUpdateQuery->ParamByName("ACCESS_LEVEL")->AsInteger = (contactAccessLevel + vReprintReceipt);
+				contactsAccessLevelUpdateQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+				contactsAccessLevelUpdateQuery->ExecQuery();
+			}
+
+		}
+		transaction.Commit();
+	}
+	catch( ... )
+	{
+		transaction.Rollback();
+		throw;
+	}
+}
+
+
 
 }

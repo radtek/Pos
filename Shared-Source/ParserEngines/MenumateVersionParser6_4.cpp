@@ -37,7 +37,11 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
-
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -54,7 +58,7 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
-  
+
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_43Tables()
@@ -76,6 +80,12 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+    AlterDayArcBillTable6_45(_dbControl);
+    AlterArcBillTable6_45(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -452,7 +462,9 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         inDBControl);
     }
 }
-//--------------------------------------------------------------------------------------------void TApplyParser::InsertIntoMallExportSettings6_44(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName, char isUIRequired){
+//--------------------------------------------------------------------------------------------
+void TApplyParser::InsertIntoMallExportSettings6_44(TDBControl* const inDBControl, int settingKey, UnicodeString fiedlName, UnicodeString controlName, char isUIRequired)
+{
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try
@@ -476,7 +488,14 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-}//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )
+	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_AREA_TABLES "
 		"( "
@@ -486,7 +505,10 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         "   FLOORPLAN_VER  INTEGER "
 		");",
 		inDBControl );
-	}    if(!generatorExists("GEN_MEZZANINE_TABLE_ID", _dbControl))    {
+	}
+
+    if(!generatorExists("GEN_MEZZANINE_TABLE_ID", _dbControl))
+    {
         executeQuery(
             "CREATE GENERATOR GEN_MEZZANINE_TABLE_ID;", inDBControl
         );
@@ -494,7 +516,13 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_TABLE_ID TO 0;", inDBControl
         );
-    }}//--------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineSalesTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_SALES", _dbControl ) )	{
+    }
+}
+//--------------------------------------------------------------------------------------------
+void TApplyParser::CreateMezzanineSalesTable6_44(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "MEZZANINE_SALES", _dbControl ) )
+	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_SALES "
 		"( "
@@ -513,7 +541,10 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         "   Z_KEY INTEGER "
 		");",
 		inDBControl );
-	}    if(!generatorExists("GEN_MEZZANINE_SALES_ID", _dbControl))    {
+	}
+
+    if(!generatorExists("GEN_MEZZANINE_SALES_ID", _dbControl))
+    {
         executeQuery(
             "CREATE GENERATOR GEN_MEZZANINE_SALES_ID;", inDBControl
         );
@@ -521,7 +552,13 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         executeQuery(
             "SET GENERATOR GEN_MEZZANINE_SALES_ID TO 0;", inDBControl
         );
-    }}//------------------------------------------------------------------------------------------void TApplyParser::InsertInTo_MallExport_Settings_Values6_44(TDBControl* const inDBControl, int settingId, int mallId){    TDBTransaction transaction( *inDBControl );    transaction.StartTransaction();
+    }
+}
+//------------------------------------------------------------------------------------------
+void TApplyParser::InsertInTo_MallExport_Settings_Values6_44(TDBControl* const inDBControl, int settingId, int mallId)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
 
     try
     {
@@ -534,7 +571,9 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
         SelectQuery->ExecQuery();
         int index = GetMallExportSettingValueKey(_dbControl);
         for (; !SelectQuery->Eof; SelectQuery->Next())
-        {            if ( tableExists( "MALLEXPORT_SETTINGS_VALUES", _dbControl ) )            {
+        {
+            if ( tableExists( "MALLEXPORT_SETTINGS_VALUES", _dbControl ) )
+            {
                 TIBSQL *InsertQuery    = transaction.Query(transaction.AddQuery());
                 InsertQuery->Close();
                 InsertQuery->SQL->Text =
@@ -554,7 +593,13 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     catch( Exception &E )
     {
         transaction.Rollback();
-    }}//--------------------------------------------------------------------------------------int TApplyParser::GetMallExportSettingValueKey(TDBControl* const inDBControl){    int index = 0;    TDBTransaction transaction( *inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------
+int TApplyParser::GetMallExportSettingValueKey(TDBControl* const inDBControl)
+{
+    int index = 0;
+    TDBTransaction transaction( *inDBControl );
     transaction.StartTransaction();
 
     try
@@ -574,4 +619,36 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-    return index + 1;}}
+    return index + 1;
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterDayArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "DAYARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE DAYARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+void TApplyParser::AlterArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "ARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE ARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+}
+//------------------------------------------------------------------------------

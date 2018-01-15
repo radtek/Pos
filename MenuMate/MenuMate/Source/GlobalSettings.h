@@ -494,6 +494,11 @@ public:
     bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
     bool IsAutoLoggedOut;
+    bool IsFiscalStorageEnabled;
+    UnicodeString OrganizationNumber;
+    UnicodeString POSPlusSerialNumber;
+    bool ShowCashDrawerOpeningsCount;
+    bool ShowReprintReceiptDetails;
     double DiningBal;
 };
 
