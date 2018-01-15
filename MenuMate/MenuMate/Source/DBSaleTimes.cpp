@@ -51,42 +51,57 @@ int TDBSaleTimes::OpenSaleStartTime(Database::TDBTransaction &DBTransaction,int 
 
 void TDBSaleTimes::CloseSaleStartTime(Database::TDBTransaction &DBTransaction,int TimeKey)
 {
-   if(TimeKey != 0)
-   {
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text =
-      "UPDATE TURNAROUNDTIMES "
-      "SET "
-         "SALE_END_TIME = :SALE_END_TIME, "
-         "MAKE_START_TIME = :MAKE_START_TIME "
-      "WHERE "
-         "TIME_KEY	= :TIME_KEY";
-      IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
-      IBInternalQuery->ParamByName("SALE_END_TIME")->AsDateTime = Now();
-      IBInternalQuery->ParamByName("MAKE_START_TIME")->AsDateTime = Now();
-		IBInternalQuery->ExecQuery();
+    try
+    {
+       if(TimeKey != 0)
+       {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text =
+          "UPDATE TURNAROUNDTIMES "
+          "SET "
+             "SALE_END_TIME = :SALE_END_TIME, "
+             "MAKE_START_TIME = :MAKE_START_TIME "
+          "WHERE "
+             "TIME_KEY	= :TIME_KEY";
+          IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+          IBInternalQuery->ParamByName("SALE_END_TIME")->AsDateTime = Now();
+          IBInternalQuery->ParamByName("MAKE_START_TIME")->AsDateTime = Now();
+            IBInternalQuery->ExecQuery();
 
+       }
+    }
+    catch(Exception & E)
+   {
+       TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+       throw;
    }
+
 }
 
 void TDBSaleTimes::CloseMakeStartTime(Database::TDBTransaction &DBTransaction,int TimeKey)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-   if(TimeKey != 0)
-   {
-      IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text =
-      "UPDATE TURNAROUNDTIMES "
-      "SET "
-         "MAKE_END_TIME = :MAKE_END_TIME "
-      "WHERE "
-         "TIME_KEY	= :TIME_KEY";
-      IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
-      IBInternalQuery->ParamByName("MAKE_END_TIME")->AsDateTime = Now();
-		IBInternalQuery->ExecQuery();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       if(TimeKey != 0)
+       {
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text =
+          "UPDATE TURNAROUNDTIMES "
+          "SET "
+             "MAKE_END_TIME = :MAKE_END_TIME "
+          "WHERE "
+             "TIME_KEY	= :TIME_KEY";
+          IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+          IBInternalQuery->ParamByName("MAKE_END_TIME")->AsDateTime = Now();
+            IBInternalQuery->ExecQuery();
+        }
    }
-
+   catch(Exception & E)
+   {
+       TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+   }
 }
 
 

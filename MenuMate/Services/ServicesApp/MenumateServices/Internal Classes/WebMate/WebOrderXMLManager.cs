@@ -423,6 +423,10 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         public string ReadCompletOrderFromFile(string inFileURI, out WebOrder outWebOrder)
         {
+          if(!File.Exists(inFileURI)) {
+                outWebOrder = new WebOrder();
+                return null;
+            }
             XmlDocument webOrderXML = XMLDocManager.CreateXMLDoc(inFileURI);
 
             XmlNode root = XMLDocManager.GetRoot(webOrderXML);

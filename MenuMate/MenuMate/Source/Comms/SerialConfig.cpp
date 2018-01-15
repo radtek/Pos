@@ -17,6 +17,7 @@
 __fastcall TfrmSerialConfig::TfrmSerialConfig(TComponent* Owner)
    : TZForm(Owner)
 {
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSerialConfig::DrawButtons()
@@ -121,7 +122,7 @@ void __fastcall TfrmSerialConfig::LoadSettings(TComPort *Port,bool inAsync)
    DrawButtons();
 
 }
-
+//------------------------------------------------------------------------------
 void __fastcall TfrmSerialConfig::AssignSettings(TComPort *Port, bool &inAsync)
 {
    if(Port != NULL)
@@ -138,7 +139,7 @@ void __fastcall TfrmSerialConfig::AssignSettings(TComPort *Port, bool &inAsync)
       inAsync = Async;
    }
 }
-
+//----------------------------------------------------------------------------
 int TfrmSerialConfig::BaudRateToInt(TBaudRate Baud)
 {
    int RetVal = 19200;

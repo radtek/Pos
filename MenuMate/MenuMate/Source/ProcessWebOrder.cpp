@@ -57,7 +57,7 @@ void __fastcall TfrmProcessWebOrder::FormShow(TObject *Sender)
 // ---------------------------------------------------------------------------
 
 void TfrmProcessWebOrder::Execute()
-{
+{   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     try
     {
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
@@ -67,7 +67,7 @@ void TfrmProcessWebOrder::Execute()
         }
         else
         {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+
             DBTransaction.StartTransaction();
 
             TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
@@ -79,8 +79,9 @@ void TfrmProcessWebOrder::Execute()
         ShowModal();
     }
     catch(Exception & E)
-	{
+	{   DBTransaction.Rollback();
 	    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        //throw;
 	}
 }
 
@@ -408,10 +409,19 @@ void TfrmProcessWebOrder::startAcceptWebOrdersThread(bool acceptAll)
             if(acceptAll)
             {
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                 try{
                 DBTransaction.StartTransaction();
                 TDBWebUtil::LoadWebOrders(DBTransaction, WebOrderContainer);
                 WebOrderContainer.first();
                 DBTransaction.Commit();
+
+                 }
+                   catch(Exception &E)
+                    {
+                      DBTransaction.Rollback();
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+                        throw;
+                    }
             }
            func_ptr ptr = &acceptWebOrder;
            TAcceptWebOrdersThread *autoAcceptThread = new TAcceptWebOrdersThread(&WebOrderContainer, acceptAll);
@@ -459,6 +469,7 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 		// Load the Order.
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        try{
 		DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
         {
@@ -473,6 +484,14 @@ void TAcceptWebOrdersThread::acceptWebOrder()
 		   TWebProcUtil::ProcessWebOrder(Screen->ActiveForm, DBTransaction, container->Current, ChitNumber);
         }
 		DBTransaction.Commit();
+
+      }
+           catch(Exception &E)
+            {
+              DBTransaction.Rollback();
+             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+            }
+            try{
 		DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().AutoAcceptWebOrders)
          {
@@ -492,6 +511,12 @@ void TAcceptWebOrdersThread::acceptWebOrder()
             container->first();
         }
 		DBTransaction.Commit();
+          }
+           catch(Exception &E)
+            {
+              DBTransaction.Rollback();
+          TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+            }
 	}
 	catch(EAbort & E)
 	{

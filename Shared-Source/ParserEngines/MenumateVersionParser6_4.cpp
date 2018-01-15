@@ -37,7 +37,16 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
-
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_45Tables()
+{
+    update6_45Tables();
+}
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_46Tables()
+{
+    update6_46Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -54,7 +63,7 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
-  
+
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_43Tables()
@@ -76,6 +85,17 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
+
+}
+//----------------------------------------------------
+void TApplyParser::update6_45Tables()
+{
+    AlterDayArcBillTable6_45(_dbControl);
+    AlterArcBillTable6_45(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_46Tables()
+{
     CREATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_46( _dbControl ) ;
@@ -480,7 +500,9 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-}//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
+}
+
+//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_AREA_TABLES "
 		"( "
@@ -578,7 +600,37 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-    return index + 1;}//--------------------------------------------------------------------------------------------------void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl )
+    return index + 1;}//------------------------------------------------------------------------------
+void TApplyParser::AlterDayArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "DAYARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE DAYARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::AlterArcBillTable6_45(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "ARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE ARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl )
 {
 	TDBTransaction transaction( *inDBControl );
 	try
@@ -715,17 +767,14 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
 		"execute statement AStmnt;  "
 		"SUSPEND;   "
 		"END ",	inDBControl );
-		/*
-"GRANT EXECUTE "
-"ON PROCEDURE CREATE_DSR_PIVOT TO  SYSDBA " ;       */
-	}
+    }
 	catch(Exception &exception)
 	{
 		transaction.Rollback();
 		throw;
 	}
 }
-//-----------------------------------------------------
+//------------------------------------------------------------------------------
 void TApplyParser::POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl )
 {
 	TDBTransaction transaction( *inDBControl );
@@ -790,9 +839,6 @@ void TApplyParser::POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inD
 		" SELECT  b.ARCHIVE_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL)AS SUBTOTAL,c.INVOICE_NUMBER  FROM  ARCHIVE b LEFT join  ARCBILLPAY a ON b .ARCBILL_KEY=A.ARCBILL_KEY left join ARCBILL c on b.ARCBILL_KEY=c.ARCBILL_KEY  "
 		"where b .TIME_STAMP_BILLED>=:StartTime and b .TIME_STAMP_BILLED<:Endtime  "
 		"GROUP BY  b.ARCHIVE_KEY, a.PAY_TYPE,c.INVOICE_NUMBER  INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL,INVOICE_NUMBER  "
-
-		/*	"SELECT  b.ARCHIVE_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL) AS SUBTOTAL FROM ARCBILLPAY a LEFT join ARCHIVE b ON b .ARCBILL_KEY=A.ARCBILL_KEY where b .TIME_STAMP>=:StartTime and b .TIME_STAMP<:Endtime  "
-			"GROUP BY  b.ARCHIVE_KEY, a.PAY_TYPE  INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL  "  */
 		"DO begin     "
 		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,,', ','); "
 		"PAY_TYPE=REPLACE (PAY_TYPE, ',,', ',');  "
@@ -836,11 +882,7 @@ void TApplyParser::POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inD
 		"execute statement UpdatePayTypeStmt;  "
 		"end "
 		"end "
-		/*"if (PAY_TYPE <> '') then  "
-			"UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || SUBTOTAL|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''' and ''' || SUBTOTAL||'''!=0' ;  "
-			"if (PAY_TYPE <> '')  "
-			"then execute statement UpdatePayTypeStmt;  "
-			"end    "   */
+
 		"FOR SELECT AC.ARCHIVE_KEY, a.TAX_NAME, sum(a.TAX_VALUE) TAX_VALUE, a.TAX_TYPE FROM ARCORDERTAXES a inner join ARCHIVE AC on "
                         "AC.ARCHIVE_KEY=a.ARCHIVE_KEY INNER JOIN ARCBILL AB ON AB.ARCBILL_KEY=AC.ARCBILL_KEY "
                         "where  a.TAX_NAME<>'' and AC.TIME_STAMP_BILLED>=:StartTime and  AC.TIME_STAMP_BILLED<:Endtime  GROUP BY AC.ARCHIVE_KEY,   a.TAX_NAME, "
@@ -972,7 +1014,8 @@ void TApplyParser::POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inD
 }
 //-----------------------------------------------------
 void TApplyParser::CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl )
-{	TDBTransaction transaction( *inDBControl );
+{
+    TDBTransaction transaction( *inDBControl );
 	try
 	{
 		executeQuery(
@@ -1107,9 +1150,6 @@ void TApplyParser::CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl )
 		"execute statement AStmnt;  "
 		"SUSPEND;   "
 		"END ",	inDBControl );
-		/*
-"GRANT EXECUTE "
-"ON PROCEDURE CREATE_DSR_PIVOT TO  SYSDBA " ;       */
 	}
 	catch(Exception &exception)
 	{

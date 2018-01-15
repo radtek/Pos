@@ -1186,14 +1186,28 @@ bool TfrmEditCustomer::ValidateEmailId()
         IBInternalQuery->Close();
         if(Info.ContactKey > 0)
         {
-          IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY";
+          if (TGlobalSettings::Instance().LoyaltyMateEnabled )
+          {
+            IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY";          }
+          else
+          {
+            IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";            IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
+          }
+
           IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = Info.ContactKey;
         }
         else
         {
-          IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL ";
-
+            if (TGlobalSettings::Instance().LoyaltyMateEnabled )
+            {
+              IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL ";
+            }
+            else
+            {
+                IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACT_TYPE <> :CONTACT_TYPE ";                IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
+            }
         }
+
         IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail;
 
         IBInternalQuery->ExecQuery();

@@ -530,7 +530,15 @@ void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransa
 // ---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::ProcessTimeTracking(TPaymentTransaction &PaymentTransaction)
 {
-	TDBSaleTimes::CloseSaleStartTime(PaymentTransaction.DBTransaction, PaymentTransaction.TimeKey); // Close the Sale Key for Chefmate.
+    try
+    {
+	    TDBSaleTimes::CloseSaleStartTime(PaymentTransaction.DBTransaction, PaymentTransaction.TimeKey); // Close the Sale Key for Chefmate.
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -541,9 +549,10 @@ void __fastcall TWebProcUtil::ProcessStock(TPaymentTransaction &PaymentTransacti
  	TDeviceRealTerminal::Instance().ManagerStock->UpdateStock(PaymentTransaction.DBTransaction, PaymentTransaction.Orders);
   }
   catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-	}
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -642,6 +651,7 @@ void __fastcall TWebProcUtil::ProcessPatrons(TPaymentTransaction &PaymentTransac
     catch(Exception & E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
     }
 }
 
@@ -754,6 +764,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
     catch(Exception & E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
     }
 }
 // ---------------------------------------------------------------------------
@@ -1094,6 +1105,7 @@ bool __fastcall TWebProcUtil::checkAutoPrintReceipts(TMMTabType TabType)
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
     }
 
     return autoPrintReceipt;

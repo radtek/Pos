@@ -914,7 +914,7 @@ object frmDiscountTimes: TfrmDiscountTimes
       Left = 1
       Top = 513
       Width = 822
-      Height = 170
+      Height = 450
       Align = alBottom
       BorderWidth = 6
       Color = 14342874
@@ -924,7 +924,7 @@ object frmDiscountTimes: TfrmDiscountTimes
         Left = 7
         Top = 7
         Width = 808
-        Height = 34
+        Height = 60
         Align = alTop
         BevelOuter = bvLowered
         Caption = 'Automatic Discount Times'
@@ -959,7 +959,7 @@ object frmDiscountTimes: TfrmDiscountTimes
         ParentGridColor = False
         GridColor = 14342874
         DefaultColWidth = 120
-        DefaultRowHeight = 55
+        DefaultRowHeight = 59
         AutoButtonWidth = True
         VertScrollButtonPos = vsBelow
         VertScrollButtonHeight = 60
@@ -1036,6 +1036,7 @@ object frmDiscountTimes: TfrmDiscountTimes
         ScrollBtnRight.LatchedColor = -2147483633
         ScrollBtnRight.DisabledColor = -2147483633
         ScrollBtnRight.LatchedFontColor = -2147483640
+        VertScrollDistance = 60
         Buttons = {04000000}
       end
     end
