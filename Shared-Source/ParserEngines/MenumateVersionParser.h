@@ -810,10 +810,10 @@ namespace MenumateVersionParser
         void upgrade6_37Tables();
         void update6_37Tables();
         void UpdateContacts6_37(TDBControl* const inDBControl);
-        void CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
-        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
-        void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
-        void POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
+//        void CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
+//        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
+//        void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
+//        void POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );  //All of these now moved to 6.46
         void AlterTable6_37(TDBControl* const inDBControl);
 
         void upgrade6_38Tables();
@@ -874,6 +874,11 @@ namespace MenumateVersionParser
         void CreateMezzanineSalesTable6_44(TDBControl* const inDBControl);
         int GetMallExportSettingValueKey(TDBControl* const inDBControl);
         void InsertInTo_MallExport_Settings_Values6_44(TDBControl* const inDBControl, int settingId, int mallId);
+
+        void CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
+        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
+        void CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
+        void POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
 
     }; // class
 } // namespace
