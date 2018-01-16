@@ -517,7 +517,7 @@ PARSER_ERROR apply6_44( TDBControl* inDBControl )
 {
 	return TApplyParser::Instance()->Apply( MenumateVersionParser::pv6_44,  inDBControl );
 }
-//---------------------------------
+//--------------------------
 PARSER_ERROR apply6_45( TDBControl* inDBControl )
 {
 	return TApplyParser::Instance()->Apply( MenumateVersionParser::pv6_45,  inDBControl );

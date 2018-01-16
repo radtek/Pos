@@ -69,6 +69,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     IsVouchersProcessed = false;
     IgnoreLoyaltyKey = false;
     WasSavedSales = false;
+    IsCashDrawerOpened = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -129,6 +130,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
+    IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -179,6 +181,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
+    IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
 }
 
 int __fastcall PaymentCompare(void *Item1,void *Item2)

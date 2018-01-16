@@ -53,6 +53,7 @@ protected:
     virtual void AddVoidAndCancelReport(IReport* report);
 	virtual void AddMasterCashDenominationSection(IReport* report);
     virtual void AddCashDenominationSection(IReport* report);
+    virtual void AddReprintReceiptSection(IReport* report);
 };
 
 #endif

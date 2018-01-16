@@ -8,6 +8,7 @@
 #include "MMMessageBox.h"
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
+#include "VerticalSelect.h"
 #include "MessageMaintenance.h"
 #include "PMSTaxCodes.h"
 //---------------------------------------------------------------------------
@@ -145,7 +146,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         //tbDefTransAccount->Caption = "ServiceCharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
-        tbExpensesAccount-> Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
+        tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
@@ -528,6 +529,7 @@ void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Send
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableCustomerJourney, TGlobalSettings::Instance().EnableCustomerJourney);
     DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------
 
 void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
 {

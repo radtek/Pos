@@ -23,6 +23,7 @@ public:
    void Clear();
    bool Valid();
    bool ValidEmail();
+   bool ValidateCheckedDuplicateEmail();
    void LoadFromStream(int CardVersion, TMemoryStream *Stream);
    void SaveToStream(TMemoryStream *Stream);
 

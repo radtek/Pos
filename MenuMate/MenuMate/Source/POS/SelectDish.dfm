@@ -3317,7 +3317,7 @@ object frmSelectDish: TfrmSelectDish
   end
   object tiClock: TTimer
     Enabled = False
-    Interval = 500
+    Interval = 2000
     OnTimer = tiClockTimer
     Left = 889
     Top = 300

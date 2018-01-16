@@ -210,7 +210,8 @@ class TPaymentTransaction
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
         bool WasSavedSales;
-        TPMSClientDetails PMSClientDetails;
+		TPMSClientDetails PMSClientDetails;
+        bool IsCashDrawerOpened;
 };
 
 #endif

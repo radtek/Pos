@@ -103,7 +103,15 @@ int TfrmMemberCreation::CheckEmailInDB(AnsiString email)
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL='" + Info.EMail + "'";
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled )
+        {
+            IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL='" + Info.EMail + "'";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL='" + Info.EMail + "'" "AND CONTACT_TYPE <> :CONTACT_TYPE";
+            IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
+        }
         IBInternalQuery->ExecQuery();
         DBTransaction.Commit();
         count = IBInternalQuery->Fields[0]->AsInteger;
@@ -225,6 +233,7 @@ void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
   {
     cbNoEmail->Visible = false;
   }
+  TouchBtn2->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::FormResize(TObject *Sender)
@@ -277,7 +286,6 @@ void __fastcall TfrmMemberCreation::TouchBtn2MouseClick(TObject *Sender)
              MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
           }
        }
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::tbtnDayMouseClick(TObject *Sender)

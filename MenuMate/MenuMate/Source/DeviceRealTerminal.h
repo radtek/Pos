@@ -21,6 +21,7 @@
 #include "enumTerminalGlobalMessageTypes.h"
 #include "BasePMS.h"
 #include "PhoenixHotelSystem.h"
+#include "FiscalPort.h"
 #include "OracleDataObjects.h"
 
 //---------------------------------------------------------------------------
@@ -44,6 +45,7 @@ public:
    std::auto_ptr<TScaleModel> Scales;
    std::auto_ptr<TIMManager> IMManager;
    std::auto_ptr<TManagerPocketVoucher> PocketVouchers;
+   std::auto_ptr<TFiscalPort> FiscalPort;
 
    TPoleDisplay *PoleDisplay;
 

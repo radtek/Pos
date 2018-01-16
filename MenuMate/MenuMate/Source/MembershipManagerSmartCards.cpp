@@ -993,7 +993,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 	catch(Exception & E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-	}	//
+	}
 }
 
 void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sender)
@@ -1014,7 +1014,6 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
     // are held points to be saved to the card.
     TDateTime SmartCardLastModified = SmartCardContact.LastModified;
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
-
     if (SmartCardContact.ContactKey == 0)
     {
         if(SmartCardContact.MemberType == 0)
@@ -1028,7 +1027,14 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
                SmartCardContact.MemberType = 1;
             }
         }
-        MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        if(!SmartCardContact.ValidateCheckedDuplicateEmail())
+        {
+            MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
+            MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        }
         DBTransaction.Commit();
         DBTransaction.StartTransaction();
     }
@@ -1041,17 +1047,25 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
 
         if (MembershipSystem->GetContactType(DBTransaction, SmartCardContact.ContactKey) == eDeletedMember)
         {
+
             if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
                         "Undelete", "Leave Deleted") == IDOK)
             {
-                MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
-            }
+                if(!SmartCardContact.ValidateCheckedDuplicateEmail())
+               {
+                    MessageBox("Email ID is already associated with a Member!!!", "Error", MB_OK + MB_ICONERROR);
+                    CheckForCardInDB = false;
+               }
+               else
+               {
+                    MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+               }
+             }
             else
             {
                 CheckForCardInDB = false;
             }
         }
-
         if (CheckForCardInDB)
         {
             switch(GetSmartCardStatus(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.ATRStr))
@@ -1120,7 +1134,6 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
 
         }
     }
-
     DBTransaction.Commit();
 }
 
@@ -2417,7 +2430,38 @@ void TManagerMembershipSmartCards::ValidateCardExistance(Database::TDBTransactio
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
    }
 }
+/*
+bool TManagerMembershipSmartCards::ValidateEmailInDB(TMMContactInfo &Info)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    bool isEmailValid  = true;
+    DBTransaction.StartTransaction();
+    int emailcount = 0;
+    try
+    {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY AND CONTACT_TYPE <> :CONTACT_TYPE";
+      IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = eDeletedMember;
 
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = Info.ContactKey;
+      IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail;
+      IBInternalQuery->ExecQuery();
+      DBTransaction.Commit();
+      emailcount = IBInternalQuery->Fields[0]->AsInteger;
+      if(emailcount > 0)
+      {
+        isEmailValid = false;
+      }
+    }
+    catch(Exception & E)
+    {
+        isEmailValid = false;
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+    }
+    return isEmailValid;
+}
+*/
 int TManagerMembershipSmartCards::ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
 {
    int retVal = 0;
