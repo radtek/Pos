@@ -58,6 +58,7 @@ USEFORM("SelectDateAndTime.cpp", frmSelectDateTime);
 USEFORM("ComboForm.cpp", frmComboForm);
 USEFORM("RegenerateMallReport.cpp", frmRegenerateMallReport);
 USEFORM("Maintenance\WalletConfiguration.cpp", frmWalletConfiguration);
+USEFORM("SetUpPosPlus.cpp", frmSetUpPosPlus);
 USEFORM("Analysis.cpp", frmAnalysis);
 USEFORM("CaptureCustomerDetails.cpp", frmCaptureDiscountDetails);
 USEFORM("ShowEJournal.cpp", frmEJournal);
@@ -193,6 +194,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
          Application->CreateForm(__classid(TfrmEJournal), &frmEJournal);
          Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
          Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
+         Application->CreateForm(__classid(TfrmSetUpPosPlus), &frmSetUpPosPlus);
          Application->Run();
 		}
 		__finally

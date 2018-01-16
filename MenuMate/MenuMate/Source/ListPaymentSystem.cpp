@@ -68,8 +68,8 @@
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
+#include "FiscalDataUtility.h"
 #include "ManagerSiHot.h"
-
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1344,7 +1344,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 {
 	bool RetVal = false;
 
-	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
+	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
 		" The PMS Interface Software has not been installed or enabled correctly." " Please contact your MenuMate support agent.").w_str
@@ -2000,7 +2000,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		{
 			IBInternalQuery->ParamByName("RECEIPT")->Clear();
 		}
-
 		IBInternalQuery->ExecQuery();
 
 		IBInternalQuery->Close();
@@ -3015,9 +3014,32 @@ void TListPaymentSystem::OpenCashDrawer(TPaymentTransaction &PaymentTransaction)
 	if (PaymentTransaction.TransOpenCashDraw())
 	{
 		TComms::Instance().KickLocalDraw(PaymentTransaction.DBTransaction);
+        PaymentTransaction.IsCashDrawerOpened = true;
+        SetCashDrawerStatus(PaymentTransaction);
 	}
 }
-
+//------------------------------------------------------------------------------
+void TListPaymentSystem::SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction)
+{
+    try
+    {
+      TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text ="UPDATE DAYARCBILL a SET a.CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED "
+                                  "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER";
+      if(PaymentTransaction.IsCashDrawerOpened)
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
+      else
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "F";
+	  IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = PaymentTransaction.InvoiceNumber;
+      IBInternalQuery->ExecQuery();
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//------------------------------------------------------------------------------
 void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction, bool &RequestEFTPOSReceipt)
 {
 	if (LastReceipt != NULL)
@@ -3562,6 +3584,8 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
+    bool FiscalTransaction = true;
+
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
        return RetVal;
@@ -3599,11 +3623,25 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         if(siHotEnabled)
             PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
         else
-            PhoenixHSOk = false;
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_OKCANCEL + MB_ICONERROR) == ID_OK)
+              PhoenixHSOk = true;
+          else
+              PhoenixHSOk = false;
+        }
     }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+        AnsiString fiscalData = dataUtility->GetPOSPlusData(PaymentTransaction);
+        AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(fiscalData, eFiscalNormalReceipt);
+        FiscalTransaction = dataUtility->AnalyzeResponse(response, eFiscalNormalReceipt);
+    }
+    if(!FiscalTransaction)
+        return RetVal;
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)
@@ -3657,8 +3695,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
-             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
+             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction && FiscalTransaction;
 	return RetVal;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::SendDataToFiscalBox(TPaymentTransaction &paymentTransaction)
+{
+
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessChequePayment(TPaymentTransaction &PaymentTransaction)
@@ -6411,10 +6454,8 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
 bool TListPaymentSystem::TryToEnableSiHot()
 {
     bool retValue = false;
-    UnicodeString processMessage = "SiHot PMS is found disabled, Trying to Enable if possible...";
+    UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
     std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
     retValue = siHotManager->GetDefaultAccount(processMessage);
-    if(!retValue)
-        MessageBox("SiHot could not get Enabled./nPlease check configuration.","Error",MB_OK);
     return retValue;
 }

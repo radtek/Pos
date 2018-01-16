@@ -22,6 +22,6 @@ class TManagerSiHot : public TBasePMS
        bool SendRoomChargePost(TPaymentTransaction &PaymentTransaction);
        bool CheckIPAddressPort(AnsiString tcpIPAddress,int tcpPort);
        bool GetRoundingandDefaultAccount();
-       bool RetryDefaultRoomPost(TRoomCharge &roomCharge);
+       bool RetryDefaultRoomPost(TPaymentTransaction &_paymentTransaction, TRoomCharge roomCharge);
 };
 #endif

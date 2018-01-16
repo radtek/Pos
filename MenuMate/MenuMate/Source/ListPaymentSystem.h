@@ -222,6 +222,8 @@ protected:
      bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
      void SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction);
      void InsertMezzanineSales(TPaymentTransaction &paymentTransaction);
+     bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
+     void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
 };
 
