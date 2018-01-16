@@ -46,6 +46,7 @@ namespace MenumateServices.WCFServices
                         retryCount += 1;
                         retryPosting = true;
                         roomChargeReponse = new RoomChargeResponse();
+                        System.Threading.Thread.Sleep(1000); 
                     }
                     else
                     {
