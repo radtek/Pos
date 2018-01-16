@@ -222,6 +222,7 @@ protected:
      bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
      void SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction);
      void InsertMezzanineSales(TPaymentTransaction &paymentTransaction);
+     bool TryToEnableSiHot();
 };
 
 #endif

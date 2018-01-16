@@ -68,6 +68,7 @@
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
+#include "ManagerSiHot.h"
 
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
@@ -3585,6 +3586,21 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}
+    else if(TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "")
+    {
+            /*
+               SiHot could be enabled but is not. Hence we need to try making it
+               enabled if possible.
+            */
+        bool siHotEnabled = TryToEnableSiHot();
+        if(siHotEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+            PhoenixHSOk = false;
+    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
@@ -6391,4 +6407,14 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+bool TListPaymentSystem::TryToEnableSiHot()
+{
+    bool retValue = false;
+    UnicodeString processMessage = "SiHot PMS is found disabled, Trying to Enable if possible...";
+    std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
+    retValue = siHotManager->GetDefaultAccount(processMessage);
+    if(!retValue)
+        MessageBox("SiHot could not get Enabled./nPlease check configuration.","Error",MB_OK);
+    return retValue;
 }

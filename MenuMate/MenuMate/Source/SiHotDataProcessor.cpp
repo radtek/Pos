@@ -34,32 +34,22 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
 
     if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
     {
-        /*
-        Added code to check the account details for default room number(stored in DefaultTransactionAccount)
-        The change is required to mitigate the risk if the default room number is having a new check in
-        with different account number(stored in )
-        */
-         if(GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0))
-         {
-            _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
-            _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-            _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-            _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
-            _paymentTransaction.SalesType = eRoomSale;
+        _roomCharge.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;
+        _paymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(_paymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+        _paymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
+        _paymentTransaction.SalesType = eRoomSale;
 
-            for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
-            {
-                TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
-                if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
-                    break;
-                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
-                Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
-            }
-         }
-         else
-             MessageBox("Default Room is not checked in.","Error",MB_OK + MB_ICONERROR);
+        for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
+        {
+            TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
+            if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
+                break;
+            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+            Order->TabType = TabRoom;
+            Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
+        }
     }
 
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);

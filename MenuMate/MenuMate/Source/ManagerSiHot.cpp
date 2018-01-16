@@ -109,7 +109,7 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
 bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
 {
      // Call to SiHotDataProcessor for making Room Charge Post
-
+    bool retValue = false;
     std::auto_ptr<TfrmProcessing>
     (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
     Processing->Message = "Posting Data to SiHot , Please Wait...";
@@ -118,8 +118,6 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomCharge roomCharge;
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
-    if(roomCharge.AccountNumber.Trim() == "")
-        return false;
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
     roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
     Processing->Close();
@@ -127,15 +125,75 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     {
         _paymentTransaction.Customer.Name = _paymentTransaction.Phoenix.AccountName;
         _paymentTransaction.Customer.RoomNumberStr = _paymentTransaction.Phoenix.RoomNumber;
-      return true;
+        retValue = true;
     }
     else
     {
-        if(roomResponse.ResponseMessage == "")
-			roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
-        if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
-            return false;
+        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
+        {
+            if(roomResponse.ResponseMessage == "")
+                roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
+            if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+                retValue = false;
+        }
+        else
+            retValue = RetryDefaultRoomPost(roomCharge);
     }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TManagerSiHot::RetryDefaultRoomPost(TRoomCharge &roomCharge)
+{
+    bool retValue = false;
+    try
+    {
+        UnicodeString processMessage =
+                              "Sync in progress for fresh details of Default Transaction Account...";
+        bool isInquirySuccessful = false;
+        isInquirySuccessful = GetDefaultAccount(processMessage);
+        if(isInquirySuccessful)
+        {
+            std::auto_ptr<TfrmProcessing>
+            (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+            TRoomChargeResponse  roomResponse;
+            std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
+            Processing->Message = "Retrying to post with fresh Default Room Details...";
+            Processing->Show();
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
+            Processing->Close();
+            if(roomResponse.IsSuccessful)
+                retValue = true;
+            else
+            {
+                if(roomResponse.ResponseMessage == "")
+                    roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
+                if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+            }
+        }
+    }
+    catch(Exception &Exc)
+    {
+        retValue = false;
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+/*
+Added code to check the account details for default room number
+(stored in DefaultTransactionAccount)
+The change is required to mitigate the risk if the default room number is
+having a new check in with different account number(stored in )
+*/
+bool TManagerSiHot::GetDefaultAccount(UnicodeString processMessage)
+{
+    bool retValue = false;
+    std::auto_ptr<TfrmProcessing>
+    (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = processMessage;
+    Processing->Show();
+    std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
+    retValue = siHotDataProcessor->GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0);
+    return retValue;
 }
 //---------------------------------------------------------------------------
 TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
