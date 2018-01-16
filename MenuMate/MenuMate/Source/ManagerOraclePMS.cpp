@@ -159,7 +159,9 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                                     int StaffId)
 {
     if(_paymentTransaction.Orders->Count == 0)
-        return true;
+    {
+       return true;
+    }
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
     bool retValue = false;
@@ -181,10 +183,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                tip += (double)payment->GetAdjustment();
             }
         }
+        double totalPayTendered = 0;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
             double amount = (double)payment->GetPayTendered();
+            totalPayTendered += amount;
             double portion = 0;
             tip += (double)payment->TipAmount;
             if((amount != 0)
@@ -200,7 +204,18 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 resultData = TOracleTCPIP::Instance().SendAndFetch(data);
                 retValue = oracledata->DeserializeData(resultData, _postResult);
             }
-        }
+         }
+         if(totalPayTendered == 0) // case for cancelled,100% discount
+         {
+            double portion = 1;
+            postRequest = oracledata->CreatePost(_paymentTransaction,portion, 0,0);
+            postRequest.CheckNumber = checkNumber;
+            TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
+            AnsiString resultData = "";
+            AnsiString data = oracledata->SerializeOut(doc);
+            resultData = TOracleTCPIP::Instance().SendAndFetch(data);
+            retValue = oracledata->DeserializeData(resultData, _postResult);
+         }
     }
     catch(Exception &E)
     {

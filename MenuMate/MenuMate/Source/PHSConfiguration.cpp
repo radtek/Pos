@@ -165,9 +165,6 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbServiceCharge->Enabled = false;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
-        tbPointCat->Enabled = false;
-        tbCreditCat->Enabled = false;
-        tbPaymentDefCat->Enabled = false;
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;

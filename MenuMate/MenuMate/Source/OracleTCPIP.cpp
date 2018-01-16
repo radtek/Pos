@@ -62,7 +62,7 @@ bool TOracleTCPIP::Connect()
 	catch( Exception& E)
 	{
         Disconnect();
-       	MessageBox(E.Message+"\nPlease check IP address and Port number Values",
+       	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
                                                  "Abort", MB_OK + MB_ICONERROR);
 	}
     return retValue;

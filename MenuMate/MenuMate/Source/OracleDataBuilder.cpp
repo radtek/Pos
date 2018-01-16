@@ -69,9 +69,7 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
                                    TDeviceRealTerminal::Instance().User.Surname;
         char* id = new char[20];
         itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
-        postRoomInquiry.WorkstationId = id;//TDeviceRealTerminal::Instance().BasePMS->POSID;
-//        MessageBox(TDeviceRealTerminal::Instance().BasePMS->POSID,"TDeviceRealTerminal::Instance().BasePMS->POSID",MB_OK);
-//        MessageBox(postRoomInquiry.WorkstationId,"WORKSTATIONID1",MB_OK);
+        postRoomInquiry.WorkstationId = id;
         DBTransaction.Commit();
     }
 	catch(Exception &E)
@@ -185,6 +183,12 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
         paymentMethod = payment->PaymentThirdPartyID;
+        if(payment->GetPaymentAttribute(ePayTypePoints))
+            paymentMethod = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
+        if(payment->GetPaymentAttribute(ePayTypeCredit))
+            paymentMethod = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
+        if(paymentMethod.Trim() == "")
+            paymentMethod = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
 
 
         double total = CalculateTotal(subtotals,discMap, taxMap, serviceChargeMap);
@@ -521,7 +525,6 @@ void TOracleDataBuilder::AddInvoiceAttrs(TiXmlElement *rootNode,TPostRequest &po
     }
     catch( Exception &E )
     {
-        MessageBox(E.Message,"Exception in add attributes",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
 }
@@ -847,11 +850,6 @@ void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::m
         priceExclusive = priceExclusive - taxValue;
     else
         taxValue = 0;
-
-//    MessageBox(priceExclusive,"Shivashu subtotal TManagerOraclePMS",MB_OK);
-//    MessageBox(serviceCharge,"Shivashu serviceCharge TManagerOraclePMS",MB_OK);
-//    MessageBox(taxValue,"Shivashu taxValue TManagerOraclePMS",MB_OK);
-//    MessageBox(itemComplete->Item,"Shivashu itemComplete->Item TManagerOraclePMS",MB_OK);
 
     if(subtotals.size() == 0)
     {
