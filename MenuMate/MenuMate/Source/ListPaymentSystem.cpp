@@ -3627,7 +3627,20 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
           if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_OKCANCEL + MB_ICONERROR) == ID_OK)
               PhoenixHSOk = true;
           else
+          {
               PhoenixHSOk = false;
+              for(int paymentIndex = 0; paymentIndex < PaymentTransaction.PaymentsCount(); paymentIndex++)
+              {
+                  TPayment *payment = PaymentTransaction.PaymentGet(paymentIndex);
+                  if(payment->GetPay() != 0)
+                  {
+                    payment->SetPay(0);
+                    payment->SetAdjustment(0);
+                    payment->SetCashOut(0);
+                    payment->Result = eFailed;
+                  }
+              }
+          }
         }
     }
 	if(!PhoenixHSOk)
@@ -6465,14 +6478,14 @@ bool TListPaymentSystem::TryToEnableSiHot()
         directoryName = directoryName + "/Sihot Post Logs";
         if (!DirectoryExists(directoryName))
             CreateDir(directoryName);
-        AnsiString name = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+        AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
         AnsiString fileName =  directoryName + "/" + name;
         std::auto_ptr<TStringList> List(new TStringList);
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
         List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
-        List->Add("Date- " + (AnsiString)Now().FormatString("DDMMYYYY") + "\n");
+        List->Add("Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
         List->Add("Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
         if(retValue)
             List->Add("Successful");
