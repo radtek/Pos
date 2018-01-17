@@ -37,12 +37,16 @@ void TApplyParser::upgrade6_44Tables()
 {
     update6_44Tables();
 }
-//-------------------------------------------------------------
+//-----------------------------------------------------------
 void TApplyParser::upgrade6_45Tables()
 {
     update6_45Tables();
 }
-
+//-------------------------------------------------------------
+void TApplyParser::upgrade6_46Tables()
+{
+    update6_46Tables();
+}
 
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
@@ -60,7 +64,7 @@ void TApplyParser::update6_41Tables()
 void TApplyParser::update6_42Tables()
 {
     Create6_42Generator(_dbControl);
-  
+
 }
 //--------------------------------------------------------------------
 void TApplyParser::update6_43Tables()
@@ -86,10 +90,14 @@ void TApplyParser::update6_44Tables()
 //----------------------------------------------------
 void TApplyParser::update6_45Tables()
 {
-
-	AlterTablePaymentType6_45(_dbControl);
-	Updatetable_PaymentTypes6_45(_dbControl);
-
+    AlterDayArcBillTable6_45(_dbControl);
+    AlterArcBillTable6_45(_dbControl);
+}
+//----------------------------------------------------
+void TApplyParser::update6_46Tables()
+{
+	AlterTablePaymentType6_46(_dbControl);
+	Updatetable_PaymentTypes6_46(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -490,7 +498,9 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-}//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
+}
+
+//--------------------------------------------------------------------------------------------------void TApplyParser::CreateMezzanineAreaTable6_44(TDBControl* const inDBControl){    if ( !tableExists( "MEZZANINE_AREA_TABLES", _dbControl ) )	{
 		executeQuery(
 		"CREATE TABLE MEZZANINE_AREA_TABLES "
 		"( "
@@ -588,16 +598,42 @@ void TApplyParser::AlterTableOrders6_43(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
-    return index + 1;}//---------------------------------------------------------------------------------------------------void TApplyParser::AlterTablePaymentType6_45(TDBControl* const inDBControl)
+    return index + 1;}//------------------------------------------------------------------------------
+void TApplyParser::AlterDayArcBillTable6_45(TDBControl* const inDBControl)
 {
-
+    if ( !fieldExists( "DAYARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE DAYARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}
+//---------------------------------------------------------------------------------------------------void TApplyParser::AlterArcBillTable6_45(TDBControl* const inDBControl){
+    if ( !fieldExists( "ARCBILL ", "CASH_DRAWER_OPENED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD CASH_DRAWER_OPENED T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+        executeQuery (
+        "UPDATE ARCBILL "
+        "SET CASH_DRAWER_OPENED = 'F'; ",
+        inDBControl);
+    }
+}//---------------------------------------------------------------------------------------------------void TApplyParser::AlterTablePaymentType6_46(TDBControl* const inDBControl)
+{
    if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
     {
         executeQuery(
 		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
 		inDBControl);
     }
-}//--------------------------------------------------------------------------------------------------------void TApplyParser::Updatetable_PaymentTypes6_45(TDBControl* const inDBControl){
+}//--------------------------------------------------------------------------------------------------------void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl){
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try

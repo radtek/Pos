@@ -221,6 +221,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsCloudSynced, TGlobalSettings::Instance().IsCloudSyncedForDiscount);
             InitializeMallExportConfig(DBTransaction);
             TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmShowReprintReceiptDetails, TGlobalSettings::Instance().ShowReprintReceiptDetails);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmShowCashDrawerOpeningsCount, TGlobalSettings::Instance().ShowCashDrawerOpeningsCount);
 
         }
 
@@ -380,6 +382,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
         TGlobalSettings::Instance().MembershipPaid = TManagerVariable::Instance().GetBool(DBTransaction, vmMembershipPaid, false);
+        TGlobalSettings::Instance().OrganizationNumber = TManagerVariable::Instance().GetStr(DBTransaction, vmOrganizationNumber, "1234567890");
          int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
          if(mallIndex != 0)
             TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
@@ -395,6 +398,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
         TGlobalSettings::Instance().IsBillSplittedByMenuType = TManagerVariable::Instance().GetBool(DBTransaction, vmIsBillSplittedByMenuType, false);
         TGlobalSettings::Instance().CustomerId = TManagerVariable::Instance().GetStr(DBTransaction, vmCustomerId, "");
+
         TGlobalSettings::Instance().EnableCustomerJourney = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableCustomerJourney, false);
         if(mallIndex == 2)
             TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(DBTransaction);
@@ -441,5 +445,5 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName);
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths);
     TManagerVariable::Instance().GetProfileBool(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport);
-    }
+}
 

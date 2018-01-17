@@ -329,6 +329,9 @@ __published:	// IDE-managed Components
         TGroupBox *GroupBox26;
         TLabel *lblEndOfDay;
         TCheckBox *cbSplitBillByMenuType;
+        TCheckBox *cbShowCashDrawerCount;
+        TCheckBox *cbShowReprintDetails;
+
         TCheckBox *cbIntegratedEftposSmartConnect;
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -565,6 +568,8 @@ __published:	// IDE-managed Components
         void __fastcall cbUseMemberSubsClick(TObject *Sender);
         void __fastcall cbFloatWithdrawFromCashClick(TObject *Sender);
         void __fastcall cbSplitBillByMenuTypeClick(TObject *Sender);
+        void __fastcall cbShowCashDrawerCountClick(TObject *Sender);
+        void __fastcall cbShowReprintDetailsClick(TObject *Sender);
         void __fastcall cbIntegratedEftposSmartConnectClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);

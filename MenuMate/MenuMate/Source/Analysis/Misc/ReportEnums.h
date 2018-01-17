@@ -45,7 +45,8 @@ enum ReportSectionType
     mmShowBegningandEndingBalance,
     mmRefundCancelDetailsSections,
 	mmMasterCashDenominationDetailsSection,
-    mmCashDenominationDetailsSection
+    mmCashDenominationDetailsSection,
+    mmReprintReceiptDetailsSection
 };
 
 enum CalculatedTotals

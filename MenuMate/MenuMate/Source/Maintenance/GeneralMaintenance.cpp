@@ -242,7 +242,8 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
     cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
-
+    cbShowReprintDetails->Checked = TGlobalSettings::Instance().ShowReprintReceiptDetails;
+    cbShowCashDrawerCount->Checked = TGlobalSettings::Instance().ShowCashDrawerOpeningsCount;
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -4449,7 +4450,45 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmFloatWithdrawFromCash, TGlobalSettings::Instance().FloatWithdrawFromCash);
 	DBTransaction.Commit();
-}//--------------------------------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbSplitBillByMenuTypeClick(TObject *Sender){
+}//-----------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbShowCashDrawerCountClick(TObject *Sender){	TGlobalSettings  &gs = TGlobalSettings::Instance();	TManagerVariable &mv = TManagerVariable::Instance();
+
+	int global_profile_key;
+	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+
+	tr.StartTransaction();
+
+	// This is used to retain the state of the checkbox if the POS is exited
+#pragma warn -pia
+	if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+#pragma warn .pia
+
+	mv.SetProfileBool(
+	tr,
+	global_profile_key,
+	vmShowCashDrawerOpeningsCount,
+	gs.ShowCashDrawerOpeningsCount = cbShowCashDrawerCount->Checked);
+
+	tr.Commit();}//-----------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbShowReprintDetailsClick(TObject *Sender){	TGlobalSettings  &gs = TGlobalSettings::Instance();	TManagerVariable &mv = TManagerVariable::Instance();
+
+	int global_profile_key;
+	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+
+	tr.StartTransaction();
+
+	// This is used to retain the state of the checkbox if the POS is exited
+#pragma warn -pia
+	if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+#pragma warn .pia
+
+	mv.SetProfileBool(
+	tr,
+	global_profile_key,
+	vmShowReprintReceiptDetails,
+	gs.ShowReprintReceiptDetails = cbShowReprintDetails->Checked);
+
+	tr.Commit();}//--------------------------------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbSplitBillByMenuTypeClick(TObject *Sender){
     TGlobalSettings  &ref_gs = TGlobalSettings::Instance();
 	TManagerVariable &ref_mv = TManagerVariable::Instance();
 

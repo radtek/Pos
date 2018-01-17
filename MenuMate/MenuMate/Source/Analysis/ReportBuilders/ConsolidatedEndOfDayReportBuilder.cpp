@@ -187,6 +187,10 @@ void ConsolidatedEndOfDayReportBuilder::AddMasterCashDenominationSection(IReport
 {
     //AddConsolidatedReportSectionToReport(report, mmMasterCashDenominationDetailsSection, (GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
 }
+void ConsolidatedEndOfDayReportBuilder::AddReprintReceiptSection(IReport* report)
+{
+    AddConsolidatedReportSectionToReport(report, mmReprintReceiptDetailsSection, GetGlobalSettings()->ShowReprintReceiptDetails, GetStartTime(), GetEndTime());
+}
 
 void ConsolidatedEndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
 {
@@ -246,6 +250,7 @@ void ConsolidatedEndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
         AddCancelsSection(report);
         AddWriteOffSection(report);
         AddDiscountReportSection(report);
+        AddReprintReceiptSection(report);
         AddPriceAdjustmentSection(report);
         AddPointsReportSection(report);
         AddPatronAverageSection(report);

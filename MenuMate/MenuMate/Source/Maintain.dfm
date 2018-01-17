@@ -699,7 +699,7 @@ object frmMaintain: TfrmMaintain
           Left = 8
           Top = 48
           Width = 465
-          Height = 600
+          Height = 665
           Caption = 'Interfaces '
           Font.Charset = ANSI_CHARSET
           Font.Color = clBlack
@@ -931,7 +931,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnRunRateBoard: TTouchBtn
             Left = 28
-            Top = 520
+            Top = 521
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -979,6 +979,23 @@ object frmMaintain: TfrmMaintain
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnSecurityMouseClick
+          end
+          object TouchBtnFiscalStorage: TTouchBtn
+            Left = 28
+            Top = 584
+            Font.Charset = THAI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'POS Plus'
+            ButtonColor = 6052441
+            LatchedColor = clBtnFace
+            DisabledButtonColor = clBtnFace
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = TouchBtnFiscalMouseClick
           end
         end
         object Panel16: TPanel
