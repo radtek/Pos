@@ -93,14 +93,6 @@ void TManagerOraclePMS::Initialise()
 bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
 {
     bool retValue = false;
-//    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
-//    SelectQuery->Close();
-//    SelectQuery->SQL->Text = "SELECT REVENUECODE,REVENUECODE_DESCRIPTION FROM REVENUECODEDETAILS";
-//    SelectQuery->ExecQuery();
-//    if(SelectQuery->RecordCount > 0)
-//        retValue = true;
-//    return retValue;
-
     RevenueCodesMap.clear();
     std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
     TIBSQL* queryRevenue = managerDB->LoadRevenueCodes(DBTransaction);
@@ -205,7 +197,17 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 retValue = oracledata->DeserializeData(resultData, _postResult);
             }
          }
-         if(totalPayTendered == 0) // case for cancelled,100% discount
+         bool isCompleteCancel = false;
+         for(int itemNumber = 0; itemNumber < _paymentTransaction.Orders->Count; itemNumber++)
+         {
+            TItemComplete *itemThis = (TItemComplete*)_paymentTransaction.Orders->Items[itemNumber];
+            if(itemThis->OrderType != CanceledOrder)
+            {
+               isCompleteCancel = true;
+               break;
+            }
+         }
+         if(totalPayTendered == 0 && !isCompleteCancel) // case for cancelled,100% discount
          {
             double portion = 1;
             postRequest = oracledata->CreatePost(_paymentTransaction,portion, 0,0);
