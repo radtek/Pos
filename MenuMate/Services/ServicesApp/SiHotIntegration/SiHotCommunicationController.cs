@@ -76,7 +76,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 50000;
+                    request.Timeout = 5000;
                     //request.ContentType = "text/plain";
                     stringList.Add("=============================================================================");
                     stringList.Add("Inquiry Request at:       " + DateTime.Now.ToString("ddMMMyyyy"));
@@ -207,7 +207,7 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetValidateContent(transno);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 50000;
+                request.Timeout = 5000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse wr = request.GetResponse();

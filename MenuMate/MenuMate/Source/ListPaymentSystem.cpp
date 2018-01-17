@@ -6457,5 +6457,33 @@ bool TListPaymentSystem::TryToEnableSiHot()
     UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
     std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
     retValue = siHotManager->GetDefaultAccount(processMessage);
+    try
+    {
+        AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        directoryName = directoryName + "/Sihot Post Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        AnsiString name = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+        AnsiString fileName =  directoryName + "/" + name;
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+
+        List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
+        List->Add("Date- " + (AnsiString)Now().FormatString("DDMMYYYY") + "\n");
+        List->Add("Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+        if(retValue)
+            List->Add("Successful");
+        else
+            List->Add("Unsuccessful");
+        List->Add("===========================================================");
+        List->Add("\n");
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Ex)
+    {
+    }
     return retValue;
 }
