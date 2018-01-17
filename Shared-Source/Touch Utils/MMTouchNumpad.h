@@ -84,20 +84,23 @@ private: // User declarations
 
 	Currency wrkPayAmount;
 	int wrkIntAmount;
+    double wrkIntAmountLong;
 	UnicodeString wrkStrAmount;
     UnicodeString wrkNumStrAmount;
 
-    int MaxLength;
+
 public: // User declarations
 
 	Currency CURResult;
     double splitValue;
 	int INTResult;
+    double INTResultLong;
 	UnicodeString STRResult;
     UnicodeString NUMSTRResult;
 
 	Currency CURInitial;
 	int INTInitial;
+    double INTInitialLong;
     double valueEntered;
 	UnicodeString StrInitial;
     UnicodeString NUMSTRInitial;
@@ -111,6 +114,7 @@ public: // User declarations
 
 	void __fastcall UpdateDisplay();
     bool IsInitialized;
+    int MaxLength;
 };
 // ---------------------------------------------------------------------------
 #endif
