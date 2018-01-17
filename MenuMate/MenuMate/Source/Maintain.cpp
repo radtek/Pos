@@ -4049,14 +4049,11 @@ void TfrmMaintain::SelectPMSType()
                break;
             }
         }
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
-        {
-            TGlobalSettings::Instance().PMSType = Action;
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
-            DBTransaction1.Commit();
-        }
+        TGlobalSettings::Instance().PMSType = Action;
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
+        DBTransaction1.Commit();
     }
 }
 //---------------------------------------------------------------------------
