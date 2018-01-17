@@ -18,13 +18,19 @@ ReportFinancialCalculations::~ReportFinancialCalculations()
 TFinancialDetails ReportFinancialCalculations::GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,AnsiString DeviceName)
 {
     TFinancialDetails financialDetails;
-
-    GetBilledSalesDetail(DBTransaction, financialDetails, DeviceName);
-    GetSavedSalesDetail(DBTransaction, financialDetails, DeviceName);
-    GetBilledSalesQuantity(DBTransaction, financialDetails, DeviceName);
-    GetSavedSalesQuantity(DBTransaction, financialDetails, DeviceName);
-    GetLoyaltySalesDetail(DBTransaction, TransactionInfo, DeviceName);
-
+    try
+    {
+        GetBilledSalesDetail(DBTransaction, financialDetails, DeviceName);
+        GetSavedSalesDetail(DBTransaction, financialDetails, DeviceName);
+        GetBilledSalesQuantity(DBTransaction, financialDetails, DeviceName);
+        GetSavedSalesQuantity(DBTransaction, financialDetails, DeviceName);
+        GetLoyaltySalesDetail(DBTransaction, TransactionInfo, DeviceName);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
     return financialDetails;
 }
 
@@ -1031,7 +1037,6 @@ Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction
     }
 	catch(Exception & E)
 	{
-
 		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
 		throw;
 	}

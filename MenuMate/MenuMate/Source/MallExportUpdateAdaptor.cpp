@@ -86,6 +86,7 @@ TExportUpdateResponse TMallExportUpdateAdaptor::UpdateExportTablesOnZed( TFinanc
         response.Successful = false;
         response.Message = ex.Message;
         response.Description = "Failed to update mall export table on zed";
+        throw;
     }
 
     return response;

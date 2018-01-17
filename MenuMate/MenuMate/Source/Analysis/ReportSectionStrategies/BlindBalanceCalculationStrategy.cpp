@@ -22,42 +22,50 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 
 void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 {
-    TBlindBalances balance;
-    AnsiString bagId;
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-
-    TForm* currentForm = Screen->ActiveForm;
-    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
-    if(blindBalanceController.Run())
+    try
     {
-       _dbTransaction->Commit();
-       _dbTransaction->StartTransaction();
+        TBlindBalances balance;
+        AnsiString bagId;
+        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+
+        TForm* currentForm = Screen->ActiveForm;
+        TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
+        if(blindBalanceController.Run())
+        {
+           _dbTransaction->Commit();
+           _dbTransaction->StartTransaction();
+        }
+        else
+        {
+            printOut->ContinuePrinting = false;
+            return;
+        }
+
+        balance = blindBalanceController.Get();
+        bagId = blindBalanceController.GetBagID();
+        TBlindBalanceControllerInterface::Instance()->SetBalances(balance);
+        TBlindBalanceControllerInterface::Instance()->SetBagID(bagId);
+        TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+
+        printOut->PrintFormat->Line->ColCount = 3;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 4/10;
+        printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        printOut->PrintFormat->Line->Columns[0]->Text =  "Payment Type";
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width / 3;
+        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Blind Balance ";
+        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]->Width - printOut->PrintFormat->Line->Columns[1]->Width;
+        printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+        printOut->PrintFormat->Line->Columns[2]->Text = "Variance ";
+
+        printOut->PrintFormat->AddLine();
+        LoadBlindBalanceDetailsForNormalZed(printOut, ibInternalQuery, balance, deviceName);
     }
-    else
+    catch(Exception &E)
     {
-        printOut->ContinuePrinting = false;
-        return;
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
     }
-
-    balance = blindBalanceController.Get();
-    bagId = blindBalanceController.GetBagID();
-    TBlindBalanceControllerInterface::Instance()->SetBalances(balance);
-    TBlindBalanceControllerInterface::Instance()->SetBagID(bagId);
-    TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
-
-    printOut->PrintFormat->Line->ColCount = 3;
-	printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 4/10;
-	printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-	printOut->PrintFormat->Line->Columns[0]->Text =  "Payment Type";
-	printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width / 3;
-	printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-	printOut->PrintFormat->Line->Columns[1]->Text = "Blind Balance ";
-	printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]->Width - printOut->PrintFormat->Line->Columns[1]->Width;
-	printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-	printOut->PrintFormat->Line->Columns[2]->Text = "Variance ";
-
-	printOut->PrintFormat->AddLine();
-    LoadBlindBalanceDetailsForNormalZed(printOut, ibInternalQuery, balance, deviceName);
 }
 
 void BlindBalanceCalculationStrategy::LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName)
