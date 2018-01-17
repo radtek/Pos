@@ -6,6 +6,7 @@
 #include "MallExportUpdateAdaptor.h"
 #include "GlobalSettings.h"
 #include "ManagerPatron.h"
+#include "MMLogging.h"
 
 //---------------------------------------------------------------------------
 
@@ -86,6 +87,7 @@ TExportUpdateResponse TMallExportUpdateAdaptor::UpdateExportTablesOnZed( TFinanc
         response.Successful = false;
         response.Message = ex.Message;
         response.Description = "Failed to update mall export table on zed";
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
         throw;
     }
 

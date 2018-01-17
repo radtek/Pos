@@ -3,6 +3,7 @@
 
 #pragma hdrstop
 #include "DBDenominations.h"
+#include "MMLogging.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
