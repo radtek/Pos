@@ -197,17 +197,17 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 retValue = oracledata->DeserializeData(resultData, _postResult);
             }
          }
-         bool isCompleteCancel = false;
+         bool isNotCompleteCancel = false;
          for(int itemNumber = 0; itemNumber < _paymentTransaction.Orders->Count; itemNumber++)
          {
             TItemComplete *itemThis = (TItemComplete*)_paymentTransaction.Orders->Items[itemNumber];
             if(itemThis->OrderType != CanceledOrder)
             {
-               isCompleteCancel = true;
+               isNotCompleteCancel = true;
                break;
             }
          }
-         if(totalPayTendered == 0 && !isCompleteCancel) // case for cancelled,100% discount
+         if(totalPayTendered == 0 && isNotCompleteCancel) // case for cancelled,100% discount
          {
             double portion = 1;
             postRequest = oracledata->CreatePost(_paymentTransaction,portion, 0,0);
