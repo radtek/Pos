@@ -804,7 +804,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-        
+
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -829,7 +829,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		}
 
 		transactionRecovery.ClearRecoveryInfo();
-
+        SetCashDrawerStatus(PaymentTransaction);
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
@@ -3015,7 +3015,6 @@ void TListPaymentSystem::OpenCashDrawer(TPaymentTransaction &PaymentTransaction)
 	{
 		TComms::Instance().KickLocalDraw(PaymentTransaction.DBTransaction);
         PaymentTransaction.IsCashDrawerOpened = true;
-        SetCashDrawerStatus(PaymentTransaction);
 	}
 }
 //------------------------------------------------------------------------------
@@ -3589,7 +3588,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
        return RetVal;
-     
+
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
