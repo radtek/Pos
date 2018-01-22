@@ -3623,7 +3623,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
         else
         {
-          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_OKCANCEL + MB_ICONERROR) == ID_OK)
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
               PhoenixHSOk = true;
           else
           {
