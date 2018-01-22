@@ -496,26 +496,34 @@ void TfrmMessageMaintenance::GetHeaders(AnsiString& CurrentCaption, AnsiString& 
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue)
 {
-   inTitle = inTitle.Trim();
-   if(inTitle == "")
-   {
-      MessageBox("Denomination must have a title.", "Warning", MB_ICONWARNING + MB_OK);
+    try
+    {
+       inTitle = inTitle.Trim();
+       if(inTitle == "")
+       {
+          MessageBox("Denomination must have a title.", "Warning", MB_ICONWARNING + MB_OK);
+       }
+       else if(inValue == 0)
+       {
+          MessageBox("Denomination must have value greater than zero.", "Warning", MB_ICONWARNING + MB_OK);
+       }
+       else if(TDBDenominations::IsDenominationExist(DBTransaction,key,inTitle))
+       {
+         MessageBox("Denomination with same title already exist.", "Warning", MB_ICONWARNING + MB_OK);
+       }
+       else
+       {
+         TDenomination denomination;
+         denomination.Key = key;
+         denomination.Title = inTitle;
+         denomination.DenominationValue = inValue;
+         TDBDenominations::SaveDenomination(DBTransaction,denomination);
+       }
    }
-   else if(inValue == 0)
+   catch(Exception &E)
    {
-      MessageBox("Denomination must have value greater than zero.", "Warning", MB_ICONWARNING + MB_OK);
-   }
-   else if(TDBDenominations::IsDenominationExist(DBTransaction,key,inTitle))
-   {
-     MessageBox("Denomination with same title already exist.", "Warning", MB_ICONWARNING + MB_OK);
-   }
-   else
-   {
-     TDenomination denomination;
-     denomination.Key = key;
-     denomination.Title = inTitle;
-     denomination.DenominationValue = inValue;
-     TDBDenominations::SaveDenomination(DBTransaction,denomination);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
    }
 }
 //---------------------------------------------------------------------------

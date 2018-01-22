@@ -19,7 +19,7 @@ __fastcall TfrmTouchNumpad::TfrmTouchNumpad(TComponent* Owner) : TZForm(Owner)
    IsInitialized = true;
    PreSelect = true;
    Format = pmCurrency;
-   MaxLength = 10; // Default length is 9
+   MaxLength = 9; // Default length is 9
 }
 
 // ---------------------------------------------------------------------------
@@ -64,6 +64,7 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 	  btnCLR->Left = pnl2->Left;
 	  btnCLR->Width = pnl3->Left + pnl3->Width - pnl2->Left;
 	  wrkIntAmount = INTInitial;
+      wrkIntAmountLong = INTInitialLong;
 	  UpdateDisplay();
 	  if (INTInitial == 0 || PreSelect == false)
 	  {
@@ -125,7 +126,10 @@ void __fastcall TfrmTouchNumpad::UpdateDisplay()
     }
     else if (Mode == pmNumber)
     {
-        lbeEnteredValue->Caption = IntToStr(wrkIntAmount);
+        if(MaxLength != 10)
+            lbeEnteredValue->Caption = IntToStr(wrkIntAmount);
+        else
+            lbeEnteredValue->Caption = wrkIntAmountLong;
     }
     else if (Mode == pmPIN)
     {
@@ -292,34 +296,71 @@ void __fastcall TfrmTouchNumpad::btnNumberMouseDown(TObject *Sender, TMouseButto
    {
 	  if (lbeEnteredValue->Color == clHighlight)
 	  {
-		 wrkIntAmount = StrToInt(Btn->Caption);
-		 if (ForcedNegitive)
-		 {
-			if (wrkIntAmount > 0)
-			{
-			   wrkIntAmount = -wrkIntAmount;
-			}
-		 }
+          if(MaxLength != 10)
+          {
+             wrkIntAmount = StrToInt(Btn->Caption);
+             if (ForcedNegitive)
+             {
+                if (wrkIntAmount > 0)
+                {
+                   wrkIntAmount = -wrkIntAmount;
+                }
+             }
+         }
+         else
+         {
+             TryStrToFloat(Btn->Caption, wrkIntAmountLong);
+             if (ForcedNegitive)
+             {
+                if (wrkIntAmountLong > 0)
+                {
+                   wrkIntAmountLong = -wrkIntAmountLong;
+                }
+             }
+         }
 		 UpdateDisplay();
 	  }
 	  else
 	  {
-		 if (IntToStr(wrkIntAmount).Length() < MaxLength)
-		 {
-			if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
-			{
-			   wrkIntAmount = -wrkIntAmount;
-			}
-			wrkIntAmount = wrkIntAmount * 10 + StrToInt(Btn->Caption);
-			if (ForcedNegitive)
-			{
-			   if (wrkIntAmount > 0)
-			   {
-				  wrkIntAmount = -wrkIntAmount;
-			   }
-			}
-			UpdateDisplay();
-		 }
+         if(MaxLength != 10)
+         {
+             if (IntToStr(wrkIntAmount).Length() < MaxLength)
+             {
+                if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
+                {
+                   wrkIntAmount = -wrkIntAmount;
+                }
+                wrkIntAmount = wrkIntAmount * 10 + StrToInt(Btn->Caption);
+                if (ForcedNegitive)
+                {
+                   if (wrkIntAmount > 0)
+                   {
+                      wrkIntAmount = -wrkIntAmount;
+                   }
+                }
+                UpdateDisplay();
+             }
+         }
+         else
+         {
+             AnsiString strValue = wrkIntAmountLong;
+             if (strValue.Length() < MaxLength)
+             {
+                if (ForcedNegitive && wrkIntAmountLong < 0) // Do the Math on + Numbers
+                {
+                   wrkIntAmountLong = -wrkIntAmountLong;
+                }
+                wrkIntAmountLong = wrkIntAmountLong * 10 + StrToInt(Btn->Caption);
+                if (ForcedNegitive)
+                {
+                   if (wrkIntAmountLong > 0)
+                   {
+                      wrkIntAmountLong = -wrkIntAmountLong;
+                   }
+                }
+                UpdateDisplay();
+             }
+         }
 	  }
    }
    else if (Mode == pmPIN)
@@ -359,6 +400,7 @@ void __fastcall TfrmTouchNumpad::btnCLRMouseUp(TObject *Sender, TMouseButton But
    else if (Mode == pmNumber)
    {
 	  wrkIntAmount = 0;
+      wrkIntAmountLong = 0;
 	  UpdateDisplay();
    }
    else if (Mode == pmPIN)
@@ -415,7 +457,10 @@ void __fastcall TfrmTouchNumpad::btnDiscountClick(TObject *Sender)
    }
    else if (Mode == pmNumber)
    {
-	  INTResult = -wrkIntAmount;
+      if(MaxLength != 10)
+	    INTResult = -wrkIntAmount;
+      else
+        INTResultLong = -wrkIntAmountLong;
    }
    else if(Mode == pmSTR)
    {
@@ -436,7 +481,10 @@ void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
        }
        else if (Mode == pmNumber)
        {
-          INTResult = wrkIntAmount;
+           if(MaxLength != 10)
+            INTResult = wrkIntAmount;
+           else
+            INTResultLong = wrkIntAmountLong;
        }
        else if (Mode == pmPIN)
        {
@@ -521,13 +569,27 @@ void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftS
           {
              if (lbeEnteredValue->Color == clHighlight)
              {
-                wrkIntAmount = KeyPressed;
-                if (ForcedNegitive)
+                if(MaxLength != 10)
                 {
-                   if (wrkIntAmount > 0)
-                   {
-                      wrkIntAmount = -wrkIntAmount;
-                   }
+                    wrkIntAmount = KeyPressed;
+                    if (ForcedNegitive)
+                    {
+                       if (wrkIntAmount > 0)
+                       {
+                          wrkIntAmount = -wrkIntAmount;
+                       }
+                    }
+                }
+                else
+                {
+                    wrkIntAmountLong = KeyPressed;
+                    if (ForcedNegitive)
+                    {
+                       if (wrkIntAmountLong > 0)
+                       {
+                          wrkIntAmountLong = -wrkIntAmountLong;
+                       }
+                    }
                 }
                 UpdateDisplay();
                 lbeEnteredValue->ParentColor = true;
@@ -535,21 +597,44 @@ void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftS
              }
              else
              {
-                if (IntToStr(wrkIntAmount).Length() < MaxLength)
+                if(MaxLength != 10)
                 {
-                   if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
-                   {
-                      wrkIntAmount = -wrkIntAmount;
-                   }
-                   wrkIntAmount = wrkIntAmount * 10 + KeyPressed;
-                   if (ForcedNegitive)
-                   {
-                      if (wrkIntAmount > 0)
-                      {
-                         wrkIntAmount = -wrkIntAmount;
-                      }
-                   }
-                   UpdateDisplay();
+                    if (IntToStr(wrkIntAmount).Length() < MaxLength)
+                    {
+                       if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
+                       {
+                          wrkIntAmount = -wrkIntAmount;
+                       }
+                       wrkIntAmount = wrkIntAmount * 10 + KeyPressed;
+                       if (ForcedNegitive)
+                       {
+                          if (wrkIntAmount > 0)
+                          {
+                             wrkIntAmount = -wrkIntAmount;
+                          }
+                       }
+                       UpdateDisplay();
+                    }
+                }
+                else
+                {
+                    AnsiString strValue = wrkIntAmountLong;
+                    if (strValue.Length() < MaxLength)
+                    {
+                       if (ForcedNegitive && wrkIntAmountLong < 0) // Do the Math on + Numbers
+                       {
+                          wrkIntAmountLong = -wrkIntAmountLong;
+                       }
+                       wrkIntAmountLong = wrkIntAmountLong * 10 + KeyPressed;
+                       if (ForcedNegitive)
+                       {
+                          if (wrkIntAmountLong > 0)
+                          {
+                             wrkIntAmountLong = -wrkIntAmountLong;
+                          }
+                       }
+                       UpdateDisplay();
+                    }
                 }
              }
           }
@@ -606,7 +691,10 @@ void __fastcall TfrmTouchNumpad::btnOkMouseClick(TObject *Sender)
    }
    else if (Mode == pmNumber)
    {
-      INTResult = wrkIntAmount;
+      if(MaxLength != 10)
+        INTResult = wrkIntAmount;
+      else
+        INTResultLong = wrkIntAmountLong;
    }
    else if (Mode == pmPIN)
    {
