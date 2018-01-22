@@ -171,12 +171,59 @@ void XReprintReceiptDetailsSection::SetSingleColumnPrinterFormat(TPrintout* prin
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
 //------------------------------------------------------------------------------
+//void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrInvoice)
+//{
+//    try
+//    {
+//        qrInvoice->Close();
+//
+//        UnicodeString query =
+//        "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
+//        "INNER JOIN DAYARCBILL d "
+//        "on a.NOTE = d.INVOICE_NUMBER "
+//        "WHERE a.TIME_STAMP > "
+//        "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
+//        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+//        "ORDER BY b.TIME_STAMP desc) "
+//        "and a.SECURITY_EVENT = 'Reprint Receipt' "
+//        " AND a.TERMINAL_NAME = :TERMINAL_NAME  "
+//        " UNION ALL "
+//        "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
+//        "INNER JOIN ARCBILL d "
+//        "on a.NOTE = d.INVOICE_NUMBER "
+//        "WHERE a.TIME_STAMP > "
+//        "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
+//        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+//        "ORDER BY b.TIME_STAMP desc) "
+//        "and a.SECURITY_EVENT = 'Reprint Receipt' "
+//        " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
+//
+//        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+//        {
+////            query += " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
+//            qrInvoice->SQL->Text = query;
+//            qrInvoice->ParamByName("TERMINAL_NAME")->AsString =
+//                                     TDeviceRealTerminal::Instance().ID.Name;
+//        }
+//        else
+//           qrInvoice->SQL->Text = query;
+//
+//        qrInvoice->ExecQuery();
+//    }
+//    catch(Exception &Exc)
+//    {
+//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+//        throw;
+//    }
+//}
+//------------------------------------------------------------------------------
 void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrInvoice)
 {
     try
     {
         qrInvoice->Close();
-
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
         UnicodeString query =
         "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
         "INNER JOIN DAYARCBILL d "
@@ -185,18 +232,48 @@ void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrIn
         "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
         "WHERE b.SECURITY_EVENT = 'Till Z Off' "
         "ORDER BY b.TIME_STAMP desc) "
-        "and a.SECURITY_EVENT = 'Reprint Receipt' ";
+        "and a.SECURITY_EVENT = 'Reprint Receipt' "
+        " AND a.TERMINAL_NAME = :TERMINAL_NAME  "
+        " UNION ALL "
+        "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
+        "INNER JOIN ARCBILL d "
+        "on a.NOTE = d.INVOICE_NUMBER "
+        "WHERE a.TIME_STAMP > "
+        "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
+        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+        "ORDER BY b.TIME_STAMP desc) "
+        "and a.SECURITY_EVENT = 'Reprint Receipt' "
+        " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
 
-        if(!TGlobalSettings::Instance().EnableDepositBagNum)
-        {
-            query += " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
+//            query += " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
             qrInvoice->SQL->Text = query;
             qrInvoice->ParamByName("TERMINAL_NAME")->AsString =
                                      TDeviceRealTerminal::Instance().ID.Name;
         }
         else
-           qrInvoice->SQL->Text = query;
+        {
+        UnicodeString query =
+        "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
+        "INNER JOIN DAYARCBILL d "
+        "on a.NOTE = d.INVOICE_NUMBER "
+        "WHERE a.TIME_STAMP > "
+        "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
+        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+        "ORDER BY b.TIME_STAMP desc) "
+        "and a.SECURITY_EVENT = 'Reprint Receipt' "
+        " UNION ALL "
+        "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
+        "INNER JOIN ARCBILL d "
+        "on a.NOTE = d.INVOICE_NUMBER "
+        "WHERE a.TIME_STAMP > "
+        "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
+        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+        "ORDER BY b.TIME_STAMP desc) "
+        "and a.SECURITY_EVENT = 'Reprint Receipt' ";
 
+//            query += " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
+            qrInvoice->SQL->Text = query;
+        }
         qrInvoice->ExecQuery();
     }
     catch(Exception &Exc)
