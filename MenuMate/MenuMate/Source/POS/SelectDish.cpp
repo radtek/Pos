@@ -323,11 +323,21 @@ void __fastcall TfrmSelectDish::SyncGridFontSizes()
 {
 	int font_size = TGlobalSettings::Instance().posButtonFontSize&~0x80;
 
-	tgridItemOptions->Font->Size = font_size;
-	tgridItemSetMenuItems->Font->Size = font_size;
-	tgridItemSideItems->Font->Size = font_size;
-	tgridOrderItem->Font->Size = font_size;
+   tgridItemOptions->Font->Size = font_size;
+   tgridItemSetMenuItems->Font->Size = font_size;
+  tgridItemSideItems->Font->Size = font_size;
+   tgridOrderItem->Font->Size = font_size;
 }
+//--------------------------------------changes-----------------------------------------------
+/*void __fastcall TfrmSelectDish::FontSizeOFServingCours()
+{
+	int font_size = TGlobalSettings::Instance().posButtonFontSize&~0x80;
+
+   tgridItemOptions->Font->Size = font_size;
+   tgridItemSetMenuItems->Font->Size = font_size;
+  tgridItemSideItems->Font->Size = font_size;
+   tgridOrderItem->Font->Size = font_size;
+} */
 // ---------------------------------------------------------------------------
 ChitResult TfrmSelectDish::InitializeChit()
 {
@@ -540,14 +550,17 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 	SetGridColors(tgridItemSetMenuItems);
 	SetGridColors(tgridSeats);
 	SetNumpadColors(tnpQuantity);
+    tgridServingCourse->Font->Size=14;
 
     if(TGlobalSettings::Instance().ShowLargeFonts )
     {
       tgridOrderCourse->Font->Size = 18;
+      //tgridItemServingCourse->Font->Size =14;
     }
     else
     {
       tgridOrderCourse->Font->Size = 12;
+     // tgridItemServingCourse->Font->Size =14;
     }
 	InitXeroIntegration();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -4959,8 +4972,9 @@ void TfrmSelectDish::RedrawServingCourses()
 			{
 				if (itServingCourse->Selectable)
 				{
+                    tgridServingCourse->Font->Size=14;
 					tgridServingCourse->Buttons[0][i]->Caption = itServingCourse->Name;
-					tgridServingCourse->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_BUTTONCOLOR];
+                    tgridServingCourse->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_BUTTONCOLOR];
 					tgridServingCourse->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_FONTCOLOR];
 					tgridServingCourse->Buttons[0][i]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
 					tgridServingCourse->Buttons[0][i]->LatchedFontColor = clWhite;//ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
