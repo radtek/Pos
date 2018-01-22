@@ -222,7 +222,7 @@ void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrIn
     try
     {
         qrInvoice->Close();
-        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        if(!TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
         {
         UnicodeString query =
         "SELECT a.Note, a.SECURITY_EVENT, a.TIME_STAMP, d.TOTAL FROM SECURITY a "
