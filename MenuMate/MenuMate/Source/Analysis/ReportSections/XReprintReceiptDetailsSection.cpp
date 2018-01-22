@@ -230,7 +230,7 @@ void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrIn
         "on a.NOTE = d.INVOICE_NUMBER "
         "WHERE a.TIME_STAMP > "
         "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
-        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+        "WHERE b.SECURITY_EVENT = 'Till Z Off' AND b.TERMINAL_NAME = :TERMINALNAME2 "
         "ORDER BY b.TIME_STAMP desc) "
         "and a.SECURITY_EVENT = 'Reprint Receipt' "
         " AND a.TERMINAL_NAME = :TERMINAL_NAME  "
@@ -240,7 +240,7 @@ void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrIn
         "on a.NOTE = d.INVOICE_NUMBER "
         "WHERE a.TIME_STAMP > "
         "(SELECT FIRST 1 b.TIME_STAMP FROM SECURITY b "
-        "WHERE b.SECURITY_EVENT = 'Till Z Off' "
+        "WHERE b.SECURITY_EVENT = 'Till Z Off' AND b.TERMINAL_NAME = :TERMINALNAME2 "
         "ORDER BY b.TIME_STAMP desc) "
         "and a.SECURITY_EVENT = 'Reprint Receipt' "
         " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
@@ -248,6 +248,8 @@ void XReprintReceiptDetailsSection::ReprintReceiptQueryForNormalZed(TIBSQL* qrIn
 //            query += " AND a.TERMINAL_NAME = :TERMINAL_NAME  ";
             qrInvoice->SQL->Text = query;
             qrInvoice->ParamByName("TERMINAL_NAME")->AsString =
+                                     TDeviceRealTerminal::Instance().ID.Name;
+            qrInvoice->ParamByName("TERMINALNAME2")->AsString =
                                      TDeviceRealTerminal::Instance().ID.Name;
         }
         else
