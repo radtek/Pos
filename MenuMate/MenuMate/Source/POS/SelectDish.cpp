@@ -328,16 +328,7 @@ void __fastcall TfrmSelectDish::SyncGridFontSizes()
   tgridItemSideItems->Font->Size = font_size;
    tgridOrderItem->Font->Size = font_size;
 }
-//--------------------------------------changes-----------------------------------------------
-/*void __fastcall TfrmSelectDish::FontSizeOFServingCours()
-{
-	int font_size = TGlobalSettings::Instance().posButtonFontSize&~0x80;
 
-   tgridItemOptions->Font->Size = font_size;
-   tgridItemSetMenuItems->Font->Size = font_size;
-  tgridItemSideItems->Font->Size = font_size;
-   tgridOrderItem->Font->Size = font_size;
-} */
 // ---------------------------------------------------------------------------
 ChitResult TfrmSelectDish::InitializeChit()
 {
@@ -550,7 +541,6 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
 	SetGridColors(tgridItemSetMenuItems);
 	SetGridColors(tgridSeats);
 	SetNumpadColors(tnpQuantity);
-    tgridServingCourse->Font->Size=14;
 
     if(TGlobalSettings::Instance().ShowLargeFonts )
     {

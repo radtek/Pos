@@ -1190,8 +1190,8 @@ object frmSelectDish: TfrmSelectDish
             BorderWidth = 5
             Font.Charset = ANSI_CHARSET
             Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
+            Font.Height = -19
+            Font.Name = 'Arial'
             Font.Style = []
             ParentFont = False
             ParentColor = True
