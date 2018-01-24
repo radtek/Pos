@@ -99,16 +99,18 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
               List->LoadFromFile(fileName);
             List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
             List->Add("Request Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+            List->Add("Request Data:- " +inData + "\n");
             sendData(inData);
             outResponse = fetchResponse();
             List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
             List->Add("Response Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+            List->Add("Response Data:- " +outResponse + "\n");
         }
         catch( Exception& exc)
         {
             TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
             List->Add("Exception Message- " + exc.Message + "\n");
-            MessageBox("Could not communicate with server.\n" +exc.Message,"Error",MB_OK + MB_ICONERROR);
+            MessageBox("Could not communicate with Oracle Server.\n" +exc.Message,"Error",MB_OK + MB_ICONERROR);
         }
 	}
     else if (!tcpClient->Connected())
