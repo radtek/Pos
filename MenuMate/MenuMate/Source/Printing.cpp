@@ -602,7 +602,7 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayCo
    }
 }
 
-bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request)
+bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request , bool IsPartialTranferItemOrGuests ,bool IsReversedPartialDocketPrint)
  {
 try
    {
@@ -627,7 +627,7 @@ try
 		 if (PhysicalPrinter.Type == ptWindows_Printer)
 		 {
 			TPrintout *Printout = GetPrintout(DBTransaction, Request, &CurrentPrinter, true);
-            AddTransferToPrintout(Printout->PrintFormat,Transfer);
+            AddTransferToPrintout(Printout->PrintFormat,Transfer,IsPartialTranferItemOrGuests,IsReversedPartialDocketPrint);
 		 }
 	  }
 	  return true;
@@ -926,7 +926,7 @@ void TKitchen::AddCallAwayToPrintout(TPrintFormat *pPrinter)
    pPrinter->PartialCut();
 }
 
-void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer)
+void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer, bool isPartialTranferItemOrGuests , bool IsDestToSourceDocketPrint)
 {
    pPrinter->WordWrap = true;
    pPrinter->Line->ColCount = 1;
@@ -967,7 +967,15 @@ void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *T
    pPrinter->Line->Columns[0]->Alignment = taCenter;
    pPrinter->Line->FontInfo.Height = fsNormalSize;
    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-   pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " transferred to " + Transfer->TableTransferedTo;
+   if(isPartialTranferItemOrGuests)
+   {
+        if(IsDestToSourceDocketPrint)
+        pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedTo + " partial transferred to " + Transfer->TableTransferedFrom;
+        else
+        pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " partial transferred to " + Transfer->TableTransferedTo;
+   }
+   else
+    pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " transferred to " + Transfer->TableTransferedTo;
    pPrinter->AddLine();
 
    pPrinter->Line->FontInfo.Height = fsNormalSize;

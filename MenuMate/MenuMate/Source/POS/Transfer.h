@@ -312,6 +312,8 @@ public:		// User declarations
     bool CloseClipTab;
     bool ItemTransferredFromClip;
     bool isClipLongPress;
+    bool isTransferfromSourceToDes;
+    bool istransferfromdestosource;
 };
 //---------------------------------------------------------------------------
 #endif
