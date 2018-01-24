@@ -160,7 +160,8 @@ void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTrans
 
 void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTransaction)
 {
-
+    try
+    {
         TIBSQL *IBInternalQuery  = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE";
@@ -222,6 +223,12 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
             TDeviceRealTerminal::Instance().PaymentSystem->InsertPaymentTypeInPanasonicDB(PayTypes);
         }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
 
 void TSalesForceCommAtZed::EnableOrDisablePV(AnsiString CompanyName)
@@ -296,15 +303,17 @@ void TSalesForceCommAtZed::FindingValuesOfFields(AnsiString accountName)
 
 bool TSalesForceCommAtZed::IsXeroActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
-        if(TGlobalSettings::Instance().IsXeroEnabled || TGlobalSettings::Instance().IsMYOBEnabled)
-            isActivated = true;
-        return isActivated;
+    bool isActivated = false;
+    if(TGlobalSettings::Instance().IsXeroEnabled || TGlobalSettings::Instance().IsMYOBEnabled)
+        isActivated = true;
+    return isActivated;
 }
 
 bool TSalesForceCommAtZed::IsWebMateActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -317,16 +326,24 @@ bool TSalesForceCommAtZed::IsWebMateActivated(Database::TDBTransaction &DBTransa
         IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2117;
         IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             isActivated = true;
-		}
-        return isActivated;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }
 
 bool TSalesForceCommAtZed::IsThorActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -339,16 +356,24 @@ bool TSalesForceCommAtZed::IsThorActivated(Database::TDBTransaction &DBTransacti
         IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9049;
         IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             isActivated = true;
-		}
-        return isActivated;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }
 
 bool TSalesForceCommAtZed::IsStockActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         UnicodeString key = "";
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
@@ -361,29 +386,32 @@ bool TSalesForceCommAtZed::IsStockActivated(Database::TDBTransaction &DBTransact
                             " PRODUCT  = :PRODUCT ";
         IBInternalQuery->ParamByName("PRODUCT")->AsString = "Office";
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             key = IBInternalQuery->FieldByName("REGKEY")->AsString;
             if(key.Length() > 0)
             {
                 isActivated = true;
             }
-		}
-//        DBTransaction1.Commit();
-        // Query for Stock
-        UnicodeString StockDB =TGlobalSettings::Instance().StockInterbaseIP + ":" +TGlobalSettings::Instance().StockDatabasePath;
+        }
+
         bool exists = false;
+        UnicodeString StockDB = "";
         try
         {
-            TStockInterface StockInterface(StockDB);
-            StockInterface.Initialise();
-            exists = StockInterface.CheckStockItem();
-		}
-		catch(Exception & E)
-		{
-			TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
-			throw;
-		}
+            if(TGlobalSettings::Instance().StockInterbaseIP != "" || TGlobalSettings::Instance().StockDatabasePath != "")
+            {
+                StockDB = TGlobalSettings::Instance().StockInterbaseIP + ":" +TGlobalSettings::Instance().StockDatabasePath;
+                TStockInterface StockInterface(StockDB);
+                StockInterface.Initialise();
+                exists = StockInterface.CheckStockItem();
+            }
+        }
+        catch(Exception & E)
+        {
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
+            throw;
+        }
         if(exists)
         {
             isActivated = true;
@@ -392,7 +420,13 @@ bool TSalesForceCommAtZed::IsStockActivated(Database::TDBTransaction &DBTransact
         {
             isActivated = false;
         }
-        return isActivated;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }
 
 UnicodeString TSalesForceCommAtZed::GetversionNumber(Database::TDBTransaction &DBTransaction1)
@@ -402,7 +436,9 @@ UnicodeString TSalesForceCommAtZed::GetversionNumber(Database::TDBTransaction &D
 
 bool TSalesForceCommAtZed::IsPalmMateActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -414,16 +450,24 @@ bool TSalesForceCommAtZed::IsPalmMateActivated(Database::TDBTransaction &DBTrans
                             " PRODUCT  = :PRODUCT";
         IBInternalQuery->ParamByName("PRODUCT")->AsString = "PalmMate";
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             isActivated = true;
-		}
-        return isActivated;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }
 
 bool TSalesForceCommAtZed::IsChefMateActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -435,16 +479,24 @@ bool TSalesForceCommAtZed::IsChefMateActivated(Database::TDBTransaction &DBTrans
                             " SHARE_NAME  = :SHARE_NAME";
         IBInternalQuery->ParamByName("SHARE_NAME")->AsString = "ChefMate Display";
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             isActivated = true;
-		}
-        return isActivated;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }
 
 bool TSalesForceCommAtZed::IsLoyaltyActivated(Database::TDBTransaction &DBTransaction1)
 {
-        bool isActivated = false;
+    bool isActivated = false;
+    try
+    {
         TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -457,9 +509,15 @@ bool TSalesForceCommAtZed::IsLoyaltyActivated(Database::TDBTransaction &DBTransa
         IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7038;
         IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
         IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
+        if(IBInternalQuery->RecordCount > 0)
+        {
             isActivated = true;
-		}
-        return isActivated;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return isActivated;
 }

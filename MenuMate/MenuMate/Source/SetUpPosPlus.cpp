@@ -178,11 +178,13 @@ void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Send
         frmTouchNumpad->btnSurcharge->Visible = true;
         frmTouchNumpad->btnDiscount->Visible = false;
         frmTouchNumpad->Mode = pmNumber;
-        frmTouchNumpad->INTInitial = atoi(TGlobalSettings::Instance().OrganizationNumber.t_str());
-
+        double intialValue = 0;
+        TryStrToFloat(TGlobalSettings::Instance().OrganizationNumber,intialValue);
+        frmTouchNumpad->INTInitialLong = intialValue;
+        frmTouchNumpad->MaxLength = 10;
         if (frmTouchNumpad->ShowModal() == mrOk)
         {
-            TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResult;
+            TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResultLong;
             int offset = 10 -TGlobalSettings::Instance().OrganizationNumber.Length();
             UnicodeString value = "";
             if(offset > 0)
@@ -194,10 +196,11 @@ void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Send
                 MessageBox("0 will be added in front of Organization Number","Information",MB_OK);
             }
             TGlobalSettings::Instance().OrganizationNumber = value;
-            TGlobalSettings::Instance().OrganizationNumber += IntToStr(frmTouchNumpad->INTResult);
+            AnsiString strValue = frmTouchNumpad->INTResultLong;
+            TGlobalSettings::Instance().OrganizationNumber += strValue;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,  vmOrganizationNumber, TGlobalSettings::Instance().OrganizationNumber);
-             DBTransaction.Commit();
-             tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            DBTransaction.Commit();
+            tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
         }
 
     }

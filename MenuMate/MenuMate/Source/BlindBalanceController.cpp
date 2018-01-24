@@ -279,27 +279,43 @@ bool TBlindBalanceController::WarnOperator(void)
 
 void TBlindBalanceController::LoadBlindBalances(void)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SELECT * "
-										  "FROM BLINDBALANCE B "
-										  "WHERE DEPOSITBAG_ID = 'To Be Zed';";
-	IBInternalQuery->ExecQuery();
-	for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-	{
-		BlindBalances.UpdateBlindBalance(IBInternalQuery->FieldByName("PAYMENT")->AsString, IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat);
-	}
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT * "
+                                              "FROM BLINDBALANCE B "
+                                              "WHERE DEPOSITBAG_ID = 'To Be Zed';";
+        IBInternalQuery->ExecQuery();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            BlindBalances.UpdateBlindBalance(IBInternalQuery->FieldByName("PAYMENT")->AsString, IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat);
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
 }
 
 void TBlindBalanceController::UpdateBlindBalances(AnsiString BagID)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "UPDATE BLINDBALANCE "
-										  "SET DEPOSITBAG_ID = :DEPOSITBAG_ID "
-										  "WHERE DEPOSITBAG_ID = 'To Be Zed' ";
-	IBInternalQuery->ParamByName("DEPOSITBAG_ID")->AsString = BagID;
-	IBInternalQuery->ExecQuery();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE BLINDBALANCE "
+                                              "SET DEPOSITBAG_ID = :DEPOSITBAG_ID "
+                                              "WHERE DEPOSITBAG_ID = 'To Be Zed' ";
+        IBInternalQuery->ParamByName("DEPOSITBAG_ID")->AsString = BagID;
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
 }
 
 TBlindBalances TBlindBalanceController::Get()

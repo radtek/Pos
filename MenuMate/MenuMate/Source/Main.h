@@ -162,6 +162,7 @@ public:		// User declarations
     void SaveBoolVariable(vmVariables vmVar, bool CompName);
     bool FirstMallSet;
     void EnablePOSForSpecifiedMallSchedule();
+    void SaveItemPriceIncludeTaxToDatabase(vmVariables vmVariable, bool value);
 };
 
 //---------------------------------------------------------------------------
