@@ -225,6 +225,8 @@ protected:
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
+     void PrintReceipt(bool RequestEFTPOSReceipt);
+     bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
 };
 
 #endif

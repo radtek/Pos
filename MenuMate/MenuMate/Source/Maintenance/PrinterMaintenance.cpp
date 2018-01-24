@@ -234,6 +234,9 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 cbAPRROS->Checked = TGlobalSettings::Instance().AutoPrintRoomReceipts;
 		 cbAPIROS->Checked = TGlobalSettings::Instance().AutoPrintInvoiceReceipts;
 		 cbAPWOOS->Checked = TGlobalSettings::Instance().AutoPrintWebReceipts;
+         cbAlwaysPrintDiscountSales->Checked = Receipt->AlwaysPrintReceiptDiscountSales;
+         cbPrintSignatureOnDiscountSales->Checked = Receipt->PrintSignatureWithDiscountSales;
+         cbPrintSignatureOnRoomSales->Checked = Receipt->PrintSignatureWithRoomSales;
 
 		 bool PrintNote = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintNoteWithDiscount);
 		 cbPrintNoteWithDiscount->Checked = PrintNote;
@@ -5351,4 +5354,31 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
       memCustomizeSubHeader->Enabled = false;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbAlwaysPrintDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->AlwaysPrintReceiptDiscountSales = cbAlwaysPrintDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, Receipt->AlwaysPrintReceiptDiscountSales);
+   DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, Receipt->PrintSignatureWithDiscountSales);
+   DBTransaction.Commit();
+}
 
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, Receipt->PrintSignatureWithRoomSales);
+   DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
