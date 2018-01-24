@@ -180,7 +180,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         }
 
         AnsiString paymentMethod = "";
-
+        bool isNotRoomPaymentType = false;
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
         paymentMethod = payment->PaymentThirdPartyID;
         if(payment->GetPaymentAttribute(ePayTypePoints))
@@ -189,7 +189,10 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
         if(paymentMethod.Trim() == "")
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-
+        if(!payment->GetPaymentAttribute(ePayTypeRoomInterface))
+        {
+            isNotRoomPaymentType = true;
+        }
 
         double total = CalculateTotal(subtotals,discMap, taxMap, serviceChargeMap);
         total += tip;
@@ -304,6 +307,16 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         char* id = new char[20];
         itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
         postRequest.WorkstationId = id;//TDeviceRealTerminal::Instance().BasePMS->POSID;
+        if(isNotRoomPaymentType)
+        {
+           postRequest.RoomNumber = "";
+           postRequest.ReservationId = "";
+           postRequest.ProfileId = "";
+           postRequest.LastName = "";
+             postRequest.InquiryInformation = "";
+             postRequest.RequestType = "1";
+           postRequest.MatchfromPostList = "";
+        }
     }
 	catch(Exception &E)
 	{
