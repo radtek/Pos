@@ -340,7 +340,33 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
 }
-
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbAlwaysPrintDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->AlwaysPrintReceiptDiscountSales = cbAlwaysPrintDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, Receipt->AlwaysPrintReceiptDiscountSales);
+   DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    Receipt->PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, Receipt->PrintSignatureWithRoomSales);
+    DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, Receipt->PrintSignatureWithDiscountSales);
+   DBTransaction.Commit();
+}
 // ---------------------------------------------------------------------------
 
 void __fastcall TfrmPrinterMaintenance::WMDisplayChange(TWMDisplayChange& Message)
@@ -5353,34 +5379,4 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
    else
       memCustomizeSubHeader->Enabled = false;
 }
-//---------------------------------------------------------------------------
-void __fastcall TfrmPrinterMaintenance::cbAlwaysPrintDiscountSalesClick(TObject *Sender)
-{
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   Receipt->AlwaysPrintReceiptDiscountSales = cbAlwaysPrintDiscountSales->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, Receipt->AlwaysPrintReceiptDiscountSales);
-   DBTransaction.Commit();
-}
-//-------------------------------------------------------------------------------------
-//void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
-//{
-//    Database::TDBTransaction DBTransaction(DBControl);
-//    DBTransaction.StartTransaction();
-//    Receipt->PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
-//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, Receipt->PrintSignatureWithRoomSales);
-//    DBTransaction.Commit();
-//    TObject *s1 = Sender;
-//}
-////-------------------------------------------------------------------------------------
-//void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
-//{
-//   Database::TDBTransaction DBTransaction(DBControl);
-//   DBTransaction.StartTransaction();
-//   Receipt->PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
-//   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, Receipt->PrintSignatureWithDiscountSales);
-//   DBTransaction.Commit();
-//   TObject *s1 = Sender;
-//}
-
 //-------------------------------------------------------------------------------------
