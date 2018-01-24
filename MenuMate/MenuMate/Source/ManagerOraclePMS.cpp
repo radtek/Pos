@@ -217,6 +217,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             AnsiString data = oracledata->SerializeOut(doc);
             resultData = TOracleTCPIP::Instance().SendAndFetch(data);
             retValue = oracledata->DeserializeData(resultData, _postResult);
+
          }
     }
     catch(Exception &E)
