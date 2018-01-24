@@ -451,8 +451,8 @@ __published:	// IDE-managed Components
     void __fastcall memSubHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
     void __fastcall cbAlwaysPrintDiscountSalesClick(TObject *Sender);
-    void __fastcall cbPrintSignatureOnDiscountSalesClick(TObject *Sender);
-    void __fastcall cbPrintSignatureOnRoomSalesClick(TObject *Sender);
+//    void __fastcall cbPrintSignatureOnDiscountSalesClick(TObject *Sender);
+//    void __fastcall cbPrintSignatureOnRoomSalesClick(TObject *Sender);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	 BEGIN_MESSAGE_MAP

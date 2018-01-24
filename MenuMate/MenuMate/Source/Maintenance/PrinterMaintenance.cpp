@@ -5363,22 +5363,24 @@ void __fastcall TfrmPrinterMaintenance::cbAlwaysPrintDiscountSalesClick(TObject 
    DBTransaction.Commit();
 }
 //-------------------------------------------------------------------------------------
-void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
-{
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   Receipt->PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, Receipt->PrintSignatureWithDiscountSales);
-   DBTransaction.Commit();
-}
+//void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
+//{
+//    Database::TDBTransaction DBTransaction(DBControl);
+//    DBTransaction.StartTransaction();
+//    Receipt->PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
+//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, Receipt->PrintSignatureWithRoomSales);
+//    DBTransaction.Commit();
+//    TObject *s1 = Sender;
+//}
+////-------------------------------------------------------------------------------------
+//void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
+//{
+//   Database::TDBTransaction DBTransaction(DBControl);
+//   DBTransaction.StartTransaction();
+//   Receipt->PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
+//   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, Receipt->PrintSignatureWithDiscountSales);
+//   DBTransaction.Commit();
+//   TObject *s1 = Sender;
+//}
 
-//-------------------------------------------------------------------------------------
-void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
-{
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   Receipt->PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, Receipt->PrintSignatureWithRoomSales);
-   DBTransaction.Commit();
-}
 //-------------------------------------------------------------------------------------
