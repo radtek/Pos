@@ -62,6 +62,7 @@ bool TOracleTCPIP::Connect()
 	catch( Exception& E)
 	{
         Disconnect();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
        	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
                                                  "Abort", MB_OK + MB_ICONERROR);
 	}
@@ -82,15 +83,31 @@ bool TOracleTCPIP::Disconnect()
 AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 {
     AnsiString outResponse = "";
+    AnsiString directoryName = "";
+    std::auto_ptr<TStringList> List(new TStringList);
+    AnsiString fileName = "";
 	if (inData != "" && tcpClient->Connected())
 	{
         try
         {
+            directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
+            if (!DirectoryExists(directoryName))
+                CreateDir(directoryName);
+            AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+            fileName = directoryName + "/" + name;
+            if (FileExists(fileName) )
+              List->LoadFromFile(fileName);
+            List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+            List->Add("Request Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
             sendData(inData);
             outResponse = fetchResponse();
+            List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+            List->Add("Response Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
         }
         catch( Exception& exc)
         {
+            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
+            List->Add("Exception Message- " + exc.Message + "\n");
             MessageBox("Could not communicate with server.\n" +exc.Message,"Error",MB_OK + MB_ICONERROR);
         }
 	}
@@ -98,7 +115,22 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     {
         MessageBox("Connection Not Open", "Error",MB_OK + MB_ICONERROR);
     }
+    MakeOracleLogFile(List,fileName);
     return outResponse;
+}
+//--------------------------------------------------------------------------
+void TOracleTCPIP::MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString infileName)
+{
+    try
+    {
+        List->Add("===========================================================================================================");
+        List->Add("\n");
+        List->SaveToFile(infileName);
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //---------------------------------------------------------------------------
 void TOracleTCPIP::sendData( AnsiString inData )

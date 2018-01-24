@@ -42,5 +42,6 @@ class TOracleTCPIP
         TBytes CreateByteArray( const char* inBuffer, __int32 inBufferSize );
         TBytes CreateSTX();
         TBytes CreateETX();
+        void MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString infileName);
 };
 #endif
