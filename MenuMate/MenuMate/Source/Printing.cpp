@@ -926,7 +926,7 @@ void TKitchen::AddCallAwayToPrintout(TPrintFormat *pPrinter)
    pPrinter->PartialCut();
 }
 
-void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer, bool isPartialTranferItemOrGuests , bool IsDestToSourceDocketPrint)
+void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer, bool isPartialTranferItemOrGuests , bool IsReversedDocketTablePrint)
 {
    pPrinter->WordWrap = true;
    pPrinter->Line->ColCount = 1;
@@ -969,10 +969,10 @@ void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *T
    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
    if(isPartialTranferItemOrGuests)
    {
-        if(IsDestToSourceDocketPrint)
-        pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedTo + " partial transferred to " + Transfer->TableTransferedFrom;
+        if(IsReversedDocketTablePrint)
+            pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedTo + " partial transferred to " + Transfer->TableTransferedFrom;
         else
-        pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " partial transferred to " + Transfer->TableTransferedTo;
+            pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " partial transferred to " + Transfer->TableTransferedTo;
    }
    else
     pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " transferred to " + Transfer->TableTransferedTo;
