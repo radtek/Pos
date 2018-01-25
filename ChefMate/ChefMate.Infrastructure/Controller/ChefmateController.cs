@@ -198,14 +198,18 @@ namespace Chefmate.Infrastructure.Controller
                 order.OrderState = OrderState.Complete;
                 DbOrder.AddOrder(order, CurrenTerminal.TerminalId, false);
                 ProcessTransferWhenDestinationNotExist(sourceOrders, order);
+                bool isTransferredOrderReplaced = false;
 
                 //When one order is transferred to other table then new table should come at the old source table 's place.
                 //For that Add newly created order in place of the source table which has been trasferred to destination.
                 foreach (var currentOrder in TotalOrders)
                 {
                     ModifiedOrders.Add(currentOrder);
-                    if (string.Equals(currentOrder.TableTabName, order.SourceTableName))
+                    if (string.Equals(currentOrder.TableTabName, order.SourceTableName) && !isTransferredOrderReplaced)
+                    {
                         ModifiedOrders.Add(order);
+                        isTransferredOrderReplaced = true;
+                    }
 
                 }
                 TotalOrders.Clear();
