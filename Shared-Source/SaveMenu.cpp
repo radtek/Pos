@@ -332,6 +332,9 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
 {
     try
     {
+        if(inCost < -1000000)
+            inCost = 0;
+
         const char * const true_or_false[2] = {"false", "true"};
 
         TiXmlElement *itemElem  = ( TiXmlElement* )inItemHandle;

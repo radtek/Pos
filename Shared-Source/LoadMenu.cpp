@@ -713,6 +713,8 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 					outSpecialPrice             = StrToCurr(  AnsiString( itPtr->Attribute( "specialPrice" ) ) );
 					outGST                      = StrToFloat( AnsiString( itPtr->Attribute( "gst" ) ) );
 					outCost                     = StrToCurr(  AnsiString( itPtr->Attribute( "cost" ) ) );
+                    if(outCost < -1000000)
+                        outCost = 0;
 					outCostGST                  = StrToCurr(  AnsiString( itPtr->Attribute( "costGST" ) ) );
 					outPointsPercent            = StrToFloat( AnsiString( itPtr->Attribute( "pointsPercent" ) ) );
 					outMemberPurchaseCount      = StrToFloat( AnsiString( itPtr->Attribute( "memberPurchaseCount" ) ) );

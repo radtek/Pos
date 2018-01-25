@@ -52,6 +52,8 @@ void TWriteOff::InsertToDatabase(Database::TDBTransaction &DBTransaction, TItemC
 {
 	try
 	{
+        if(inOrder->Cost < -1000000)
+            inOrder->Cost = 0;
 
 		int Key, Course_Key, Category_Key, Group_Key;
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -130,7 +132,8 @@ void TWriteOff::InsertToDatabase(Database::TDBTransaction &DBTransaction, TItemC
 {
 	try
 	{
-
+        if(inOrder->Cost < -1000000)
+            inOrder->Cost = 0;
 
 		int Key, Course_Key, Menu_Key, Category_Key, Group_Key;
 		long Item_Key;
@@ -190,11 +193,11 @@ void TWriteOff::InsertToDatabase(Database::TDBTransaction &DBTransaction, TItemC
 		IBInternalQuery->ParamByName("ITEM_KEY")->AsLong = Item_Key;
 		IBInternalQuery->ParamByName("PARENT_KEY")->AsInteger = Parent_Key;
 		IBInternalQuery->ParamByName("SIZE_NAME")->AsString = inOrder->Size;
-      IBInternalQuery->ParamByName("TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
-      IBInternalQuery->ParamByName("COST")->AsCurrency = inOrder->Cost;
+        IBInternalQuery->ParamByName("TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+        IBInternalQuery->ParamByName("COST")->AsCurrency = inOrder->Cost;
         IBInternalQuery->ParamByName("QTY")->AsInteger = inOrder->GetQty();
-         IBInternalQuery->ParamByName("THIRD_PARTY_CODE")->AsString = inOrder->ThirdPartyCode;
-     IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
+        IBInternalQuery->ParamByName("THIRD_PARTY_CODE")->AsString = inOrder->ThirdPartyCode;
+        IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
         IBInternalQuery->ParamByName("COURSE_NAME")->AsString = inOrder->Course;
         IBInternalQuery->ParamByName("MENU_NAME")->AsString = inOrder->MenuName;
 		IBInternalQuery->ExecQuery();

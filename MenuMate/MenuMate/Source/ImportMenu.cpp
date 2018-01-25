@@ -2531,6 +2531,9 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 {
 	try
 	{
+        if(inCost < -1000000)
+            inCost = 0;
+
 		TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
         qr->Close();
 		qr->SQL->Text = "INSERT INTO ITEMSIZE ( ItemSize_Key, Item_Key, Sizes_Key, Item_ID, Size_ID, Palm_Item_ID, Palm_Size_ID, "
@@ -3398,6 +3401,9 @@ __int32 TImportMenu::UpdateItemSizeInDB(
 
 	try
 	{
+        if(inCost < -1000000)
+            inCost = 0;
+
 		TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
 		qr->SQL->Text = "UPDATE ITEMSIZE "
 						"SET Item_Key = :itemFKey, Sizes_Key = :sizeFKey, "
