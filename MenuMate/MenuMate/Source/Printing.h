@@ -126,8 +126,6 @@ public:
     bool RavellItemsWithPriceAdjusts;
     int  MembershipNameDisplay;
     bool AlwaysPrintReceiptDiscountSales;
-    bool PrintSignatureWithDiscountSales;
-    bool PrintSignatureWithRoomSales;
 
 	UnicodeString BulletOpt;
 	UnicodeString NoteHeader;

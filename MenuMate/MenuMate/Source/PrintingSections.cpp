@@ -314,6 +314,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintOrganizationNumber, "Organization Number");
 	DefaultCaption[epofiPrintOrganizationNumber] = "Organization Number";
+
+    Instructions[i++] = InstructionPair(epofiPrintSignatureSection, "Signature Section");
+	DefaultCaption[epofiPrintSignatureSection] = "Signature Section";
 }
 
 
@@ -493,6 +496,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintBIRSalesTax:
     case epofiPrintPOSPlusSerialNumber:
     case epofiPrintOrganizationNumber:
+    case epofiPrintSignatureSection:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -1005,6 +1009,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
         case epofiPrintPOSPlusSerialNumber:
 			PrintPOSPlusSerialNumber(PrintJob);
 			break;
+        case epofiPrintSignatureSection:
+            PrintSignatureSection(PrintJob);
+            break;
 		default:
 			break;
 		}
@@ -8889,8 +8896,6 @@ void TOrderBundle::SaveOptions(TListOptionContainer *Options1, Currency quantity
     }
 }
 
-
-
 void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 	TPrintFormat* pPrinter )
  {
      if(orderbundle->addManuallyEnteredWeightString && TGlobalSettings::Instance().NotifyForManuallyEnteredWeight)
@@ -9066,3 +9071,69 @@ void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
     }
 }
 //-----------------------------------------------------------------------------
+void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
+{
+	if (TGlobalSettings::Instance().PrintSignatureWithDiscountSales && IsDiscountApplied())
+	{
+        UnicodeString customerDetails[3] = {"Name  ", "Reason  ", "Signature  "};
+        UnicodeString customerData[3] = {"---------------------------------", "---------------------------------","---------------------------------"};
+        PrintSignatureBySetting(customerDetails, customerData, 3);
+        pPrinter->AddLine();
+    }
+
+    if (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomPayment(PrintJob) && PrintJob->Transaction->Customer.RoomNumberStr != ""
+        && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Phoenix))
+	{
+        UnicodeString customerDetails[3] = {"Name  ", "Room#  ", "Signature  "};
+        UnicodeString customerData[3] = {PrintJob->Transaction->Customer.Name, PrintJob->Transaction->Customer.RoomNumberStr, "---------------------------------"};
+        PrintSignatureBySetting(customerDetails, customerData, 3);
+    }
+}
+//------------------------------------------------------------------------------
+bool TPrintSection::IsDiscountApplied()
+{
+    for (int i = 0; i < WorkingOrdersList->Count; i++)
+    {
+        TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = Item->BillCalcResult.Discount.begin();
+
+        for( ; drIT != Item->BillCalcResult.Discount.end(); drIT++ )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+//------------------------------------------------------------------------------
+void TPrintSection::PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size)
+{
+    for(int index = 0; index < size; index++)
+    {
+        pPrinter->Line->ColCount = 2;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[0]->Text = customerDetails[index];
+        pPrinter->Line->Columns[1]->Text = customerData[index];
+        pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->AddLine();
+        pPrinter->Line->Columns[0]->Text = "";
+        pPrinter->Line->Columns[1]->Text = "";
+        pPrinter->AddLine();
+    }
+}
+//-------------------------------------------------------------------------------
+bool TPrintSection::IsRoomPayment(TReqPrintJob *PrintJob)
+{
+    bool retVal = false;
+    for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
+	{
+		TPayment *payment = PrintJob->Transaction->PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}

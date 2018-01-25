@@ -288,8 +288,6 @@ __fastcall TReceipt::TReceipt()
    VoidFooter = new TStringList;
    SubHeader = new TStringList;
    AlwaysPrintReceiptDiscountSales = false;
-   PrintSignatureWithDiscountSales = false;
-   PrintSignatureWithRoomSales = false;
 }
 
 __fastcall TReceipt::~TReceipt()
@@ -1184,8 +1182,6 @@ void TReceipt::Initialise(Database::TDBTransaction &DBTransaction)
    NoteHeader = TManagerVariable::Instance().GetStr(DBTransaction, vmKitchenHeaderNote, "Note: ");
    MembershipNameDisplay = TManagerVariable::Instance().GetInt(DBTransaction, vmMembersNameOnReceipt, 0);
    AlwaysPrintReceiptDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, false);
-   PrintSignatureWithDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithDiscountSales, false);
-   PrintSignatureWithRoomSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithRoomSales, false);
 }
 
 void TKitchen::GetSetMenuHeaders(Database::TDBTransaction &DBTransaction, TList *OrdersList)

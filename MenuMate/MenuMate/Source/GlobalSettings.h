@@ -499,6 +499,8 @@ public:
     UnicodeString POSPlusSerialNumber;
     bool ShowCashDrawerOpeningsCount;
     bool ShowReprintReceiptDetails;
+    bool PrintSignatureWithDiscountSales;
+    bool PrintSignatureWithRoomSales;
 };
 
 #endif
