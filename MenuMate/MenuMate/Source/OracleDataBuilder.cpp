@@ -67,9 +67,9 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         postRoomInquiry.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                    TDeviceRealTerminal::Instance().User.Surname;
-        char* id = new char[20];
-        itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
-        postRoomInquiry.WorkstationId = id;
+//        char* id = new char[20];
+//        itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
+        postRoomInquiry.WorkstationId = TDeviceRealTerminal::Instance().ID.Name.SubString(0,20);
         DBTransaction.Commit();
     }
 	catch(Exception &E)
@@ -304,17 +304,15 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         postRequest.Time = Now().FormatString( "HHMMSS");
         postRequest.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                TDeviceRealTerminal::Instance().User.Surname;
-        char* id = new char[20];
-        itoa(TDeviceRealTerminal::Instance().BasePMS->POSID , id , 10);
-        postRequest.WorkstationId = id;//TDeviceRealTerminal::Instance().BasePMS->POSID;
+        postRequest.WorkstationId = TDeviceRealTerminal::Instance().ID.Name.SubString(0,20);
         if(isNotRoomPaymentType)
         {
            postRequest.RoomNumber = "";
            postRequest.ReservationId = "";
            postRequest.ProfileId = "";
            postRequest.LastName = "";
-             postRequest.InquiryInformation = "";
-             postRequest.RequestType = "1";
+           postRequest.InquiryInformation = "";
+           postRequest.RequestType = "1";
            postRequest.MatchfromPostList = "";
         }
     }

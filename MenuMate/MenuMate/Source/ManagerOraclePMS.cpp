@@ -60,9 +60,33 @@ void TManagerOraclePMS::Initialise()
             {
                 if(Slots.size() > 0)
                 {
-                    if(InitializeoracleTCP())
+                    if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory != NULL)
                     {
-                        Enabled = GetLinkStatus();
+                        if(PointsCategory.Trim() != "" && PointsCategory != NULL)
+                        {
+                            if(CreditCategory.Trim() != "" && CreditCategory != NULL)
+                            {
+                                if(InitializeoracleTCP())
+                                {
+                                    Enabled = GetLinkStatus();
+                                }
+                            }
+                            else
+                            {
+                                MessageBox("Credit Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                                Enabled = false;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox("Points Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                            Enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox("Default Payment Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                        Enabled = false;
                     }
                 }
                 else
@@ -176,6 +200,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             }
         }
         double totalPayTendered = 0;
+            MessageBox(_paymentTransaction.Money.TotalRounding,"Total Rounding",MB_OK);
+            MessageBox(_paymentTransaction.Money.PaymentRounding,"Payment Rounding",MB_OK);
+//            MessageBox(_paymentTransaction.Money.RoundedChange,"Rounded Change",MB_OK);
+//            MessageBox(_paymentTransaction.Money.RoundedGrandTotal,"RoundedGrandTotal",MB_OK);
+            MessageBox(_paymentTransaction.Money.PaymentAmount,"PaymentAmount",MB_OK);
+        double roundedPaymentAmount = 0;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -186,9 +216,35 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             if((amount != 0)
                   && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
             {
+                            MessageBox(amount,"Pay tendered",MB_OK);
                 portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
+//                MessageBox(portion,"portion",MB_OK);
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
+                if(payment->GetSurcharge() != 0)
+                {
+                   int size = postRequest.Discount.size();
+                   double surcharge = payment->GetSurcharge();
+                   double rounding = RoundTo(double((payment->GetPayRounding()/payment->GetPayTendered())*payment->GetSurcharge()),-2);
+                   surcharge += rounding;
+                   surcharge = RoundTo(surcharge * 100 , -2);
+                   AnsiString strSurcharge = (AnsiString)surcharge;
+                   rounding = rounding *100;
+                   AnsiString strRounding = (AnsiString)rounding;
+                   if(strSurcharge.Pos(".") != 0)
+                   {
+                      strSurcharge = strSurcharge.SubString(1,strSurcharge.Pos(".")-1);
+                   }
+                    if(strRounding.Pos(".") != 0)
+                   {
+                      strRounding = strRounding.SubString(1,strRounding.Pos(".")-1);
+                   }
+                   int roundingggg = atoi(strRounding.c_str());
+                   int totalAmount = atoi(postRequest.TotalAmount.c_str()) + (roundingggg);
+                   AnsiString strAmount = totalAmount;
+                   postRequest.TotalAmount = strAmount;
+                   postRequest.Discount.push_back(strSurcharge);
+                }
                 postRequest.CheckNumber = checkNumber;
                 TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
                 AnsiString resultData = "";

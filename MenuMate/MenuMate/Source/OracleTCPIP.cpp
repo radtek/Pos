@@ -22,11 +22,17 @@ TOracleTCPIP::TOracleTCPIP()
 //---------------------------------------------------------------------------
 TOracleTCPIP::~TOracleTCPIP()
 {
-    if(tcpClient)
+    try
     {
-        delete tcpClient;
-        tcpClient = NULL;
-//        MessageBox("Client destroyed","shivashu",MB_OK);
+        if(tcpClient)
+        {
+            delete tcpClient;
+            tcpClient = NULL;
+    //        MessageBox("Client destroyed","shivashu",MB_OK);
+        }
+    }
+    catch(Exception &Exc)
+    {
     }
 }
 //---------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 
 #include "ManagerPMSCodes.h"
 #include "MMLogging.h"
+#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -42,6 +43,24 @@ void TManagerPMSCodes::GetTaxCodesFromDB(Database::TDBTransaction &DBTransaction
       for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
 	  {
       }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::UpdateItemSizes(Database::TDBTransaction &DBTransaction,int newValue,int key)
+{
+    try
+    {
+        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        UpdateQuery->SQL->Text =
+                   "Update ITEMSIZE SET REVENUECODE = :REVENUECODENEW "
+                   "WHERE REVENUECODE =:REVENUECODEOLD ";
+        UpdateQuery->ParamByName("REVENUECODEOLD")->AsInteger = key;
+        UpdateQuery->ParamByName("REVENUECODENEW")->AsInteger = newValue;
+        UpdateQuery->ExecQuery();
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //----------------------------------------------------------------------------
 void TManagerPMSCodes::GetRevenueCodesFromDB(Database::TDBTransaction &DBTransaction,
@@ -140,6 +159,7 @@ void TManagerPMSCodes::DeleteRevenueCode(Database::TDBTransaction &DBTransaction
                    "DELETE FROM REVENUECODEDETAILS WHERE REVENUECODE = :REVENUECODE";
         DeleteQuery->ParamByName("REVENUECODE")->AsInteger = key;
         DeleteQuery->ExecQuery();
+        UpdateItemSizes(DBTransaction,0,key);
         if(isDefault)
         {
             TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());

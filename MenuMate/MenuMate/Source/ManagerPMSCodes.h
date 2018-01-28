@@ -57,5 +57,6 @@ class TManagerPMSCodes
         void PopulateMealsToGrid(TStringGrid * StringGrid,std::vector<TTimeSlots> TimeSlots);
         void EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlots slots);
         void DeleteMealDetails(Database::TDBTransaction &DBTransaction,int key);
+        void UpdateItemSizes(Database::TDBTransaction &DBTransaction,int newValue,int key);
 };
 #endif

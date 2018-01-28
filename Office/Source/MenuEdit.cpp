@@ -298,6 +298,7 @@ forcedSideList(new TList)
 	{
 		tntedKitchenName->Font->Name = "MS Shell Dlg";
 	}
+    cbRevenueGroupCode->Sorted = false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::FormCreate(TObject *Sender)

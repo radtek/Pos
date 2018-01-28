@@ -293,16 +293,7 @@ void TfrmTaxProfile::shiftEditingToNextColumn(PVirtualNode* currentNode, TColumn
 
       if(currentColumn < TP_Column_Priority)
       {
-         if(currentColumn == TP_Column_Priority - 2)
-         {
-             TaxProfile* nodeTaxProfile = (TaxProfile*)vtvProfiles->GetNodeData(*currentNode);
-             if(nodeTaxProfile->taxProfileType != SalesTax)
-                nextColumn = currentColumn + 2;
-             else
-                nextColumn = currentColumn + 1;
-         }
-         else
-            nextColumn = currentColumn + 1;
+         nextColumn = currentColumn + 1;
 
          vtvProfiles->SetFocus();
          vtvProfiles->FocusedNode = *currentNode;

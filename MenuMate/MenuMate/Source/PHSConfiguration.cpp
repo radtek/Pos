@@ -98,22 +98,22 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIDClick(TObject *Sender)
 	}
 	else
 	{
-      std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-		frmTouchNumpad->Caption = "Enter the Unique ID for this POS.";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->POSID;
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->POSID = frmTouchNumpad->INTResult;
-			tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        frmTouchNumpad->Caption = "Enter the Unique ID for this POS.";
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->Mode = pmNumber;
+        frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        if (frmTouchNumpad->ShowModal() == mrOk)
+        {
+            TDeviceRealTerminal::Instance().BasePMS->POSID = frmTouchNumpad->INTResult;
+            tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSPOSID,TDeviceRealTerminal::Instance().BasePMS->POSID);
             DBTransaction1.Commit();
-		}
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -168,6 +168,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbItemDefCat->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbSurchargeCat->Enabled = false;
+        tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
     }
     else
@@ -211,7 +212,10 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
@@ -267,7 +271,10 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
@@ -295,7 +302,10 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;

@@ -687,6 +687,7 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->SetMaxLengthValue(2);
     frmTouchNumpad->INTInitial = 0;
 
     std::map<int, TRevenueCodeDetails>::iterator iter;
@@ -756,6 +757,7 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->SetMaxLengthValue(2);
     frmTouchNumpad->INTInitial = key;
 
     std::map<int, TRevenueCodeDetails>::iterator iter;
@@ -781,6 +783,8 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
                 codeDetails.RevenueCodeDescription = frmTouchKeyboard->KeyboardText;
                 managerPMSCodes->RevenueCodesMap.insert(std::pair<int,TRevenueCodeDetails>(frmTouchNumpad->INTResult,codeDetails));
                 managerPMSCodes->EditRevenueCode(DBTransaction,key,frmTouchNumpad->INTResult,codeDetails);
+                // Update Item Sizes with Revenue Codes
+                managerPMSCodes->UpdateItemSizes(DBTransaction,frmTouchNumpad->INTResult,key);
             }
             DBTransaction.Commit();
             ShowMessages();
@@ -805,6 +809,7 @@ void TfrmMessageMaintenance::AddServingTime(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->SetMaxLengthValue(2);
     frmTouchNumpad->INTInitial = 0;
     AnsiString mealName = "";
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult >0)
@@ -924,7 +929,17 @@ void TfrmMessageMaintenance::UpdateMealDetails(Database::TDBTransaction &DBTrans
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->INTInitial = 0;
+    int initialValue = 0;
+    for(int mealCodeIndex = 0; mealCodeIndex < managerPMSCodes->TimeSlots.size(); mealCodeIndex++)
+    {
+        if(managerPMSCodes->TimeSlots[mealCodeIndex].key == key)
+        {
+            initialValue = atoi(managerPMSCodes->TimeSlots[mealCodeIndex].MealName.c_str());
+            break;
+        }
+    }
+    frmTouchNumpad->INTInitial = initialValue;
+    frmTouchNumpad->SetMaxLengthValue(2);
     AnsiString mealName = "";
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
     {
