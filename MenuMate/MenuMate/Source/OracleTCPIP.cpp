@@ -17,7 +17,6 @@ TOracleTCPIP::TOracleTCPIP()
 {
     tcpClient = new TIdTCPClient(NULL);
     CreateTCPClient();
-//    MessageBox("Client created","shivashu",MB_OK);
 }
 //---------------------------------------------------------------------------
 TOracleTCPIP::~TOracleTCPIP()
@@ -28,7 +27,6 @@ TOracleTCPIP::~TOracleTCPIP()
         {
             delete tcpClient;
             tcpClient = NULL;
-    //        MessageBox("Client destroyed","shivashu",MB_OK);
         }
     }
     catch(Exception &Exc)
@@ -57,11 +55,9 @@ bool TOracleTCPIP::Connect()
             CreateTCPClient();
             Sleep(1000);
        }
-//       MessageBox("before connect of OracleTCPIP ip address:" + tcpClient->Host + " port number " +tcpClient->Port + " ","shivashu",MB_OK);
        if(! tcpClient->Connected())
        {
            tcpClient->Connect();
-//       MessageBox("after connect of OracleTCPIP","shivashu",MB_OK);
            retValue = true;
        }
 	}
@@ -77,12 +73,9 @@ bool TOracleTCPIP::Connect()
 //----------------------------------------------------------------------------
 bool TOracleTCPIP::Disconnect()
 {
-//    MessageBox("In Disconnect of connection","shivashu",MB_OK);
     if(tcpClient->Connected())
     {
-//        MessageBox("before Disconnect of connection","shivashu",MB_OK);
         tcpClient->Disconnect();
-//        MessageBox("after Disconnect of connection","shivashu",MB_OK);
     }
 }
 //---------------------------------------------------------------------------
@@ -92,7 +85,20 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     AnsiString directoryName = "";
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = "";
-	if (inData != "" && tcpClient->Connected())
+    //bool isLinkActive = true;
+//    if(!tcpClient->Connected())
+//    {
+//        bool isLinkActive = false;
+//        std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
+//        TLinkDescription linkDescription = oracledata->CreateLinkDescription();
+//        TiXmlDocument doc = oracledata->CreateLinkDescriptionXML(linkDescription);
+//        AnsiString data = oracledata->SerializeOut(doc);
+//        AnsiString resultData = "";
+//        resultData = SendAndFetch(data);
+//        // deserialize the resposne
+//        isLinkActive = oracledata->DeserializeGetLinkStatus(resultData);
+//    }
+	if (inData != "" && tcpClient->Connected() /*&& isLinkActive*/)
 	{
         try
         {
@@ -121,7 +127,7 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 	}
     else if (!tcpClient->Connected())
     {
-        MessageBox("Connection Not Open", "Error",MB_OK + MB_ICONERROR);
+        MessageBox("Connection Not Open for Oracle PMS", "Error",MB_OK + MB_ICONERROR);
     }
     MakeOracleLogFile(List,fileName);
     return outResponse;

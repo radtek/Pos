@@ -335,6 +335,7 @@ private:
     void PrintBIRSalesTax(TReqPrintJob* PrintJob);
     void PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob);
     void PrintOrganizationNumber(TReqPrintJob* PrintJob);
+    void PrintOracleCheckNumber(TReqPrintJob* PrintJob);
     bool IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount );
 };
 

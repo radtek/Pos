@@ -499,6 +499,7 @@ public:
     UnicodeString POSPlusSerialNumber;
     bool ShowCashDrawerOpeningsCount;
     bool ShowReprintReceiptDetails;
+    UnicodeString OracleCheckNumber;
 };
 
 #endif

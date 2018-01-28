@@ -135,7 +135,6 @@ bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
 {
-//    MessageBox("Going to Initialize TCP","shivashu",MB_OK);
     bool retValue = TOracleTCPIP::Instance().Connect();
     return retValue;
 }
@@ -174,6 +173,7 @@ void TManagerOraclePMS::LoadMeals(Database::TDBTransaction &DBTransaction)
 bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                                     int StaffId)
 {
+    AnsiString checkNumber = "";
     if(_paymentTransaction.Orders->Count == 0)
     {
        return true;
@@ -187,7 +187,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
         TPostRequest postRequest;
         TPostRequestAnswer _postResult;
         std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
-        AnsiString checkNumber = managerDB->GetCheckNumber(DBTransaction);
+        checkNumber = managerDB->GetCheckNumber(DBTransaction);
         DBTransaction.Commit();
 
         double tip = 0;
@@ -200,50 +200,69 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             }
         }
         double totalPayTendered = 0;
-            MessageBox(_paymentTransaction.Money.TotalRounding,"Total Rounding",MB_OK);
-            MessageBox(_paymentTransaction.Money.PaymentRounding,"Payment Rounding",MB_OK);
-//            MessageBox(_paymentTransaction.Money.RoundedChange,"Rounded Change",MB_OK);
-//            MessageBox(_paymentTransaction.Money.RoundedGrandTotal,"RoundedGrandTotal",MB_OK);
-            MessageBox(_paymentTransaction.Money.PaymentAmount,"PaymentAmount",MB_OK);
-        double roundedPaymentAmount = 0;
+        double roundedPaymentAmount = (double)_paymentTransaction.Money.PaymentAmount -
+                                      (double)_paymentTransaction.Money.PaymentSurcharges;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
-            double amount = (double)payment->GetPayTendered();
+            double amount = (double)payment->GetPayTendered() - (double)payment->GetSurcharge();
             totalPayTendered += amount;
             double portion = 0;
             tip += (double)payment->TipAmount;
             if((amount != 0)
                   && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
             {
-                            MessageBox(amount,"Pay tendered",MB_OK);
-                portion = (double)amount/(double)_paymentTransaction.Money.PaymentAmount;
-//                MessageBox(portion,"portion",MB_OK);
+                roundedPaymentAmount += (double)payment->GetPayRounding();
+                portion = (double)amount/roundedPaymentAmount ;
+                portion = RoundTo(portion,-2);
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
                 if(payment->GetSurcharge() != 0)
                 {
-                   int size = postRequest.Discount.size();
                    double surcharge = payment->GetSurcharge();
-                   double rounding = RoundTo(double((payment->GetPayRounding()/payment->GetPayTendered())*payment->GetSurcharge()),-2);
-                   surcharge += rounding;
                    surcharge = RoundTo(surcharge * 100 , -2);
                    AnsiString strSurcharge = (AnsiString)surcharge;
-                   rounding = rounding *100;
-                   AnsiString strRounding = (AnsiString)rounding;
                    if(strSurcharge.Pos(".") != 0)
                    {
                       strSurcharge = strSurcharge.SubString(1,strSurcharge.Pos(".")-1);
                    }
-                    if(strRounding.Pos(".") != 0)
+                   int size = postRequest.Discount.size();
+                   if(size < 16)
                    {
-                      strRounding = strRounding.SubString(1,strRounding.Pos(".")-1);
+                        int paymentSurcharge = 0;
+                        paymentSurcharge += atoi(strSurcharge.c_str());
+                        AnsiString str = paymentSurcharge;
+                        postRequest.Discount.push_back(str);
                    }
-                   int roundingggg = atoi(strRounding.c_str());
-                   int totalAmount = atoi(postRequest.TotalAmount.c_str()) + (roundingggg);
-                   AnsiString strAmount = totalAmount;
-                   postRequest.TotalAmount = strAmount;
-                   postRequest.Discount.push_back(strSurcharge);
+                   else
+                   {
+                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
+                        paymentSurcharge += atoi(strSurcharge.c_str());
+                        AnsiString str = paymentSurcharge;
+                        postRequest.Discount[15] = str;
+                   }
+                }
+                if(_paymentTransaction.Money.TotalRounding  != 0)
+                {
+                    double totalRounding = (double)_paymentTransaction.Money.TotalRounding;
+                    double roundingPortion = totalRounding * portion;
+                    roundingPortion = RoundTo(roundingPortion,-2);
+                    roundingPortion = roundingPortion * 100;
+                    AnsiString roundingPortionStr = (AnsiString)roundingPortion;
+                    if(roundingPortionStr.Pos(".") != 0)
+                    {
+                      roundingPortionStr = roundingPortionStr.SubString(1,roundingPortionStr.Pos(".")-1);
+                    }
+                    int roundingPortionInt = atoi(roundingPortionStr.c_str());
+                    int oldTotal = atoi(postRequest.TotalAmount.c_str());
+                    oldTotal += roundingPortionInt;
+                    postRequest.TotalAmount = oldTotal;
+                    if(postRequest.Subtotal1.size() > 0)
+                    {
+                        int oldSubTotal = atoi(postRequest.Subtotal1[0].c_str());
+                        oldSubTotal += roundingPortionInt;
+                        postRequest.Subtotal1[0] = oldSubTotal;
+                    }
                 }
                 postRequest.CheckNumber = checkNumber;
                 TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
@@ -281,6 +300,8 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction.Rollback();
     }
+    if(retValue == true)
+        TGlobalSettings::Instance().OracleCheckNumber = checkNumber;
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -296,7 +317,6 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
         TPostRoomInquiry postRoomRequest;
         postRoomRequest.InquiryInformation = _roomNumber;
         oracledata->CreatePostRoomInquiry(postRoomRequest);
-//        MessageBox(postRoomRequest.WorkstationId,"WORKSTATIONID12",MB_OK);
         TiXmlDocument doc = oracledata->CreateRoomInquiryXML(postRoomRequest);
         AnsiString resultData = "";
         AnsiString data = oracledata->SerializeOut(doc);

@@ -314,6 +314,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintOrganizationNumber, "Organization Number");
 	DefaultCaption[epofiPrintOrganizationNumber] = "Organization Number";
+
+    Instructions[i++] = InstructionPair(epofiPrintOracleCheckNumber, "Oracle Check Number");
+	DefaultCaption[epofiPrintOracleCheckNumber] = "Oracle Check Number";
 }
 
 
@@ -493,6 +496,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintBIRSalesTax:
     case epofiPrintPOSPlusSerialNumber:
     case epofiPrintOrganizationNumber:
+    case epofiPrintOracleCheckNumber:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -767,6 +771,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintOrganizationNumber:
             PrintOrganizationNumber(PrintJob);
+            break;
+        case epofiPrintOracleCheckNumber:
+            PrintOracleCheckNumber(PrintJob);
             break;
 		case epofiPrintServingCourse:
 			PrintServingCourse(PrintJob);
@@ -9075,6 +9082,29 @@ void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 		pPrinter->Line->Columns[0]->Text  = OrgName;
         pPrinter->Line->Columns[1]->Text  = TGlobalSettings::Instance().OrganizationNumber;
 		pPrinter->AddLine();
+        Empty = false;
+    }
+}
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
+{
+	UnicodeString OrgName = "Oracle Check Number: ";
+
+	if (TGlobalSettings::Instance().OracleCheckNumber == "")
+	{
+		Empty = true;
+	}
+	else
+	{
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->ColCount = 2;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+		pPrinter->Line->Columns[0]->Text  = OrgName;
+        pPrinter->Line->Columns[1]->Text  = TGlobalSettings::Instance().OracleCheckNumber;
+		pPrinter->AddLine();
+        TGlobalSettings::Instance().OracleCheckNumber = "";
         Empty = false;
     }
 }
