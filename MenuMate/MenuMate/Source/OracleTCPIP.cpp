@@ -85,19 +85,6 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     AnsiString directoryName = "";
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = "";
-    //bool isLinkActive = true;
-//    if(!tcpClient->Connected())
-//    {
-//        bool isLinkActive = false;
-//        std::auto_ptr<TOracleDataBuilder> oracledata(new TOracleDataBuilder());
-//        TLinkDescription linkDescription = oracledata->CreateLinkDescription();
-//        TiXmlDocument doc = oracledata->CreateLinkDescriptionXML(linkDescription);
-//        AnsiString data = oracledata->SerializeOut(doc);
-//        AnsiString resultData = "";
-//        resultData = SendAndFetch(data);
-//        // deserialize the resposne
-//        isLinkActive = oracledata->DeserializeGetLinkStatus(resultData);
-//    }
 	if (inData != "" && tcpClient->Connected() /*&& isLinkActive*/)
 	{
         try

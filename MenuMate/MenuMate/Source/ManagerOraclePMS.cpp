@@ -208,13 +208,15 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             double amount = (double)payment->GetPayTendered() - (double)payment->GetSurcharge();
             totalPayTendered += amount;
             double portion = 0;
+            double portionOriginal = 0;
             tip += (double)payment->TipAmount;
             if((amount != 0)
                   && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
             {
                 roundedPaymentAmount += (double)payment->GetPayRounding();
                 portion = (double)amount/roundedPaymentAmount ;
-                portion = RoundTo(portion,-2);
+                portionOriginal = portion;
+//                portion = RoundTo(portion,-2);
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
                 if(payment->GetSurcharge() != 0)
@@ -242,6 +244,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                         postRequest.Discount[15] = str;
                    }
                 }
+
                 if(_paymentTransaction.Money.TotalRounding  != 0)
                 {
                     double totalRounding = (double)_paymentTransaction.Money.TotalRounding;
