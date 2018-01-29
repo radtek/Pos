@@ -380,7 +380,7 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 	{
 		if(Order->OrderKey != 0)
 		{
-            if(Order->Cost < -1000000)
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
                 Order->Cost = 0;
 
 			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -423,7 +423,7 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
                 SubOrder->RunBillCalculator();
 
-                if(SubOrder->Cost < -1000000)
+                if(SubOrder->Cost < -1000000 || SubOrder->Cost > 900000000)
                     SubOrder->Cost = 0;
 
 				IBInternalQuery->Close();
@@ -1250,7 +1250,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 			IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
 
-            if(Order->Cost < -1000000)
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
                 Order->Cost = 0;
 
 			IBInternalQuery->ParamByName("COST")->AsCurrency = Order->Cost;
@@ -1651,7 +1651,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 				IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 				IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
-                if(CurrentSubOrder->Cost < -1000000)
+                if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
                     CurrentSubOrder->Cost = 0;
 				IBInternalQuery->ParamByName("COST")->AsCurrency = CurrentSubOrder->Cost;
 				IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = CurrentSubOrder->Loyalty_Key;

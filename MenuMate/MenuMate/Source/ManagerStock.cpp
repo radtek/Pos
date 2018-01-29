@@ -360,7 +360,7 @@ void TManagerStock::UpdateStockCost(Database::TDBTransaction &DBTransaction,Unic
 
 	try
 	{
-        if(inCost < -1000000)
+        if(inCost < -1000000 || inCost > 900000000)
             inCost = 0;
 
 		IBInternalQuery->Close();
@@ -459,7 +459,7 @@ void TManagerStock::UpdateItemCosts(Database::TDBTransaction &DBTransaction,Unic
 			for (;!IBReceipeQuery->Eof ; IBReceipeQuery->Next())
 			{
 				UnitCost  	= 		double(IBReceipeQuery->FieldByName("COST")->AsFloat);
-                if(UnitCost < -1000000)
+                if(UnitCost < -1000000 || UnitCost > 900000000)
                     UnitCost = 0;
 				UnitQty  	= 		double(IBReceipeQuery->FieldByName("QTY")->AsFloat);
 				OrderCost 	+= 	double(UnitCost * UnitQty);

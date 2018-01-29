@@ -52,7 +52,7 @@ void TWriteOff::InsertToDatabase(Database::TDBTransaction &DBTransaction, TItemC
 {
 	try
 	{
-        if(inOrder->Cost < -1000000)
+        if(inOrder->Cost < -1000000 || inOrder->Cost > 900000000)
             inOrder->Cost = 0;
 
 		int Key, Course_Key, Category_Key, Group_Key;
@@ -132,7 +132,7 @@ void TWriteOff::InsertToDatabase(Database::TDBTransaction &DBTransaction, TItemC
 {
 	try
 	{
-        if(inOrder->Cost < -1000000)
+        if(inOrder->Cost < -1000000 || inOrder->Cost > 900000000)
             inOrder->Cost = 0;
 
 		int Key, Course_Key, Menu_Key, Category_Key, Group_Key;

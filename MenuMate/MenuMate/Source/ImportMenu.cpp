@@ -2531,7 +2531,7 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 {
 	try
 	{
-        if(inCost < -1000000)
+        if(inCost < -1000000 || inCost > 900000000)
             inCost = 0;
 
 		TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
@@ -3401,7 +3401,7 @@ __int32 TImportMenu::UpdateItemSizeInDB(
 
 	try
 	{
-        if(inCost < -1000000)
+        if(inCost < -1000000 || inCost > 900000000)
             inCost = 0;
 
 		TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );

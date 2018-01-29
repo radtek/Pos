@@ -2462,7 +2462,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("QTY")->AsFloat = double(Order->GetQty());
                 IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach_BillCalc();
 
-                if(Order->Cost < -1000000)
+                if(Order->Cost < -1000000 || Order->Cost > 900000000)
                     Order->Cost = 0;
 
 				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(Order->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
@@ -2633,7 +2633,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
 					IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
 
-                    if(CurrentSubOrder->Cost < -1000000)
+                    if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
                         CurrentSubOrder->Cost = 0;
 
 					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(CurrentSubOrder->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
