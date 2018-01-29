@@ -464,20 +464,18 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
 {
     TSiHotService siHotService;
     siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.SuperCategory_Desc = "Rounding";
+    siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.MiddleCategory_Desc = "Rounding";
+    siHotService.MiddleCategory_Desc = "Rounding Differences";
     siHotService.ArticleCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.ArticleCategory_Desc = "Rounding";
+    siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.ArticleNo_Desc = "Rounding";
-    double pricePerUnit = fabs((double)(_paymentTransaction.Money.PaymentRounding));
+    siHotService.ArticleNo_Desc = "";
+    double pricePerUnit = fabs((double)(_paymentTransaction.Money.TotalRounding));
     pricePerUnit = RoundTo(pricePerUnit,-2);
     siHotService.PricePerUnit = pricePerUnit;//fabs((double)(_paymentTransaction.Money.PaymentRounding));
-    siHotService.Amount = _paymentTransaction.Money.RoundingAdjustment < 0 ? "-1" : "1";
-    double priceTotal = fabs((double)(_paymentTransaction.Money.PaymentRounding));
-    priceTotal = RoundTo(priceTotal,-2);
-    siHotService.PriceTotal = priceTotal;//fabs((double)(_paymentTransaction.Money.PaymentRounding));
+    siHotService.Amount = _paymentTransaction.Money.TotalRounding < 0 ? "-1" : "1";
+    siHotService.PriceTotal = pricePerUnit;
     siHotService.VATPercentage = 0;
     siHotService.Billno = billNo;
     siHotService.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
@@ -572,6 +570,10 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     if((surcharge != 0) /*|| (_paymentTransaction.Money.ProductSurcharge != 0)*/ || tip != 0)
     {
         AddSurchargeAndTip(_roomCharge,surcharge,billNo,tip);
+    }
+    if(_paymentTransaction.Money.TotalRounding != 0)
+    {
+        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
     }
 }
 //----------------------------------------------------------------------------

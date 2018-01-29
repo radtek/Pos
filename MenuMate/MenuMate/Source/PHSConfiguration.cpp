@@ -149,7 +149,6 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
-        tbRoundingCategory->Enabled = false;
         cbEnableCustomerJourney->Enabled = true;
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
     }
