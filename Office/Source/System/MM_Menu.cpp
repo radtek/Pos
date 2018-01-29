@@ -772,13 +772,6 @@ void TMenuLoadDB::GetAllRevenueCodesFromDB(std::map<int,AnsiString> &revenueCode
         tpcInfo.code            = tpcOptions->FieldByName( "REVENUECODE"         )->AsInteger;
         tpcInfo.codeDescription = tpcOptions->FieldByName( "REVENUECODE_DESCRIPTION"        )->AsString;
 
-        /*AnsiString revenueCodeDetails = tpcInfo.code;
-        revenueCodeDetails += "(";
-        revenueCodeDetails += tpcInfo.codeDescription;
-        revenueCodeDetails += ")";
-        revenueCodes->Add(revenueCodeDetails);
-        revenueCodes->Add(""); */
-
         revenueCodesMap.insert(std::pair<int,AnsiString>(tpcInfo.code,tpcInfo.codeDescription));
         tpcOptions->Next();
     }
