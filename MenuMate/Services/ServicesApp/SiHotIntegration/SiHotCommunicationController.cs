@@ -76,7 +76,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 5000;
+                    request.Timeout = 10000;
                     //request.ContentType = "text/plain";
                     stringList.Add("=============================================================================");
                     stringList.Add("Inquiry Request at:       " + DateTime.Now.ToString("ddMMMyyyy"));
@@ -106,6 +106,8 @@ namespace SiHotIntegration
                 {
                     ServiceLogger.Log("Exception in sending Room request" + ex.Message);
                     stringList.Add("exception Message:         " + ex.Message);
+                    stringList.Add("exception Date:-           " + DateTime.Now.ToString("ddMMMyyyy"));
+                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hhmmss"));
                 }
                 finally
                 {
