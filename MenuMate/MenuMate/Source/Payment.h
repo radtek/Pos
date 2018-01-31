@@ -169,6 +169,8 @@ public:
     void ClearPaymentAttribute();
     bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
     AnsiString GetPropertyString();
+    UnicodeString CSVString;
+
 };
 
 #endif

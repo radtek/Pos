@@ -6459,7 +6459,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
-				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->CSVString + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
@@ -6498,7 +6498,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
-				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->CSVString + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));

@@ -2896,10 +2896,9 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 					{
 						Csv.LoadFromFile(File);
 					}
-
-					Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
+					Csv.Add((Payment->CSVString += "\u00A0") + "," + FormatDateTime("mm/dd/yy", Date()) + "," + FormatDateTime("hh:nn",
 					Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
-					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
 
 					Csv.SaveToFile(File);
 				}
@@ -6499,3 +6498,4 @@ bool TListPaymentSystem::TryToEnableSiHot()
     }
     return retValue;
 }
+
