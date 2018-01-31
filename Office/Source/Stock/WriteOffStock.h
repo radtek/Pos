@@ -93,6 +93,7 @@ private:	// User declarations
     std::vector<TDateTime> DateArray;
     double totalcost;
     int DeleteRow;
+    int Decimalpalaces ;
 
 public:		// User declarations
     __fastcall TfrmWriteOffStock(TComponent* Owner);

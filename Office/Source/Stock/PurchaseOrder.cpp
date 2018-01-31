@@ -34,7 +34,9 @@ using std::auto_ptr;
 __fastcall TfrmPurchaseOrder::TfrmPurchaseOrder(TComponent* Owner)
 : TForm(Owner),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
-{}
+{
+Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
+}
 //---------------------------------------------------------------------------
 TModalResult TfrmPurchaseOrder::Execute()
 {	Initialise();
@@ -134,10 +136,21 @@ void TfrmPurchaseOrder::LoadOrder()
 		NodeData->StocktakeUnit						= qrPurchaseStock->FieldByName("Stocktake_Unit")->AsString;
 		NodeData->SupplierCode						= qrPurchaseStock->FieldByName("Supplier_Code")->AsString;
 		NodeData->SupplierUnit						= qrPurchaseStock->FieldByName("Supplier_Unit")->AsString;
-		NodeData->SupplierUnitCost					= qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat;
+         if(Decimalpalaces== 4)
+                {
+
+
+       NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat,ffFixed,19, 4));
+       	NodeData->SupplierUnitQty = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat,ffFixed,19, 4));
+        }
+        else
+        {
+           NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat,ffFixed,19, 2));
+           NodeData->SupplierUnitQty = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat,ffFixed,19, 2));
+        }
 		//NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Stock_Qty")->AsFloat / qrPurchaseStock->FieldByName("Order_Qty")->AsFloat;
 		NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Supplier_Unit_Size")->AsFloat;
-		NodeData->SupplierUnitQty					= qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat;
+		//NodeData->SupplierUnitQty					= qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat;
 	}
 	if (Transaction->InTransaction)
 	Transaction->Commit();

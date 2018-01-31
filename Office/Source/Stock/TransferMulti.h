@@ -146,6 +146,7 @@ private:	// User declarations
         TStringList *BatchKeyList;
 		    void LoadStocksForManualMode();
     void LoadStocksForStockRequestMode();
+    int Decimalpalaces ;
 public:		// User declarations
 	__fastcall TfrmTransferMulti(TComponent* Owner);
 	AnsiString Source;
@@ -161,6 +162,7 @@ public:		// User declarations
     int Transfer_no;
 
     	float	StockTakeQty  ;
+
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmTransferMulti *frmTransferMulti;

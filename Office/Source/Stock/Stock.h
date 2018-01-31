@@ -234,7 +234,7 @@ private:	// User declarations
 	int GetStockItemCount();
 	bool StockInStocktake( int StockKey );
 	int StockItemIconIndex;
-
+    int Decimalpalaces ;
 	enum TStockNodeType { snDeletedBin, snStockCategory, snStockGroup, snStockItem };
 	class TStockNodeData
 	{

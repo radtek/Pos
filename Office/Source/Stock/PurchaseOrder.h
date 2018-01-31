@@ -184,6 +184,7 @@ private:	// User declarations
     int CheckImage();
     void CallPurchaseOrderRerport(AnsiString ReportName, bool emailp, AnsiString efname);
     bool CheckNegativeValue();
+    int Decimalpalaces;
 public:
 	TDateTime DateRequired;
 	// User declarations

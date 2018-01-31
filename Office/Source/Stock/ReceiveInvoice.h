@@ -125,7 +125,7 @@ __published:	// IDE-managed Components
     TIBSQL *qrUpdateOrder;
     TIBQuery *qrSelectLocationUpdate;
     TIBQuery *qrSupplierOrderQty;
-        TNumericEdit *neBackOrder;
+    TNumericEdit *neBackOrder;
     TIBQuery *qrLocationUpdate;
     TIBQuery *qrPurchaseStockAuto;
     TIBQuery *qrUnitChanged;
@@ -144,6 +144,7 @@ __published:	// IDE-managed Components
     TIBQuery *qrUpdateDateInStockTrans;
     TIBQuery *qrUpdateDateInTransactionBatch;
     TEdit *myEditBox;
+
     TRichEdit *reGstValue;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -236,6 +237,7 @@ private:	// User declarations
     bool CheckNegativeEntered(TRichEdit *reValue);
     void CheckNegativeValue(TNumericEdit *neCost);
     bool IsNegativeQtyOrCost;
+    int Decimalpalaces;
 
 
 public:		// User declarations
@@ -250,7 +252,7 @@ public:		// User declarations
     AnsiString InvoiceReference;
     AnsiString SupplierName;
     AnsiString BaseUnit;
-    int Decimalpalaces ;
+   
     bool IsPrintReport;
     bool IsSavedPackingSlip;
     bool AllowNegativeValue;

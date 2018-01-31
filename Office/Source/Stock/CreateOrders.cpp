@@ -143,7 +143,17 @@ IVTEditLink *EditLink)
 	if (Node && Column == 4)
 	{
 		TOrderSupplierItemNodeData *NodeData = (TOrderSupplierItemNodeData *)Sender->GetNodeData(Node);
-		neStockQty->Value = NodeData->SupplierUnitQty;
+          if(CurrentConnection.SettingDecimalPlaces == 4)
+          {
+           	neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, 4));
+          }
+
+          else
+          {
+          	neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, 2));
+          }
+		//neStockQty->Value = NodeData->SupplierUnitQty;
+
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
@@ -158,7 +168,15 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 		if (Column == 4)
 		{
 			TOrderSupplierItemNodeData *NodeData	= (TOrderSupplierItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-			NodeData->SupplierUnitQty					= neStockQty->Value;
+            if(Decimalpalaces== 4)
+            {
+             	NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, 4));
+            }
+            else
+            {
+             	NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, 2));
+            }
+			
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
 	}
@@ -620,7 +638,15 @@ void TfrmCreateOrders::PopulateNodeData (TOrderSupplierItemNodeData *NodeData)
 	OrderItemData->StocktakeUnit = NodeData->StocktakeUnit;
 	OrderItemData->SupplierCode  = NodeData->SupplierCode;
 	OrderItemData->SupplierUnit  = NodeData->SupplierUnit;
-	OrderItemData->SupplierUnitCost	= NodeData->SupplierUnitCost;
+    if(Decimalpalaces == 4)
+       {
+        	OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 4));
+       }
+         else
+         {
+          	OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 2));
+         }
+   //	OrderItemData->SupplierUnitCost	= NodeData->SupplierUnitCost;
 	OrderItemData->SupplierUnitSize	= NodeData->SupplierUnitSize;
 	OrderItemData->SupplierUnitQty	= NodeData->SupplierUnitQty;
 	OrderItemData->SupplierKey   =	 NodeData->SupplierKey;

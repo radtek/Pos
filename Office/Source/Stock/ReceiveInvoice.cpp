@@ -50,6 +50,7 @@ frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 	dtpInvoiceDate->Time				= Time();
 	IsPackingSlipUpdateMode = false;
 	BatchKey = 0;
+    Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
@@ -70,7 +71,7 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	vtvStockQty->Visible	= true;
 	vtvStockQty->Clear();
 	vtvStockQty->NodeDataSize = sizeof(TInvoiceItemNodeData);
-	Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
+ 
 	if(Decimalpalaces==0)
 	{ Decimalpalaces=4;  }
 	neGST->DecimalPlaces= Decimalpalaces;
@@ -153,7 +154,7 @@ void TfrmReceiveInvoice::LoadForm()
 				NodeData->StocktakeUnit				= qrStockTransaction->FieldByName("ORDER_UNIT")->AsString;
 				NodeData->StockKey					= qrStockTransaction->FieldByName("STOCK_KEY")->AsInteger;
 				NodeData->SupplierCode				= qrStockTransaction->FieldByName("Supplier_Code")->AsString;
-				NodeData->SupplierUnit				= qrStockTransaction->FieldByName("UNIT")->AsString;
+				NodeData->SupplierUnit				= qrStockTransaction->FieldByName("UNIT")->AsString; //StrToFloat(FloatToStrF(qrStockTransaction->FieldByName("UNIT")->AsString,ffFixed,19, 4))
 				NodeData->DisplayedUnit				= qrStockTransaction->FieldByName("UNIT")->AsString;
 				BaseUnit=NodeData->DisplayedUnit;
 				NodeData->IsUnitChanged          = false;
@@ -337,7 +338,15 @@ void __fastcall TfrmReceiveInvoice::vtvStockQtyCreateEditor(TBaseVirtualTree *Se
 	if (Node && Column == 4) // Quantity
 	{
 		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-		neStockQty->Value = NodeData->OrderQty;
+     if(Decimalpalaces == 4)
+            {
+             neStockQty->Value = StrToFloat(FloatToStrF(NodeData->OrderQty, ffFixed,19, 4));
+            }
+            else
+            {
+             neStockQty->Value = StrToFloat(FloatToStrF(NodeData->OrderQty, ffFixed,19, 2));
+            }
+		
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
@@ -345,7 +354,15 @@ void __fastcall TfrmReceiveInvoice::vtvStockQtyCreateEditor(TBaseVirtualTree *Se
 	else if (Node && Column == 5) // Unit Cost
 	{
 		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-		neCost->Value = NodeData->SupplierUnitCost;
+        if(Decimalpalaces == 4)
+            {
+            neCost->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 4));
+            }
+            else
+            {
+              neCost->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 2));
+            }
+	  
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neCost);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neCost->Handle, EM_SETSEL, 0, -1);
@@ -353,7 +370,15 @@ void __fastcall TfrmReceiveInvoice::vtvStockQtyCreateEditor(TBaseVirtualTree *Se
 	else if (Node && Column == 6) // Total Cost
 	{
 		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-		neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+         if(Decimalpalaces == 4)
+         {
+           neTotalCost->Text = FloatToStrF(NodeData->SupplierTotalCost, ffFixed,19, 4);
+         }
+         else
+         {
+           neTotalCost->Text = FloatToStrF(NodeData->SupplierTotalCost, ffFixed,19, 2);
+         }
+	
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neTotalCost);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neTotalCost->Handle, EM_SETSEL, 0, -1);
@@ -627,7 +652,7 @@ void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 }
 //---------------------------------------------------------------------------
 void TfrmReceiveInvoice::ShowTotals()
-{       Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
+{       
 	TInvoiceSummary invoiceSummary;
     //neGST->Value = 0.00;
 	CalculateInvoiceTotals(invoiceSummary);
@@ -2458,6 +2483,7 @@ void TfrmReceiveInvoice::UpdateSupplierUnit(TInvoiceItemNodeData *NodeData)
 
 void TfrmReceiveInvoice::UpdateNodeQty(TInvoiceItemNodeData *NodeData, double QtyToReceive, double newSupplierUnitSize)
 {
+    
     double quantity = NodeData->OrderQty;
     NodeData->DisplayedUnit = dbcbUnit->Items->Strings[dbcbUnit->ItemIndex];
 
@@ -2477,12 +2503,18 @@ void TfrmReceiveInvoice::UpdateNodeQty(TInvoiceItemNodeData *NodeData, double Qt
 
     //if(quantity != 0)
     //{
+        //quantity->DecimalPlaces=Decimalpalaces;
         NodeData->OrderQty = quantity;
+
     //}
+   // QtyToReceive->DecimalPlaces= Decimalpalaces
     NodeData->SupplierUnitsToReceive = QtyToReceive;
     neStockQty->Value = NodeData->OrderQty;
+    //neStockQty->DecimalPlaces=DecimalPlaces;
+    neStockQty->DecimalPlaces=Decimalpalaces;
     NodeData->SupplierTotalCost = NodeData->SupplierUnitCost  * NodeData->OrderQty;
     neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+   // neTotalCost->DecimalPlace=DecimalPlace;
     NodeData->BackOrder	= NodeData->SupplierUnitsToReceive - NodeData->OrderQty;
 }
 

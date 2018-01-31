@@ -101,7 +101,7 @@ private:	// User declarations
     void PopulatePriceArray(AnsiString Location, AnsiString Item);
     bool ChangeInRecipe;
     void UpdateDB(void);
-
+    int Decimalpalaces ;
     std::map<AnsiString, double> ItemPrices;
 public:		// User declarations
     __fastcall TfrmEditRecipe(TComponent* Owner);

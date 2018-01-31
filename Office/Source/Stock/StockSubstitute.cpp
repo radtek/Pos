@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "StockSubstitute.h"
-
+#include "Connections.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "VirtualTrees"
@@ -14,6 +14,7 @@ TfrmStockSubstitute *frmStockSubstitute;
 __fastcall TfrmStockSubstitute::TfrmStockSubstitute(TComponent* Owner)
    : TForm(Owner)
 {
+  Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -44,15 +45,34 @@ void TfrmStockSubstitute::GetStockSubstitute(AnsiString Location)
                 NodeData->StockKey = qrGetSubstituteStock->FieldByName("STOCK_KEY")->AsInteger;
                 NodeData->StockCode = qrGetSubstituteStock->FieldByName("CODE")->AsString;
                 NodeData->StockName = qrGetSubstituteStock->FieldByName("STOCK_NAME")->AsString;
-                NodeData->StockLatestCost = qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat;
-                NodeData->StockOnHandQty = qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat;
-                NodeData->StockMinLevel = qrGetSubstituteStock->FieldByName("STOCK_MINLEVEL")->AsFloat;
+                if(Decimalpalaces = 4)
+                {
+                NodeData->StockLatestCost = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat,ffFixed,19, 4);
+                NodeData->StockOnHandQty =  FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat,ffFixed,19, 4);
+                NodeData->SubstituteLatestCost= FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat,ffFixed,19, 4);
+                NodeData->SubstituteOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat,ffFixed,19, 4);
+                NodeData->SubstituteMinLevel = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat,ffFixed,19, 4);
+                NodeData->Variance = FloatToStrF( qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger,ffFixed,19, 4);
+
+                }
+                else
+                {
+                NodeData->StockLatestCost = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat,ffFixed,19, 2);
+                NodeData->StockOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat,ffFixed,19, 2);
+                NodeData->SubstituteLatestCost= FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat,ffFixed,19, 2);
+                NodeData->SubstituteOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat,ffFixed,19, 2);
+                NodeData->SubstituteMinLevel = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat,ffFixed,19, 2);
+                NodeData->Variance = FloatToStrF( qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger,ffFixed,19, 2);
+                 //qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger;
+                }
+             
+
                 NodeData->SubstituteStockKey = qrGetSubstituteStock->FieldByName("SUBSTITUTE_STOCK_KEY")->AsInteger;
                 NodeData->SubstituteStockCode = qrGetSubstituteStock->FieldByName("SUBSTITUTE_CODE")->AsString;
                 NodeData->SubstituteStockName = qrGetSubstituteStock->FieldByName("SUBSTITUTE_NAME")->AsString;
-                NodeData->SubstituteLatestCost = qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat;
-                NodeData->SubstituteOnHandQty = qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat;
-                NodeData->SubstituteMinLevel = qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat;
+
+                //NodeData->SubstituteOnHandQty = qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat;
+
                 NodeData->Condition1 = qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND1")->AsInteger;
                 NodeData->Condition2 = qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND2")->AsInteger;
                 NodeData->Variance = qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger;

@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #pragma hdrstop
-
+#include "Connections.h"
 #include "ReceiveStockItem.h"
 #include "StockData.h"
 #include "Login.h"
@@ -19,6 +19,7 @@ __fastcall TfrmReceiveStockItem::TfrmReceiveStockItem(TComponent* Owner)
 : TForm(Owner),
 frmAddStock(new TfrmAddStock(NULL))
 {
+ Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 TModalResult TfrmReceiveStockItem::Execute()
@@ -217,6 +218,7 @@ void __fastcall TfrmReceiveStockItem::btnCancelClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 {
+
 	if (qrSupplierStock->FieldByName("Supplier_Unit")->AsString == "")
 	{
 		Application->MessageBox("Please select or add a supplier unit.", "Error", MB_ICONERROR + MB_OK);
@@ -245,14 +247,31 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 	StocktakeUnit	= qrStock->FieldByName("Stocktake_Unit")->AsString;
 	Initialised	= (qrStock->FieldByName("Initialised")->AsString == "T");
 	InitialisedTime	= qrStock->FieldByName("Initialised_Time")->AsDateTime;
-   LatestCost   = qrStock->FieldByName("Latest_Cost")->AsFloat;
-   OnHandQty    = qrStock->FieldByName("On_Hand")->AsFloat;
+   if(Decimalpalaces== 4)
+                {
+
+  //  FloatToStrF(NodeData->AverageCost, ffCurrency, 19, 2);
+   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, 4));
+   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, 4));
+   SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, 4);
+
+  StocktakeUnitQty  =  StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 4));
+     }
+     else
+    {
+   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, 2));
+   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, 2));
+   SupplierUnitCost =FloatToStrF(neCost1->Value,ffFixed,19, 2);
+   StocktakeUnitQty = StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 2));
+     }
+
+
 	SupplierCode	= qrSupplierStock->FieldByName("Supplier_Code")->AsString;
 	SupplierUnit	= qrSupplierStock->FieldByName("Supplier_Unit")->AsString;
-	SupplierUnitCost = neCost1->Value;
+
 	SupplierUnitQty	 =  neQty->Value;
 	SupplierUnitSize  = qrSupplierStock->FieldByName("Qty")->AsFloat;
-	StocktakeUnitQty  = SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat;
+
 
     // qrSupplierSelection
     qrSupplierSelection->Close();
@@ -388,7 +407,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		neCost2->OnChange = NULL;
 		neCost3->OnChange = NULL;
 		neCost4->OnChange = NULL;
-
+        
 		double Cost1, Cost2, Cost3, Cost4;
 
 		// Default costs, incase they can't be calculated.
@@ -396,7 +415,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		Cost2 = Cost1 * (qrStock->FieldByName("GST_Percent")->AsFloat + 100) / 100;
 		Cost3 = Cost1 * neQty->Value;
 		Cost4 = Cost2 * neQty->Value;
-
+       
 		if (Sender == neCost1)
 		{
 			Cost1 = neCost1->Value;
@@ -408,6 +427,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		{
 			if (qrStock->FieldByName("GST_Percent")->AsFloat + 100 != 0)
 			{
+              
 				Cost1 = neCost2->Value * 100 / (qrStock->FieldByName("GST_Percent")->AsFloat + 100);
 				Cost2 = neCost2->Value;
 				Cost3 = Cost1 * neQty->Value;
@@ -434,15 +454,21 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 				Cost4 = neCost4->Value;
 			}                             
 		}
+   
 		neCost1->Value		= Cost1;
+        neCost1->DecimalPlaces=Decimalpalaces;
 		neCost2->Value		= Cost2;
+        neCost2->DecimalPlaces=Decimalpalaces;
 		neCost3->Enabled	= (neQty->Value != 0);
 		neCost4->Enabled	= (neQty->Value != 0);
 		if (neQty->Value != 0)
 		{
 			neCost3->Value	= Cost3;
+            neCost3->DecimalPlaces=Decimalpalaces;
 			neCost4->Value	= Cost4;
+            neCost4->DecimalPlaces=Decimalpalaces;
 		}
+       
 		else
 		{
 			neCost3->Value	= 0;

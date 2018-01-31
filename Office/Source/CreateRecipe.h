@@ -124,7 +124,7 @@ private:	// User declarations
     bool CheckRecipeExists(void);
     double GetItemCost(AnsiString Item, AnsiString Location);
     void UpdatePrices(AnsiString Item, AnsiString Location);
-
+     int Decimalpalaces ;
 public:		// User declarations
     __fastcall TfrmCreateRecipe(TComponent* Owner);
 };

@@ -16,6 +16,7 @@ TfrmUpdateSupplierCosts *frmUpdateSupplierCosts;
 __fastcall TfrmUpdateSupplierCosts::TfrmUpdateSupplierCosts(TComponent* Owner)
    : TForm(Owner)
 {
+ Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUpdateSupplierCosts::FormShow(TObject *Sender)
@@ -53,7 +54,17 @@ void TfrmUpdateSupplierCosts::AddDataToList()
                 NodeData->StockUnit = qrGetSupplierStock->FieldByName("STOCKTAKE_UNIT")->AsString;
                 NodeData->OrderUnit = qrGetSupplierStock->FieldByName("SUPPLIER_UNIT")->AsString;
                 NodeData->StockQuantity = qrGetSupplierStock->FieldByName("QTY")->AsCurrency;
-                NodeData->SupplierUnitCost = qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat;
+                if(Decimalpalaces==2)
+                {
+
+                NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat,ffFixed,19, 4));
+
+                }
+                else
+                {
+
+            NodeData->SupplierUnitCost =  StrToFloat(FloatToStrF(qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat,ffFixed,19, 2));
+                }
                 NodeData->PreferredSupplier = qrGetSupplierStock->FieldByName("PREFERRED_SUPPLIER")->AsString == 'T' ? true : false;
              }
 
