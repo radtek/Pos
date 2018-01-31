@@ -33,6 +33,7 @@ __published:	// IDE-managed Components
     TCheckBox *cbCalculateServiceChargePostDiscount;
     TCheckBox *cbApplyTaxToServiceCharge;
     TComboBox *cbTaxProfile;
+    TCheckBox *cbUseItalyFiscalPrinter;
 
     //add frn
     TPageControl *Pages;
@@ -49,7 +50,7 @@ __published:	// IDE-managed Components
     void __fastcall cbCalculateServiceChargePostDiscountClick(TObject *Sender);
     void __fastcall cbApplyTaxToServiceChargeClick(TObject *Sender);
     void __fastcall cbTaxProfileChange(TObject *Sender);
-
+    void __fastcall cbUseItalyFiscalPrinterClick(TObject *Sender);
 public:		// User declarations
     __fastcall TfrmTaxMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
 

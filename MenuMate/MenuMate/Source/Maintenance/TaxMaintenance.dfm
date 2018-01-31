@@ -211,6 +211,22 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           TabOrder = 8
           OnChange = cbTaxProfileChange
         end
+        object cbUseItalyFIscalPrinter: TCheckBox
+          Left = 32
+          Top = 360
+          Width = 265
+          Height = 25
+          Caption = 'Use Italy Fiscal Printer'
+          Ctl3D = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 9
+        end
         object Panel11: TPanel
           Left = 1
           Top = 1

@@ -255,3 +255,10 @@ void TfrmTaxMaintenance::saveNumSettingToDatabase(vmVariables vmVariable, double
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount = cbUseItalyFiscalPrinter->Checked;
+    TGlobalSettings::Instance().UsingServiceCharge = cbUseItalyFiscalPrinter->Checked;
+    saveBoolSettingToDatabase(vmCalculateServiceChargePostDiscount, TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount);
+    saveBoolSettingToDatabase(vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge);
+}
