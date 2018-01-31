@@ -9097,12 +9097,9 @@ void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
 	else
 	{
         pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
-		pPrinter->Line->ColCount = 2;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
-        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
-        pPrinter->Line->Columns[1]->Alignment = taRightJustify;
-		pPrinter->Line->Columns[0]->Text  = OrgName;
-        pPrinter->Line->Columns[1]->Text  = TGlobalSettings::Instance().OracleCheckNumber;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Text  = OrgName + TGlobalSettings::Instance().OracleCheckNumber;
 		pPrinter->AddLine();
         TGlobalSettings::Instance().OracleCheckNumber = "";
         Empty = false;

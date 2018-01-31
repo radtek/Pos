@@ -187,7 +187,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
         if(payment->GetPaymentAttribute(ePayTypeCredit))
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-        if(paymentMethod.Trim() == "")
+        if(paymentMethod.Trim() == "" || paymentMethod.Trim().Length() > 6)
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
         if(!payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
