@@ -106,7 +106,7 @@ private:	// User declarations
         bool isPrefferedSupplierSelected;
 //	bool InvoiceContainsItem(AnsiString StockCode, AnsiString SupplierUnit, AnsiString InvoiceRef);
 	const std::auto_ptr<TfrmAddStock>frmAddStock;
-      int Decimalpalaces ;
+    
 public:		// User declarations
 	__fastcall TfrmReceiveStockItem(TComponent* Owner);
 	AnsiString	StockCode;

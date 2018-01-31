@@ -176,7 +176,6 @@ private:	// User declarations
     void RecieveStockItem(AnsiString StockCode);
     void PopulateStockWithCategory(AnsiString Location);
     void PopulateStockWithOutCategory(AnsiString Location);
-     int Decimalpalaces ;
 public:		// User declarations
 	__fastcall TfrmStockRequest(TComponent* Owner);
 	AnsiString	StockCode;

@@ -81,7 +81,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object Label3: TLabel
         Left = 525
-        Top = 326
+        Top = 336
         Width = 113
         Height = 13
         Alignment = taRightJustify
@@ -107,7 +107,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object lbeTotalInc: TLabel
         Left = 693
-        Top = 326
+        Top = 337
         Width = 81
         Height = 13
         Alignment = taRightJustify
@@ -466,7 +466,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object neGST: TNumericEdit
         Left = 648
-        Top = 331
+        Top = 337
         Width = 129
         Height = 21
         Value = -5.65465465465465E21

@@ -143,15 +143,11 @@ IVTEditLink *EditLink)
 	if (Node && Column == 4)
 	{
 		TOrderSupplierItemNodeData *NodeData = (TOrderSupplierItemNodeData *)Sender->GetNodeData(Node);
-          if(CurrentConnection.SettingDecimalPlaces == 4)
-          {
-           	neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, 4));
-          }
+         neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 
-          else
-          {
-          	neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, 2));
-          }
+
+
+
 		//neStockQty->Value = NodeData->SupplierUnitQty;
 
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
@@ -168,15 +164,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 		if (Column == 4)
 		{
 			TOrderSupplierItemNodeData *NodeData	= (TOrderSupplierItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-            if(Decimalpalaces== 4)
-            {
-             	NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, 4));
-            }
-            else
-            {
-             	NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, 2));
-            }
-			
+            NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
 	}
@@ -248,7 +236,7 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 3:	CellText = NodeData->SupplierUnit;
 			break;
-		case 4:	CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+		case 4:	CellText = FloatToStrF(NodeData->SupplierUnitQty,ffFixed,19,CurrentConnection.SettingDecimalPlaces);//MMMath::FloatString(NodeData->SupplierUnitQty);
 			break;
 		}
 	}
@@ -638,15 +626,8 @@ void TfrmCreateOrders::PopulateNodeData (TOrderSupplierItemNodeData *NodeData)
 	OrderItemData->StocktakeUnit = NodeData->StocktakeUnit;
 	OrderItemData->SupplierCode  = NodeData->SupplierCode;
 	OrderItemData->SupplierUnit  = NodeData->SupplierUnit;
-    if(Decimalpalaces == 4)
-       {
-        	OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 4));
-       }
-         else
-         {
-          	OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, 2));
-         }
-   //	OrderItemData->SupplierUnitCost	= NodeData->SupplierUnitCost;
+    OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+   
 	OrderItemData->SupplierUnitSize	= NodeData->SupplierUnitSize;
 	OrderItemData->SupplierUnitQty	= NodeData->SupplierUnitQty;
 	OrderItemData->SupplierKey   =	 NodeData->SupplierKey;

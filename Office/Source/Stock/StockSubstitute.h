@@ -106,7 +106,6 @@ private:	// User declarations
    void LoadNumbers(TStockSubstituteData *SubstituteData);
    void GetRecipeStocks();
    void UpdateToOriginalStock();
-   int Decimalpalaces;
 public:		// User declarations
    __fastcall TfrmStockSubstitute(TComponent* Owner);
      AnsiString Location;

@@ -212,7 +212,6 @@ ignorePendingDeletions(true)
 	dmMMData->Registered(&Registered);
 	DeletedNode = NULL;
 	StockItemIconIndex = ICON_BOX_INDEX;
-    Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 
 }
 
@@ -1667,20 +1666,10 @@ void __fastcall TfrmStock::tvStockChange(TObject *Sender, TTreeNode *Node)
 				 sgLocations->Cells[0][Row] = qrStockLocation->FieldByName("Location")->AsString;
 
 
-			   sgLocations->Cells[1][Row] = qrStockLocation->FieldByName("On_Hand")->AsString;
-			   sgLocations->Cells[2][Row] = qrStockLocation->FieldByName("On_Order")->AsString;
-                if(Decimalpalaces==2)
-                {
-
-				sgLocations->Cells[3][Row] = FloatToStrF(qrStockLocation->FieldByName("Average_Cost")->AsFloat, ffNumber, 19, 2);
-                sgLocations->Cells[4][Row] = FloatToStrF(qrStockLocation->FieldByName("Latest_Cost")->AsFloat, ffNumber, 19, 2);
-                }
-                else
-                {
-
-                 sgLocations->Cells[3][Row] = FloatToStrF(qrStockLocation->FieldByName("Average_Cost")->AsFloat, ffNumber, 19, 4);
-                 sgLocations->Cells[4][Row] = FloatToStrF(qrStockLocation->FieldByName("Latest_Cost")->AsFloat, ffNumber, 19, 4);
-                }
+			   sgLocations->Cells[1][Row] = FloatToStrF(qrStockLocation->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+			   sgLocations->Cells[2][Row] = FloatToStrF(qrStockLocation->FieldByName("On_Order")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces); 
+                sgLocations->Cells[3][Row] = FloatToStrF(qrStockLocation->FieldByName("Average_Cost")->AsFloat, ffNumber, 19, CurrentConnection.SettingDecimalPlaces);
+                sgLocations->Cells[4][Row] = FloatToStrF(qrStockLocation->FieldByName("Latest_Cost")->AsFloat, ffNumber, 19, CurrentConnection.SettingDecimalPlaces);
                
 				sgLocations->Cells[5][Row] = qrStockLocation->FieldByName("Min_Level")->AsString;
 				sgLocations->Cells[6][Row] = qrStockLocation->FieldByName("Max_Level")->AsString;
@@ -1710,14 +1699,7 @@ void __fastcall TfrmStock::tvStockChange(TObject *Sender, TTreeNode *Node)
 				sgSuppliers->Cells[0][Row] = qrStockSuppliers->FieldByName("Preferred_Supplier")->AsBoolean?"*":"";
 				sgSuppliers->Cells[1][Row] = qrStockSuppliers->FieldByName("Supplier_Name")->AsString;
 				sgSuppliers->Cells[2][Row] = qrStockSuppliers->FieldByName("Supplier_Unit")->AsString;
-                 if(Decimalpalaces==2)
-                {
-				sgSuppliers->Cells[3][Row] = FloatToStrF(qrStockSuppliers->FieldByName("Latest_Cost")->AsFloat,ffNumber,19, 2);
-                }
-                else
-                {
-                sgSuppliers->Cells[3][Row] = FloatToStrF(qrStockSuppliers->FieldByName("Latest_Cost")->AsFloat,ffNumber,19, 4);
-                }
+				sgSuppliers->Cells[3][Row] = FloatToStrF(qrStockSuppliers->FieldByName("Latest_Cost")->AsFloat,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
 				Row++;
 			}
 			Transaction->Commit();

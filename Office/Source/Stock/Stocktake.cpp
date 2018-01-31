@@ -62,7 +62,6 @@ __fastcall TfrmStocktake::TfrmStocktake(Stock::TStocktakeControl &StocktakeContr
 	: TForm(static_cast<TComponent*>(NULL)), fStocktakeControl(StocktakeControl), fStocktake(Stocktake)
 {
 	Panel2->DoubleBuffered = true;
-    Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmStocktake::FormShow(TObject *Sender)
@@ -174,19 +173,10 @@ void TfrmStocktake::LoadTree()
 		//NodeData->Barcode								   = qrStock->FieldByName("Barcode")->AsString;
 		NodeData->Initialised				         = qrStock->FieldByName("Initialised")->AsString == "T";
 		NodeData->Unit							         = qrStock->FieldByName("Stocktake_Unit")->AsString;
-
-        if(Decimalpalaces==2)
-            {
-     
-        NodeData->OnHand					         =  FloatToStrF(qrStock->FieldByName("On_Hand")->AsDouble,ffNumber,19, 2);
-         NodeData->Stocktake				         =  FloatToStrF(qrStock->FieldByName("Stocktake")->AsDouble,ffNumber,19, 2);
-	  
-		NodeData->Variance					         =  FloatToStrF(qrStock->FieldByName("Variance")->AsDouble,ffNumber,19, 2);
-         }
-         else
-         {
-          	NodeData->Variance					         =  FloatToStrF(qrStock->FieldByName("Variance")->AsDouble,ffNumber,19, 4);
-         }
+        NodeData->OnHand					         =  FloatToStrF(qrStock->FieldByName("On_Hand")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
+        NodeData->Stocktake				         =  FloatToStrF(qrStock->FieldByName("Stocktake")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
+		NodeData->Variance					         =  FloatToStrF(qrStock->FieldByName("Variance")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
+        
 		if (NodeData->Key == CurrentStockKey)
 		{
 			SelectedStockNode								= StockNode;
@@ -679,17 +669,7 @@ void __fastcall TfrmStocktake::vtvStocktakeGetText(
 					{
 						if (NodeData->Variance != 0 && NodeData->Initialised)
 						{
-                         if(Decimalpalaces==2)
-                           {
-                          CellText = MMMath::FloatString(NodeData->Variance, 2);
-                             }
-
-                             else
-                             {
-                             CellText = MMMath::FloatString(NodeData->Variance, 4);
-                             }
-
-						   //	CellText = MMMath::FloatString(NodeData->Variance);
+                            CellText = MMMath::FloatString(NodeData->Variance, CurrentConnection.SettingDecimalPlaces);
 						}
 						else
 						{

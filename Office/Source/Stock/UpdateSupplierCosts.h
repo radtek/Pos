@@ -111,7 +111,6 @@ private:	// User declarations
   void AddSupplierStock(TSupplierItemNodeData* NodeData);
   bool GetStockDetail(TSupplierItemNodeData* NodeData);
   bool CheckNegativeCostOrQty();
-  int Decimalpalaces;
 public:		// User declarations
    __fastcall TfrmUpdateSupplierCosts(TComponent* Owner);
    	int ContactKey;

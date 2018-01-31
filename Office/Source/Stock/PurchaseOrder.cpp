@@ -35,7 +35,6 @@ __fastcall TfrmPurchaseOrder::TfrmPurchaseOrder(TComponent* Owner)
 : TForm(Owner),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 {
-Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 TModalResult TfrmPurchaseOrder::Execute()
@@ -136,18 +135,8 @@ void TfrmPurchaseOrder::LoadOrder()
 		NodeData->StocktakeUnit						= qrPurchaseStock->FieldByName("Stocktake_Unit")->AsString;
 		NodeData->SupplierCode						= qrPurchaseStock->FieldByName("Supplier_Code")->AsString;
 		NodeData->SupplierUnit						= qrPurchaseStock->FieldByName("Supplier_Unit")->AsString;
-         if(Decimalpalaces== 4)
-                {
-
-
-       NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat,ffFixed,19, 4));
-       	NodeData->SupplierUnitQty = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat,ffFixed,19, 4));
-        }
-        else
-        {
-           NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat,ffFixed,19, 2));
-           NodeData->SupplierUnitQty = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat,ffFixed,19, 2));
-        }
+        NodeData->SupplierUnitCost                  = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+       	NodeData->SupplierUnitQty                   = StrToFloat(FloatToStrF(qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 		//NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Stock_Qty")->AsFloat / qrPurchaseStock->FieldByName("Order_Qty")->AsFloat;
 		NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Supplier_Unit_Size")->AsFloat;
 		//NodeData->SupplierUnitQty					= qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat;
@@ -782,9 +771,9 @@ void TfrmPurchaseOrder::ShowTotals()
 		GST	+= double(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty * NodeData->GSTPercent) / 100;
 		Node = vtvStockQty->GetNext(Node);
 	}
-	lbeTotalExc->Caption	= MMMath::CurrencyString(Total);
-	lbeTotalInc->Caption	= MMMath::CurrencyString(Total + GST);
-	lbeGST->Caption		= MMMath::CurrencyString(GST);
+	lbeTotalExc->Caption	= MMMath::CurrencyString(Total,CurrentConnection.SettingDecimalPlaces);
+	lbeTotalInc->Caption	= MMMath::CurrencyString(Total + GST,CurrentConnection.SettingDecimalPlaces);
+	lbeGST->Caption		= MMMath::CurrencyString(GST,CurrentConnection.SettingDecimalPlaces);
 }//---------------------------------------------------------------------------
 void __fastcall TfrmPurchaseOrder::vtvStockQtyGetText(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
@@ -802,11 +791,21 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 3:	CellText = NodeData->SupplierUnit;
 			break;
-		case 4:	CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+		case 4: FloatToStrF(NodeData->SupplierUnitQty,ffFixed,19,CurrentConnection.SettingDecimalPlaces);
+        //CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
 			break;
-		case 5:	CellText =FormatFloat("0.0000",NodeData->SupplierUnitCost);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
+		case 5:
+         if(CurrentConnection.SettingDecimalPlaces==4)
+         {
+        CellText =FormatFloat("0.0000",NodeData->SupplierUnitCost);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
+         }
+         else
+         {
+           CellText =FormatFloat("0.00",NodeData->SupplierUnitCost);
+         }
 			break;
-		case 6:	CellText = MMMath::CurrencyString(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
+		case 6:	CellText = FloatToStrF(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty,ffCurrency,19,CurrentConnection.SettingDecimalPlaces);
+        //MMMath::CurrencyString("0.00", NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
 			break;
 		}
 	}
@@ -863,7 +862,8 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 		else if (Column == 5)
 		{
 			TOrderItemNodeData *NodeData = (TOrderItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-			NodeData->SupplierUnitCost = neCost->Value;
+		   	NodeData->SupplierUnitCost = neCost->Value;
+         
 		}
 		else if (Column == 6)
 		{

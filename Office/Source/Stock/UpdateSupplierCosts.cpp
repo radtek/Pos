@@ -16,7 +16,6 @@ TfrmUpdateSupplierCosts *frmUpdateSupplierCosts;
 __fastcall TfrmUpdateSupplierCosts::TfrmUpdateSupplierCosts(TComponent* Owner)
    : TForm(Owner)
 {
- Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUpdateSupplierCosts::FormShow(TObject *Sender)
@@ -54,17 +53,7 @@ void TfrmUpdateSupplierCosts::AddDataToList()
                 NodeData->StockUnit = qrGetSupplierStock->FieldByName("STOCKTAKE_UNIT")->AsString;
                 NodeData->OrderUnit = qrGetSupplierStock->FieldByName("SUPPLIER_UNIT")->AsString;
                 NodeData->StockQuantity = qrGetSupplierStock->FieldByName("QTY")->AsCurrency;
-                if(Decimalpalaces==2)
-                {
-
-                NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat,ffFixed,19, 4));
-
-                }
-                else
-                {
-
-            NodeData->SupplierUnitCost =  StrToFloat(FloatToStrF(qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat,ffFixed,19, 2));
-                }
+                NodeData->SupplierUnitCost = StrToFloat(FloatToStrF(qrGetSupplierStock->FieldByName("LATEST_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
                 NodeData->PreferredSupplier = qrGetSupplierStock->FieldByName("PREFERRED_SUPPLIER")->AsString == 'T' ? true : false;
              }
 
@@ -271,11 +260,20 @@ void __fastcall TfrmUpdateSupplierCosts::vtvStockItemGetText(TBaseVirtualTree *S
 						break;
 			case 3:	CellText = NodeData->OrderUnit;
 						break;
-			case 4:	CellText = MMMath::FloatString(NodeData->StockQuantity);
+			case 4:
+                    if(CurrentConnection.SettingDecimalPlaces==4)
+                    {
+                  CellText =FormatFloat("0.0000",NodeData->StockQuantity);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
+                     }
+                 else
+                {
+                CellText =FormatFloat("0.00",NodeData->StockQuantity);  //CellText = MMMath::FloatString(NodeData->StockQuantity);
+                  }
+
 						break;
-                        case 5:	CellText =  FormatFloat("0.00",NodeData->SupplierUnitCost);  //MMMath::FloatString(NodeData->SupplierUnitCost);
-						break;
-                        case 6:  CellText =  NodeData->PreferredSupplier ? OptionTrue : OptionFalse;
+            case 5: CellText =FloatToStrF(NodeData->SupplierUnitCost,ffFixed,19,CurrentConnection.SettingDecimalPlaces);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
+                        break;
+            case 6:  CellText =  NodeData->PreferredSupplier ? OptionTrue : OptionFalse;
 						break;
 		}
 	}

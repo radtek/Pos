@@ -122,7 +122,6 @@ private:	// User declarations
    void ResetInitialisation(int RadioButtonValue);
 	AnsiString CurrentStockCategory, CurrentStockGroup;
 	int CurrentStockKey;
-    int Decimalpalaces;
      
 public:		// User declarations
 	__fastcall TfrmStocktake(Stock::TStocktakeControl &StocktakeControl, Stock::TStocktakeDetails &Stocktake);

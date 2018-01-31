@@ -36,7 +36,6 @@ __fastcall TfrmUseRecipe::TfrmUseRecipe(TComponent* Owner)
     IsSearchBoxClicked = false;
 	dtRecipes->Close();
 	dtRecipes->Open();
-     Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUseRecipe::DBGridOnClick(TColumn *Column)
@@ -88,15 +87,7 @@ void TfrmUseRecipe::DisplayStock(void)
 
         NodeData->Text = qrRecipe->FieldByName("Required_Stock")->AsString;
         NodeData->Location = qrRecipe->FieldByName("Stock_Location")->AsString;
-       
-        if(Decimalpalaces == 4)
-        {
-        NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, 4));
-        }
-        else
-        {
-         NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, 2));
-        }
+        NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
         NodeData->Unit = qrRecipe->FieldByName("Stock_Unit")->AsString;
         NodeData->Code = qrRecipe->FieldByName("Stock_Code")->AsString;
 
@@ -104,7 +95,7 @@ void TfrmUseRecipe::DisplayStock(void)
         temp = ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty;
 
         NumTotal->Value = NumTotal->Value + temp;
-        NumTotal->DecimalPlaces=Decimalpalaces;
+        NumTotal->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
         Filter = true;
 	}
 }
@@ -163,23 +154,10 @@ void __fastcall TfrmUseRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
             case 4: CellText = NodeData->RecipeQty;
                         break;
-            case 5:
-            CellText = NodeData->AverageCost;
-            if(Decimalpalaces==2)
-            {
-                    CellText = FloatToStrF(NodeData->AverageCost, ffCurrency, 19, 2);
+            case 5: CellText = FloatToStrF(NodeData->AverageCost, ffCurrency, 19, CurrentConnection.SettingDecimalPlaces);
                     if(HideCosts)
-                     CellText = "Unavailable";
-                     }
-                     else
-                     {
-                      CellText = FloatToStrF(NodeData->AverageCost, ffCurrency, 19, 4);
-                    if(HideCosts)
-                     CellText = "Unavailable";
-
-                     }
-
-                       break;
+                        CellText = "Unavailable";
+                     break;
 		}
     }
 	else

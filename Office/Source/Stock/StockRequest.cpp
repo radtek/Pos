@@ -29,7 +29,6 @@ __fastcall TfrmStockRequest::TfrmStockRequest(TComponent* Owner)
 frmPurchaseOrder(new TfrmPurchaseOrder(NULL)),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 {
- Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmStockRequest::FormShow(TObject *Sender)
@@ -213,7 +212,7 @@ IVTEditLink *EditLink)
 
 		TStockRequestItemNodeData *NodeData = (TStockRequestItemNodeData *)Sender->GetNodeData(Node);
 		neStockQty->Value = NodeData->SupplierUnitQty;
-        neStockQty->DecimalPlaces=Decimalpalaces;
+        neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
@@ -228,7 +227,7 @@ void __fastcall TfrmStockRequest::vtvStockQtyEdited(TBaseVirtualTree *Sender, PV
 		if (Column == 4)
 		{
 			TStockRequestItemNodeData *NodeData	= (TStockRequestItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-            neStockQty->DecimalPlaces=Decimalpalaces;
+            neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 			NodeData->SupplierUnitQty					= neStockQty->Value;
              
 		}

@@ -19,7 +19,7 @@ __fastcall TfrmReceiveStockItem::TfrmReceiveStockItem(TComponent* Owner)
 : TForm(Owner),
 frmAddStock(new TfrmAddStock(NULL))
 {
- Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
+
 }
 //---------------------------------------------------------------------------
 TModalResult TfrmReceiveStockItem::Execute()
@@ -247,23 +247,13 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 	StocktakeUnit	= qrStock->FieldByName("Stocktake_Unit")->AsString;
 	Initialised	= (qrStock->FieldByName("Initialised")->AsString == "T");
 	InitialisedTime	= qrStock->FieldByName("Initialised_Time")->AsDateTime;
-   if(Decimalpalaces== 4)
-                {
 
-  //  FloatToStrF(NodeData->AverageCost, ffCurrency, 19, 2);
-   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, 4));
-   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, 4));
+   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
    SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, 4);
+   StocktakeUnitQty  =  StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 4));
 
-  StocktakeUnitQty  =  StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 4));
-     }
-     else
-    {
-   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, 2));
-   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, 2));
-   SupplierUnitCost =FloatToStrF(neCost1->Value,ffFixed,19, 2);
-   StocktakeUnitQty = StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 2));
-     }
+
 
 
 	SupplierCode	= qrSupplierStock->FieldByName("Supplier_Code")->AsString;
@@ -456,17 +446,17 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		}
    
 		neCost1->Value		= Cost1;
-        neCost1->DecimalPlaces=Decimalpalaces;
+        neCost1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		neCost2->Value		= Cost2;
-        neCost2->DecimalPlaces=Decimalpalaces;
+        neCost2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		neCost3->Enabled	= (neQty->Value != 0);
 		neCost4->Enabled	= (neQty->Value != 0);
 		if (neQty->Value != 0)
 		{
 			neCost3->Value	= Cost3;
-            neCost3->DecimalPlaces=Decimalpalaces;
+            neCost3->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 			neCost4->Value	= Cost4;
-            neCost4->DecimalPlaces=Decimalpalaces;
+            neCost4->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		}
        
 		else

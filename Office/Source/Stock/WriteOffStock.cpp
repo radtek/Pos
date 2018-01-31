@@ -28,7 +28,6 @@ __fastcall TfrmWriteOffStock::TfrmWriteOffStock(TComponent* Owner)
     sgWriteOffs->Cells[3][0] = "Unit";
     sgWriteOffs->Cells[4][0] = "Quantity";
     sgWriteOffs->Cells[5][0] = "Comment";
-    Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 
 }
 //---------------------------------------------------------------------------
@@ -71,18 +70,7 @@ void __fastcall TfrmWriteOffStock::LocationOnSelect(TObject *Sender)
 
 void __fastcall TfrmWriteOffStock::QuantityOnChange(TObject *Sender)
 {
- if(Decimalpalaces==2)
-       {
-       Quantity  = StrToFloat(FloatToStrF(neQty->Value,ffFixed,19, 2));
-        }
-        else
-        {
-          Quantity  = StrToFloat(FloatToStrF(neQty->Value,ffFixed,19, 4));
-
-        }
-    
-
-
+    Quantity  = StrToFloat(FloatToStrF(neQty->Value,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 
     if(CostDisplayChangeOk)
     {
@@ -143,15 +131,7 @@ void __fastcall TfrmWriteOffStock::btnAddOnClick(TObject *Sender)
     sgWriteOffs->Cells[1][RowNumber] = cbLocations->Text;
     sgWriteOffs->Cells[2][RowNumber] = EItem->Text;
     sgWriteOffs->Cells[3][RowNumber] = SuppliedUnit->Text;
-     if(Decimalpalaces==2)
-            {
-     sgWriteOffs->Cells[4][RowNumber] = FloatToStrF(neQty->Value, ffNumber, 19, 2);
-     }
-     else
-     {
-      sgWriteOffs->Cells[4][RowNumber] = FloatToStrF(neQty->Value, ffNumber, 19, 4);
-
-     }
+    sgWriteOffs->Cells[4][RowNumber] = FloatToStrF(neQty->Value, ffNumber, 19, CurrentConnection.SettingDecimalPlaces);
     
     sgWriteOffs->Cells[5][RowNumber] = Edit1->Text;
 
@@ -334,9 +314,9 @@ void __fastcall TfrmWriteOffStock::btnAddItemOnClick(TObject *Sender)
     LocationOnSelect(Sender);
 
             neCost1->Value = Price;
-            neCost1->DecimalPlaces=Decimalpalaces;
+            neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
             neCost3->Value = Price * Quantity;
-            neCost3->DecimalPlaces=Decimalpalaces;
+            neCost3->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 
 
         }

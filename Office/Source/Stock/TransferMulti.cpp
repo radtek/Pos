@@ -25,7 +25,6 @@ __fastcall TfrmTransferMulti::TfrmTransferMulti(TComponent* Owner)
 : TForm(Owner)
 {
 	isStockRequestMode = false;
-     Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmTransferMulti::FormShow(TObject *Sender)
@@ -172,31 +171,11 @@ void TfrmTransferMulti::LoadStocksForManualMode()
 
 			if (qrStockTransferManual->FieldByName("Location")->AsString == Source)
 			{
-             if(Decimalpalaces== 4)
-                {
-
-           
-				NodeData->SourceOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffFixed,19, 4));
-                }
-                else
-                {
-                 NodeData->SourceOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffFixed,19, 2));
-                }
+                NodeData->SourceOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 			}
 			else if (qrStockTransferManual->FieldByName("Location")->AsString == Destination)
 			{
-             
-
-      
-               if(Decimalpalaces == 4)
-                {
-				NodeData->DestOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffNumber,19, 4));//5.6873; //qrStockTransferManual->FieldByName("On_Hand")->AsFloat;
-                }
-               else
-               {
-               	 NodeData->DestOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffNumber,19, 2)); //5.68;//FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffGeneral,19,2);
-
-                }
+                NodeData->DestOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffNumber,19, CurrentConnection.SettingDecimalPlaces));
 			}
 
 			if (NodeData->Initialised)
@@ -504,7 +483,7 @@ IVTEditLink *EditLink)
 
 			TStockNodeData *NodeData = (TStockNodeData *)Sender->GetNodeData(Node);
 			neStockQty->Value = NodeData->Quantity;
-            neStockQty->DecimalPlaces=Decimalpalaces;
+            neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 			TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 			PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 			PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);

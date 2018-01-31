@@ -106,7 +106,6 @@ private:
     void Searchreceipe(AnsiString ReceipeName);
     bool IsSearchBoxClicked;
     void loadreceipe();
-     int Decimalpalaces ;
 public:
     __fastcall TfrmUseRecipe(TComponent* Owner);
 

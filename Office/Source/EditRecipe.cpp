@@ -26,7 +26,6 @@ __fastcall TfrmEditRecipe::TfrmEditRecipe(TComponent* Owner)
 	dtRecipes->Close();                                                                             
 	dtRecipes->Open();
     NumericEdit1->Enabled=false;
-    Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 
@@ -101,18 +100,8 @@ void TfrmEditRecipe::DisplayStock(AnsiString inRecipe)
 
         NodeData->Text = qrRecipe->FieldByName("Required_Stock")->AsString;
         NodeData->Location = qrRecipe->FieldByName("Stock_Location")->AsString;
-           if(Decimalpalaces == 4)
-        {
-        NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, 4));
-        NodeData->AverageCost = StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, 4)));
-     
-        }
-        else
-        {
-          NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, 2));
-         NodeData->AverageCost = StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, 2)));
-        }
-        
+        NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+        NodeData->AverageCost = StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, CurrentConnection.SettingDecimalPlaces)));
         NodeData->Unit = qrRecipe->FieldByName("Stock_Unit")->AsString;
         NodeData->Code = qrRecipe->FieldByName("Stock_Code")->AsString;
 
@@ -126,7 +115,7 @@ void TfrmEditRecipe::DisplayStock(AnsiString inRecipe)
          
 
         NumericEdit2->Value = NumericEdit2->Value + NodeData->AverageCost;
-        NumericEdit2->DecimalPlaces=Decimalpalaces;
+        NumericEdit2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 	}
 }
 //---------------------------------------------------------------------------
@@ -147,15 +136,7 @@ void __fastcall TfrmEditRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
 			case 3:	CellText = NodeData->Qty;
 						break;
-            case 4: CellText = NodeData->AverageCost;
-            if(Decimalpalaces==2)
-            {
-            CellText = FloatToStrF(NodeData->AverageCost, ffFixed,19, 2);
-            }
-            else
-            {
-              CellText = FloatToStrF(NodeData->AverageCost, ffFixed,19, 4);
-            }
+            case 4: CellText = FloatToStrF(NodeData->AverageCost, ffGeneral,19, CurrentConnection.SettingDecimalPlaces);
                         break;
 		}
     }

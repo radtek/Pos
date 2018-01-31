@@ -238,7 +238,7 @@ private:	// User declarations
     void CheckNegativeValue(TNumericEdit *neCost);
     bool IsNegativeQtyOrCost;
     int Decimalpalaces;
-
+   
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);

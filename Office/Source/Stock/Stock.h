@@ -108,6 +108,7 @@ __published:	// IDE-managed Components
 	TLabel *Label13;
 	TLabel *Label1;
 	TStringGrid *sgLocations;
+   
 	TSplitter *Splitter2;
 	TMenuItem *N2;
 	TMenuItem *ExpandTree1;
@@ -234,7 +235,6 @@ private:	// User declarations
 	int GetStockItemCount();
 	bool StockInStocktake( int StockKey );
 	int StockItemIconIndex;
-    int Decimalpalaces ;
 	enum TStockNodeType { snDeletedBin, snStockCategory, snStockGroup, snStockItem };
 	class TStockNodeData
 	{

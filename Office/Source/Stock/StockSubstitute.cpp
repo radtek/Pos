@@ -14,7 +14,6 @@ TfrmStockSubstitute *frmStockSubstitute;
 __fastcall TfrmStockSubstitute::TfrmStockSubstitute(TComponent* Owner)
    : TForm(Owner)
 {
-  Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -45,27 +44,12 @@ void TfrmStockSubstitute::GetStockSubstitute(AnsiString Location)
                 NodeData->StockKey = qrGetSubstituteStock->FieldByName("STOCK_KEY")->AsInteger;
                 NodeData->StockCode = qrGetSubstituteStock->FieldByName("CODE")->AsString;
                 NodeData->StockName = qrGetSubstituteStock->FieldByName("STOCK_NAME")->AsString;
-                if(Decimalpalaces = 4)
-                {
-                NodeData->StockLatestCost = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat,ffFixed,19, 4);
-                NodeData->StockOnHandQty =  FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat,ffFixed,19, 4);
-                NodeData->SubstituteLatestCost= FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat,ffFixed,19, 4);
-                NodeData->SubstituteOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat,ffFixed,19, 4);
-                NodeData->SubstituteMinLevel = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat,ffFixed,19, 4);
-                NodeData->Variance = FloatToStrF( qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger,ffFixed,19, 4);
-
-                }
-                else
-                {
-                NodeData->StockLatestCost = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat,ffFixed,19, 2);
-                NodeData->StockOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat,ffFixed,19, 2);
-                NodeData->SubstituteLatestCost= FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat,ffFixed,19, 2);
-                NodeData->SubstituteOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat,ffFixed,19, 2);
-                NodeData->SubstituteMinLevel = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat,ffFixed,19, 2);
-                NodeData->Variance = FloatToStrF( qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger,ffFixed,19, 2);
-                 //qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger;
-                }
-             
+                NodeData->StockLatestCost = FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                NodeData->StockOnHandQty =  FloatToStrF(qrGetSubstituteStock->FieldByName("STOCK_ONHAND")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                NodeData->SubstituteLatestCost= FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                NodeData->SubstituteOnHandQty = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_ONHAND")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                NodeData->SubstituteMinLevel = FloatToStrF(qrGetSubstituteStock->FieldByName("SUBSTITUTE_MINLEVEL")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                NodeData->Variance = FloatToStrF( qrGetSubstituteStock->FieldByName("SUBSTITUTE_COND3")->AsInteger,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
 
                 NodeData->SubstituteStockKey = qrGetSubstituteStock->FieldByName("SUBSTITUTE_STOCK_KEY")->AsInteger;
                 NodeData->SubstituteStockCode = qrGetSubstituteStock->FieldByName("SUBSTITUTE_CODE")->AsString;
