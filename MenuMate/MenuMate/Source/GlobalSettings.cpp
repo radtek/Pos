@@ -405,5 +405,6 @@ TGlobalSettings::TGlobalSettings()
     ShowReprintReceiptDetails = false;
     PrintSignatureWithDiscountSales = false;
     PrintSignatureWithRoomSales = false;
+    UseItalyFiscalPrinter = false;
 }
 

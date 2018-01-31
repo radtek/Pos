@@ -501,6 +501,7 @@ public:
     bool ShowReprintReceiptDetails;
     bool PrintSignatureWithDiscountSales;
     bool PrintSignatureWithRoomSales;
+    bool UseItalyFiscalPrinter;
 };
 
 #endif

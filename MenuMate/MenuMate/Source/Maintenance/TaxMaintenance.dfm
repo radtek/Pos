@@ -226,6 +226,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 9
+          OnClick = cbUseItalyFiscalPrinterClick
         end
         object Panel11: TPanel
           Left = 1

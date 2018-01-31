@@ -50,6 +50,8 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
         cbTaxProfile->Enabled = true;
         cbTaxProfile->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().ServiceChargeTaxProfileKey);
     }
+
+    cbUseItalyFiscalPrinter->Checked = TGlobalSettings::Instance().UseItalyFiscalPrinter;
 }
 //---------------------------------------------------------------------------
 
@@ -257,8 +259,6 @@ void TfrmTaxMaintenance::saveNumSettingToDatabase(vmVariables vmVariable, double
 //---------------------------------------------------------------------------
 void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender)
 {
-    TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount = cbUseItalyFiscalPrinter->Checked;
-    TGlobalSettings::Instance().UsingServiceCharge = cbUseItalyFiscalPrinter->Checked;
-    saveBoolSettingToDatabase(vmCalculateServiceChargePostDiscount, TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount);
-    saveBoolSettingToDatabase(vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge);
+    TGlobalSettings::Instance().UseItalyFiscalPrinter = cbUseItalyFiscalPrinter->Checked;
+    saveBoolSettingToDatabase(vmUseItalyFiscalPrinter, TGlobalSettings::Instance().UseItalyFiscalPrinter);
 }

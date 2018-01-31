@@ -2368,6 +2368,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		vmgTax,
 		0);
 
+        SetVarBool(DBTransaction, vmUseItalyFiscalPrinter,"Use Italy Fiscal Printer", "This setting will print receipt to fiscal printer", vmgTax, false);
+
 		int GlobalProfileKey = GetProfile(DBTransaction,eSystemProfiles,"Globals");
 
 		if(GlobalProfileKey == 0)
@@ -2390,6 +2392,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 			SetProfileBool(DBTransaction, GlobalProfileKey, vmApplyServiceChargeTax,              false);
 			SetProfileInt( DBTransaction, GlobalProfileKey, vmServiceChargeTaxProfileKey,         0);
 			SetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               0);
+            SetProfileBool(DBTransaction, GlobalProfileKey, vmUseItalyFiscalPrinter,              false);
 		}
 
 		SetVarStr( DBTransaction, vmXeroMachineName, "Xero Integration / Machine Name",
