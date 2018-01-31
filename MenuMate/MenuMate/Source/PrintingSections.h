@@ -336,6 +336,10 @@ private:
     void PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob);
     void PrintOrganizationNumber(TReqPrintJob* PrintJob);
     bool IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount );
+    void PrintSignatureSection(TReqPrintJob* PrintJob);
+    bool IsDiscountApplied();
+    void PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size);
+    bool IsRoomPayment(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------

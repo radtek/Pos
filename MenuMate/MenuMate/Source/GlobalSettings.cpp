@@ -403,5 +403,7 @@ TGlobalSettings::TGlobalSettings()
     POSPlusSerialNumber = "";
     ShowCashDrawerOpeningsCount = false;
     ShowReprintReceiptDetails = false;
+    PrintSignatureWithDiscountSales = false;
+    PrintSignatureWithRoomSales = false;
 }
 
