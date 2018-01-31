@@ -76,7 +76,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 10000;
+                    request.Timeout = 5000;
                     //request.ContentType = "text/plain";
                     stringList.Add("=============================================================================");
                     stringList.Add("Inquiry Request at:       " + DateTime.Now.ToString("ddMMMyyyy"));

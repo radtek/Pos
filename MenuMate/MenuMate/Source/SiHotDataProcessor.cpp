@@ -349,33 +349,50 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
     {
         TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQueryGenerator->Close();
-
-        switch(_paymentTransaction.TypeOfSale)
+        bool IsCompDiscountApplied = false;
+        bool IsNCDiscountApplied   = false;
+        bool IsNormalDiscountApplied = false;
+        for(int index = 0; index < _paymentTransaction.Orders->Count; index++)
         {
-           case 1:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "Comp " + IntToStr(number);
+            TItemComplete *itemcomplete = (TItemComplete*)_paymentTransaction.Orders->Items[index];
+            for(int discountIndex = 0; discountIndex < itemcomplete->Discounts.size(); discountIndex++)
+            {
+                if(itemcomplete->Discounts[discountIndex].IsComplimentaryDiscount())
+                {
+                    IsCompDiscountApplied = true;
+                    break;
+                }
+                if(itemcomplete->Discounts[discountIndex].IsNonChargableDiscount())
+                {
+                    IsNCDiscountApplied = true;
+                    break;
+                }
+            }
+            if(IsCompDiscountApplied || IsNCDiscountApplied)
+            {
                 break;
-           }
-           case 2:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "NC "+ IntToStr(number);
-                break;
-           }
-           default:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = IntToStr(number);
-                break;
-           }
+            }
+        }
+        if(IsCompDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "Comp " + IntToStr(number);
+        }
+        else if(IsNCDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "NC "+ IntToStr(number);
+        }
+        else
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = IntToStr(number);
         }
         DBTransaction.Commit();
     }
