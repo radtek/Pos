@@ -9284,6 +9284,7 @@ void TfrmSelectDish::ResetPOS()
   RefreshMenu();
   InitializeChit(); // initialize default chit...
   IsAutoLogOutInSelectDish = true;
+  TGlobalSettings::Instance().DiningBal = 0;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()

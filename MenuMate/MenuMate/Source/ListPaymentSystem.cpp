@@ -512,7 +512,6 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
     {
         LoadClippPaymentTypes(PaymentTransaction);
     }
-
 	IBInternalQuery->Close();
 	IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
 	IBInternalQuery->ExecQuery();
@@ -548,8 +547,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	    loadPaymentTypeGroupsForPaymentType(IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment );
 	    PaymentTransaction.PaymentAdd(NewPayment);
     }
-
-
+//    for(int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+//    {
+//        MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
+//    }
 
     TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
     if (CashPayment == NULL)
@@ -623,7 +624,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTransaction)
 {
     TPayment *NewPayment = new TPayment;
-    NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    if(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal)
+        NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    else
+        NewPayment->Name = "PtsBal";
     NewPayment->SysNameOveride = "Points";
     NewPayment->SetPaymentAttribute(ePayTypePoints);
     NewPayment->DisplayOrder = 1;
@@ -661,14 +665,14 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
     if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal)
     {
         TPayment *NewPayment = new TPayment;
-        NewPayment->Name = "Comp";
-        NewPayment->SysNameOveride = "Points";
-        NewPayment->SetPaymentAttribute(ePayTypePoints);
-        NewPayment->DisplayOrder = 1;
-        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
-        NewPayment->Colour = clTeal;
-        NewPayment->PaymentThirdPartyID = "10007242";
-        PaymentTransaction.PaymentAdd(NewPayment);
+//        NewPayment->Name = "Comp";
+//        NewPayment->SysNameOveride = "Points";
+//        NewPayment->SetPaymentAttribute(ePayTypePoints);
+//        NewPayment->DisplayOrder = 1;
+//        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
+//        NewPayment->Colour = clTeal;
+//        NewPayment->PaymentThirdPartyID = "10007242";
+//        PaymentTransaction.PaymentAdd(NewPayment);
 
         NewPayment = new TPayment;
         NewPayment->Name = "Dining";

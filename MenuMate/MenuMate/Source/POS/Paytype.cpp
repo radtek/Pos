@@ -104,7 +104,6 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
-
 	if (TGlobalSettings::Instance().EnableMenuPatronCount)
 	CurrentTransaction.CalculatePatronCountFromMenu();
 
@@ -266,11 +265,20 @@ void TfrmPaymentType::Reset()
             tgPayments->Buttons[ButtonPos][PAYCOL]->LatchedFontColor = clWhite;
             tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name;
             tgPayments->Buttons[ButtonPos][PAYCOL]->Tag = i;
+
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
             {
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+            }
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && (Payment->Name == "PtsBal" || Payment->Name == "Dining"))
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+
+
             }
 
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Grams")
@@ -294,7 +302,8 @@ void TfrmPaymentType::Reset()
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
                CopyPaymentColor(ButtonPos);
              }
-           else if (Payment->GetPaymentAttribute(ePayTypeAllowCashOut) || Payment->GetPaymentAttribute(ePayTypePoints) ||
+           else if (Payment->GetPaymentAttribute(ePayTypeAllowCashOut) ||
+                   (Payment->GetPaymentAttribute(ePayTypePoints) && TGlobalSettings::Instance().MembershipType != MembershipTypeExternal) ||
                    (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && !Payment->IsLoyaltyVoucher()))
             {
                  if((Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) || Payment->GetPaymentAttribute(ePayTypePoints)))
@@ -363,6 +372,13 @@ void TfrmPaymentType::Reset()
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+            }
+             if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && (Payment->Name == "PtsBal" || Payment->Name == "Dining"))
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+
             }
             ButtonPos++;
         }
@@ -553,6 +569,20 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
                 || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
 
+            }
+             if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && (Payment->Name == "PtsBal" || Payment->Name == "Dining"))
+            {
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled =  (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
+                || !TGlobalSettings::Instance().LoyaltyMateEnabled ;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Visible = TGlobalSettings::Instance().AllowPointPaymentByValue;
+
+                if(Payment->GetAdjustment() == 0.00)
+                {
+                    if(Payment->Name == "PtsBal")
+                        tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrentTransaction.Membership.Member.Points.getPointsBalance();
+                    else
+                        tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + TGlobalSettings::Instance().DiningBal;
+                }
             }
 			ButtonPos++;
 		}
@@ -1292,6 +1322,10 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             {
                 TGlobalSettings::Instance().RefundingItems = true;
             }
+             if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && (Payment->Name == "PtsBal" || Payment->Name == "Dining"))
+            {
+                TGlobalSettings::Instance().RefundingItems = true;
+            }
         }
         //Voucher
         if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails)))
@@ -1889,9 +1923,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                 CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
                                 CurrentTransaction.SalesType = eRoomSale;
                                 RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
-//                                MessageBox(RoomNumber,"Room No",MB_OK);
                                 CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-//                                MessageBox(CurrentTransaction.Phoenix.RoomNumber,"Curr Room Number",MB_OK);
 								if(TGlobalSettings::Instance().PMSType == Oracle)
 								{
 									CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -1937,13 +1969,11 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                 }
                                 else
                                 {
-//                                    CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.SiHotRoom.c_str());
                                     CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                                     CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].FirstName;
                                     CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->SiHotAccounts[frmPhoenixRoom->SelectedRoom.FolderNumber-1].AccountDetails[0].LastName;
                                     TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                                 }
-//                                CurrentTransaction.WasSavedSales = false;
                             }
                         }
                         else
@@ -2109,7 +2139,6 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {
   bool isPaymentByWeight =  Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Grams";
   UnicodeString MemberName = "";
-
   if(TDeviceRealTerminal::Instance().ManagerMembership->Authorise(CurrentTransaction.Membership.Member,wrkPayAmount) == lsAccepted)
     {
         Currency RoundedPoints;
@@ -2180,7 +2209,6 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
              TotalPoints =  RoundedPoints;
           }
 
-
         if(!canRedeem)
          {
            return;
@@ -2221,6 +2249,10 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
             wrkPayAmount = PointsTransaction.Money.GrandTotal;
             HasWrkPayAmountChanged = true;
         }
+        if(Payment->Name == "Dining")
+        {
+            RoundedPoints = TGlobalSettings::Instance().DiningBal;
+        }
         if (PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
         {
                 MessageBox(AnsiString("You cannot redeem points at this time.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
@@ -2242,8 +2274,8 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
         }
         else if ((((TGlobalSettings::Instance().UseTierLevels && TotalPoints > RoundedPoints)||
                  (!TGlobalSettings::Instance().UseTierLevels && wrkPayAmount > RoundedPoints )) &&
-                 (TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
-                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive))) ||
+                 //(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal  &&
+                 !PointsTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowedNegitive)) ||
                  (PointsTransaction.Membership.Member.MemberType == 2 && (wrkPayAmount > RoundedPoints)))
         {
             if (RoundedPoints <= 0)
@@ -3715,6 +3747,7 @@ TRedeemPointsInformation *RedeemPointsInformation,bool IsWeighted)
 		{
 			requiredPointsValue = RedeemPointsInformation->RemainingPoints/TierLevel->PointRedemRate;
 		}
+
 		if(MaxValue - RedeemPointsInformation->TotalValue >= requiredPointsValue)
 		{
 			RedeemPointsInformation->RemainingPoints -= requiredPoints;
@@ -4274,6 +4307,10 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
                ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
             ManagerDiscount->ClearMemberExemtDiscounts(CurrentTransaction.Orders);
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
+//            for(int i = 0; i < PaymentTransaction.PaymentList->Count; i++)
+//            {
+//               MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
+//            }
 			Reset(); // Reloads the Buttons on the screen.
             CurrentTransaction.IgnoreLoyaltyKey = false;
 			CurrentTransaction.Recalc();
@@ -4556,3 +4593,4 @@ bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
     }
     return true;
 }
+//---------------------------------------------------------------------

@@ -183,30 +183,84 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     WasSavedSales = OtherTransaction.WasSavedSales;
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
 }
-
+//-----------------------------------------------------------------------------
+bool __fastcall UseDifferentPattern(void *Item1,void *Item2)
+{
+    bool retValue = false;
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH" || Payment1->Name.Trim().UpperCase() == "DINING" || Payment1->Name.Trim().UpperCase() == "PTSBAL")
+                     &&
+       (Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "DINING" || Payment2->Name.Trim().UpperCase() == "PTSBAL"))
+    {
+        return true;
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+int __fastcall SortPaymentTypesForCasino(void *Item1,void *Item2)
+{
+    bool retValue = 0;
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "PTSBAL" || Payment1->Name.Trim().UpperCase() == "DINING")
+        {
+            return -1;
+        }
+    }
+    if((Payment1->Name.Trim().UpperCase() == "PTSBAL"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "CASH")
+        {
+            return 1;
+        }
+        if(Payment2->Name.Trim().UpperCase() == "DINING")
+        {
+            return -1;
+        }
+    }
+    if((Payment1->Name.Trim().UpperCase() == "DINING"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "PTSBAL")
+        {
+            return 1;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 int __fastcall PaymentCompare(void *Item1,void *Item2)
 {
 	TPayment* Payment1 = (TPayment*)Item1;
 	TPayment* Payment2 = (TPayment*)Item2;
 
 	if(Payment1->DisplayOrder > Payment2->DisplayOrder)
-   {
-      return 1;
-	}
+    {
+        return 1;
+    }
 	else if(Payment1->DisplayOrder == Payment2->DisplayOrder)
 	{
-		if(Payment1->Name > Payment2->Name)
-      {
-         return 1;
-      }
-		else if(Payment1->Name == Payment2->Name)
-      {
-         return 0;
-      }
-      else
-      {
-         return -1;
-		}
+        if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal &&
+            UseDifferentPattern(Item1, Item2))
+        {
+            return SortPaymentTypesForCasino(Item1, Item2);
+        }
+        else
+        {
+            if(Payment1->Name > Payment2->Name)
+            {
+                return 1;
+            }
+            else if(Payment1->Name == Payment2->Name)
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
    }
    else
    {
