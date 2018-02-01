@@ -2461,10 +2461,11 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("ORDER_TYPE")->AsInteger = Order->OrderType;
 				IBInternalQuery->ParamByName("QTY")->AsFloat = double(Order->GetQty());
                 IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach_BillCalc();
-				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-				Order->Cost,
-				0.01,
-				TGlobalSettings::Instance().MidPointRoundsDown);
+
+                if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                    Order->Cost = 0;
+
+				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(Order->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 				IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsFloat = double(Order->CostGSTPercent);
                 IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Order->TotalAdjustment();
 				IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = Order->DiscountReason.SubString(1, 40);
@@ -2631,11 +2632,12 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
 					IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
-					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-					CurrentSubOrder->Cost,
-					0.01,
-					TGlobalSettings::Instance().MidPointRoundsDown);
-                                        IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
+
+                    if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
+                        CurrentSubOrder->Cost = 0;
+
+					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(CurrentSubOrder->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+                    IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
 					//IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = RoundToNearest(CurrentSubOrder->TotalAdjustment(),0.01,
 					//TGlobalSettings::Instance().MidPointRoundsDown );
 					IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = CurrentSubOrder->DiscountReason.SubString(1, 40);

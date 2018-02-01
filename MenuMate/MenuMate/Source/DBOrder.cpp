@@ -380,8 +380,10 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 	{
 		if(Order->OrderKey != 0)
 		{
-			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                Order->Cost = 0;
 
+			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text =
 			"UPDATE "
@@ -419,7 +421,11 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 			for (int i = 0; i < Order->SubOrders->Count ; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
-                                SubOrder->RunBillCalculator();
+                SubOrder->RunBillCalculator();
+
+                if(SubOrder->Cost < -1000000 || SubOrder->Cost > 900000000)
+                    SubOrder->Cost = 0;
+
 				IBInternalQuery->Close();
 				IBInternalQuery->SQL->Text =
 				"UPDATE "
@@ -1243,6 +1249,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 			IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 			IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
+
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                Order->Cost = 0;
+
 			IBInternalQuery->ParamByName("COST")->AsCurrency = Order->Cost;
 			IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = Order->Loyalty_Key;
 			IBInternalQuery->ParamByName("MASTER_CONTAINER")->AsString = Order->MasterContainer;
@@ -1385,6 +1395,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERRECIPE, 1) FROM RDB$DATABASE";
 				IBInternalQuery->ExecQuery();
 				int ReceipeKey = IBInternalQuery->Fields[0]->AsInteger;
+                if(CurrentRecipe->Cost < -1000000)
+                    CurrentRecipe->Cost = 0;
 
 				IBInternalQuery->Close();
 				IBInternalQuery->SQL->Text =
@@ -1639,6 +1651,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 				IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 				IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
+                if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
+                    CurrentSubOrder->Cost = 0;
 				IBInternalQuery->ParamByName("COST")->AsCurrency = CurrentSubOrder->Cost;
 				IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = CurrentSubOrder->Loyalty_Key;
 				IBInternalQuery->ParamByName("MASTER_CONTAINER")->AsString = Order->MasterContainer;
@@ -1741,6 +1755,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERRECIPE, 1) FROM RDB$DATABASE";
 					IBInternalQuery->ExecQuery();
 					int ReceipeKey = IBInternalQuery->Fields[0]->AsInteger;
+                    if(CurrentRecipe->Cost < -1000000)
+                        CurrentRecipe->Cost = 0;
 
 					IBInternalQuery->Close();
 					IBInternalQuery->SQL->Text =

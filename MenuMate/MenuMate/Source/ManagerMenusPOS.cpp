@@ -759,6 +759,10 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 IBInternalQuery->ParamByName("GST_PERCENT")->AsString = NextWord;
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
+
+                     if(StrToCurr(NextWord) < -1000000 || StrToCurr(NextWord) > 900000000)
+                        NextWord = "0";
+
 					 IBInternalQuery->ParamByName("COST")->AsString = NextWord;
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsString = NextWord;

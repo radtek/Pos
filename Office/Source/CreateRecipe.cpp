@@ -741,8 +741,8 @@ void TfrmCreateRecipe::UpdateRecipeDB(TRecipeNodeData *NodeData, double Costs[],
         QueryRecipe->ParamByName("Stock_Qty")->AsFloat = NodeData->Qty;
         QueryRecipe->ParamByName("Stock_Location")->AsString = NodeData->Location;
         QueryRecipe->ParamByName("Stock_Unit")->AsString = NodeData->Unit;
-        QueryRecipe->ParamByName("Stock_Average_Cost")->AsFloat = Costs[0];
-        QueryRecipe->ParamByName("Stock_Latest_Cost")->AsFloat = Costs[1];
+        QueryRecipe->ParamByName("Stock_Average_Cost")->AsFloat = Costs[0] > -1000000 ? Costs[0] : 0;
+        QueryRecipe->ParamByName("Stock_Latest_Cost")->AsFloat = Costs[1] > -1000000 ? Costs[1] : 0;
         QueryRecipe->ParamByName("Deleted")->AsString = "F";
 
         QueryRecipe->ExecSQL();
