@@ -2,9 +2,9 @@
 
 #ifndef SiHotDataObjectsH
 #define SiHotDataObjectsH
-#include <memory>
-#include <vector>
-#include <Classes.hpp>
+//#include <memory>
+//#include <vector>
+//#include <Classes.hpp>
 #include "PHSTCPIP.h"
 //---------------------------------------------------------------------------
 struct TRoomRequest

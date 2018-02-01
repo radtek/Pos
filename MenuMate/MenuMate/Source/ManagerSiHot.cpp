@@ -56,8 +56,8 @@ void TManagerSiHot::Initialise()
     RoundingAccountSiHot = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
     DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
+    RevenueCodesMap.clear();
 
-	DBTransaction.Commit();
 	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
@@ -71,6 +71,7 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = false;
 	}
+    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::GetRoundingandDefaultAccount()

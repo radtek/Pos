@@ -403,5 +403,6 @@ TGlobalSettings::TGlobalSettings()
     POSPlusSerialNumber = "";
     ShowCashDrawerOpeningsCount = false;
     ShowReprintReceiptDetails = false;
+    OracleCheckNumber = "";
 }
 

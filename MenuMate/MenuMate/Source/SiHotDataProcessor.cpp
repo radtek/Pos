@@ -668,3 +668,4 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     return retValue;
 }
 //----------------------------------------------------------------------------
+

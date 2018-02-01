@@ -263,6 +263,7 @@ bool TImportMenu::CreateMenuInDB( TLoadMenu* inMenu, Database::TDBTransaction *i
 	   SaveServingCoursesFromMenu(  menuKey, inMenu, inDBTransaction );
 	   SaveThirdPartyCodesFromMenu(          inMenu, inDBTransaction );
 	   SaveCoursesFromMenu(         menuKey, inMenu, inDBTransaction );
+       SaveRevenueCodes(                     inMenu, inDBTransaction );
 
 	   SaveAllForcedSidesFromMenu( inMenu, inDBTransaction );
        SaveAllForcedOptionsFromMenu(inMenu, inDBTransaction);
@@ -307,6 +308,7 @@ bool TImportMenu::SaveMenuInDB( TLoadMenu* inMenu, Database::TDBTransaction *inD
 	   SaveServingCoursesFromMenu(  inMenu->MenuKey, inMenu, inDBTransaction );
 	   SaveThirdPartyCodesFromMenu(          inMenu, inDBTransaction );
 	   SaveCoursesFromMenu(         inMenu->MenuKey, inMenu, inDBTransaction );
+       SaveRevenueCodes(            inMenu, inDBTransaction );
 
 	   SaveAllForcedSidesFromMenu( inMenu, inDBTransaction );
        SaveAllForcedOptionsFromMenu(inMenu, inDBTransaction);
@@ -391,6 +393,16 @@ void TImportMenu::SaveThirdPartyCodesFromMenu( TLoadMenu* inMenu, Database::TDBT
 	for( int i = 0; i < tpcCount; i++ )
 	{
 		SaveThirdPartyCodeFromMenu( i, inMenu, inDBTransaction );
+	}
+}
+// ---------------------------------------------------------------------------
+void TImportMenu::SaveRevenueCodes( TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
+{
+	__int32 tpcCount = inMenu->RevenueCodesCount();
+
+	for( int i = 0; i < tpcCount; i++ )
+	{
+		InsertRevenueCodesInDB( i,inMenu, inDBTransaction );
 	}
 }
 // ---------------------------------------------------------------------------
@@ -635,10 +647,11 @@ void TImportMenu::SaveTaxProfileFromMenu(__int32 inIndex, TLoadMenu* inMenu, Dat
 	Currency   taxRate;
 	__int32    taxType;
     __int32    priority;
+    //__int32    taxCode;
 
 	//::::::::::::::::::::::::::::::::::::::::::::::::
 
-	__int32 taxProfileXMLHandle = inMenu->TaxProfileAtIndex(inIndex, taxProfileKey, taxProfileName, taxRate, taxType, priority);
+	__int32 taxProfileXMLHandle = inMenu->TaxProfileAtIndex(inIndex, taxProfileKey, taxProfileName, taxRate, taxType, priority);//, taxCode);
 
 	//::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -659,7 +672,7 @@ void TImportMenu::SaveTaxProfileFromMenu(__int32 inIndex, TLoadMenu* inMenu, Dat
 
             TaxType taxTypeEnum = TaxProfile::Convert(taxType);
 
-            TaxProfile taxProfile(taxProfileName.Trim(), taxRate, taxTypeEnum, priority);
+            TaxProfile taxProfile(taxProfileName.Trim(), taxRate, taxTypeEnum, priority);//,taxCode);
             taxProfileDBManager.InsertTaxProfile(*inDBTransaction, taxProfile, taxProfileKey);
         }
 
@@ -756,6 +769,54 @@ void TImportMenu::SaveThirdPartyCodeFromMenu( __int32    inIndex,
             AddKeyMap( "tpCodes", xmlKey, tpcKey );
         }
     }
+}
+//----------------------------------------------------------------------------
+void TImportMenu::InsertRevenueCodesInDB(int index, TLoadMenu* inMenu,
+                        Database::TDBTransaction *inDBTransaction )
+{
+	__int32    code;
+	WideString description;
+
+	//::::::::::::::::::::::::::::::::::::::::::::::::
+
+	__int32 tpcXMLHandle = inMenu->RevenueCodeAtIndex(
+                                        index,
+                                        code,
+                                        description);
+
+	//:::::::::::::::::::::::::::::::::::::
+	try
+	{
+        if( tpcXMLHandle > 0 )
+        {
+            if( code != 0 )
+            {
+                if( !RevenueCodeExists( inDBTransaction, code ) && description.Trim().Length() != 0)
+                {
+                    TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
+                    qr->SQL->Text = "INSERT INTO REVENUECODEDETAILS ( REVENUECODE, REVENUECODE_DESCRIPTION ) "
+                                    "VALUES ( :REVENUECODE, :REVENUECODE_DESCRIPTION ); ";
+
+                    qr->ParamByName("REVENUECODE"        )->AsInteger = code;
+                    qr->ParamByName("REVENUECODE_DESCRIPTION"       )->AsString  = description;
+
+                    qr->ExecQuery();
+                }
+            }
+        }
+	}
+	catch( Exception& exc )
+	{
+       textLog = "Failed to insert REVENUECODE with key in the DB: "
+                 "REVENUECODE: " + IntToStr( code ) + "  " +
+                 "REVENUECODE_DESCRIPTION: " + description            + " : " + exc.Message;
+       TManagerLogs::Instance().Add( __FUNC__, EXCEPTIONLOG, textLog );
+       AddErrorLog( textLog );
+
+       throw;
+	}
+
+	//:::::::::::::::::::::::::::::::::::::
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::SaveCourseFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadMenu* inMenu,
@@ -1016,6 +1077,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
     int        default_patron_count;
     __int32    taxProfileFKey;
    Currency    priceForPoints;
+   int         revenueCode;
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -1027,7 +1089,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
 														 setMenuMask, availableAsStandard, barcode, enabled, categoryFKey,
 														 category, thirdPartyCodeFKey, tareWeight, plu,
 														 availableQuantity, defaultQuantity, warningQuantity,
-														 disableWhenCountReachesZero, canBePaidForUsingPoints, default_patron_count, priceForPoints);
+														 disableWhenCountReachesZero, canBePaidForUsingPoints, default_patron_count, priceForPoints,revenueCode);
     // Item Sizes are allways inserted as new.
     itemID = itemSizeKey;
 	sizeID = sizeFKey;
@@ -1056,7 +1118,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
                             categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                             availableQuantity, defaultQuantity, warningQuantity,
                             disableWhenCountReachesZero,
-                            canBePaidForUsingPoints, default_patron_count, priceForPoints, inDBTransaction );
+                            canBePaidForUsingPoints, default_patron_count, priceForPoints,revenueCode, inDBTransaction );
         }
         else
         {
@@ -1069,7 +1131,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
                         categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                         availableQuantity, defaultQuantity, warningQuantity,
                         disableWhenCountReachesZero, canBePaidForUsingPoints,
-                        default_patron_count, priceForPoints, inDBTransaction );
+                        default_patron_count, priceForPoints,revenueCode, inDBTransaction );
         }
 
 //			// ASEAN ++
@@ -2437,6 +2499,7 @@ __int32 TImportMenu::InsertItemSizeInDB(
                         bool       inCanBePaidForUsingPoints,
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
+                        int        inrevenueCode,
 						Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -2466,7 +2529,7 @@ __int32 TImportMenu::InsertItemSizeInDB(
 			inMemberPurchaseCount, inLocationPurchaseCount, inCategoryKey, inTareWeight,
 			inHandheldName, inReceiptName, inPLU, inAvailableQuantity, inDefaultQuantity,
             inWarningQuantity, inDisableWhenCountReachesZero, inCanBePaidForUsingPoints,
-            inDefaultPatronCount, inPriceForPoints, inDBTransaction );
+            inDefaultPatronCount, inPriceForPoints,inrevenueCode, inDBTransaction );
 
 		result = key;
 	}
@@ -2527,6 +2590,7 @@ void TImportMenu::InsertItemSizeInDBWithKey(
                         bool       inCanBePaidForUsingPoints,
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
+                        int        inrevenueCode,
 						Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -2540,14 +2604,14 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 											   "Loc_Discount_Percent, Mem_Sale_Count, Loc_Sale_Count, Category_Key, "
 											   "Tare_Weight, Handheld_Name, Receipt_Name, PLU, available_quantity, "
                                                "default_quantity, warning_quantity, disable_when_count_reaches_zero, "
-											   "can_be_paid_for_using_points, default_patron_count, PRICE_FOR_POINTS) "
+											   "can_be_paid_for_using_points, default_patron_count, PRICE_FOR_POINTS,REVENUECODE) "
 						"VALUES ( :key, :itemFKey, :sizeFKey, :itemID, :sizeID, :palmItemID, :palmSizeID, :sizeName, :price, :maxRetailPrice, "
 								 ":specialPrice, :cost, :isao, :free, :availableAsStandard, :noRecipe, :barcode, :setMenuMask, "
 								 ":enabled, :gstPercent, :costGSTPercent, :pointsPercent, :sizeKitchenName, :thirdPartyCodesKey, "
 								 ":memDiscountPercent, :locDiscountPercent, :memSaleCount, :locSaleCount, :categoryKey, "
 								 ":tareWeight, :handheldName, :receiptName, :plu, "
                                  ":available_quantity, :default_quantity, :warning_quantity, :disable_when_count_reaches_zero, "
-								 ":can_be_paid_for_using_points, :default_patron_count, :PRICE_FOR_POINTS);";
+								 ":can_be_paid_for_using_points, :default_patron_count, :PRICE_FOR_POINTS, :REVENUECODE);";
 
 		qr->ParamByName("key"                )->AsInteger = inKey;
 		qr->ParamByName("itemFKey"           )->AsInteger = inMasterItemKey;
@@ -2597,12 +2661,10 @@ void TImportMenu::InsertItemSizeInDBWithKey(
           inDefaultPatronCount;
         qr->ParamByName("PRICE_FOR_POINTS")->AsCurrency =
           inPriceForPoints;
+        qr->ParamByName("REVENUECODE")->AsInteger =
+          inrevenueCode;
 
 		qr->ExecQuery();
-
-
-
-     
 
 	}
 	catch( Exception& exc )
@@ -3390,6 +3452,7 @@ __int32 TImportMenu::UpdateItemSizeInDB(
                                                 bool inDisableWhenCountReachesZero,
 						bool inCanBePaidForUsingPoints,
                         Currency   inPriceForPoints,
+                        __int32    inRevenueCode,
 						Database::TDBTransaction *inDBTransaction )
 {
 	bool result = false;
@@ -3416,7 +3479,7 @@ __int32 TImportMenu::UpdateItemSizeInDB(
                                                         "warning_quantity = :warning_quantity, "
                                                         "disable_when_count_reaches_zero = :disable_when_count_reaches_zero, "
                                                         "can_be_paid_for_using_points = :can_be_paid_for_using_points, "
-                                                        "PRICE_FOR_POINTS = :PRICE_FOR_POINTS, "
+                                                        "PRICE_FOR_POINTS = :PRICE_FOR_POINTS, REVENUECODE =: REVENUECODE "
 						"WHERE ItemSize_Key = :key;";
 
 		qr->ParamByName("key"                )->AsInteger  = inItemSizeKey;
@@ -3463,6 +3526,8 @@ __int32 TImportMenu::UpdateItemSizeInDB(
                   inDisableWhenCountReachesZero;
                 qr->ParamByName("PRICE_FOR_POINTS")->AsCurrency =
                   inPriceForPoints;
+                qr->ParamByName("REVENUECODE")->AsInteger =
+                  inRevenueCode;
 
 		qr->ExecQuery();
 
@@ -4069,6 +4134,27 @@ __int32 TImportMenu::GetExistingMenuKeyByName( Database::TDBTransaction *inDBTra
     return result;
 }
 // ---------------------------------------------------------------------------
+bool TImportMenu::RevenueCodeExists(
+                            Database::TDBTransaction *inDBTransaction,
+                            __int32 inCode )
+{
+    bool result = false;
+
+    TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
+	qr->SQL->Text = "Select COUNT( REVENUECODE ) "
+                    "FROM REVENUECODEDETAILS "
+                    "WHERE REVENUECODE = :REVENUECODE;";
+	qr->ParamByName("REVENUECODE")->AsString = inCode;
+	qr->ExecQuery();
+
+    if(!qr->Eof)
+    {
+        result = qr->Fields[0]->AsInteger > 0;
+    }
+
+    return result;
+}
+//----------------------------------------------------------------------------
 
 bool TImportMenu::ThirdPartyCodeExists(
                             Database::TDBTransaction *inDBTransaction,

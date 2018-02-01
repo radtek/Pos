@@ -854,7 +854,7 @@ void __fastcall TfrmSetup::btnTestScalesClick(TObject *Sender)
 	 Order->Size 						= "Test Size";
 	 Order->SizeKitchenName     	= "Test Size";
 	 //Order->GSTPercent          	= 15;
-     Order->TaxProfiles.push_back(TaxProfile("Test Tax", 15, SalesTax, 1));
+     Order->TaxProfiles.push_back(TaxProfile("Test Tax", 15, SalesTax, 1/*,0*/));
 	 Order->PointsPercent       	= 0;
 	 Order->SetMenuMask		   	= 0;
 	 Order->SetMenu			      = 0;

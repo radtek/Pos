@@ -22,7 +22,7 @@ enum eMembershipType {
 };
 
 enum ePMSType{
-    Phoenix = 1,SiHot
+    Phoenix = 1,SiHot,Oracle
 };
 
 enum eSetFontSize {eSeven , eEight, eNine, eTenth, eEleven };
@@ -499,6 +499,7 @@ public:
     UnicodeString POSPlusSerialNumber;
     bool ShowCashDrawerOpeningsCount;
     bool ShowReprintReceiptDetails;
+    UnicodeString OracleCheckNumber;
 };
 
 #endif

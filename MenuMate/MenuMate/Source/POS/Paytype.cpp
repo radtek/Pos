@@ -1411,6 +1411,44 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                             CurrentTransaction.SalesType = eRoomSale;
                             RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
                             CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+							if(TGlobalSettings::Instance().PMSType == Oracle)
+							{
+								CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+								TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+								CurrentTransaction.Customer.RoomNumber =
+												atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+								TabName =
+												atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+								CurrentTransaction.PMSClientDetails.ReservationID =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].ReservationId;
+								CurrentTransaction.PMSClientDetails.SequenceNumber =
+												frmPhoenixRoom->roomResult.SequenceNumber;
+								CurrentTransaction.PMSClientDetails.ProfileID =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].ProfileId;
+								CurrentTransaction.PMSClientDetails.CreditLimit =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].CreditLimit;
+								CurrentTransaction.PMSClientDetails.HotelID =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].HotelId;
+								CurrentTransaction.PMSClientDetails.FirstName =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+								CurrentTransaction.PMSClientDetails.LastName =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+								CurrentTransaction.PMSClientDetails.MatchIdentifier =frmPhoenixRoom->SelectedRoom.FolderNumber-1;
+								CurrentTransaction.PMSClientDetails.RoomNumber =
+												frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber;
+								CurrentTransaction.PMSClientDetails.Date =
+												frmPhoenixRoom->roomResult.Date;
+								CurrentTransaction.PMSClientDetails.Time =
+												frmPhoenixRoom->roomResult.Time;
+								CurrentTransaction.Phoenix.AccountNumber = CurrentTransaction.Customer.RoomNumber;
+								CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+								[frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+								CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+								CurrentTransaction.SalesType = eRoomSale;
+								RoomNumber = atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+								CurrentTransaction.Phoenix.RoomNumber =
+									atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+							}							
                             if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -1835,6 +1873,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                                     MessageBox("Credit Limit Exceeded","Info",MB_OK);
                                 }
                             }
+							if(TGlobalSettings::Instance().PMSType == Oracle)
+							{
+								if(Payment->GetPay() > StrToCurr(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].CreditLimit))
+								{
+								   GuestMasterOk = false;
+								   MessageBox("Credit Limit Exceeded","Info",MB_OK);
+								}
+							}							
                             if(GuestMasterOk)
                             {
                                 CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
@@ -1846,7 +1892,45 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 //                                MessageBox(RoomNumber,"Room No",MB_OK);
                                 CurrentTransaction.Phoenix.RoomNumber = frmPhoenixRoom->SelectedRoom.SiHotRoom;
 //                                MessageBox(CurrentTransaction.Phoenix.RoomNumber,"Curr Room Number",MB_OK);
-                                if(TGlobalSettings::Instance().PMSType != SiHot)
+								if(TGlobalSettings::Instance().PMSType == Oracle)
+								{
+									CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
+									TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
+									CurrentTransaction.Customer.RoomNumber =
+													atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+									TabName =
+													atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+									CurrentTransaction.PMSClientDetails.ReservationID =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].ReservationId;
+									CurrentTransaction.PMSClientDetails.SequenceNumber =
+													frmPhoenixRoom->roomResult.SequenceNumber;
+									CurrentTransaction.PMSClientDetails.ProfileID =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].ProfileId;
+									CurrentTransaction.PMSClientDetails.CreditLimit =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].CreditLimit;
+									CurrentTransaction.PMSClientDetails.HotelID =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].HotelId;
+									CurrentTransaction.PMSClientDetails.FirstName =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+									CurrentTransaction.PMSClientDetails.LastName =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+									CurrentTransaction.PMSClientDetails.MatchIdentifier =frmPhoenixRoom->SelectedRoom.FolderNumber;
+									CurrentTransaction.PMSClientDetails.RoomNumber =
+													frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber;
+									CurrentTransaction.PMSClientDetails.Date =
+													frmPhoenixRoom->roomResult.Date;
+									CurrentTransaction.PMSClientDetails.Time =
+													frmPhoenixRoom->roomResult.Time;
+									CurrentTransaction.Phoenix.AccountNumber = CurrentTransaction.Customer.RoomNumber;
+									CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
+									[frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+									CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+									CurrentTransaction.SalesType = eRoomSale;
+									RoomNumber = atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+									CurrentTransaction.Phoenix.RoomNumber =
+										atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
+								}
+                                else if(TGlobalSettings::Instance().PMSType != SiHot)
                                 {
                                     CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
                                     TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
