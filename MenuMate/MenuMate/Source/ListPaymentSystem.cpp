@@ -2896,7 +2896,7 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 					{
 						Csv.LoadFromFile(File);
 					}
-					Csv.Add((Payment->CSVString += "\u00A0") + "," + FormatDateTime("mm/dd/yy", Date()) + "," + FormatDateTime("hh:nn",
+					Csv.Add((Payment->CSVString += "\u00A0") + "," + FormatDateTime("mm/dd/yyyy", Date()) + "," + FormatDateTime("hh:nn",
 					Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
 					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
 
