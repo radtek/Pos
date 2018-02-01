@@ -131,6 +131,7 @@ private:	// User declarations
 	void __fastcall ExportIntaMateListCategories();
     void __fastcall ResetPoint(Database::TDBTransaction &DBTransaction, int ContactKey,TResetPoints check); //MM- 4579
     void __fastcall CheckDate(Database::TDBTransaction &DBTransaction, int keys,int ContactKey, double points,TResetPoints check, int caseTicked, AnsiString boxTicked,AnsiString options); //MM- 4579
+    void __fastcall FiscalPrinterSettlement();
 
     void CheckCancelItemsTable();
     void UpdateCancelItemsTable();

@@ -2559,6 +2559,8 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 		frmDropDown->AddButton("Consumption", &ReportConsumption);
 		frmDropDown->AddButton("Table & Tab Summary", &TableTabSummaryReport);
 		frmDropDown->AddButton("Site Summary", &ReportSiteSummary);
+		if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+            frmDropDown->AddButton("Fiscal Printer Settlement", &FiscalPrinterSettlement);
 
 		if (frmDropDown->ShowModal() == mrOk)
         {
@@ -8884,4 +8886,9 @@ void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransactio
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+//-------------------------------------------------------------------------------
+void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
+{
+	//todo
 }
