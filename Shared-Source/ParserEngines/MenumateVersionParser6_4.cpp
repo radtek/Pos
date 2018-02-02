@@ -104,6 +104,8 @@ void TApplyParser::update6_46Tables()
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_46( _dbControl ) ;
 	POPULATEDSRPIVOTProcedure6_46( _dbControl ) ;
+    AlterTablePaymentType6_46(_dbControl);
+    Updatetable_PaymentTypes6_46(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1677,5 +1679,38 @@ void TApplyParser::POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl 
 		throw;
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTablePaymentType6_46(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
+		inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------------
+void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------
