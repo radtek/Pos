@@ -892,7 +892,10 @@ namespace MenumateVersionParser
 		void Create6_46Generators(TDBControl* const _dbControl);
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
-        void UpdateServingTimes(TDBControl* const _dbControl);    }; // class
+        void UpdateServingTimes(TDBControl* const _dbControl);
+        void AlterTablePaymentType6_46(TDBControl* const _dbControl);
+        void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
+    };// class
 } // namespace
 
 #endif
