@@ -5236,7 +5236,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAlwaysPrintDiscountSales: TCheckBox
                               Left = 11
-                              Top = 112
+                              Top = 84
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt with discounts'
@@ -5251,7 +5251,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintSignatureOnDiscountSales: TCheckBox
                               Left = 11
-                              Top = 140
+                              Top = 112
                               Width = 315
                               Height = 20
                               Caption = 'Print signature section on discount sale'
@@ -5266,7 +5266,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintSignatureOnRoomSales: TCheckBox
                               Left = 11
-                              Top = 168
+                              Top = 140
                               Width = 315
                               Height = 20
                               Caption = 'Print signature section on room sale'
@@ -5281,7 +5281,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbDuplicateReceipts: TCheckBox
                               Left = 11
-                              Top = 84
+                              Top = 168
                               Width = 315
                               Height = 20
                               Caption = 'Duplicate all receipts'
