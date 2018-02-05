@@ -182,17 +182,6 @@ void __fastcall TfrmShowPrintout::btnClosePrintClick(TObject *Sender)
    }
    else
    {
-	  TPrintout *Printout = new TPrintout;
-	  Printout->Printer = TComms::Instance().ReceiptPrinter;
-	  try
-	  {
-		 CurrentPrintout->Position = 0;
-		 Printout->PrintToPrinterStream(CurrentPrintout.get(), TComms::Instance().ReceiptPrinter.UNCName());
-	  }
-	  __finally
-	  {
-		 delete Printout;
-	  }
 	  ExitCode = 2;
 	  Close();
 
