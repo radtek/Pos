@@ -69,6 +69,7 @@
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
+#include "ManagerSiHot.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -516,7 +517,6 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
     {
         LoadClippPaymentTypes(PaymentTransaction);
     }
-
 	IBInternalQuery->Close();
 	IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
 	IBInternalQuery->ExecQuery();
@@ -553,8 +553,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	    loadPaymentTypeGroupsForPaymentType(IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment );
 	    PaymentTransaction.PaymentAdd(NewPayment);
     }
-
-
+//    for(int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+//    {
+//        MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
+//    }
 
     TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
     if (CashPayment == NULL)
@@ -628,7 +630,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTransaction)
 {
     TPayment *NewPayment = new TPayment;
-    NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    if(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal)
+        NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    else
+        NewPayment->Name = "PtsBal";
     NewPayment->SysNameOveride = "Points";
     NewPayment->SetPaymentAttribute(ePayTypePoints);
     NewPayment->DisplayOrder = 1;
@@ -666,14 +671,14 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
     if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal)
     {
         TPayment *NewPayment = new TPayment;
-        NewPayment->Name = "Comp";
-        NewPayment->SysNameOveride = "Points";
-        NewPayment->SetPaymentAttribute(ePayTypePoints);
-        NewPayment->DisplayOrder = 1;
-        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
-        NewPayment->Colour = clTeal;
-        NewPayment->PaymentThirdPartyID = "10007242";
-        PaymentTransaction.PaymentAdd(NewPayment);
+//        NewPayment->Name = "Comp";
+//        NewPayment->SysNameOveride = "Points";
+//        NewPayment->SetPaymentAttribute(ePayTypePoints);
+//        NewPayment->DisplayOrder = 1;
+//        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
+//        NewPayment->Colour = clTeal;
+//        NewPayment->PaymentThirdPartyID = "10007242";
+//        PaymentTransaction.PaymentAdd(NewPayment);
 
         NewPayment = new TPayment;
         NewPayment->Name = "Dining";
@@ -810,7 +815,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-        
+
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -835,7 +840,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		}
 
 		transactionRecovery.ClearRecoveryInfo();
-
+        SetCashDrawerStatus(PaymentTransaction);
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
@@ -1351,7 +1356,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 {
 	bool RetVal = false;
 
-	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
+	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
 		" The PMS Interface Software has not been installed or enabled correctly." " Please contact your MenuMate support agent.").w_str
@@ -2468,10 +2473,11 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("ORDER_TYPE")->AsInteger = Order->OrderType;
 				IBInternalQuery->ParamByName("QTY")->AsFloat = double(Order->GetQty());
                 IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach_BillCalc();
-				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-				Order->Cost,
-				0.01,
-				TGlobalSettings::Instance().MidPointRoundsDown);
+
+                if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                    Order->Cost = 0;
+
+				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(Order->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 				IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsFloat = double(Order->CostGSTPercent);
                 IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Order->TotalAdjustment();
 				IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = Order->DiscountReason.SubString(1, 40);
@@ -2638,11 +2644,12 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
 					IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
-					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-					CurrentSubOrder->Cost,
-					0.01,
-					TGlobalSettings::Instance().MidPointRoundsDown);
-                                        IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
+
+                    if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
+                        CurrentSubOrder->Cost = 0;
+
+					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(CurrentSubOrder->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+                    IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
 					//IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = RoundToNearest(CurrentSubOrder->TotalAdjustment(),0.01,
 					//TGlobalSettings::Instance().MidPointRoundsDown );
 					IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = CurrentSubOrder->DiscountReason.SubString(1, 40);
@@ -3022,7 +3029,6 @@ void TListPaymentSystem::OpenCashDrawer(TPaymentTransaction &PaymentTransaction)
 	{
 		TComms::Instance().KickLocalDraw(PaymentTransaction.DBTransaction);
         PaymentTransaction.IsCashDrawerOpened = true;
-        SetCashDrawerStatus(PaymentTransaction);
 	}
 }
 //------------------------------------------------------------------------------
@@ -3598,6 +3604,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     if (!WalletTransaction)
        return RetVal;
 
+
     SmartConnectQRTransaction = ProcessSmartConnectQRTransaction(PaymentTransaction);
     if (!SmartConnectQRTransaction)
        return RetVal;
@@ -3622,6 +3629,39 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}
+    else if(TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "")
+    {
+            /*
+               SiHot could be enabled but is not. Hence we need to try making it
+               enabled if possible.
+            */
+        bool siHotEnabled = TryToEnableSiHot();
+        if(siHotEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              for(int paymentIndex = 0; paymentIndex < PaymentTransaction.PaymentsCount(); paymentIndex++)
+              {
+                  TPayment *payment = PaymentTransaction.PaymentGet(paymentIndex);
+                  if(payment->GetPay() != 0)
+                  {
+                    payment->SetPay(0);
+                    payment->SetAdjustment(0);
+                    payment->SetCashOut(0);
+                    payment->Result = eFailed;
+                  }
+              }
+          }
+        }
+    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
@@ -6436,6 +6476,42 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+bool TListPaymentSystem::TryToEnableSiHot()
+{
+    bool retValue = false;
+    UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
+    std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
+    retValue = siHotManager->GetDefaultAccount(processMessage);
+    try
+    {
+        AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        directoryName = directoryName + "/Sihot Post Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+        AnsiString fileName =  directoryName + "/" + name;
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+
+        List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
+        List->Add("Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+        List->Add("Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+        if(retValue)
+            List->Add("Successful");
+        else
+            List->Add("Unsuccessful");
+        List->Add("===========================================================");
+        List->Add("\n");
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Ex)
+    {
+    }
+    return retValue;
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction)

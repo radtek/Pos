@@ -1021,6 +1021,8 @@ TListMenu *TManagerMenus::LoadMenuFromDB(Database::TDBControl &DBControl, const 
                              Size->Categories->FinancialCategoryGroup = ItemSizeInfo.Category_Group_Name;
 
                              Size->PriceLevels = ItemSizeInfo.PriceLevels;
+                             Size->RevenueCode = ItemSizeInfo.RevenueCode;
+
 
 
                              if (Size->Categories->FinancialCategory == "")
@@ -1043,11 +1045,14 @@ TListMenu *TManagerMenus::LoadMenuFromDB(Database::TDBControl &DBControl, const 
                                DBTransaction.StartTransaction();
                                UnicodeString Code = Size->ThirdPartyCode;
                                DBTransaction.Commit();
-                               if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
+                               if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Phoenix)
                                {
-                                  throw Exception("Unable to Load Menu " + Menu->MenuName + ". The Third Party Code : " + Code +
-                                    " is not found in the PMS System");
-                               } // end Added for POS
+                                   if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
+                                   {
+                                      throw Exception("Unable to Load Menu " + Menu->MenuName + ". The Third Party Code : " + Code +
+                                        " is not found in the PMS System");
+                                   } // end Added for POS
+                               }
         #endif
                              for (unsigned i = 0; i < ItemSizeInfo.Recipes.size(); i++)
                              {

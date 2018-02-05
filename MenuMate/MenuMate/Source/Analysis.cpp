@@ -1897,312 +1897,405 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                                                   "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
             }
 
-         	IBDayArcBill->ExecQuery();
-			for (; !IBDayArcBill->Eof; IBDayArcBill->Next())
-			{
-				IBInternalQuery->Close();
-				IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCBILL, 1) FROM RDB$DATABASE";
-				IBInternalQuery->ExecQuery();
-				int ArcBillKey = IBInternalQuery->Fields[0]->AsInteger;
+            try
+            {
+         	    IBDayArcBill->ExecQuery();
 
-				// Copy all the daily ArcBill Fields to the main archive
-				IBArcBill->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-                IBArcBill->ParamByName("Z_KEY")->AsInteger = Zedkey;
-				for (int i = 1; i < IBDayArcBill->FieldCount; i++)
-				{
-					UnicodeString FieldName = IBDayArcBill->Fields[i]->Name;
-					if (FieldName.UpperCase() == "RECEIPT")
-					{
-						if (IBDayArcBill->FieldByName("RECEIPT")->IsNull)
-						{
-							IBArcBill->ParamByName("RECEIPT")->Clear();
-						}
-						else
-						{
-							std::auto_ptr <TMemoryStream> ReceiptToArchive(new TMemoryStream);
-							IBDayArcBill->FieldByName("RECEIPT")->SaveToStream(ReceiptToArchive.get());
-							ReceiptToArchive->Position = 0;
-							IBArcBill->ParamByName("RECEIPT")->LoadFromStream(ReceiptToArchive.get());
-						}
-					}
-					else
-					{
-						VariantDBAssign(IBDayArcBill->FieldByName(FieldName), IBArcBill->ParamByName(FieldName));
-					}
-				}
-				IBArcBill->ExecQuery();
+			    for (; !IBDayArcBill->Eof; IBDayArcBill->Next())
+                {
+                        IBInternalQuery->Close();
+                        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCBILL, 1) FROM RDB$DATABASE";
+                        IBInternalQuery->ExecQuery();
+                        int ArcBillKey = IBInternalQuery->Fields[0]->AsInteger;
+                        try
+                        {
+                        // Copy all the daily ArcBill Fields to the main archive
+                            IBArcBill->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBArcBill->ParamByName("Z_KEY")->AsInteger = Zedkey;
+                            for (int i = 1; i < IBDayArcBill->FieldCount; i++)
+                            {
+                                UnicodeString FieldName = IBDayArcBill->Fields[i]->Name;
+                                if (FieldName.UpperCase() == "RECEIPT")
+                                {
+                                    if (IBDayArcBill->FieldByName("RECEIPT")->IsNull)
+                                    {
+                                        IBArcBill->ParamByName("RECEIPT")->Clear();
+                                    }
+                                    else
+                                    {
+                                        std::auto_ptr <TMemoryStream> ReceiptToArchive(new TMemoryStream);
+                                        IBDayArcBill->FieldByName("RECEIPT")->SaveToStream(ReceiptToArchive.get());
+                                        ReceiptToArchive->Position = 0;
+                                        IBArcBill->ParamByName("RECEIPT")->LoadFromStream(ReceiptToArchive.get());
+                                    }
+                                }
+                                else
+                                {
+                                    VariantDBAssign(IBDayArcBill->FieldByName(FieldName), IBArcBill->ParamByName(FieldName));
+                                }
+                            }
 
-				if (StockMasterPath != "")
-				{
-					Csv.Add("H," + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + "," + IBDayArcBill->FieldByName("TIME_STAMP")
-					->AsDateTime.FormatString("d/m/yyyy") + "," + IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime.FormatString("H:N:S")
-					+ "," + IBDayArcBill->FieldByName("STAFF_NAME")->AsString + "," + IBDayArcBill->FieldByName("DISCOUNT")
-					->AsString + "," + IBDayArcBill->FieldByName("PATRON_COUNT")->AsString);
-				}
-
-				IBDayArcBillPay->Close();
-				IBDayArcBillPay->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayArcBillPay->ExecQuery();
-				for (; !IBDayArcBillPay->Eof; IBDayArcBillPay->Next())
-				{
-					// Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
-					// link to dtArcBill
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCBILLPAY, 1) FROM RDB$DATABASE";
-					IBInternalQuery->ExecQuery();
-					int ArcBillPayKey = IBInternalQuery->Fields[0]->AsInteger;
-
-					for (int i = 2; i < IBDayArcBillPay->FieldCount; i++)
-					{
-						UnicodeString FieldName = IBDayArcBillPay->Fields[i]->Name;
-						VariantDBAssign(IBDayArcBillPay->FieldByName(FieldName), IBArcBillPay->ParamByName(FieldName));
-						// IBArcBillPay->ParamByName(FieldName)->AsVariant =
-						// IBDayArcBillPay->FieldByName(FieldName)->AsVariant;
-					}
-					IBArcBillPay->ParamByName("ARCBILLPAY_KEY")->AsInteger = ArcBillPayKey;
-					IBArcBillPay->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBArcBillPay->ExecQuery();
-
-					if (StockMasterPath != "")
-					{
-						Csv.Add(UnicodeString("T,") + IBDayArcBillPay->FieldByName("PAY_TYPE")->AsString + "," + IBDayArcBillPay->FieldByName
-						("SUBTOTAL")->AsString);
-					}
-				}
-
-				IBDayArcRef->Close();
-				IBDayArcRef->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayArcRef->ExecQuery();
-				for (; !IBDayArcRef->Eof; IBDayArcRef->Next())
-				{
-					// Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
-					// link to dtArcBill
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCREF, 1) FROM RDB$DATABASE";
-					IBInternalQuery->ExecQuery();
-					int ArcRefKey = IBInternalQuery->Fields[0]->AsInteger;
-
-					for (int i = 2; i < IBDayArcRef->FieldCount; i++)
-					{
-						UnicodeString FieldName = IBDayArcRef->Fields[i]->Name;
-						VariantDBAssign(IBDayArcRef->FieldByName(FieldName), IBArcRef->ParamByName(FieldName));
-
-						/* IBArcRef->ParamByName(FieldName)->AsVariant =
-				IBDayArcRef->FieldByName(FieldName)->AsVariant; */
-					}
-					IBArcRef->ParamByName("ARCREF_KEY")->AsInteger = ArcRefKey;
-					IBArcRef->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBArcRef->ExecQuery();
-				}
-
-				IBDayArcSurcharge->Close();
-				IBDayArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayArcSurcharge->ExecQuery();
-				for (; !IBDayArcSurcharge->Eof; IBDayArcSurcharge->Next())
-				{
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCSURCHARGE, 1) FROM RDB$DATABASE";
-					IBInternalQuery->ExecQuery();
-					int ArcSurchargeKey = IBInternalQuery->Fields[0]->AsInteger;
-
-					// Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
-					// link to dtArcBill
-					for (int i = 2; i < IBDayArcSurcharge->FieldCount; i++)
-					{
-						UnicodeString FieldName = IBDayArcSurcharge->Fields[i]->Name;
-						VariantDBAssign(IBDayArcSurcharge->FieldByName(FieldName), IBArcSurcharge->ParamByName(FieldName));
-
-						/* IBArcSurcharge->ParamByName(FieldName)->AsVariant =
-				IBDayArcSurcharge->FieldByName(FieldName)->AsVariant; */
-					}
-					IBArcSurcharge->ParamByName("SURCHARGE_KEY")->AsInteger = ArcSurchargeKey;
-					IBArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBArcSurcharge->ExecQuery();
-
-					if (StockMasterPath != "")
-					{
-						Csv.Add(UnicodeString("T,") + IBDayArcSurcharge->FieldByName("PAY_TYPE")->AsString + "," + IBDayArcSurcharge->FieldByName
-						("SUBTOTAL")->AsString);
-					}
-				}
-
-				IBDayPartonCount->Close();
-				IBDayPartonCount->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayPartonCount->ExecQuery();
-				for (; !IBDayPartonCount->Eof; IBDayPartonCount->Next())
-				{
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PATRONCOUNT, 1) FROM RDB$DATABASE";
-					IBInternalQuery->ExecQuery();
-					int ArcPatronCountKey = IBInternalQuery->Fields[0]->AsInteger;
-
-					// Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
-					// link to dtArcBill
-					for (int i = 2; i < IBDayPartonCount->FieldCount; i++)
-					{
-						UnicodeString FieldName = IBDayPartonCount->Fields[i]->Name;
-						VariantDBAssign(IBDayPartonCount->FieldByName(FieldName), IBPatronCount->ParamByName(FieldName));
-
-						/* IBPatronCount->ParamByName(FieldName)->AsVariant =
-				IBDayPartonCount->FieldByName(FieldName)->AsVariant; */
-					}
-					IBPatronCount->ParamByName("PATRONCOUNT_KEY")->AsInteger = ArcPatronCountKey;
-					IBPatronCount->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBPatronCount->ExecQuery();
-
-					/* if (UseStockMaster)
-			{ // This will write out the Patron count its on disable because
-			// it 'might' break other people already useing this file.
-			// Given each line has a header Type char it 'shouldnt though'.
-			Csv.Add(UnicodeString("P,") +
-			IBDayPartonCount->FieldByName("PATRON_TYPE")->AsString + "," +
-			IBDayPartonCount->FieldByName("PATRON_COUNT")->AsString);
-			} */
-				}
+                            IBArcBill->ExecQuery();
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcBill->ExecQuery() " + ArcBillKey);
+                        throw;
+                    }
 
 
-				IBDayWebArchive->Close();
-				IBDayWebArchive->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayWebArchive->ExecQuery();
-				for (; !IBDayWebArchive->Eof; IBDayWebArchive->Next())
-				{
-					// Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
-					// link to dtArcBill
-					VariantDBAssign(IBDayWebArchive->FieldByName("WEBORDER_KEY"), IBWebArchive->ParamByName("WEBORDER_KEY"));
-					IBWebArchive->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBWebArchive->ExecQuery();
-				}
+                    if (StockMasterPath != "")
+                    {
+                        Csv.Add("H," + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + "," + IBDayArcBill->FieldByName("TIME_STAMP")
+                        ->AsDateTime.FormatString("d/m/yyyy") + "," + IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime.FormatString("H:N:S")
+                        + "," + IBDayArcBill->FieldByName("STAFF_NAME")->AsString + "," + IBDayArcBill->FieldByName("DISCOUNT")
+                        ->AsString + "," + IBDayArcBill->FieldByName("PATRON_COUNT")->AsString);
+                    }
+                    int dayArcBillKeyRef = 0;
+                    try
+                    {
+                        IBDayArcBillPay->Close();
+                        IBDayArcBillPay->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        dayArcBillKeyRef = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBDayArcBillPay->ExecQuery();
+                        for (; !IBDayArcBillPay->Eof; IBDayArcBillPay->Next())
+                        {
+                            // Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
+                            // link to dtArcBill
+                            IBInternalQuery->Close();
+                            IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCBILLPAY, 1) FROM RDB$DATABASE";
+                            IBInternalQuery->ExecQuery();
+                            int ArcBillPayKey = IBInternalQuery->Fields[0]->AsInteger;
 
-				// Find all the archive entries connected to this arcbill.
-				IBDayArchive->Close();
-				IBDayArchive->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-				IBDayArchive->ExecQuery();
-				for (; !IBDayArchive->Eof; IBDayArchive->Next())
-				{
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCHIVE, 1) FROM RDB$DATABASE";
-					IBInternalQuery->ExecQuery();
-					int ArchiveKey = IBInternalQuery->Fields[0]->AsInteger;
+                            for (int i = 2; i < IBDayArcBillPay->FieldCount; i++)
+                            {
+                                UnicodeString FieldName = IBDayArcBillPay->Fields[i]->Name;
+                                VariantDBAssign(IBDayArcBillPay->FieldByName(FieldName), IBArcBillPay->ParamByName(FieldName));
+                                // IBArcBillPay->ParamByName(FieldName)->AsVariant =
+                                // IBDayArcBillPay->FieldByName(FieldName)->AsVariant;
+                            }
+                            IBArcBillPay->ParamByName("ARCBILLPAY_KEY")->AsInteger = ArcBillPayKey;
+                            IBArcBillPay->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBArcBillPay->ExecQuery();
 
-					for (int i = 2; i < IBDayArchive->FieldCount; i++)
-					{
-						UnicodeString FieldName = IBDayArchive->Fields[i]->Name;
-						if(ParamExists(IBArchive, FieldName))
-						{
-							VariantDBAssign(IBDayArchive->FieldByName(FieldName), IBArchive->ParamByName(FieldName));
-						}
-						/* IBArchive->ParamByName(FieldName)->AsVariant =
-				IBDayArchive->FieldByName(FieldName)->AsVariant; */
-					}
-					IBArchive->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-					IBArchive->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-					IBArchive->ExecQuery();
+                            if (StockMasterPath != "")
+                            {
+                                Csv.Add(UnicodeString("T,") + IBDayArcBillPay->FieldByName("PAY_TYPE")->AsString + "," + IBDayArcBillPay->FieldByName
+                                ("SUBTOTAL")->AsString);
+                            }
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcBillPay->ExecQuery() "+   dayArcBillKeyRef);
+                        throw;
+                    }
 
-					IBDayArchiveDiscounts->Close();
-					IBDayArchiveDiscounts->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
-					IBDayArchiveDiscounts->ExecQuery();
-					for (; !IBDayArchiveDiscounts->Eof; IBDayArchiveDiscounts->Next())
-					{
-						IBInternalQuery->Close();
-						IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCORDERDISCOUNTS, 1) FROM RDB$DATABASE";
-						IBInternalQuery->ExecQuery();
-						int ARCORDERDISCOUNTS_KEY = IBInternalQuery->Fields[0]->AsInteger;
+                    try
+                    {
+                        IBDayArcRef->Close();
+                        IBDayArcRef->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBDayArcRef->ExecQuery();
+                        for (; !IBDayArcRef->Eof; IBDayArcRef->Next())
+                        {
+                            // Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
+                            // link to dtArcBill
+                            IBInternalQuery->Close();
+                            IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCREF, 1) FROM RDB$DATABASE";
+                            IBInternalQuery->ExecQuery();
+                            int ArcRefKey = IBInternalQuery->Fields[0]->AsInteger;
 
-						for (int i = 2; i < IBDayArchiveDiscounts->FieldCount; i++)
-						{
-							UnicodeString FieldName = IBDayArchiveDiscounts->Fields[i]->Name;
-							VariantDBAssign(IBDayArchiveDiscounts->FieldByName(FieldName), IBArchiveDiscounts->ParamByName(FieldName));
-						}
-						IBArchiveDiscounts->ParamByName("ARCORDERDISCOUNTS_KEY")->AsInteger = ARCORDERDISCOUNTS_KEY;
-						IBArchiveDiscounts->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-						IBArchiveDiscounts->ExecQuery();
-					}
+                            for (int i = 2; i < IBDayArcRef->FieldCount; i++)
+                            {
+                                UnicodeString FieldName = IBDayArcRef->Fields[i]->Name;
+                                VariantDBAssign(IBDayArcRef->FieldByName(FieldName), IBArcRef->ParamByName(FieldName));
 
-					IBDayArchiveTaxes->Close();
-					IBDayArchiveTaxes->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
-					IBDayArchiveTaxes->ExecQuery();
-					for (; !IBDayArchiveTaxes->Eof; IBDayArchiveTaxes->Next())
-					{
-						IBInternalQuery->Close();
-						IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCORDERTAXES, 1) FROM RDB$DATABASE";
-						IBInternalQuery->ExecQuery();
-						int ARCORDERTAXES_KEY = IBInternalQuery->Fields[0]->AsInteger;
+                                /* IBArcRef->ParamByName(FieldName)->AsVariant =
+                        IBDayArcRef->FieldByName(FieldName)->AsVariant; */
+                            }
+                            IBArcRef->ParamByName("ARCREF_KEY")->AsInteger = ArcRefKey;
+                            IBArcRef->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBArcRef->ExecQuery();
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBDayArcRef->ExecQuery() "+   dayArcBillKeyRef);
+                        throw;
+                    }
 
-						for (int i = 2; i < IBDayArchiveTaxes->FieldCount; i++)
-						{
-							UnicodeString FieldName = IBDayArchiveTaxes->Fields[i]->Name;
-							VariantDBAssign(IBDayArchiveTaxes->FieldByName(FieldName), IBArchiveTaxes->ParamByName(FieldName));
-						}
-						IBArchiveTaxes->ParamByName("ARCORDERTAXES_KEY")->AsInteger = ARCORDERTAXES_KEY;
-						IBArchiveTaxes->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-						IBArchiveTaxes->ExecQuery();
-					}
+                    try
+                    {
+                        IBDayArcSurcharge->Close();
+                        IBDayArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBDayArcSurcharge->ExecQuery();
+                        for (; !IBDayArcSurcharge->Eof; IBDayArcSurcharge->Next())
+                        {
+                            IBInternalQuery->Close();
+                            IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCSURCHARGE, 1) FROM RDB$DATABASE";
+                            IBInternalQuery->ExecQuery();
+                            int ArcSurchargeKey = IBInternalQuery->Fields[0]->AsInteger;
 
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM DAYARCCATEGORY WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
-					IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
-					IBInternalQuery->ExecQuery();
-					for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-					{
-						IBInternalQuery2->Close();
-						IBInternalQuery2->SQL->Text =
-						"INSERT INTO ARCCATEGORY (" "ARCHIVE_KEY," "CATEGORY_KEY) " "VALUES (" ":ARCHIVE_KEY,"
-						":CATEGORY_KEY);";
-						IBInternalQuery2->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-						IBInternalQuery2->ParamByName("CATEGORY_KEY")->AsInteger = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
-						IBInternalQuery2->ExecQuery();
-					}
+                            // Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
+                            // link to dtArcBill
+                            for (int i = 2; i < IBDayArcSurcharge->FieldCount; i++)
+                            {
+                                UnicodeString FieldName = IBDayArcSurcharge->Fields[i]->Name;
+                                VariantDBAssign(IBDayArcSurcharge->FieldByName(FieldName), IBArcSurcharge->ParamByName(FieldName));
 
-					if (StockMasterPath != "")
-					{
-						bool SetMunuItem = (IBDayArchive->FieldByName("PRICE")->AsCurrency == 0);
-						UnicodeString ITEM_ID = IBDayArchive->FieldByName("ITEM_ID")->AsString;
-						UnicodeString SIZE_NAME = IBDayArchive->FieldByName("SIZE_NAME")->AsString;
-						UnicodeString TIME_STAMPDMY = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("d/m/yyyy");
-						UnicodeString TIME_STAMPHMS = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn:ss");
-						UnicodeString SERVER_NAME = IBDayArchive->FieldByName("SERVER_NAME")->AsString;
-						UnicodeString ORDER_TYPE = IBDayArchive->FieldByName("ORDER_TYPE")->AsString;
-						UnicodeString ORDER_LOCATION = IBDayArchive->FieldByName("ORDER_LOCATION")->AsString;
-						UnicodeString LOYALTY_NAME = Membership->GetContactName(DBTransaction,
-						IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
-						UnicodeString MEMBER_NUMBER = Membership->GetContactNumber(DBTransaction,
-						IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
-						UnicodeString SITE_ID = FormatFloat("00000",TGlobalSettings::Instance().SiteID);
-						UnicodeString DISCOUNT = FormatFloat("0.00", IBDayArchive->FieldByName("DISCOUNT")->AsCurrency);
-						UnicodeString REDEEMED = FormatFloat("0.00", IBDayArchive->FieldByName("REDEEMED")->AsCurrency);
-						UnicodeString POINTS_PERCENT = FloatToStr(IBDayArchive->FieldByName("POINTS_PERCENT")->AsFloat);
-						UnicodeString POINTS_EARNED = FormatFloat("0.00", IBDayArchive->FieldByName("POINTS_EARNED")->AsCurrency);
-						UnicodeString THIRDPARTYCODES_KEY = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
-						IBDayArchive->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
-						UnicodeString PRICE = FormatFloat("0.00", IBDayArchive->FieldByName("PRICE")->AsCurrency * IBDayArchive->FieldByName("QTY")->AsCurrency);
-						UnicodeString HAPPY_HOUR = IBDayArchive->FieldByName("HAPPY_HOUR")->AsString.UpperCase() == "F" ? "0" : "1";
-						UnicodeString PLU = IBDayArchive->FieldByName("PLU")->AsString;
+                                /* IBArcSurcharge->ParamByName(FieldName)->AsVariant =
+                        IBDayArcSurcharge->FieldByName(FieldName)->AsVariant; */
+                            }
+                            IBArcSurcharge->ParamByName("SURCHARGE_KEY")->AsInteger = ArcSurchargeKey;
+                            IBArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBArcSurcharge->ExecQuery();
 
-						Csv.Add(UnicodeString("P,") + ITEM_ID + "," + SIZE_NAME + "," + "," + TIME_STAMPDMY + "," + TIME_STAMPHMS +
-						"," + SERVER_NAME + "," + ORDER_TYPE + "," + ORDER_LOCATION + "," + HAPPY_HOUR + "," + LOYALTY_NAME + "," + SITE_ID +
-						"," + MEMBER_NUMBER + "," + DISCOUNT + "," + REDEEMED + "," + POINTS_PERCENT + "," + POINTS_EARNED + "," +
-						THIRDPARTYCODES_KEY + "," + (SetMunuItem ? "1" : "0") + "," + PRICE + "," + PLU);
-					}
-				}
+                            if (StockMasterPath != "")
+                            {
+                                Csv.Add(UnicodeString("T,") + IBDayArcSurcharge->FieldByName("PAY_TYPE")->AsString + "," + IBDayArcSurcharge->FieldByName
+                                ("SUBTOTAL")->AsString);
+                            }
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcSurcharge->ExecQuery() "+  dayArcBillKeyRef);
+                        throw;
+                    }
 
-                //Update MallExport's arcbill key if zed is done..
-                if(TGlobalSettings::Instance().mallInfo.MallId)
-                {   
-                    IBMallQuery->Close();
-                    IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-                    IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-                    IBMallQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-                    IBMallQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
-                    IBMallQuery->ExecQuery();
+                    try
+                    {
+                        IBDayPartonCount->Close();
+                        IBDayPartonCount->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBDayPartonCount->ExecQuery();
+                        for (; !IBDayPartonCount->Eof; IBDayPartonCount->Next())
+                        {
+                            IBInternalQuery->Close();
+                            IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PATRONCOUNT, 1) FROM RDB$DATABASE";
+                            IBInternalQuery->ExecQuery();
+                            int ArcPatronCountKey = IBInternalQuery->Fields[0]->AsInteger;
 
-                    IBMallSalesTypeQuery->Close();
-                    IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
-                    IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
-                    IBMallSalesTypeQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-                    IBMallSalesTypeQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
-                    IBMallSalesTypeQuery->ExecQuery();
+                            // Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
+                            // link to dtArcBill
+                            for (int i = 2; i < IBDayPartonCount->FieldCount; i++)
+                            {
+                                UnicodeString FieldName = IBDayPartonCount->Fields[i]->Name;
+                                VariantDBAssign(IBDayPartonCount->FieldByName(FieldName), IBPatronCount->ParamByName(FieldName));
+
+                                /* IBPatronCount->ParamByName(FieldName)->AsVariant =
+                        IBDayPartonCount->FieldByName(FieldName)->AsVariant; */
+                            }
+                            IBPatronCount->ParamByName("PATRONCOUNT_KEY")->AsInteger = ArcPatronCountKey;
+                            IBPatronCount->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBPatronCount->ExecQuery();
+
+                            /* if (UseStockMaster)
+                    { // This will write out the Patron count its on disable because
+                    // it 'might' break other people already useing this file.
+                    // Given each line has a header Type char it 'shouldnt though'.
+                    Csv.Add(UnicodeString("P,") +
+                    IBDayPartonCount->FieldByName("PATRON_TYPE")->AsString + "," +
+                    IBDayPartonCount->FieldByName("PATRON_COUNT")->AsString);
+                    } */
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBPatronCount->ExecQuery() "+  dayArcBillKeyRef);
+                        throw;
+                    }
+
+                    try
+                    {
+                        IBDayWebArchive->Close();
+                        IBDayWebArchive->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBDayWebArchive->ExecQuery();
+                        for (; !IBDayWebArchive->Eof; IBDayWebArchive->Next())
+                        {
+                            // Copy all the daily ArcBillPay Fields to the main archive. Don't copy field 1 as it is the
+                            // link to dtArcBill
+                            VariantDBAssign(IBDayWebArchive->FieldByName("WEBORDER_KEY"), IBWebArchive->ParamByName("WEBORDER_KEY"));
+                            IBWebArchive->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                            IBWebArchive->ExecQuery();
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBWebArchive->ExecQuery() " + dayArcBillKeyRef);
+                        throw;
+                    }
+
+                    try
+                    {
+                    // Find all the archive entries connected to this arcbill.
+                    IBDayArchive->Close();
+                    IBDayArchive->ParamByName("ARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                    IBDayArchive->ExecQuery();
+                    for (; !IBDayArchive->Eof; IBDayArchive->Next())
+                    {
+                                IBInternalQuery->Close();
+                                IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCHIVE, 1) FROM RDB$DATABASE";
+                                IBInternalQuery->ExecQuery();
+                                int ArchiveKey = IBInternalQuery->Fields[0]->AsInteger;
+                                try
+                                {
+                                    for (int i = 2; i < IBDayArchive->FieldCount; i++)
+                                    {
+                                        UnicodeString FieldName = IBDayArchive->Fields[i]->Name;
+                                        if(ParamExists(IBArchive, FieldName))
+                                        {
+                                            VariantDBAssign(IBDayArchive->FieldByName(FieldName), IBArchive->ParamByName(FieldName));
+                                        }
+                                        /* IBArchive->ParamByName(FieldName)->AsVariant =
+                                IBDayArchive->FieldByName(FieldName)->AsVariant; */
+                                    }
+                                    IBArchive->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+                                    IBArchive->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                                    IBArchive->ExecQuery();
+                               }
+                               catch(Exception & E)
+                               {
+                                    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+  dayArcBillKeyRef);
+                                    throw;
+                               }
+
+                            try
+                            {
+                                IBDayArchiveDiscounts->Close();
+                                IBDayArchiveDiscounts->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
+                                IBDayArchiveDiscounts->ExecQuery();
+                                for (; !IBDayArchiveDiscounts->Eof; IBDayArchiveDiscounts->Next())
+                                {
+                                    IBInternalQuery->Close();
+                                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCORDERDISCOUNTS, 1) FROM RDB$DATABASE";
+                                    IBInternalQuery->ExecQuery();
+                                    int ARCORDERDISCOUNTS_KEY = IBInternalQuery->Fields[0]->AsInteger;
+
+                                    for (int i = 2; i < IBDayArchiveDiscounts->FieldCount; i++)
+                                    {
+                                        UnicodeString FieldName = IBDayArchiveDiscounts->Fields[i]->Name;
+                                        VariantDBAssign(IBDayArchiveDiscounts->FieldByName(FieldName), IBArchiveDiscounts->ParamByName(FieldName));
+                                    }
+                                    IBArchiveDiscounts->ParamByName("ARCORDERDISCOUNTS_KEY")->AsInteger = ARCORDERDISCOUNTS_KEY;
+                                    IBArchiveDiscounts->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+                                    IBArchiveDiscounts->ExecQuery();
+                                }
+                            }
+                            catch(Exception & E)
+                            {
+                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+  dayArcBillKeyRef);
+                                throw;
+                            }
+
+                            try
+                            {
+                                IBDayArchiveTaxes->Close();
+                                IBDayArchiveTaxes->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
+                                IBDayArchiveTaxes->ExecQuery();
+                                for (; !IBDayArchiveTaxes->Eof; IBDayArchiveTaxes->Next())
+                                {
+                                    IBInternalQuery->Close();
+                                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCORDERTAXES, 1) FROM RDB$DATABASE";
+                                    IBInternalQuery->ExecQuery();
+                                    int ARCORDERTAXES_KEY = IBInternalQuery->Fields[0]->AsInteger;
+
+                                    for (int i = 2; i < IBDayArchiveTaxes->FieldCount; i++)
+                                    {
+                                        UnicodeString FieldName = IBDayArchiveTaxes->Fields[i]->Name;
+                                        VariantDBAssign(IBDayArchiveTaxes->FieldByName(FieldName), IBArchiveTaxes->ParamByName(FieldName));
+                                    }
+                                    IBArchiveTaxes->ParamByName("ARCORDERTAXES_KEY")->AsInteger = ARCORDERTAXES_KEY;
+                                    IBArchiveTaxes->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+                                    IBArchiveTaxes->ExecQuery();
+                                }
+                            }
+                            catch(Exception & E)
+                            {
+                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+ dayArcBillKeyRef);
+                                throw;
+                            }
+
+                            try
+                            {
+                                IBInternalQuery->Close();
+                                IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM DAYARCCATEGORY WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
+                                IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = IBDayArchive->FieldByName("ARCHIVE_KEY")->AsInteger;
+                                IBInternalQuery->ExecQuery();
+                                for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+                                {
+                                    IBInternalQuery2->Close();
+                                    IBInternalQuery2->SQL->Text =
+                                    "INSERT INTO ARCCATEGORY (" "ARCHIVE_KEY," "CATEGORY_KEY) " "VALUES (" ":ARCHIVE_KEY,"
+                                    ":CATEGORY_KEY);";
+                                    IBInternalQuery2->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+                                    IBInternalQuery2->ParamByName("CATEGORY_KEY")->AsInteger = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+                                    IBInternalQuery2->ExecQuery();
+                                }
+                            }
+                            catch(Exception & E)
+                            {
+                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "DAYARCCATEGORY->ExecQuery() "+ dayArcBillKeyRef);
+                                throw;
+                            }
+
+                            if (StockMasterPath != "")
+                            {
+                                bool SetMunuItem = (IBDayArchive->FieldByName("PRICE")->AsCurrency == 0);
+                                UnicodeString ITEM_ID = IBDayArchive->FieldByName("ITEM_ID")->AsString;
+                                UnicodeString SIZE_NAME = IBDayArchive->FieldByName("SIZE_NAME")->AsString;
+                                UnicodeString TIME_STAMPDMY = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("d/m/yyyy");
+                                UnicodeString TIME_STAMPHMS = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn:ss");
+                                UnicodeString SERVER_NAME = IBDayArchive->FieldByName("SERVER_NAME")->AsString;
+                                UnicodeString ORDER_TYPE = IBDayArchive->FieldByName("ORDER_TYPE")->AsString;
+                                UnicodeString ORDER_LOCATION = IBDayArchive->FieldByName("ORDER_LOCATION")->AsString;
+                                UnicodeString LOYALTY_NAME = Membership->GetContactName(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
+                                UnicodeString MEMBER_NUMBER = Membership->GetContactNumber(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
+                                UnicodeString SITE_ID = FormatFloat("00000",TGlobalSettings::Instance().SiteID);
+                                UnicodeString DISCOUNT = FormatFloat("0.00", IBDayArchive->FieldByName("DISCOUNT")->AsCurrency);
+                                UnicodeString REDEEMED = FormatFloat("0.00", IBDayArchive->FieldByName("REDEEMED")->AsCurrency);
+                                UnicodeString POINTS_PERCENT = FloatToStr(IBDayArchive->FieldByName("POINTS_PERCENT")->AsFloat);
+                                UnicodeString POINTS_EARNED = FormatFloat("0.00", IBDayArchive->FieldByName("POINTS_EARNED")->AsCurrency);
+                                UnicodeString THIRDPARTYCODES_KEY = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,IBDayArchive->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
+                                UnicodeString PRICE = FormatFloat("0.00", IBDayArchive->FieldByName("PRICE")->AsCurrency * IBDayArchive->FieldByName("QTY")->AsCurrency);
+                                UnicodeString HAPPY_HOUR = IBDayArchive->FieldByName("HAPPY_HOUR")->AsString.UpperCase() == "F" ? "0" : "1";
+                                UnicodeString PLU = IBDayArchive->FieldByName("PLU")->AsString;
+
+                                Csv.Add(UnicodeString("P,") + ITEM_ID + "," + SIZE_NAME + "," + "," + TIME_STAMPDMY + "," + TIME_STAMPHMS +
+                                "," + SERVER_NAME + "," + ORDER_TYPE + "," + ORDER_LOCATION + "," + HAPPY_HOUR + "," + LOYALTY_NAME + "," + SITE_ID +
+                                "," + MEMBER_NUMBER + "," + DISCOUNT + "," + REDEEMED + "," + POINTS_PERCENT + "," + POINTS_EARNED + "," +
+                                THIRDPARTYCODES_KEY + "," + (SetMunuItem ? "1" : "0") + "," + PRICE + "," + PLU);
+                            }
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBDayArchive1->ExecQuery() " + dayArcBillKeyRef);
+                        throw;
+                    }
+
+                    //Update MallExport's arcbill key if zed is done..
+                    if(TGlobalSettings::Instance().mallInfo.MallId)
+                    {
+                        IBMallQuery->Close();
+                        IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                        IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBMallQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                        IBMallQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
+                        IBMallQuery->ExecQuery();
+
+                        IBMallSalesTypeQuery->Close();
+                        IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                        IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                        IBMallSalesTypeQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+                        IBMallSalesTypeQuery->ParamByName("DATE_CREATED")->AsDateTime = IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime;
+                        IBMallSalesTypeQuery->ExecQuery();
+                    }
                 }
-			}
+            }
+            catch(Exception & E)
+	        {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "First Try Block");
+            }
 
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = "DELETE FROM DAYARCBILL where TERMINAL_NAME = :TERMINAL_NAME";
@@ -2800,20 +2893,30 @@ Zed:
 				TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 				if(TGlobalSettings::Instance().EnableDontClearZedData)
 				{
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
-					IBInternalQuery->ExecQuery();
-					Zedkey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
-					BagID = "To Be Zed";
-					UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
-					UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
-					UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
-					if(TGlobalSettings::Instance().EnablePaxCount)
-					UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
-					if (TGlobalSettings::Instance().EnableBlindBalances)
-                    PrintBlindBalance(DBTransaction, Balances, DeviceName);
-					DBTransaction.Commit();
-					return;
+                    try
+                    {
+                        IBInternalQuery->Close();
+                        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+                        IBInternalQuery->ExecQuery();
+                        Zedkey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+                        BagID = "To Be Zed";
+                        UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
+                        UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
+                        UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
+                        if(TGlobalSettings::Instance().EnablePaxCount)
+                        UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
+                        if (TGlobalSettings::Instance().EnableBlindBalances)
+                        PrintBlindBalance(DBTransaction, Balances, DeviceName);
+                        DBTransaction.Commit();
+                        return;
+                    }
+                    catch(Exception & E)
+                    {
+                        DBTransaction.Rollback();
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+                        throw;
+                    }
+
 				}
 				else
 				{
@@ -2890,8 +2993,7 @@ Zed:
 						IBInternalQuery->ExecQuery();
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
-						UpdatePrinterReadingsDatabase(DBTransaction, Zedkey,
-						PrinterReading);
+						UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
                         ///changes here for staff hour...
                         UpdateZedStaffHoursEnable(DBTransaction, Zedkey);
 
@@ -4782,8 +4884,7 @@ void TfrmAnalysis::UpdateStockComplete(Database::TDBTransaction &DBTransaction)
 	}
 }
 
-TFinancialDetails TfrmAnalysis::GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,
-AnsiString DeviceName)
+TFinancialDetails TfrmAnalysis::GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo, AnsiString DeviceName)
 {
 	TFinancialDetails FinancialDetails;
 	try
@@ -5418,14 +5519,7 @@ void TfrmAnalysis::UpdateBlindBlances(Database::TDBTransaction &DBTransaction, i
         IBInternalQuery->Close();
         for (TBlindBalanceContainer::iterator itBlindBalances = Balance.begin(); (itBlindBalances != Balance.end()) && ZedKey; itBlindBalances++)
         {
-            /*	  IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT BLINDBALANCE_KEY FROM BLINDBALANCE WHERE PAYMENT = :PAYMENT AND Z_KEY = :Z_KEY";
-        IBInternalQuery->ParamByName("PAYMENT")->AsString = itBlindBalances->first;
-        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
-        IBInternalQuery->ExecQuery();
-        if (IBInternalQuery->RecordCount == 0)
-        {
-    */		 int BlindBalancekey;
+            int BlindBalancekey;
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_BLINDBALANCE_KEY, 1) FROM RDB$DATABASE";
             IBInternalQuery->ExecQuery();
@@ -5446,26 +5540,6 @@ void TfrmAnalysis::UpdateBlindBlances(Database::TDBTransaction &DBTransaction, i
             IBInternalQuery->ParamByName("OFFICE_BALANCE")->AsCurrency = 0;
             IBInternalQuery->ParamByName("DEPOSITBAG_ID")->AsString = BagID;
             IBInternalQuery->ExecQuery();
-            /*	  }
-        else
-        {
-            int BlindBalanceKey = IBInternalQuery->FieldByName("BLINDBALANCE_KEY")->AsInteger;
-
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text = "UPDATE BLINDBALANCE SET Z_KEY = :Z_KEY, PAYMENT = :PAYMENT, PAYMENT_GROUP = :PAYMENT_GROUP,"
-                " PAYMENT_TRANS_QTY = :PAYMENT_TRANS_QTY, BLIND_BALANCE = :BLIND_BALANCE, SYSTEM_BALANCE = :SYSTEM_BALANCE,"
-                " OFFICE_BALANCE = :OFFICE_BALANCE, DEPOSITBAG_ID = :DEPOSITBAG_ID WHERE BLINDBALANCE_KEY = :BLINDBALANCE_KEY";
-            IBInternalQuery->ParamByName("BLINDBALANCE_KEY")->AsInteger = BlindBalanceKey;
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
-            IBInternalQuery->ParamByName("PAYMENT")->AsString = itBlindBalances->first;
-            IBInternalQuery->ParamByName("PAYMENT_GROUP")->AsInteger = itBlindBalances->second.PaymentGroup;
-            IBInternalQuery->ParamByName("PAYMENT_TRANS_QTY")->AsInteger += itBlindBalances->second.TransQty;
-            IBInternalQuery->ParamByName("BLIND_BALANCE")->AsCurrency += itBlindBalances->second.BlindBalance;
-            IBInternalQuery->ParamByName("SYSTEM_BALANCE")->AsCurrency += itBlindBalances->second.SystemBalance;
-            IBInternalQuery->ParamByName("OFFICE_BALANCE")->AsCurrency = 0;
-            IBInternalQuery->ParamByName("DEPOSITBAG_ID")->AsString = BagID;
-            IBInternalQuery->ExecQuery();
-        }   */
         }
     }
     catch(Exception &E)
@@ -7797,25 +7871,33 @@ void TfrmAnalysis::MallExportReadFromDB(UnicodeString DataQuery, std::map<Unicod
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    query->Close();
+   try
+   {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
 
-    query->SQL->Text = DataQuery;
-    query->ExecQuery();
+        query->SQL->Text = DataQuery;
+        query->ExecQuery();
 
-    while(!query->Eof)
-    {
-		MallExportKey = query->FieldByName("MALLEXPORT_KEY")->AsInteger;
-        FieldName = query->FieldByName("FIELD_NAME")->AsString;
-		StringValue = query->FieldByName("STRING_VALUE")->AsString;
-        IntegerValue = query->FieldByName("INTEGER_VALUE")->AsInteger;
-        CurrencyValue = query->FieldByName("CURRENCY_VALUE")->AsCurrency;
-        TimeStampValue = query->FieldByName("TIMESTAMP_VALUE")->AsDateTime;
+        while(!query->Eof)
+        {
+            MallExportKey = query->FieldByName("MALLEXPORT_KEY")->AsInteger;
+            FieldName = query->FieldByName("FIELD_NAME")->AsString;
+            StringValue = query->FieldByName("STRING_VALUE")->AsString;
+            IntegerValue = query->FieldByName("INTEGER_VALUE")->AsInteger;
+            CurrencyValue = query->FieldByName("CURRENCY_VALUE")->AsCurrency;
+            TimeStampValue = query->FieldByName("TIMESTAMP_VALUE")->AsDateTime;
 
-        DataRead[FieldName] = MallExportCheckValue(StringValue, IntegerValue, CurrencyValue, TimeStampValue, query);
-        query->Next();
+            DataRead[FieldName] = MallExportCheckValue(StringValue, IntegerValue, CurrencyValue, TimeStampValue, query);
+            query->Next();
+        }
+        DBTransaction.Commit();
     }
-    DBTransaction.Commit();
+	catch(Exception &E)
+	{
+		DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
 }
 //---------------------------------------------------------------------------
 UnicodeString TfrmAnalysis::MallExportCheckValue(UnicodeString StringValue, int IntegerValue,
@@ -8210,10 +8292,10 @@ void TfrmAnalysis::SyncCompanyDetails()
 
 void TfrmAnalysis::UpdateSalesForce()
 {
+   Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction1.StartTransaction();
    try
    {
-        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction1.StartTransaction();
         AnsiString CompanyName = GetCompanyName(DBTransaction1);
         DBTransaction1.Commit();
         std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
@@ -8222,6 +8304,7 @@ void TfrmAnalysis::UpdateSalesForce()
     }
     catch(Exception & E)
     {
+        DBTransaction1.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
@@ -8265,17 +8348,17 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        throw;
     }
 }
 
 void TfrmAnalysis::UpdateStock(bool UpdateingStock)
 {
+    Database::TDBTransaction DBStockTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBStockTransaction);
+    DBStockTransaction.StartTransaction();
     try
     {
-        Database::TDBTransaction DBStockTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(DBStockTransaction);
-        DBStockTransaction.StartTransaction();
-
         if (UpdateStockAllowed(DBStockTransaction))
         {
             UpdateingStock = true;
@@ -8288,6 +8371,7 @@ void TfrmAnalysis::UpdateStock(bool UpdateingStock)
     }
     catch(Exception & E)
     {
+        DBStockTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
@@ -8436,19 +8520,20 @@ void TfrmAnalysis::UpdateMallExportDetails()
 
 void TfrmAnalysis::OpenCashDrawer()
 {
+    Database::TDBTransaction OpenCashDrawerTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(OpenCashDrawerTransaction);
+    OpenCashDrawerTransaction.StartTransaction();
     try
     {
         if(TGlobalSettings::Instance().OpenCashDrawer)
         {
-            Database::TDBTransaction OpenCashDrawerTransaction(TDeviceRealTerminal::Instance().DBControl);
-            TDeviceRealTerminal::Instance().RegisterTransaction(OpenCashDrawerTransaction);
-            OpenCashDrawerTransaction.StartTransaction();
             TComms::Instance().KickLocalDraw(OpenCashDrawerTransaction);
-            OpenCashDrawerTransaction.Commit();
         }
+        OpenCashDrawerTransaction.Commit();
     }
     catch(Exception & E)
     {
+        OpenCashDrawerTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }

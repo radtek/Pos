@@ -224,6 +224,7 @@ protected:
      void InsertMezzanineSales(TPaymentTransaction &paymentTransaction);
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
+     bool TryToEnableSiHot();
      bool ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction);
 };
 

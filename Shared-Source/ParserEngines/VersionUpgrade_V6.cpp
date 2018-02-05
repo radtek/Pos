@@ -1413,7 +1413,7 @@ PARSER_ERROR TApplyParser::apply6_41( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
-//-----------------------------------------------------------------------------------
+////::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PARSER_ERROR TApplyParser::apply6_42( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;
@@ -1509,7 +1509,7 @@ PARSER_ERROR TApplyParser::apply6_44( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
 PARSER_ERROR TApplyParser::apply6_45( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;
@@ -1541,7 +1541,7 @@ PARSER_ERROR TApplyParser::apply6_45( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
-//-------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
 PARSER_ERROR TApplyParser::apply6_46( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;

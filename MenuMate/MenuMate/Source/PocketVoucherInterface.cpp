@@ -24,11 +24,14 @@ PocketVoucherDetails TPocketVoucherInterface::GetPocketVoucherDetail(UnicodeStri
     PocketVoucherDetail *pvDetails = new PocketVoucherDetail();
     pvDetails = pVClient->GetPocketVoucherDetail(accName);
     PocketVoucherDetails pvDetailsLocal;
-    pvDetailsLocal.MerchantId = pvDetails->MerchantId;
-    pvDetailsLocal.Password = pvDetails->Password;
-    pvDetailsLocal.PocketVoucherField = pvDetails->PocketVoucher;
-    pvDetailsLocal.Url = pvDetails->Url;
-    pvDetailsLocal.Username = pvDetails->UserName;
+    if(pvDetails != NULL)
+    {
+        pvDetailsLocal.MerchantId = pvDetails->MerchantId;
+        pvDetailsLocal.Password = pvDetails->Password;
+        pvDetailsLocal.PocketVoucherField = pvDetails->PocketVoucher;
+        pvDetailsLocal.Url = pvDetails->Url;
+        pvDetailsLocal.Username = pvDetails->UserName;
+    }
 
     return pvDetailsLocal;
 }

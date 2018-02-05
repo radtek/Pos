@@ -76,7 +76,7 @@ namespace SiHotIntegration
                     var bytes = byteList.ToArray<byte>();
 
                     request.ContentLength = bytes.Length;
-                    request.Timeout = 50000;
+                    request.Timeout = 5000;
                     //request.ContentType = "text/plain";
                     stringList.Add("=============================================================================");
                     stringList.Add("Inquiry Request at:       " + DateTime.Now.ToString("ddMMMyyyy"));
@@ -92,11 +92,22 @@ namespace SiHotIntegration
                     stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hhmmss"));
                     memberStream = new StreamReader(webResponse.GetResponseStream());
                     roomDetails = deserializer.DeserializeRoomResponse(memberStream.ReadToEnd());
+                    stringList.Add("Room Number:  " + roomRequest.RoomNumber);
+                    for (int guestList = 0; guestList < roomDetails.GuestDetailsList.Count; guestList++)
+                    {
+                        stringList.Add("Account Number:  " + roomDetails.GuestDetailsList[guestList].AccountNo);
+                        stringList.Add("Name:            " + roomDetails.GuestDetailsList[guestList].FirstName + " "
+                                                           + roomDetails.GuestDetailsList[guestList].LastName);
+                    }
+                    if(roomDetails.GuestDetailsList.Count == 0)
+                        stringList.Add("Guest List:  " + "0");    
                 }
                 catch (Exception ex)
                 {
                     ServiceLogger.Log("Exception in sending Room request" + ex.Message);
                     stringList.Add("exception Message:         " + ex.Message);
+                    stringList.Add("exception Date:-           " + DateTime.Now.ToString("ddMMMyyyy"));
+                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hhmmss"));
                 }
                 finally
                 {
@@ -198,7 +209,7 @@ namespace SiHotIntegration
                 List<byte> bytesList = serializer.GetValidateContent(transno);
                 byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
-                request.Timeout = 50000;
+                request.Timeout = 5000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
                 WebResponse wr = request.GetResponse();

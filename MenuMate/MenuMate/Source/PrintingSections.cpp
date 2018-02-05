@@ -314,6 +314,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintOrganizationNumber, "Organization Number");
 	DefaultCaption[epofiPrintOrganizationNumber] = "Organization Number";
+
+    Instructions[i++] = InstructionPair(epofiPrintOracleCheckNumber, "Oracle Check Number");
+	DefaultCaption[epofiPrintOracleCheckNumber] = "Oracle Check Number";
 }
 
 
@@ -493,6 +496,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintBIRSalesTax:
     case epofiPrintPOSPlusSerialNumber:
     case epofiPrintOrganizationNumber:
+    case epofiPrintOracleCheckNumber:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -767,6 +771,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintOrganizationNumber:
             PrintOrganizationNumber(PrintJob);
+            break;
+        case epofiPrintOracleCheckNumber:
+            PrintOracleCheckNumber(PrintJob);
             break;
 		case epofiPrintServingCourse:
 			PrintServingCourse(PrintJob);
@@ -1171,7 +1178,8 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 
 	UnicodeString ItemName = ThisInstruction->Caption;
 /************MM-5048***************************/
-	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
+	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot &&
+        TGlobalSettings::Instance().PMSType != Oracle)
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
@@ -1193,6 +1201,18 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}
+    else if(PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType == Oracle &&
+            PrintJob->Transaction->Phoenix.AccountName != "")
+    {
+        AnsiString RoomNumber = "";
+		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
+		pPrinter->AddLine();
+    }
 }
 
 int __fastcall SortTableTab(void *Item1, void *Item2) // TKitchens Sort Function.
@@ -9062,6 +9082,26 @@ void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 		pPrinter->Line->Columns[0]->Text  = OrgName;
         pPrinter->Line->Columns[1]->Text  = TGlobalSettings::Instance().OrganizationNumber;
 		pPrinter->AddLine();
+        Empty = false;
+    }
+}
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
+{
+	UnicodeString OrgName = "Oracle Check Number: ";
+
+	if (TGlobalSettings::Instance().OracleCheckNumber == "")
+	{
+		Empty = true;
+	}
+	else
+	{
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+		pPrinter->Line->ColCount = 1;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Text  = OrgName + TGlobalSettings::Instance().OracleCheckNumber;
+		pPrinter->AddLine();
+        TGlobalSettings::Instance().OracleCheckNumber = "";
         Empty = false;
     }
 }

@@ -58,37 +58,45 @@ void TCashDenominationControllerInterface::ResetCashDenominations()
 
 void TCashDenominationControllerInterface::SaveDenominations(Database::TDBTransaction &DBTransaction,int z_key,UnicodeString inTerminalName)
 {
-   if(MasterCashDenominations.GetTotal() > 0)
-   {
-        TCashDenominationContainer::iterator itCashDenomination = MasterCashDenominations.begin();
-		for (; itCashDenomination != MasterCashDenominations.end(); advance(itCashDenomination,1))
-		{
-            if(itCashDenomination->second.Quantity > 0)
+    try
+    {
+       if(MasterCashDenominations.GetTotal() > 0)
+       {
+            TCashDenominationContainer::iterator itCashDenomination = MasterCashDenominations.begin();
+            for (; itCashDenomination != MasterCashDenominations.end(); advance(itCashDenomination,1))
             {
-                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,inTerminalName,
-                                                   itCashDenomination->second.Title,
-                                                   itCashDenomination->second.DenominationValue,
-                                                   itCashDenomination->second.Quantity);
+                if(itCashDenomination->second.Quantity > 0)
+                {
+                    TDBDenominations::SaveZedDenominations(DBTransaction,z_key,inTerminalName,
+                                                       itCashDenomination->second.Title,
+                                                       itCashDenomination->second.DenominationValue,
+                                                       itCashDenomination->second.Quantity);
+                }
             }
-		}
-   }
+       }
 
-   if(CashDenominations.GetTotal() > 0)
-   {
-        UnicodeString terminalName = TGlobalSettings::Instance().EnableDepositBagNum ? UnicodeString("") : inTerminalName;
+       if(CashDenominations.GetTotal() > 0)
+       {
+            UnicodeString terminalName = TGlobalSettings::Instance().EnableDepositBagNum ? UnicodeString("") : inTerminalName;
 
-        TCashDenominationContainer::iterator itCashDenomination = CashDenominations.begin();
-		for (; itCashDenomination != CashDenominations.end(); advance(itCashDenomination,1))
-		{
-           if(itCashDenomination->second.Quantity > 0)
+            TCashDenominationContainer::iterator itCashDenomination = CashDenominations.begin();
+            for (; itCashDenomination != CashDenominations.end(); advance(itCashDenomination,1))
             {
-                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,terminalName,
-                                                   itCashDenomination->second.Title,
-                                                   itCashDenomination->second.DenominationValue,
-                                                   itCashDenomination->second.Quantity);
+               if(itCashDenomination->second.Quantity > 0)
+                {
+                    TDBDenominations::SaveZedDenominations(DBTransaction,z_key,terminalName,
+                                                       itCashDenomination->second.Title,
+                                                       itCashDenomination->second.DenominationValue,
+                                                       itCashDenomination->second.Quantity);
+                }
             }
-		}
-   }
+       }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
 
 

@@ -3,6 +3,9 @@
 #include "MembershipExternalXML.h"
 #include <SysUtils.hpp>
 #include <tchar.h>
+#include <DateUtils.hpp>
+#include <system.hpp>
+#include <Forms.hpp>
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -131,60 +134,70 @@ TMSXMLEnquiry::TMSXMLEnquiry() : TMSXMLBase()
 	   PointsBalance = 0;
 	   CompBalance = 0;
 	   Authorised = 0;
+       PromoBalance = 0;
 }
 
 void TMSXMLEnquiry::Parse()
 {
-	TiXmlHandle hDoc(&ResultDoc);
-	TiXmlElement* pElement = NULL;
-	pElement = hDoc.FirstChild(_T("Response")).ToElement();
-	if (pElement)
-	{
-		UnicodeString TransactionID = UnicodeString(pElement->Attribute(_T("id")));
-		UnicodeString TransmissionStatus = UnicodeString(pElement->Attribute(_T("TransmissionStatus")));
-        Authorised = 0;
-		ResultText = UnicodeString(pElement->Attribute(_T("Message")));
+    try
+    {
+       TiXmlHandle hDoc(&ResultDoc);
+        TiXmlElement* pElement = NULL;
+        pElement = hDoc.FirstChild(_T("Response")).ToElement();
+        if (pElement)
+        {
+            UnicodeString TransactionID = UnicodeString(pElement->Attribute(_T("id")));
+            UnicodeString TransmissionStatus = UnicodeString(pElement->Attribute(_T("TransmissionStatus")));
+            Authorised = 0;
+            ResultText = UnicodeString(pElement->Attribute(_T("Message")));
 
-		if(TransactionID != TransID && TransactionID != "-1")
-		{
-			Result = eMSFailed;
-			ResultText = "Transaction ID Mismatch";
-		}
-		else if(UpperCase(TransmissionStatus) == "NAK")
-		{
-			Result = eMSFailed;
-		}
-		else if(UpperCase(TransmissionStatus) == "ACK")
-		{
-			UnicodeString ResponseStatus = UnicodeString(pElement->Attribute(_T("ResponseStatus")));
-			if(ResponseStatus == "ACK")
-			{
-				Result = eMSAccepted;
-				MemberName = UnicodeString(pElement->Attribute(_T(xmlEleMember)));
-				AccountNo = UnicodeString(pElement->Attribute(_T(xmlAttrMemNumber)));
-                Note = UnicodeString(pElement->Attribute(_T(xmlAttrNote)));
-                Type = UnicodeString(pElement->Attribute(_T(xmlAttrType)));
-				pElement->QueryIntAttribute(_T(xmlAttrGroupID),&MembersGroup);
-				pElement->QueryIntAttribute(_T(xmlAttrPoints),&PointsBalance);
-				pElement->QueryIntAttribute(_T(xmlAttrComp),&CompBalance);
-				pElement->QueryIntAttribute(_T(xmlAttrAuth),&Authorised);
-			}
-			else
-			{
-				Result = eMSFailed;
-			}
-		}
-		else
-		{
-			Result = eMSFailed;
-			ResultText = "Incorrect Responce Status : " + UpperCase(TransmissionStatus);
-		}
-	}
-	else
-	{
-		Result = eMSFailed;
-		ResultText = "Incorrect XML format ";
-	}
+            if(TransactionID != TransID && TransactionID != "-1")
+            {
+                Result = eMSFailed;
+                ResultText = "Transaction ID Mismatch";
+            }
+            else if(UpperCase(TransmissionStatus) == "NAK")
+            {
+                Result = eMSFailed;
+            }
+            else if(UpperCase(TransmissionStatus) == "ACK")
+            {
+                UnicodeString ResponseStatus = UnicodeString(pElement->Attribute(_T("ResponseStatus")));
+                if(ResponseStatus == "ACK")
+                {    
+                    Result = eMSAccepted;
+                    MemberName = UnicodeString(pElement->Attribute(_T(xmlEleMember)));
+                    AccountNo = UnicodeString(pElement->Attribute(_T(xmlAttrMemNumber)));
+                    Note = UnicodeString(pElement->Attribute(_T(xmlAttrNote)));
+                    Type = UnicodeString(pElement->Attribute(_T(xmlAttrType)));
+                    pElement->QueryIntAttribute(_T(xmlAttrGroupID),&MembersGroup);
+                    pElement->QueryIntAttribute(_T(xmlAttrPoints),&PointsBalance);
+                    pElement->QueryIntAttribute(_T(xmlAttrComp),&CompBalance);
+                    pElement->QueryIntAttribute(_T(xmlAttrPromo2),&PromoBalance);
+                    pElement->QueryIntAttribute(_T(xmlAttrAuth),&Authorised);
+                    
+                }
+                else
+                {
+                    Result = eMSFailed;
+                }
+            }
+            else
+            {
+                Result = eMSFailed;
+                ResultText = "Incorrect Responce Status : " + UpperCase(TransmissionStatus);
+            }
+        }
+        else
+        {
+            Result = eMSFailed;
+            ResultText = "Incorrect XML format ";
+        }
+    }
+    catch(Exception &E)
+    {
+        //TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+    }
 }
 
 TMSXMLEnquiry *TMSXMLEnquiry::SetTerminalID(int data)
@@ -266,7 +279,7 @@ void TMSXMLTransaction::Build()
 }
 
 void TMSXMLTransaction::Parse()
-{
+{  
 	TiXmlHandle hDoc(&ResultDoc);
 	TiXmlElement* pElement = NULL;
 	pElement = hDoc.FirstChild(_T("Response")).ToElement();
@@ -309,4 +322,21 @@ void TMSXMLTransaction::Parse()
 		Result = eMSFailed;
 		ResultText = "Incorrect XML format ";
 	}
+}
+//------------------------------------------
+void TMSXMLEnquiry::MakeXMLLogFile(AnsiString str)
+{
+     AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoXMLParseLogs.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+
+
+    List->Add("Response:- "+ str +  "\n");
+
+
+    List->SaveToFile(fileName );
 }

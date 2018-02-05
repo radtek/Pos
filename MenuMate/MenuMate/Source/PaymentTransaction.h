@@ -74,7 +74,22 @@ class TRewardsTransaction
       UnicodeString EFTPOSRef;
       Currency Amount;
 };
-
+class TPMSClientDetails
+{
+    public:
+    TPMSClientDetails();
+    AnsiString ReservationID;
+    AnsiString SequenceNumber;
+    AnsiString ProfileID;
+    AnsiString CreditLimit;
+    AnsiString HotelID;
+    AnsiString FirstName;
+    AnsiString LastName;
+    AnsiString MatchIdentifier;
+    AnsiString RoomNumber;
+    AnsiString Date;
+    AnsiString Time;
+};
 class TPaymentTransaction
 {
 
@@ -90,7 +105,9 @@ class TPaymentTransaction
     void SetRedeemBDayPoints(Currency &PointsRedeemed);
     void SetRedeemFVPoints(Currency &PointsRedeemed);
     void CheckDiscountsWithMembership(TItemMinorComplete *Order);
-  public:
+    bool __fastcall UseDifferentPattern(void* Item1, void* Item2);
+    int __fastcall SortPaymentTypesForCasino(void* Item1, void* Item2);
+    public:
         AnsiString PartyName;
         Database::TDBTransaction &DBTransaction;
         void BuildXMLPaymentTypes(TPOS_XMLBase &Data);
@@ -195,6 +212,7 @@ class TPaymentTransaction
         SCDPWDCustomerDetails customerDetails;
         bool IgnoreLoyaltyKey;
         bool WasSavedSales;
+		TPMSClientDetails PMSClientDetails;
         bool IsCashDrawerOpened;
 };
 

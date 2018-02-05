@@ -93,6 +93,7 @@ enum ePrintOutFormatInstructions{
                                  epofiPrintBIRSalesTax,
                                  epofiPrintPOSPlusSerialNumber,
                                  epofiPrintOrganizationNumber,
+                                 epofiPrintOracleCheckNumber,
 								 };
 
 typedef std::pair<ePrintOutFormatInstructions,UnicodeString> InstructionPair;

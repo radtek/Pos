@@ -323,11 +323,12 @@ void __fastcall TfrmSelectDish::SyncGridFontSizes()
 {
 	int font_size = TGlobalSettings::Instance().posButtonFontSize&~0x80;
 
-	tgridItemOptions->Font->Size = font_size;
-	tgridItemSetMenuItems->Font->Size = font_size;
-	tgridItemSideItems->Font->Size = font_size;
-	tgridOrderItem->Font->Size = font_size;
+   tgridItemOptions->Font->Size = font_size;
+   tgridItemSetMenuItems->Font->Size = font_size;
+  tgridItemSideItems->Font->Size = font_size;
+   tgridOrderItem->Font->Size = font_size;
 }
+
 // ---------------------------------------------------------------------------
 ChitResult TfrmSelectDish::InitializeChit()
 {
@@ -544,10 +545,12 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     if(TGlobalSettings::Instance().ShowLargeFonts )
     {
       tgridOrderCourse->Font->Size = 18;
+      //tgridItemServingCourse->Font->Size =14;
     }
     else
     {
       tgridOrderCourse->Font->Size = 12;
+     // tgridItemServingCourse->Font->Size =14;
     }
 	InitXeroIntegration();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -3504,7 +3507,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[iSeat]->Orders->Items[i];
-
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType && !isBeveragesInvGenerated &&
                         TGlobalSettings::Instance().IsBillSplittedByMenuType && DelayedInvoiceNumber != "" )
                 {
@@ -4959,8 +4961,9 @@ void TfrmSelectDish::RedrawServingCourses()
 			{
 				if (itServingCourse->Selectable)
 				{
+                    tgridServingCourse->Font->Size=14;
 					tgridServingCourse->Buttons[0][i]->Caption = itServingCourse->Name;
-					tgridServingCourse->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_BUTTONCOLOR];
+                    tgridServingCourse->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_BUTTONCOLOR];
 					tgridServingCourse->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_UNSELECTED][ATTRIB_FONTCOLOR];
 					tgridServingCourse->Buttons[0][i]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
 					tgridServingCourse->Buttons[0][i]->LatchedFontColor = clWhite;//ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
@@ -9281,6 +9284,7 @@ void TfrmSelectDish::ResetPOS()
   RefreshMenu();
   InitializeChit(); // initialize default chit...
   IsAutoLogOutInSelectDish = true;
+  TGlobalSettings::Instance().DiningBal = 0;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -13420,6 +13424,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->SetMenuMaster = itemSize->SetMenuMaster;
 	itemComplete->ThirdPartyKey = itemSize->ThirdPartyKey;
 	itemComplete->ThirdPartyCode = itemSize->ThirdPartyCode;
+    itemComplete->RevenueCode = itemSize->RevenueCode;
 	itemComplete->PLU = itemSize->PLU;
 
 	itemComplete->MemberFreeSaleCount = itemSize->MemberFreeSaleCount;
@@ -13694,6 +13699,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyKey = Item->Sizes->SizeGet(SelectedSize)->ThirdPartyKey;
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(SelectedSize)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(SelectedSize)->PLU;
+        NewSubOrder->RevenueCode = Item->Sizes->SizeGet(SelectedSize)->RevenueCode;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(SelectedSize)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(SelectedSize)->Cost; // Get default cost if assigned.
@@ -13769,6 +13775,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyKey = Item->Sizes->SizeGet(0)->ThirdPartyKey;
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(0)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(0)->PLU;
+        NewSubOrder->RevenueCode = Item->Sizes->SizeGet(0)->RevenueCode;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(0)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(0)->Cost; // Get default cost if assigned.
@@ -13823,7 +13830,6 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 	SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
 	SecRef.TimeStamp = Now();
 	NewSubOrder->Security->SecurityUpdate(secOrderedBy, SecRef);
-
 	MasterOrder->SubOrders->SubOrderAdd(NewSubOrder);
 	MasterOrder->MasterContainer = MasterOrder->Size;
     if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
