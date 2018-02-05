@@ -106,6 +106,8 @@ namespace SiHotIntegration
                 {
                     ServiceLogger.Log("Exception in sending Room request" + ex.Message);
                     stringList.Add("exception Message:         " + ex.Message);
+                    stringList.Add("exception Date:-           " + DateTime.Now.ToString("ddMMMyyyy"));
+                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hhmmss"));
                 }
                 finally
                 {

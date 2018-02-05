@@ -14,6 +14,7 @@ TaxProfile::TaxProfile(int dbKey)
    taxPriority    = 0;
    taxSelectable  = true;
    _taxProfileDBKey = dbKey;
+   //taxCode        = 0;
 }
 
 TaxProfile::TaxProfile()
@@ -24,9 +25,10 @@ TaxProfile::TaxProfile()
    taxPriority    = 0;
    taxSelectable  = true;
    _taxProfileDBKey = 0;
+   //taxCode        = 0;
 }
 
-TaxProfile::TaxProfile(AnsiString name, Percentage perc, TaxType type, Priority priority)
+TaxProfile::TaxProfile(AnsiString name, Percentage perc, TaxType type, Priority priority)//, int code)
 {
    taxProfileName = name;
    taxPercentage  = perc;
@@ -34,6 +36,7 @@ TaxProfile::TaxProfile(AnsiString name, Percentage perc, TaxType type, Priority 
    taxPriority    = priority;
    taxSelectable  = true;
    _taxProfileDBKey = 0;
+   //taxCode        = code;
 }
 
 void TaxProfile::writetaxProfileName( AnsiString intaxProfileName )
@@ -56,6 +59,11 @@ void TaxProfile::writetaxSelectable( bool intaxSelectable )
 {
    _taxSelectable = intaxSelectable;
 }
+//-- to be incorpotated in future--//
+/*void TaxProfile::writetaxCode( int intaxCode )
+{
+   _taxCode = intaxCode;
+}*/
 
 TaxType TaxProfile::Convert(int type)
 {
@@ -137,7 +145,9 @@ void TaxProfile::operator = (const TaxProfile& rhs)
 {
    _taxProfileName = rhs.taxProfileName;
    _taxProfileType = rhs.taxProfileType;
-   _taxPercentage = rhs.taxPercentage;
+   _taxPercentage  = rhs.taxPercentage;
+  //-- to be incorpotated in future--//
+  // _taxCode        = rhs.taxCode;
    _taxPriority = rhs.taxPriority;
    _taxSelectable = rhs.taxSelectable;
    _taxProfileDBKey = rhs.GetTaxProfileDBKey();

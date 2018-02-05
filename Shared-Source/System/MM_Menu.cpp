@@ -5,6 +5,7 @@
 #include "DB_Utilities.h"
 #include "DeviceRealTerminal.h"
 
+
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 // ---------------------------------------------------------------------------
@@ -250,6 +251,7 @@ void TMenuLoadDB::LoadItemSizeTaxProfiles(TItemSizeInfo *ItemSizeInfo)
     Percentage  rate;
     Priority    priority;
     int         profileKey;
+    //int         taxCode;
 
     sqlItemSizeTaxProfiles->Close();
     sqlItemSizeTaxProfiles->ParamByName("ItemSize_Key")->AsInteger = ItemSizeInfo->Key;
@@ -260,6 +262,7 @@ void TMenuLoadDB::LoadItemSizeTaxProfiles(TItemSizeInfo *ItemSizeInfo)
         rate       = sqlItemSizeTaxProfiles->FieldByName("Rate")->AsCurrency;
         priority   = sqlItemSizeTaxProfiles->FieldByName("Priority")->AsInteger;
         profileKey = sqlItemSizeTaxProfiles->FieldByName("Profile_key")->AsInteger;
+        //taxCode    = sqlItemSizeTaxProfiles->FieldByName("TAX_CODE")->AsInteger;
 
         type = TaxProfile::Convert(sqlItemSizeTaxProfiles->FieldByName("Type")->AsInteger);
 
@@ -269,7 +272,7 @@ void TMenuLoadDB::LoadItemSizeTaxProfiles(TItemSizeInfo *ItemSizeInfo)
         taxProfile.taxPercentage  = rate;
         taxProfile.taxProfileType = type;
         taxProfile.taxPriority    = priority;
-
+        //taxProfile.taxCode        = taxCode;
         ItemSizeInfo->TaxProfiles.push_back(taxProfile);
 
         sqlItemSizeTaxProfiles->Next();
@@ -612,7 +615,7 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 			       AsInteger);
 			ItemSizeInfo->PriceForPoints = QFBN(sqlMenu, "PRICE_FOR_POINTS", AsCurrency);
 #undef QFBN
-
+            ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
 			ItemSizeInfo->Categories.clear();
 			ItemSizeInfo->Recipes.clear();
             ItemSizeInfo->TaxProfiles.clear();

@@ -88,6 +88,9 @@ const AnsiString MenuSQL =
       "ItemSize.PLU,"
       "ItemSize.PLU, "
       "ItemSize.PRICE_FOR_POINTS, " // add line for price for points..
+      "ItemSize.REVENUECODE, "
+      "REVENUECODEDETAILS.REVENUECODE_DESCRIPTION,"
+
 		"ArcCategories.Category_Key,"
       "ArcCategories.Category,"
 		"CategoryGroups.CategoryGroups_key Category_Group_Key,"
@@ -129,6 +132,8 @@ const AnsiString MenuSQL =
 			"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
 		"Left Join ServingCourses On "
 			"Course.ServingCourses_Key = ServingCourses.ServingCourses_Key "
+		"Left Join REVENUECODEDETAILS On "
+			"ITEMSIZE.REVENUECODE = REVENUECODEDETAILS.REVENUECODE "
 
 	"Where "
 		"Menu.Menu_Key = :Menu_Key "
@@ -328,6 +333,11 @@ const AnsiString ThirdPartyCodesSQL =
 			"THIRDPARTYCODES_KEY as KEY, CODE, CODETYPE, VISIBLE, DESCRIPTION "
 		"FROM "
 			"THIRDPARTYCODES";
+const AnsiString RevenueCodesSQL =
+		"SELECT "
+			"REVENUECODE , REVENUECODE_DESCRIPTION "
+		"FROM "
+			"REVENUECODEDETAILS ORDER BY REVENUECODE";
 
 const AnsiString TaxProfileKeysSQL =
 		"SELECT "
@@ -450,6 +460,9 @@ public:
 	WideString	Category_Group_Name;
 	int			ThirdPartyCodes_Key;
 	WideString	Third_Party_Code;
+
+    int         RevenueCode;
+    AnsiString  RevenueCodeDescription;
 
     __int32     PLU;
 
@@ -678,6 +691,13 @@ public:
     WideString Description;
 };
 //---------------------------------------------------------------------------
+class TRevenueCodesInfo : public TDBKey
+{
+public:
+    int code;
+    WideString codeDescription;
+};
+//---------------------------------------------------------------------------
 class TMenuLoad
 {
 protected:
@@ -775,6 +795,7 @@ public:
                                   std::vector<TNameAndKey> &inForcedItemOptions );
 
     bool GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes );
+    void GetAllRevenueCodesFromDB(std::map<int,AnsiString> &revenueCodesMap);
     void GeTItemSizePriceLevels(int inItemSizeKey, std::map<int,TItemSizePriceLevel>* ItemSizePriceLevels );
     void GeTItemSizeTaxPercentage(int inItemSizeKey, std::vector<TItemSizeTaxesPercentage> &itemSizeTaxPercentage);
 };

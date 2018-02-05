@@ -403,6 +403,8 @@ TGlobalSettings::TGlobalSettings()
     POSPlusSerialNumber = "";
     ShowCashDrawerOpeningsCount = false;
     ShowReprintReceiptDetails = false;
+    DiningBal = 0;
+    OracleCheckNumber = "";
     PrintSignatureWithDiscountSales = false;
     PrintSignatureWithRoomSales = false;
     UseItalyFiscalPrinter = false;

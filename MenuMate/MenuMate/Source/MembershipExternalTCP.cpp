@@ -111,7 +111,6 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 
 				if(!fTCPClient->Connected())
 				{
-
 					fTCPClient->Host = HostAddress;
 					fTCPClient->Port = Port;
 					fTCPClient->BoundPort = 0;
@@ -126,7 +125,6 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Write Length :" + IntToStr(Data.Length()));
 					fTCPClient->IOHandler->WriteLn(Data);
 					Data = "";
-					//Data =  fTCPClient->IOHandler->ReadLnWait();
 
                    TByteDynArray Incomming;
                    fTCPClient->IOHandler->ReadBytes(Incomming, 10, false);
@@ -144,7 +142,8 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
                         fTCPClient->IOHandler->ReadBytes(Incomming, -1, false);
                         Data = AnsiString((char *)&Incomming[0],Incomming.Length);
                    }
-
+                    AnsiString Data2 = "-------------------" + Now().FormatString("yyyy-mm-dd - hh-nn-ss") + "-------------";
+                    Data2 = Data2 + Data;
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read : " + Data);
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read Length :" + IntToStr(Data.Length()));
 
@@ -160,6 +159,7 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 						Packet.Result = eMSAccepted;
 						Packet.SerializeIn(Data);
 					}
+                    makeLogFile(Data2);
 				}
 				else
 				{
@@ -187,6 +187,23 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 		}
 	}
 	while(Retry == true && RetryCount < defaultRetryCount);
+}
+//---------------------------------------------------------------------------
+void TMembershipGeneralLedgerTCP::makeLogFile(AnsiString str)
+{
+     AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoLogs.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+
+
+    List->Add("Response:- "+ str +  "\n");
+
+
+    List->SaveToFile(fileName );
 }
 //---------------------------------------------------------------------------
 

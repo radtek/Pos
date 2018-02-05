@@ -573,6 +573,8 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 
             ItemSizeInfo->PLU = sqlMenu->FieldByName("PLU")->AsInteger;
             ItemSizeInfo->PriceForPoints = sqlMenu->FieldByName("PRICE_FOR_POINTS")->AsInteger;
+            ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
+            ItemSizeInfo->RevenueCodeDescription = sqlMenu->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
 
 				ItemSizeInfo->Categories.clear();
 				ItemSizeInfo->Recipes.clear();
@@ -749,6 +751,31 @@ bool TMenuLoadDB::GetForcedItemOptionKeys( unsigned int inItemKey, std::vector<T
     //::::::::::::::::::::::::::::::::::::
 
 	return Success;
+}
+//----------------------------------------------------------------------------
+void TMenuLoadDB::GetAllRevenueCodesFromDB(std::map<int,AnsiString> &revenueCodesMap)
+{
+
+	Database::TcpIBSQL tpcOptions( new TIBSQL( NULL ) );
+
+	this->dbTransaction.RegisterQuery( tpcOptions );
+
+	tpcOptions->SQL->Text = RevenueCodesSQL;
+    this->dbTransaction.StartTransaction();
+
+    tpcOptions->ExecQuery();
+
+    while( !tpcOptions->Eof )
+    {
+        TRevenueCodesInfo tpcInfo;
+
+        tpcInfo.code            = tpcOptions->FieldByName( "REVENUECODE"         )->AsInteger;
+        tpcInfo.codeDescription = tpcOptions->FieldByName( "REVENUECODE_DESCRIPTION"        )->AsString;
+
+        revenueCodesMap.insert(std::pair<int,AnsiString>(tpcInfo.code,tpcInfo.codeDescription));
+        tpcOptions->Next();
+    }
+    tpcOptions->Close();
 }
 // ---------------------------------------------------------------------------
 bool TMenuLoadDB::GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes )

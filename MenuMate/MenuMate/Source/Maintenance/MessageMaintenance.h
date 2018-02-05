@@ -14,6 +14,7 @@
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
+#include "ManagerPMSCodes.h"
 //---------------------------------------------------------------------------
 
 
@@ -56,6 +57,16 @@ private:	// User declarations
     void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
     void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
     bool CheckDefaultPatronTypes();
+    void LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
+    void AddMessage(TObject *Sender);
+    void AddRevenueCode(TObject *Sender);
+    void UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key);
+    TManagerPMSCodes* managerPMSCodes;
+    void AddServingTime(TObject *Sender);
+    bool ValidateTimeSlot(TDateTime time, int key);
+    void LoadServingDetails(Database::TDBTransaction &DBTransaction);
+    void InsertMealSlotToDB(TTimeSlots slots);
+    void UpdateMealDetails(Database::TDBTransaction &DBTransaction, int key);
 public:		// User declarations
 
 	eMessageType MessageType;

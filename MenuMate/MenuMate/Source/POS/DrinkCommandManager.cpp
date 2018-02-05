@@ -56,7 +56,7 @@ UnicodeString TDrinkCommandManager::StartSession(AnsiString path , int port , An
                 {
                     temp_data += hex_ansi.SubString( i,2 );
                 }
-                temp_data += hex_ansi.SubString( 1,1 ) ;
+                temp_data += hex_ansi.SubString( 1,1 );
             }
         }
     }

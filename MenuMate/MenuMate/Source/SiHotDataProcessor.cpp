@@ -349,33 +349,50 @@ UnicodeString TSiHotDataProcessor::GetInvoiceNumber(TPaymentTransaction _payment
     {
         TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQueryGenerator->Close();
-
-        switch(_paymentTransaction.TypeOfSale)
+        bool IsCompDiscountApplied = false;
+        bool IsNCDiscountApplied   = false;
+        bool IsNormalDiscountApplied = false;
+        for(int index = 0; index < _paymentTransaction.Orders->Count; index++)
         {
-           case 1:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "Comp " + IntToStr(number);
+            TItemComplete *itemcomplete = (TItemComplete*)_paymentTransaction.Orders->Items[index];
+            for(int discountIndex = 0; discountIndex < itemcomplete->Discounts.size(); discountIndex++)
+            {
+                if(itemcomplete->Discounts[discountIndex].IsComplimentaryDiscount())
+                {
+                    IsCompDiscountApplied = true;
+                    break;
+                }
+                if(itemcomplete->Discounts[discountIndex].IsNonChargableDiscount())
+                {
+                    IsNCDiscountApplied = true;
+                    break;
+                }
+            }
+            if(IsCompDiscountApplied || IsNCDiscountApplied)
+            {
                 break;
-           }
-           case 2:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = "NC "+ IntToStr(number);
-                break;
-           }
-           default:
-           {
-                IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
-                IBInternalQueryGenerator->ExecQuery();
-                int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
-                invoiceNumber = IntToStr(number);
-                break;
-           }
+            }
+        }
+        if(IsCompDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "Comp " + IntToStr(number);
+        }
+        else if(IsNCDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "NC "+ IntToStr(number);
+        }
+        else
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = IntToStr(number);
         }
         DBTransaction.Commit();
     }
@@ -464,20 +481,18 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
 {
     TSiHotService siHotService;
     siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.SuperCategory_Desc = "Rounding";
+    siHotService.SuperCategory_Desc = "";
     siHotService.MiddleCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.MiddleCategory_Desc = "Rounding";
+    siHotService.MiddleCategory_Desc = "Rounding Differences";
     siHotService.ArticleCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.ArticleCategory_Desc = "Rounding";
+    siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
-    siHotService.ArticleNo_Desc = "Rounding";
-    double pricePerUnit = fabs((double)(_paymentTransaction.Money.PaymentRounding));
+    siHotService.ArticleNo_Desc = "";
+    double pricePerUnit = fabs((double)(_paymentTransaction.Money.TotalRounding));
     pricePerUnit = RoundTo(pricePerUnit,-2);
     siHotService.PricePerUnit = pricePerUnit;//fabs((double)(_paymentTransaction.Money.PaymentRounding));
-    siHotService.Amount = _paymentTransaction.Money.RoundingAdjustment < 0 ? "-1" : "1";
-    double priceTotal = fabs((double)(_paymentTransaction.Money.PaymentRounding));
-    priceTotal = RoundTo(priceTotal,-2);
-    siHotService.PriceTotal = priceTotal;//fabs((double)(_paymentTransaction.Money.PaymentRounding));
+    siHotService.Amount = _paymentTransaction.Money.TotalRounding < 0 ? "-1" : "1";
+    siHotService.PriceTotal = pricePerUnit;
     siHotService.VATPercentage = 0;
     siHotService.Billno = billNo;
     siHotService.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
@@ -573,6 +588,10 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     {
         AddSurchargeAndTip(_roomCharge,surcharge,billNo,tip);
     }
+    if(_paymentTransaction.Money.TotalRounding != 0)
+    {
+        AddRoundingAsService(_roomCharge, billNo, _paymentTransaction);
+    }
 }
 //----------------------------------------------------------------------------
 bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort)
@@ -649,3 +668,4 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     return retValue;
 }
 //----------------------------------------------------------------------------
+
