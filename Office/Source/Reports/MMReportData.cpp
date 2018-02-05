@@ -9368,7 +9368,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 
 	"Select "
 			"Security.Security_Event,"
-		   "(NAME || ' ' || Last_Name) as Name, "
+		   "(NAME || ' ' || Orders.Last_Name) as Name, "
 			"Orders.Time_Stamp,"
 			"Orders.Menu_Name Group_Name,"
 			"Orders.Course_Name,"
@@ -9394,7 +9394,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-													ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
+													ParamString(Names->Count, "(NAME || ' ' || Orders.Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 

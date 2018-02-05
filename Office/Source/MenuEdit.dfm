@@ -1,7 +1,7 @@
 object frmMenuEdit: TfrmMenuEdit
   Tag = 1023
-  Left = 380
-  Top = 100
+  Left = 335
+  Top = 89
   Width = 675
   Height = 625
   HorzScrollBar.Visible = False
@@ -1381,9 +1381,9 @@ object frmMenuEdit: TfrmMenuEdit
                 Top = 0
                 Width = 338
                 Height = 450
-                ActivePage = tsItemSizePrice
+                ActivePage = tsSizeCategories
                 Align = alClient
-                TabIndex = 0
+                TabIndex = 2
                 TabOrder = 0
                 object tsItemSizePrice: TTabSheet
                   Caption = 'Price / Cost'
@@ -1817,7 +1817,7 @@ object frmMenuEdit: TfrmMenuEdit
                     422)
                   object Label32: TLabel
                     Left = 8
-                    Top = 80
+                    Top = 64
                     Width = 127
                     Height = 13
                     Caption = 'Breakdown Categories'
@@ -1829,12 +1829,12 @@ object frmMenuEdit: TfrmMenuEdit
                     ParentFont = False
                   end
                   object Label35: TLabel
-                    Left = 8
-                    Top = 289
-                    Width = 121
+                    Left = 16
+                    Top = 217
+                    Width = 226
                     Height = 13
                     Anchors = [akLeft, akBottom]
-                    Caption = '3rd Party Group Code'
+                    Caption = '3rd Party Group Code                                   '
                     Font.Charset = DEFAULT_CHARSET
                     Font.Color = clWindowText
                     Font.Height = -11
@@ -1864,22 +1864,44 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Bevel4: TBevel
                     Left = 8
-                    Top = 96
+                    Top = 80
                     Width = 313
                     Height = 9
                     Shape = bsTopLine
                   end
                   object Bevel6: TBevel
-                    Left = 8
-                    Top = 305
+                    Left = 16
+                    Top = 233
                     Width = 313
                     Height = 9
                     Anchors = [akLeft, akBottom]
                     Shape = bsTopLine
                   end
+                  object Bevel10: TBevel
+                    Left = 17
+                    Top = 353
+                    Width = 313
+                    Height = 9
+                    Anchors = [akLeft, akBottom]
+                    Shape = bsTopLine
+                  end
+                  object Label3: TLabel
+                    Left = 16
+                    Top = 337
+                    Width = 126
+                    Height = 13
+                    Anchors = [akLeft, akBottom]
+                    Caption = 'Revenue Code               '
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = [fsBold]
+                    ParentFont = False
+                  end
                   object btnAddCategory: TButton
                     Left = 8
-                    Top = 112
+                    Top = 88
                     Width = 89
                     Height = 25
                     Caption = 'Add'
@@ -1894,7 +1916,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnRemoveCategory: TButton
                     Left = 8
-                    Top = 144
+                    Top = 120
                     Width = 89
                     Height = 25
                     Caption = 'Remove'
@@ -1909,7 +1931,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSyncCategories: TButton
                     Left = 8
-                    Top = 176
+                    Top = 152
                     Width = 89
                     Height = 25
                     Caption = 'Sync'
@@ -1924,9 +1946,9 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object lbCategories: TListBox
                     Left = 112
-                    Top = 112
+                    Top = 88
                     Width = 209
-                    Height = 158
+                    Height = 121
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     Font.Charset = DEFAULT_CHARSET
@@ -1942,7 +1964,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSyncCategory: TButton
                     Left = 248
-                    Top = 39
+                    Top = 31
                     Width = 73
                     Height = 25
                     Caption = 'Sync'
@@ -1957,7 +1979,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object cbCategory: TComboBox
                     Left = 8
-                    Top = 40
+                    Top = 32
                     Width = 233
                     Height = 24
                     Style = csOwnerDrawFixed
@@ -1986,9 +2008,9 @@ object frmMenuEdit: TfrmMenuEdit
                       '9')
                   end
                   object cb3rdPartyGroupCode: TComboBox
-                    Left = 8
-                    Top = 321
-                    Width = 313
+                    Left = 16
+                    Top = 241
+                    Width = 305
                     Height = 21
                     Anchors = [akLeft, akBottom]
                     Color = clInfoBk
@@ -1997,7 +2019,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     Sorted = True
                     TabOrder = 6
@@ -2005,8 +2027,8 @@ object frmMenuEdit: TfrmMenuEdit
                     OnChange = cb3rdPartyGroupCodeChange
                   end
                   object btnSync3rdPartyGroupItem: TButton
-                    Left = 8
-                    Top = 387
+                    Left = 16
+                    Top = 299
                     Width = 97
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2021,8 +2043,8 @@ object frmMenuEdit: TfrmMenuEdit
                     OnClick = btnSync3rdPartyGroupItemClick
                   end
                   object btnSync3rdPartyGroupCourse: TButton
-                    Left = 112
-                    Top = 387
+                    Left = 120
+                    Top = 299
                     Width = 105
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2037,8 +2059,8 @@ object frmMenuEdit: TfrmMenuEdit
                     OnClick = btnSync3rdPartyGroupCourseClick
                   end
                   object btnSync3rdPartyGroupMenu: TButton
-                    Left = 224
-                    Top = 387
+                    Left = 232
+                    Top = 299
                     Width = 97
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2053,8 +2075,8 @@ object frmMenuEdit: TfrmMenuEdit
                     OnClick = btnSync3rdPartyGroupMenuClick
                   end
                   object Button1: TButton
-                    Left = 112
-                    Top = 355
+                    Left = 120
+                    Top = 267
                     Width = 105
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2067,6 +2089,73 @@ object frmMenuEdit: TfrmMenuEdit
                     ParentFont = False
                     TabOrder = 10
                     OnClick = Button1Click
+                  end
+                  object cbRevenueGroupCode: TComboBox
+                    Left = 16
+                    Top = 360
+                    Width = 305
+                    Height = 19
+                    Style = csOwnerDrawFixed
+                    Anchors = [akLeft, akBottom]
+                    Color = clInfoBk
+                    Font.Charset = ANSI_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ItemHeight = 13
+                    ParentFont = False
+                    Sorted = True
+                    TabOrder = 11
+                    OnChange = cbRevenueGroupCodeSelect
+                  end
+                  object btnSyncRevenueCodeItem: TButton
+                    Left = 16
+                    Top = 387
+                    Width = 97
+                    Height = 25
+                    Anchors = [akLeft, akBottom]
+                    Caption = 'Sync Item'
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                    TabOrder = 12
+                    OnClick = btnSyncRevenueCodeItemClick
+                  end
+                  object btnSyncRevenueCodeCourse: TButton
+                    Left = 120
+                    Top = 387
+                    Width = 105
+                    Height = 25
+                    Anchors = [akLeft, akBottom]
+                    Caption = 'Sync Course'
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                    TabOrder = 13
+                    OnClick = btnSyncRevenueCodeCourseClick
+                  end
+                  object btnSyncRevenueCodeMenu: TButton
+                    Left = 232
+                    Top = 387
+                    Width = 97
+                    Height = 25
+                    Anchors = [akLeft, akBottom]
+                    Caption = 'Sync Menu'
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                    TabOrder = 14
+                    OnClick = btnSyncRevenueCodeMenuClick
                   end
                 end
                 object TabSheet3: TTabSheet

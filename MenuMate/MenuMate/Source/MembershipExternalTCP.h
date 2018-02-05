@@ -23,6 +23,7 @@ class TMembershipGeneralLedgerTCP
    int ExceptSleepTime;
 
 	void SendAndFetch(TMSXMLBase &Packet, AnsiString HostAddress, int Port);
+    void makeLogFile(AnsiString str);
    public :
       TMembershipGeneralLedgerTCP();
 

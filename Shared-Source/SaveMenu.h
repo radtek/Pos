@@ -26,6 +26,7 @@ protected:
     TiXmlElement *_coursesElem;
     TiXmlElement *_TPCsElem;   // Third Party Codes
     TiXmlElement *_taxProfilesElem;
+    TiXmlElement *_revenueElem;
 
     AnsiString GetMenuVersion();
     void SetMenuVersion( AnsiString inVersion );
@@ -69,7 +70,9 @@ public:
 
     void SaveThirdPartyCode( __int32 inKey, AnsiString inCode, AnsiString inDescription, bool inVisible, __int32 inCodeType );
 
-    void SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTaxRate, __int32 inTaxType, __int32 inPriority );
+    void SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTaxRate, __int32 inTaxType, __int32 inPriority);
+                        //-- to be incorpotated in future--//
+                        //, __int32 inTaxCode  );
 
     __int32 SaveMenuCourse( __int32 inKey, AnsiString inLongDescription, AnsiString inKitchenName,
                             AnsiString inHandheldName, AnsiString inReceiptName, __int32 inLocation,
@@ -121,7 +124,7 @@ public:
                           bool inDisableWhenCountReachesZero,
                           bool inCanBePaidForUsingPoints,
                           const int inDefaultPatronCount,
-                          Currency inPriceForPoints); // add price for points.
+                          Currency inPriceForPoints,int revenueCode); // add price for points.
 
      void SaveBCategory( __int32 inItemSizeHandle, __int32 inKey, AnsiString inName );
 
@@ -130,6 +133,7 @@ public:
 
      void SaveItemSizeTaxProfile( __int32 inItemSizeHandle, __int32 inKey, AnsiString inName );
      void SaveItemSizePriceLevels( __int32 inItemSizeHandle, __int32 inKey, AnsiString inName,Currency Price );
+     void SaveRevenueCodes(__int32 code, AnsiString description);
 
      bool Commit();
 

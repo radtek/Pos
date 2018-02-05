@@ -3301,6 +3301,14 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Shows Reprint Details with number of reprints and amount"
 		"when closing the til.",
 		vmgPOS, false);
+        SetVarNum(DBTransaction,vmDiningBal, "Dining Balance",
+                  "Member's Dining Point Balance",
+                  vmgPOS,
+                  0.00);
+		SetVarStr(DBTransaction,vmRevenueCentre, "PMS Revenue Centre",
+		"PMS Revenue Centre./r"
+		"Default is 0",
+		vmg3rdPartyInterface, "0");
 
         SetVarBool(DBTransaction,vmAlwaysPrintReceiptDiscountSales, "Always Print a Receipt (Discount Sales)",
 		"The till will always print a receipt on Discount Sales.\r"

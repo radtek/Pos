@@ -93,6 +93,7 @@ enum ePrintOutFormatInstructions{
                                  epofiPrintBIRSalesTax,
                                  epofiPrintPOSPlusSerialNumber,
                                  epofiPrintOrganizationNumber,
+                                 epofiPrintOracleCheckNumber,
                                  epofiPrintSignatureSection,
 								 };
 
