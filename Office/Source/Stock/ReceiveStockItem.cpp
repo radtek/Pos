@@ -247,8 +247,15 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 	StocktakeUnit	= qrStock->FieldByName("Stocktake_Unit")->AsString;
 	Initialised	= (qrStock->FieldByName("Initialised")->AsString == "T");
 	InitialisedTime	= qrStock->FieldByName("Initialised_Time")->AsDateTime;
-
-   LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+   if(CurrentConnection.SettingDecimalPlaces==4)
+        {
+    LatestCost = StrToFloat(FormatFloat("0.0000",qrStock->FieldByName("Latest_Cost")->AsFloat));
+ //  LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+   }
+   else
+   {
+    LatestCost =  StrToFloat(FormatFloat("0.00",qrStock->FieldByName("Latest_Cost")->AsFloat));
+   }
    OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
    SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, 4);
    StocktakeUnitQty  =  StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 4));

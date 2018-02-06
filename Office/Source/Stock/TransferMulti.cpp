@@ -345,15 +345,37 @@ TVSTTextType TextType, WideString &CellText)
 			}
 			else if (Column == 2)
 			{
-				CellText = MMMath::FloatString(NodeData->SourceOnHand);
+             if(CurrentConnection.SettingDecimalPlaces==4)
+            {
+				CellText =  FormatFloat("0.0000",NodeData->SourceOnHand);  //MMMath::FloatString(NodeData->SourceOnHand);
 			}
+            else
+            {
+             	CellText =  FormatFloat("0.00",NodeData->SourceOnHand); 
+
+            }
+            }
 			else if (Column == 3)
 			{
-				CellText = MMMath::FloatString(NodeData->DestOnHand);
+            if(CurrentConnection.SettingDecimalPlaces==4)
+            {
+				CellText =  FormatFloat("0.0000",NodeData->DestOnHand); //MMMath::FloatString(NodeData->DestOnHand);
 			}
+            else
+            {
+            	CellText =  FormatFloat("0.00",NodeData->DestOnHand);
+            }
+            }
 			else if (Column == 4 )//&& NodeData->Quantity != 0)
 			{
-				CellText = MMMath::FloatString(NodeData->Quantity);
+             if(CurrentConnection.SettingDecimalPlaces==4)
+                {
+				CellText =  FormatFloat("0.0000",NodeData->Quantity);//MMMath::FloatString(NodeData->Quantity);
+                }
+                else
+                {
+                 	CellText =  FormatFloat("0.00",NodeData->Quantity);
+                }
 			}
 		}
 	}

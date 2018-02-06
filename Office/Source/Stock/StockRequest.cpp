@@ -299,15 +299,19 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 2:	CellText = NodeData->Text;
 			break;
-		case 3:	CellText = MMMath::FloatString(NodeData->SupplierUnitCost, 2);
+		case 3:
+        CellText = MMMath::FloatString(NodeData->SupplierUnitCost, CurrentConnection.SettingDecimalPlaces);
 			break;
-		case 4: 	CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+		case 4:
+        CellText = MMMath::FloatString(NodeData->SupplierUnitQty,CurrentConnection.SettingDecimalPlaces);
 			break;
 		case 5:	CellText = NodeData->SupplierUnit;
 			break;
-		case 6:	CellText =  MMMath::FloatString(NodeData->onhand,2);;
+		case 6:
+        CellText = MMMath::FloatString(NodeData->onhand,CurrentConnection.SettingDecimalPlaces);
 			break;
-		case 7:	CellText =  MMMath::FloatString(NodeData->LatestCost,2);;
+		case 7:
+        CellText =  MMMath::FloatString(NodeData->LatestCost,CurrentConnection.SettingDecimalPlaces);
 			break;
 		}
 	}

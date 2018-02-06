@@ -163,7 +163,8 @@ void TfrmReceiveInvoice::LoadForm()
                 NodeData->IsUnitEditable         = true;
                 }
                 // StrToFloat(FloatToStrF(qrStockTransaction->FieldByName("TOTAL_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
-				NodeData->SupplierUnitCost			= StrToFloat(FloatToStrF(qrStockTransaction->FieldByName("UNIT_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+               	NodeData->SupplierUnitCost = StrToFloat(FormatFloat("0.0000",qrStockTransaction->FieldByName("UNIT_COST")->AsFloat));
+			   //	NodeData->SupplierUnitCost			= StrToFloat(FloatToStrF(qrStockTransaction->FieldByName("UNIT_COST")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 				NodeData->SupplierUnitsToReceive	    = qrStockTransaction->FieldByName("ORDER_QTY")->AsFloat;
 				NodeData->OrderQty					= (qrStockTransaction->FieldByName("ORDER_QTY")->AsFloat);
 				NodeData->SupplierKey					= (qrStockTransaction->FieldByName("SUPPLIER_KEY")->AsInteger);
@@ -348,7 +349,7 @@ void __fastcall TfrmReceiveInvoice::vtvStockQtyCreateEditor(TBaseVirtualTree *Se
 	{
 		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
         neCost->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
-	  
+	    neCost->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neCost);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neCost->Handle, EM_SETSEL, 0, -1);
@@ -1184,7 +1185,7 @@ bool TfrmReceiveInvoice::CheckInvoice()
 			{
 				vtvStockQty->OnEdited = NULL;
 				vtvStockQty->FocusedNode = Node;
-				vtvStockQty->FocusedColumn = 4;
+				vtvStockQty->FocusedColumn = CurrentConnection.SettingDecimalPlaces;
 				vtvStockQty->Selected[Node] = true;
 				Continue = false;
 				Application->MessageBox("This product's supplier unit is incorrect. You must remove this item and rectify this problem before adding.", "Error", MB_ICONERROR + MB_OK);

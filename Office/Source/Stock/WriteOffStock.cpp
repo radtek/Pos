@@ -28,6 +28,9 @@ __fastcall TfrmWriteOffStock::TfrmWriteOffStock(TComponent* Owner)
     sgWriteOffs->Cells[3][0] = "Unit";
     sgWriteOffs->Cells[4][0] = "Quantity";
     sgWriteOffs->Cells[5][0] = "Comment";
+    neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost3->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
+    neTotal->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
 
 }
 //---------------------------------------------------------------------------
@@ -140,6 +143,7 @@ void __fastcall TfrmWriteOffStock::btnAddOnClick(TObject *Sender)
     DateArray.push_back(DateTimePicker1->Date);
     totalcost += neCost3->Value;
     neTotal->Value = totalcost;
+    neTotal->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 
 
     EItem->Text = "";

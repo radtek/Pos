@@ -39,7 +39,7 @@ frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 //---------------------------------------------------------------------------
 TModalResult TfrmPurchaseOrder::Execute()
 {	Initialise();
-	vtvStockQty->Clear();
+   vtvStockQty->Clear();
 	vtvStockQty->NodeDataSize = sizeof(TOrderItemNodeData);
 	if (OrderKey)
 	{
@@ -63,7 +63,7 @@ void TfrmPurchaseOrder::InitialisePreDef(int SupplierKey, AnsiString weborder_ur
 	btnCommitAndSubmitWeborder->Enabled =  weborder_uri != NULL && (this->weborder_uri = weborder_uri).Length() > 0;
 	OrderKey		= 0;
 	ContactName = "";
-	vtvStockQty->Clear();
+   vtvStockQty->Clear();
 	vtvStockQty->NodeDataSize = sizeof(TOrderItemNodeData);
 }//---------------------------------------------------------------------------
 void TfrmPurchaseOrder::Initialise()
@@ -791,7 +791,16 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 3:	CellText = NodeData->SupplierUnit;
 			break;
-		case 4: FloatToStrF(NodeData->SupplierUnitQty,ffFixed,19,CurrentConnection.SettingDecimalPlaces);
+		case 4:
+         if(CurrentConnection.SettingDecimalPlaces==4)
+         {
+        CellText =FormatFloat("0.0000",NodeData->SupplierUnitQty);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
+         }
+         else
+         {
+           CellText =FormatFloat("0.00",NodeData->SupplierUnitQty);
+         }
+       
         //CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
 			break;
 		case 5:
@@ -804,8 +813,18 @@ TVSTTextType TextType, WideString &CellText)
            CellText =FormatFloat("0.00",NodeData->SupplierUnitCost);
          }
 			break;
-		case 6:	CellText = FloatToStrF(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty,ffCurrency,19,CurrentConnection.SettingDecimalPlaces);
-        //MMMath::CurrencyString("0.00", NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
+		case 6:
+        if(CurrentConnection.SettingDecimalPlaces==4)
+        {
+         
+         CellText=  CurrencyString +   FormatFloat("0.0000",NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
+        
+        }
+        else
+        {
+           CellText=  CurrencyString +   FormatFloat("0.00",NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
+        }
+       
 			break;
 		}
 	}

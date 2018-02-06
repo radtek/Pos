@@ -134,9 +134,25 @@ void __fastcall TfrmEditRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
 			case 2:	CellText = NodeData->Unit;
 						break;
-			case 3:	CellText = NodeData->Qty;
+			case 3:   if(CurrentConnection.SettingDecimalPlaces==4)
+            {
+            CellText = FormatFloat("0.0000",NodeData->Qty);          //NodeData->Qty;
+            }
+            else
+            {
+              CellText = FormatFloat("0.00",NodeData->Qty); 
+            }
 						break;
-            case 4: CellText = FloatToStrF(NodeData->AverageCost, ffGeneral,19, CurrentConnection.SettingDecimalPlaces);
+            case 4:   if(CurrentConnection.SettingDecimalPlaces==4)
+         {
+            CellText =  FormatFloat("0.0000",NodeData->AverageCost);
+            //FloatToStrF(NodeData->AverageCost, ffGeneral,19, CurrentConnection.SettingDecimalPlaces);
+            }
+            else
+            {
+
+              CellText =  FormatFloat("0.00",NodeData->AverageCost);
+            }
                         break;
 		}
     }
