@@ -9125,16 +9125,16 @@ void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
     }
 
     if(TGlobalSettings::Instance().NewBook == 2 && IsRMSPaymentType(PrintJob))
-    {
+    {    
         PrintJob->Transaction->Customer.Name = PrintJob->Transaction->Customer.Name;
         PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->Customer.RoomNumber;
     }
 
-    if (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomPayment(PrintJob) && PrintJob->Transaction->Customer.RoomNumberStr != ""
+    if (TGlobalSettings::Instance().PrintSignatureWithRoomSales && (IsRoomPayment(PrintJob) || IsRMSPaymentType(PrintJob))&& PrintJob->Transaction->Customer.RoomNumberStr != ""
         && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Phoenix || TGlobalSettings::Instance().PMSType == Oracle))
 	{
         UnicodeString customerDetails[3] = {"Name  ", "Room#  ", "Signature  "};
-        UnicodeString customerData[3] = {PrintJob->Transaction->Customer.Name, PrintJob->Transaction->Customer.RoomNumberStr, "---------------------------------"};
+        UnicodeString customerData[3] = {PrintJob->Transaction->Customer.Name.Trim(), PrintJob->Transaction->Customer.RoomNumberStr.Trim(), "---------------------------------"};
         PrintSignatureBySetting(customerDetails, customerData, 3);
     }
     else if (TGlobalSettings::Instance().PrintSignatureWithDiscountSales && IsDiscountApplied())
