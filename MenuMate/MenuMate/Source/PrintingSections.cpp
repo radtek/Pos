@@ -9113,19 +9113,34 @@ void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
 {
-	if (TGlobalSettings::Instance().PrintSignatureWithDiscountSales && IsDiscountApplied())
-	{
-        UnicodeString customerDetails[3] = {"Name  ", "Reason  ", "Signature  "};
-        UnicodeString customerData[3] = {"---------------------------------", "---------------------------------","---------------------------------"};
-        PrintSignatureBySetting(customerDetails, customerData, 3);
-        pPrinter->AddLine();
+    if(TGlobalSettings::Instance().PMSType == Oracle && IsRoomPayment(PrintJob))
+    {
+        PrintJob->Transaction->Customer.Name = PrintJob->Transaction->PMSClientDetails.FirstName + " " + PrintJob->Transaction->PMSClientDetails.LastName;
+        PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->PMSClientDetails.RoomNumber;
+    }
+    else if(TGlobalSettings::Instance().PMSType == Phoenix && IsRoomPayment(PrintJob))
+    {
+        PrintJob->Transaction->Customer.Name = PrintJob->Transaction->Phoenix.AccountName;
+        PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->Phoenix.AccountNumber;
+    }
+
+    if(TGlobalSettings::Instance().NewBook == 2 && IsRMSPaymentType(PrintJob))
+    {
+        PrintJob->Transaction->Customer.Name = PrintJob->Transaction->Customer.Name;
+        PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->Customer.RoomNumber;
     }
 
     if (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomPayment(PrintJob) && PrintJob->Transaction->Customer.RoomNumberStr != ""
-        && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Phoenix))
+        && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Phoenix || TGlobalSettings::Instance().PMSType == Oracle))
 	{
         UnicodeString customerDetails[3] = {"Name  ", "Room#  ", "Signature  "};
         UnicodeString customerData[3] = {PrintJob->Transaction->Customer.Name, PrintJob->Transaction->Customer.RoomNumberStr, "---------------------------------"};
+        PrintSignatureBySetting(customerDetails, customerData, 3);
+    }
+    else if (TGlobalSettings::Instance().PrintSignatureWithDiscountSales && IsDiscountApplied())
+	{
+        UnicodeString customerDetails[3] = {"Name  ", "Reason  ", "Signature  "};
+        UnicodeString customerData[3] = {"---------------------------------", "---------------------------------","---------------------------------"};
         PrintSignatureBySetting(customerDetails, customerData, 3);
     }
 }
@@ -9149,6 +9164,9 @@ void TPrintSection::PrintSignatureBySetting(UnicodeString customerDetails[], Uni
 {
     for(int index = 0; index < size; index++)
     {
+        pPrinter->Line->Columns[0]->Text = "";
+        pPrinter->Line->Columns[1]->Text = "";
+        pPrinter->AddLine();
         pPrinter->Line->ColCount = 2;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
         pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
@@ -9156,9 +9174,6 @@ void TPrintSection::PrintSignatureBySetting(UnicodeString customerDetails[], Uni
         pPrinter->Line->Columns[1]->Text = customerData[index];
         pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
-        pPrinter->AddLine();
-        pPrinter->Line->Columns[0]->Text = "";
-        pPrinter->Line->Columns[1]->Text = "";
         pPrinter->AddLine();
     }
 }
@@ -9170,6 +9185,21 @@ bool TPrintSection::IsRoomPayment(TReqPrintJob *PrintJob)
 	{
 		TPayment *payment = PrintJob->Transaction->PaymentGet(i);
         if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}
+//--------------------------------------------------------------------------------------
+bool TPrintSection::IsRMSPaymentType(TReqPrintJob *PrintJob)
+{
+    bool retVal = false;
+    for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
+	{
+		TPayment *payment = PrintJob->Transaction->PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
 		{
             retVal = true;
             break;
