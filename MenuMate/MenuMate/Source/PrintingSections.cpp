@@ -9162,12 +9162,12 @@ bool TPrintSection::IsDiscountApplied()
 //------------------------------------------------------------------------------
 void TPrintSection::PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size)
 {
+    pPrinter->Line->ColCount = 2;
     for(int index = 0; index < size; index++)
     {
         pPrinter->Line->Columns[0]->Text = "";
         pPrinter->Line->Columns[1]->Text = "";
         pPrinter->AddLine();
-        pPrinter->Line->ColCount = 2;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
         pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
         pPrinter->Line->Columns[0]->Text = customerDetails[index];
