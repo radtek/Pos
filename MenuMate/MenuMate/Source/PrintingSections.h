@@ -341,6 +341,7 @@ private:
     bool IsDiscountApplied();
     void PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size);
     bool IsRoomPayment(TReqPrintJob *PrintJob);
+    bool IsRMSPaymentType(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------
