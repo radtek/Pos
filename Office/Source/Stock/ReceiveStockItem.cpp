@@ -61,11 +61,23 @@ TModalResult TfrmReceiveStockItem::Execute()
 		{
 			sgLocations->RowCount++;
 		}
-		sgLocations->Cells[0][Row] = qrStock->FieldByName("Location")->AsString;
-		sgLocations->Cells[1][Row] = qrStock->FieldByName("On_Hand")->AsString;
-		sgLocations->Cells[2][Row] = qrStock->FieldByName("On_Order")->AsString;
-		sgLocations->Cells[3][Row] = qrStock->FieldByName("Min_Level")->AsString;
-		sgLocations->Cells[4][Row] = qrStock->FieldByName("Max_Level")->AsString;
+        sgLocations->Cells[0][Row]=qrStock->FieldByName("Location")->AsString;
+        if(CurrentConnection.SettingDecimalPlaces==4)
+        {
+
+		sgLocations->Cells[1][Row] = FormatFloat("0.0000",qrStock->FieldByName("On_Hand")->AsFloat);
+		sgLocations->Cells[2][Row] = FormatFloat("0.0000",qrStock->FieldByName("On_Order")->AsFloat);
+		sgLocations->Cells[3][Row] = FormatFloat("0.0000",qrStock->FieldByName("Min_Level")->AsFloat);
+		sgLocations->Cells[4][Row] = FormatFloat("0.0000",qrStock->FieldByName("Max_Level")->AsFloat);
+        }
+        else
+        {
+        sgLocations->Cells[1][Row] = FormatFloat("0.00",qrStock->FieldByName("On_Hand")->AsFloat);
+		sgLocations->Cells[2][Row] = FormatFloat("0.00",qrStock->FieldByName("On_Order")->AsFloat);
+		sgLocations->Cells[3][Row] = FormatFloat("0.00",qrStock->FieldByName("Min_Level")->AsFloat);
+		sgLocations->Cells[4][Row] = FormatFloat("0.00",qrStock->FieldByName("Max_Level")->AsFloat);
+
+        }
 		Row++;
 	}
 	qrStock->First();
@@ -250,15 +262,24 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
    if(CurrentConnection.SettingDecimalPlaces==4)
         {
     LatestCost = StrToFloat(FormatFloat("0.0000",qrStock->FieldByName("Latest_Cost")->AsFloat));
- //  LatestCost = StrToFloat(FloatToStrF(qrStock->FieldByName("Latest_Cost")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+     OnHandQty = StrToFloat(FormatFloat("0.0000",qrStock->FieldByName("On_Hand")->AsFloat));
+      SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+
+     StocktakeUnitQty  = StrToFloat(FormatFloat("0.0000",SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat)); //StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+     SupplierUnitQty  =  StrToFloat(FormatFloat("0.0000",neQty->Value));//neQty->Value;
+
+
    }
    else
    {
     LatestCost =  StrToFloat(FormatFloat("0.00",qrStock->FieldByName("Latest_Cost")->AsFloat));
+    OnHandQty = StrToFloat(FormatFloat("0.00",qrStock->FieldByName("On_Hand")->AsFloat));
+    SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+   StocktakeUnitQty  = StrToFloat(FormatFloat("0.00",SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat));
+   	SupplierUnitQty	 = StrToFloat(FormatFloat("0.00",neQty->Value));//neQty->Value;
+
    }
-   OnHandQty = StrToFloat(FloatToStrF(qrStock->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
-   SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, 4);
-   StocktakeUnitQty  =  StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, 4));
+
 
 
 
@@ -266,7 +287,7 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 	SupplierCode	= qrSupplierStock->FieldByName("Supplier_Code")->AsString;
 	SupplierUnit	= qrSupplierStock->FieldByName("Supplier_Unit")->AsString;
 
-	SupplierUnitQty	 =  neQty->Value;
+
 	SupplierUnitSize  = qrSupplierStock->FieldByName("Qty")->AsFloat;
 
 
@@ -400,6 +421,11 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 {
 	try
 	{
+
+
+
+
+ 
 		neCost1->OnChange = NULL;
 		neCost2->OnChange = NULL;
 		neCost3->OnChange = NULL;
