@@ -78,18 +78,23 @@ namespace SiHotIntegration
                     request.ContentLength = bytes.Length;
                     request.Timeout = 5000;
                     //request.ContentType = "text/plain";
-                    stringList.Add("=============================================================================");
-                    stringList.Add("Inquiry Request at:       " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("Inquiry Request Time:     " + DateTime.Now.ToString("hhmmss"));
-                    // Get the request stream.  
-                    dataStream = request.GetRequestStream();
+                    stringList.Add("Inquiry Request Date:       " + DateTime.Now.ToString("ddMMMyyyy"));
+                    stringList.Add("Inquiry Request Time:       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    stringList.Add("******Request Data Start*******");
+                    for (int detailsIndex = 0; detailsIndex < detailsList.Count; detailsIndex++)
+                    {
+                        stringList.Add(detailsList[detailsIndex]);
+                    }
+                    stringList.Add("******Request Data End*******");
+                        // Get the request stream.  
+                        dataStream = request.GetRequestStream();
                     // Write the data to the request stream.  
                     dataStream.Write(bytes, 0, bytes.Length);
                     // Close the Stream object.  
 
                     webResponse = (HttpWebResponse)request.GetResponse();
                     stringList.Add("Inquiry Response at Date:  " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hhmmss"));
+                    stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hh:mm:ss tt"));
                     memberStream = new StreamReader(webResponse.GetResponseStream());
                     roomDetails = deserializer.DeserializeRoomResponse(memberStream.ReadToEnd());
                     stringList.Add("Room Number:  " + roomRequest.RoomNumber);
@@ -107,7 +112,7 @@ namespace SiHotIntegration
                     ServiceLogger.Log("Exception in sending Room request" + ex.Message);
                     stringList.Add("exception Message:         " + ex.Message);
                     stringList.Add("exception Date:-           " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hhmmss"));
+                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 }
                 finally
                 {
@@ -183,7 +188,7 @@ namespace SiHotIntegration
                     responseNew.Close();
                 //-------------------------------------------------------------------------------------//
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
-                stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hhmmss"));
+                stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Post Response:                            " + responseText);
                 stringList.Add("No of Times tried:                        " + retryCount);
                 if (exceptionMessage.Length != 0)
@@ -228,8 +233,10 @@ namespace SiHotIntegration
             List<string> stringList = new List<string>();
             try
             {
-                stringList.Add("=============================================================================");
                 string invoiceNnumber = "0";
+                stringList.Add("Post Request Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("Post Request Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Transaction Number:                     " + roomChargeDetails.TransNo);
                 for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
                 {
                     invoiceNnumber = roomChargeDetails.ItemList[0].Billno;
@@ -243,13 +250,23 @@ namespace SiHotIntegration
                 }
                 stringList.Add("Invoice Amount:                     " + value.ToString());
                 string paymentNames = "";
+                stringList.Add("*********Start Of Items**************");
+                for (int itemIndex = 0; itemIndex < roomChargeDetails.ItemList.Count; itemIndex++)
+                {
+                    stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory + 
+                                   "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc + 
+                                   "    Amount:-      " + roomChargeDetails.ItemList[itemIndex].Amount + 
+                                   "    Price Unit:-  " + roomChargeDetails.ItemList[itemIndex].PricePerUnit + 
+                                   "    Price Total:- " + roomChargeDetails.ItemList[itemIndex].PriceTotal + 
+                                   "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage);
+                   
+                }
+                stringList.Add("**********End Of Items**************");
                 for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
                 {
                     paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Amount;
                 }
                 stringList.Add("Payments:                        " + paymentNames);
-                stringList.Add("Post Request Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
-                stringList.Add("Post Request Time:                       " + DateTime.Now.ToString("hhmmss"));
             }
             catch (Exception ex)
             {
@@ -262,6 +279,7 @@ namespace SiHotIntegration
         {
             try
             {
+                list.Add("=================================================================================");
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 

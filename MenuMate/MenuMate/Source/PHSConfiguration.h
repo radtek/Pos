@@ -64,6 +64,7 @@ private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
    void InitializePMS();
+   void LogPMSEnabling();
 public:		// User declarations
    ePMS PMSType;
 

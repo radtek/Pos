@@ -16,6 +16,7 @@ class TManagerSiHot : public TBasePMS
        void Initialise();
        bool ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
        bool GetDefaultAccount(UnicodeString processMessage);
+       void LogPMSEnabling(TriggerLocation triggerType);
     private :
        bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);

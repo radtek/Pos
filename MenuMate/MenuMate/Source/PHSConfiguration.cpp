@@ -191,6 +191,7 @@ void TfrmPHSConfiguration::UpdateGUI()
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 {
+    TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eUI);
     TDeviceRealTerminal::Instance().BasePMS->Initialise();
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
@@ -200,7 +201,6 @@ void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 	Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
