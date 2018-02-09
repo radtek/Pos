@@ -86,16 +86,6 @@ namespace SiHotIntegration
                         stringList.Add(detailsList[detailsIndex]);
                     }
                     stringList.Add("******Request Data End*******");
-                    string byteValues = "";
-                    for (int byteIndex = 0; byteIndex < byteList.Count; byteIndex++)
-                    {
-                        byteValues += byteList[byteIndex];
-                        byteValues += " ";
-                    }
-                    stringList.Add("***********Byte Values Start***********");
-                    stringList.Add("Byte List Count:- " + byteList.Count);
-                    stringList.Add("bytes:- " + byteValues);
-                    stringList.Add("***********Byte Values End***********");
                         // Get the request stream.  
                         dataStream = request.GetRequestStream();
                     // Write the data to the request stream.  
@@ -169,16 +159,6 @@ namespace SiHotIntegration
                 // Get the request stream.  
                 dataStream = request.GetRequestStream();
                 // Write the data to the request stream.
-                string byteValues = "";
-                for (int byteIndex = 0; byteIndex < bytesList.Count; byteIndex++)
-                {
-                    byteValues += bytesList[byteIndex];
-                    byteValues += " ";
-                }
-                stringList.Add("***********Byte Values Start***********");
-                stringList.Add("Byte List Count:- " + bytesList.Count);
-                stringList.Add("bytes:- " + byteValues);
-                stringList.Add("***********Byte Values End***********");
                 dataStream.Write(bytes, 0, bytes.Length);
                 // Close the Stream object.  
                 dataStream.Close();
