@@ -2837,6 +2837,21 @@ void __fastcall TfrmAddStock::dbeAveCostChange(TObject *Sender)
 {
    CheckNegativeValue(dbeAveCost);
 }
+//------------------------------------------------------------------------
+void __fastcall TfrmAddStock::dbeMaxLevelChange(TObject *Sender)
+{
+     CheckNegativeValue(dbeMaxLevel);
+
+
+}
+//----------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeMinLevelChange(TObject *Sender)
+{
+     CheckNegativeValue(dbeMinLevel);
+
+ 
+}
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmAddStock::dbeAssessedValueChange(TObject *Sender)

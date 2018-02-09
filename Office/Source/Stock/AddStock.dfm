@@ -816,6 +816,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnChange = dbeMinLevelChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeKeyPress
         end
@@ -836,6 +837,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 5
+          OnChange = dbeMaxLevelChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeMaxLevelKeyPress
         end
