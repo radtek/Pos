@@ -904,20 +904,24 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
              bool  fullTransfer;
              if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) && Partialtransfer.size()>1)
              {
-                for(std::map<UnicodeString,UnicodeString>::iterator iter = Partialtransfer.begin(); iter != Partialtransfer.end(); ++iter)
+                if(MessageBox("Do you want to inform the chef?","Confirmation", MB_YESNO  + MB_ICONWARNING) == IDYES)
                 {
-                      TTransferComplete *TransferComplete = new TTransferComplete();
-                      TransferComplete->TableTransferedFrom = iter->second;
-                      TransferComplete->TableTransferedTo = iter->first;
-                      std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                      std::auto_ptr<TKitchen> Kitchen(new TKitchen());
-                      Kitchen->Initialise(*DBTransaction);
-                      Kitchen->GetPrintouts(*DBTransaction, TransferComplete, TransferRequest.get(),true,false,true);
-                      TransferRequest->Printouts->Print(devPC);
+                    for(std::map<UnicodeString,UnicodeString>::iterator iter = Partialtransfer.begin(); iter != Partialtransfer.end(); ++iter)
+                    {
 
-              }
+                          TTransferComplete *TransferComplete = new TTransferComplete();
+                          TransferComplete->TableTransferedFrom = iter->second;
+                          TransferComplete->TableTransferedTo = iter->first;
+                          std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+                          std::auto_ptr<TKitchen> Kitchen(new TKitchen());
+                          Kitchen->Initialise(*DBTransaction);
+                          Kitchen->GetPrintouts(*DBTransaction, TransferComplete, TransferRequest.get(),true,false,true);
+                          TransferRequest->Printouts->Print(devPC);
+
+                    }
+                }
              }
-             if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) && Partialtransfer.size()== 1)
+             if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) && Partialtransfer.size() == 1)
              {
                 PrintTransferChefNotification(*DBTransaction ,true);
              }
@@ -1006,10 +1010,13 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
       {
          TransferData(*DBTransaction);
       }
-      TTransferComplete *TransferComplete = new TTransferComplete();
-      TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
-      TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-      Partialtransfer.insert( std::pair<UnicodeString,UnicodeString>(TransferComplete->TableTransferedTo, TransferComplete->TableTransferedFrom) );
+      if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (btnTransferTo->Caption != "Select" && btnTransferFrom->Caption != "Select"))
+      {
+          TTransferComplete *TransferComplete = new TTransferComplete();
+          TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
+          TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
+          Partialtransfer.insert( std::pair<UnicodeString,UnicodeString>(TransferComplete->TableTransferedTo, TransferComplete->TableTransferedFrom) );
+      }
 
   }
 }
