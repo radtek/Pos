@@ -86,6 +86,16 @@ namespace SiHotIntegration
                         stringList.Add(detailsList[detailsIndex]);
                     }
                     stringList.Add("******Request Data End*******");
+                    string byteValues = "";
+                    for (int byteIndex = 0; byteIndex < byteList.Count; byteIndex++)
+                    {
+                        byteValues += byteList[byteIndex];
+                        byteValues += " ";
+                    }
+                    stringList.Add("***********Byte Values Start***********");
+                    stringList.Add("Byte List Count:- " + byteList.Count);
+                    stringList.Add("bytes:- " + byteValues);
+                    stringList.Add("***********Byte Values End***********");
                         // Get the request stream.  
                         dataStream = request.GetRequestStream();
                     // Write the data to the request stream.  
@@ -96,14 +106,16 @@ namespace SiHotIntegration
                     stringList.Add("Inquiry Response at Date:  " + DateTime.Now.ToString("ddMMMyyyy"));
                     stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hh:mm:ss tt"));
                     memberStream = new StreamReader(webResponse.GetResponseStream());
-                    roomDetails = deserializer.DeserializeRoomResponse(memberStream.ReadToEnd());
-                    stringList.Add("Room Number:  " + roomRequest.RoomNumber);
-                    for (int guestList = 0; guestList < roomDetails.GuestDetailsList.Count; guestList++)
-                    {
-                        stringList.Add("Account Number:  " + roomDetails.GuestDetailsList[guestList].AccountNo);
-                        stringList.Add("Name:            " + roomDetails.GuestDetailsList[guestList].FirstName + " "
-                                                           + roomDetails.GuestDetailsList[guestList].LastName);
-                    }
+                    string readerResponse = memberStream.ReadToEnd();
+                    stringList.Add("Response Received:-  " + readerResponse);
+                    roomDetails = deserializer.DeserializeRoomResponse(readerResponse);
+                    //stringList.Add("Room Number:  " + roomRequest.RoomNumber);
+                    //for (int guestList = 0; guestList < roomDetails.GuestDetailsList.Count; guestList++)
+                    //{
+                    //    stringList.Add("Account Number:  " + roomDetails.GuestDetailsList[guestList].AccountNo);
+                    //    stringList.Add("Name:            " + roomDetails.GuestDetailsList[guestList].FirstName + " "
+                    //                                       + roomDetails.GuestDetailsList[guestList].LastName);
+                    //}
                     if(roomDetails.GuestDetailsList.Count == 0)
                         stringList.Add("Guest List:  " + "0");    
                 }
@@ -149,14 +161,24 @@ namespace SiHotIntegration
                 request.Method = "POST";
                 // Create POST data and convert it to a byte array.  
                 List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
-                byte[] bytes = bytesList.ToArray<byte>();
+                byte[] bytes = bytesList.ToArray<byte>(); 
                 request.ContentLength = bytes.Length;
                 //request.Timeout = 5000;
                 request.Timeout = 5000;
                 request.ContentType = "text/plain";
                 // Get the request stream.  
                 dataStream = request.GetRequestStream();
-                // Write the data to the request stream.  
+                // Write the data to the request stream.
+                string byteValues = "";
+                for (int byteIndex = 0; byteIndex < bytesList.Count; byteIndex++)
+                {
+                    byteValues += bytesList[byteIndex];
+                    byteValues += " ";
+                }
+                stringList.Add("***********Byte Values Start***********");
+                stringList.Add("Byte List Count:- " + bytesList.Count);
+                stringList.Add("bytes:- " + byteValues);
+                stringList.Add("***********Byte Values End***********");
                 dataStream.Write(bytes, 0, bytes.Length);
                 // Close the Stream object.  
                 dataStream.Close();
@@ -168,8 +190,9 @@ namespace SiHotIntegration
                 dataStream = responseNew.GetResponseStream();
                 // Open the stream using a StreamReader for easy access.  
                 reader = new StreamReader(dataStream);
-
-                response = deserializer.DesrializeRoomPostResponse(reader.ReadToEnd());
+                string readerResponse = reader.ReadToEnd();
+                response = deserializer.DesrializeRoomPostResponse(readerResponse);
+                stringList.Add("Response Received :- " + readerResponse);
                 if (response.IsSuccessful)
                     responseText = "Successful";
             }
