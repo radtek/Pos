@@ -2482,7 +2482,13 @@ void __fastcall TfrmAddStock::dsSuppliersStockDataChange(TObject *Sender, TField
 
             if(cost > 0 && qty > 0)
             {
-                float supplierCost = cost/qty;
+                //float supplierCost = cost/qty;
+                AnsiString supplierCost = cost/qty;
+                if(supplierCost.Pos(".") != 0)
+                {
+                    if(supplierCost.Length() - supplierCost.Pos(".") > CurrentConnection.SettingDecimalPlaces )
+                       supplierCost = supplierCost.SubString(0,supplierCost.Pos(".") + CurrentConnection.SettingDecimalPlaces);
+                }
                 dbeSupplierCost->Text = supplierCost;
             }    
         }
@@ -2805,24 +2811,20 @@ void TfrmAddStock::CheckNegativeValue(TDBEdit *dbetextbox)
 
      if(dbetextbox->Text.Trim().Length() > 0)
      {
-     AnsiString cost = dbetextbox->Text.TrimLeft();
-     cost = cost.SubString(0, 1);
-   AnsiString value = dbetextbox->Text;  int originalLength = dbetextbox->Text.Length();
-   if(value.Pos(".") != 0)
-   {
-       AnsiString newValue = value.SubString(0,value.Pos(".") + CurrentConnection.SettingDecimalPlaces);
-       dbetextbox->Text = newValue;
-       if(newValue.Length() < originalLength)
-      SelectNext((TWinControl *)dbetextbox, true, true);
+         AnsiString cost = dbetextbox->Text.TrimLeft();
+         cost = cost.SubString(0, 1);
+         bool moveToNext = false;
+         dbetextbox->Text = FormatForDecimalPlaces(dbetextbox->Text,moveToNext);
+         if(moveToNext)
+            dbetextbox->SelStart = dbetextbox->Text.Length();
+            //SelectNext((TWinControl *)dbetextbox, true, true);
 
-
-   }
-       if(cost == '-')
-       {
-          dbetextbox->Text = "";
-       }
-       }
+         if(cost == '-')
+         {
+            dbetextbox->Text = "";
+         }
      }
+}
 
 
 void __fastcall TfrmAddStock::dbeLatestCostChange(TObject *Sender)
@@ -2830,7 +2832,20 @@ void __fastcall TfrmAddStock::dbeLatestCostChange(TObject *Sender)
    CheckNegativeValue(dbeLatestCost);
 }
 //-----------------------------------------------
-
+AnsiString TfrmAddStock::FormatForDecimalPlaces(AnsiString inputValue, bool &moveToNext)
+{
+    moveToNext = false;
+    AnsiString outValue = inputValue;
+    AnsiString value = inputValue;
+    int originalLength = inputValue.Length();
+    if(value.Pos(".") != 0)
+    {
+       outValue = value.SubString(0,value.Pos(".") + CurrentConnection.SettingDecimalPlaces);
+       if(outValue.Length() < originalLength)
+          moveToNext = true;
+    }
+    return outValue;
+}
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmAddStock::dbeAveCostChange(TObject *Sender)
@@ -2840,17 +2855,23 @@ void __fastcall TfrmAddStock::dbeAveCostChange(TObject *Sender)
 //------------------------------------------------------------------------
 void __fastcall TfrmAddStock::dbeMaxLevelChange(TObject *Sender)
 {
-     CheckNegativeValue(dbeMaxLevel);
-
-
+     //CheckNegativeValue(dbeMaxLevel);
+    bool moveToNext = false;
+    dbeMaxLevel->Text = FormatForDecimalPlaces(dbeMaxLevel->Text, moveToNext);
+    if(moveToNext)
+       dbeMaxLevel->SelStart = dbeMaxLevel->Text.Length();
+       //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
 }
 //----------------------------------------------------------------
 
 void __fastcall TfrmAddStock::dbeMinLevelChange(TObject *Sender)
 {
-     CheckNegativeValue(dbeMinLevel);
-
- 
+    //CheckNegativeValue(dbeMinLevel);
+    bool moveToNext = false;
+    dbeMinLevel->Text = FormatForDecimalPlaces(dbeMinLevel->Text, moveToNext);
+    if(moveToNext)
+       dbeMinLevel->SelStart = dbeMinLevel->Text.Length();
+       //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
 }
 //---------------------------------------------------------------------------
 
@@ -2896,3 +2917,23 @@ void __fastcall TfrmAddStock::dbeConversionFactorChange(TObject *Sender)
    CheckNegativeValue(dbeConversionFactor);
 }
 //-----------------------------------------------------------------------
+void __fastcall TfrmAddStock::dbeMinOrderQtyChange(TObject *Sender)
+{
+    bool moveToNext = false;
+    dbeMinOrderQty->Text = FormatForDecimalPlaces(dbeMinOrderQty->Text, moveToNext);
+    if(moveToNext)
+       dbeMinOrderQty->SelStart = dbeMinOrderQty->Text.Length();
+       //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeGSTChange(TObject *Sender)
+{
+    bool moveToNext = false;
+    dbeGST->Text = FormatForDecimalPlaces(dbeGST->Text, moveToNext);
+    if(moveToNext)
+       dbeGST->SelStart = dbeGST->Text.Length();
+       //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
+}
+//---------------------------------------------------------------------------
+

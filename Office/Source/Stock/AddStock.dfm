@@ -320,7 +320,7 @@ object frmAddStock: TfrmAddStock
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          ItemHeight = 13
+          ItemHeight = 0
           ParentFont = False
           TabOrder = 3
           OnChange = cbStockGroupChange
@@ -466,6 +466,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 7
+          OnChange = dbeGSTChange
           OnKeyPress = dbeKeyPress
         end
         object dbeGLCode: TDBEdit
@@ -1481,6 +1482,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 11
+          OnChange = dbeMinOrderQtyChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeKeyPress
         end
@@ -1915,7 +1917,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 2
         end
         object DBCmbsubsttem1: TComboBox
@@ -1925,7 +1927,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 3
         end
         object txtvariance1: TNumericEdit
@@ -2039,7 +2041,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 2
         end
         object DBCmbsubsttem2: TComboBox
@@ -2049,7 +2051,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 3
         end
         object txtvariance2: TNumericEdit
@@ -2163,7 +2165,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 2
         end
         object DBCmbsubsttem3: TComboBox
@@ -2173,7 +2175,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 13
+          ItemHeight = 0
           TabOrder = 3
         end
         object txtvariance3: TNumericEdit

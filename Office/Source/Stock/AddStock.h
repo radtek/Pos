@@ -299,6 +299,8 @@ __published:	// IDE-managed Components
 	void __fastcall dbeConversionFactorKeyPress(TObject *Sender,
           char &Key);
     void __fastcall dbeConversionFactorChange(TObject *Sender);
+    void __fastcall dbeMinOrderQtyChange(TObject *Sender);
+    void __fastcall dbeGSTChange(TObject *Sender);
  //  void __fastcall dbeLatestCostChange(TObject *Sender);
 
 	//void __fastcall btnScanSupplierBarcodeClick(TObject *Sender);
@@ -324,6 +326,8 @@ private:	// User declarations
 	const std::auto_ptr<TfrmAddSupplierUnit>frmAddSupplierUnit;
     void ResetSubstitueControl();
     void CheckNegativeValue(TDBEdit *dbetextbox);
+    AnsiString FormatForDecimalPlaces(AnsiString inputValue, bool &moveToNext);
+    //bool moveToNext;
 public:		// User declarations
 	__fastcall TfrmAddStock(TComponent* Owner);
 	TAdjustStockMode Mode;
