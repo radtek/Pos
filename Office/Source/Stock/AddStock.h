@@ -291,6 +291,9 @@ __published:	// IDE-managed Components
     void __fastcall dbcOrderQtyChange(TObject *Sender);
     void __fastcall dbeLatestCostChange(TObject *Sender);
     void __fastcall dbeAveCostChange(TObject *Sender);
+    void __fastcall dbeMaxLevelChange(TObject *Sender);
+    void __fastcall dbeMinLevelChange(TObject *Sender);
+
     void __fastcall dbeAssessedValueChange(TObject *Sender);
     void __fastcall dbeAssessedValueKeyPress(TObject *Sender, char &Key);
 	void __fastcall dbeConversionFactorKeyPress(TObject *Sender,
@@ -362,7 +365,7 @@ AnsiString PopulateSubstituteDescription(int StockKey)  ;
     int SubstituteUniqueId1;
    int SubstituteUniqueId2;
    int SubstituteUniqueId3;
-
+   AnsiString value;
 
 // end
 //   int CopyStockItem(AnsiString CodeToCopy);
