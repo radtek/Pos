@@ -876,9 +876,7 @@ void __fastcall TfrmCreateRecipe::NumQuantityChange(TObject *Sender)
           {     Converted_value=NumQuantity->Value/Convert;
                 Unit= qrDescription->FieldByName("Stocktake_unit")->AsString ;
                 double newValue = NumQuantity->Value/Convert;
-                newValue = RoundTo(newValue,-CurrentConnection.SettingDecimalPlaces);
-                AnsiString newStr = newValue.toString();
-            Label2->Caption =   "  "+ newStr+ "(" + qrDescription->FieldByName("Stocktake_unit")->AsString + ")";//qrdescription->ConversionFactor;
+            Label2->Caption =   "  "+ MMMath::CurrencyString(newValue,CurrentConnection.SettingDecimalPlaces)+ "(" + qrDescription->FieldByName("Stocktake_unit")->AsString + ")";//qrdescription->ConversionFactor;
             }
 
 
