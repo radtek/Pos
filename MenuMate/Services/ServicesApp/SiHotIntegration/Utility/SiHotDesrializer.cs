@@ -75,10 +75,13 @@ namespace SiHotIntegration.Utility
             RoomChargeResponse roomPostResponse = new RoomChargeResponse();
             try
             {
-                if (response.Contains("notok"))
+                if (response.Contains("transno:") && response.Contains("notok:") &&
+                    (response.IndexOf("notok:") > response.IndexOf("transno:")))
                     roomPostResponse.IsSuccessful = false;
-                else
+                else if (response.Contains("transno:") && response.Contains("ok"))
                     roomPostResponse.IsSuccessful = true;
+                else if (!response.Contains("transno:") || response.Trim() == "")
+                    roomPostResponse.IsSuccessful = false;
                 int i = response.Length;
                 List<string> stringList = new List<string>();
                 stringList = Regex.Split(response, groupSeparator).ToList();

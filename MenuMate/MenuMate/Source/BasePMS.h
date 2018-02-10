@@ -8,6 +8,7 @@
 #include "ManagerPMSCodes.h"
 #include "OracleDataObjects.h"
 //---------------------------------------------------------------------------
+enum TriggerLocation {eBoot = 1,eUI,eSelf};
 class TBasePMS
 {
     public:
@@ -46,7 +47,6 @@ class TBasePMS
         std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
 
         AnsiString virtual GetLastTransactionRef();
-
         void virtual Initialise();
         bool virtual TestCode(AnsiString CodeToTest);
         void virtual ClearCodesTestedOk();
@@ -58,6 +58,7 @@ class TBasePMS
         void virtual GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
         bool virtual ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
         void virtual GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> _roomResult);
+        void virtual LogPMSEnabling(TriggerLocation triggerType);
 };
 //extern TBasePMS *BasePMS;
 #endif
