@@ -2466,7 +2466,7 @@ void __fastcall TfrmAddStock::dbeGSTExit(TObject *Sender)
         dbeGST->Text = "15.0";
 }
 //---------------------------------------------------------------------------
- 
+
 void __fastcall TfrmAddStock::dsSuppliersStockDataChange(TObject *Sender, TField *Field)
 {
     //We need to populate the Supplier unit cost text box, by calculation
@@ -2490,7 +2490,7 @@ void __fastcall TfrmAddStock::dsSuppliersStockDataChange(TObject *Sender, TField
                        supplierCost = supplierCost.SubString(0,supplierCost.Pos(".") + CurrentConnection.SettingDecimalPlaces);
                 }
                 dbeSupplierCost->Text = supplierCost;
-            }    
+            }
         }
     }
 }
@@ -2936,4 +2936,3 @@ void __fastcall TfrmAddStock::dbeGSTChange(TObject *Sender)
        //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
 }
 //---------------------------------------------------------------------------
-
