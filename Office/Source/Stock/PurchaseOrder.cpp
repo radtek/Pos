@@ -804,7 +804,7 @@ TVSTTextType TextType, WideString &CellText)
             CellText = NodeData->SupplierUnitCost;
 			break;
 		case 6:
-            CellText = RoundTo(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty, -CurrentConnection.SettingDecimalPlaces);
+            CellText = RoundTo(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty, CurrentConnection.SettingDecimalPlaces);
 			break;
 		}
 	}

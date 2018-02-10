@@ -301,6 +301,7 @@ __published:	// IDE-managed Components
     void __fastcall dbeConversionFactorChange(TObject *Sender);
     void __fastcall dbeMinOrderQtyChange(TObject *Sender);
     void __fastcall dbeGSTChange(TObject *Sender);
+  
  //  void __fastcall dbeLatestCostChange(TObject *Sender);
 
 	//void __fastcall btnScanSupplierBarcodeClick(TObject *Sender);

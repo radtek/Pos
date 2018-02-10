@@ -195,7 +195,9 @@ __published:	// IDE-managed Components
     void __fastcall reGstValueMouseDown(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall neCostChange(TObject *Sender);
-    //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall reGSTChange(TObject *Sender);
+    void __fastcall neTotalCostChange(TObject *Sender);
+   
 
 private:	// User declarations
 
@@ -238,7 +240,7 @@ private:	// User declarations
     void CheckNegativeValue(TNumericEdit *neCost);
     bool IsNegativeQtyOrCost;
     int Decimalpalaces;
-   
+    AnsiString FormatForDecimalPlaces(AnsiString inputValue, bool &moveToNext);
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);

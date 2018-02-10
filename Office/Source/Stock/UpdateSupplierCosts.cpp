@@ -16,11 +16,13 @@ TfrmUpdateSupplierCosts *frmUpdateSupplierCosts;
 __fastcall TfrmUpdateSupplierCosts::TfrmUpdateSupplierCosts(TComponent* Owner)
    : TForm(Owner)
 {
+ neStockNumericEdit->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUpdateSupplierCosts::FormShow(TObject *Sender)
 {
     vtvStockItem->Clear();
+
     vtvStockItem->NodeDataSize	= sizeof(TSupplierItemNodeData);
     lbeTitle->Caption = "Update Supplier Costs";
     dbcbPreferredSupplier->Items->Clear();

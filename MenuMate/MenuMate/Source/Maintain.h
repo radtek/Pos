@@ -236,6 +236,7 @@ private:
     void SelectPMSType();
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
+    bool SetUpOracle();
 public: // User declarations
 };
 #endif

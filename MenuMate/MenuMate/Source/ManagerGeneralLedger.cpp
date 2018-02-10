@@ -149,11 +149,11 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 
 		}
 
-        /*if(PaymentTransaction.Money.Discount != 0)
+        if(PaymentTransaction.Money.Discount != 0)
         {
             // Discounts are a Negitive so post the positive number.
         	Categories[DefaultDiscountCode] -= PaymentTransaction.Money.Discount;
-        }*/
+        }
 
         if(Categories.size() > 0)
         {

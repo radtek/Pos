@@ -21,6 +21,7 @@ __fastcall TfrmCreateOrders::TfrmCreateOrders(TComponent* Owner)
 frmPurchaseOrder(new TfrmPurchaseOrder(NULL)),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 {
+  neStockQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmCreateOrders::FormShow(TObject *Sender)

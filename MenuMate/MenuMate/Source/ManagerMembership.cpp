@@ -468,20 +468,8 @@ void TManagerMembership::BuildXMLListMembership(Database::TDBTransaction &DBTran
 			MagCards->LinkEndChild(MagCard);
 		 }
 
-				 EleMember->LinkEndChild(MagCards);
-
-
-
-
-
-
-
-
-
-
-
-			  //	 EleMember->LinkEndChild(SummaGroups);
-		 List->LinkEndChild(EleMember);
+		    EleMember->LinkEndChild(MagCards);
+		    List->LinkEndChild(EleMember);
 	  }
 	  Data.Doc.LinkEndChild(List);
    }
@@ -586,16 +574,6 @@ void TManagerMembership::BuildXMLMemberUpdate(Database::TDBTransaction &DBTransa
 		 {
 			EleMember->SetAttribute(xmlAttrSummaGroup, IBInternalQuery2->FieldByName("GROUPS_KEY")->AsInteger);
 		 }
-
-
-
-
-
-
-
-
-
-
 		 Database::TcpIBSQL IBInternalQuery1(new TIBSQL(NULL));
 		 DBTransaction.RegisterQuery(IBInternalQuery1);
 		 IBInternalQuery1->Close();

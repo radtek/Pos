@@ -19,6 +19,11 @@ __fastcall TfrmReceiveStockItem::TfrmReceiveStockItem(TComponent* Owner)
 : TForm(Owner),
 frmAddStock(new TfrmAddStock(NULL))
 {
+   neQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost3->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost4->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 
 }
 //---------------------------------------------------------------------------
@@ -481,17 +486,13 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		}
 
 		neCost1->Value		= Cost1;
-        neCost1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		neCost2->Value		= Cost2;
-        neCost2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		neCost3->Enabled	= (neQty->Value != 0);
 		neCost4->Enabled	= (neQty->Value != 0);
 		if (neQty->Value != 0)
 		{
 			neCost3->Value	= Cost3;
-            neCost3->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 			neCost4->Value	= Cost4;
-            neCost4->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		}
 
 		else
@@ -627,5 +628,6 @@ void __fastcall TfrmReceiveStockItem::neQtyKeyPress(TObject *Sender,
       Key = NULL;
    }
 }
+
 //---------------------------------------------------------------------------
 

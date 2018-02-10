@@ -79,6 +79,7 @@ namespace SalesForceCommunication
 
                 var selectColumnNames = new List<string> { "PocketVouchers__c", "PocketVouchers_URL__c", "PocketVouchers_User__c", "PocketVouchers_Password__c", "PocketVouchers_MerchantID__c", "PocketVouchers_Date_Updated__c" };
                 var filterClause = string.Format("Name = {0}", accountName);
+                filterClause = filterClause.Insert((filterClause.Length), " AND Active_Customer__c = 'Yes'");
 
                 var queryResult = _salesForceCommunicationHelper.ExecuteSelectQuery(filterClause, selectColumnNames);
 

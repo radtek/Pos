@@ -318,6 +318,7 @@ void __fastcall TfrmInvoices::qrInvoiceDetailAfterScroll(TDataSet *DataSet)
 {
 	((TFloatField *)qrInvoiceDetail->FieldByName("UNIT_COST"))->currency = true;
 	((TFloatField *)qrInvoiceDetail->FieldByName("TOTAL_COST"))->currency = true;
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmInvoices::qrInvoiceTotalAfterScroll(TDataSet *DataSet)
@@ -343,12 +344,14 @@ TTreeNode *Node)
 			((TFloatField *)qrInvoiceDetail->FieldByName("TOTAL_COST"))->currency = true;
                 if(CurrentConnection.SettingDecimalPlaces==4)
                 {
+      
 			((TFloatField *)qrInvoiceDetail->FieldByName("TOTAL_COST"))->DisplayFormat = "####0.0000";
 
 			((TFloatField *)qrInvoiceDetail->FieldByName("UNIT_COST" ))->DisplayFormat = "####0.0000";
             }
             else
             {
+        
               ((TFloatField *)qrInvoiceDetail->FieldByName("TOTAL_COST"))->DisplayFormat = "####0.00";
               ((TFloatField *)qrInvoiceDetail->FieldByName("UNIT_COST" ))->DisplayFormat = "####0.00";
             }
@@ -359,7 +362,7 @@ TTreeNode *Node)
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST"     ))->currency = true;
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST_INCL"))->currency = true;
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_GST"      ))->currency = true;
-               if(CurrentConnection.SettingDecimalPlaces==4)
+              if(CurrentConnection.SettingDecimalPlaces==4)
                 {
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST"     ))->DisplayFormat = "#####0.0000";
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST_INCL"))->DisplayFormat = "#####0.0000";
@@ -367,7 +370,7 @@ TTreeNode *Node)
             }
             else
             {
-            	((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST"     ))->DisplayFormat = "#####0.00";
+            ((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST"     ))->DisplayFormat = "#####0.00";
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_COST_INCL"))->DisplayFormat = "#####0.00";
 			((TFloatField *)qrInvoiceTotal->FieldByName("TOTAL_GST"      ))->DisplayFormat = "#####0.00";
             }

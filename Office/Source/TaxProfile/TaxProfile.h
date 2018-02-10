@@ -24,11 +24,13 @@ class TaxProfile
    public:
       TaxProfile();
       TaxProfile(int dbKey);
-      TaxProfile(AnsiString name, Percentage perc, TaxType type, Priority priority);
+      TaxProfile(AnsiString name, Percentage perc, TaxType type, Priority priority);//, int code);
 
       __property AnsiString   taxProfileName = { read = _taxProfileName,   write = writetaxProfileName   };
       __property Percentage   taxPercentage  = { read = _taxPercentage,    write = writetaxPercentage    };
       __property TaxType      taxProfileType = { read = _taxProfileType,   write = writetaxProfileType   };
+      //-- to be incorpotated in future--//
+      //__property int          taxCode        = { read = _taxCode,          write = writetaxCode          };
       __property Priority     taxPriority    = { read = _taxPriority,      write = writetaxPriority      };
       __property bool         taxSelectable  = { read = _taxSelectable,    write = writetaxSelectable    };
 
@@ -49,6 +51,8 @@ class TaxProfile
       AnsiString  _taxProfileName;
       TaxType     _taxProfileType;
       Percentage  _taxPercentage;
+      //-- to be incorpotated in future--//
+      //int         _taxCode;
       Priority    _taxPriority;
       bool        _taxSelectable;
       int         _taxProfileDBKey;
@@ -56,6 +60,7 @@ class TaxProfile
       void  writetaxProfileName  ( AnsiString intaxProfileName );
       void  writetaxProfileType  ( TaxType intaxProfileType );
       void  writetaxPercentage   ( Percentage intaxPercentage );
+      //void  writetaxCode         ( int intaxCode );
       void  writetaxPriority     ( Priority intaxPriority );
       void  writetaxSelectable   ( bool intaxSelectable );
 

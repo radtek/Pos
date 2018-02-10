@@ -410,6 +410,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Height = 21
         TabOrder = 5
         Visible = False
+        OnChange = neTotalCostChange
         OnExit = neTotalCostExit
         OnKeyDown = neStockQtyKeyDown
         OnKeyPress = neTotalCostKeyPress
@@ -723,6 +724,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     Lines.Strings = (
       'reGstValue')
     TabOrder = 4
+    OnChange = reGSTChange
     OnExit = reGstValueExit
     OnKeyDown = reGstValueKeyDown
     OnKeyPress = reGstValueKeyPress

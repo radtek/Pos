@@ -26,9 +26,10 @@ __fastcall TfrmCreateRecipe::TfrmCreateRecipe(TComponent* Owner)
     ((TEdit *)NumQuantity)->Text = "Recipe Quantity";
     NumQuantity->Enabled=false;
     vtvStock->NodeDataSize = sizeof(TRecipeNodeData);
-    Decimalpalaces = CurrentConnection.SettingDecimalPlaces;
+    NumQuantity->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 
-}
+} 
 //---------------------------------------------------------------------------
 
 void TfrmCreateRecipe::EnterText(AnsiString &Text)
@@ -340,7 +341,7 @@ void __fastcall TfrmCreateRecipe::IncludeOnClick(TObject *Sender)
     NodeData->AverageCost = temp;
    NumericEdit1->Value = NumericEdit1->Value + (GetItemCost(Edit4->Text, cbStockLocation->Text) *  Converted_value);
    
-    NumericEdit1->DecimalPlaces = Decimalpalaces;
+   // NumericEdit1->DecimalPlaces = Decimalpalaces;
     StockLocation = cbStockLocation->Text;
 
     StockCode = NULL;
@@ -370,8 +371,8 @@ void __fastcall TfrmCreateRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
 			case 2:	CellText = NodeData->Unit;
 						break;
-			case 3:	CellText = NodeData->Qty;
-	            if(Decimalpalaces==2)
+			case 3:	
+	            if(CurrentConnection.SettingDecimalPlaces==2)
 	            {
 	            	CellText = FloatToStrF(NodeData->Qty, ffFixed, 19, 2);
 	            }
@@ -379,22 +380,18 @@ void __fastcall TfrmCreateRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 	            {
 	             	CellText = FloatToStrF(NodeData->Qty, ffFixed, 19, 4);
 	            }
+                CellText = NodeData->Qty;
 				break;
            case 4:
-            CellText = NodeData->AverageCost;
-            if(Decimalpalaces==2)
-            {
-                    CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 2);
-
-                     }
-                     else
-                     {
-                      CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 4);
-                   
-
-                     }
-
-                       break;
+                if(CurrentConnection.SettingDecimalPlaces==2)
+                {
+                   CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 2);
+                }
+                else
+                {
+                    CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 4);
+                }
+                break;
 		}
     }
 	else
@@ -765,8 +762,8 @@ void TfrmCreateRecipe::UpdateRecipeDB(TRecipeNodeData *NodeData, double Costs[],
         QueryRecipe->ParamByName("Stock_Qty")->AsFloat = NodeData->Qty;
         QueryRecipe->ParamByName("Stock_Location")->AsString = NodeData->Location;
         QueryRecipe->ParamByName("Stock_Unit")->AsString = NodeData->Unit;
-        QueryRecipe->ParamByName("Stock_Average_Cost")->AsFloat = Costs[0];
-        QueryRecipe->ParamByName("Stock_Latest_Cost")->AsFloat = Costs[1];
+        QueryRecipe->ParamByName("Stock_Average_Cost")->AsFloat = Costs[0] > -1000000 ? Costs[0] : 0;
+        QueryRecipe->ParamByName("Stock_Latest_Cost")->AsFloat = Costs[1] > -1000000 ? Costs[1] : 0;
         QueryRecipe->ParamByName("Deleted")->AsString = "F";
 
         QueryRecipe->ExecSQL();

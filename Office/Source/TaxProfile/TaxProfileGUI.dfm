@@ -72,22 +72,22 @@ object frmTaxProfile: TfrmTaxProfile
         Columns = <
           item
             Position = 0
-            Width = 200
+            Width = 180
             WideText = 'Name'
           end
           item
             Position = 1
-            Width = 80
+            Width = 87
             WideText = 'Rate'
           end
           item
             Position = 2
-            Width = 150
+            Width = 160
             WideText = 'Tax Type'
           end
           item
             Position = 3
-            Width = 87
+            Width = 90
             WideText = 'Priority'
           end>
       end
