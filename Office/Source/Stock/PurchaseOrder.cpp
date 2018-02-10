@@ -40,6 +40,9 @@ frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 TModalResult TfrmPurchaseOrder::Execute()
 {	Initialise();
    vtvStockQty->Clear();
+   neCost->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+   neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+   neTotalCost->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 	vtvStockQty->NodeDataSize = sizeof(TOrderItemNodeData);
 	if (OrderKey)
 	{
@@ -792,39 +795,13 @@ TVSTTextType TextType, WideString &CellText)
 		case 3:	CellText = NodeData->SupplierUnit;
 			break;
 		case 4:
-         if(CurrentConnection.SettingDecimalPlaces==4)
-         {
-        CellText =FormatFloat("0.0000",NodeData->SupplierUnitQty);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
-         }
-         else
-         {
-           CellText =FormatFloat("0.00",NodeData->SupplierUnitQty);
-         }
-       
-        //CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+         CellText = NodeData->SupplierUnitQty;
 			break;
 		case 5:
-         if(CurrentConnection.SettingDecimalPlaces==4)
-         {
-        CellText =FormatFloat("0.0000",NodeData->SupplierUnitCost);// MMMath::CurrencyString(NodeData->SupplierUnitCost);
-         }
-         else
-         {
-           CellText =FormatFloat("0.00",NodeData->SupplierUnitCost);
-         }
+            CellText = NodeData->SupplierUnitCost;
 			break;
 		case 6:
-        if(CurrentConnection.SettingDecimalPlaces==4)
-        {
-         
-         CellText=  CurrencyString +   FormatFloat("0.0000",NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
-        
-        }
-        else
-        {
-           CellText=  CurrencyString +   FormatFloat("0.00",NodeData->SupplierUnitCost * NodeData->SupplierUnitQty);
-        }
-       
+            CellText = RoundTo(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty, -CurrentConnection.SettingDecimalPlaces);
 			break;
 		}
 	}
@@ -889,7 +866,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 			TOrderItemNodeData *NodeData = (TOrderItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 			if (NodeData->SupplierUnitQty != 0)
 			{
-				NodeData->SupplierUnitCost = neTotalCost->Value / NodeData->SupplierUnitQty;
+				NodeData->SupplierUnitCost = RoundTo(neTotalCost->Value / NodeData->SupplierUnitQty,-CurrentConnection.SettingDecimalPlaces);
 			}
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
