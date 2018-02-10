@@ -35,6 +35,9 @@ __fastcall TfrmPurchaseOrder::TfrmPurchaseOrder(TComponent* Owner)
 : TForm(Owner),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 {
+    neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neTotalCost->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost->DecimalPlaces     = CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 TModalResult TfrmPurchaseOrder::Execute()
