@@ -56,8 +56,8 @@ void TManagerSiHot::Initialise()
     RoundingAccountSiHot = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
     DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
+    RevenueCodesMap.clear();
 
-	DBTransaction.Commit();
 	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
@@ -71,6 +71,7 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = false;
 	}
+    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::GetRoundingandDefaultAccount()
@@ -129,17 +130,25 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
-        {
+//        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
+//        {
+            AnsiString responseString = "";
+            responseString = roomResponse.ResponseMessage;
             if(roomResponse.ResponseMessage == "")
-                roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
-            if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+                responseString = "Sale could not get processed.Press OK to  process sale again";
+            if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
+               responseString.Pos("accountclosed") != 0)
+            {
+                responseString += "\rPlease try again or check your Default Room configuration.";
+                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+            }
+            if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
                 retValue = false;
-        }
-        else
-        {
-            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
-        }
+//        }
+//        else
+//        {
+//            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
+//        }
     }
     return retValue;
 }

@@ -180,7 +180,7 @@ object frmMYOBPurchasesExport: TfrmMYOBPurchasesExport
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clNavy
-            Date = 37581.6942244329
+            Date = 37581.6892304514
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -199,7 +199,7 @@ object frmMYOBPurchasesExport: TfrmMYOBPurchasesExport
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clMaroon
-            Date = 36795.6942244329
+            Date = 36795.6892304514
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11

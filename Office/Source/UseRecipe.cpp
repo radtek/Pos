@@ -503,8 +503,9 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
     try
     {
         int Stock_Key;
-        double Price;
-        double OnHand;
+        double Price = 0;
+        double OnHand = 0;
+        Currency AverageCostNew = 0;
 
         Query->Close();
         Query->SQL->Text =
@@ -535,7 +536,8 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
             "Where Stock_Key = :Stock_Key And Location = :Location;";
         Query->ParamByName("Location")->AsString = Location;
         Query->ParamByName("Stock_Key")->AsInteger = Stock_Key;
-        Query->ParamByName("Average_Cost")->AsCurrency = ((OnHand * Price) + ((double)NumTotal->Value/(double)NumQty->Value * NumQty->Value)) / (OnHand + NumQty->Value);
+        AverageCostNew =  ((OnHand * Price) + ((double)NumTotal->Value/(double)NumQty->Value * NumQty->Value)) / (OnHand + NumQty->Value);
+        Query->ParamByName("Average_Cost")->AsCurrency = AverageCostNew > -1000000 ? AverageCostNew : 0;
         Query->ParamByName("Latest_Cost")->AsCurrency = (double)NumTotal->Value/(double)NumQty->Value;
         Query->ExecQuery();
     }
@@ -551,7 +553,7 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
 void __fastcall TfrmUseRecipe::NumQtyOnChange(TObject *Sender)
 {
 	PVirtualNode Node = vtvStock->GetFirst();
-    double temp;
+    double temp = 0;
     NumTotal->Value = 0;
 
     while(Node)
@@ -569,7 +571,7 @@ void __fastcall TfrmUseRecipe::NumQtyOnChange(TObject *Sender)
 void TfrmUseRecipe::UpdateTotal(void)
 {
 	PVirtualNode Node = vtvStock->GetFirst();
-    double temp;
+    double temp = 0;
     NumTotal->Value = 0;
 
     while(Node)

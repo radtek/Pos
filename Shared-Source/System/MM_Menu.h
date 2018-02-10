@@ -83,6 +83,7 @@ const UnicodeString MenuSQL =
 
 		"ItemSize.default_patron_count, "
         "ItemSize.PRICE_FOR_POINTS, "
+        "ItemSize.REVENUECODE,"
 
 		"ArcCategories.Category, "
         "ArcCategories.GL_CODE, "
@@ -206,6 +207,7 @@ const UnicodeString ItemSizeTaxProfilesSQL =
 		"Name, "
 		"Rate, "
 		"Type, "
+        //"TAX_CODE,"
         "Priority "
 	"From "
 		"TaxProfiles Inner Join TaxProfiles_ItemSize "
@@ -462,6 +464,7 @@ public:
 
 	int DefaultPatronCount;
     Currency	  PriceForPoints;
+    int           RevenueCode;
 };
 //---------------------------------------------------------------------------
 class TItemSideInfo : public TDBKey

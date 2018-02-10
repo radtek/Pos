@@ -21,6 +21,8 @@
 #define TP_Column_Name 0
 #define TP_Column_Rate 1
 #define TP_Column_Type 2
+//-- to be incorpotated in future--//
+//#define TP_Column_TaxCode 3
 #define TP_Column_Priority 3
 
 //---------------------------------------------------------------------------
@@ -155,17 +157,20 @@ private:
    bool validateTaxProfileRate(AnsiString rate);
    bool validateTaxProfilePriority(AnsiString priority);
    bool validateTaxProfileType(AnsiString type);
+   bool validateTaxProfileCode(AnsiString code);
 
    bool checkTaxProfileName(AnsiString name);
    bool checkTaxProfileRate(Currency rate);
    bool checkTaxProfilePriority(int priority);
    bool checkTaxProfileType(TaxType type);
+   bool checkTaxProfileCode(int code);
 
    bool checkDuplicateTaxProfile(int column, AnsiString newColumnText);
 
    void editSelectedNode( int columnIndex=TP_Column_Name );
    void setSelectedNode( PVirtualNode &node );
    void toggleDeleteButton();
+   TaxType getTaxProfileType(int column, PVirtualNode* node);
 };
 
 

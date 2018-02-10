@@ -674,31 +674,23 @@ void TfrmReceiveInvoice::ShowTotals()
 {
     Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 	TInvoiceSummary invoiceSummary;
-    //neGST->Value = 0.00;
 	CalculateInvoiceTotals(invoiceSummary);
 	imgWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeTotalExc->Caption	= MMMath::FloatString(invoiceSummary.TotalExcl, Decimalpalaces);
 	lbeTotalInc->Caption	= MMMath::FloatString(invoiceSummary.TotalInc, Decimalpalaces);
-    //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST) ;
-	//neGST->Value			= invoiceSummary.TotalGST;
 	if(Decimalpalaces==2)
 	{
 		lbeTotalExc->Caption= FormatFloat("0.00",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.00",invoiceSummary.TotalInc);;
-        //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST);
         reGstValue->Text = FormatFloat("0.00",invoiceSummary.TotalGST);
-
-		
 	}
 	else
 	{
 		lbeTotalExc->Caption= FormatFloat("0.0000",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.0000",invoiceSummary.TotalInc);;
-        //myEditBox->Text =  FormatFloat("0.0000",invoiceSummary.TotalGST) ;
         reGstValue->Text = FormatFloat("0.0000",invoiceSummary.TotalGST) ;
 	}
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::btnFindClick(TObject *Sender)
@@ -806,12 +798,13 @@ void __fastcall TfrmReceiveInvoice::BitBtn1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void TfrmReceiveInvoice::AddStockItem(AnsiString StockCode)
-{       qrSupplier->Close();
+{
+    qrSupplier->Close();
 	qrSupplier->Open();
 	frmReceiveStockItem->StockCode = StockCode;
 	frmReceiveStockItem->SupplierKey = qrSupplier->FieldByName("Contact_LK")->AsInteger;
     frmReceiveStockItem->AllowNegativeQuantity = AllowNegativeStockQuantity;
-         if (frmReceiveStockItem->Execute() == mrOk)
+    if (frmReceiveStockItem->Execute() == mrOk)
 	{
 		PVirtualNode Node = vtvStockQty->GetFirst();
 		while (Node)
@@ -1129,20 +1122,11 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
                              //updating transaction batch table
                            qrUpdateDateInStockTrans->Close();
                            qrUpdateDateInTransactionBatch->ParamByName("CREATED")->AsDateTime	=dtpInvoiceDate->DateTime ;
-
                            qrUpdateDateInTransactionBatch->ParamByName("BATCH_KEY")->AsInteger	=BatchKey ;
-
                            qrUpdateDateInTransactionBatch->ParamByName("REFERENCE")->AsString	=InvoiceReference ;
-
                            qrUpdateDateInTransactionBatch->ExecSQL();
-
                            Transaction->Commit() ;
-
-
                       }
-
-
-
 					ModalResult = mrOk;
 				}
 				else
@@ -1532,8 +1516,6 @@ void TfrmReceiveInvoice::LoadUnits(int stockKey)
 		qrPurchaseOrder->ParamByName("Order_Key")->AsInteger = OrderKey;
 		qrPurchaseOrder->Open();
 
-
-
 		query->SQL->Text = "select distinct SUPPLIER_UNIT, QTY  from SUPPLIERSTOCK Where STOCK_KEY = :STOCK_KEY and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY union "
 		"select distinct STOCKTAKE_UNIT SUPPLIER_UNIT, 1 as QTY   from STOCK left join SUPPLIERSTOCK on SUPPLIERSTOCK.STOCK_KEY=STOCK.STOCK_KEY Where STOCK.STOCK_KEY = :STOCK_KEY and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY  ";
 		query->ParamByName("STOCK_KEY")->AsInteger = stockKey;
@@ -1715,10 +1697,8 @@ void __fastcall TfrmReceiveInvoice::dbcbUnitChange(TObject *Sender)
                               }
                               else
                               {
-                                 //double itemQty = GetSupplierUnitSize(NodeData->StockKey, NodeData->SupplierKey, NodeData->SupplierUnit);
                                  if(QtyToReceive > 0)
                                  {
-                                     //NodeData->SupplierUnitCost = unitCost/ QtyToReceive;
                                      UpdateUnitqty(NodeData);
                                      NodeData->SupplierTotalCost = NodeData->SupplierUnitCost  * NodeData->OrderQty;
                                  }
@@ -1739,7 +1719,6 @@ void __fastcall TfrmReceiveInvoice::dbcbUnitChange(TObject *Sender)
                         UpdateSupplierUnit(NodeData);
                         if(NodeData->SupplierUnitCost > 0)
                         {
-                            //NodeData->SupplierUnit = NodeData->DisplayedUnit;     // update node qty..
                             if(NodeData->OrderQty == 0)
                             {
                                UpdateNodeQty(NodeData, QtyToReceive, newSupplierUnitSize); // update node qty..
@@ -1806,7 +1785,8 @@ void TfrmReceiveInvoice::UpdatePurchaseOrder()
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
-{        qrLocationUpdate->Close();
+{
+    qrLocationUpdate->Close();
 	qrPurchaseOrder->Close();
 	qrSupplier->Close();
 	qrSelectLocationUpdate->Close();
@@ -1820,7 +1800,8 @@ void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
 	AnsiString Stockkey=    qrPurchaseStock->FieldByName("Stock_Key")->AsString;
 	AnsiString Supplier_Unit=qrPurchaseStock->FieldByName("Supplier_Unit")->AsString;
 	vtvStockQty->BeginUpdate();
-	try{
+	try
+    {
 		vtvStockQty->EndEditNode();
 		TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 		AnsiString Locationsel=  NodeData->Location;
@@ -1832,7 +1813,6 @@ void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
 		qrLocationUpdate->Open();
 		qrLocationUpdate->First();
 
-		//	NodeData->OrderQty					= qrSelectLocationUpdate->FieldByName("Qty_On_Order")->AsFloat;
 		NodeData->LatestCost			      = qrLocationUpdate->FieldByName("LATEST_COST")->AsFloat;
 		NodeData->OnHandQty			      = qrLocationUpdate->FieldByName("ON_HAND")->AsFloat;
 
@@ -1853,12 +1833,6 @@ void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
 void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
 {
         CommitInvoice();
-      /* if(BatchKey==0)
-        {
-        qrBatchKey->Close();
-        qrBatchKey->SQL->Text = "Select Gen_id(Gen_Stocktrans_Batch_Key, 1) From rdb$database";
-        qrBatchKey->Open();
-        }      */
          if(IsPrintReport)
          {
             if (dmStockReportData->StockTrans->DefaultDatabase->Connected && !dmStockReportData->StockTrans->InTransaction)
@@ -1885,7 +1859,6 @@ void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
 					Transaction->Commit();
 }
 //---------------------------------------------------------------------------
- //---------------------------------------------------------------------------
 void  TfrmReceiveInvoice::CommitInvoice()
 {
     IsPrintReport=true;
@@ -2117,15 +2090,6 @@ void  TfrmReceiveInvoice::CommitInvoice()
 						}
 					}
 					ModalResult = mrOk;
-
-             /*  if(BatchKey==0)
-              {
-                qrBatchKey->Close();
-                qrBatchKey->SQL->Text = "Select Gen_id(Gen_Stocktrans_Batch_Key, 1) From rdb$database";
-                qrBatchKey->Open();
-              }   */
-
-
 				}
 				else
 				{
@@ -2138,7 +2102,9 @@ void  TfrmReceiveInvoice::CommitInvoice()
 			Application->MessageBox("There are no items in this invoice.", "Error", MB_ICONERROR + MB_OK);
 		}
 	}
-    else{ IsPrintReport=false;
+    else
+    {
+     IsPrintReport=false;
     }
 }
 
@@ -2353,10 +2319,7 @@ void TfrmReceiveInvoice::CommitPackingSlip(bool isCommitted)
                 qrCheckCommitted->ParamByName("REFERENCE")->AsString = InvoiceReference;
                 qrCheckCommitted->Open();
                 bool RetVal = (qrCheckCommitted->Fields->Fields[0]->AsString != "");
-                qrCheckCommitted->Close();
-
-
-
+                qrCheckCommitted->Close();   
                 
                 if(isCommitted || RetVal)
                 {

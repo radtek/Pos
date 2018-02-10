@@ -42,7 +42,7 @@ private:	// User declarations
     void SetTablesColor(Database::TDBTransaction &DBTransaction);
     void SetColorAsPerNoServiceTime(TGridButton *GridButton,TDateTime OrderTime);
     void UpdateFloorPlanSheet();
-    TfrmSelectTable *frmSelectTable;
+//    TfrmSelectTable *frmSelectTable;
     void SetMezzanineTablesColor();
     void UpdateColor(int tableNo, bool isSelected);
     std::map<int, std::vector<TMezzanineTable> > MezzanineTables;

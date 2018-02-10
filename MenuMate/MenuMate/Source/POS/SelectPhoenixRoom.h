@@ -17,6 +17,7 @@
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
+#include "OracleDataObjects.h"
 //---------------------------------------------------------------------------
 
 class TfrmPhoenixRoom : public TZForm
@@ -220,6 +221,9 @@ private:	// User declarations
 	int  SetSelectedFolder(int FolderNumber);
 	bool SelectionVisible;
 	void RefreshList();
+    void SearchPhoenix(TPhoenixRoomStatusExt SelectedRoom);
+    void SearchSiHot(TPhoenixRoomStatusExt SelectedRoom);
+    void SearchOracle(TPhoenixRoomStatusExt SelectedRoom);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);
@@ -242,6 +246,9 @@ public:		// User declarations
 	void UpdateInterface();
     std::vector<TSiHotAccounts> SiHotAccounts;
     double LimitSiHot;
+//    std::auto_ptr<TRoomInquiryResult*> roomResult;
+    TRoomInquiryResult roomResult;
+    int OracleRoomIndex;
 };
 //---------------------------------------------------------------------------
 

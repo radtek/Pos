@@ -258,6 +258,7 @@
 #define xmlAttrCard              ("Card")
 #define xmlAttrPoints            ("PointsTotal")
 #define xmlAttrComp              ("CompTotal")
+#define xmlAttrPromo2              ("Promo2Total")
 #define xmlAttrPIN               ("AccessPIN")
 #define xmlAttrAccessLevel       ("AccessLevel")
 #define xmlAttrPalmAutoOpt       ("PalmAutoOpt")
@@ -295,5 +296,6 @@
 #define xmlMesg ("Msg")
 #define xmlAttrAuth ("Authorised")
 #define xmlRepeatTrans ("RepeatTranaction")
+
 
 

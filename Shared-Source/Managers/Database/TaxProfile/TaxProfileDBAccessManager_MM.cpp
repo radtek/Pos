@@ -49,6 +49,7 @@ bool TTaxProfileDBAccessManager_MM::InsertTaxProfile(
    insertQuery->ParamByName("NAME")->AsString = taxProfile.taxProfileName; //todo: substring to db field lengths
    insertQuery->ParamByName("RATE")->AsDouble = taxProfile.taxPercentage;
    insertQuery->ParamByName("TYPE")->AsInteger = taxProfile.taxProfileType;
+   //insertQuery->ParamByName("TAX_CODE")->AsInteger = taxProfile.taxCode;
    insertQuery->ParamByName("PRIORITY")->AsInteger = taxProfile.taxPriority;
    insertQuery->ParamByName("SELECTABLE")->AsString = taxProfile.taxSelectable ? "T" : "F";
 
@@ -178,6 +179,7 @@ TaxProfile TTaxProfileDBAccessManager_MM::LoadTaxProfileFromKey(
         "   NAME,"
         "   RATE,"
         "   TYPE,"
+        //"   TAX_CODE,"
         "   PRIORITY,"
         "   SELECTABLE "
         "FROM "
@@ -251,6 +253,7 @@ void TTaxProfileDBAccessManager_MM::getTaxProfileFromQuery(TIBSQL* query, TaxPro
    taxProfile->taxProfileName = query->FieldByName("NAME")->AsString;
    taxProfile->taxPercentage  = query->FieldByName("RATE")->AsDouble;
    taxProfile->taxProfileType = query->FieldByName("TYPE")->AsInteger;
+   //taxProfile->taxCode        = query->FieldByName("TAX_CODE")->AsInteger;
    taxProfile->taxPriority    = query->FieldByName("PRIORITY")->AsInteger;
    taxProfile->taxSelectable  = query->FieldByName("SELECTABLE")->AsString == "T" ? true : false;
 }
@@ -264,6 +267,7 @@ bool TTaxProfileDBAccessManager_MM::updateTaxProfilePartial( Database::TDBTransa
    updateQuery->ParamByName("PROFILE_KEY")->AsInteger = taxProfile->GetTaxProfileDBKey();
    updateQuery->ParamByName("NAME")->AsString = taxProfile->taxProfileName;
    updateQuery->ParamByName("PRIORITY")->AsInteger = taxProfile->taxPriority;
+   //updateQuery->ParamByName("TAX_CODE")->AsInteger = taxProfile->taxCode;
 
    updateQuery->ExecQuery();
 
