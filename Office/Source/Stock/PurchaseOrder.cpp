@@ -804,7 +804,7 @@ TVSTTextType TextType, WideString &CellText)
             CellText = NodeData->SupplierUnitCost;
 			break;
 		case 6:
-            CellText = RoundTo(NodeData->SupplierUnitCost * NodeData->SupplierUnitQty, CurrentConnection.SettingDecimalPlaces);
+            CellText = RoundTo((NodeData->SupplierUnitCost * NodeData->SupplierUnitQty), -CurrentConnection.SettingDecimalPlaces);
 			break;
 		}
 	}
@@ -869,7 +869,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 			TOrderItemNodeData *NodeData = (TOrderItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 			if (NodeData->SupplierUnitQty != 0)
 			{
-				NodeData->SupplierUnitCost = RoundTo(neTotalCost->Value / NodeData->SupplierUnitQty,-CurrentConnection.SettingDecimalPlaces);
+				NodeData->SupplierUnitCost = RoundTo((neTotalCost->Value / NodeData->SupplierUnitQty),-CurrentConnection.SettingDecimalPlaces);
 			}
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
