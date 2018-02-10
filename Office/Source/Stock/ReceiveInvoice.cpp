@@ -50,6 +50,9 @@ frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 	dtpInvoiceDate->Time				= Time();
 	IsPackingSlipUpdateMode = false;
 	BatchKey = 0;
+    neCost->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    neBackOrder->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    neStockQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
@@ -2771,4 +2774,39 @@ void TfrmReceiveInvoice::CheckNegativeValue(TNumericEdit *neCost)
        }
    }
 }
+//--------------------------------------------------------------------------
+AnsiString TfrmReceiveInvoice::FormatForDecimalPlaces(AnsiString inputValue, bool &moveToNext)
+{
+    moveToNext = false;
+    AnsiString outValue = inputValue;
+    AnsiString value = inputValue;
+    int originalLength = inputValue.Length();
+    if(value.Pos(".") != 0)
+    {
+       outValue = value.SubString(0,value.Pos(".") + CurrentConnection.SettingDecimalPlaces);
+       if(outValue.Length() < originalLength)
+          moveToNext = true;
+    }
+    return outValue;
+}
+//-----------------------------------------------------------------------
+void __fastcall TfrmReceiveInvoice::reGSTChange(TObject *Sender)
+{
+    bool moveToNext = false;
+    reGstValue->Text = FormatForDecimalPlaces(reGstValue->Text, moveToNext);
+    if(moveToNext)
+       reGstValue->SelStart = reGstValue->Text.Length();
+}
+//--------------------------------------------------------------------
+
+  void __fastcall TfrmReceiveInvoice::neTotalCostChange(TObject *Sender)
+{
+    bool moveToNext = false;
+     neTotalCost->Text = FormatForDecimalPlaces(neTotalCost->Text, moveToNext);
+    if(moveToNext)
+       neTotalCost->SelStart =  neTotalCost->Text.Length();
+}
+
+
+
 

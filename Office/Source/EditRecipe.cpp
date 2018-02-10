@@ -26,6 +26,7 @@ __fastcall TfrmEditRecipe::TfrmEditRecipe(TComponent* Owner)
 	dtRecipes->Close();                                                                             
 	dtRecipes->Open();
     NumericEdit1->Enabled=false;
+    NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 

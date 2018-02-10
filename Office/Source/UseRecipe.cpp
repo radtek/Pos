@@ -36,6 +36,8 @@ __fastcall TfrmUseRecipe::TfrmUseRecipe(TComponent* Owner)
     IsSearchBoxClicked = false;
 	dtRecipes->Close();
 	dtRecipes->Open();
+    NumQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUseRecipe::DBGridOnClick(TColumn *Column)

@@ -2859,7 +2859,7 @@ void __fastcall TfrmAddStock::dbeMaxLevelChange(TObject *Sender)
     bool moveToNext = false;
     dbeMaxLevel->Text = FormatForDecimalPlaces(dbeMaxLevel->Text, moveToNext);
     if(moveToNext)
-       dbeMaxLevel->SelStart = dbeMaxLevel->Text.Length();
+    dbeMaxLevel->SelStart = dbeMaxLevel->Text.Length();
        //SelectNext((TWinControl *)((TDBEdit *)Sender), true, true);
 }
 //----------------------------------------------------------------

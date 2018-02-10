@@ -27,9 +27,9 @@ object frmAddStock: TfrmAddStock
     Width = 473
     Height = 393
     Hint = 'The sales unit refers to the measure deducted by sales.'
-    ActivePage = tsLocations
+    ActivePage = tsSuppliers
     MultiLine = True
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object tsItemDetails: TTabSheet
@@ -320,7 +320,7 @@ object frmAddStock: TfrmAddStock
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          ItemHeight = 0
+          ItemHeight = 13
           ParentFont = False
           TabOrder = 3
           OnChange = cbStockGroupChange
@@ -1917,7 +1917,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 2
         end
         object DBCmbsubsttem1: TComboBox
@@ -1927,7 +1927,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 3
         end
         object txtvariance1: TNumericEdit
@@ -2041,7 +2041,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 2
         end
         object DBCmbsubsttem2: TComboBox
@@ -2051,7 +2051,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 3
         end
         object txtvariance2: TNumericEdit
@@ -2165,7 +2165,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 2
         end
         object DBCmbsubsttem3: TComboBox
@@ -2175,7 +2175,7 @@ object frmAddStock: TfrmAddStock
           Height = 21
           Style = csDropDownList
           Color = clInfoBk
-          ItemHeight = 0
+          ItemHeight = 13
           TabOrder = 3
         end
         object txtvariance3: TNumericEdit

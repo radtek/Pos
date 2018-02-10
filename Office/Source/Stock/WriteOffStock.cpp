@@ -28,9 +28,10 @@ __fastcall TfrmWriteOffStock::TfrmWriteOffStock(TComponent* Owner)
     sgWriteOffs->Cells[3][0] = "Unit";
     sgWriteOffs->Cells[4][0] = "Quantity";
     sgWriteOffs->Cells[5][0] = "Comment";
-    neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
-    neCost3->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
-    neTotal->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
+     neQty->DecimalPlaces =   CurrentConnection.SettingDecimalPlaces;
+     neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+     neCost3->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
+     neTotal->DecimalPlaces =  CurrentConnection.SettingDecimalPlaces;
 
 }
 //---------------------------------------------------------------------------

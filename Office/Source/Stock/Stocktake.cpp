@@ -42,6 +42,8 @@ public:
 	Currency			Variance;
 
 };
+
+
 // storage of key and qty that were loaded from the file - multiple barcodes in the file
 typedef std::map<int,double> TStockMap;
 //---------------------------------------------------------------------------
@@ -66,6 +68,7 @@ __fastcall TfrmStocktake::TfrmStocktake(Stock::TStocktakeControl &StocktakeContr
 //---------------------------------------------------------------------------
 void __fastcall TfrmStocktake::FormShow(TObject *Sender)
 {
+    neStockQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 	lbeLocation->Caption = "Loading...";
 	PostMessage(Handle, WM_AFTERSHOW, 0, 0);
 	btnImportCount->Enabled = (CurrentConnection.StocktakePath != "" && CurrentConnection.StocktakeBarcodePos != -1 && CurrentConnection.StocktakeQtyPos != -1);
@@ -173,9 +176,9 @@ void TfrmStocktake::LoadTree()
 		//NodeData->Barcode								   = qrStock->FieldByName("Barcode")->AsString;
 		NodeData->Initialised				         = qrStock->FieldByName("Initialised")->AsString == "T";
 		NodeData->Unit							         = qrStock->FieldByName("Stocktake_Unit")->AsString;
-        NodeData->OnHand					         =  FloatToStrF(qrStock->FieldByName("On_Hand")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
-        NodeData->Stocktake				         =  FloatToStrF(qrStock->FieldByName("Stocktake")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
-		NodeData->Variance					         =  FloatToStrF(qrStock->FieldByName("Variance")->AsDouble,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
+        NodeData->OnHand					         =  qrStock->FieldByName("On_Hand")->AsDouble;
+        NodeData->Stocktake				         =   qrStock->FieldByName("Stocktake")->AsDouble;
+		NodeData->Variance					         = qrStock->FieldByName("Variance")->AsDouble;
         
 		if (NodeData->Key == CurrentStockKey)
 		{
