@@ -287,6 +287,7 @@ __fastcall TReceipt::TReceipt()
    RavellItemsWithPriceAdjusts = false;
    VoidFooter = new TStringList;
    SubHeader = new TStringList;
+   AlwaysPrintReceiptDiscountSales = false;
 }
 
 __fastcall TReceipt::~TReceipt()
@@ -1180,6 +1181,7 @@ void TReceipt::Initialise(Database::TDBTransaction &DBTransaction)
    BulletOpt = TManagerVariable::Instance().GetStr(DBTransaction, vmKitchenBulletOpt, "    ");
    NoteHeader = TManagerVariable::Instance().GetStr(DBTransaction, vmKitchenHeaderNote, "Note: ");
    MembershipNameDisplay = TManagerVariable::Instance().GetInt(DBTransaction, vmMembersNameOnReceipt, 0);
+   AlwaysPrintReceiptDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, false);
 }
 
 void TKitchen::GetSetMenuHeaders(Database::TDBTransaction &DBTransaction, TList *OrdersList)

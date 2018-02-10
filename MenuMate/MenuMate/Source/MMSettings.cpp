@@ -404,6 +404,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(DBTransaction);
         TGlobalSettings::Instance().IsAutoLoggedOut = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAutoLoggedOut, false);
         TGlobalSettings::Instance().DiningBal =  TManagerVariable::Instance().GetNum(DBTransaction, vmDiningBal, 0.00);
+        TGlobalSettings::Instance().PrintSignatureWithDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithDiscountSales, false);
+        TGlobalSettings::Instance().PrintSignatureWithRoomSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithRoomSales, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

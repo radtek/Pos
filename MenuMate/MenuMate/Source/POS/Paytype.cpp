@@ -732,6 +732,8 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
             else
             {
                 Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.RoomNumber);
+                if(CurrentTransaction.Customer.Name.Trim() == "")
+                    CurrentTransaction.Customer.Name = CurrentTransaction.Phoenix.AccountName;
             }
 			Receipt->ExtraInfo->Add("Guest " + CurrentTransaction.Phoenix.AccountName);
 		}

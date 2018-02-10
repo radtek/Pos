@@ -3309,6 +3309,21 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"PMS Revenue Centre./r"
 		"Default is 0",
 		vmg3rdPartyInterface, "0");
+
+        SetVarBool(DBTransaction,vmAlwaysPrintReceiptDiscountSales, "Always Print a Receipt (Discount Sales)",
+		"The till will always print a receipt on Discount Sales.\r"
+		"Default is False",
+		vmgPrinting, false);
+
+        SetVarBool(DBTransaction,vmPrintSignatureWithDiscountSales, "Always Print Signature section with discount sales.",
+		"This will print signature section with Discount Sales.\r"
+		"Default is False",
+		vmgPrinting, false);
+
+        SetVarBool(DBTransaction,vmPrintSignatureWithRoomSales, "Always Print Signature section with room sales.",
+		"This will print signature section with room Sales.\r"
+		"Default is False",
+		vmgPrinting, false);
 	}
 	catch(Exception &E)
 	{

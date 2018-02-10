@@ -501,6 +501,8 @@ public:
     bool ShowReprintReceiptDetails;
     double DiningBal;
     UnicodeString OracleCheckNumber;
+    bool PrintSignatureWithDiscountSales;
+    bool PrintSignatureWithRoomSales;
 };
 
 #endif

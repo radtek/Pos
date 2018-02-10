@@ -94,6 +94,7 @@ enum ePrintOutFormatInstructions{
                                  epofiPrintPOSPlusSerialNumber,
                                  epofiPrintOrganizationNumber,
                                  epofiPrintOracleCheckNumber,
+                                 epofiPrintSignatureSection,
 								 };
 
 typedef std::pair<ePrintOutFormatInstructions,UnicodeString> InstructionPair;
