@@ -5,6 +5,7 @@
 #include "Connections.h"
 #include "CreateRecipe.h"
 #include "SelectStockItem.h"
+#include "MM_Math.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "VirtualTrees"
@@ -331,16 +332,17 @@ void __fastcall TfrmCreateRecipe::IncludeOnClick(TObject *Sender)
 
     NodeData->Text = Edit4->Text;
     NodeData->Location = cbStockLocation->Text;
-    NodeData->Qty = Converted_value;;
+    NodeData->Qty = RoundTo(Converted_value,-CurrentConnection.SettingDecimalPlaces);
+    //MMMath::CurrencyString(Converted_value,CurrentConnection.SettingDecimalPlaces);//Converted_value;
     NodeData->Unit = Unit;
     NodeData->Code = StockCode;
-   
+
     temp = GetItemCost(Edit4->Text, cbStockLocation->Text);
     temp = temp * Converted_value;;
-   
+
     NodeData->AverageCost = temp;
    NumericEdit1->Value = NumericEdit1->Value + (GetItemCost(Edit4->Text, cbStockLocation->Text) *  Converted_value);
-   
+
    // NumericEdit1->DecimalPlaces = Decimalpalaces;
     StockLocation = cbStockLocation->Text;
 
@@ -873,7 +875,10 @@ void __fastcall TfrmCreateRecipe::NumQuantityChange(TObject *Sender)
          else
           {     Converted_value=NumQuantity->Value/Convert;
                 Unit= qrDescription->FieldByName("Stocktake_unit")->AsString ;
-            Label2->Caption =   "  "+FloatToStr(NumQuantity->Value/Convert) + "(" + qrDescription->FieldByName("Stocktake_unit")->AsString + ")";//qrdescription->ConversionFactor;
+                double newValue = NumQuantity->Value/Convert;
+                newValue = RoundTo(newValue,-CurrentConnection.SettingDecimalPlaces);
+                AnsiString newStr = newValue.toString();
+            Label2->Caption =   "  "+ newStr+ "(" + qrDescription->FieldByName("Stocktake_unit")->AsString + ")";//qrdescription->ConversionFactor;
             }
 
 
