@@ -110,7 +110,7 @@ private:	// User declarations
   void UpdateStockData(TSupplierItemNodeData* StockInfo);
   void AddSupplierStock(TSupplierItemNodeData* NodeData);
   bool GetStockDetail(TSupplierItemNodeData* NodeData);
-  bool CheckNegativeCostOrQty();  
+  bool CheckNegativeCostOrQty();
 public:		// User declarations
    __fastcall TfrmUpdateSupplierCosts(TComponent* Owner);
    	int ContactKey;

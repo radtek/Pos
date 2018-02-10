@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #pragma hdrstop
-
+#include "Connections.h"
 #include "CreateRecipe.h"
 #include "SelectStockItem.h"
 //---------------------------------------------------------------------------
@@ -26,9 +26,10 @@ __fastcall TfrmCreateRecipe::TfrmCreateRecipe(TComponent* Owner)
     ((TEdit *)NumQuantity)->Text = "Recipe Quantity";
     NumQuantity->Enabled=false;
     vtvStock->NodeDataSize = sizeof(TRecipeNodeData);
+    NumQuantity->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 
-
-}
+} 
 //---------------------------------------------------------------------------
 
 void TfrmCreateRecipe::EnterText(AnsiString &Text)
@@ -333,12 +334,14 @@ void __fastcall TfrmCreateRecipe::IncludeOnClick(TObject *Sender)
     NodeData->Qty = Converted_value;;
     NodeData->Unit = Unit;
     NodeData->Code = StockCode;
-
+   
     temp = GetItemCost(Edit4->Text, cbStockLocation->Text);
     temp = temp * Converted_value;;
+   
     NodeData->AverageCost = temp;
-
-    NumericEdit1->Value = NumericEdit1->Value + (GetItemCost(Edit4->Text, cbStockLocation->Text) *  Converted_value);
+   NumericEdit1->Value = NumericEdit1->Value + (GetItemCost(Edit4->Text, cbStockLocation->Text) *  Converted_value);
+   
+   // NumericEdit1->DecimalPlaces = Decimalpalaces;
     StockLocation = cbStockLocation->Text;
 
     StockCode = NULL;
@@ -357,6 +360,7 @@ void __fastcall TfrmCreateRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
       WideString &CellText)
 {
 	TRecipeNodeData *NodeData = (TRecipeNodeData *)Sender->GetNodeData(Node);
+    
 	if (NodeData)
 	{
 		switch (Column)
@@ -367,10 +371,27 @@ void __fastcall TfrmCreateRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
 			case 2:	CellText = NodeData->Unit;
 						break;
-			case 3:	CellText = NodeData->Qty;
-						break;
-            case 4: CellText = FloatToStrF(NodeData->AverageCost, ffGeneral, 19, 2);
-                        break;
+			case 3:	
+	            if(CurrentConnection.SettingDecimalPlaces==2)
+	            {
+	            	CellText = FloatToStrF(NodeData->Qty, ffFixed, 19, 2);
+	            }
+	            else
+	            {
+	             	CellText = FloatToStrF(NodeData->Qty, ffFixed, 19, 4);
+	            }
+                CellText = NodeData->Qty;
+				break;
+           case 4:
+                if(CurrentConnection.SettingDecimalPlaces==2)
+                {
+                   CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 2);
+                }
+                else
+                {
+                    CellText = FloatToStrF(NodeData->AverageCost, ffFixed, 19, 4);
+                }
+                break;
 		}
     }
 	else
