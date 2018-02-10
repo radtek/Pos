@@ -24,7 +24,12 @@ frmAddStock(new TfrmAddStock(NULL))
 //---------------------------------------------------------------------------
 TModalResult TfrmReceiveStockItem::Execute()
 {
-        isPrefferedSupplierSelected  = true;
+    neQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost3->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost4->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    isPrefferedSupplierSelected  = true;
 	if (!Transaction->InTransaction) Transaction->StartTransaction();
 	dbluLocation->Enabled = true;
 	qrStock->Close();
@@ -422,15 +427,11 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 	try
 	{
 
-
-
-
- 
 		neCost1->OnChange = NULL;
 		neCost2->OnChange = NULL;
 		neCost3->OnChange = NULL;
 		neCost4->OnChange = NULL;
-        
+
 		double Cost1, Cost2, Cost3, Cost4;
 
 		// Default costs, incase they can't be calculated.
@@ -438,19 +439,20 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		Cost2 = Cost1 * (qrStock->FieldByName("GST_Percent")->AsFloat + 100) / 100;
 		Cost3 = Cost1 * neQty->Value;
 		Cost4 = Cost2 * neQty->Value;
-       
+
 		if (Sender == neCost1)
 		{
 			Cost1 = neCost1->Value;
 			Cost2 = Cost1 * (qrStock->FieldByName("GST_Percent")->AsFloat + 100) / 100;
 			Cost3 = Cost1 * neQty->Value;
 			Cost4 = Cost2 * neQty->Value;
+            neCost1->SelStart = ((AnsiString)neCost1->Value).Length();
 		}
 		else if (Sender == neCost2)
 		{
 			if (qrStock->FieldByName("GST_Percent")->AsFloat + 100 != 0)
 			{
-              
+
 				Cost1 = neCost2->Value * 100 / (qrStock->FieldByName("GST_Percent")->AsFloat + 100);
 				Cost2 = neCost2->Value;
 				Cost3 = Cost1 * neQty->Value;
@@ -475,9 +477,9 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 				Cost2 = neCost4->Value / neQty->Value;
 				Cost3 = Cost1 * neQty->Value;
 				Cost4 = neCost4->Value;
-			}                             
+			}
 		}
-   
+
 		neCost1->Value		= Cost1;
         neCost1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		neCost2->Value		= Cost2;
@@ -491,7 +493,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 			neCost4->Value	= Cost4;
             neCost4->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 		}
-       
+
 		else
 		{
 			neCost3->Value	= 0;

@@ -26,6 +26,7 @@ frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 void __fastcall TfrmCreateOrders::FormShow(TObject *Sender)
 {
 	vtvStockQty->Clear();
+    neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 	vtvStockQty->NodeDataSize	= sizeof(TOrderSupplierItemNodeData);
 	lbeTitle->Caption				= "Create Orders";
 	if(SelectedRequestList->Count > 0)
