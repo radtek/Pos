@@ -11,6 +11,7 @@
 #include "Stock.h"
 #include "MM_Math.h"
 #include "Connections.h"
+#include <Math.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "NumericEdit"
@@ -2040,6 +2041,17 @@ void __fastcall TfrmAddStock::PageControl1Change(TObject *Sender)
 		dtSupplierBarcode->Open();
 		ResizeBarcodeGrids();
 	}
+    if(PageControl1->ActivePage == tsSuppliers)
+    {
+        dbeSupplierCost->Text;
+        AnsiString supplierCost = dbeSupplierCost->Text;
+        if(supplierCost.Pos(".") != 0)
+        {
+            if(supplierCost.Length() - supplierCost.Pos(".") > CurrentConnection.SettingDecimalPlaces )
+               supplierCost = supplierCost.SubString(0,supplierCost.Pos(".") + CurrentConnection.SettingDecimalPlaces);
+        }
+        dbeSupplierCost->Text = supplierCost;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmAddStock::qrSuppliersAfterScroll(TDataSet *DataSet)
@@ -2482,7 +2494,6 @@ void __fastcall TfrmAddStock::dsSuppliersStockDataChange(TObject *Sender, TField
 
             if(cost > 0 && qty > 0)
             {
-                //float supplierCost = cost/qty;
                 AnsiString supplierCost = cost/qty;
                 if(supplierCost.Pos(".") != 0)
                 {
@@ -2498,7 +2509,7 @@ void __fastcall TfrmAddStock::dsSuppliersStockDataChange(TObject *Sender, TField
 
 void __fastcall TfrmAddStock::cbStockSubGroupKeyDown(TObject *Sender,
       WORD &Key, TShiftState Shift)
-{
+{                                                                                               
       	if (!cbStockSubGroup->DroppedDown)
 	{
 		if (Key == VK_DOWN)

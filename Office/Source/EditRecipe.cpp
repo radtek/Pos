@@ -27,7 +27,7 @@ __fastcall TfrmEditRecipe::TfrmEditRecipe(TComponent* Owner)
 	dtRecipes->Open();
     NumericEdit1->Enabled=false;
     NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
-   NumericEdit2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    NumericEdit2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 
@@ -94,31 +94,15 @@ void TfrmEditRecipe::DisplayStock(AnsiString inRecipe)
 
         RecipeNode = vtvStock->AddChild(NULL);
         NodeData = (TRecipeNodeData *)vtvStock->GetNodeData(RecipeNode);
-
-
-            
         RecipeID = qrRecipe->FieldByName("Recipes_ID")->AsInteger;
-
-
         NodeData->Text = qrRecipe->FieldByName("Required_Stock")->AsString;
         NodeData->Location = qrRecipe->FieldByName("Stock_Location")->AsString;
         NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
-        //if(CurrentConnection.SettingDecimalPlaces)
-        NodeData->AverageCost =ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty; //StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, CurrentConnection.SettingDecimalPlaces)));
         NodeData->Unit = qrRecipe->FieldByName("Stock_Unit")->AsString;
         NodeData->Code = qrRecipe->FieldByName("Stock_Code")->AsString;
-
-
-
         PopulatePriceArray(qrRecipe->FieldByName("Stock_Location")->AsString, qrRecipe->FieldByName("Required_Stock")->AsString);
-
-
-        
-
-         
-
-        NumericEdit2->Value = NumericEdit2->Value + NodeData->AverageCost;
-        //NumericEdit2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+        NodeData->AverageCost =ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty;
+        NumericEdit2->Value = NumericEdit2->Value + RoundTo(NodeData->AverageCost,-CurrentConnection.SettingDecimalPlaces);
 	}
 }
 //---------------------------------------------------------------------------
@@ -137,25 +121,18 @@ void __fastcall TfrmEditRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 						break;
 			case 2:	CellText = NodeData->Unit;
 						break;
-			case 3:   if(CurrentConnection.SettingDecimalPlaces==4)
-            {
-            CellText = FormatFloat("0.0000",NodeData->Qty);          //NodeData->Qty;
-            }
-            else
-            {
-              CellText = FormatFloat("0.00",NodeData->Qty); 
-            }
-						break;
-            case 4: if(CurrentConnection.SettingDecimalPlaces==4)
-             {
-             CellText = FormatFloat("0.0000",NodeData->AverageCost);  //NodeData->AverageCost; //NodeData->AverageCost;
-             }
-           else
-           {
-             CellText = FormatFloat("0.00",NodeData->AverageCost);  
-           }
-           
-                        break;
+			case 3:
+                if(CurrentConnection.SettingDecimalPlaces==4)
+                    CellText = FormatFloat("0.0000",NodeData->Qty);          //NodeData->Qty;
+                else
+                    CellText = FormatFloat("0.00",NodeData->Qty);
+            break;
+            case 4:
+                if(CurrentConnection.SettingDecimalPlaces==4)
+                   CellText = FormatFloat("0.0000",NodeData->AverageCost);  //NodeData->AverageCost; //NodeData->AverageCost;
+                else
+                   CellText = FormatFloat("0.00",NodeData->AverageCost);
+            break;
 		}
     }
 	else
@@ -186,7 +163,6 @@ void __fastcall TfrmEditRecipe::FindItemOnClick(TObject *Sender)
         Label4->Caption = qrDescription->FieldByName("Reduction_unit")->AsString;
          NumericEdit1->Enabled=true;
            ((TEdit *)NumericEdit1)->Text = "0";
-        //Label5->Caption= Label5->Caption;// +"("+  qrDescription->FieldByName("Stocktake_unit")->AsString +")" ;
         ChangeFont(Edit1, eStockBox);
         cbLocation->Enabled = true;
         BoxExit(cbLocation);
@@ -729,22 +705,21 @@ void __fastcall TfrmEditRecipe::RemoveItemOnClick(TObject *Sender)
 
 void __fastcall TfrmEditRecipe::NumericEdit1Change(TObject *Sender)
 {
-     double Convert;
-
-           qrDescription->Close();
-       // qrDescription->ParamByName("Code")->AsString = frmSelectStockItem->StockCode;
-           qrDescription->Open();
-           Convert=qrDescription->FieldByName("Conversion_Factor")->AsFloat;
-            if(Convert <= 0)
-          {     Converted_value = NumericEdit1->Value;
-                Unit=  qrDescription->FieldByName("Stocktake_unit")->AsString;
-            Label3->Caption ="  "+FloatToStr(NumericEdit1->Value);// +"("+  qrDescription->FieldByName("Stocktake_unit")->AsString +")"  ;
-          }
-         else
-          {    Converted_value = NumericEdit1->Value/Convert;
-                Unit=  qrDescription->FieldByName("Stocktake_unit")->AsString;
-            Label3->Caption =  "  "+FloatToStr(NumericEdit1->Value/Convert)+"("+  Unit +")";//qrdescription->ConversionFactor;
-            }
+    double Convert;
+    qrDescription->Close();
+    qrDescription->Open();
+    Convert=qrDescription->FieldByName("Conversion_Factor")->AsFloat;
+    if(Convert <= 0)
+    {   Converted_value = NumericEdit1->Value;
+        Unit=  qrDescription->FieldByName("Stocktake_unit")->AsString;
+        Label3->Caption ="  "+FloatToStr(NumericEdit1->Value);// +"("+  qrDescription->FieldByName("Stocktake_unit")->AsString +")"  ;
+    }
+    else
+    {
+        Converted_value = NumericEdit1->Value/Convert;
+        Unit=  qrDescription->FieldByName("Stocktake_unit")->AsString;
+        Label3->Caption =  "  "+FloatToStr(NumericEdit1->Value/Convert)+"("+  Unit +")";//qrdescription->ConversionFactor;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEditRecipe::NumericEdit1KeyPress(TObject *Sender,
