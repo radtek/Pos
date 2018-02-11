@@ -27,6 +27,7 @@ __fastcall TfrmEditRecipe::TfrmEditRecipe(TComponent* Owner)
 	dtRecipes->Open();
     NumericEdit1->Enabled=false;
     NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   NumericEdit2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 
@@ -102,7 +103,8 @@ void TfrmEditRecipe::DisplayStock(AnsiString inRecipe)
         NodeData->Text = qrRecipe->FieldByName("Required_Stock")->AsString;
         NodeData->Location = qrRecipe->FieldByName("Stock_Location")->AsString;
         NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
-        NodeData->AverageCost = StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, CurrentConnection.SettingDecimalPlaces)));
+        //if(CurrentConnection.SettingDecimalPlaces)
+        NodeData->AverageCost =ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty; //StrToFloat(((ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty,ffFixed,19, CurrentConnection.SettingDecimalPlaces)));
         NodeData->Unit = qrRecipe->FieldByName("Stock_Unit")->AsString;
         NodeData->Code = qrRecipe->FieldByName("Stock_Code")->AsString;
 
@@ -116,7 +118,7 @@ void TfrmEditRecipe::DisplayStock(AnsiString inRecipe)
          
 
         NumericEdit2->Value = NumericEdit2->Value + NodeData->AverageCost;
-        NumericEdit2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+        //NumericEdit2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 	}
 }
 //---------------------------------------------------------------------------
@@ -144,16 +146,15 @@ void __fastcall TfrmEditRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
               CellText = FormatFloat("0.00",NodeData->Qty); 
             }
 						break;
-            case 4:   if(CurrentConnection.SettingDecimalPlaces==4)
-         {
-            CellText =  FormatFloat("0.0000",NodeData->AverageCost);
-            //FloatToStrF(NodeData->AverageCost, ffGeneral,19, CurrentConnection.SettingDecimalPlaces);
-            }
-            else
-            {
-
-              CellText =  FormatFloat("0.00",NodeData->AverageCost);
-            }
+            case 4: if(CurrentConnection.SettingDecimalPlaces==4)
+             {
+             CellText = FormatFloat("0.0000",NodeData->AverageCost);  //NodeData->AverageCost; //NodeData->AverageCost;
+             }
+           else
+           {
+             CellText = FormatFloat("0.00",NodeData->AverageCost);  
+           }
+           
                         break;
 		}
     }
