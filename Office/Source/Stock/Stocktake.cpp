@@ -664,15 +664,32 @@ void __fastcall TfrmStocktake::vtvStocktakeGetText(
 			{
 				switch (Column)
 				{
-					case 0:	CellText = NodeData->Description;							break;
-					case 1:	CellText = NodeData->Unit;										break;
-					case 2:	CellText = MMMath::FloatString(NodeData->OnHand);		break;
-					case 3:	CellText = MMMath::FloatString(NodeData->Stocktake);	break;
+					case 0:	CellText = NodeData->Description; break;
+					case 1:	CellText = NodeData->Unit;		  break;
+					case 2:
+                        {
+                        double onHand = NodeData->OnHand;
+                        onHand = RoundTo(onHand,-CurrentConnection.SettingDecimalPlaces);
+                        NodeData->OnHand = onHand;  // Node value also changed
+                        CellText = onHand;//MMMath::FloatString(NodeData->OnHand);
+                        break;
+                        }
+					case 3:
+                       {
+                       double countValue = NodeData->Stocktake;
+                       countValue = RoundTo(countValue,-CurrentConnection.SettingDecimalPlaces);
+                       NodeData->Stocktake = countValue;
+                       CellText = countValue;//MMMath::FloatString(NodeData->Stocktake);
+                       break;
+                       }
 					case 4:
 					{
 						if (NodeData->Variance != 0 && NodeData->Initialised)
 						{
-                            CellText = MMMath::FloatString(NodeData->Variance, CurrentConnection.SettingDecimalPlaces);
+                            double initValue = NodeData->Variance;
+                            initValue = RoundTo(initValue,-CurrentConnection.SettingDecimalPlaces);
+                            NodeData->Variance = initValue;
+                            CellText = initValue;//MMMath::FloatString(NodeData->Variance, CurrentConnection.SettingDecimalPlaces);
 						}
 						else
 						{
