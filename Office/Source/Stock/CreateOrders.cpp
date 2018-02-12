@@ -21,11 +21,13 @@ __fastcall TfrmCreateOrders::TfrmCreateOrders(TComponent* Owner)
 frmPurchaseOrder(new TfrmPurchaseOrder(NULL)),
 frmReceiveStockItem(new TfrmReceiveStockItem(NULL))
 {
+  neStockQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmCreateOrders::FormShow(TObject *Sender)
 {
 	vtvStockQty->Clear();
+    neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 	vtvStockQty->NodeDataSize	= sizeof(TOrderSupplierItemNodeData);
 	lbeTitle->Caption				= "Create Orders";
 	if(SelectedRequestList->Count > 0)
@@ -143,7 +145,13 @@ IVTEditLink *EditLink)
 	if (Node && Column == 4)
 	{
 		TOrderSupplierItemNodeData *NodeData = (TOrderSupplierItemNodeData *)Sender->GetNodeData(Node);
-		neStockQty->Value = NodeData->SupplierUnitQty;
+         neStockQty->Value = StrToFloat(FloatToStrF(NodeData->SupplierUnitQty, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+
+
+
+
+		//neStockQty->Value = NodeData->SupplierUnitQty;
+
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
@@ -158,7 +166,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 		if (Column == 4)
 		{
 			TOrderSupplierItemNodeData *NodeData	= (TOrderSupplierItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-			NodeData->SupplierUnitQty					= neStockQty->Value;
+            NodeData->SupplierUnitQty= StrToFloat(FloatToStrF(neStockQty->Value, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
 	}
@@ -230,7 +238,7 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 3:	CellText = NodeData->SupplierUnit;
 			break;
-		case 4:	CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+		case 4:	CellText = FloatToStrF(NodeData->SupplierUnitQty,ffFixed,19,CurrentConnection.SettingDecimalPlaces);//MMMath::FloatString(NodeData->SupplierUnitQty);
 			break;
 		}
 	}
@@ -620,7 +628,8 @@ void TfrmCreateOrders::PopulateNodeData (TOrderSupplierItemNodeData *NodeData)
 	OrderItemData->StocktakeUnit = NodeData->StocktakeUnit;
 	OrderItemData->SupplierCode  = NodeData->SupplierCode;
 	OrderItemData->SupplierUnit  = NodeData->SupplierUnit;
-	OrderItemData->SupplierUnitCost	= NodeData->SupplierUnitCost;
+    OrderItemData->SupplierUnitCost = StrToFloat(FloatToStrF(NodeData->SupplierUnitCost, ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+   
 	OrderItemData->SupplierUnitSize	= NodeData->SupplierUnitSize;
 	OrderItemData->SupplierUnitQty	= NodeData->SupplierUnitQty;
 	OrderItemData->SupplierKey   =	 NodeData->SupplierKey;

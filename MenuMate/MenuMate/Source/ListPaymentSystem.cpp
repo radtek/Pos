@@ -3471,91 +3471,22 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
 	if (PaymentTransaction.Type == eTransQuickSale)
 	{
-		if (Receipt->AlwaysPrintReceiptCashSales)
+		if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
 		{
-			if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-			{
-				// Print all the TPrintouts including the EFTPOS one.
-				LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-			}
-			else
-			{
-				// Only print the first TPrintout as the EFTPOS job does not need duplication.
-				LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-			}
-
-			if (TGlobalSettings::Instance().DuplicateReceipts)
-			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
+            PrintReceipt(RequestEFTPOSReceipt);
 		}
 	}
 	else
 	{
-		if (Receipt->AlwaysPrintReceiptTenderedSales)
+		if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
 		{
-			if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-			{
-				// Print all the TPrintouts including the EFTPOS one.
-				LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-			}
-			else
-			{
-				// Only print the first TPrintout as the EFTPOS job does not need duplication.
-				LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-			}
-
-			if (TGlobalSettings::Instance().DuplicateReceipts)
-			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
+			PrintReceipt(RequestEFTPOSReceipt);
 		}
 		else
 		{
 			if (CloseAndPrint)
 			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-
-				if (TGlobalSettings::Instance().DuplicateReceipts)
-				{
-					if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-					{
-						// Print all the TPrintouts including the EFTPOS one.
-						LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-					}
-					else
-					{
-						// Only print the first TPrintout as the EFTPOS job does not need duplication.
-						LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-					}
-				}
+				PrintReceipt(RequestEFTPOSReceipt);
 			}
 			else
 			{
@@ -6482,6 +6413,7 @@ bool TListPaymentSystem::TryToEnableSiHot()
     bool retValue = false;
     UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
     std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
+    siHotManager->LogPMSEnabling(eSelf);
     retValue = siHotManager->GetDefaultAccount(processMessage);
     try
     {
@@ -6497,14 +6429,12 @@ bool TListPaymentSystem::TryToEnableSiHot()
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
-        List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
-        List->Add("Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-        List->Add("Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+//        List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
         if(retValue)
             List->Add("Successful");
         else
             List->Add("Unsuccessful");
-        List->Add("===========================================================");
+        List->Add("=======================================================================");
         List->Add("\n");
         List->SaveToFile(fileName );
     }
@@ -6512,6 +6442,50 @@ bool TListPaymentSystem::TryToEnableSiHot()
     {
     }
     return retValue;
+}
+//------------------------------------------------------------------------------------------
+void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
+{
+    if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+    {
+        // Print all the TPrintouts including the EFTPOS one.
+        LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+    }
+    else
+    {
+        // Only print the first TPrintout as the EFTPOS job does not need duplication.
+        LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+    }
+
+    if (TGlobalSettings::Instance().DuplicateReceipts)
+    {
+        if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+        {
+            // Print all the TPrintouts including the EFTPOS one.
+            LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        }
+        else
+        {
+            // Only print the first TPrintout as the EFTPOS job does not need duplication.
+            LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction)
+{
+    for(int index = 0 ; index < paymentTransaction.Orders->Count ; index++)
+    {
+        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[index];
+
+        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = itemComplete->BillCalcResult.Discount.begin();
+
+        for( ; drIT != itemComplete->BillCalcResult.Discount.end(); drIT++ )
+        {
+            return true;
+        }
+    }
+    return false;
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction)

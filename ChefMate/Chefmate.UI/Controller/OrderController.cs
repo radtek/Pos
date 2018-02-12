@@ -443,7 +443,7 @@ namespace Chefmate.UI.Controller
             foreach (var order in orders)
             {
                 var group = order.DisplayGroups.FirstOrDefault(s => s.OrderGroupKey == inGroup.OrderGroupKey);
-                if (group.OrderStatus != OrderStatus.Bumped)
+                if (group != null && group.OrderStatus != OrderStatus.Bumped)
                 {
                     group.OrderStatus = OrderStatus.Hold;
                     foreach (var item in group.Items)

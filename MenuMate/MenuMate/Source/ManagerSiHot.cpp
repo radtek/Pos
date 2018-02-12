@@ -35,6 +35,44 @@ TManagerSiHot::~TManagerSiHot()
 
 }
 //---------------------------------------------------------------------------
+void TManagerSiHot::LogPMSEnabling(TriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        directoryName = directoryName + "\\Sihot Post Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+        AnsiString fileName =  directoryName + "\\" + name;
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot at start of Menumate" +"\n");
+        }
+        else if(triggerType == eSelf)
+        {
+            List->Add("Note- "+ (AnsiString)"Found SiHot disabled with necessary details present" +"\n" +
+                  "      "+ "Menumate is trying to enable SiHot and then sale would be processed" +"\n");
+            List->Add("Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+            List->Add("Time- " + (AnsiString)Now().FormatString("hh:nn:ss tt") + "\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
 void TManagerSiHot::Initialise()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);

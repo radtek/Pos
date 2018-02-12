@@ -405,6 +405,8 @@ TGlobalSettings::TGlobalSettings()
     ShowReprintReceiptDetails = false;
     DiningBal = 0;
     OracleCheckNumber = "";
+    PrintSignatureWithDiscountSales = false;
+    PrintSignatureWithRoomSales = false;
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
 }

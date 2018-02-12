@@ -193,6 +193,7 @@ public:		// User declarations
      int	ContactKey;
    int StockRequestNumber;
 
+    
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmStockRequest *frmStockRequest;
