@@ -7,11 +7,16 @@ using SiHotIntegration.Utility;
 using System.Text;
 using System.IO;
 using SiHotIntegration.Tools;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SiHotIntegration
 {
     public class SiHotCommunicationController
     {
+        public readonly string connectFailedMessage = "Unable to connect to SiHot";
         public SiHotCommunicationController()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
@@ -19,177 +24,197 @@ namespace SiHotIntegration
 
         public string URIRoomRequest(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //     uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/roomrequest" + @"/";
-            //else
-            //     uri = @"http://" + ipAddress + @"/roomrequest" + @"/";
-            string uri = ipAddress + @"/roomrequest" + @"/";
-            return uri;
+            return ipAddress + @"/roomrequest" + @"/"; 
         }
         public string URIRoomChargePost(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //    uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/accountbook" + @"/";
-            //else
-            //    uri = @"http://" + ipAddress + @"/accountbook" + @"/";
-            string uri = ipAddress + @"/accountbook" + @"/";
-            return uri;
+            return ipAddress + @"/accountbook" + @"/";
         }
         public string URIValidate(string ipAddress, int portNumber)
         {
-            //string uri = @"";
-            //if(!ipAddress.Contains(":"))
-            //    uri = @"http://" + ipAddress + @":" + portNumber + @"/RMS" + @"/paymenttype" + @"/";
-            //else
-            //    uri = @"http://" + ipAddress + @"/paymenttype" + @"/";
-            string uri = ipAddress + @"/paymenttype" + @"/";
-            return uri;
+            return ipAddress + @"/paymenttype" + @"/";
         }
         public RoomDetails GetRoomDetails(RoomRequest roomRequest)
         {
-                SiHotSerializer serializer = new SiHotSerializer();
-                SiHotDesrializer deserializer = new SiHotDesrializer();
-                RoomDetails roomDetails = new RoomDetails();
-                HttpWebResponse webResponse = null;
-                Stream dataStream = null;
-                StreamReader memberStream = null;
-                List<string> stringList = new List<string>();
-                try
+            RoomDetails roomDetails = new RoomDetails();
+            List<string> stringList = new List<string>();
+            SiHotSerializer serializer = new SiHotSerializer();
+            SiHotDesrializer deserializer = new SiHotDesrializer();
+            string strCompleteResponse = "";
+            string strSiHotResponse = "";
+            bool IsSecured = false;
+            try
+            {
+                string uri = URIRoomRequest(roomRequest.IPAddress, roomRequest.PortNumber);
+                Uri myUri = new Uri(uri);
+                var host = Dns.GetHostAddresses(myUri.Host)[0];
+                IsSecured = uri.Contains("https:");
+                using (var tc = new TcpClient())
                 {
-                    string uri = URIRoomRequest(roomRequest.IPAddress, roomRequest.PortNumber);
-                    var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
-                    request.Method = WebRequestMethods.Http.Post;
-                    request.ServicePoint.Expect100Continue = false;
-                    request.ContentType = "text/plain";
-                    List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
-
-                    byte seperator = 29;
-                    var byteList = new List<byte>();
-                    for (int i = 0; i < detailsList.Count; i++)
+                    tc.Connect(host, IsSecured ? 443 : 80);
+                    if (tc.Connected)
                     {
-                        var str = detailsList[i];
-                        byteList.AddRange(Encoding.UTF8.GetBytes(str).ToList<byte>());
-                        byteList.Add(seperator);
+                        stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
+                        stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        using (var ns = tc.GetStream())
+                        {
+                            List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
+                            var bytes = GetRoomByteArray(detailsList);
+                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
+                            strHttpRequest += System.Text.Encoding.UTF8.GetString(bytes).Trim();
+                            PrepareRoomRquestLogs(stringList, detailsList);
+                            if (IsSecured)
+                            {
+                                using (var ssl = new SslStream(ns, false, ValidateServerCertificate, null))
+                                {
+                                    ssl.AuthenticateAsClient(host.ToString(), null, SslProtocols.Tls, false);
+                                    using (var sw = new System.IO.StreamWriter(ssl))
+                                    {
+                                        using (var sr = new System.IO.StreamReader(ssl))
+                                        {
+                                            sw.Write(strHttpRequest);
+                                            stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                            sw.Flush();
+                                            strCompleteResponse = sr.ReadToEnd();
+                                            if (strCompleteResponse.Contains("transno:"))
+                                                strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                                   strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                using (var sw = new System.IO.StreamWriter(ns))
+                                {
+                                    using (var sr = new System.IO.StreamReader(ns))
+                                    {
+                                        sw.Write(strHttpRequest);
+                                        stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                        sw.Flush();
+                                        strCompleteResponse = sr.ReadToEnd();
+                                        if (strCompleteResponse.Contains("transno:"))
+                                            strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                               strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                    }
+                                }
+                            }
+                            roomDetails = deserializer.DeserializeRoomResponse(strSiHotResponse);
+                            PrepareRoomResponseLogs(strSiHotResponse, roomDetails, stringList);
+                        }
                     }
-                    var bytes = byteList.ToArray<byte>();
-
-                    request.ContentLength = bytes.Length;
-                    request.Timeout = 5000;
-                    //request.ContentType = "text/plain";
-                    stringList.Add("Inquiry Request Date:       " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("Inquiry Request Time:       " + DateTime.Now.ToString("hh:mm:ss tt"));
-                    stringList.Add("******Request Data Start*******");
-                    for (int detailsIndex = 0; detailsIndex < detailsList.Count; detailsIndex++)
+                    else
                     {
-                        stringList.Add(detailsList[detailsIndex]);
+                        stringList.Add("TCP connection to SiHot was not established.");
+                        stringList.Add("Connection Failure at Time:-                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        roomDetails.ResponseMessage = connectFailedMessage;
+                        roomDetails.IsSuccessful = false;
                     }
-                    stringList.Add("******Request Data End*******");
-                        // Get the request stream.  
-                        dataStream = request.GetRequestStream();
-                    // Write the data to the request stream.  
-                    dataStream.Write(bytes, 0, bytes.Length);
-                    // Close the Stream object.  
-
-                    webResponse = (HttpWebResponse)request.GetResponse();
-                    stringList.Add("Inquiry Response at Date:  " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("Inquiry Response at Time:  " + DateTime.Now.ToString("hh:mm:ss tt"));
-                    memberStream = new StreamReader(webResponse.GetResponseStream());
-                    string readerResponse = memberStream.ReadToEnd();
-                    stringList.Add("Response Received:-  " + readerResponse);
-                    roomDetails = deserializer.DeserializeRoomResponse(readerResponse);
-                    //stringList.Add("Room Number:  " + roomRequest.RoomNumber);
-                    //for (int guestList = 0; guestList < roomDetails.GuestDetailsList.Count; guestList++)
-                    //{
-                    //    stringList.Add("Account Number:  " + roomDetails.GuestDetailsList[guestList].AccountNo);
-                    //    stringList.Add("Name:            " + roomDetails.GuestDetailsList[guestList].FirstName + " "
-                    //                                       + roomDetails.GuestDetailsList[guestList].LastName);
-                    //}
-                    if(roomDetails.GuestDetailsList.Count == 0)
-                        stringList.Add("Guest List:  " + "0");    
                 }
-                catch (Exception ex)
-                {
-                    ServiceLogger.Log("Exception in sending Room request" + ex.Message);
-                    stringList.Add("exception Message:         " + ex.Message);
-                    stringList.Add("exception Date:-           " + DateTime.Now.ToString("ddMMMyyyy"));
-                    stringList.Add("exception Time:-           " + DateTime.Now.ToString("hh:mm:ss tt"));
-                }
-                finally
-                {
-                    if (webResponse != null)
-                        stringList.Add("webresponse Status Description: " + webResponse.StatusDescription);
-                    if (memberStream != null)
-                        memberStream.Close();
-                    if (dataStream != null)
-                        dataStream.Close();
-                    if (webResponse != null)
-                        webResponse.Close();
-                    WriteToFile(stringList);
-                }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in sending Room request" + ex.Message);
+                stringList.Add("exception Message:                       " + ex.Message);
+                stringList.Add("exception Date:-                         " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("exception Time:-                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            finally
+            {
+                WriteToFile(stringList);
+            }
             return roomDetails;
         }
-
         public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount)
         {
-            List<string> stringList = GetDetailsList(roomChargeDetails);
+            List<string> stringList = new List<string>();
             RoomChargeResponse response = new RoomChargeResponse();
             SiHotSerializer serializer = new SiHotSerializer();
             SiHotDesrializer deserializer = new SiHotDesrializer();
             string responseText = "Unsuccessful";
             string exceptionMessage = "";
-            HttpWebResponse responseNew = null;
-            Stream dataStream = null;
-            StreamReader reader = null;
+            string strCompleteResponse = "";
+            string strSiHotResponse = "";
+            bool IsSecured = false;
             try
             {
                 string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
-                request.ServicePoint.Expect100Continue = false;
-                // Set the Method property of the request to POST.  
-                request.Method = "POST";
-                // Create POST data and convert it to a byte array.  
-                List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
-                byte[] bytes = bytesList.ToArray<byte>(); 
-                request.ContentLength = bytes.Length;
-                //request.Timeout = 5000;
-                request.Timeout = 5000;
-                request.ContentType = "text/plain";
-                // Get the request stream.  
-                dataStream = request.GetRequestStream();
-                // Write the data to the request stream.
-                dataStream.Write(bytes, 0, bytes.Length);
-                // Close the Stream object.  
-                dataStream.Close();
-                // Get the response.  
-                responseNew = (HttpWebResponse)request.GetResponse();
-                // Display the status.  
-                var status = ((HttpWebResponse)responseNew).StatusDescription;
-                // Get the stream containing content returned by the server.  
-                dataStream = responseNew.GetResponseStream();
-                // Open the stream using a StreamReader for easy access.  
-                reader = new StreamReader(dataStream);
-                string readerResponse = reader.ReadToEnd();
-                response = deserializer.DesrializeRoomPostResponse(readerResponse);
-                stringList.Add("Response Received :- " + readerResponse);
-                if (response.IsSuccessful)
-                    responseText = "Successful";
+                Uri myUri = new Uri(uri);
+                var host = Dns.GetHostAddresses(myUri.Host)[0];
+                IsSecured = uri.Contains("https:");
+                using (var tc = new TcpClient())
+                {
+                    tc.Connect(host, IsSecured ? 443 : 80);
+                    if (tc.Connected)
+                    {
+                        stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
+                        stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        GetDetailsList(roomChargeDetails, stringList);
+                        using (var ns = tc.GetStream())
+                        {
+                            List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
+                            byte[] bytes = bytesList.ToArray<byte>();
+                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
+                            strHttpRequest += System.Text.Encoding.UTF8.GetString(bytes).Trim();
+                            if (IsSecured)
+                            {
+                                using (var ssl = new SslStream(ns, false, ValidateServerCertificate, null))
+                                {
+                                    ssl.AuthenticateAsClient(host.ToString(), null, SslProtocols.Tls, false);
+                                    using (var sw = new System.IO.StreamWriter(ssl))
+                                    {
+                                        using (var sr = new System.IO.StreamReader(ssl))
+                                        {
+                                            sw.Write(strHttpRequest);
+                                            stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                            sw.Flush();
+                                            strCompleteResponse = sr.ReadToEnd();
+                                            if (strCompleteResponse.Contains("transno:"))
+                                                strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                                   strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                using (var sw = new System.IO.StreamWriter(ns))
+                                {
+                                    using (var sr = new System.IO.StreamReader(ns))
+                                    {
+                                        sw.Write(strHttpRequest);
+                                        stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                        sw.Flush();
+                                        strCompleteResponse = sr.ReadToEnd();
+                                        if (strCompleteResponse.Contains("transno:"))
+                                            strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                               strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                    }
+                                }
+                                response = deserializer.DesrializeRoomPostResponse(strSiHotResponse);
+                                stringList.Add("SiHot Response Received :-                " + strSiHotResponse);
+                                if (response.IsSuccessful)
+                                    responseText = "Successful";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        stringList.Add("TCP connection to SiHot was not established.");
+                        stringList.Add("Connection Failure at Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        response.Response = connectFailedMessage;
+                        response.IsSuccessful = false;
+                    }
+                }
             }
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in sending Room Post " + ex.Message);
                 exceptionMessage = ex.Message;
+                response.IsSuccessful = false;
             }
             finally
             {
-                if (reader != null)
-                    reader.Close();
-                if (dataStream != null)
-                    dataStream.Close();
-                if(responseNew != null)
-                    responseNew.Close();
-                //-------------------------------------------------------------------------------------//
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Post Response:                            " + responseText);
@@ -201,8 +226,7 @@ namespace SiHotIntegration
                 WriteToFile(stringList);
             }
             return response;
-        }
-
+        }     
         public bool ValidateCredentials(string address, int port, int transno)
         {
             bool value = false;
@@ -231,51 +255,50 @@ namespace SiHotIntegration
             }
             return value;
         }
-        private List<string> GetDetailsList(RoomChargeDetails roomChargeDetails)
+        private void GetDetailsList(RoomChargeDetails roomChargeDetails, List<string> stringList)
         {
-            List<string> stringList = new List<string>();
             try
             {
                 string invoiceNnumber = "0";
-                stringList.Add("Post Request Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
-                stringList.Add("Post Request Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
-                stringList.Add("Transaction Number:                     " + roomChargeDetails.TransNo);
+                stringList.Add("Transaction Number:                       " + roomChargeDetails.TransNo);
                 for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
                 {
                     invoiceNnumber = roomChargeDetails.ItemList[0].Billno;
                     break;
                 }
-                stringList.Add("Invoice Number:                     " + invoiceNnumber);
+                stringList.Add("Invoice Number:                           " + invoiceNnumber);
                 double value = 0.0;
                 for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
                 {
                     value += Double.Parse(roomChargeDetails.ItemList[i].PriceTotal);
                 }
-                stringList.Add("Invoice Amount:                     " + value.ToString());
+                stringList.Add("Invoice Amount:                           " + value.ToString());
                 string paymentNames = "";
                 stringList.Add("*********Start Of Items**************");
                 for (int itemIndex = 0; itemIndex < roomChargeDetails.ItemList.Count; itemIndex++)
                 {
                     stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory + 
                                    "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc + 
-                                   "    Amount:-      " + roomChargeDetails.ItemList[itemIndex].Amount + 
+                                   "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount + 
                                    "    Price Unit:-  " + roomChargeDetails.ItemList[itemIndex].PricePerUnit + 
                                    "    Price Total:- " + roomChargeDetails.ItemList[itemIndex].PriceTotal + 
                                    "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage);
                    
                 }
-                stringList.Add("**********End Of Items**************");
+                stringList.Add("***********End Of Items**************");
                 for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
                 {
+                    if(i > 0)
+                        paymentNames += "                                          ";
                     paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Amount;
+                    paymentNames += "\r\n";
                 }
-                stringList.Add("Payments:                        " + paymentNames);
+                stringList.Add("Payments:                                 " + paymentNames);
             }
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in preparing data for LOG" + ex.Message);
             }
-            return stringList;
         }
 
         private void WriteToFile(List<string> list)
@@ -328,6 +351,50 @@ namespace SiHotIntegration
             {
                 ServiceLogger.Log("Exception in Making File" + ex.Message);
             }
+        }
+        private string GetHttpRequest(Uri inUri, int dataLength)
+        {
+            return @"POST " + inUri.LocalPath + " HTTP/1.1" + Environment.NewLine +
+                                                "Time-out: 5000" + Environment.NewLine +
+                                                "Content-Type: binary" + Environment.NewLine +
+                                                "Host: " + inUri.Host + Environment.NewLine +
+                                                "Content-Length: " + dataLength + Environment.NewLine
+                                                + Environment.NewLine;
+        }
+        private static bool ValidateServerCertificate(object sender,X509Certificate certificate,X509Chain chain,
+                                                      SslPolicyErrors sslPolicyErrors)
+        {
+            return true; // Accept all certs
+        }
+        private byte[] GetRoomByteArray(List<string> detailsList)
+        {
+            byte seperator = 29;
+            var byteList = new List<byte>();
+            for (int i = 0; i < detailsList.Count; i++)
+            {
+                var str = detailsList[i];
+                byteList.AddRange(Encoding.UTF8.GetBytes(str).ToList<byte>());
+                byteList.Add(seperator);
+            }
+            var bytes = byteList.ToArray<byte>();
+            return bytes;
+        }
+        private void PrepareRoomRquestLogs(List<string> stringListLogs, List<string> detailsList)
+        { 
+            stringListLogs.Add("******Request Data Start*******");
+            for (int detailsIndex = 0; detailsIndex < detailsList.Count; detailsIndex++)
+            {
+                stringListLogs.Add(detailsList[detailsIndex]);
+            }
+            stringListLogs.Add("******Request Data End*******");
+        }
+        private void PrepareRoomResponseLogs(string strSiHotResponse, RoomDetails roomDetails, List<string> stringListLogs)
+        {
+            stringListLogs.Add("Inquiry Response at Date:                " + DateTime.Now.ToString("ddMMMyyyy"));
+            stringListLogs.Add("Inquiry Response at Time:                " + DateTime.Now.ToString("hh:mm:ss tt"));
+            stringListLogs.Add("SiHot Response Received:-                " + strSiHotResponse);
+            if (roomDetails.GuestDetailsList.Count == 0)
+                stringListLogs.Add("Guest List:                              " + "0"); 
         }
     }
 }
