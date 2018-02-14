@@ -17,6 +17,7 @@ namespace SiHotIntegration
     public class SiHotCommunicationController
     {
         public readonly string connectFailedMessage = "Unable to connect to SiHot";
+        public readonly string siHotUnavailable = "SiHot is not available at the moment.";
         public SiHotCommunicationController()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
@@ -51,6 +52,7 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
+                    tc.ReceiveTimeout = 5000;
                     tc.Connect(host, IsSecured ? 443 : 80);
                     if (tc.Connected)
                     {
@@ -58,6 +60,7 @@ namespace SiHotIntegration
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                         using (var ns = tc.GetStream())
                         {
+                            ns.ReadTimeout = 3000;
                             List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
                             var bytes = GetRoomByteArray(detailsList);
                             var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
@@ -72,8 +75,8 @@ namespace SiHotIntegration
                                     {
                                         using (var sr = new System.IO.StreamReader(ssl))
                                         {
+                                            stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                             sw.Write(strHttpRequest);
-                                            stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                             sw.Flush();
                                             strCompleteResponse = sr.ReadToEnd();
                                             if (strCompleteResponse.Contains("transno:"))
@@ -89,8 +92,8 @@ namespace SiHotIntegration
                                 {
                                     using (var sr = new System.IO.StreamReader(ns))
                                     {
+                                        stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         sw.Write(strHttpRequest);
-                                        stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         sw.Flush();
                                         strCompleteResponse = sr.ReadToEnd();
                                         if (strCompleteResponse.Contains("transno:"))
@@ -105,7 +108,7 @@ namespace SiHotIntegration
                     }
                     else
                     {
-                        stringList.Add("TCP connection to SiHot was not established.");
+                        stringList.Add(connectFailedMessage);
                         stringList.Add("Connection Failure at Time:-                " + DateTime.Now.ToString("hh:mm:ss tt"));
                         roomDetails.ResponseMessage = connectFailedMessage;
                         roomDetails.IsSuccessful = false;
@@ -144,6 +147,7 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
+                    tc.ReceiveTimeout = 5000;
                     tc.Connect(host, IsSecured ? 443 : 80);
                     if (tc.Connected)
                     {
@@ -152,6 +156,7 @@ namespace SiHotIntegration
                         GetDetailsList(roomChargeDetails, stringList);
                         using (var ns = tc.GetStream())
                         {
+                            ns.ReadTimeout = 3000;
                             List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                             byte[] bytes = bytesList.ToArray<byte>();
                             var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
@@ -165,8 +170,8 @@ namespace SiHotIntegration
                                     {
                                         using (var sr = new System.IO.StreamReader(ssl))
                                         {
+                                            stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                             sw.Write(strHttpRequest);
-                                            stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                             sw.Flush();
                                             strCompleteResponse = sr.ReadToEnd();
                                             if (strCompleteResponse.Contains("transno:"))
@@ -182,8 +187,8 @@ namespace SiHotIntegration
                                 {
                                     using (var sr = new System.IO.StreamReader(ns))
                                     {
+                                        stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         sw.Write(strHttpRequest);
-                                        stringList.Add("Data written at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         sw.Flush();
                                         strCompleteResponse = sr.ReadToEnd();
                                         if (strCompleteResponse.Contains("transno:"))
@@ -191,16 +196,18 @@ namespace SiHotIntegration
                                                                strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
                                     }
                                 }
-                                response = deserializer.DesrializeRoomPostResponse(strSiHotResponse);
-                                stringList.Add("SiHot Response Received :-                " + strSiHotResponse);
-                                if (response.IsSuccessful)
-                                    responseText = "Successful";
                             }
+                            response = deserializer.DesrializeRoomPostResponse(strSiHotResponse);
+                            stringList.Add("SiHot Response Received :-                " + strSiHotResponse);
+                            if (response.IsSuccessful)
+                                responseText = "Successful";
+                            if (response.Response.Trim() == "")
+                                response.Response = siHotUnavailable;
                         }
                     }
                     else
                     {
-                        stringList.Add("TCP connection to SiHot was not established.");
+                        stringList.Add(connectFailedMessage);
                         stringList.Add("Connection Failure at Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                         response.Response = connectFailedMessage;
                         response.IsSuccessful = false;
@@ -217,7 +224,7 @@ namespace SiHotIntegration
             {
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
-                stringList.Add("Post Response:                            " + responseText);
+                stringList.Add("Post Status:                              " + responseText);
                 stringList.Add("No of Times tried:                        " + retryCount);
                 if (exceptionMessage.Length != 0)
                     stringList.Add("Post Exception message:                   " + exceptionMessage);
@@ -270,7 +277,9 @@ namespace SiHotIntegration
                 double value = 0.0;
                 for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
                 {
-                    value += Double.Parse(roomChargeDetails.ItemList[i].PriceTotal);
+                    double thisValue = Double.Parse(roomChargeDetails.ItemList[i].Amount);
+                    thisValue = thisValue * Double.Parse(roomChargeDetails.ItemList[i].PricePerUnit);
+                    value += thisValue;
                 }
                 stringList.Add("Invoice Amount:                           " + value.ToString());
                 string paymentNames = "";
@@ -390,11 +399,11 @@ namespace SiHotIntegration
         }
         private void PrepareRoomResponseLogs(string strSiHotResponse, RoomDetails roomDetails, List<string> stringListLogs)
         {
-            stringListLogs.Add("Inquiry Response at Date:                " + DateTime.Now.ToString("ddMMMyyyy"));
-            stringListLogs.Add("Inquiry Response at Time:                " + DateTime.Now.ToString("hh:mm:ss tt"));
-            stringListLogs.Add("SiHot Response Received:-                " + strSiHotResponse);
+            stringListLogs.Add("Inquiry Response Date:                    " + DateTime.Now.ToString("ddMMMyyyy"));
+            stringListLogs.Add("Inquiry Response Time:                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+            stringListLogs.Add("SiHot Response Received:-                 " + strSiHotResponse);
             if (roomDetails.GuestDetailsList.Count == 0)
-                stringListLogs.Add("Guest List:                              " + "0"); 
+                stringListLogs.Add("Guest List:                               " + "0"); 
         }
     }
 }

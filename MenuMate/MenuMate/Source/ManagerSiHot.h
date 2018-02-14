@@ -24,5 +24,7 @@ class TManagerSiHot : public TBasePMS
        bool CheckIPAddressPort(AnsiString tcpIPAddress,int tcpPort);
        bool GetRoundingandDefaultAccount();
        bool RetryDefaultRoomPost(TPaymentTransaction &_paymentTransaction, TRoomCharge roomCharge);
+       AnsiString GetLogFileName();
+       void UpdateSiHotLogs(bool status);
 };
 #endif

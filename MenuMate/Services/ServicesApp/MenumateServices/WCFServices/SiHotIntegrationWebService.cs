@@ -42,7 +42,8 @@ namespace MenumateServices.WCFServices
                     SiHotCommunicationController siCommController = new SiHotCommunicationController();
                     roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails,retryCount);
                     if (!roomChargeReponse.IsSuccessful &&
-                        (roomChargeReponse.Response == "" || roomChargeReponse.Response == null || roomChargeReponse.Response == siCommController.connectFailedMessage) && 
+                        (roomChargeReponse.Response == "" || roomChargeReponse.Response == null || 
+                        roomChargeReponse.Response == siCommController.connectFailedMessage || roomChargeReponse.Response == siCommController.siHotUnavailable) && 
                         retryCount < 3)
                     {
                         retryCount += 1;
