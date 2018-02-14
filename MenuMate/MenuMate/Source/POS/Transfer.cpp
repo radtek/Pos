@@ -4780,7 +4780,6 @@ void TfrmTransfer::PrintTransferChefNotification(Database::TDBTransaction &DBTra
                  {
                     TransferComplete->TableTransferedFrom = iter->first;
                     TransferComplete->TableTransferedTo = *itertwo;
-                    MessageBox(*itertwo,"itertwo",MB_OK) ;
                     Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(),true);
                  }
              }
