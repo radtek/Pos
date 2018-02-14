@@ -365,7 +365,7 @@ namespace SiHotIntegration
         {
             return @"POST " + inUri.LocalPath + " HTTP/1.1" + Environment.NewLine +
                                                 "Time-out: 5000" + Environment.NewLine +
-                                                "Content-Type: binary" + Environment.NewLine +
+                                                "Content-Type: text/plain" + Environment.NewLine +
                                                 "Host: " + inUri.Host + Environment.NewLine +
                                                 "Content-Length: " + dataLength + Environment.NewLine
                                                 + Environment.NewLine;
