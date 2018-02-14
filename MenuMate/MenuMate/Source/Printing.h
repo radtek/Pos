@@ -46,7 +46,7 @@ private:
 	TPrintout* GetPrintout(Database::TDBTransaction &DBTransaction,TReqPrintJob *Request, TPrinterVirtual *VirtualPrinter, bool CallAway = false);	// Finds the appriate printout for the
 																										// printer or creates one
 	void AddCallAwayToPrintout(TPrintFormat *PrintFormat);								// Adds pre-sorted courses to the above printout.
-    void AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer,bool isPartialTranferItemOrGuests, bool IsDestToSourceDocketPrint , bool PrintSimultaneoustransfer);     // Add Print Transfer for the Table Transfer to Kitchen
+    void AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer,bool isPartialTranferItemOrGuests);     // Add Print Transfer for the Table Transfer to Kitchen
 	void PrintOrderHeader(TPrintFormat *pPrinter,										// Header for AddOrdersToPrintout()
 		TKitchenCourseTable *CourseTable);
 	void PrintCallAwayHeader(TPrintFormat *pPrinter,										// Header for AddOrdersToPrintout()
@@ -62,7 +62,7 @@ private:
                     TSectionInstructStorage::iterator &itInstruction);
 
    // Add Print Transfer for the Table Transfer to Kitchen
-   bool GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request,bool IsPartialTranferItemOrGuests = false ,bool IsReversedPartialDocketPrint = false,bool IsSimultaneousPartialTransfer=false);
+   bool GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request,bool IsPartialTranferItemOrGuests = false);
 
    // Returns the Print job stored in the PrintJobs TList so we can add to it.
    __fastcall TKitchen();

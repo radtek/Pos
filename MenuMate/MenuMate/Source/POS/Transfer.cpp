@@ -159,9 +159,6 @@ void __fastcall TfrmTransfer::FormShow(TObject *Sender)
    CloseClipTab=true;
    ItemTransferredFromClip=false;
    isClipLongPress=false;
-   IsTableTransferfrom = false;
-   IsTableTransferTO = false;
-
 
 }
 // ---------------------------------------------------------------------------
@@ -904,53 +901,7 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
              bool  fullTransfer;
              if(TGlobalSettings::Instance().PrintNoticeOnTransfer)
              {
-                if(MessageBox("Do you want to inform the chef?","Confirmation", MB_YESNO  + MB_ICONWARNING) == IDYES)
-                {
-                    if((IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) && Partialtransfer.size()>1)
-                    {
-                        for(std::map<UnicodeString,UnicodeString>::iterator iter = Partialtransfer.begin(); iter != Partialtransfer.end(); ++iter)
-                        {
-
-                          TTransferComplete *TransferComplete = new TTransferComplete();
-                          TransferComplete->TableTransferedFrom = iter->second;
-                          TransferComplete->TableTransferedTo = iter->first;
-                          std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                          std::auto_ptr<TKitchen> Kitchen(new TKitchen());
-                          Kitchen->Initialise(*DBTransaction);
-                          Kitchen->GetPrintouts(*DBTransaction, TransferComplete, TransferRequest.get(),true,false,true);
-                          TransferRequest->Printouts->Print(devPC);
-                        }
-                    }
-
-                   if((IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) && ReversePartialtransfer.size()>1 || (Partialtransfer.size()>1 && ReversePartialtransfer.size()==1 ))
-                   {
-                        for(std::map<UnicodeString,UnicodeString>::iterator iter = ReversePartialtransfer.begin(); iter != ReversePartialtransfer.end(); ++iter)
-                        {
-
-                          TTransferComplete *TransferComplete = new TTransferComplete();
-                          TransferComplete->TableTransferedFrom = iter->second;
-                          TransferComplete->TableTransferedTo = iter->first;
-                          std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-                          std::auto_ptr<TKitchen> Kitchen(new TKitchen());
-                          Kitchen->Initialise(*DBTransaction);
-                          Kitchen->GetPrintouts(*DBTransaction, TransferComplete, TransferRequest.get(),true,true,false);
-                          TransferRequest->Printouts->Print(devPC);
-
-                        }
-
-                   }
-
-                   if((IsTableTransferfrom || IsTableTransferTO || (IsTableTransferfrom && IsTableTransferTO)) &&
-                   ((Partialtransfer.size() == 1 && ReversePartialtransfer.size() == 0)||
-                   (Partialtransfer.size() == 1 && ReversePartialtransfer.size() == 1) ||
-                   (Partialtransfer.size() == 0 && ReversePartialtransfer.size() == 1)))
-
-                   {
-                      PrintTransferChefNotification(*DBTransaction ,true);
-                   }
-
-                }
-
+                PrintTransferChefNotification(*DBTransaction ,true);
              }
               // here ItemTransferredFromClip is used so that if items were transferred from clip tab then only it should enter
               // vidout it u can transfer from table to clip tab and it will ask for linking ,which should not happen and therefore is bug .
@@ -1041,9 +992,13 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
           TTransferComplete *TransferComplete = new TTransferComplete();
           TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
           TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-          Partialtransfer.insert( std::pair<UnicodeString,UnicodeString>(TransferComplete->TableTransferedTo, TransferComplete->TableTransferedFrom) );
+          Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
+          if (std::find(Partialtransfer[TransferComplete->TableTransferedFrom].begin(),Partialtransfer[TransferComplete->TableTransferedFrom].end(),TransferComplete->TableTransferedTo )
+              == Partialtransfer[TransferComplete->TableTransferedFrom].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
+           {
+                   Partialtransfer[TransferComplete->TableTransferedFrom].push_back(TransferComplete->TableTransferedTo);
+           }
       }
-
   }
 }
 //----------------------------------------------------------------------------
@@ -1188,10 +1143,15 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoClick(TObject *Sender)
 
       if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (btnTransferTo->Caption != "Select" && btnTransferFrom->Caption != "Select"))
       {
-          TTransferComplete *TransferComplete = new TTransferComplete();
-          TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
-          TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-          ReversePartialtransfer.insert( std::pair<UnicodeString,UnicodeString>(TransferComplete->TableTransferedTo, TransferComplete->TableTransferedFrom) );
+        TTransferComplete *TransferComplete = new TTransferComplete();
+        TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
+        TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
+        Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
+        if (std::find(Partialtransfer[TransferComplete->TableTransferedTo].begin(),Partialtransfer[TransferComplete->TableTransferedTo].end(),TransferComplete->TableTransferedFrom )
+            == Partialtransfer[TransferComplete->TableTransferedTo].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
+        {
+            Partialtransfer[TransferComplete->TableTransferedTo].push_back(TransferComplete->TableTransferedFrom);
+        }
       }
   }
 
@@ -2854,7 +2814,6 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 	  case eTables:
 		 {
             int DestTabKey = 0;
-            IsTableTransferTO = true;
             if(ClipTabSelected && isTabSelected && !isClipLongPress)
             {
                TMMTabType tabtype = TDBTab::GetTabType(*DBTransaction, source_key,isTabSelected);
@@ -3032,7 +2991,6 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
 	  case eTables:
 		 {
             int DestTabKey = 0;
-            IsTableTransferfrom = true;
            if(ClipTabSelected && isTabSelected && !isClipLongPress)
            {
 
@@ -4809,38 +4767,32 @@ bool TfrmTransfer::CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTran
 void TfrmTransfer::PrintTransferChefNotification(Database::TDBTransaction &DBTransaction , bool IsPartialTransferForTable)
 {
     TTransferComplete *TransferComplete = new TTransferComplete();
-    std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));    
+    std::auto_ptr <TReqPrintJob> TransferRequest(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
     Kitchen->Initialise(DBTransaction);
-    TransferComplete->UserName =  TDeviceRealTerminal::Instance().User.Name;
-    TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(DBTransaction,CurrentSourceTable);
-    TransferComplete->TableTransferedTo =  TDBTables::GetTableName(DBTransaction,CurrentDestTable);
-
-
-   if(IsPartialTransferForTable)
-   {
-        if(IsTableTransferfrom && !IsTableTransferTO)
+    if(MessageBox("Do you want to inform the chef?","Confirmation", MB_YESNO  + MB_ICONWARNING) == IDYES)
+    {
+        if(IsPartialTransferForTable)
         {
-            Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(), true , false);
+            for(std::map<AnsiString,std::vector<AnsiString> >::iterator iter = Partialtransfer.begin(); iter != Partialtransfer.end(); ++iter)
+            {
+                 for(std::vector <AnsiString> ::iterator itertwo = iter->second.begin(); itertwo!= iter->second.end();itertwo++)
+                 {
+                    TransferComplete->TableTransferedFrom = iter->first;
+                    TransferComplete->TableTransferedTo = *itertwo;
+                    MessageBox(*itertwo,"itertwo",MB_OK) ;
+                    Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(),true);
+                 }
+             }
         }
-        else if(IsTableTransferTO && !IsTableTransferfrom)
+        else
         {
-            Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(), true , true);
+            TransferComplete->UserName =  TDeviceRealTerminal::Instance().User.Name;
+            TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(DBTransaction,CurrentSourceTable);
+            TransferComplete->TableTransferedTo =  TDBTables::GetTableName(DBTransaction,CurrentDestTable);
+            Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get());
         }
-        else if(IsTableTransferfrom && IsTableTransferTO )
-        {
-			std::auto_ptr <TReqPrintJob> TransferRequesttwo(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-            Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequesttwo.get(), true , true);
-			TransferRequesttwo->Printouts->Print(devPC);
-            Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(), true , false);
-        }
-   }
-   else
-   {
-      Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get());
-   }
-   TransferRequest->Printouts->Print(devPC);
-   delete TransferComplete;
-
+        TransferRequest->Printouts->Print(devPC);
+        delete TransferComplete;
+    }
 }
-

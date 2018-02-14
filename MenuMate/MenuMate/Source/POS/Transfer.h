@@ -315,8 +315,7 @@ public:		// User declarations
     bool isClipLongPress;
     bool IsTableTransferfrom;
     bool IsTableTransferTO;
-    std::map<UnicodeString,UnicodeString> Partialtransfer;
-
+    std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
 };
 //---------------------------------------------------------------------------
 #endif
