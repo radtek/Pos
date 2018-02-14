@@ -720,6 +720,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     Width = 129
     Height = 21
     Alignment = taRightJustify
+    Anchors = [akLeft, akBottom]
     Enabled = False
     Lines.Strings = (
       'reGstValue')
