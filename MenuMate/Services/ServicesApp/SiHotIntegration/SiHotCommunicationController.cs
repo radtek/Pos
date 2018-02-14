@@ -138,6 +138,7 @@ namespace SiHotIntegration
             string exceptionMessage = "";
             string strCompleteResponse = "";
             string strSiHotResponse = "";
+            string exceptionTime = "";
             bool IsSecured = false;
             try
             {
@@ -218,6 +219,7 @@ namespace SiHotIntegration
             {
                 ServiceLogger.Log("Exception in sending Room Post " + ex.Message);
                 exceptionMessage = ex.Message;
+                exceptionTime = DateTime.Now.ToString("hh:mm:ss tt");
                 response.IsSuccessful = false;
             }
             finally
@@ -228,6 +230,8 @@ namespace SiHotIntegration
                 stringList.Add("No of Times tried:                        " + retryCount);
                 if (exceptionMessage.Length != 0)
                     stringList.Add("Post Exception message:                   " + exceptionMessage);
+                if (exceptionTime.Length != 0)
+                    stringList.Add("Post Exception Time:                      " + exceptionTime);
                 if (!response.IsSuccessful)
                     stringList.Add("Unsuccessful reason:                      " + response.Response);
                 WriteToFile(stringList);
@@ -286,11 +290,23 @@ namespace SiHotIntegration
                 stringList.Add("*********Start Of Items**************");
                 for (int itemIndex = 0; itemIndex < roomChargeDetails.ItemList.Count; itemIndex++)
                 {
+                    string ppu = "";
+                    string total = "";
+                    if (roomChargeDetails.ItemList[itemIndex].PricePerUnit.Contains("."))
+                    {
+                        ppu =
+                            roomChargeDetails.ItemList[itemIndex].PricePerUnit.Substring(0, (roomChargeDetails.ItemList[itemIndex].PricePerUnit.IndexOf(".") + 3));
+                    }
+                    if (roomChargeDetails.ItemList[itemIndex].PriceTotal.Contains("."))
+                    {
+                        total =
+                             roomChargeDetails.ItemList[itemIndex].PriceTotal.Substring(0, (roomChargeDetails.ItemList[itemIndex].PriceTotal.IndexOf(".") + 3));
+                    }
                     stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory + 
                                    "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc + 
                                    "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount + 
-                                   "    Price Unit:-  " + roomChargeDetails.ItemList[itemIndex].PricePerUnit + 
-                                   "    Price Total:- " + roomChargeDetails.ItemList[itemIndex].PriceTotal + 
+                                   "    Price Unit:-  " + ppu + 
+                                   "    Price Total:- " + total + 
                                    "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage);
                    
                 }
