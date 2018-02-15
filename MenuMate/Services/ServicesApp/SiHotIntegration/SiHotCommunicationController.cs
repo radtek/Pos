@@ -279,9 +279,15 @@ namespace SiHotIntegration
                 }
                 stringList.Add("Invoice Number:                           " + invoiceNnumber);
                 double value = 0.0;
-                for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
+                for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
                 {
-                    value += Double.Parse(roomChargeDetails.PaymentList[i].Amount);
+                    //double thisValue = Math.Round(Double.Parse(roomChargeDetails.ItemList[i].Amount),2);
+                    //thisValue = thisValue * Math.Round(Double.Parse(roomChargeDetails.ItemList[i].PricePerUnit),2);
+                    //value += thisValue;
+                    double thisValue = Math.Round(Double.Parse(roomChargeDetails.ItemList[i].PriceTotal), 2);
+                    if (roomChargeDetails.ItemList[i].Amount.Contains("-"))
+                        thisValue = thisValue * -1;
+                    value += thisValue;
                 }
                 stringList.Add("Invoice Amount:                           " + value.ToString());
                 string paymentNames = "";
