@@ -279,25 +279,25 @@ namespace SiHotIntegration
                 }
                 stringList.Add("Invoice Number:                           " + invoiceNnumber);
                 double value = 0.0;
-                for (int i = 0; i < roomChargeDetails.ItemList.Count; i++)
+                for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
                 {
-                    double thisValue = Double.Parse(roomChargeDetails.ItemList[i].Amount);
-                    thisValue = thisValue * Double.Parse(roomChargeDetails.ItemList[i].PricePerUnit);
-                    value += thisValue;
+                    value += Double.Parse(roomChargeDetails.PaymentList[i].Amount);
                 }
                 stringList.Add("Invoice Amount:                           " + value.ToString());
                 string paymentNames = "";
                 stringList.Add("*********Start Of Items**************");
                 for (int itemIndex = 0; itemIndex < roomChargeDetails.ItemList.Count; itemIndex++)
                 {
-                    string ppu = "";
-                    string total = "";
-                    if (roomChargeDetails.ItemList[itemIndex].PricePerUnit.Contains("."))
+                    string ppu = roomChargeDetails.ItemList[itemIndex].PricePerUnit;
+                    string total = roomChargeDetails.ItemList[itemIndex].PriceTotal;
+                    if (roomChargeDetails.ItemList[itemIndex].PricePerUnit.Contains(".") &&
+                        (roomChargeDetails.ItemList[itemIndex].PricePerUnit.IndexOf(".") + 3 < roomChargeDetails.ItemList[itemIndex].PricePerUnit.Length))
                     {
                         ppu =
                             roomChargeDetails.ItemList[itemIndex].PricePerUnit.Substring(0, (roomChargeDetails.ItemList[itemIndex].PricePerUnit.IndexOf(".") + 3));
                     }
-                    if (roomChargeDetails.ItemList[itemIndex].PriceTotal.Contains("."))
+                    if (roomChargeDetails.ItemList[itemIndex].PriceTotal.Contains(".") &&
+                        (roomChargeDetails.ItemList[itemIndex].PriceTotal.IndexOf(".") + 3 < roomChargeDetails.ItemList[itemIndex].PriceTotal.Length))
                     {
                         total =
                              roomChargeDetails.ItemList[itemIndex].PriceTotal.Substring(0, (roomChargeDetails.ItemList[itemIndex].PriceTotal.IndexOf(".") + 3));
