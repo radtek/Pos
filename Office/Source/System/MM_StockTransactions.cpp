@@ -1245,7 +1245,7 @@ void TStocktakeControl::EnumStocktakes(TStocktakeList &StocktakeList, bool Unini
 				sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Or";
 			}
 		}
-		sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Order By upper(Name)asc "; //Initialised_Time";
+          sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Order By INITIALISED_TIME ASC ,upper(LOCATION) , upper(NAME) ";
 
 		for (sqlEnumStocktakes->ExecQuery(); !sqlEnumStocktakes->Eof; sqlEnumStocktakes->Next())
 		{
