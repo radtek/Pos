@@ -44,6 +44,7 @@ namespace SiHotIntegration
             string strCompleteResponse = "";
             string strSiHotResponse = "";
             bool IsSecured = false;
+            int portNumber = 0;
             try
             {
                 string uri = URIRoomRequest(roomRequest.IPAddress, roomRequest.PortNumber);
@@ -53,7 +54,11 @@ namespace SiHotIntegration
                 using (var tc = new TcpClient())
                 {
                     tc.ReceiveTimeout = 5000;
-                    tc.Connect(host, IsSecured ? 443 : 80);
+                    if (myUri.Port != -1)
+                        portNumber = myUri.Port;
+                    else
+                        portNumber = IsSecured ? 443 : 80;
+                    tc.Connect(host, portNumber);
                     if (tc.Connected)
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
@@ -140,6 +145,7 @@ namespace SiHotIntegration
             string strSiHotResponse = "";
             string exceptionTime = "";
             bool IsSecured = false;
+            int portNumber = 0;
             try
             {
                 string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);
@@ -149,7 +155,11 @@ namespace SiHotIntegration
                 using (var tc = new TcpClient())
                 {
                     tc.ReceiveTimeout = 5000;
-                    tc.Connect(host, IsSecured ? 443 : 80);
+                    if (myUri.Port != -1)
+                        portNumber = myUri.Port;
+                    else
+                        portNumber = IsSecured ? 443 : 80;
+                    tc.Connect(host, portNumber);
                     if (tc.Connected)
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
