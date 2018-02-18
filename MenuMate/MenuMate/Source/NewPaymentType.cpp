@@ -1288,6 +1288,7 @@ void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
     else if(!cbCSVPaymentType->Checked)
     {
         cbreservationmaster->Enabled = false;
+        cbreservationmaster->Checked = cbreservationmaster->Enabled ;
     }
 }
 
