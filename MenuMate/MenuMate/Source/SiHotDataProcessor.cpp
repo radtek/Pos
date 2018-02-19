@@ -493,7 +493,10 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
     siHotService.PricePerUnit = pricePerUnit;//fabs((double)(_paymentTransaction.Money.PaymentRounding));
     siHotService.Amount = _paymentTransaction.Money.TotalRounding < 0 ? "-1" : "1";
     siHotService.PriceTotal = pricePerUnit;
-    siHotService.VATPercentage = 0;
+    if(TGlobalSettings::Instance().ApplyRoundingTax)
+        siHotService.VATPercentage = TGlobalSettings::Instance().RoundingTaxRate;
+    else
+        siHotService.VATPercentage = 0;
     siHotService.Billno = billNo;
     siHotService.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
     siHotService.Cashier = TDeviceRealTerminal::Instance().User.Name;

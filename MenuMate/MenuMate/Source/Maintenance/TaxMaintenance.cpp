@@ -23,7 +23,7 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
 {
     //Populate Service Charge Combo Box
     loadTaxProfiles(cbTaxProfile->Items);
-
+    loadTaxProfiles(cbTaxProfileRounding->Items);
     bool usingServiceCharge = TGlobalSettings::Instance().UsingServiceCharge;
 
     //Fill all the form from global settings variables
@@ -54,7 +54,7 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
     if(cbApplyTaxToRounding->Checked)
     {
         cbTaxProfileRounding->Enabled = true;
-        cbTaxProfile->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().RoundingTaxProfileKey);
+        cbTaxProfileRounding->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().RoundingTaxProfileKey);
     }
 }
 //---------------------------------------------------------------------------
