@@ -479,6 +479,7 @@ void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, Un
 //----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
+    ReadCurrentRoundingSettingForVat();
     TSiHotService siHotService;
     siHotService.SuperCategory = TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     siHotService.SuperCategory_Desc = "";
@@ -494,7 +495,10 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
     siHotService.Amount = _paymentTransaction.Money.TotalRounding < 0 ? "-1" : "1";
     siHotService.PriceTotal = pricePerUnit;
     if(TGlobalSettings::Instance().ApplyRoundingTax)
-        siHotService.VATPercentage = TGlobalSettings::Instance().RoundingTaxRate;
+    {
+        double vatPercentage = RoundTo(TGlobalSettings::Instance().RoundingTaxRate,-2);
+        siHotService.VATPercentage = vatPercentage;
+    }
     else
         siHotService.VATPercentage = 0;
     siHotService.Billno = billNo;
@@ -502,6 +506,54 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
     siHotService.Cashier = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source = "Guest";
     _roomCharge.SiHotServices.push_back(siHotService);
+}
+//----------------------------------------------------------------------------
+void TSiHotDataProcessor::ReadCurrentRoundingSettingForVat()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
+        if(GlobalProfileKey != 0)
+        {
+
+            TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            	"SELECT "
+                "NUMERIC_VAL "
+                "FROM "
+                "VARSPROFILE "
+                "WHERE "
+                "VARIABLES_KEY = :VARIABLES_KEY "
+                "AND PROFILE_KEY = :PROFILE_KEY ";
+
+            IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = vmRoundingTaxRate;
+            IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = GlobalProfileKey;
+            IBInternalQuery->ExecQuery();
+            TGlobalSettings::Instance().RoundingTaxRate = IBInternalQuery->FieldByName("NUMERIC_VAL")->AsFloat;
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            	"SELECT "
+                "INTEGER_VAL "
+                "FROM "
+                "VARSPROFILE "
+                "WHERE "
+                "VARIABLES_KEY = :VARIABLES_KEY "
+                "AND PROFILE_KEY = :PROFILE_KEY ";
+            IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = vmApplyRoundingTax;
+            IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = GlobalProfileKey;
+            IBInternalQuery->ExecQuery();
+            TGlobalSettings::Instance().ApplyRoundingTax = IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+    }
 }
 //----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)

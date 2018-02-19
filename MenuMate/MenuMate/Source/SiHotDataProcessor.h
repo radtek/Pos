@@ -32,5 +32,6 @@ class TSiHotDataProcessor
        bool AddItemToSiHotService(TItemComplete *itemComplete,UnicodeString billNo,TRoomCharge &_roomCharge);
        void AddServiceChargeAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
        void AddPaymentMethods(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
+       void ReadCurrentRoundingSettingForVat();
 };
 #endif
