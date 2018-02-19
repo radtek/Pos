@@ -37,6 +37,8 @@ __published:	// IDE-managed Components
     //add frn
     TPageControl *Pages;
     TTabSheet *tsTaxSettings;
+    TCheckBox *cbApplyTaxToRounding;
+    TComboBox *cbTaxProfileRounding;
 
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
@@ -49,6 +51,8 @@ __published:	// IDE-managed Components
     void __fastcall cbCalculateServiceChargePostDiscountClick(TObject *Sender);
     void __fastcall cbApplyTaxToServiceChargeClick(TObject *Sender);
     void __fastcall cbTaxProfileChange(TObject *Sender);
+    void __fastcall cbApplyTaxToRoundingClick(TObject *Sender);
+    void __fastcall cbRoundingTaxProfileChange(TObject *Sender);
 
 public:		// User declarations
     __fastcall TfrmTaxMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
