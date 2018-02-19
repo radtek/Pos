@@ -67,6 +67,7 @@ private:	// User declarations
     void saveBoolSettingToDatabase(vmVariables vmVariable, bool value);
     void saveIntSettingToDatabase(vmVariables vmVariable, int value);
     void saveNumSettingToDatabase(vmVariables vmVariable, double value);
+    void ReadVariablesFromDatabase();
 };
 //---------------------------------------------------------------------------
 
