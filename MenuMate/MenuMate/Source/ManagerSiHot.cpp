@@ -86,7 +86,7 @@ void TManagerSiHot::Initialise()
     DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
     RevenueCodesMap.clear();
-
+    UnsetPostingFlag();
 	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
@@ -258,6 +258,12 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
 {
+   WaitOrProceedWithPost();
+   return ExportData(paymentTransaction);
+}
+//---------------------------------------------------------------------------
+bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
+{
     bool roomChargeSelected = false;
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
     {
@@ -316,6 +322,8 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         if(checkedCreditLimit && !creditLimitViolated)
           retValue = RoomChargePost(paymentTransaction);
     }
+    if(!retValue)
+        UnsetPostingFlag();
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -354,5 +362,129 @@ AnsiString TManagerSiHot::GetLogFileName()
     AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
     AnsiString fileName =  directoryName + "\\" + name;
     return fileName;
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::WaitOrProceedWithPost()
+{
+    bool isPosting = false;
+    int global_profile_key;
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    std::auto_ptr<TStringList> waitLogs(new TStringList);
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        tr.StartTransaction();
+        // This is used to retain the state of the checkbox if the POS is exited
+        #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        #pragma warn .pia
+        TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
+        if(isPosting)
+        {
+            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
+        }
+        while(isPosting)
+        {
+            Sleep(500);
+            TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
+        }
+        tr.Commit();
+        SetPostingFlag();
+//        MessageBox(waitLogs->Count,"1",MB_OK);
+        if(waitLogs->Count > 0)
+        {
+            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("=================================================================================");
+//            MessageBox(waitLogs->Count,"2",MB_OK);
+            LogWaitStatus(waitLogs);
+        }
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::LogWaitStatus(std::auto_ptr<TStringList> waitLogs)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        for(int index = 0; index < waitLogs->Count; index++)
+        {
+            AnsiString value = waitLogs->operator [](index);
+            List->Add(value);
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::SetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,true);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::UnsetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,false);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //---------------------------------------------------------------------------

@@ -977,6 +977,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        {
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+        }
 		throw;
 	}
 
@@ -3274,6 +3278,10 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
    {
        TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
        PaymentTransaction.InvoiceNumber = Order->DelayedInvoiceNumber;
+   }
+   if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+   {
+      TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
    }
 }
 
