@@ -313,8 +313,6 @@ public:		// User declarations
     bool CloseClipTab;
     bool ItemTransferredFromClip;
     bool isClipLongPress;
-    bool IsTableTransferfrom;
-    bool IsTableTransferTO;
     std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
 };
 //---------------------------------------------------------------------------

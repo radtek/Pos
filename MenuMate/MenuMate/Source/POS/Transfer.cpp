@@ -899,11 +899,11 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
           else
           {
              bool  fullTransfer;
-             if(TGlobalSettings::Instance().PrintNoticeOnTransfer)
+             if(Partialtransfer.size())
              {
                 PrintTransferChefNotification(*DBTransaction ,true);
              }
-              // here ItemTransferredFromClip is used so that if items were transferred from clip tab then only it should enter
+             // here ItemTransferredFromClip is used so that if items were transferred from clip tab then only it should enter
               // vidout it u can transfer from table to clip tab and it will ask for linking ,which should not happen and therefore is bug .
 
               if(ClipTabSelected && ItemTransferredFromClip)
@@ -987,7 +987,7 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
       {
          TransferData(*DBTransaction);
       }
-      if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (btnTransferTo->Caption != "Select" && btnTransferFrom->Caption != "Select"))
+      if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
       {
           TTransferComplete *TransferComplete = new TTransferComplete();
           TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
@@ -1140,18 +1140,17 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoClick(TObject *Sender)
       {
         ReverseData(*DBTransaction);
       }
-
-      if(TGlobalSettings::Instance().PrintNoticeOnTransfer && (btnTransferTo->Caption != "Select" && btnTransferFrom->Caption != "Select"))
+      if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
       {
-        TTransferComplete *TransferComplete = new TTransferComplete();
-        TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
-        TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-        Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
-        if (std::find(Partialtransfer[TransferComplete->TableTransferedTo].begin(),Partialtransfer[TransferComplete->TableTransferedTo].end(),TransferComplete->TableTransferedFrom )
-            == Partialtransfer[TransferComplete->TableTransferedTo].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
-        {
-            Partialtransfer[TransferComplete->TableTransferedTo].push_back(TransferComplete->TableTransferedFrom);
-        }
+            TTransferComplete *TransferComplete = new TTransferComplete();
+            TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
+            TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
+            Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
+            if (std::find(Partialtransfer[TransferComplete->TableTransferedTo].begin(),Partialtransfer[TransferComplete->TableTransferedTo].end(),TransferComplete->TableTransferedFrom )
+                == Partialtransfer[TransferComplete->TableTransferedTo].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
+            {
+                Partialtransfer[TransferComplete->TableTransferedTo].push_back(TransferComplete->TableTransferedFrom);
+            }
       }
   }
 
