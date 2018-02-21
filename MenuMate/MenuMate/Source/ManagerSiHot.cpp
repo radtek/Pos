@@ -372,6 +372,7 @@ void TManagerSiHot::WaitOrProceedWithPost()
     std::auto_ptr<TStringList> waitLogs(new TStringList);
     try
     {
+        Sleep(100);
         TGlobalSettings  &gs = TGlobalSettings::Instance();
         TManagerVariable &mv = TManagerVariable::Instance();
 
@@ -383,16 +384,16 @@ void TManagerSiHot::WaitOrProceedWithPost()
         #pragma warn .pia
         TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
         if(isPosting)
-        {
             waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
-        }
         while(isPosting)
         {
-            Sleep(500);
+            Sleep(400);
             TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
         }
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,true);
         tr.Commit();
-        SetPostingFlag();
+        //SetPostingFlag();
         if(waitLogs->Count > 0)
         {
             waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
