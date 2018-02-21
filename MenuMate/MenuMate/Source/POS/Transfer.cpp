@@ -159,7 +159,8 @@ void __fastcall TfrmTransfer::FormShow(TObject *Sender)
    CloseClipTab=true;
    ItemTransferredFromClip=false;
    isClipLongPress=false;
-
+   IsDisplayTransferFromPressed = false;
+   IsDisplayTransfertoPressed = false;
 }
 // ---------------------------------------------------------------------------
 void TfrmTransfer::UpdateSourceTableDetails(Database::TDBTransaction &DBTransaction)
@@ -989,15 +990,8 @@ void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
       }
       if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
       {
-          TTransferComplete *TransferComplete = new TTransferComplete();
-          TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
-          TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-          Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
-          if (std::find(Partialtransfer[TransferComplete->TableTransferedFrom].begin(),Partialtransfer[TransferComplete->TableTransferedFrom].end(),TransferComplete->TableTransferedTo )
-              == Partialtransfer[TransferComplete->TableTransferedFrom].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
-           {
-                   Partialtransfer[TransferComplete->TableTransferedFrom].push_back(TransferComplete->TableTransferedTo);
-           }
+         IsDisplayTransferFromPressed = true;
+         SaveItemsGuestToPrint();
       }
   }
 }
@@ -1142,15 +1136,8 @@ void __fastcall TfrmTransfer::lbDisplayTransfertoClick(TObject *Sender)
       }
       if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
       {
-            TTransferComplete *TransferComplete = new TTransferComplete();
-            TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
-            TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
-            Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
-            if (std::find(Partialtransfer[TransferComplete->TableTransferedTo].begin(),Partialtransfer[TransferComplete->TableTransferedTo].end(),TransferComplete->TableTransferedFrom )
-                == Partialtransfer[TransferComplete->TableTransferedTo].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
-            {
-                Partialtransfer[TransferComplete->TableTransferedTo].push_back(TransferComplete->TableTransferedFrom);
-            }
+        IsDisplayTransfertoPressed = true;
+        SaveItemsGuestToPrint();
       }
   }
 
@@ -1744,6 +1731,11 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
                      {
                          TransferTotal(source_key, dest_tabkey, false,  isTabSelected);
                      }
+                     if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
+                     {
+                         IsDisplayTransferFromPressed = true;
+                         SaveItemsGuestToPrint();
+                     }
                      if(CheckToOverwriteSourceStatus(*DBTransaction,true))
                         TDBTables::SetTableBillingStatus(*DBTransaction,CurrentSourceTable,eNoneStatus);
                  }
@@ -1877,10 +1869,17 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
                            ReverseTransferTotal(*it, dest_tabkey, true,  isTabSelected);
                          }
                          GetSavedOrderKey.clear();
+
                      }
                      else
                      {
                         ReverseTransferTotal(tab_key, dest_tabkey, true,  isTabSelected);
+                     }
+                     if(TGlobalSettings::Instance().PrintNoticeOnTransfer && ((CurrentSourceDisplayMode == eTables) && (CurrentDestDisplayMode == eTables)))
+                     {
+                        IsDisplayTransfertoPressed = true;
+                        SaveItemsGuestToPrint();
+
                      }
                     if(CheckToOverwriteSourceStatus(*DBTransaction,false))
                         TDBTables::SetTableBillingStatus(*DBTransaction,CurrentDestTable,eNoneStatus);
@@ -4761,6 +4760,34 @@ bool TfrmTransfer::CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTran
                     TGlobalSettings::Instance().ReservationsEnabled;
 
     return retValue;
+}
+//------------------------------------------------------------------------------
+void TfrmTransfer::SaveItemsGuestToPrint()
+{
+    TTransferComplete *TransferComplete = new TTransferComplete();
+    TransferComplete->TableTransferedFrom =  TDBTables::GetTableName(*DBTransaction,CurrentSourceTable);
+    TransferComplete->TableTransferedTo =  TDBTables::GetTableName(*DBTransaction,CurrentDestTable);
+    if(IsDisplayTransferFromPressed)
+    {
+          Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
+          if (std::find(Partialtransfer[TransferComplete->TableTransferedFrom].begin(),Partialtransfer[TransferComplete->TableTransferedFrom].end(),TransferComplete->TableTransferedTo )
+              == Partialtransfer[TransferComplete->TableTransferedFrom].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
+           {
+                   Partialtransfer[TransferComplete->TableTransferedFrom].push_back(TransferComplete->TableTransferedTo);
+           }
+           IsDisplayTransferFromPressed = false;
+    }
+    else if(IsDisplayTransfertoPressed)
+    {
+           Partialtransfer.insert(std::pair< AnsiString,std::vector<AnsiString> >(TransferComplete->TableTransferedFrom, std::vector<AnsiString>()));
+           if (std::find(Partialtransfer[TransferComplete->TableTransferedTo].begin(),Partialtransfer[TransferComplete->TableTransferedTo].end(),TransferComplete->TableTransferedFrom )
+                    == Partialtransfer[TransferComplete->TableTransferedTo].end() && (TransferComplete->TableTransferedFrom != TransferComplete->TableTransferedTo))
+           {
+                Partialtransfer[TransferComplete->TableTransferedTo].push_back(TransferComplete->TableTransferedFrom);
+           }
+           IsDisplayTransfertoPressed = false;
+    }
+
 }
 //------------------------------------------------------------------------------
 void TfrmTransfer::PrintTransferChefNotification(Database::TDBTransaction &DBTransaction , bool IsPartialTransferForTable)
