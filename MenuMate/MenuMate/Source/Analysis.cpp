@@ -2856,8 +2856,8 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			ReportManager reportManager;
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
              
-             int(CompleteZed) = zedReport->DisplayAndPrint(ZedToArchive);
-             
+             CompleteZed = zedReport->DisplayAndPrint(ZedToArchive);
+              
 			// Mall Export added variabnle
 			ZedCompleted =  CompleteZed;
 			ZedCancel    = !CompleteZed;
@@ -3113,23 +3113,6 @@ Zed:
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
                     delete mallExport;
-                }
-            }
-            if(int(CompleteZed) == 2)
-            {
-                std::auto_ptr<TMemoryStream> CurrZedPrintout(ZedToArchive);
-                TPrintout *Printout = new TPrintout;
-                Printout->Printer = TComms::Instance().ReceiptPrinter;
-                try
-                {
-                    CurrZedPrintout->Position = 0;
-                    Printout->PrintToPrinterStream(CurrZedPrintout.get(), TComms::Instance().ReceiptPrinter.UNCName());
-                    CurrZedPrintout.release() ;
-                
-                }
-                __finally
-                {                            
-                    delete Printout;
                 }
             }
       }
