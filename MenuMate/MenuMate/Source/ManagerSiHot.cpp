@@ -393,12 +393,10 @@ void TManagerSiHot::WaitOrProceedWithPost()
         }
         tr.Commit();
         SetPostingFlag();
-//        MessageBox(waitLogs->Count,"1",MB_OK);
         if(waitLogs->Count > 0)
         {
             waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
             waitLogs->Add("=================================================================================");
-//            MessageBox(waitLogs->Count,"2",MB_OK);
             LogWaitStatus(waitLogs);
         }
     }
