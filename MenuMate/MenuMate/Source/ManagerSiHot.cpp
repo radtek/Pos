@@ -372,7 +372,9 @@ void TManagerSiHot::WaitOrProceedWithPost()
     std::auto_ptr<TStringList> waitLogs(new TStringList);
     try
     {
-        Sleep(100);
+        Sleep(Random(21));
+        Sleep(Random(30));
+        Sleep(Random(50));
         TGlobalSettings  &gs = TGlobalSettings::Instance();
         TManagerVariable &mv = TManagerVariable::Instance();
 
