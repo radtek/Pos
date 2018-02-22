@@ -299,8 +299,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
             ReFormatIpToUrl();
-            if(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "")
-                TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eBoot);
+            TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eBoot);
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
