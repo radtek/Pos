@@ -213,7 +213,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
         end
         object cbUseItalyFIscalPrinter: TCheckBox
           Left = 32
-          Top = 360
+          Top = 410
           Width = 265
           Height = 25
           Caption = 'Use Italy Fiscal Printer'
@@ -225,7 +225,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           Font.Style = []
           ParentCtl3D = False
           ParentFont = False
-          TabOrder = 9
+          TabOrder = 11
           OnClick = cbUseItalyFiscalPrinterClick
         end
         object Panel11: TPanel
