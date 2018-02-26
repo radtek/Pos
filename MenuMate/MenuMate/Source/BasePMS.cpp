@@ -74,4 +74,8 @@ void TBasePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomRe
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::LogPMSEnabling(TriggerLocation triggerType)
+{
+}
+//---------------------------------------------------------------------------
 

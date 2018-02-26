@@ -35,6 +35,35 @@ TManagerSiHot::~TManagerSiHot()
 
 }
 //---------------------------------------------------------------------------
+void TManagerSiHot::LogPMSEnabling(TriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot at start of Menumate" +"\n");
+        }
+        else if(triggerType == eSelf)
+        {
+            List->Add("Note- "+ (AnsiString)"Found SiHot disabled with necessary details present" +"\n" +
+                  "      "+ "Menumate is trying to enable SiHot and then sale would be processed" +"\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
 void TManagerSiHot::Initialise()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -79,6 +108,7 @@ bool TManagerSiHot::GetRoundingandDefaultAccount()
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort);
+    UpdateSiHotLogs(retValue);
     if(!retValue)
         MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     return retValue;
@@ -215,6 +245,7 @@ bool TManagerSiHot::GetDefaultAccount(UnicodeString processMessage)
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0);
+    UpdateSiHotLogs(retValue);
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -286,5 +317,42 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
           retValue = RoomChargePost(paymentTransaction);
     }
     return retValue;
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::UpdateSiHotLogs(bool status)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(status)
+        {
+            List->Insert((List->Count-1),"<<< SiHot Interface Enabled >>>");
+        }
+        else
+        {
+            List->Insert((List->Count-1),"<<< SiHot Interface Not Enabled >>>");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TManagerSiHot::GetLogFileName()
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\Sihot Post Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "\\" + name;
+    return fileName;
 }
 //---------------------------------------------------------------------------

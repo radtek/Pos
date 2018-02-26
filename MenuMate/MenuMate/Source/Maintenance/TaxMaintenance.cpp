@@ -22,8 +22,9 @@ __fastcall TfrmTaxMaintenance::TfrmTaxMaintenance(TComponent* Owner, Database::T
 void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
 {
     //Populate Service Charge Combo Box
+    ReadVariablesFromDatabase();
     loadTaxProfiles(cbTaxProfile->Items);
-
+    loadTaxProfiles(cbTaxProfileRounding->Items);
     bool usingServiceCharge = TGlobalSettings::Instance().UsingServiceCharge;
 
     //Fill all the form from global settings variables
@@ -49,6 +50,12 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
     {
         cbTaxProfile->Enabled = true;
         cbTaxProfile->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().ServiceChargeTaxProfileKey);
+    }
+    cbApplyTaxToRounding->Checked            = TGlobalSettings::Instance().ApplyRoundingTax;
+    if(cbApplyTaxToRounding->Checked)
+    {
+        cbTaxProfileRounding->Enabled = true;
+        cbTaxProfileRounding->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().RoundingTaxProfileKey);
     }
 
     cbUseItalyFiscalPrinter->Checked = TGlobalSettings::Instance().UseItalyFiscalPrinter;
@@ -92,7 +99,14 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
     }
     else
     {
-        Close();
+        if(cbApplyTaxToRounding->Checked && cbTaxProfileRounding->ItemIndex == -1)
+        {
+            MessageBox("Rounding tax must be selected.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
+            Close();
+        }
     }
 }
 //---------------------------------------------------------------------------
@@ -206,7 +220,6 @@ int TfrmTaxMaintenance::getTaxProfileIndexFromKey(int profileKey)
     return -1;
 }
 //---------------------------------------------------------------------------
-
 void TfrmTaxMaintenance::saveBoolSettingToDatabase(vmVariables vmVariable, bool value)
 {
     Database::TDBTransaction DBTransaction(DBControl);
@@ -223,7 +236,35 @@ void TfrmTaxMaintenance::saveBoolSettingToDatabase(vmVariables vmVariable, bool 
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
+void TfrmTaxMaintenance::ReadVariablesFromDatabase()
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
+        if(GlobalProfileKey != 0)
+        {
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,              TGlobalSettings::Instance().ApplyRoundingTax);
+            TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,         TGlobalSettings::Instance().RoundingTaxProfileKey);
+            TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyServiceChargeTax,              TGlobalSettings::Instance().ApplyServiceChargeTax);
+            TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmServiceChargeTaxProfileKey,         TGlobalSettings::Instance().ServiceChargeTaxProfileKey);
+            TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               TGlobalSettings::Instance().ServiceChargeTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmItemPriceIncludeTax,                TGlobalSettings::Instance().ItemPriceIncludeTax);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmItemPriceIncludeServiceCharge,      TGlobalSettings::Instance().ItemPriceIncludeServiceCharge);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateTaxPostDiscount,           TGlobalSettings::Instance().ReCalculateTaxPostDiscount);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateServiceChargePostDiscount, TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge);
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
 void TfrmTaxMaintenance::saveIntSettingToDatabase(vmVariables vmVariable, int value)
 {
     Database::TDBTransaction DBTransaction(DBControl);
@@ -240,7 +281,6 @@ void TfrmTaxMaintenance::saveIntSettingToDatabase(vmVariables vmVariable, int va
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 void TfrmTaxMaintenance::saveNumSettingToDatabase(vmVariables vmVariable, double value)
 {
     Database::TDBTransaction DBTransaction(DBControl);
@@ -255,6 +295,23 @@ void TfrmTaxMaintenance::saveNumSettingToDatabase(vmVariables vmVariable, double
     TManagerVariable::Instance().SetProfileNum(DBTransaction, GlobalProfileKey, vmVariable, value);
 
 	DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::cbApplyTaxToRoundingClick(TObject *Sender)
+{
+    cbTaxProfileRounding->Enabled = cbApplyTaxToRounding->Checked;
+    TGlobalSettings::Instance().ApplyRoundingTax = cbApplyTaxToRounding->Checked;
+
+    saveBoolSettingToDatabase(vmApplyRoundingTax, TGlobalSettings::Instance().ApplyRoundingTax);
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::cbRoundingTaxProfileChange(TObject *Sender)
+{
+    TGlobalSettings::Instance().RoundingTaxProfileKey = taxProfiles[cbTaxProfileRounding->ItemIndex].ProfileKey;
+    TGlobalSettings::Instance().RoundingTaxRate       = taxProfiles[cbTaxProfileRounding->ItemIndex].Rate;
+
+    saveIntSettingToDatabase(vmRoundingTaxProfileKey, TGlobalSettings::Instance().RoundingTaxProfileKey);
+    saveNumSettingToDatabase(vmRoundingTaxRate,       TGlobalSettings::Instance().RoundingTaxRate);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender)

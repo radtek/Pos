@@ -81,7 +81,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object Label3: TLabel
         Left = 525
-        Top = 326
+        Top = 336
         Width = 113
         Height = 13
         Alignment = taRightJustify
@@ -107,7 +107,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object lbeTotalInc: TLabel
         Left = 693
-        Top = 326
+        Top = 337
         Width = 81
         Height = 13
         Alignment = taRightJustify
@@ -410,6 +410,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Height = 21
         TabOrder = 5
         Visible = False
+        OnChange = neTotalCostChange
         OnExit = neTotalCostExit
         OnKeyDown = neStockQtyKeyDown
         OnKeyPress = neTotalCostKeyPress
@@ -466,7 +467,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       end
       object neGST: TNumericEdit
         Left = 648
-        Top = 331
+        Top = 337
         Width = 129
         Height = 21
         Value = -5.65465465465465E21
@@ -719,10 +720,12 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     Width = 129
     Height = 21
     Alignment = taRightJustify
+    Anchors = [akLeft, akBottom]
     Enabled = False
     Lines.Strings = (
       'reGstValue')
     TabOrder = 4
+    OnChange = reGSTChange
     OnExit = reGstValueExit
     OnKeyDown = reGstValueKeyDown
     OnKeyPress = reGstValueKeyPress

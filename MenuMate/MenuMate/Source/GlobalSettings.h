@@ -503,6 +503,9 @@ public:
     UnicodeString OracleCheckNumber;
     bool PrintSignatureWithDiscountSales;
     bool PrintSignatureWithRoomSales;
+    bool ApplyRoundingTax;
+    int RoundingTaxProfileKey;
+    double RoundingTaxRate;
     bool UseItalyFiscalPrinter;
 };
 
