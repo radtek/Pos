@@ -2896,10 +2896,18 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 					{
 						Csv.LoadFromFile(File);
 					}
-					Csv.Add((Payment->CSVString += "\u00A0") + "," + FormatDateTime("mm/dd/yyyy", Date()) + "," + FormatDateTime("hh:nn",
-					Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
-					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
-
+                    if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
+                    {
+                        Csv.Add((Payment->CSVString) + "," + FormatDateTime("mm/dd/yyyy", Date()) + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
+                    }
+                    else
+                    {
+                        Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+                    }
 					Csv.SaveToFile(File);
 				}
 				__finally
