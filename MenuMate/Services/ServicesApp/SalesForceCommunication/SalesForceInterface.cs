@@ -25,6 +25,7 @@ namespace SalesForceCommunication
             _accountFieldsMapper = new AccountFieldsMapper();
             _salesForceCommunicationHelper = new SalesForceCommunicationHelper(_salesforceService);
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => { return true; };
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
         }
 
         public bool Login(SalesForceCredential salesForceCredential)
