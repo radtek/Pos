@@ -4804,6 +4804,7 @@ void TfrmTransfer::PrintTransferChefNotification(Database::TDBTransaction &DBTra
             {
                  for(std::vector <AnsiString> ::iterator itertwo = iter->second.begin(); itertwo!= iter->second.end();itertwo++)
                  {
+                    TransferComplete->UserName =  TDeviceRealTerminal::Instance().User.Name;
                     TransferComplete->TableTransferedFrom = iter->first;
                     TransferComplete->TableTransferedTo = *itertwo;
                     Kitchen->GetPrintouts(DBTransaction, TransferComplete, TransferRequest.get(),true);
