@@ -3345,6 +3345,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Getting the Rounding Tax Rate",
 		vmgTax,
 		0);
+		SetVarBool(DBTransaction, vmIsSiHotPostInProgress, "Shows status of posting",
+		"Gets true while posting to SiHot ",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
