@@ -191,6 +191,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
         DBTransaction.Commit();
 
         double tip = 0;
+        double tipEftPOS = 0;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -198,10 +199,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             {
                tip += (double)payment->GetAdjustment();
             }
+            tipEftPOS += (double)payment->TipAmount;
         }
         double totalPayTendered = 0;
         double roundedPaymentAmount = (double)_paymentTransaction.Money.PaymentAmount -
-                                      (double)_paymentTransaction.Money.PaymentSurcharges;
+                                      (double)_paymentTransaction.Money.PaymentSurcharges
+                                      + tip;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -209,14 +212,13 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             totalPayTendered += amount;
             double portion = 0;
             double portionOriginal = 0;
-            tip += (double)payment->TipAmount;
             if((amount != 0)
                   && !payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
             {
                 roundedPaymentAmount += (double)payment->GetPayRounding();
                 portion = (double)amount/roundedPaymentAmount ;
                 portionOriginal = portion;
-//                portion = RoundTo(portion,-2);
+                tip += tipEftPOS;
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
                 if(payment->GetSurcharge() != 0)
@@ -260,11 +262,15 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                     int oldTotal = atoi(postRequest.TotalAmount.c_str());
                     oldTotal += roundingPortionInt;
                     postRequest.TotalAmount = oldTotal;
-                    if(postRequest.Subtotal1.size() > 0)
+                    for(int index = 0; index < postRequest.Subtotal1.size(); index++)
                     {
-                        int oldSubTotal = atoi(postRequest.Subtotal1[0].c_str());
-                        oldSubTotal += roundingPortionInt;
-                        postRequest.Subtotal1[0] = oldSubTotal;
+                       if(postRequest.Subtotal1[index].Trim() != "")
+                       {
+                           int oldSubTotal = atoi(postRequest.Subtotal1[index].c_str());
+                           oldSubTotal += roundingPortionInt;
+                           postRequest.Subtotal1[index] = oldSubTotal;
+                           break;
+                       }
                     }
                 }
                 postRequest.CheckNumber = checkNumber;
