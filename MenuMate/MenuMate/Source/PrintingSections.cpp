@@ -9256,9 +9256,9 @@ bool TPrintSection::CheckToPrintPatronSection(TReqPrintJob *PrintJob)
     std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
     for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
     {
-         if(ptrPatronTypes->Name.Trim() == "Senior Citizen" && ptrPatronTypes->Count > 0)
+         if(ptrPatronTypes->Name.UpperCase().Trim() == "SENIOR CITIZEN" && ptrPatronTypes->Count > 0)
             isSCDAvailable = true;
-         if(ptrPatronTypes->Name.Trim() != "Senior Citizen" && ptrPatronTypes->Count > 0)
+         if(ptrPatronTypes->Name.UpperCase().Trim() != "SENIOR CITIZEN" && ptrPatronTypes->Count > 0)
             isOtherAvailable = true;
     }
     retValue = isSCDAvailable && isOtherAvailable;
