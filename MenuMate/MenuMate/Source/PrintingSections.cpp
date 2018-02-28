@@ -22,7 +22,7 @@
 #include <map>
 #include <list>
 #include <cmath>
-
+#include "MMMessageBox.h"
 #include "DiscountGroup.h"
 #include "MMTouchKeyboard.h"
 #include "ZForm.h"
@@ -320,6 +320,10 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintSignatureSection, "Signature Section");
 	DefaultCaption[epofiPrintSignatureSection] = "Signature Section";
+
+    Instructions[i++] = InstructionPair(epofiPrintPatronsSection, "Patron Count Section");
+	DefaultCaption[epofiPrintPatronsSection] = "Patron Count Section";
+
 }
 
 
@@ -501,6 +505,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintOrganizationNumber:
     case epofiPrintOracleCheckNumber:
     case epofiPrintSignatureSection:
+    case epofiPrintPatronsSection:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -1018,6 +1023,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintSignatureSection:
             PrintSignatureSection(PrintJob);
+            break;
+        case epofiPrintPatronsSection:
+            PrintPatronSection(PrintJob);
             break;
 		default:
 			break;
@@ -9125,7 +9133,7 @@ void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
     }
 
     if(TGlobalSettings::Instance().NewBook == 2 && IsRMSPaymentType(PrintJob))
-    {    
+    {
         PrintJob->Transaction->Customer.Name = PrintJob->Transaction->Customer.Name;
         PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->Customer.RoomNumber;
     }
@@ -9208,3 +9216,52 @@ bool TPrintSection::IsRMSPaymentType(TReqPrintJob *PrintJob)
     }
     return retVal;
 }
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintPatronSection(TReqPrintJob *PrintJob)
+{
+    Empty = false;
+    if(CheckToPrintPatronSection(PrintJob))
+    {
+        pPrinter->DrawLine();
+        pPrinter->Line->ColCount = 2;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text = "Patron Name";
+        pPrinter->Line->Columns[1]->Text = "Count";
+        pPrinter->AddLine();
+        std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
+        for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
+        {
+            pPrinter->Line->ColCount = 2;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+            pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+            pPrinter->Line->Columns[0]->Text = ptrPatronTypes->Name;//customerDetails[index];
+            pPrinter->Line->Columns[1]->Text = "#" + (AnsiString)ptrPatronTypes->Count;//customerData[index];
+            pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+            pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+            pPrinter->AddLine();
+        }
+    }
+    else
+        Empty = true;
+}
+//-----------------------------------------------------------------------------
+bool TPrintSection::CheckToPrintPatronSection(TReqPrintJob *PrintJob)
+{
+    bool retValue = false;
+    bool isSCDAvailable = false;
+    bool isOtherAvailable = false;
+    std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
+    for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
+    {
+         if(ptrPatronTypes->Name.Trim() == "Senior Citizen" && ptrPatronTypes->Count > 0)
+            isSCDAvailable = true;
+         if(ptrPatronTypes->Name.Trim() != "Senior Citizen" && ptrPatronTypes->Count > 0)
+            isOtherAvailable = true;
+    }
+    retValue = isSCDAvailable && isOtherAvailable;
+    return retValue;
+}
+//-----------------------------------------------------------------------------
