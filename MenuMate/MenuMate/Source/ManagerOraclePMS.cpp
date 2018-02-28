@@ -262,11 +262,15 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                     int oldTotal = atoi(postRequest.TotalAmount.c_str());
                     oldTotal += roundingPortionInt;
                     postRequest.TotalAmount = oldTotal;
-                    if(postRequest.Subtotal1.size() > 0)
+                    for(int index = 0; index < postRequest.Subtotal1.size(); index++)
                     {
-                        int oldSubTotal = atoi(postRequest.Subtotal1[0].c_str());
-                        oldSubTotal += roundingPortionInt;
-                        postRequest.Subtotal1[0] = oldSubTotal;
+                       if(postRequest.Subtotal1[index].Trim() != "")
+                       {
+                           int oldSubTotal = atoi(postRequest.Subtotal1[index].c_str());
+                           oldSubTotal += roundingPortionInt;
+                           postRequest.Subtotal1[index] = oldSubTotal;
+                           break;
+                       }
                     }
                 }
                 postRequest.CheckNumber = checkNumber;
