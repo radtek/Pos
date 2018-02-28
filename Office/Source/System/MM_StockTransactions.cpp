@@ -196,17 +196,11 @@ TStockTransaction::TStockTransaction(TIBDatabase *IBDatabase) : TStockControl(IB
 
 			"StockLocation.Location,"
 			"StockLocation.On_Hand,"
-//			"StockLocation.On_Order,"
 			"StockLocation.Latest_Cost,"
 			"StockLocation.Average_Cost,"
 
 			"StockLocation.Writeoffs_Pending,"
 			"StockLocation.Sales_Pending,"
-
-//			"StockLocation.Initialised_Time_Stamp,"
-//			"StockLocation.Initialised_User_ID,"
-//			"StockLocation.Initialised_User_Name,"
-
 			"StockLocation.Last_Stocktake,"
 			"StockLocation.Transfer,"
 			"StockLocation.Inwards,"
@@ -256,40 +250,6 @@ bool TStockTransaction::fGetStockDetails(int StockKey, AnsiString Location, TSto
 		sqlStockDetails->Close();
 		return true;
 	}
-/*//	// If there is no source location, this is an error. Bail out. (Deleted by another user?)
-	if (!sqlStockDetails->Eof)
-	{
-		StockLocationDetails.StockCode			= sqlStockDetails->FieldByName("Code")->AsString;
-		StockLocationDetails.Description			= sqlStockDetails->FieldByName("Description")->AsString;
-		StockLocationDetails.GST_Percent			= sqlStockDetails->FieldByName("GST_Percent")->AsDouble;
-		StockLocationDetails.Stock_Category		= sqlStockDetails->FieldByName("Stock_Category")->AsString;
-		StockLocationDetails.Stock_Group			= sqlStockDetails->FieldByName("Stock_Group")->AsString;
-		StockLocationDetails.GL_Code				= sqlStockDetails->FieldByName("GL_Code")->AsString;
-		StockLocationDetails.Stocktake_Unit		= sqlStockDetails->FieldByName("Stocktake_Unit")->AsString;
-		StockLocationDetails.Average_Cost		= sqlStockDetails->FieldByName("Average_Cost")->AsDouble;
-		StockLocationDetails.Latest_Cost			= sqlStockDetails->FieldByName("Latest_Cost")->AsDouble;
-		StockLocationDetails.On_Hand				= sqlStockDetails->FieldByName("On_Hand")->AsDouble;
-//		StockLocationDetails.On_Order				= sqlStockDetails->FieldByName("On_Order")->AsDouble;
-
-		StockLocationDetails.Writeoffs_Pending	= sqlStockDetails->FieldByName("Writeoffs_Pending")->AsDouble;
-		StockLocationDetails.Sales_Pending		= sqlStockDetails->FieldByName("Sales_Pending")->AsDouble;
-
-		StockLocationDetails.Last_Stocktake		= sqlStockDetails->FieldByName("Last_Stocktake")->AsDateTime;
-		StockLocationDetails.Transfer				= sqlStockDetails->FieldByName("Transfer")->AsDouble;
-		StockLocationDetails.Inwards				= sqlStockDetails->FieldByName("Inwards")->AsDouble;
-		StockLocationDetails.Opening				= sqlStockDetails->FieldByName("Opening")->AsDouble;
-		StockLocationDetails.Writeoff				= sqlStockDetails->FieldByName("Writeoff")->AsDouble;
-		StockLocationDetails.Sales					= sqlStockDetails->FieldByName("Sales")->AsDouble;
-		StockLocationDetails.Stocktake			= sqlStockDetails->FieldByName("Stocktake")->AsDouble;
-
-		sqlStockDetails->Close();
-		return true;
-	}
-	else
-	{
-		sqlStockDetails->Close();
-		return false;
-	} */
 }
 //---------------------------------------------------------------------------
 void TStockTransaction::fReadStockDetails(TStockLocationDetails& StockLocationDetails)
@@ -305,21 +265,17 @@ void TStockTransaction::fReadStockDetails(TStockLocationDetails& StockLocationDe
 	StockLocationDetails.Average_Cost		= sqlStockDetails->FieldByName("Average_Cost")->AsDouble;
 	StockLocationDetails.Latest_Cost			= sqlStockDetails->FieldByName("Latest_Cost")->AsDouble;
 	StockLocationDetails.On_Hand				= sqlStockDetails->FieldByName("On_Hand")->AsDouble;
-//	StockLocationDetails.On_Order				= sqlStockDetails->FieldByName("On_Order")->AsDouble;
-
 	StockLocationDetails.Writeoffs_Pending	= sqlStockDetails->FieldByName("Writeoffs_Pending")->AsDouble;
 	StockLocationDetails.Sales_Pending		= sqlStockDetails->FieldByName("Sales_Pending")->AsDouble;
-
 	StockLocationDetails.Last_Stocktake		= sqlStockDetails->FieldByName("Last_Stocktake")->AsDateTime;
 	StockLocationDetails.Transfer				= sqlStockDetails->FieldByName("Transfer")->AsDouble;
 	StockLocationDetails.Inwards				= sqlStockDetails->FieldByName("Inwards")->AsDouble;
 	StockLocationDetails.Opening				= sqlStockDetails->FieldByName("Opening")->AsDouble;
 	StockLocationDetails.Writeoff				= sqlStockDetails->FieldByName("Writeoff")->AsDouble;
 	StockLocationDetails.Sales					= sqlStockDetails->FieldByName("Sales")->AsDouble;
-	StockLocationDetails.Stocktake			= sqlStockDetails->FieldByName("Stocktake")->AsDouble;   //
+	StockLocationDetails.Stocktake			= sqlStockDetails->FieldByName("Stocktake")->AsDouble;    
     StockLocationDetails.Last_latest_cost	= sqlStockDetails->FieldByName("Last_Cost")->AsDouble;
-
- }
+}
 //---------------------------------------------------------------------------
 bool TStockTransaction::fCreateBatch(TTransactionBatchInfo& BatchInfo)
 {
@@ -349,7 +305,7 @@ bool TStockTransaction::fCreateBatch(TTransactionBatchInfo& BatchInfo)
 		sqlCreateBatch->ParamByName("Export_2")->AsString			= BatchInfo.Export_2;
 		sqlCreateBatch->ParamByName("Export_3")->AsString			= BatchInfo.Export_3;
 		sqlCreateBatch->ParamByName("Order_Number")->AsString		= BatchInfo.Order_Number;
-		sqlCreateBatch->ParamByName("Total_Cost")->AsDouble		= BatchInfo.Total_Cost;
+		sqlCreateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? double(BatchInfo.Total_Cost) : 0;
 		sqlCreateBatch->ParamByName("Total_GST")->AsDouble			= BatchInfo.Total_GST;
 		sqlCreateBatch->ParamByName("Closed")->AsString				= BatchInfo.Closed?"T":"F";
 		sqlCreateBatch->ParamByName("Exported")->AsString			= BatchInfo.Exported?"T":"F";
@@ -381,7 +337,7 @@ bool TStockTransaction::fUpdateBatch(TTransactionBatchInfo& BatchInfo)
         case ttPackingSlip: sqlUpdateBatch->ParamByName("Transaction_Type")->AsString = "Packing Slip";     break;
 	}
 		sqlUpdateBatch->ParamByName("Batch_Key")->AsInteger 		= BatchInfo.BatchID;
-		sqlUpdateBatch->ParamByName("Total_Cost")->AsDouble		= BatchInfo.Total_Cost;
+		sqlUpdateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? double(BatchInfo.Total_Cost) : 0;
 		sqlUpdateBatch->ParamByName("Total_GST")->AsDouble			= BatchInfo.Total_GST;
         sqlUpdateBatch->ParamByName("Reference")->AsString			= BatchInfo.Reference;
         sqlUpdateBatch->ParamByName("ISCOMMITTED_PACKINGSLIP")->AsString			= BatchInfo.ISCOMMITTED_PACKINGSLIP?"T":"F";
@@ -425,8 +381,8 @@ void TStockTransaction::fAddBatchTransaction(TTransactionInfo const& Transaction
 	sqlCreateTransaction->ParamByName("GL_Code")->AsString			= TransactionInfo.GL_Code;
 	sqlCreateTransaction->ParamByName("Qty")->AsDouble					= TransactionInfo.Qty;
 	sqlCreateTransaction->ParamByName("Unit")->AsString				= TransactionInfo.Unit;
-	sqlCreateTransaction->ParamByName("Unit_Cost")->AsCurrency		= TransactionInfo.Unit_Cost;
-	sqlCreateTransaction->ParamByName("Total_Cost")->AsCurrency		= TransactionInfo.Total_Cost; //cww
+	sqlCreateTransaction->ParamByName("Unit_Cost")->AsCurrency		= TransactionInfo.Unit_Cost > -1000000 ? double(TransactionInfo.Unit_Cost) : 0;;
+	sqlCreateTransaction->ParamByName("Total_Cost")->AsCurrency		= TransactionInfo.Total_Cost > -1000000 ? double(TransactionInfo.Total_Cost) : 0; //cww
 	sqlCreateTransaction->ParamByName("Location")->AsString			= TransactionInfo.Location;
 	sqlCreateTransaction->ParamByName("Purchaser_Name")->AsString	= TransactionInfo.Purchaser_Name;
  	sqlCreateTransaction->ParamByName("Order_Unit")->AsString		= TransactionInfo.Order_Unit;
@@ -1289,7 +1245,7 @@ void TStocktakeControl::EnumStocktakes(TStocktakeList &StocktakeList, bool Unini
 				sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Or";
 			}
 		}
-		sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Order By upper(Name)asc "; //Initialised_Time";
+          sqlEnumStocktakes->SQL->Text = sqlEnumStocktakes->SQL->Text + " Order By INITIALISED_TIME ASC ,upper(LOCATION) , upper(NAME) ";
 
 		for (sqlEnumStocktakes->ExecQuery(); !sqlEnumStocktakes->Eof; sqlEnumStocktakes->Next())
 		{

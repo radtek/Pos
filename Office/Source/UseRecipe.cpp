@@ -36,6 +36,8 @@ __fastcall TfrmUseRecipe::TfrmUseRecipe(TComponent* Owner)
     IsSearchBoxClicked = false;
 	dtRecipes->Close();
 	dtRecipes->Open();
+    NumQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+    NumericEdit1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmUseRecipe::DBGridOnClick(TColumn *Column)
@@ -47,6 +49,7 @@ void __fastcall TfrmUseRecipe::DBGridOnClick(TColumn *Column)
 //---------------------------------------------------------------------------
 void TfrmUseRecipe::DisplayStock(void)
 {
+
     ItemPrices.clear();
     NumTotal->Value = 0;
 
@@ -86,7 +89,7 @@ void TfrmUseRecipe::DisplayStock(void)
 
         NodeData->Text = qrRecipe->FieldByName("Required_Stock")->AsString;
         NodeData->Location = qrRecipe->FieldByName("Stock_Location")->AsString;
-        NodeData->Qty = qrRecipe->FieldByName("Stock_Qty")->AsFloat;
+        NodeData->Qty = StrToFloat(FloatToStrF(qrRecipe->FieldByName("Stock_Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
         NodeData->Unit = qrRecipe->FieldByName("Stock_Unit")->AsString;
         NodeData->Code = qrRecipe->FieldByName("Stock_Code")->AsString;
 
@@ -94,6 +97,7 @@ void TfrmUseRecipe::DisplayStock(void)
         temp = ItemPrices[NodeData->Text + "," + NodeData->Location] * NodeData->Qty;
 
         NumTotal->Value = NumTotal->Value + temp;
+        NumTotal->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
         Filter = true;
 	}
 }
@@ -130,7 +134,7 @@ void __fastcall TfrmUseRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
       WideString &CellText)
 {
 	TRecipeNodeData *NodeData = (TRecipeNodeData *)Sender->GetNodeData(Node);
-
+  
 	if (NodeData)
 	{
         if(Filter)
@@ -148,15 +152,14 @@ void __fastcall TfrmUseRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 			case 2:	CellText = NodeData->Unit;
 						break;
 			case 3:	CellText = NodeData->Qty;
+
 						break;
             case 4: CellText = NodeData->RecipeQty;
                         break;
-            case 5:
-                    CellText = FloatToStrF(NodeData->AverageCost, ffCurrency, 19, 2);
+            case 5: CellText = FloatToStrF(NodeData->AverageCost, ffCurrency, 19, CurrentConnection.SettingDecimalPlaces);
                     if(HideCosts)
                         CellText = "Unavailable";
-
-                        break;
+                     break;
 		}
     }
 	else
@@ -217,6 +220,7 @@ void __fastcall TfrmUseRecipe::vtvStockCreateEditor(
       TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
       IVTEditLink *EditLink)
 {
+
 	if (Node && Column == 1)
 	{
  		TRecipeNodeData *NodeData = (TRecipeNodeData *)Sender->GetNodeData(Node);
@@ -269,6 +273,7 @@ void __fastcall TfrmUseRecipe::vtvStockEdited(TBaseVirtualTree *Sender,
 		{
             Filter = false;
 			TRecipeNodeData *NodeData	= (TRecipeNodeData *)vtvStock->GetNodeData(vtvStock->FocusedNode);
+          
 			NodeData->RecipeQty					= NumericEdit1->Value;
             NodeData->AverageCost = (ItemPrices[NodeData->Text + "," + NodeData->Location] * NumericEdit1->Value);
             UpdateTotal();
@@ -432,7 +437,7 @@ void TfrmUseRecipe::UpdateDB(void)
 
             double AveCost = ItemPrices[NodeData->Text + "," + NodeData->Location];
 
-            ManufactureStock.UpdateStock(temp, -NodeData->RecipeQty, AveCost, true);     // change for manufacture receipes qty for initial items...... 
+            ManufactureStock.UpdateStock(temp, -NodeData->RecipeQty, AveCost, true);     // change for manufacture receipes qty for initial items......
 
             Node = vtvStock->GetNext(Node);
         }   
@@ -500,8 +505,9 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
     try
     {
         int Stock_Key;
-        double Price;
-        double OnHand;
+        double Price = 0;
+        double OnHand = 0;
+        Currency AverageCostNew = 0;
 
         Query->Close();
         Query->SQL->Text =
@@ -532,7 +538,8 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
             "Where Stock_Key = :Stock_Key And Location = :Location;";
         Query->ParamByName("Location")->AsString = Location;
         Query->ParamByName("Stock_Key")->AsInteger = Stock_Key;
-        Query->ParamByName("Average_Cost")->AsCurrency = ((OnHand * Price) + ((double)NumTotal->Value/(double)NumQty->Value * NumQty->Value)) / (OnHand + NumQty->Value);
+        AverageCostNew =  ((OnHand * Price) + ((double)NumTotal->Value/(double)NumQty->Value * NumQty->Value)) / (OnHand + NumQty->Value);
+        Query->ParamByName("Average_Cost")->AsCurrency = AverageCostNew > -1000000 ? double(AverageCostNew) : 0;
         Query->ParamByName("Latest_Cost")->AsCurrency = (double)NumTotal->Value/(double)NumQty->Value;
         Query->ExecQuery();
     }
@@ -548,7 +555,7 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
 void __fastcall TfrmUseRecipe::NumQtyOnChange(TObject *Sender)
 {
 	PVirtualNode Node = vtvStock->GetFirst();
-    double temp;
+    double temp = 0;
     NumTotal->Value = 0;
 
     while(Node)
@@ -566,7 +573,7 @@ void __fastcall TfrmUseRecipe::NumQtyOnChange(TObject *Sender)
 void TfrmUseRecipe::UpdateTotal(void)
 {
 	PVirtualNode Node = vtvStock->GetFirst();
-    double temp;
+    double temp = 0;
     NumTotal->Value = 0;
 
     while(Node)

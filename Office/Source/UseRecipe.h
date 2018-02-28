@@ -108,6 +108,7 @@ private:
     void loadreceipe();
 public:
     __fastcall TfrmUseRecipe(TComponent* Owner);
+
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TForm3 *Form3;

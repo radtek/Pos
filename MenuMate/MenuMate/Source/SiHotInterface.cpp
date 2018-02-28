@@ -42,7 +42,21 @@ TRoomResponse TSiHotInterface::SendRoomRequest(TRoomRequest _roomRequest)
     }
     catch(Exception & E)
     {
-       return roomResponse;
+        AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        directoryName = directoryName + "/Sihot Post Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+        AnsiString fileName =  directoryName + "/" + name;
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        List->Add("Exception Occurred while communication:- " + E.Message);
+        List->Add("=================================================================");
+        List->SaveToFile(fileName);
+        return roomResponse;
 	}
 }
 //---------------------------------------------------------------------------
@@ -70,7 +84,9 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
 TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge)
 {
     TRoomChargeResponse roomChargeResponse;
+    roomChargeResponse.IsSuccessful = false;
     RoomChargeResponse *roomResponse = new RoomChargeResponse;
+    roomResponse->IsSuccessful = false;
     // Post room charge and get Response
     RoomChargeDetails *roomChargeDetails = new RoomChargeDetails;
     try

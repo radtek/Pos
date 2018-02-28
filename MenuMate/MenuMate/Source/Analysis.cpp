@@ -2999,11 +2999,8 @@ Zed:
 
 					}
 				}
-				if (MessageBox("Do you wish to Reset the Chit Number to #1 for all MenuMate P.O.S Terminals Now?",
-							"Reset Chit Number on all P.O.S Terminals", MB_YESNO + MB_ICONQUESTION) == IDYES)
-				{
-					TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
-				}
+
+                TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
 				PatronCountXML->Clear();
                 Processing->Message = "Processing End Of Day...";
                 UpdateSalesForce(); //update sales force

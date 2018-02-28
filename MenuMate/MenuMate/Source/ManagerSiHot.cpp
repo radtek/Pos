@@ -35,6 +35,35 @@ TManagerSiHot::~TManagerSiHot()
 
 }
 //---------------------------------------------------------------------------
+void TManagerSiHot::LogPMSEnabling(TriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling SiHot at start of Menumate" +"\n");
+        }
+        else if(triggerType == eSelf)
+        {
+            List->Add("Note- "+ (AnsiString)"Found SiHot disabled with necessary details present" +"\n" +
+                  "      "+ "Menumate is trying to enable SiHot and then sale would be processed" +"\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
 void TManagerSiHot::Initialise()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -56,8 +85,8 @@ void TManagerSiHot::Initialise()
     RoundingAccountSiHot = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
     DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
-
-	DBTransaction.Commit();
+    RevenueCodesMap.clear();
+    UnsetPostingFlag();
 	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
@@ -71,6 +100,7 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = false;
 	}
+    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::GetRoundingandDefaultAccount()
@@ -78,6 +108,7 @@ bool TManagerSiHot::GetRoundingandDefaultAccount()
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort);
+    UpdateSiHotLogs(retValue);
     if(!retValue)
         MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     return retValue;
@@ -129,17 +160,25 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
-        {
+//        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
+//        {
+            AnsiString responseString = "";
+            responseString = roomResponse.ResponseMessage;
             if(roomResponse.ResponseMessage == "")
-                roomResponse.ResponseMessage = "Sale could not get processed.Press OK to  process sale again";
-            if(MessageBox(roomResponse.ResponseMessage,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+                responseString = "Sale could not get processed.Press OK to  process sale again";
+            if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
+               responseString.Pos("accountclosed") != 0)
+            {
+                responseString += "\rPlease try again or check your Default Room configuration.";
+                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+            }
+            if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
                 retValue = false;
-        }
-        else
-        {
-            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
-        }
+//        }
+//        else
+//        {
+//            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
+//        }
     }
     return retValue;
 }
@@ -206,6 +245,7 @@ bool TManagerSiHot::GetDefaultAccount(UnicodeString processMessage)
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     retValue = siHotDataProcessor->GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0);
+    UpdateSiHotLogs(retValue);
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -217,6 +257,12 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)
+{
+   WaitOrProceedWithPost();
+   return ExportData(paymentTransaction);
+}
+//---------------------------------------------------------------------------
+bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
 {
     bool roomChargeSelected = false;
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
@@ -276,6 +322,170 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
         if(checkedCreditLimit && !creditLimitViolated)
           retValue = RoomChargePost(paymentTransaction);
     }
+    if(!retValue)
+        UnsetPostingFlag();
     return retValue;
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::UpdateSiHotLogs(bool status)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(status)
+        {
+            List->Insert((List->Count-1),"<<< SiHot Interface Enabled >>>");
+        }
+        else
+        {
+            List->Insert((List->Count-1),"<<< SiHot Interface Not Enabled >>>");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TManagerSiHot::GetLogFileName()
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\Sihot Post Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "\\" + name;
+    return fileName;
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::WaitOrProceedWithPost()
+{
+    bool isPosting = false;
+    int global_profile_key;
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    std::auto_ptr<TStringList> waitLogs(new TStringList);
+    try
+    {
+        Sleep(Random(21));
+        Sleep(Random(30));
+        Sleep(Random(50));
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        tr.StartTransaction();
+        // This is used to retain the state of the checkbox if the POS is exited
+        #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        #pragma warn .pia
+        TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
+        if(isPosting)
+            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
+        while(isPosting)
+        {
+            Sleep(400);
+            TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
+        }
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,true);
+        tr.Commit();
+        //SetPostingFlag();
+        if(waitLogs->Count > 0)
+        {
+            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("=================================================================================");
+            LogWaitStatus(waitLogs);
+        }
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::LogWaitStatus(std::auto_ptr<TStringList> waitLogs)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        for(int index = 0; index < waitLogs->Count; index++)
+        {
+            AnsiString value = waitLogs->operator [](index);
+            List->Add(value);
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::SetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,true);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::UnsetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsSiHotPostInProgress,false);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //---------------------------------------------------------------------------

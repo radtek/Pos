@@ -181,6 +181,8 @@ class TImportMenu
 		                                    TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction );
         void SaveItemSizePriceLevelFromMenu( __int32 inIndex, __int32 inItemSizeXMLHandle, __int32 inItemSizeKey,
 											     TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction );
+        void SaveRevenueCodes( TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction );
+        void InsertRevenueCodesInDB(int index,TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction);
 
 
 		//::::::::::::::::::::::::::::
@@ -374,6 +376,7 @@ class TImportMenu
                         bool       inCanBePaidUsingPoints,
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
+                        int        inrevenueCode,
 						Database::TDBTransaction *inDBTransaction );
 
 		   void InsertItemSizeInDBWithKey(
@@ -417,6 +420,7 @@ class TImportMenu
                         bool       inCanBePaidUsingPoints,
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
+                        int        inrevenueCode,
 						Database::TDBTransaction *inDBTransaction );
 
 		__int32 InsertBCategoryInDB( __int32 inItemSizeKey, __int32 inCategoryKey,
@@ -521,6 +525,7 @@ class TImportMenu
 						bool inDisableWhenCountReachesZero,
                         bool inCanBePaidUsingPoints,
                         Currency   inPriceForPoints,
+                        int        inrevenueCode,
 						Database::TDBTransaction *inDBTransaction );
 
 		__int32 UpdateItemSizeReceipeInDB( __int32 inReceipeKey, __int32 inItemSizeKey,
@@ -617,6 +622,9 @@ class TImportMenu
         bool ThirdPartyCodeExists(
                 Database::TDBTransaction *inDBTransaction,
                 WideString inCode );
+        bool RevenueCodeExists(
+                Database::TDBTransaction *inDBTransaction,
+                __int32 inCode );
         __int32 GetTPCKey(
                     Database::TDBTransaction *inDBTransaction,
                     WideString inCode );

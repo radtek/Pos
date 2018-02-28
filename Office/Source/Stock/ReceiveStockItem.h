@@ -106,6 +106,7 @@ private:	// User declarations
         bool isPrefferedSupplierSelected;
 //	bool InvoiceContainsItem(AnsiString StockCode, AnsiString SupplierUnit, AnsiString InvoiceRef);
 	const std::auto_ptr<TfrmAddStock>frmAddStock;
+    
 public:		// User declarations
 	__fastcall TfrmReceiveStockItem(TComponent* Owner);
 	AnsiString	StockCode;
@@ -130,12 +131,13 @@ public:		// User declarations
 	double		SupplierUnitQty;
 	double		StocktakeUnitQty;
 	Currency	   SupplierUnitCost;
-   double LatestCost;
+    double LatestCost;
    double OnHandQty;
    	int	StockRequestSupplierKey;
    	AnsiString	CheckLocation;
 	TModalResult Execute();	// Call this - not Show()
     bool AllowNegativeQuantity;
+
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmReceiveStockItem *frmReceiveStockItem;

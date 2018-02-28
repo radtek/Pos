@@ -1770,12 +1770,14 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 	qrWages->Close();
 	qrWages->SQL->Text =
 
- "select "
+   "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1807,7 +1809,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
-        
+
 
     if (Names && Names->Count > 0)
 	{
@@ -1818,14 +1820,16 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 
                             " ) "
 
-    "Union All "
+     "Union All "
 
         "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "Login_DateTime, "
-           "Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1855,6 +1859,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
+
     if (Names && Names->Count > 0)
 	{
 		qrWages->SQL->Text	=	qrWages->SQL->Text + "and (" +
@@ -1865,7 +1870,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                             " )"
 
                             "Order by "
-                                "9,2,4";
+                                "11,2,4";
 
 	if (Names)
 	{
@@ -1888,8 +1893,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1902,8 +1909,9 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                         "C.Contact_Type, "
                         "C.Name, "
                         "C.Payroll_ID, "
-                        "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
+                          "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
+                        
                         "ct.Breaks, "
                         "ct.TOTALHOURS, "
                         "TCL.Name Department, "
@@ -1936,8 +1944,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1977,7 +1987,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                             " )"
 
                             "Order by "
-                                "2,9,4";
+                                "2,11,4";
 
 	if (Names)
 	{
@@ -9368,7 +9378,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 
 	"Select "
 			"Security.Security_Event,"
-		   "(NAME || ' ' || Last_Name) as Name, "
+		   "(NAME || ' ' || Orders.Last_Name) as Name, "
 			"Orders.Time_Stamp,"
 			"Orders.Menu_Name Group_Name,"
 			"Orders.Course_Name,"
@@ -9394,7 +9404,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-													ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
+													ParamString(Names->Count, "(NAME || ' ' || Orders.Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 

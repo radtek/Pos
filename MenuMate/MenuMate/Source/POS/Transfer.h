@@ -273,6 +273,9 @@ private:	// User declarations
     void SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
     void SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
     bool CheckToOverwriteSourceStatus(Database::TDBTransaction &DBTransaction,bool checkSourceTable);
+    void PrintTransferChefNotification(Database::TDBTransaction &DBTransaction ,bool IsPartialTransferForTable = false);
+    bool IsDisplayTransferFromPressed;
+    bool IsDisplayTransfertoPressed;
 
 public:		// User declarations
     __fastcall TfrmTransfer(TComponent* Owner,Database::TDBControl &inDBControl);
@@ -312,6 +315,8 @@ public:		// User declarations
     bool CloseClipTab;
     bool ItemTransferredFromClip;
     bool isClipLongPress;
+    std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
+    void SaveItemsGuestToPrint();
 };
 //---------------------------------------------------------------------------
 #endif

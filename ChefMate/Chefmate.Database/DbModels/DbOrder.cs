@@ -214,7 +214,8 @@ namespace Chefmate.Database.DbModels
                                 ON A.ORDER_KEY = B.ORDER_KEY
                                 INNER JOIN ORDERITEMS C 
                                 ON B.ORDERGROUP_KEY = C.SERVINGCOURSE_KEY
-                                WHERE C.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS AND C.TERMINAL_KEY =@TERMINAL_KEY";
+                                WHERE C.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS AND C.TERMINAL_KEY =@TERMINAL_KEY
+                                ORDER BY a.ORDER_SALE_START_TIME";
             var parameters = new List<QueryParameter>();
             parameters.Add(new QueryParameter("ORDER_ITEM_STATUS", OrderStatus.Bumped));
             parameters.Add(new QueryParameter("TERMINAL_KEY", terminalKey));

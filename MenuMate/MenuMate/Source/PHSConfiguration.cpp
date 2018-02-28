@@ -9,6 +9,8 @@
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
 #include "VerticalSelect.h"
+#include "MessageMaintenance.h"
+#include "PMSTaxCodes.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -38,8 +40,6 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIPAddressClick(TObject *Sender)
 		frmTouchKeyboard->Caption = "Enter the IP Address of the PMS Hotel System.";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
-//			PhoenixHM->TCPIPAddress = frmTouchKeyboard->KeyboardText;
-//			tbPhoenixIPAddress->Caption = "Server TCP IP Address\r" + PhoenixHM->TCPIPAddress;
 			TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress = frmTouchKeyboard->KeyboardText.Trim();
             if(PMSType == siHot)
             {
@@ -98,22 +98,22 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIDClick(TObject *Sender)
 	}
 	else
 	{
-      std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-		frmTouchNumpad->Caption = "Enter the Unique ID for this POS.";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->POSID;
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->POSID = frmTouchNumpad->INTResult;
-			tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        frmTouchNumpad->Caption = "Enter the Unique ID for this POS.";
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->Mode = pmNumber;
+        frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->POSID;
+        if (frmTouchNumpad->ShowModal() == mrOk)
+        {
+            TDeviceRealTerminal::Instance().BasePMS->POSID = frmTouchNumpad->INTResult;
+            tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
             Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSPOSID,TDeviceRealTerminal::Instance().BasePMS->POSID);
             DBTransaction1.Commit();
-		}
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -149,9 +149,26 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
-        tbRoundingCategory->Enabled = false;
         cbEnableCustomerJourney->Enabled = true;
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
+        tbServingTime->Enabled = false;
+        tbRevenueCentre->Enabled = false;
+        tbRevenueCodes->Enabled = false;
+    }
+    else if(PMSType == oracle)
+    {
+        tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+        tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+        tbTipAccount->Enabled = false;
+        tbExpensesAccount->Enabled = false;
+        tbServiceCharge->Enabled = false;
+        TouchBtn1->Enabled = false;
+        tbRoundingCategory->Enabled = false;
+        tbItemDefCat->Enabled = false;
+        tbDefTransAccount->Enabled = false;
+        tbSurchargeCat->Enabled = false;
+        tbPhoenixID->Enabled = false;
+        cbEnableCustomerJourney->Enabled = false;
     }
     else
     {
@@ -160,15 +177,22 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
+        tbServingTime->Enabled = false;
+        tbRevenueCodes->Enabled = false;
+        tbRevenueCentre->Enabled = false;
+        cbEnableCustomerJourney->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;;
 }
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 {
+    if(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "")
+        TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eUI);
     TDeviceRealTerminal::Instance().BasePMS->Initialise();
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
@@ -178,7 +202,6 @@ void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 	Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
@@ -189,7 +212,10 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
@@ -245,7 +271,10 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
@@ -273,7 +302,10 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
 	else
 	{
 	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
+        if(PMSType != oracle)
+		    frmTouchKeyboard->MaxLength = 255;
+        else
+            frmTouchKeyboard->MaxLength = 6;
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
@@ -307,10 +339,7 @@ void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        //if(PMSType == SiHot)
-    	 //	frmTouchKeyboard->Caption = "Enter the Service Charge Account.";
-       /// else
-            frmTouchKeyboard->Caption = "Enter the Default Transaction Account.";
+        frmTouchKeyboard->Caption = "Enter the Default Transaction Account.";
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount = frmTouchKeyboard->KeyboardText;
@@ -472,33 +501,6 @@ void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)
 		}
 	}
 }
-//----------------------------------------------------------------------------
-//void __fastcall TfrmPHSConfiguration::tbRoundingAccountClick(TObject *Sender)
-//{
-//    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
-//	{
-//		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
-//	}
-//	else
-//	{
-//	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-//		frmTouchKeyboard->MaxLength = 255;
-//		frmTouchKeyboard->AllowCarriageReturn = false;
-//		frmTouchKeyboard->StartWithShiftDown = false;
-//		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
-//		frmTouchKeyboard->Caption = "Enter the Default Transaction Account";
-//		if (frmTouchKeyboard->ShowModal() == mrOk)
-//		{
-//            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-//            DBTransaction1.StartTransaction();
-//			TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot = frmTouchKeyboard->KeyboardText;
-//			tbRoundingAccount->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
-//            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSRoundingAccountSiHot,TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot);
-//            DBTransaction1.Commit();
-//		}
-//	}
-//}
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
 {
@@ -533,6 +535,53 @@ void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Send
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableCustomerJourney, TGlobalSettings::Instance().EnableCustomerJourney);
     DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
+{
+   std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                 (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                              (this,TDeviceRealTerminal::Instance().DBControl));
+   frmMessageMaintenance->MessageType = eRevenueCodes;
+   frmMessageMaintenance->ShowModal();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbServingTimeMouseClick(TObject *Sender)
+{
+   std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                 (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                              (this,TDeviceRealTerminal::Instance().DBControl));
+   frmMessageMaintenance->MessageType = eServingTimes;
+   frmMessageMaintenance->ShowModal();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+		frmTouchNumpad->Caption = "Enter Revenue Centre.";
+		frmTouchNumpad->btnSurcharge->Caption = "Ok";
+		frmTouchNumpad->btnSurcharge->Visible = true;
+		frmTouchNumpad->btnDiscount->Visible = false;
+		frmTouchNumpad->Mode = pmNumber;
+		frmTouchNumpad->INTInitial = atoi(TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.c_str());
+        frmTouchNumpad->SetMaxLengthValue(5);
+		if (frmTouchNumpad->ShowModal() == mrOk)
+		{
+			TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchNumpad->INTResult;
+			tbRevenueCentre->Caption = "Revenue Centre ID\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCentre,TDeviceRealTerminal::Instance().BasePMS->RevenueCentre);
+            DBTransaction1.Commit();
+		}
+	}
 }
 //---------------------------------------------------------------------------
 

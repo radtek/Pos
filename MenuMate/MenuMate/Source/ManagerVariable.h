@@ -58,8 +58,7 @@ enum vmVariables
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
    vmIntaMateTerminalID, vmIntaMateIPTimeOut, vmPocketVoucherURL, vmMembershipTillID,
    vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,vmPMSTipAccount,vmPMSExpensesAccount,vmPMSServiceChargeAccount,
-   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName, vmEnableCustomerJourney,
-
+   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName, vmEnableCustomerJourney,vmRevenueCentre,
 	// Stock Master ----------------------------------------------------------------
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,
 
@@ -124,6 +123,7 @@ enum vmVariables
     vmReportExportPath,
     vmIsBillSplittedByMenuType,
     vmIsAutoLoggedOut,
+    vmDiningBal,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -147,6 +147,7 @@ enum vmVariables
    vmAutoPrintWebReceipts,vmReceiptNumberLabel,vmReprintReceiptLabel, vmShowSessionDateInZed,vmPrintZeroTaxes,vmPrintNoticeOnTransfer, vmShowPriceAdjustment, vmRevenueFiguresAreDiscountInclusive,
    vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt, vmSetVoidFooter,
    vmReceiptDigits, vmShowVoidOrRefund, vmShowVoidNumber,vmRefundReferenceLabel,vmSetSubHeader,vmUseBIRFormatInXZReport,
+   vmAlwaysPrintReceiptDiscountSales, vmPrintSignatureWithDiscountSales, vmPrintSignatureWithRoomSales,
    // Printers   ------------------------------------------------------------------
    vmPrinterModel = 7000, vmPrinterEmulationMode, vmNormalCPL, vmNormalBoldCPL, vmCutterGap, vmTopMargin, vmKitchenTopMargin,
    vmAlwaysUseFullCut, vmKanjiPrinter, vmSingleLineChar, vmDoubleLineChar, vmGraphicPrinter, vmGraphicFontName, vmGraphicFontSize,
@@ -217,7 +218,10 @@ enum vmVariables
     vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,
     vmPMSType, vmIsFiscalStorageEnabled, vmFiscalServerPortNumber,
     vmFiscalBaudRate, vmFiscalDataBits,vmFiscalStopBits,vmFiscalParityBits,
-    vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails
+    vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,
+    vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
+    vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
+    vmIsSiHotPostInProgress
 };
 
 // ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
-
+#include "Connections.h"
 #include "Stocktake.h"
 #include "StockData.h"
 #include "Login.h"
@@ -40,7 +40,10 @@ public:
 	Currency			OnHand;
 	Currency			Stocktake;
 	Currency			Variance;
+
 };
+
+
 // storage of key and qty that were loaded from the file - multiple barcodes in the file
 typedef std::map<int,double> TStockMap;
 //---------------------------------------------------------------------------
@@ -65,6 +68,7 @@ __fastcall TfrmStocktake::TfrmStocktake(Stock::TStocktakeControl &StocktakeContr
 //---------------------------------------------------------------------------
 void __fastcall TfrmStocktake::FormShow(TObject *Sender)
 {
+    neStockQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
 	lbeLocation->Caption = "Loading...";
 	PostMessage(Handle, WM_AFTERSHOW, 0, 0);
 	btnImportCount->Enabled = (CurrentConnection.StocktakePath != "" && CurrentConnection.StocktakeBarcodePos != -1 && CurrentConnection.StocktakeQtyPos != -1);
@@ -97,6 +101,7 @@ void __fastcall TfrmStocktake::AfterShow(TMessage& Message)
 //---------------------------------------------------------------------------
 void TfrmStocktake::LoadTree()
 {
+    
 	if (fStocktake.Committed)
 	{
 		lbeLocation->Caption = "Stocktake Location: " + fStocktake.Location + " - Committed";
@@ -171,10 +176,10 @@ void TfrmStocktake::LoadTree()
 		//NodeData->Barcode								   = qrStock->FieldByName("Barcode")->AsString;
 		NodeData->Initialised				         = qrStock->FieldByName("Initialised")->AsString == "T";
 		NodeData->Unit							         = qrStock->FieldByName("Stocktake_Unit")->AsString;
-		NodeData->OnHand						         = qrStock->FieldByName("On_Hand")->AsDouble;
-		NodeData->Stocktake					         = qrStock->FieldByName("Stocktake")->AsDouble;
+        NodeData->OnHand					         =  qrStock->FieldByName("On_Hand")->AsDouble;
+        NodeData->Stocktake				         =   qrStock->FieldByName("Stocktake")->AsDouble;
 		NodeData->Variance					         = qrStock->FieldByName("Variance")->AsDouble;
-
+        
 		if (NodeData->Key == CurrentStockKey)
 		{
 			SelectedStockNode								= StockNode;
@@ -457,6 +462,7 @@ void __fastcall TfrmStocktake::btnPrintStocktakeClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStocktake::btnPrintVarianceClick(TObject *Sender)
 {
+  
 	if (vtvStocktake->IsEditing())
 	{
 		vtvStocktake->EndEditNode();
@@ -658,15 +664,32 @@ void __fastcall TfrmStocktake::vtvStocktakeGetText(
 			{
 				switch (Column)
 				{
-					case 0:	CellText = NodeData->Description;							break;
-					case 1:	CellText = NodeData->Unit;										break;
-					case 2:	CellText = MMMath::FloatString(NodeData->OnHand);		break;
-					case 3:	CellText = MMMath::FloatString(NodeData->Stocktake);	break;
+					case 0:	CellText = NodeData->Description; break;
+					case 1:	CellText = NodeData->Unit;		  break;
+					case 2:
+                        {
+                        double onHand = NodeData->OnHand;
+                        onHand = RoundTo(onHand,-CurrentConnection.SettingDecimalPlaces);
+                        NodeData->OnHand = onHand;  // Node value also changed
+                        CellText = onHand;//MMMath::FloatString(NodeData->OnHand);
+                        break;
+                        }
+					case 3:
+                       {
+                       double countValue = NodeData->Stocktake;
+                       countValue = RoundTo(countValue,-CurrentConnection.SettingDecimalPlaces);
+                       NodeData->Stocktake = countValue;
+                       CellText = countValue;//MMMath::FloatString(NodeData->Stocktake);
+                       break;
+                       }
 					case 4:
 					{
 						if (NodeData->Variance != 0 && NodeData->Initialised)
 						{
-							CellText = MMMath::FloatString(NodeData->Variance);
+                            double initValue = NodeData->Variance;
+                            initValue = RoundTo(initValue,-CurrentConnection.SettingDecimalPlaces);
+                            NodeData->Variance = initValue;
+                            CellText = initValue;//MMMath::FloatString(NodeData->Variance, CurrentConnection.SettingDecimalPlaces);
 						}
 						else
 						{

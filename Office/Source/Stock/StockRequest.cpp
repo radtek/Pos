@@ -16,6 +16,7 @@
 #include "SelectSupplier.h"
 #include "SelectLocationSupplier.h"
 #include "StockGroup.h"
+#include "Connections.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "NumericEdit"
@@ -205,10 +206,13 @@ void __fastcall TfrmStockRequest::vtvStockQtyCreateEditor(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 IVTEditLink *EditLink)
 {
+
 	if (Node && Column == 4)
 	{
+
 		TStockRequestItemNodeData *NodeData = (TStockRequestItemNodeData *)Sender->GetNodeData(Node);
 		neStockQty->Value = NodeData->SupplierUnitQty;
+        neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
@@ -217,12 +221,15 @@ IVTEditLink *EditLink)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStockRequest::vtvStockQtyEdited(TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 {
+    
 	if (vtvStockQty->FocusedNode)
 	{
 		if (Column == 4)
 		{
 			TStockRequestItemNodeData *NodeData	= (TStockRequestItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
+            neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 			NodeData->SupplierUnitQty					= neStockQty->Value;
+             
 		}
 		vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
 	}
@@ -292,15 +299,19 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 2:	CellText = NodeData->Text;
 			break;
-		case 3:	CellText = MMMath::FloatString(NodeData->SupplierUnitCost, 2);
+		case 3:
+        CellText = MMMath::FloatString(NodeData->SupplierUnitCost, CurrentConnection.SettingDecimalPlaces);
 			break;
-		case 4: 	CellText = MMMath::FloatString(NodeData->SupplierUnitQty);
+		case 4:
+        CellText = MMMath::FloatString(NodeData->SupplierUnitQty,CurrentConnection.SettingDecimalPlaces);
 			break;
 		case 5:	CellText = NodeData->SupplierUnit;
 			break;
-		case 6:	CellText =  MMMath::FloatString(NodeData->onhand,2);;
+		case 6:
+        CellText = MMMath::FloatString(NodeData->onhand,CurrentConnection.SettingDecimalPlaces);
 			break;
-		case 7:	CellText =  MMMath::FloatString(NodeData->LatestCost,2);;
+		case 7:
+        CellText =  MMMath::FloatString(NodeData->LatestCost,CurrentConnection.SettingDecimalPlaces);
 			break;
 		}
 	}

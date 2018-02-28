@@ -1630,6 +1630,7 @@ bool TdmStockData::Update3_0()
 		IBQuery2->SQL->Text = "Select Gen_id(Gen_StockTrans, 1) From rdb$database";
 		IBQuery1->Close();
 		IBQuery1->SQL->Text = "Select * From StockTrans Where Transaction_Type = 'Transfer' And Qty >= 0";
+        double unitCost = 0.00;
 		for (IBQuery1->Open(); !IBQuery1->Eof; IBQuery1->Next())
 		{
 			IBQuery2->Open();
@@ -1647,7 +1648,8 @@ bool TdmStockData::Update3_0()
 			Query->ParamByName("Created")->AsDateTime			= IBQuery1->FieldByName("Created")->AsDateTime;
 			Query->ParamByName("Unit")->AsString				= IBQuery1->FieldByName("Unit")->AsString;
 			Query->ParamByName("Qty")->AsDouble					= -IBQuery1->FieldByName("Qty")->AsFloat;
-			Query->ParamByName("Unit_Cost")->AsDouble			= IBQuery1->FieldByName("Unit_Cost")->AsFloat;
+            unitCost = IBQuery1->FieldByName("Unit_Cost")->AsFloat;
+			Query->ParamByName("Unit_Cost")->AsDouble			=  unitCost > -1000000 ? double(unitCost) : 0;
 			Query->ParamByName("Purchaser_Name")->AsString	= IBQuery1->FieldByName("Location")->AsString;
 			Query->ExecQuery();
 
