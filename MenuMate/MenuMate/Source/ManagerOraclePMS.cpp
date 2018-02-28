@@ -191,6 +191,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
         DBTransaction.Commit();
 
         double tip = 0;
+        double tipEftPOS = 0;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -198,7 +199,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             {
                tip += (double)payment->GetAdjustment();
             }
-            tip += (double)payment->TipAmount;
+            tipEftPOS += (double)payment->TipAmount;
         }
         double totalPayTendered = 0;
         double roundedPaymentAmount = (double)_paymentTransaction.Money.PaymentAmount -
@@ -217,6 +218,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 roundedPaymentAmount += (double)payment->GetPayRounding();
                 portion = (double)amount/roundedPaymentAmount ;
                 portionOriginal = portion;
+                tip += tipEftPOS;
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
                 if(payment->GetSurcharge() != 0)
