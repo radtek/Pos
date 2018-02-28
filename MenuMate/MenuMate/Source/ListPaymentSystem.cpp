@@ -68,7 +68,8 @@
 #include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
-
+#include "FiscalDataUtility.h"
+#include "ManagerSiHot.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -511,7 +512,6 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
     {
         LoadClippPaymentTypes(PaymentTransaction);
     }
-
 	IBInternalQuery->Close();
 	IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
 	IBInternalQuery->ExecQuery();
@@ -547,8 +547,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	    loadPaymentTypeGroupsForPaymentType(IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment );
 	    PaymentTransaction.PaymentAdd(NewPayment);
     }
-
-
+//    for(int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+//    {
+//        MessageBox((PaymentTransaction.PaymentGet(i))->Name,"Payment Names",MB_OK);
+//    }
 
     TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
     if (CashPayment == NULL)
@@ -622,7 +624,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTransaction)
 {
     TPayment *NewPayment = new TPayment;
-    NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    if(TGlobalSettings::Instance().MembershipType != MembershipTypeExternal)
+        NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
+    else
+        NewPayment->Name = "PtsBal";
     NewPayment->SysNameOveride = "Points";
     NewPayment->SetPaymentAttribute(ePayTypePoints);
     NewPayment->DisplayOrder = 1;
@@ -660,14 +665,14 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
     if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal)
     {
         TPayment *NewPayment = new TPayment;
-        NewPayment->Name = "Comp";
-        NewPayment->SysNameOveride = "Points";
-        NewPayment->SetPaymentAttribute(ePayTypePoints);
-        NewPayment->DisplayOrder = 1;
-        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
-        NewPayment->Colour = clTeal;
-        NewPayment->PaymentThirdPartyID = "10007242";
-        PaymentTransaction.PaymentAdd(NewPayment);
+//        NewPayment->Name = "Comp";
+//        NewPayment->SysNameOveride = "Points";
+//        NewPayment->SetPaymentAttribute(ePayTypePoints);
+//        NewPayment->DisplayOrder = 1;
+//        NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
+//        NewPayment->Colour = clTeal;
+//        NewPayment->PaymentThirdPartyID = "10007242";
+//        PaymentTransaction.PaymentAdd(NewPayment);
 
         NewPayment = new TPayment;
         NewPayment->Name = "Dining";
@@ -803,7 +808,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-        
+
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -828,7 +833,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		}
 
 		transactionRecovery.ClearRecoveryInfo();
-
+        SetCashDrawerStatus(PaymentTransaction);
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
@@ -966,12 +971,17 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		    TDeviceRealTerminal::Instance().ProcessingController.Pop();
         }
 		OnAfterTransactionComplete.Occured();
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 	}
 	catch(Exception & E)
 	{
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
 		throw;
 	}
 
@@ -1343,7 +1353,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 {
 	bool RetVal = false;
 
-	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
+	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
 		" The PMS Interface Software has not been installed or enabled correctly." " Please contact your MenuMate support agent.").w_str
@@ -1999,7 +2009,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		{
 			IBInternalQuery->ParamByName("RECEIPT")->Clear();
 		}
-
 		IBInternalQuery->ExecQuery();
 
 		IBInternalQuery->Close();
@@ -2461,10 +2470,11 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("ORDER_TYPE")->AsInteger = Order->OrderType;
 				IBInternalQuery->ParamByName("QTY")->AsFloat = double(Order->GetQty());
                 IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach_BillCalc();
-				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-				Order->Cost,
-				0.01,
-				TGlobalSettings::Instance().MidPointRoundsDown);
+
+                if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                    Order->Cost = 0;
+
+				IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(Order->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 				IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsFloat = double(Order->CostGSTPercent);
                 IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Order->TotalAdjustment();
 				IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = Order->DiscountReason.SubString(1, 40);
@@ -2631,11 +2641,12 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
 					IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
-					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(
-					CurrentSubOrder->Cost,
-					0.01,
-					TGlobalSettings::Instance().MidPointRoundsDown);
-                                        IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
+
+                    if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
+                        CurrentSubOrder->Cost = 0;
+
+					IBInternalQuery->ParamByName("COST")->AsCurrency = RoundToNearest(CurrentSubOrder->Cost, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+                    IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = CurrentSubOrder->TotalAdjustment();
 					//IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = RoundToNearest(CurrentSubOrder->TotalAdjustment(),0.01,
 					//TGlobalSettings::Instance().MidPointRoundsDown );
 					IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = CurrentSubOrder->DiscountReason.SubString(1, 40);
@@ -3014,9 +3025,31 @@ void TListPaymentSystem::OpenCashDrawer(TPaymentTransaction &PaymentTransaction)
 	if (PaymentTransaction.TransOpenCashDraw())
 	{
 		TComms::Instance().KickLocalDraw(PaymentTransaction.DBTransaction);
+        PaymentTransaction.IsCashDrawerOpened = true;
 	}
 }
-
+//------------------------------------------------------------------------------
+void TListPaymentSystem::SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction)
+{
+    try
+    {
+      TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text ="UPDATE DAYARCBILL a SET a.CASH_DRAWER_OPENED = :CASH_DRAWER_OPENED "
+                                  "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER";
+      if(PaymentTransaction.IsCashDrawerOpened)
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "T";
+      else
+          IBInternalQuery->ParamByName("CASH_DRAWER_OPENED")->AsString = "F";
+	  IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = PaymentTransaction.InvoiceNumber;
+      IBInternalQuery->ExecQuery();
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//------------------------------------------------------------------------------
 void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction, bool &RequestEFTPOSReceipt)
 {
 	if (LastReceipt != NULL)
@@ -3435,91 +3468,22 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
 	if (PaymentTransaction.Type == eTransQuickSale)
 	{
-		if (Receipt->AlwaysPrintReceiptCashSales)
+		if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
 		{
-			if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-			{
-				// Print all the TPrintouts including the EFTPOS one.
-				LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-			}
-			else
-			{
-				// Only print the first TPrintout as the EFTPOS job does not need duplication.
-				LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-			}
-
-			if (TGlobalSettings::Instance().DuplicateReceipts)
-			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
+            PrintReceipt(RequestEFTPOSReceipt);
 		}
 	}
 	else
 	{
-		if (Receipt->AlwaysPrintReceiptTenderedSales)
+		if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
 		{
-			if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-			{
-				// Print all the TPrintouts including the EFTPOS one.
-				LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-			}
-			else
-			{
-				// Only print the first TPrintout as the EFTPOS job does not need duplication.
-				LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-			}
-
-			if (TGlobalSettings::Instance().DuplicateReceipts)
-			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
+			PrintReceipt(RequestEFTPOSReceipt);
 		}
 		else
 		{
 			if (CloseAndPrint)
 			{
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					// Print all the TPrintouts including the EFTPOS one.
-					LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-				}
-				else
-				{
-					// Only print the first TPrintout as the EFTPOS job does not need duplication.
-					LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-				}
-
-				if (TGlobalSettings::Instance().DuplicateReceipts)
-				{
-					if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-					{
-						// Print all the TPrintouts including the EFTPOS one.
-						LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-					}
-					else
-					{
-						// Only print the first TPrintout as the EFTPOS job does not need duplication.
-						LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
-					}
-				}
+				PrintReceipt(RequestEFTPOSReceipt);
 			}
 			else
 			{
@@ -3561,10 +3525,12 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
+    bool FiscalTransaction = true;
+
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
        return RetVal;
-     
+
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
@@ -3585,9 +3551,51 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}
+    else if(TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "")
+    {
+            /*
+               SiHot could be enabled but is not. Hence we need to try making it
+               enabled if possible.
+            */
+        bool siHotEnabled = TryToEnableSiHot();
+        if(siHotEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              for(int paymentIndex = 0; paymentIndex < PaymentTransaction.PaymentsCount(); paymentIndex++)
+              {
+                  TPayment *payment = PaymentTransaction.PaymentGet(paymentIndex);
+                  if(payment->GetPay() != 0)
+                  {
+                    payment->SetPay(0);
+                    payment->SetAdjustment(0);
+                    payment->SetCashOut(0);
+                    payment->Result = eFailed;
+                  }
+              }
+          }
+        }
+    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+        AnsiString fiscalData = dataUtility->GetPOSPlusData(PaymentTransaction);
+        AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(fiscalData, eFiscalNormalReceipt);
+        FiscalTransaction = dataUtility->AnalyzeResponse(response, eFiscalNormalReceipt);
+    }
+    if(!FiscalTransaction)
+        return RetVal;
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)
@@ -3641,8 +3649,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
-             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
+             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction && FiscalTransaction;
 	return RetVal;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::SendDataToFiscalBox(TPaymentTransaction &paymentTransaction)
+{
+
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessChequePayment(TPaymentTransaction &PaymentTransaction)
@@ -6391,4 +6404,65 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+bool TListPaymentSystem::TryToEnableSiHot()
+{
+    bool retValue = false;
+    try
+    {
+        UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
+        std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
+        siHotManager->LogPMSEnabling(eSelf);
+        retValue = siHotManager->GetDefaultAccount(processMessage);
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retValue = false;
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------------------
+void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
+{
+    if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+    {
+        // Print all the TPrintouts including the EFTPOS one.
+        LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+    }
+    else
+    {
+        // Only print the first TPrintout as the EFTPOS job does not need duplication.
+        LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+    }
+
+    if (TGlobalSettings::Instance().DuplicateReceipts)
+    {
+        if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+        {
+            // Print all the TPrintouts including the EFTPOS one.
+            LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        }
+        else
+        {
+            // Only print the first TPrintout as the EFTPOS job does not need duplication.
+            LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction)
+{
+    for(int index = 0 ; index < paymentTransaction.Orders->Count ; index++)
+    {
+        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[index];
+
+        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = itemComplete->BillCalcResult.Discount.begin();
+
+        for( ; drIT != itemComplete->BillCalcResult.Discount.end(); drIT++ )
+        {
+            return true;
+        }
+    }
+    return false;
 }

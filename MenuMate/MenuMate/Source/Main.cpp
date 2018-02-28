@@ -299,6 +299,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
             ReFormatIpToUrl();
+            TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eBoot);
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
@@ -457,6 +458,10 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmUpdateMenu, TGlobalSettings::Instance().UpdateMenu);
+       if(TGlobalSettings::Instance().ItemPriceIncludeTax)
+       {
+            SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
+       }
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -1725,6 +1730,22 @@ void TfrmMain::ReFormatIpToUrl()
 			TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
 		}
     }
+}
+//---------------------------------------------------------------------------
+void TfrmMain::SaveItemPriceIncludeTaxToDatabase(vmVariables vmVariable, bool value)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction,eSystemProfiles,"Globals");
+    if(GlobalProfileKey == 0)
+    {
+	    GlobalProfileKey = TManagerVariable::Instance().SetProfile(DBTransaction,eSystemProfiles,"Globals");
+    }
+
+    TManagerVariable::Instance().SetProfileBool(DBTransaction, GlobalProfileKey, vmVariable, value);
+
+	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 

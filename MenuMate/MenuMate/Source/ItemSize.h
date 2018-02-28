@@ -69,6 +69,7 @@ public:
    int DefaultPatronCount() const;
    Currency CostForPoints;
    bool IsCanBePaidForUsingPoints;
+   int  RevenueCode;
 
 private:
    item_key_type host_item_key_;

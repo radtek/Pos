@@ -187,6 +187,11 @@ void EndOfDayReportBuilder::AddMasterCashDenominationSection(IReport* report)
     AddReportSectionToReport(report, mmMasterCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum);
 }
 
+void EndOfDayReportBuilder::AddReprintReceiptSection(IReport* report)
+{
+    int i = AddReportSectionToReport(report, mmReprintReceiptDetailsSection, GetGlobalSettings()->ShowReprintReceiptDetails);
+}
+
 void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
 {
    if(GetGlobalSettings()->UseBIRFormatInXZReport)
@@ -245,6 +250,7 @@ void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
         AddCancelsSection(report);
         AddWriteOffSection(report);
         AddDiscountReportSection(report);
+        AddReprintReceiptSection(report);
         AddPriceAdjustmentSection(report);
         AddPointsReportSection(report);
         AddPatronAverageSection(report);

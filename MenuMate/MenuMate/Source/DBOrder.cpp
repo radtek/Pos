@@ -380,8 +380,10 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 	{
 		if(Order->OrderKey != 0)
 		{
-			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                Order->Cost = 0;
 
+			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text =
 			"UPDATE "
@@ -419,7 +421,11 @@ void TDBOrder::UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorCom
 			for (int i = 0; i < Order->SubOrders->Count ; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
-                                SubOrder->RunBillCalculator();
+                SubOrder->RunBillCalculator();
+
+                if(SubOrder->Cost < -1000000 || SubOrder->Cost > 900000000)
+                    SubOrder->Cost = 0;
+
 				IBInternalQuery->Close();
 				IBInternalQuery->SQL->Text =
 				"UPDATE "
@@ -1243,6 +1249,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 			IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 			IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
+
+            if(Order->Cost < -1000000 || Order->Cost > 900000000)
+                Order->Cost = 0;
+
 			IBInternalQuery->ParamByName("COST")->AsCurrency = Order->Cost;
 			IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = Order->Loyalty_Key;
 			IBInternalQuery->ParamByName("MASTER_CONTAINER")->AsString = Order->MasterContainer;
@@ -1385,6 +1395,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERRECIPE, 1) FROM RDB$DATABASE";
 				IBInternalQuery->ExecQuery();
 				int ReceipeKey = IBInternalQuery->Fields[0]->AsInteger;
+                if(CurrentRecipe->Cost < -1000000)
+                    CurrentRecipe->Cost = 0;
 
 				IBInternalQuery->Close();
 				IBInternalQuery->SQL->Text =
@@ -1639,6 +1651,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 				IBInternalQuery->ParamByName("TAB_TYPE")->AsInteger = Order->TabType;
 				IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
+                if(CurrentSubOrder->Cost < -1000000 || CurrentSubOrder->Cost > 900000000)
+                    CurrentSubOrder->Cost = 0;
 				IBInternalQuery->ParamByName("COST")->AsCurrency = CurrentSubOrder->Cost;
 				IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = CurrentSubOrder->Loyalty_Key;
 				IBInternalQuery->ParamByName("MASTER_CONTAINER")->AsString = Order->MasterContainer;
@@ -1741,6 +1755,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERRECIPE, 1) FROM RDB$DATABASE";
 					IBInternalQuery->ExecQuery();
 					int ReceipeKey = IBInternalQuery->Fields[0]->AsInteger;
+                    if(CurrentRecipe->Cost < -1000000)
+                        CurrentRecipe->Cost = 0;
 
 					IBInternalQuery->Close();
 					IBInternalQuery->SQL->Text =
@@ -3260,7 +3276,7 @@ void TDBOrder::GetOrderIncludingSidesFromOrderKey(Database::TDBTransaction &DBTr
 				if(IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger != LastOrderKey)
 				{
 					LastOrderKey = IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger;
-					if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->IsNull)
+					if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->IsNull || IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger == 0)
 					{
 						LoadOrder(DBTransaction,IBInternalQuery,Order);
 						LoadOrderCategories(DBTransaction,Order->OrderKey,Order->Categories);
@@ -3475,7 +3491,7 @@ void TDBOrder::GetOrdersIncludingSidesFromTabKeys(Database::TDBTransaction &DBTr
 		"ORDERS "
 		"WHERE "
 		"TAB_KEY IN (" + KeysList->DelimitedText + ") "
-		"AND SIDE_ORDER_KEY IS NULL "
+		"AND (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0)"
 		"ORDER BY TAB_KEY,ORDER_KEY";
 		IBInternalQuery->ExecQuery();
 		if (IBInternalQuery->RecordCount)
@@ -4711,33 +4727,17 @@ UnicodeString TDBOrder::GetContactName(Database::TDBTransaction &DBTransaction, 
 
 void TDBOrder::UpdateOrderTableForWebOrders(Database::TDBTransaction &DBTransaction, TItemComplete *Order)
 {
-
-   TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
-   IBUpdateQuery->Close();
-   IBUpdateQuery->SQL->Text =
-			"UPDATE "
-			"ORDERS "
-			"SET "
-			"ACTIVECHITNUMBER_KEY = :ACTIVECHITNUMBER_KEY "
-			"WHERE "
-			"ORDER_KEY = :ORDER_KEY";
-
-        if(Order->GetActiveChitNumberKey() == 0)
-        {
-            IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->Clear();
-        }
-        else
-        {
-            IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
-        }
-        IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = Order->OrderKey;
-
-        IBUpdateQuery->ExecQuery();
-        IBUpdateQuery->Close();
-
-        for (int i = 0; i < Order->SubOrders->Count; i++)
-        {
-            TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
+   try
+   {
+       TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBUpdateQuery->Close();
+       IBUpdateQuery->SQL->Text =
+                "UPDATE "
+                "ORDERS "
+                "SET "
+                "ACTIVECHITNUMBER_KEY = :ACTIVECHITNUMBER_KEY "
+                "WHERE "
+                "ORDER_KEY = :ORDER_KEY";
 
             if(Order->GetActiveChitNumberKey() == 0)
             {
@@ -4747,12 +4747,36 @@ void TDBOrder::UpdateOrderTableForWebOrders(Database::TDBTransaction &DBTransact
             {
                 IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
             }
-            IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = SubOrder->OrderKey;
+            IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = Order->OrderKey;
 
             IBUpdateQuery->ExecQuery();
             IBUpdateQuery->Close();
-        }
-    //}
+
+            for (int i = 0; i < Order->SubOrders->Count; i++)
+            {
+                TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
+
+                if(Order->GetActiveChitNumberKey() == 0)
+                {
+                    IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->Clear();
+                }
+                else
+                {
+                    IBUpdateQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
+                }
+                IBUpdateQuery->ParamByName("ORDER_KEY")->AsString = SubOrder->OrderKey;
+
+                IBUpdateQuery->ExecQuery();
+                IBUpdateQuery->Close();
+            }
+        //}
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+
 }
 
 Currency TDBOrder::GetPriceForPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order)

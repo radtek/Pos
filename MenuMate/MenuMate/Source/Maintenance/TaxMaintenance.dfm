@@ -197,7 +197,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
         end
         object cbTaxProfile: TComboBox
           Left = 303
-          Top = 320
+          Top = 323
           Width = 400
           Height = 24
           Style = csDropDownList
@@ -227,6 +227,39 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           ParentBackground = False
           ParentFont = False
           TabOrder = 0
+        end
+        object cbApplyTaxToRounding: TCheckBox
+          Left = 32
+          Top = 365
+          Width = 265
+          Height = 25
+          Caption = 'Apply Tax to Rounding'
+          Ctl3D = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 9
+          OnClick = cbApplyTaxToRoundingClick
+        end
+        object cbTaxProfileRounding: TComboBox
+          Left = 303
+          Top = 368
+          Width = 400
+          Height = 24
+          Style = csDropDownList
+          Enabled = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 10
+          OnChange = cbRoundingTaxProfileChange
         end
       end
     end

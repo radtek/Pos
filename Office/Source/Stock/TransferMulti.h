@@ -161,6 +161,7 @@ public:		// User declarations
     int Transfer_no;
 
     	float	StockTakeQty  ;
+
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmTransferMulti *frmTransferMulti;

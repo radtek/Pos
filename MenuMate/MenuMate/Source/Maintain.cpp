@@ -73,6 +73,7 @@
 
 #include "SetupGlCodes.h"
 #include "ManagerClippIntegration.h"
+#include "SetUpPosPlus.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -144,6 +145,8 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	{
         if(TGlobalSettings::Instance().PMSType == SiHot)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
+        else if(TGlobalSettings::Instance().PMSType == Oracle)
+            tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
         else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
@@ -234,6 +237,16 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
     {
         TouchBtnRunRateBoard->ButtonColor = clRed;
        TouchBtnRunRateBoard->Caption = "Run Rate Board\r[Disabled]";
+    }
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    {
+        TouchBtnFiscalStorage->ButtonColor = clGreen;
+        TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+    }
+    else
+    {
+        TouchBtnFiscalStorage->ButtonColor = clRed;
+        TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
     }
 }
 //---------------------------------------------------------------------------
@@ -4020,6 +4033,13 @@ void TfrmMaintain::SelectPMSType()
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
+    TVerticalSelection Item3;
+    Item3.Title = "Oracle";
+    Item3.Properties["Action"] = IntToStr(3);
+    Item3.Properties["Color"] = IntToStr(clNavy);
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
+
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -4037,15 +4057,17 @@ void TfrmMaintain::SelectPMSType()
                SetUpSiHot();
                break;
             }
+            case 3 :
+            {
+               SetUpOracle();
+               break;
+            }
         }
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
-        {
-            TGlobalSettings::Instance().PMSType = Action;
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
-            DBTransaction1.Commit();
-        }
+        TGlobalSettings::Instance().PMSType = Action;
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
+        DBTransaction1.Commit();
     }
 }
 //---------------------------------------------------------------------------
@@ -4090,4 +4112,74 @@ bool TfrmMaintain::SetUpPhoenix()
     return keepFormAlive;
 }
 //---------------------------------------------------------------------------
-
+void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
+{
+     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+     DBTransaction.StartTransaction();
+     try
+     {
+    	TMMContactInfo TempUserInfo;
+    	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+    	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+    	DBTransaction.Commit();
+    	if (Result == lsAccepted)
+    	{
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
+            frmsetUpPosPlus->ShowModal();
+            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            {
+                TouchBtnFiscalStorage->ButtonColor = clGreen;
+                TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+            }
+            else
+            {
+                TouchBtnFiscalStorage->ButtonColor = clRed;
+                TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
+            }
+    	}
+    	else if (Result == lsDenied)
+    	{
+    		MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+    	}
+    	else if (Result == lsPINIncorrect)
+    	{
+    		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+    	}
+     }
+     catch (Exception &Exc)
+     {
+         DBTransaction.Rollback();
+         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+     }
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::SetUpOracle()
+{
+    bool keepFormAlive = false;
+    std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
+    frmPHSConfiguration->PMSType = 3;
+    frmPHSConfiguration->ShowModal();
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+    {
+//        MessageBox("Oracle Enabled","",MB_OK);
+        tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
+        tbPHSInterface->ButtonColor = clGreen;
+    }
+    else
+    {
+//        MessageBox("Oracle Disabled","",MB_OK);
+        tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
+        tbPHSInterface->ButtonColor = clRed;
+    }
+    return keepFormAlive;
+    return true;
+}
+//---------------------------------------------------------------------------

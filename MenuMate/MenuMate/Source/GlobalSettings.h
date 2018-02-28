@@ -22,7 +22,7 @@ enum eMembershipType {
 };
 
 enum ePMSType{
-    Phoenix = 1,SiHot
+    Phoenix = 1,SiHot,Oracle
 };
 
 enum eSetFontSize {eSeven , eEight, eNine, eTenth, eEleven };
@@ -493,7 +493,21 @@ public:
     UnicodeString CustomerId;
     bool EnableCustomerJourney;
     std::map<int, std::set<int> > MezzanineTablesMap;
+    bool IsAutoLoggedOut;
+    bool IsFiscalStorageEnabled;
+    UnicodeString OrganizationNumber;
+    UnicodeString POSPlusSerialNumber;
+    bool ShowCashDrawerOpeningsCount;
+    bool ShowReprintReceiptDetails;
+    double DiningBal;
+    UnicodeString OracleCheckNumber;
+    bool PrintSignatureWithDiscountSales;
+    bool PrintSignatureWithRoomSales;
+    bool ApplyRoundingTax;
+    int RoundingTaxProfileKey;
+    double RoundingTaxRate;
 };
 
 #endif
+
 

@@ -223,6 +223,7 @@ void __fastcall TfrmStock::WMRefreshStockGroup(TMessage& Message)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStock::FormShow(TObject *Sender)
 {
+
 	tvStock->Items->Clear();
 	lbStockGroups->Items->Clear();
 	lbStockItems->Items->Clear();
@@ -250,6 +251,7 @@ void __fastcall TfrmStock::FormShow(TObject *Sender)
 	}
 	SelectInTree(LocateInTree(StockCategoryKey, StockGroupKey, StockKey, StockSelectedDeleted));
 	tvStock->SetFocus();
+ 
 }
 //---------------------------------------------------------------------------
 void TfrmStock::LoadTree()
@@ -1662,16 +1664,21 @@ void __fastcall TfrmStock::tvStockChange(TObject *Sender, TTreeNode *Node)
 				{
 					sgLocations->RowCount++;
 				}
-				sgLocations->Cells[0][Row] = qrStockLocation->FieldByName("Location")->AsString;
-				sgLocations->Cells[1][Row] = qrStockLocation->FieldByName("On_Hand")->AsString;
-				sgLocations->Cells[2][Row] = qrStockLocation->FieldByName("On_Order")->AsString;
-				sgLocations->Cells[3][Row] = FloatToStrF(qrStockLocation->FieldByName("Average_Cost")->AsFloat, ffNumber, 19, 2);
-				sgLocations->Cells[4][Row] = FloatToStrF(qrStockLocation->FieldByName("Latest_Cost")->AsFloat, ffNumber, 19, 2);
-				sgLocations->Cells[5][Row] = qrStockLocation->FieldByName("Min_Level")->AsString;
-				sgLocations->Cells[6][Row] = qrStockLocation->FieldByName("Max_Level")->AsString;
+                
+				 sgLocations->Cells[0][Row] = qrStockLocation->FieldByName("Location")->AsString;
+
+           
+			   sgLocations->Cells[1][Row] =FloatToStrF(qrStockLocation->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+
+			   sgLocations->Cells[2][Row] = FloatToStrF(qrStockLocation->FieldByName("On_Order")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+                sgLocations->Cells[3][Row] = FloatToStrF(qrStockLocation->FieldByName("Average_Cost")->AsFloat, ffNumber, 15, CurrentConnection.SettingDecimalPlaces);
+                sgLocations->Cells[4][Row] = FloatToStrF(qrStockLocation->FieldByName("Latest_Cost")->AsFloat, ffNumber, 15, CurrentConnection.SettingDecimalPlaces);
+
+				sgLocations->Cells[5][Row] = FloatToStrF(qrStockLocation->FieldByName("Min_Level")->AsFloat, ffNumber, 15, CurrentConnection.SettingDecimalPlaces);
+				sgLocations->Cells[6][Row] = FloatToStrF(qrStockLocation->FieldByName("Max_Level")->AsFloat, ffNumber, 15, CurrentConnection.SettingDecimalPlaces);
 				sgLocations->Cells[7][Row] = qrStockLocation->FieldByName("Initialised")->AsString;
-				sgLocations->Cells[8][Row] = FloatToStrF(qrStockLocation->FieldByName("Sales_Pending")->AsFloat,ffNumber,19,2);
-				sgLocations->Cells[9][Row] = FloatToStrF(qrStockLocation->FieldByName("WriteOffs_Pending")->AsFloat,ffNumber,19,2);
+				sgLocations->Cells[8][Row] = FloatToStrF(qrStockLocation->FieldByName("Sales_Pending")->AsFloat,ffNumber,19,CurrentConnection.SettingDecimalPlaces);
+				sgLocations->Cells[9][Row] = FloatToStrF(qrStockLocation->FieldByName("WriteOffs_Pending")->AsFloat,ffNumber,19,CurrentConnection.SettingDecimalPlaces);
 				Row++;
 			}
 			sgSuppliers->Cells[0][0] = "";
@@ -1695,7 +1702,7 @@ void __fastcall TfrmStock::tvStockChange(TObject *Sender, TTreeNode *Node)
 				sgSuppliers->Cells[0][Row] = qrStockSuppliers->FieldByName("Preferred_Supplier")->AsBoolean?"*":"";
 				sgSuppliers->Cells[1][Row] = qrStockSuppliers->FieldByName("Supplier_Name")->AsString;
 				sgSuppliers->Cells[2][Row] = qrStockSuppliers->FieldByName("Supplier_Unit")->AsString;
-				sgSuppliers->Cells[3][Row] = FloatToStrF(qrStockSuppliers->FieldByName("Latest_Cost")->AsFloat,ffGeneral,19, 2);
+				sgSuppliers->Cells[3][Row] = FloatToStrF(qrStockSuppliers->FieldByName("Latest_Cost")->AsFloat,ffNumber,19, CurrentConnection.SettingDecimalPlaces);
 				Row++;
 			}
 			Transaction->Commit();
@@ -2332,6 +2339,7 @@ void __fastcall TfrmStock::miEditClick(TObject *Sender)
 				frmAddStock->StockGroupKey		= StockGroupKey;
 
 				frmAddStock->Mode					= amEditStock;
+               
 				if (frmAddStock->ShowModal()	== mrOk)
 				{
 					// Find which category it actually went into.
@@ -2849,6 +2857,7 @@ void __fastcall TfrmStock::btnEmptyDeletedBinClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStock::btnEditClick(TObject *Sender)
 {
+  
 	miEditClick(NULL);
 }
 //---------------------------------------------------------------------------

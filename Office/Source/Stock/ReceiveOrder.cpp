@@ -168,6 +168,7 @@ void __fastcall TfrmReceiveOrder::FormClose(TObject *Sender,
 void __fastcall TfrmReceiveOrder::qrOrderStockAfterOpen(TDataSet *DataSet)
 {
 	DataSet->FieldByName("QTY_RECEIVED")->Alignment = taLeftJustify;
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveOrder::btnNewInvoiceClick(TObject *Sender)
@@ -248,7 +249,7 @@ void __fastcall TfrmReceiveOrder::FindDialogFind(TObject *Sender)
 			FindText = FindDialog->FindText;
 			NodeText = CurItem->Text;
 		}
-		else
+		else                                              
 		{
 			FindText = FindDialog->FindText.UpperCase();
 			NodeText = CurItem->Text.UpperCase();

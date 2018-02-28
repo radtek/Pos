@@ -5,7 +5,10 @@
 #include "MM_DBCore.h"
 #include "PHSTCPIP.h"
 #include "SiHotDataObjects.h"
+#include "ManagerPMSCodes.h"
+#include "OracleDataObjects.h"
 //---------------------------------------------------------------------------
+enum TriggerLocation {eBoot = 1,eUI,eSelf};
 class TBasePMS
 {
     public:
@@ -32,21 +35,19 @@ class TBasePMS
         AnsiString RoundingAccountSiHot;
         AnsiString DefaultAccountNumber;
         AnsiString RoundingAccountNumber;
-
+        AnsiString RevenueCentre;
 
         std::set<AnsiString> CodesTestedOk;
+        std::vector<TTimeSlots> Slots;
+        std::map<int,TRevenueCodeDetails> RevenueCodesMap;
         public :
         bool Registered;
         bool nabled;
         TPhoenixHM(Database::TDBControl &inDBControl);
-        void virtual GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
-        bool virtual ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
+        std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
 
         AnsiString virtual GetLastTransactionRef();
-
         void virtual Initialise();
-
-        std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
         bool virtual TestCode(AnsiString CodeToTest);
         void virtual ClearCodesTestedOk();
         bool virtual TestDefaultCodes();
@@ -54,6 +55,11 @@ class TBasePMS
         void virtual CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort);
         void virtual ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort);
         void virtual GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort);
+        void virtual GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
+        bool virtual ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
+        void virtual GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> _roomResult);
+        void virtual LogPMSEnabling(TriggerLocation triggerType);
+        void virtual UnsetPostingFlag();
 };
 //extern TBasePMS *BasePMS;
 #endif

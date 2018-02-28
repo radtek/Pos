@@ -87,6 +87,7 @@ class TfrmMaintain : public TZForm
     TTouchBtn *tbtnTaxSettings;
     TTouchBtn *TouchBtnBarExchange;
     TTouchBtn *TouchBtnThorlink;
+    TTouchBtn *TouchBtnFiscalStorage;
     //add by frn
     TTouchBtn *tchbtnDrinkCommand;
     TPanel *pnlButtons1;
@@ -160,6 +161,7 @@ class TfrmMaintain : public TZForm
    
    TTouchBtn *touchBtnSecurity;
    void __fastcall TouchBtnSecurityMouseClick(TObject *Sender);
+   void __fastcall TouchBtnFiscalMouseClick(TObject *Sender);
 
     //*****************
 
@@ -234,6 +236,7 @@ private:
     void SelectPMSType();
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
+    bool SetUpOracle();
 public: // User declarations
 };
 #endif

@@ -27,8 +27,6 @@ object frmSelectDish: TfrmSelectDish
   OnHide = FormHide
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 19
   object tgridSeats: TTouchGrid
@@ -657,8 +655,8 @@ object frmSelectDish: TfrmSelectDish
       Height = 35
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -694,8 +692,8 @@ object frmSelectDish: TfrmSelectDish
       Width = 140
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -713,8 +711,8 @@ object frmSelectDish: TfrmSelectDish
       Width = 120
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -730,8 +728,8 @@ object frmSelectDish: TfrmSelectDish
       Width = 85
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -753,8 +751,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -776,8 +774,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = 2200566
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -799,8 +797,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -822,8 +820,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -846,8 +844,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -869,8 +867,8 @@ object frmSelectDish: TfrmSelectDish
       Align = alRight
       Font.Charset = ANSI_CHARSET
       Font.Color = 2200566
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -915,8 +913,8 @@ object frmSelectDish: TfrmSelectDish
         Height = 55
         Font.Charset = ANSI_CHARSET
         Font.Color = clWhite
-        Font.Height = -16
-        Font.Name = 'Tahoma'
+        Font.Height = -19
+        Font.Name = 'Arial'
         Font.Style = []
         ParentFont = False
         ParentColor = True
@@ -1150,7 +1148,7 @@ object frmSelectDish: TfrmSelectDish
             object Label2: TLabel
               Left = 5
               Top = 5
-              Width = 33
+              Width = 560
               Height = 19
               Align = alTop
               Caption = 'Note'
@@ -1160,6 +1158,7 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
+              ExplicitWidth = 33
             end
             object memNote: TMemo
               Left = 5
@@ -1190,8 +1189,8 @@ object frmSelectDish: TfrmSelectDish
             BorderWidth = 5
             Font.Charset = ANSI_CHARSET
             Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
+            Font.Height = -19
+            Font.Name = 'Arial'
             Font.Style = []
             ParentFont = False
             ParentColor = True
@@ -1317,7 +1316,7 @@ object frmSelectDish: TfrmSelectDish
             object Label3: TLabel
               Left = 5
               Top = 5
-              Width = 88
+              Width = 560
               Height = 19
               Align = alTop
               Caption = 'Item History'
@@ -1327,6 +1326,7 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
+              ExplicitWidth = 88
             end
             object memOverview: TMemo
               Left = 5
@@ -2902,8 +2902,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 180
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -2920,8 +2920,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 129
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -2938,8 +2938,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 137
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -2956,8 +2956,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 129
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -2974,8 +2974,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 81
     Font.Charset = ANSI_CHARSET
     Font.Color = clBtnText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -2993,8 +2993,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 81
     Font.Charset = ANSI_CHARSET
     Font.Color = clBtnText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -3012,8 +3012,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 81
     Font.Charset = ANSI_CHARSET
     Font.Color = clBtnText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -3031,8 +3031,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 81
     Font.Charset = ANSI_CHARSET
     Font.Color = clBtnText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -3050,8 +3050,8 @@ object frmSelectDish: TfrmSelectDish
     Width = 81
     Font.Charset = ANSI_CHARSET
     Font.Color = clBtnText
-    Font.Height = -16
-    Font.Name = 'Tahoma'
+    Font.Height = -19
+    Font.Name = 'Arial'
     Font.Style = []
     ParentFont = False
     ParentColor = True
@@ -3234,8 +3234,8 @@ object frmSelectDish: TfrmSelectDish
       Height = 49
       Font.Charset = ANSI_CHARSET
       Font.Color = clBtnText
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -3253,8 +3253,8 @@ object frmSelectDish: TfrmSelectDish
       Height = 41
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
+      Font.Height = -19
+      Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -3272,7 +3272,7 @@ object frmSelectDish: TfrmSelectDish
       Height = 55
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
-      Font.Height = -17
+      Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
@@ -3317,7 +3317,7 @@ object frmSelectDish: TfrmSelectDish
   end
   object tiClock: TTimer
     Enabled = False
-    Interval = 500
+    Interval = 2000
     OnTimer = tiClockTimer
     Left = 889
     Top = 300

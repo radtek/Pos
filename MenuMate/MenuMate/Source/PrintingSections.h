@@ -333,7 +333,15 @@ private:
     void PrintVoidOnReceipt(TReqPrintJob *PrintJob);
     void ShowRefundReference(TReqPrintJob *PrintJob);
     void PrintBIRSalesTax(TReqPrintJob* PrintJob);
+    void PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob);
+    void PrintOrganizationNumber(TReqPrintJob* PrintJob);
+    void PrintOracleCheckNumber(TReqPrintJob* PrintJob);
     bool IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount );
+    void PrintSignatureSection(TReqPrintJob* PrintJob);
+    bool IsDiscountApplied();
+    void PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size);
+    bool IsRoomPayment(TReqPrintJob *PrintJob);
+    bool IsRMSPaymentType(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------

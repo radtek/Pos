@@ -287,6 +287,7 @@ __fastcall TReceipt::TReceipt()
    RavellItemsWithPriceAdjusts = false;
    VoidFooter = new TStringList;
    SubHeader = new TStringList;
+   AlwaysPrintReceiptDiscountSales = false;
 }
 
 __fastcall TReceipt::~TReceipt()
@@ -602,7 +603,7 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayCo
    }
 }
 
-bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request)
+bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction,TTransferComplete *Transfer,TReqPrintJob *Request , bool IsPartialTranferItemOrGuests)
  {
 try
    {
@@ -627,7 +628,7 @@ try
 		 if (PhysicalPrinter.Type == ptWindows_Printer)
 		 {
 			TPrintout *Printout = GetPrintout(DBTransaction, Request, &CurrentPrinter, true);
-            AddTransferToPrintout(Printout->PrintFormat,Transfer);
+            AddTransferToPrintout(Printout->PrintFormat,Transfer,IsPartialTranferItemOrGuests);
 		 }
 	  }
 	  return true;
@@ -926,7 +927,7 @@ void TKitchen::AddCallAwayToPrintout(TPrintFormat *pPrinter)
    pPrinter->PartialCut();
 }
 
-void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer)
+void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *Transfer, bool isPartialTranferItemOrGuests)
 {
    pPrinter->WordWrap = true;
    pPrinter->Line->ColCount = 1;
@@ -967,7 +968,14 @@ void TKitchen::AddTransferToPrintout(TPrintFormat *pPrinter,TTransferComplete *T
    pPrinter->Line->Columns[0]->Alignment = taCenter;
    pPrinter->Line->FontInfo.Height = fsNormalSize;
    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-   pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " transferred to " + Transfer->TableTransferedTo;
+   if(isPartialTranferItemOrGuests)
+   {
+      pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " partial transferred to " + Transfer->TableTransferedTo;
+   }
+   else
+   {
+    pPrinter->Line->Columns[0]->Text =  Transfer->TableTransferedFrom + " transferred to " + Transfer->TableTransferedTo;
+    }
    pPrinter->AddLine();
 
    pPrinter->Line->FontInfo.Height = fsNormalSize;
@@ -1180,6 +1188,7 @@ void TReceipt::Initialise(Database::TDBTransaction &DBTransaction)
    BulletOpt = TManagerVariable::Instance().GetStr(DBTransaction, vmKitchenBulletOpt, "    ");
    NoteHeader = TManagerVariable::Instance().GetStr(DBTransaction, vmKitchenHeaderNote, "Note: ");
    MembershipNameDisplay = TManagerVariable::Instance().GetInt(DBTransaction, vmMembersNameOnReceipt, 0);
+   AlwaysPrintReceiptDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, false);
 }
 
 void TKitchen::GetSetMenuHeaders(Database::TDBTransaction &DBTransaction, TList *OrdersList)

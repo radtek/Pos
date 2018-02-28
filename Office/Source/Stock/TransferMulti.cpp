@@ -171,11 +171,11 @@ void TfrmTransferMulti::LoadStocksForManualMode()
 
 			if (qrStockTransferManual->FieldByName("Location")->AsString == Source)
 			{
-				NodeData->SourceOnHand = qrStockTransferManual->FieldByName("On_Hand")->AsFloat;
+                NodeData->SourceOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
 			}
 			else if (qrStockTransferManual->FieldByName("Location")->AsString == Destination)
 			{
-				NodeData->DestOnHand = qrStockTransferManual->FieldByName("On_Hand")->AsFloat;
+                NodeData->DestOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffNumber,19, CurrentConnection.SettingDecimalPlaces));
 			}
 
 			if (NodeData->Initialised)
@@ -345,15 +345,37 @@ TVSTTextType TextType, WideString &CellText)
 			}
 			else if (Column == 2)
 			{
-				CellText = MMMath::FloatString(NodeData->SourceOnHand);
+             if(CurrentConnection.SettingDecimalPlaces==4)
+            {
+				CellText =  FormatFloat("0.0000",NodeData->SourceOnHand);  //MMMath::FloatString(NodeData->SourceOnHand);
 			}
+            else
+            {
+             	CellText =  FormatFloat("0.00",NodeData->SourceOnHand); 
+
+            }
+            }
 			else if (Column == 3)
 			{
-				CellText = MMMath::FloatString(NodeData->DestOnHand);
+            if(CurrentConnection.SettingDecimalPlaces==4)
+            {
+				CellText =  FormatFloat("0.0000",NodeData->DestOnHand); //MMMath::FloatString(NodeData->DestOnHand);
 			}
+            else
+            {
+            	CellText =  FormatFloat("0.00",NodeData->DestOnHand);
+            }
+            }
 			else if (Column == 4 )//&& NodeData->Quantity != 0)
 			{
-				CellText = MMMath::FloatString(NodeData->Quantity);
+             if(CurrentConnection.SettingDecimalPlaces==4)
+                {
+				CellText =  FormatFloat("0.0000",NodeData->Quantity);//MMMath::FloatString(NodeData->Quantity);
+                }
+                else
+                {
+                 	CellText =  FormatFloat("0.00",NodeData->Quantity);
+                }
 			}
 		}
 	}
@@ -474,13 +496,16 @@ void __fastcall TfrmTransferMulti::vtvStockQtyCreateEditor(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 IVTEditLink *EditLink)
 {
+
+
 	if (Node && Column == 4)
 	{
 		if (Sender->GetNodeLevel(Node) == 2)
 		{
+
 			TStockNodeData *NodeData = (TStockNodeData *)Sender->GetNodeData(Node);
 			neStockQty->Value = NodeData->Quantity;
-
+            neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
 			TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 			PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 			PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);

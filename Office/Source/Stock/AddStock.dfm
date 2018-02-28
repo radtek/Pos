@@ -27,9 +27,9 @@ object frmAddStock: TfrmAddStock
     Width = 473
     Height = 393
     Hint = 'The sales unit refers to the measure deducted by sales.'
-    ActivePage = tsLocations
+    ActivePage = tsSuppliers
     MultiLine = True
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object tsItemDetails: TTabSheet
@@ -466,6 +466,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 7
+          OnChange = dbeGSTChange
           OnKeyPress = dbeKeyPress
         end
         object dbeGLCode: TDBEdit
@@ -816,6 +817,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 4
+          OnChange = dbeMinLevelChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeKeyPress
         end
@@ -836,6 +838,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 5
+          OnChange = dbeMaxLevelChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeMaxLevelKeyPress
         end
@@ -1479,6 +1482,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 11
+          OnChange = dbeMinOrderQtyChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeKeyPress
         end

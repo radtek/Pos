@@ -129,7 +129,6 @@ private:	// User declarations
 	void PopulateNodeData(	TOrderSupplierItemNodeData *NodeData);
 	void PopulateStockWithCategory(AnsiString Location);
 	void PopulateStockWithOutCategory(AnsiString Location);
-
 public:		// User declarations
 	__fastcall TfrmCreateOrders(TComponent* Owner);
 	TList *SelectedRequestList;

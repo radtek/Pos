@@ -511,11 +511,14 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 AnsiString Description = NextWord;
 					 TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Code, Description, tpItemSize);
-					 if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
-					 {
-						throw Exception("Unable to Import Menu " + NewMenuName + ". The Third Party Code : " + Code +
-						   " is not found in the PMS System");
-					 }
+                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Phoenix)
+                     {
+                         if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
+                         {
+                            throw Exception("Unable to Import Menu " + NewMenuName + ". The Third Party Code : " + Code +
+                               " is not found in the PMS System");
+                         }
+                     }
 				  }break;
 			   case RCourse:
 
@@ -756,6 +759,10 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 IBInternalQuery->ParamByName("GST_PERCENT")->AsString = NextWord;
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
+
+                     if(StrToCurr(NextWord) < -1000000 || StrToCurr(NextWord) > 900000000)
+                        NextWord = "0";
+
 					 IBInternalQuery->ParamByName("COST")->AsString = NextWord;
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsString = NextWord;

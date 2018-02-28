@@ -397,5 +397,18 @@ TGlobalSettings::TGlobalSettings()
     IsBillSplittedByMenuType = false;
     CustomerId = "";
     EnableCustomerJourney = false;
+    IsAutoLoggedOut = false;
+    IsFiscalStorageEnabled = false;
+    OrganizationNumber = "";
+    POSPlusSerialNumber = "";
+    ShowCashDrawerOpeningsCount = false;
+    ShowReprintReceiptDetails = false;
+    DiningBal = 0;
+    OracleCheckNumber = "";
+    PrintSignatureWithDiscountSales = false;
+    PrintSignatureWithRoomSales = false;
+    ApplyRoundingTax = false;
+    RoundingTaxProfileKey = 0;
+    RoundingTaxRate = 0;
 }
 

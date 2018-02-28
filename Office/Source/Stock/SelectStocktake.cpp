@@ -350,7 +350,7 @@ void __fastcall TfrmSelectStocktake::btnOkClick(TObject *Sender)
 		{
 			*fStocktake = fStocktakeList[NodeData->Index];
 			CreateStocktakeExportFile(fStocktake->StocktakeKey);
-			ModalResult = mrOk;
+		   	ModalResult = mrOk;
 		}
 	}
 }

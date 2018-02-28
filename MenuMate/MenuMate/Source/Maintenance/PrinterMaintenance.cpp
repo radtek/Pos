@@ -234,6 +234,9 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 cbAPRROS->Checked = TGlobalSettings::Instance().AutoPrintRoomReceipts;
 		 cbAPIROS->Checked = TGlobalSettings::Instance().AutoPrintInvoiceReceipts;
 		 cbAPWOOS->Checked = TGlobalSettings::Instance().AutoPrintWebReceipts;
+         cbAlwaysPrintDiscountSales->Checked = Receipt->AlwaysPrintReceiptDiscountSales;
+         cbPrintSignatureOnDiscountSales->Checked = TGlobalSettings::Instance().PrintSignatureWithDiscountSales;
+         cbPrintSignatureOnRoomSales->Checked = TGlobalSettings::Instance().PrintSignatureWithRoomSales;
 
 		 bool PrintNote = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintNoteWithDiscount);
 		 cbPrintNoteWithDiscount->Checked = PrintNote;
@@ -312,6 +315,8 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 tbChefMateIP->Enabled = false;
 	  }
 	  DBTransaction.Commit();
+      if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+          cbCaptureRefundReference->Enabled = false;
       cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
       cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
       cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
@@ -335,7 +340,33 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
 }
-
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbAlwaysPrintDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   Receipt->AlwaysPrintReceiptDiscountSales = cbAlwaysPrintDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAlwaysPrintReceiptDiscountSales, Receipt->AlwaysPrintReceiptDiscountSales);
+   DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnRoomSalesClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    TGlobalSettings::Instance().PrintSignatureWithRoomSales = cbPrintSignatureOnRoomSales->Checked;
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithRoomSales, TGlobalSettings::Instance().PrintSignatureWithRoomSales);
+    DBTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbPrintSignatureOnDiscountSalesClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintSignatureWithDiscountSales = cbPrintSignatureOnDiscountSales->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintSignatureWithDiscountSales, TGlobalSettings::Instance().PrintSignatureWithDiscountSales);
+   DBTransaction.Commit();
+}
 // ---------------------------------------------------------------------------
 
 void __fastcall TfrmPrinterMaintenance::WMDisplayChange(TWMDisplayChange& Message)
@@ -4168,6 +4199,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
+               Instruction = new TPSectionInstruction(epofiPrintSignatureSection);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -4276,6 +4312,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
                Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintSignatureSection);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -4395,6 +4436,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
                Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintSignatureSection);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -5348,5 +5394,4 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
    else
       memCustomizeSubHeader->Enabled = false;
 }
-//---------------------------------------------------------------------------
-
+//-------------------------------------------------------------------------------------

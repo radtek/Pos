@@ -244,6 +244,9 @@ __published:	// IDE-managed Components
    TCheckBox *cbAPRROS;
    TCheckBox *cbAPIROS;
    TCheckBox *cbSaveAndPrint;
+   TCheckBox *cbAlwaysPrintDiscountSales;
+   TCheckBox *cbPrintSignatureOnDiscountSales;
+   TCheckBox *cbPrintSignatureOnRoomSales;
    TPanel *Panel26;
    TPanel *Panel27;
    TPanel *Panel45;
@@ -447,11 +450,9 @@ __published:	// IDE-managed Components
     void __fastcall cbSetSubHeaderClick(TObject *Sender);
     void __fastcall memSubHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
-    //void __fastcall cbExportReprintReceiptClick(TObject *Sender);
-   // void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
-    //void __fastcall cbHideTaxInvoiceClick(TObject *Sender);
-    //void __fastcall PanelCustomInfoClick(TObject *Sender);
-    //void __fastcall tbtnReceiptNumberMouseClick(TObject *Sender);
+    void __fastcall cbAlwaysPrintDiscountSalesClick(TObject *Sender);
+    void __fastcall cbPrintSignatureOnDiscountSalesClick(TObject *Sender);
+    void __fastcall cbPrintSignatureOnRoomSalesClick(TObject *Sender);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	 BEGIN_MESSAGE_MAP

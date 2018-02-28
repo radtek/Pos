@@ -93,8 +93,12 @@ namespace MenumateServices.WebMate.InternalClasses
             connectionString += "Password=" + inPassword + "; ";
             connectionString += "Database=" + inDatabaseURI + "; ";
             connectionString += "Datasource=" + inDataSource + "; ";
-            connectionString += "Pooling=false";
 
+            connectionString += "Charset=NONE;";
+            connectionString += "Connection lifetime=15;";
+            connectionString += "Packet Size=8192;";
+            connectionString += "Pooling=false";
+            
             return new FbConnection(connectionString);
         }
 

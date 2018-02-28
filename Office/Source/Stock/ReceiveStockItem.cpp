@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #pragma hdrstop
-
+#include "Connections.h"
 #include "ReceiveStockItem.h"
 #include "StockData.h"
 #include "Login.h"
@@ -19,11 +19,22 @@ __fastcall TfrmReceiveStockItem::TfrmReceiveStockItem(TComponent* Owner)
 : TForm(Owner),
 frmAddStock(new TfrmAddStock(NULL))
 {
+   neQty->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost1->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost2->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost3->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+   neCost4->DecimalPlaces=CurrentConnection.SettingDecimalPlaces;
+
 }
 //---------------------------------------------------------------------------
 TModalResult TfrmReceiveStockItem::Execute()
 {
-        isPrefferedSupplierSelected  = true;
+    neQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost1->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost2->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost3->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    neCost4->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
+    isPrefferedSupplierSelected  = true;
 	if (!Transaction->InTransaction) Transaction->StartTransaction();
 	dbluLocation->Enabled = true;
 	qrStock->Close();
@@ -60,11 +71,23 @@ TModalResult TfrmReceiveStockItem::Execute()
 		{
 			sgLocations->RowCount++;
 		}
-		sgLocations->Cells[0][Row] = qrStock->FieldByName("Location")->AsString;
-		sgLocations->Cells[1][Row] = qrStock->FieldByName("On_Hand")->AsString;
-		sgLocations->Cells[2][Row] = qrStock->FieldByName("On_Order")->AsString;
-		sgLocations->Cells[3][Row] = qrStock->FieldByName("Min_Level")->AsString;
-		sgLocations->Cells[4][Row] = qrStock->FieldByName("Max_Level")->AsString;
+        sgLocations->Cells[0][Row]=qrStock->FieldByName("Location")->AsString;
+        if(CurrentConnection.SettingDecimalPlaces==4)
+        {
+
+		sgLocations->Cells[1][Row] = FormatFloat("0.0000",qrStock->FieldByName("On_Hand")->AsFloat);
+		sgLocations->Cells[2][Row] = FormatFloat("0.0000",qrStock->FieldByName("On_Order")->AsFloat);
+		sgLocations->Cells[3][Row] = FormatFloat("0.0000",qrStock->FieldByName("Min_Level")->AsFloat);
+		sgLocations->Cells[4][Row] = FormatFloat("0.0000",qrStock->FieldByName("Max_Level")->AsFloat);
+        }
+        else
+        {
+        sgLocations->Cells[1][Row] = FormatFloat("0.00",qrStock->FieldByName("On_Hand")->AsFloat);
+		sgLocations->Cells[2][Row] = FormatFloat("0.00",qrStock->FieldByName("On_Order")->AsFloat);
+		sgLocations->Cells[3][Row] = FormatFloat("0.00",qrStock->FieldByName("Min_Level")->AsFloat);
+		sgLocations->Cells[4][Row] = FormatFloat("0.00",qrStock->FieldByName("Max_Level")->AsFloat);
+
+        }
 		Row++;
 	}
 	qrStock->First();
@@ -217,6 +240,7 @@ void __fastcall TfrmReceiveStockItem::btnCancelClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 {
+
 	if (qrSupplierStock->FieldByName("Supplier_Unit")->AsString == "")
 	{
 		Application->MessageBox("Please select or add a supplier unit.", "Error", MB_ICONERROR + MB_OK);
@@ -245,14 +269,37 @@ void __fastcall TfrmReceiveStockItem::btnOkClick(TObject *Sender)
 	StocktakeUnit	= qrStock->FieldByName("Stocktake_Unit")->AsString;
 	Initialised	= (qrStock->FieldByName("Initialised")->AsString == "T");
 	InitialisedTime	= qrStock->FieldByName("Initialised_Time")->AsDateTime;
-   LatestCost   = qrStock->FieldByName("Latest_Cost")->AsFloat;
-   OnHandQty    = qrStock->FieldByName("On_Hand")->AsFloat;
+   if(CurrentConnection.SettingDecimalPlaces==4)
+        {
+    LatestCost = StrToFloat(FormatFloat("0.0000",qrStock->FieldByName("Latest_Cost")->AsFloat));
+     OnHandQty = StrToFloat(FormatFloat("0.0000",qrStock->FieldByName("On_Hand")->AsFloat));
+      SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+
+     StocktakeUnitQty  = StrToFloat(FormatFloat("0.0000",SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat)); //StrToFloat(FloatToStrF(SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+     SupplierUnitQty  =  StrToFloat(FormatFloat("0.0000",neQty->Value));//neQty->Value;
+
+
+   }
+   else
+   {
+    LatestCost =  StrToFloat(FormatFloat("0.00",qrStock->FieldByName("Latest_Cost")->AsFloat));
+    OnHandQty = StrToFloat(FormatFloat("0.00",qrStock->FieldByName("On_Hand")->AsFloat));
+    SupplierUnitCost = FloatToStrF(neCost1->Value,ffFixed,19, CurrentConnection.SettingDecimalPlaces);
+   StocktakeUnitQty  = StrToFloat(FormatFloat("0.00",SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat));
+   	SupplierUnitQty	 = StrToFloat(FormatFloat("0.00",neQty->Value));//neQty->Value;
+
+   }
+
+
+
+
+
 	SupplierCode	= qrSupplierStock->FieldByName("Supplier_Code")->AsString;
 	SupplierUnit	= qrSupplierStock->FieldByName("Supplier_Unit")->AsString;
-	SupplierUnitCost = neCost1->Value;
-	SupplierUnitQty	 =  neQty->Value;
+
+
 	SupplierUnitSize  = qrSupplierStock->FieldByName("Qty")->AsFloat;
-	StocktakeUnitQty  = SupplierUnitQty * qrSupplierStock->FieldByName("Qty")->AsFloat;
+
 
     // qrSupplierSelection
     qrSupplierSelection->Close();
@@ -384,6 +431,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 {
 	try
 	{
+
 		neCost1->OnChange = NULL;
 		neCost2->OnChange = NULL;
 		neCost3->OnChange = NULL;
@@ -408,6 +456,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 		{
 			if (qrStock->FieldByName("GST_Percent")->AsFloat + 100 != 0)
 			{
+
 				Cost1 = neCost2->Value * 100 / (qrStock->FieldByName("GST_Percent")->AsFloat + 100);
 				Cost2 = neCost2->Value;
 				Cost3 = Cost1 * neQty->Value;
@@ -432,8 +481,9 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 				Cost2 = neCost4->Value / neQty->Value;
 				Cost3 = Cost1 * neQty->Value;
 				Cost4 = neCost4->Value;
-			}                             
+			}
 		}
+
 		neCost1->Value		= Cost1;
 		neCost2->Value		= Cost2;
 		neCost3->Enabled	= (neQty->Value != 0);
@@ -443,6 +493,7 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 			neCost3->Value	= Cost3;
 			neCost4->Value	= Cost4;
 		}
+
 		else
 		{
 			neCost3->Value	= 0;
@@ -576,5 +627,6 @@ void __fastcall TfrmReceiveStockItem::neQtyKeyPress(TObject *Sender,
       Key = NULL;
    }
 }
+
 //---------------------------------------------------------------------------
 

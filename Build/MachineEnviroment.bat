@@ -1,6 +1,6 @@
 ::
 ::
-set sv_version=6.44.0.0
+set sv_version=6.46.0.5
 SET TAGLABEL=%sv_version%
 SET VERLABEL=%sv_version%
 SET MMVERSION=%sv_version%

@@ -15,7 +15,8 @@ TBasePMS::TBasePMS() :fPhoenixNet(new TPhoenixNetTCPManager)
 //---------------------------------------------------------------------------
 //TBasePMS::TBasePMS()
 //{
-//}
+//}
+
 //---------------------------------------------------------------------------
 TBasePMS::~TBasePMS()
 {
@@ -66,6 +67,18 @@ void TBasePMS::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString
 //---------------------------------------------------------------------------
 void TBasePMS::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString
                                                        PMSIPAddress,int PMSPort)
+{
+}
+//---------------------------------------------------------------------------
+void TBasePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult)//std::auto_ptr<TRoomInquiryResult> _roomResult)
+{
+}
+//---------------------------------------------------------------------------
+void TBasePMS::LogPMSEnabling(TriggerLocation triggerType)
+{
+}
+//---------------------------------------------------------------------------
+void TBasePMS::UnsetPostingFlag()
 {
 }
 //---------------------------------------------------------------------------

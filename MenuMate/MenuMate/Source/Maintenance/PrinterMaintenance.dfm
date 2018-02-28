@@ -1031,10 +1031,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     object tsBreakdownCats: TTabSheet
       Caption = 'tsBreakdownCats'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel521: TPanel
         Left = 0
         Top = 0
@@ -1885,10 +1881,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsKitchenFormat'
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel6: TPanel
         Left = 0
         Top = 0
@@ -3369,10 +3361,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsPrinters'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel5: TPanel
         Left = 0
         Top = 0
@@ -4029,10 +4017,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsServingCoursePrinting'
       ImageIndex = 3
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel8: TPanel
         Left = 0
         Top = 0
@@ -4416,10 +4400,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsDevicePrinterProfiles'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel28: TPanel
         Left = 0
         Top = 0
@@ -4753,10 +4733,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsReceiptOptions'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object tpsReceipt: TTouchPages
         Left = 0
         Top = 0
@@ -5142,10 +5118,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     Caption = 'tsReceiptOptionsInfo'
                     ImageIndex = 2
                     TabVisible = False
-                    ExplicitLeft = 0
-                    ExplicitTop = 0
-                    ExplicitWidth = 0
-                    ExplicitHeight = 0
                     object tpsReceiptInfo: TTouchPages
                       Left = 0
                       Top = 0
@@ -5160,7 +5132,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Color = 14342874
                       ParentFont = False
                       ParentColor = False
-                      ActivePage = TouchSheetGeneralInfo
+                      ActivePage = TouchSheetCustomInfo
                       TabColor = 6052441
                       object TouchSheetGeneralInfo: TTouchSheet
                         Left = 2
@@ -5204,7 +5176,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             TabOrder = 0
                             object cbAlwaysPrintReceiptTenderedSales: TCheckBox
                               Left = 11
-                              Top = 25
+                              Top = 28
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt on tendered sales'
@@ -5219,7 +5191,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbReceiptBarCodes: TCheckBox
                               Left = 11
-                              Top = 200
+                              Top = 252
                               Width = 289
                               Height = 20
                               Caption = 'Show bar codes on receipt.'
@@ -5234,7 +5206,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbDoublePrint: TCheckBox
                               Left = 11
-                              Top = 165
+                              Top = 224
                               Width = 315
                               Height = 20
                               Caption = 'Duplicate auto print receipts'
@@ -5249,7 +5221,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAlwaysPrintCashSales: TCheckBox
                               Left = 11
-                              Top = 60
+                              Top = 56
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt on cash sales'
@@ -5259,12 +5231,57 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Font.Name = 'Tahoma'
                               Font.Style = []
                               ParentFont = False
-                              TabOrder = 3
+                              TabOrder = 15
                               OnClick = cbAlwaysPrintCashSalesClick
+                            end
+                            object cbAlwaysPrintDiscountSales: TCheckBox
+                              Left = 11
+                              Top = 84
+                              Width = 315
+                              Height = 20
+                              Caption = 'Always print receipt with discounts'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 16
+                              OnClick = cbAlwaysPrintDiscountSalesClick
+                            end
+                            object cbPrintSignatureOnDiscountSales: TCheckBox
+                              Left = 11
+                              Top = 112
+                              Width = 315
+                              Height = 20
+                              Caption = 'Print signature section on discount sale'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 17
+                              OnClick = cbPrintSignatureOnDiscountSalesClick
+                            end
+                            object cbPrintSignatureOnRoomSales: TCheckBox
+                              Left = 11
+                              Top = 140
+                              Width = 315
+                              Height = 20
+                              Caption = 'Print signature section on room sale'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 3
+                              OnClick = cbPrintSignatureOnRoomSalesClick
                             end
                             object cbDuplicateReceipts: TCheckBox
                               Left = 11
-                              Top = 95
+                              Top = 168
                               Width = 315
                               Height = 20
                               Caption = 'Duplicate all receipts'
@@ -5279,7 +5296,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPTROS: TCheckBox
                               Left = 11
-                              Top = 235
+                              Top = 280
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Tab Receipt On Save'
@@ -5294,7 +5311,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPSROS: TCheckBox
                               Left = 11
-                              Top = 270
+                              Top = 308
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Staff Receipt On Save'
@@ -5309,7 +5326,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPMOS: TCheckBox
                               Left = 11
-                              Top = 305
+                              Top = 336
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Member Receipt On Save'
@@ -5324,7 +5341,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPTAROS: TCheckBox
                               Left = 11
-                              Top = 340
+                              Top = 364
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Table Receipt On Save'
@@ -5339,7 +5356,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPCROS: TCheckBox
                               Left = 11
-                              Top = 375
+                              Top = 392
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Cash Receipt On Save'
@@ -5354,7 +5371,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPRROS: TCheckBox
                               Left = 11
-                              Top = 410
+                              Top = 420
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Room Receipt On Save'
@@ -5369,7 +5386,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPIROS: TCheckBox
                               Left = 11
-                              Top = 445
+                              Top = 448
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Invoice On Save'
@@ -5384,7 +5401,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbSaveAndPrint: TCheckBox
                               Left = 11
-                              Top = 130
+                              Top = 196
                               Width = 340
                               Height = 20
                               Caption = #39'Save and Print'#39' prints only the new orders'
@@ -5399,7 +5416,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPWOOS: TCheckBox
                               Left = 11
-                              Top = 480
+                              Top = 476
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Web Order On Save'
@@ -5674,8 +5691,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               ParentColor = True
                               Caption = 'Refund Reference Label'
                               ButtonColor = 6052441
-                              LatchedColor = -16777201
-                              DisabledButtonColor = -16777201
+                              LatchedColor = clBtnFace
+                              DisabledButtonColor = clBtnFace
                               LatchingProperties = [lkLatchColor, lkStayDown]
                               OnMouseClick = tbtnRefundReferenceLabelMouseClick
                             end

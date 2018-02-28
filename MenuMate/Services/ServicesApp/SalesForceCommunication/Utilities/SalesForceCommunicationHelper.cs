@@ -39,6 +39,7 @@ namespace SalesForceCommunication.Utilities
 
                 accountName = accountName.Replace("\"", "'");
                 var filterClause = string.Format("Name = {0}", accountName);
+                filterClause = filterClause.Insert((filterClause.Length), " AND Active_Customer__c = 'Yes'");
 
                 var queryResult = ExecuteSelectQuery(filterClause, selectColumnNames);
 
@@ -73,6 +74,7 @@ namespace SalesForceCommunication.Utilities
             {
                 accountName = accountName.Replace("\"", "'");
                 var filterClause = string.Format("Name = {0}", accountName);
+                filterClause = filterClause.Insert((filterClause.Length), " AND Active_Customer__c = 'Yes'");
 
                 var queryResult = ExecuteSelectQuery(filterClause, projectionColumns);
 

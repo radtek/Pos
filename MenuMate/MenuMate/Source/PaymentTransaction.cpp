@@ -69,6 +69,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     IsVouchersProcessed = false;
     IgnoreLoyaltyKey = false;
     WasSavedSales = false;
+    IsCashDrawerOpened = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -76,7 +77,12 @@ __fastcall TPaymentTransaction::~TPaymentTransaction()
     delete Orders;
     PaymentsClear();
 }
-
+TPMSClientDetails::TPMSClientDetails()
+{
+}
+//TPMSClientDetails::~TPMSClientDetails()
+//{
+//}
 TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransaction)
 : DBTransaction(OtherTransaction.DBTransaction) , PaymentList(new TList)
 {
@@ -124,6 +130,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
+    IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -174,31 +181,86 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
+    IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
 }
-
+//-----------------------------------------------------------------------------
+bool __fastcall UseDifferentPattern(void *Item1,void *Item2)
+{
+    bool retValue = false;
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH" || Payment1->Name.Trim().UpperCase() == "DINING" || Payment1->Name.Trim().UpperCase() == "PTSBAL")
+                     &&
+       (Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "DINING" || Payment2->Name.Trim().UpperCase() == "PTSBAL"))
+    {
+        return true;
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+int __fastcall SortPaymentTypesForCasino(void *Item1,void *Item2)
+{
+    bool retValue = 0;
+	TPayment* Payment1 = (TPayment*)Item1;
+	TPayment* Payment2 = (TPayment*)Item2;
+    if((Payment1->Name.Trim().UpperCase() == "CASH"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "PTSBAL" || Payment1->Name.Trim().UpperCase() == "DINING")
+        {
+            return -1;
+        }
+    }
+    if((Payment1->Name.Trim().UpperCase() == "PTSBAL"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "CASH")
+        {
+            return 1;
+        }
+        if(Payment2->Name.Trim().UpperCase() == "DINING")
+        {
+            return -1;
+        }
+    }
+    if((Payment1->Name.Trim().UpperCase() == "DINING"))
+    {
+        if(Payment2->Name.Trim().UpperCase() == "CASH" || Payment2->Name.Trim().UpperCase() == "PTSBAL")
+        {
+            return 1;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 int __fastcall PaymentCompare(void *Item1,void *Item2)
 {
 	TPayment* Payment1 = (TPayment*)Item1;
 	TPayment* Payment2 = (TPayment*)Item2;
 
 	if(Payment1->DisplayOrder > Payment2->DisplayOrder)
-   {
-      return 1;
-	}
+    {
+        return 1;
+    }
 	else if(Payment1->DisplayOrder == Payment2->DisplayOrder)
 	{
-		if(Payment1->Name > Payment2->Name)
-      {
-         return 1;
-      }
-		else if(Payment1->Name == Payment2->Name)
-      {
-         return 0;
-      }
-      else
-      {
-         return -1;
-		}
+        if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal &&
+            UseDifferentPattern(Item1, Item2))
+        {
+            return SortPaymentTypesForCasino(Item1, Item2);
+        }
+        else
+        {
+            if(Payment1->Name > Payment2->Name)
+            {
+                return 1;
+            }
+            else if(Payment1->Name == Payment2->Name)
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
    }
    else
    {
@@ -458,6 +520,8 @@ void TPaymentTransaction::ProcessPoints()
    // Put all the orders in a list includeing there sides so there is no special
    // code for sides.
    std::auto_ptr<TList> PointsOrdersList(new TList);
+   bool IsReedeemingpoints;
+   IsReedeemingpoints = false;
    bool isRefundTransaction = false;
    if(Orders != NULL)
    {
@@ -543,6 +607,7 @@ void TPaymentTransaction::ProcessPoints()
                 if(Redeemed != 0 && Payment->Name != "Dining")
                 {
                   SetRedeemPoints(Redeemed);
+                  IsReedeemingpoints = true;
                 }
 
                 /* Add the Purcashed Amounts amount*/
@@ -564,7 +629,8 @@ void TPaymentTransaction::ProcessPoints()
                 }
             }
         }
-        Membership.Member.Points.Recalc(PointsOrdersList.get(),Membership.Member.MemberType,isRefundTransaction);
+        Membership.Member.Points.Recalc(PointsOrdersList.get(),Membership.Member.MemberType,isRefundTransaction,IsReedeemingpoints);
+        IsReedeemingpoints = false;
 
 	}
 	else
@@ -572,7 +638,7 @@ void TPaymentTransaction::ProcessPoints()
 		Membership.Member.Points.Clear();
         if(TGlobalSettings::Instance().IsRunRateBoardEnabled && !TGlobalSettings::Instance().IsMemberSalesOnlyEnabled)
         {
-            Membership.Member.Points.Recalc(PointsOrdersList.get(), 1 , false);
+            Membership.Member.Points.Recalc(PointsOrdersList.get(), 1 , false , false);
         }
 	}
 }

@@ -473,8 +473,8 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 				"  ) TAXP ON TAXP.ITEMSIZE_KEY= ItemSize.ItemSize_Key  "
 				  
 	 "left join (SELECT      "
- "MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8000 THEN VARSPROFILE.INTEGER_VAL END) AS IsTax,     "
- " MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8001 THEN VARSPROFILE.INTEGER_VAL END) AS IsSeviceCharge,  "
+ "COALESCE(MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8000 THEN COALESCE(VARSPROFILE.INTEGER_VAL,0) END),0) AS IsTax,     "
+ " COALESCE(MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8001 THEN COALESCE(VARSPROFILE.INTEGER_VAL,0) END),0) AS IsSeviceCharge, "
 
  "cast(1 as int) keyvalue     "
 " FROM VARSPROFILE      "
@@ -1770,12 +1770,14 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 	qrWages->Close();
 	qrWages->SQL->Text =
 
- "select "
+   "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1807,7 +1809,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
-        
+
 
     if (Names && Names->Count > 0)
 	{
@@ -1818,14 +1820,16 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 
                             " ) "
 
-    "Union All "
+     "Union All "
 
         "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "Login_DateTime, "
-           "Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1855,6 +1859,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
+
     if (Names && Names->Count > 0)
 	{
 		qrWages->SQL->Text	=	qrWages->SQL->Text + "and (" +
@@ -1865,7 +1870,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                             " )"
 
                             "Order by "
-                                "9,2,4";
+                                "11,2,4";
 
 	if (Names)
 	{
@@ -1888,8 +1893,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1902,8 +1909,9 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                         "C.Contact_Type, "
                         "C.Name, "
                         "C.Payroll_ID, "
-                        "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
+                          "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
+                        
                         "ct.Breaks, "
                         "ct.TOTALHOURS, "
                         "TCL.Name Department, "
@@ -1936,8 +1944,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1977,7 +1987,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                             " )"
 
                             "Order by "
-                                "2,9,4";
+                                "2,11,4";
 
 	if (Names)
 	{
@@ -9368,7 +9378,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 
 	"Select "
 			"Security.Security_Event,"
-		   "(NAME || ' ' || Last_Name) as Name, "
+		   "(NAME || ' ' || Orders.Last_Name) as Name, "
 			"Orders.Time_Stamp,"
 			"Orders.Menu_Name Group_Name,"
 			"Orders.Course_Name,"
@@ -9394,7 +9404,7 @@ void TdmMMReportData::SetupLoyaltyDiscountedProducts(TDateTime StartTime, TDateT
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyDiscProducts->SQL->Text	=	qrLoyaltyDiscProducts->SQL->Text + "and (" +
-													ParamString(Names->Count, "(NAME || ' ' || Last_Name)", "NamesParam") + ")";
+													ParamString(Names->Count, "(NAME || ' ' || Orders.Last_Name)", "NamesParam") + ")";
 	}
 	qrLoyaltyDiscProducts->SQL->Text		=	qrLoyaltyDiscProducts->SQL->Text +
 
@@ -12747,22 +12757,21 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     {
         qrSalesSummaryB->SQL->Text = qrSalesSummaryB->SQL->Text +
         "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
-    }
+    }                                                                    
 
     qrSalesSummaryB->SQL->Text = qrSalesSummaryB->SQL->Text +
     // Total Discount
     "COALESCE((SELECT SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) FROM ARCORDERDISCOUNTS LEFT JOIN ARCHIVE ON ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "WHERE ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime), 0) AS DISCOUNT, "
 
-    // Total VAT
-    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE = 0 AND ARCHIVE.TIME_STAMP >= :StartTime AND ARCHIVE.TIME_STAMP < :EndTime),0) + "
-    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE = 4 AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0) AS VAT, "
+   //Total Vat
 
-    // Total Service Charge
+  "COALESCE((SELECT SUM(ARCORDERTAXES.Tax_Value) FROM ARCORDERTAXES  LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY= ARCHIVE.ARCHIVE_KEY "
+  "WHERE ARCORDERTAXES.TAX_TYPE IN(0,3,4) AND ARCHIVE.TIME_STAMP_BILLED>= :StartTime and ARCHIVE.TIME_STAMP_BILLED <:EndTime),0) AS VAT, "
+
+   // Total Service Charge
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (2,3) AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0) AS SERVICECHARGE, "
+    "WHERE ARCORDERTAXES.TAX_TYPE = 2  AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0) AS SERVICECHARGE, "
 
     // Total Local Tax
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
@@ -12794,14 +12803,14 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     // Total Void/Cancel and Discount (Refunds + Discounts)
     "COALESCE((SELECT SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) FROM ARCORDERDISCOUNTS LEFT JOIN ARCHIVE ON ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "WHERE ARCHIVE.TIME_STAMP >= :StartTime AND ARCHIVE.TIME_STAMP < :EndTime), 0) + "
-    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
+    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1 * ARCHIVE.QTY) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
     "LEFT JOIN ARCBILL ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY AND SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
     "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY WHERE SECURITY.SECURITY_EVENT IN ('Cancel','CancelY') AND "
     "ARCHIVE.TIME_STAMP_BILLED BETWEEN :StartTime AND :EndTime),0) AS TREFUNDDISCOUNT, "
 
     // Total Gross (Revenue + Service Charge + Local Tax + Total Cancel + Discounts + Total Refund)
     "COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
-    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
+    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1 * ARCHIVE.QTY) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
     "LEFT JOIN ARCBILL ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY AND SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
     "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY WHERE SECURITY.SECURITY_EVENT IN ('Cancel','CancelY') AND "
     "ARCHIVE.TIME_STAMP_BILLED BETWEEN :StartTime AND :EndTime),0) - "
@@ -12824,7 +12833,7 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     "GROUP BY ARCHIVE.ARCHIVE_KEY, SECURITY.SECURITY_REF, ARCHIVE.PRICE, ARCHIVE.QTY) AS CASHREF),0)) AS CASHREFUNDS, "
 
     // Total Cancel
-    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
+    "COALESCE((SELECT CAST(SUM(ARCHIVE.PRICE_LEVEL0 * -1 * ARCHIVE.QTY) AS NUMERIC(17,4)) FROM ARCHIVE LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
     "LEFT JOIN ARCBILL ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY AND SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
     "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY WHERE SECURITY.SECURITY_EVENT IN ('Cancel','CancelY') AND "
     "ARCHIVE.TIME_STAMP_BILLED BETWEEN :StartTime AND :EndTime),0) AS TOTALCANCEL, "
@@ -12922,6 +12931,7 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     {
         qrSalesSummaryB->SQL->Text = qrSalesSummaryB->SQL->Text +
         "ARCHIVE.ORDER_LOCATION ";
+
     }
     qrSalesSummaryB->ParamByName("StartTime")->AsDateTime = StartTime;
     qrSalesSummaryB->ParamByName("EndTime")->AsDateTime = EndTime;
