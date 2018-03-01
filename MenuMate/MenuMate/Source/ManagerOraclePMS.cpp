@@ -202,9 +202,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             tipEftPOS += (double)payment->TipAmount;
         }
         double totalPayTendered = 0;
+        double tipAux = 0;
+        if(tip >= 0.0)
+            tipAux = tip;
         double roundedPaymentAmount = (double)_paymentTransaction.Money.PaymentAmount -
                                       (double)_paymentTransaction.Money.PaymentSurcharges
-                                      + tip;
+                                      + tipAux;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -221,30 +224,45 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 tip += tipEftPOS;
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
-                if(payment->GetSurcharge() != 0)
+                double surcharge = 0;
+                if(_paymentTransaction.CreditTransaction)
+                    surcharge = payment->GetDiscount();
+                else
+                    surcharge = payment->GetSurcharge();
+                if(surcharge != 0)
                 {
-                   double surcharge = payment->GetSurcharge();
                    surcharge = RoundTo(surcharge * 100 , -2);
                    AnsiString strSurcharge = (AnsiString)surcharge;
                    if(strSurcharge.Pos(".") != 0)
                    {
                       strSurcharge = strSurcharge.SubString(1,strSurcharge.Pos(".")-1);
                    }
-                   int size = postRequest.Discount.size();
-                   if(size < 16)
+                   for(int subtotalindex = 0; subtotalindex < 16; subtotalindex++)
                    {
-                        int paymentSurcharge = 0;
+                      if(postRequest.Subtotal1[subtotalindex] != "" && postRequest.Subtotal1[subtotalindex] != 0)
+                      {
+                        int paymentSurcharge = atoi(postRequest.ServiceCharge[subtotalindex].c_str());
                         paymentSurcharge += atoi(strSurcharge.c_str());
                         AnsiString str = paymentSurcharge;
-                        postRequest.Discount.push_back(str);
+                        postRequest.ServiceCharge[subtotalindex] = str;
+                        break;
+                      }
                    }
-                   else
-                   {
-                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
-                        paymentSurcharge += atoi(strSurcharge.c_str());
-                        AnsiString str = paymentSurcharge;
-                        postRequest.Discount[15] = str;
-                   }
+//                   int size = postRequest.Discount.size();
+//                   if(size < 16)
+//                   {
+//                        int paymentSurcharge = 0;
+//                        paymentSurcharge += atoi(strSurcharge.c_str());
+//                        AnsiString str = paymentSurcharge;
+//                        postRequest.Discount.push_back(str);
+//                   }
+//                   else
+//                   {
+//                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
+//                        paymentSurcharge += atoi(strSurcharge.c_str());
+//                        AnsiString str = paymentSurcharge;
+//                        postRequest.Discount[15] = str;
+//                   }
                 }
 
                 if(_paymentTransaction.Money.TotalRounding  != 0)
