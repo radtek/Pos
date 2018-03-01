@@ -3332,6 +3332,30 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"This will print signature section with room Sales.\r"
 		"Default is False",
 		vmgPrinting, false);
+
+		SetVarBool(DBTransaction,
+		vmApplyRoundingTax,
+		"Apply Tax to Rounding in SiHot Posting only",
+		"Will take tax applied at Tax Profile to be chosen and implemented",
+		vmgTax,
+		false);
+
+		SetVarInt(DBTransaction,
+		vmRoundingTaxProfileKey,
+		"Rounding Tax Profile Key in SiHot Posting only",
+		"Getting the Tax Profile Key from Tax Profile Table",
+		vmgTax,
+		0);
+
+		SetVarNum(DBTransaction,
+		vmRoundingTaxRate,
+		"Rounding Tax Rate in SiHot Posting only",
+		"Getting the Rounding Tax Rate",
+		vmgTax,
+		0);
+		SetVarBool(DBTransaction, vmIsSiHotPostInProgress, "Shows status of posting",
+		"Gets true while posting to SiHot ",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

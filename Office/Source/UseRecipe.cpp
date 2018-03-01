@@ -539,7 +539,7 @@ void TfrmUseRecipe::UpdatePrices(AnsiString Item, AnsiString Location)
         Query->ParamByName("Location")->AsString = Location;
         Query->ParamByName("Stock_Key")->AsInteger = Stock_Key;
         AverageCostNew =  ((OnHand * Price) + ((double)NumTotal->Value/(double)NumQty->Value * NumQty->Value)) / (OnHand + NumQty->Value);
-        Query->ParamByName("Average_Cost")->AsCurrency = AverageCostNew > -1000000 ? AverageCostNew : 0;
+        Query->ParamByName("Average_Cost")->AsCurrency = AverageCostNew > -1000000 ? double(AverageCostNew) : 0;
         Query->ParamByName("Latest_Cost")->AsCurrency = (double)NumTotal->Value/(double)NumQty->Value;
         Query->ExecQuery();
     }

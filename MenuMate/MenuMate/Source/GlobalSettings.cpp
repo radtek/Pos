@@ -407,6 +407,9 @@ TGlobalSettings::TGlobalSettings()
     OracleCheckNumber = "";
     PrintSignatureWithDiscountSales = false;
     PrintSignatureWithRoomSales = false;
+    ApplyRoundingTax = false;
+    RoundingTaxProfileKey = 0;
+    RoundingTaxRate = 0;
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
 }

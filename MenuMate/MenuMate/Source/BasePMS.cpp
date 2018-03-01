@@ -78,4 +78,8 @@ void TBasePMS::LogPMSEnabling(TriggerLocation triggerType)
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::UnsetPostingFlag()
+{
+}
+//---------------------------------------------------------------------------
 

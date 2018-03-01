@@ -132,6 +132,7 @@ void TfrmTransferMulti::LoadStocksForManualMode()
 	AnsiString LastCategory, LastGroup, LastStock;
 
 	bool Initialised = false;
+    AnsiString DecPlacesFormat = CurrentConnection.SettingDecimalPlaces == 4 ? "0.0000" : "0.00";
 
 	vtvStockQty->BeginUpdate();
 
@@ -169,13 +170,14 @@ void TfrmTransferMulti::LoadStocksForManualMode()
 				NodeData->StockRequestKey = 0;
 			}
 
+
 			if (qrStockTransferManual->FieldByName("Location")->AsString == Source)
 			{
-                NodeData->SourceOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffFixed,19, CurrentConnection.SettingDecimalPlaces));
+                NodeData->SourceOnHand = StrToFloat(FormatFloat(DecPlacesFormat,qrStockTransferManual->FieldByName("On_Hand")->AsFloat));
 			}
 			else if (qrStockTransferManual->FieldByName("Location")->AsString == Destination)
 			{
-                NodeData->DestOnHand = StrToFloat(FloatToStrF(qrStockTransferManual->FieldByName("On_Hand")->AsFloat,ffNumber,19, CurrentConnection.SettingDecimalPlaces));
+                NodeData->DestOnHand = StrToFloat(FormatFloat(DecPlacesFormat,qrStockTransferManual->FieldByName("On_Hand")->AsFloat));
 			}
 
 			if (NodeData->Initialised)

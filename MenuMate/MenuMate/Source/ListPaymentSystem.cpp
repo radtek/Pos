@@ -978,12 +978,17 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		    TDeviceRealTerminal::Instance().ProcessingController.Pop();
         }
 		OnAfterTransactionComplete.Occured();
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 	}
 	catch(Exception & E)
 	{
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
 		throw;
 	}
 
@@ -6411,35 +6416,17 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
 bool TListPaymentSystem::TryToEnableSiHot()
 {
     bool retValue = false;
-    UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
-    std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
-    siHotManager->LogPMSEnabling(eSelf);
-    retValue = siHotManager->GetDefaultAccount(processMessage);
     try
     {
-        AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services";
-        if (!DirectoryExists(directoryName))
-            CreateDir(directoryName);
-        directoryName = directoryName + "/Sihot Post Logs";
-        if (!DirectoryExists(directoryName))
-            CreateDir(directoryName);
-        AnsiString name = "SiHotPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
-        AnsiString fileName =  directoryName + "/" + name;
-        std::auto_ptr<TStringList> List(new TStringList);
-        if (FileExists(fileName) )
-          List->LoadFromFile(fileName);
-
-//        List->Add("Note- "+ (AnsiString)"Trying to enable SiHot" +"\n");
-        if(retValue)
-            List->Add("Successful");
-        else
-            List->Add("Unsuccessful");
-        List->Add("=======================================================================");
-        List->Add("\n");
-        List->SaveToFile(fileName );
+        UnicodeString processMessage = "SiHot PMS is found disabled,\nTrying to Enable if possible...";
+        std::auto_ptr<TManagerSiHot> siHotManager(new TManagerSiHot());
+        siHotManager->LogPMSEnabling(eSelf);
+        retValue = siHotManager->GetDefaultAccount(processMessage);
     }
     catch(Exception &Ex)
     {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retValue = false;
     }
     return retValue;
 }

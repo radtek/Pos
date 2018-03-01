@@ -84,7 +84,9 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
 TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge)
 {
     TRoomChargeResponse roomChargeResponse;
+    roomChargeResponse.IsSuccessful = false;
     RoomChargeResponse *roomResponse = new RoomChargeResponse;
+    roomResponse->IsSuccessful = false;
     // Post room charge and get Response
     RoomChargeDetails *roomChargeDetails = new RoomChargeDetails;
     try
