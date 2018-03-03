@@ -2933,8 +2933,7 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
         SelectedItemKeys.insert(itItem->first);
     }
 
-    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
-                      SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
+    bool canAddItem = SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {
