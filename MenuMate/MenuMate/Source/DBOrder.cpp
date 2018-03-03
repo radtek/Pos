@@ -2432,9 +2432,8 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
 		throw;
 	}
 }
-
-double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems)
-{
+//-----------------------------------------------------------------------------
+double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems){
     double accumulatedQuantity = 0;
 	try
 	{
@@ -2458,14 +2457,10 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 
         ///Check whether any discount exist having  SCD Or PWD Discount group.
         bool isSCDOrPWDDiscountExist = false;
-        bool isSCDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Senior Citizen");
         bool isPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Person with Disability");
-        isSCDOrPWDDiscountExist = isSCDDiscountExist || isPWDDiscountExist;
+        isSCDOrPWDDiscountExist = isPWDDiscountExist;
         bool checkSCDOrPWDExist = false;
         TItemType itemType = eDrinksItem;
-
-        //Create Set For inserting OrderKeys having SCD Discount.
-        std::set<__int64> orderKeysWithSCDDiscount;
 
         //Create Set For inserting OrderKeys having PWD Discount.
         std::set<__int64> orderKeysWithPWDDiscount;
@@ -2473,25 +2468,19 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
         //Create Set For inserting OrderKeys having no Discount.
         std::set<__int64> orderKeysWithNoDiscount;
 
-        if(isSCDDiscountExist)
-        {
-            //Load OrderKeys Having SCD Discount Applied.
-            LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithSCDDiscount, "Senior Citizen");
-        }
-
         if(isPWDDiscountExist)
         {
             //Load OrderKeys Having PWD Discount Applied.
             LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithPWDDiscount, "Person with Disability");
         }
 
-        if(isSCDDiscountExist || isPWDDiscountExist)
+        if(isPWDDiscountExist)
         {
             //load OrderKeys Which have No Discount..
             LoadOrderKeysWIthoutDiscount(DBTransaction, TabKey, orderKeysWithNoDiscount);
 
             //If no order key have scd or pwd discount  then make isSCDOrPWDDiscountExist false.
-            isSCDOrPWDDiscountExist = orderKeysWithSCDDiscount.size() == 0 && orderKeysWithPWDDiscount.size() == 0 ? false : true;
+            isSCDOrPWDDiscountExist = /*orderKeysWithSCDDiscount.size() == 0 &&*/ orderKeysWithPWDDiscount.size() == 0 ? false : true;
         }
 
 		for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
@@ -2518,11 +2507,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 bool isPWDApplied = false;
                 bool noDiscountApplied = false;
 
-                if(orderKeysWithSCDDiscount.find(Order.Key) != orderKeysWithSCDDiscount.end() )
-                {
-                    isSCDApplied = (SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys, false));
-                }
-                else if(orderKeysWithPWDDiscount.find(Order.Key) != orderKeysWithPWDDiscount.end())
+                if(orderKeysWithPWDDiscount.find(Order.Key) != orderKeysWithPWDDiscount.end())
                 {
                     isPWDApplied = (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys, false));
                 }
@@ -2531,7 +2516,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                     noDiscountApplied = true;
                 }
 
-                checkSCDOrPWDExist = (isSCDApplied || isPWDApplied || noDiscountApplied);
+                checkSCDOrPWDExist = (isPWDApplied || noDiscountApplied);
             }
 
 			if(!SelectingItems || (!isSCDOrPWDDiscountExist || checkSCDOrPWDExist))
@@ -2599,13 +2584,9 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		}
 
         ///count orderkeys which have normaldiscount applied
-        int itemsWithNormalDiscount = IBInternalQuery->RecordCount - orderKeysWithNoDiscount.size() - orderKeysWithSCDDiscount.size() -  orderKeysWithPWDDiscount.size();
+        int itemsWithNormalDiscount = IBInternalQuery->RecordCount - orderKeysWithNoDiscount.size() -  orderKeysWithPWDDiscount.size();
 
-        if(SelectingItems && orderKeysWithSCDDiscount.size() > 0  && (itemsWithNormalDiscount > 0 || orderKeysWithPWDDiscount.size() > 0))
-        {
-            MessageBox("Items with Senior Citizens Discounts and items with Non Senior Citizens Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
-        }
-        else if(SelectingItems && orderKeysWithPWDDiscount.size() > 0 && (itemsWithNormalDiscount > 0 || orderKeysWithSCDDiscount.size() > 0))
+        if(SelectingItems && orderKeysWithPWDDiscount.size() > 0 && itemsWithNormalDiscount > 0)
         {
             MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
         }
@@ -2625,8 +2606,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		throw;
 	}
     return accumulatedQuantity;
-}
-
+}//------------------------------------------------------------------------------
 void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,std::set<__int64> &OrderKeys, std::map<__int64,TPnMOrder> &Orders)
 {
 	try

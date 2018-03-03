@@ -6,7 +6,6 @@
 #include "SCDPWDChecker.h"
 #include "MMMessageBox.h"
 #include "OrderUtils.h"
-
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -18,10 +17,10 @@ TSCDPWDChecker::TSCDPWDChecker()
 bool TSCDPWDChecker::SeniorCitizensCheck(TDiscount inDiscount, TList* Orders, bool isClippSale)
 {
     bool discIsSeniorCitizenDisc = inDiscount.IsSeniorCitizensDiscount();
-    bool SeniorCitizenDiscCanBeApplied = !TOrderUtils::AnyDiscountsApplied(Orders) || TOrderUtils::SeniorCitizensDiscountApplied(Orders);
+    bool SeniorCitizenDiscCanBeApplied = !TOrderUtils::AnyDiscountsApplied(Orders) ||
+                                         (TOrderUtils::SeniorCitizensDiscountApplied(Orders) && !TOrderUtils::NonSCDApplied(Orders));
 
     bool discountValid = discIsSeniorCitizenDisc ? SeniorCitizenDiscCanBeApplied : !TOrderUtils::SeniorCitizensDiscountApplied(Orders);
-
     if(isClippSale && discIsSeniorCitizenDisc)
     {
        discountValid = isClippSale;
@@ -49,7 +48,6 @@ bool TSCDPWDChecker::SeniorCitizensCheck(TDiscount inDiscount, TList* Orders, bo
 
     return discountValid;
 }
-
 bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippSale)
 {
     bool discIsPWDDisc = inDiscount.IsPersonWithDisabilityDiscount();
@@ -67,7 +65,7 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 
         if(discIsPWDDisc)
         {
-            errorMessage = "Can not apply a PWD Discount to a sale with a Non Senior Citizens Discount applied.";
+            errorMessage = "Can not apply a PWD Discount to a sale with a non PWD Discount applied.";
         }
         else
         {
@@ -84,8 +82,6 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 
     return discountValid;
 }
-
-
 bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
@@ -232,3 +228,40 @@ UnicodeString TSCDPWDChecker::getOrderKeysList(std::set<__int64> OrderKeys)
     }
     return orderKeyList;
 }
+bool TSCDPWDChecker::SeniorCitizensCheckForItem(TDiscount inDiscount, TItemMinorComplete *SelectedItem)
+{
+    bool discIsSeniorCitizenDisc = inDiscount.IsSeniorCitizensDiscount();
+    bool SeniorCitizenDiscCanBeApplied = SelectedItem->HasSeniorCitizensDiscountApplied() ||(SelectedItem->Discounts.size() == 0);
+    bool NonSCDCanBeApplied = !SelectedItem->HasSeniorCitizensDiscountApplied() ;
+    bool discountValid = discIsSeniorCitizenDisc ? SeniorCitizenDiscCanBeApplied : NonSCDCanBeApplied;
+    if(!discountValid)
+    {
+        UnicodeString errorMessage = "";
+        if(discIsSeniorCitizenDisc)
+            errorMessage = "Can not apply a Senior Citizens Discount to an item with a Non Senior Citizens Discount applied.";
+        else
+            errorMessage = "Can not apply a Non Senior Citizens Discount to an item with a Senior Citizens Discount applied.";
+		MessageBox(errorMessage, "Error", MB_ICONWARNING + MB_OK);
+    }
+    return discountValid;
+}
+bool TSCDPWDChecker::PWDCheckForItem(TDiscount inDiscount, TItemMinorComplete *SelectedItem)
+{
+    bool discIsPWDDisc = inDiscount.IsPersonWithDisabilityDiscount();
+    bool PWDDiscCanBeApplied = SelectedItem->HasPWDApplied() ||(SelectedItem->Discounts.size() == 0);
+    bool NonPWDCanBeApplied = !SelectedItem->HasPWDApplied();
+    bool discountValid = discIsPWDDisc ? PWDDiscCanBeApplied : NonPWDCanBeApplied;
+
+    if(!discountValid)
+    {
+        UnicodeString errorMessage = "";
+        if(discIsPWDDisc)
+            errorMessage = "Can not apply a PWD Discount to an item with a Non PWD Discount applied.";
+        else
+            errorMessage = "Can not apply a Non PWD Discount to an item with a PWD Discount applied.";
+
+		MessageBox(errorMessage, "Error", MB_ICONWARNING + MB_OK);
+    }
+    return discountValid;
+}
+

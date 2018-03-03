@@ -255,4 +255,26 @@ bool TOrderUtils::Match(TItemMinorComplete *PrevItem,TItemMinorComplete *Current
 	}
 	return true;
 }
-
+//----------------------------------------------------------------------------
+bool TOrderUtils::NonSCDApplied(TList *Orders)
+{
+    bool retVal = false;
+	for (int i = 0; i < Orders->Count && !retVal; i++)
+	{
+        TItemComplete *Order = (TItemComplete *)Orders->Items[i];
+        retVal = !Order->HasSeniorCitizensDiscountApplied();
+	}
+    retVal;
+}
+//-----------------------------------------------------------------------------
+bool TOrderUtils::NonPWDApplied(TList *Orders)
+{
+    bool retValue = false;
+	for (int i = 0; i < Orders->Count && !retValue; i++)
+	{
+        TItemComplete *Order = (TItemComplete *)Orders->Items[i];
+        retValue = !Order->HasPWDApplied();
+	}
+    retValue;
+}
+//-----------------------------------------------------------------------------

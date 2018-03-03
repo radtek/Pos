@@ -270,8 +270,7 @@ AnsiString TfrmSelectDiscounts::DiscountSingleItem(Database::TDBTransaction &DBT
 		 ManagerDiscount->GetDiscount(DBTransaction, DiscountKey, CurrentDiscount);
 
          TSCDPWDChecker SCDChecker;
-
-         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, Orders) && SCDChecker.PWDCheck(CurrentDiscount, Orders)
+         if(SCDChecker.SeniorCitizensCheckForItem(CurrentDiscount, SelectedItem) && SCDChecker.PWDCheck(CurrentDiscount, Orders)
              && SelectedItem->DiscountApplies(CurrentDiscount))
          {
              if (SelectedItem->DiscountApplied(DiscountKey))
