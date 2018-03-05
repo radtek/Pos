@@ -117,8 +117,8 @@ void TApplyParser::update6_46Tables()
 void TApplyParser::update6_47Tables()
 {
     Insert6_39Malls(_dbControl, 3, "Evia ", "F");
-    int settingID[10] = {1, 2, 6, 7, 16, 18, 19, 20, 24, 25};
-    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 3);
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 15, 3);
 }
 //----------------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)

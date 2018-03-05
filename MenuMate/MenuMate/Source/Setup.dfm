@@ -1254,28 +1254,28 @@ object frmSetup: TfrmSetup
           Top = 151
           Width = 60
           Height = 18
-          Caption = 'FTP Path'
+          Caption = 'Server Path'
         end
         object lbMallFTPUserName: TLabel
           Left = 392
           Top = 208
           Width = 105
           Height = 18
-          Caption = 'FTP User Name'
+          Caption = 'User Name'
         end
         object lbMallFTPPassword: TLabel
           Left = 392
           Top = 267
           Width = 92
           Height = 18
-          Caption = 'FTP Password'
+          Caption = 'Password'
         end
         object lbMallFTPServer: TLabel
           Left = 392
           Top = 95
           Width = 73
           Height = 18
-          Caption = 'FTP Server'
+          Caption = 'Server IP'
         end
         object lbMallConsolidated: TLabel
           Left = 392
