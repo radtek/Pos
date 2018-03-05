@@ -756,7 +756,6 @@ object frmTransferMulti: TfrmTransferMulti
       '   Stock.Enabled = '#39'T'#39
       '   And (Stock.Deleted Is Null Or Stock.Deleted = '#39'F'#39')'
       'Order By'
-      '  StockGroup.Stock_Group,'
       '   StockCategory.Sort_Order,'
       '   StockGroup.Sort_Order,'
       '   Stock.Description')

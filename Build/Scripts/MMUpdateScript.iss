@@ -68,7 +68,6 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags:
 Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5 Casino.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\ZSummaryReports.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\Owner Details.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
@@ -315,7 +314,6 @@ Root: HKLM; Subkey: Software\IQWORKS\MenuMate\; Flags: createvalueifdoesntexist;
 [Icons]
 Name: {group}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {group}\Office; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
-Name: {userdesktop}\Office Version 5 Casino; Filename: {app}\Office Version 5 Casino.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office Version 5; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {group}\Floorplan Editor; Filename: {app}\Floorplan\GuiClient\Menumate.WinServices.Client.FloorPlan.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
