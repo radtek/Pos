@@ -1252,28 +1252,28 @@ object frmSetup: TfrmSetup
         object lbMallFTPPath: TLabel
           Left = 392
           Top = 151
-          Width = 60
+          Width = 76
           Height = 18
           Caption = 'Server Path'
         end
         object lbMallFTPUserName: TLabel
           Left = 392
           Top = 208
-          Width = 105
+          Width = 74
           Height = 18
           Caption = 'User Name'
         end
         object lbMallFTPPassword: TLabel
           Left = 392
           Top = 267
-          Width = 92
+          Width = 61
           Height = 18
           Caption = 'Password'
         end
         object lbMallFTPServer: TLabel
           Left = 392
           Top = 95
-          Width = 73
+          Width = 61
           Height = 18
           Caption = 'Server IP'
         end
@@ -1433,36 +1433,44 @@ object frmSetup: TfrmSetup
           OnMouseClick = btnAssignMallSalesTypeMouseClick
         end
         object edMallFTPServer: TEdit
+          Tag = 1
           Left = 392
           Top = 122
           Width = 330
           Height = 26
           Color = clInactiveCaptionText
           TabOrder = 12
+          OnClick = edMallServerIPClick
         end
         object edMallFTPPath: TEdit
+          Tag = 2
           Left = 392
           Top = 179
           Width = 330
           Height = 26
           Color = clInactiveCaptionText
           TabOrder = 13
+          OnClick = edMallServerPathClick
         end
         object edMallFTPUserName: TEdit
+          Tag = 3
           Left = 392
           Top = 235
           Width = 330
           Height = 26
           Color = clInactiveCaptionText
           TabOrder = 14
+          OnClick = edMallUserNameClick
         end
         object edMallFTPPassword: TEdit
+          Tag = 4
           Left = 392
           Top = 294
           Width = 330
           Height = 26
           Color = clInactiveCaptionText
           TabOrder = 16
+          OnClick = edMallPasswordClick
         end
         object cbEnableMallConsolidatedRep: TCheckBox
           Left = 392
