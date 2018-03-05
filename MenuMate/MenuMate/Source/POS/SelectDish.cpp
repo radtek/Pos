@@ -171,7 +171,7 @@ __fastcall TfrmSelectDish::TfrmSelectDish(TComponent* Owner) : TZForm(Owner), Pa
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.RegisterForEvent(OnSmartCardRemoved);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardUpdated.RegisterForEvent(OnSmartCardInserted);
     isExtendedDisplayActive = false;
-
+    patronsStore.clear();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::CalculateAndDisplayTotalServiceCharge() const
@@ -1790,6 +1790,7 @@ void TfrmSelectDish::purge_unsent_orders()
                 orders.AppliedMembership.Clear();
              }
          }
+    patronsStore.clear();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
@@ -2732,7 +2733,7 @@ bool TfrmSelectDish::DeleteUnsentAndProceed(Database::TDBTransaction &DBTransact
 		if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 		{
            chcekitems = CheckItemsPrintCancel();
-
+           patronsStore.clear();
            if(!chcekitems)
            {
               TMMContactInfo TempUserInfo;
@@ -3682,11 +3683,19 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 			if (Sender == tbtnCashSale || Sender == tbtnTender)
 			{
-				TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, PaymentTransaction.Patrons, 1);
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                    if(patronsStore[indexStore].Count != 0)
+                    {
+                         PaymentTransaction.Patrons = patronsStore;
+                         break;
+                    }
+                }
 
 				if((Sender == tbtnCashSale || ((Sender == tbtnTender)&& CurrentTender != 0) || isProcessedQuickPayment) && TGlobalSettings::Instance().EnableMenuPatronCount)
 				{
                    PaymentTransaction.CalculatePatronCountFromMenu();
+                   StorePatronsInformation(PaymentTransaction);
                 }
 
 				// ask for patron count if this is a quick sale
@@ -3694,14 +3703,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				{
 					if (TManagerPatron::Instance().GetCount(PaymentTransaction.DBTransaction) > 0)
 					{
-						PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
+                        InitializePatronForQuickSale(PaymentTransaction);
 					}
 					else
 					{
                         MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                     }
                 }
-
                 bool isGuestExist = true;
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
                 {
@@ -3794,14 +3802,12 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 }
                 //Set order Identification Number
                 int identificationNumber = 0;
+
                 if(TableNo !=0)
-                {
                    identificationNumber = TDBOrder::GetOrderIdentificationNumberForTable(DBTransaction,TableNo);
-                }
                 else
-                {
                    identificationNumber = TDBOrder::GetOrderIdentificationNumberForTab(DBTransaction,TabName);
-                }
+
                 std::set<int>SeatCounter;
 				for (int o = 0; o < OrdersList->Count; o++)
 				{
@@ -4187,7 +4193,23 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 OrdersList->Clear();
                 memNote->Lines->Clear();
                 memOverview->Lines->Clear();
+                patronsStore.clear();
+                storedPatronCountFromMenu = 0;
+                PaymentTransaction.PatronCountFromMenu = 0;
 			}
+            else
+            {
+                patronsStore = PaymentTransaction.Patrons;
+                storedPatronCountFromMenu = PaymentTransaction.PatronCountFromMenu;
+                for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
+                {
+                    if(patronsStore[indexPatrons].Default)
+                    {
+                       patronsStore[indexPatrons].Count -= storedPatronCountFromMenu;
+                       break;
+                    }
+                }
+            }
 		}
 		else
 		{
@@ -8624,6 +8646,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 				if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 				{
 					lbDisplay->Clear();
+                    patronsStore.clear();
 					for (UINT f = 0; f < SeatOrders.size(); f++)
 					{
 						try
@@ -12337,6 +12360,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 			if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 			{
 				lbDisplay->Clear();
+                patronsStore.clear();
 				for (UINT f = 0; f < SeatOrders.size(); f++)
 				{
 					try
@@ -13199,7 +13223,6 @@ bool  TfrmSelectDish::ShowTabCreditLimitExceedsMessage(Database::TDBTransaction 
 void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TItem* inItem,	bool  inSetMenuItem,
 								   TItemSize* inItemSize,Currency  inPrice , bool IsItemSearchedOrScan)
 {
-
     CheckLastAddedItem(); // check any added item in list;
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
 
@@ -15647,3 +15670,31 @@ bool TfrmSelectDish::CloseActiveForm()
         Screen->ActiveForm->Close();
     }
 }
+//----------------------------------------------------------------------------
+void TfrmSelectDish::StorePatronsInformation(TPaymentTransaction &PaymentTransaction)
+{
+    for(int indexPatron = 0; indexPatron < PaymentTransaction.Patrons.size(); indexPatron)
+    {
+        if(PaymentTransaction.Patrons[indexPatron].Default)
+        {
+            storedPatronCountFromMenu = PaymentTransaction.Patrons[indexPatron].Count;
+            break;
+        }
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction)
+{
+    bool isDefaultInitRequired = true;
+    for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
+    {
+        PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
+        if(PaymentTransaction.Patrons[indexPatrons].Count != 0)
+           isDefaultInitRequired = false;
+    }
+    if(isDefaultInitRequired)
+          TManagerPatron::Instance().SetDefaultPatrons(PaymentTransaction.DBTransaction, PaymentTransaction.Patrons, 1);
+    PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
+    patronsStore = PaymentTransaction.Patrons;
+}
+//----------------------------------------------------------------------------

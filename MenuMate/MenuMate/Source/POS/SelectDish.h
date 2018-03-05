@@ -481,6 +481,10 @@ private: // User declarations
     bool LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &inTransaction);
     bool CloseActiveForm();
     std::vector<UnicodeString> LoadGuestDetails(UnicodeString defaultTransaction);
+    std::vector<TPatronType> patronsStore;
+    int storedPatronCountFromMenu;
+    void StorePatronsInformation(TPaymentTransaction &PaymentTransaction);
+    void InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);
