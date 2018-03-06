@@ -320,6 +320,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintSignatureSection, "Signature Section");
 	DefaultCaption[epofiPrintSignatureSection] = "Signature Section";
+
+    Instructions[i++] = InstructionPair(epofiPrintEFTPOSReceipt, "EFTPOS Receipt");
+	DefaultCaption[epofiPrintEFTPOSReceipt] = "EFTPOS Receipt";
 }
 
 
@@ -501,6 +504,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintOrganizationNumber:
     case epofiPrintOracleCheckNumber:
     case epofiPrintSignatureSection:
+    case epofiPrintEFTPOSReceipt:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -1018,6 +1022,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintSignatureSection:
             PrintSignatureSection(PrintJob);
+            break;
+        case epofiPrintEFTPOSReceipt:
+            PrintEFTPOSReceipt(PrintJob);
             break;
 		default:
 			break;
@@ -9208,3 +9215,24 @@ bool TPrintSection::IsRMSPaymentType(TReqPrintJob *PrintJob)
     }
     return retVal;
 }
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintEFTPOSReceipt(TReqPrintJob* PrintJob)
+{
+//	UnicodeString OrgName = "Oracle Check Number: ";
+//
+//	if (TGlobalSettings::Instance().OracleCheckNumber == "")
+//	{
+//		Empty = true;
+//	}
+//	else
+//	{
+//        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+//		pPrinter->Line->ColCount = 1;
+//		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+//		pPrinter->Line->Columns[0]->Text  = OrgName + TGlobalSettings::Instance().OracleCheckNumber;
+//		pPrinter->AddLine();
+//        TGlobalSettings::Instance().OracleCheckNumber = "";
+//        Empty = false;
+//    }
+}
+//-----------------------------------------------------------------------------
