@@ -485,6 +485,7 @@ private: // User declarations
     int storedPatronCountFromMenu;
     void StorePatronsInformation(TPaymentTransaction &PaymentTransaction);
     void InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction);
+    void ExtractPatronInformation(TPaymentTransaction &PaymentTransaction);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

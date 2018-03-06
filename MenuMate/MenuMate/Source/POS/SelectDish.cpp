@@ -4199,16 +4199,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			}
             else
             {
-                patronsStore = PaymentTransaction.Patrons;
-                storedPatronCountFromMenu = PaymentTransaction.PatronCountFromMenu;
-                for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
-                {
-                    if(patronsStore[indexPatrons].Default)
-                    {
-                       patronsStore[indexPatrons].Count -= storedPatronCountFromMenu;
-                       break;
-                    }
-                }
+                ExtractPatronInformation(PaymentTransaction);
             }
 		}
 		else
@@ -15696,5 +15687,19 @@ void TfrmSelectDish::InitializePatronForQuickSale(TPaymentTransaction &PaymentTr
           TManagerPatron::Instance().SetDefaultPatrons(PaymentTransaction.DBTransaction, PaymentTransaction.Patrons, 1);
     PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
     patronsStore = PaymentTransaction.Patrons;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::ExtractPatronInformation(TPaymentTransaction &PaymentTransaction)
+{
+    patronsStore = PaymentTransaction.Patrons;
+    storedPatronCountFromMenu = PaymentTransaction.PatronCountFromMenu;
+    for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
+    {
+        if(patronsStore[indexPatrons].Default)
+        {
+           patronsStore[indexPatrons].Count -= storedPatronCountFromMenu;
+           break;
+        }
+    }
 }
 //----------------------------------------------------------------------------

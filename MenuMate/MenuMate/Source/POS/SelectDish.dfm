@@ -27,6 +27,8 @@ object frmSelectDish: TfrmSelectDish
   OnHide = FormHide
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 19
   object tgridSeats: TTouchGrid
@@ -1148,7 +1150,7 @@ object frmSelectDish: TfrmSelectDish
             object Label2: TLabel
               Left = 5
               Top = 5
-              Width = 560
+              Width = 33
               Height = 19
               Align = alTop
               Caption = 'Note'
@@ -1158,7 +1160,6 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              ExplicitWidth = 33
             end
             object memNote: TMemo
               Left = 5
@@ -1291,11 +1292,11 @@ object frmSelectDish: TfrmSelectDish
             ScrollBtnRight.LatchedFontColor = 1
             Buttons = {
               040000003A0000000000000000000000000078000000DC031BBD2B325F9AFD3F
-              80000000000080008000000006000000540061006800FFFFFF000C0000000000
-              0000000000000000000000000000FFFFFF0006000000540061006800FFFFFF00
-              0C00000000000000000000000000000000000000FFFFFF000000000001000000
-              0100000001000000010000000100000001000000FF0000006400000001000000
-              00000000010000000000000000000000}
+              800000000000800080000000050000004100720069FFFFFF000C000000000000
+              00000000000000000000000000FFFFFF00050000004100720069FFFFFF000C00
+              000000000000000000000000000000000000FFFFFF0000000000010000000100
+              000001000000010000000100000001000000FF00000064000000010000000000
+              0000010000000000000000000000}
           end
           object Panel4: TPanel
             Left = 5
@@ -1316,7 +1317,7 @@ object frmSelectDish: TfrmSelectDish
             object Label3: TLabel
               Left = 5
               Top = 5
-              Width = 560
+              Width = 88
               Height = 19
               Align = alTop
               Caption = 'Item History'
@@ -1326,7 +1327,6 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              ExplicitWidth = 88
             end
             object memOverview: TMemo
               Left = 5
