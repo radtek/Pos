@@ -104,9 +104,7 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
-	if (TGlobalSettings::Instance().EnableMenuPatronCount)
-	CurrentTransaction.CalculatePatronCountFromMenu();
-
+    CalculatePatrons(CurrentTransaction);
 	int TotalCount = 0;
 	std::vector <TPatronType> ::iterator ptrPatronTypes = CurrentTransaction.Patrons.begin();
 	for (ptrPatronTypes = CurrentTransaction.Patrons.begin(); ptrPatronTypes != CurrentTransaction.Patrons.end(); ptrPatronTypes++)
@@ -4594,5 +4592,60 @@ bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
         lastChar = currentChar;
     }
     return true;
+}
+//---------------------------------------------------------------------
+void TfrmPaymentType::CalculatePatrons(TPaymentTransaction &CurrentTransaction)
+{
+    std::vector<TPatronType> patronsStore = CurrentTransaction.Patrons;
+    bool isRestoreRequired = false;
+	if (TGlobalSettings::Instance().EnableMenuPatronCount)
+    {
+	    CurrentTransaction.CalculatePatronCountFromMenu();
+        isRestoreRequired = true;
+        for(int indexPatrons = 0; indexPatrons < CurrentTransaction.Patrons.size(); indexPatrons++)
+        {
+            if(CurrentTransaction.Patrons[indexPatrons].Default)
+            {
+                CurrentTransaction.PatronCountFromMenu = CurrentTransaction.Patrons[indexPatrons].Count;
+                break;
+            }
+        }
+    }
+    if(isRestoreRequired)
+    {
+        for(int indexPatrons = 0; indexPatrons < CurrentTransaction.Patrons.size(); indexPatrons++)
+        {
+            if(CurrentTransaction.Patrons[indexPatrons].Default)
+            {
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                     if(patronsStore[indexStore].Default)
+                     {
+                       int backStore = patronsStore[indexStore].Count - CurrentTransaction.PatronCountFromMenu;
+                       CurrentTransaction.Patrons[indexPatrons].Count += patronsStore[indexStore].Count;
+                     }
+                }
+            }
+            else
+            {
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                     if(!patronsStore[indexStore].Default)
+                       CurrentTransaction.Patrons[indexPatrons].Count += patronsStore[indexStore].Count;
+                }
+            }
+        }
+    }
+    bool isDefaultInitializeRequired = true;
+    for(int indexPatron = 0; indexPatron < CurrentTransaction.Patrons.size(); indexPatron++)
+    {
+        if(CurrentTransaction.Patrons[indexPatron].Count != 0)
+        {
+             isDefaultInitializeRequired = false;
+             break;
+        }
+    }
+    if(isDefaultInitializeRequired)
+        TManagerPatron::Instance().SetDefaultPatrons(CurrentTransaction.DBTransaction, CurrentTransaction.Patrons, 1);
 }
 //---------------------------------------------------------------------

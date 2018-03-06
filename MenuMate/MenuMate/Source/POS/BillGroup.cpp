@@ -868,7 +868,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
             totalDivision = TDBTab::GetTotalDivisions(DBTransaction, *itTabs);
             tabkey = *itTabs;
         }
-
+        TSCDPWDChecker scdpwdChecker;
 		if (!TabsToLock.empty())
 		{
 			if (TabsInUseOk(DBTransaction, TabsToLock))
@@ -879,6 +879,10 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 				{
 					MessageBox("No Orders to bill!", "Error", MB_OK + MB_ICONERROR);
 				}
+                else if(!scdpwdChecker.CheckForBillingWithPWD(DBTransaction,ItemsToBill))
+                {
+                    MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
+                }
 				else
 				{
                     if(!CheckBillEntireWithCustomerJourney())
@@ -2933,8 +2937,7 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
         SelectedItemKeys.insert(itItem->first);
     }
 
-    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
-                      SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
+    bool canAddItem = SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {

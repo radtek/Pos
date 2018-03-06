@@ -808,7 +808,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
