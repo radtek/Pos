@@ -1649,7 +1649,7 @@ bool TdmStockData::Update3_0()
 			Query->ParamByName("Unit")->AsString				= IBQuery1->FieldByName("Unit")->AsString;
 			Query->ParamByName("Qty")->AsDouble					= -IBQuery1->FieldByName("Qty")->AsFloat;
             unitCost = IBQuery1->FieldByName("Unit_Cost")->AsFloat;
-			Query->ParamByName("Unit_Cost")->AsDouble			=  unitCost > -1000000 ? unitCost : 0;
+			Query->ParamByName("Unit_Cost")->AsDouble			=  unitCost > -1000000 ? double(unitCost) : 0;
 			Query->ParamByName("Purchaser_Name")->AsString	= IBQuery1->FieldByName("Location")->AsString;
 			Query->ExecQuery();
 
