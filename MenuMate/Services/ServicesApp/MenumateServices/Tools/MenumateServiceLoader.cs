@@ -49,6 +49,7 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.SalesForceIntegration);
             AddService(serviceList, MenumateServicesIdentifier.SiHotIntegration);
             AddService(serviceList, MenumateServicesIdentifier.WalletPayments);
+            AddService(serviceList, MenumateServicesIdentifier.FiscalPrinter);
             if (serviceList.Count == 0)
             {
                 ServiceLogger.Log(@"No Menumate Services to be loaded.");
@@ -158,6 +159,8 @@ namespace MenumateServices
                     return new MenumateServiceSiHotIntegration();
                 case MenumateServicesIdentifier.WalletPayments:
                     return new MenumateServiceWalletPayments();
+                case MenumateServicesIdentifier.FiscalPrinter:
+                    return new MenumateServiceFiscalPrinter();
                 default: throw new Exception(String.Format("Unknown Service: {0}", serviceIdentifier));
             }
         }

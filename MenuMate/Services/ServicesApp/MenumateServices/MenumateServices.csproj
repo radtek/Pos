@@ -192,7 +192,14 @@
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
+    <Compile Include="MenumateRunners\FIscalPrinterServiceRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateServiceFiscalPrinter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceFiscalPrinter.Designer.cs">
+      <DependentUpon>MenumateServiceFiscalPrinter.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -316,10 +323,12 @@
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServiceFiscalPrinter.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
+    <Compile Include="WCFServices\WCFServiceFiscalPrinter.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
     <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />
