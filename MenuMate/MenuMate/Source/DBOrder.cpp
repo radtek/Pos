@@ -2570,7 +2570,13 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 else if(( !SelectingItems && TGlobalSettings::Instance().IsBillSplittedByMenuType) ||
                                 (!TGlobalSettings::Instance().IsBillSplittedByMenuType))
                 {
-                    Orders[Order.Key] = Order;
+                    bool canBeAdded = true;
+                    if(orderKeysWithPWDDiscount.find(Order.Key) != orderKeysWithPWDDiscount.end())
+                    {
+                        canBeAdded = SCDChecker.CanAddItemToSelectedList(DBTransaction,Order,Orders);
+                    }
+                    if(canBeAdded)
+                        Orders[Order.Key] = Order;
                 }
 
                 if(ValidOrderKeys.size() == 0)
@@ -5000,6 +5006,5 @@ void TDBOrder::LoadOrderKeysWIthoutDiscount(Database::TDBTransaction &DBTransact
 		throw;
 	}
 }
-//--------------------------------------------------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
 
