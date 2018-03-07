@@ -6,8 +6,10 @@ using System.ServiceModel;
 
 namespace MenumateServices.WCFServices
 {
-     [ServiceContract]
-    class IWCFServiceFiscalPrinter
+    [ServiceContract]
+    public interface IWCFServiceFiscalPrinter
     {
+        [OperationContract]
+         void GetRoomDetails();
     }
 }

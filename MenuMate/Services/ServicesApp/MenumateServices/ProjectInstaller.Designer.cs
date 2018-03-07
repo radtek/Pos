@@ -111,7 +111,7 @@ namespace MenumateServices
             this.serviceInstallerFiscalPrinter.Description = "Menumate Fiscal Printer Sevice";
             this.serviceInstallerFiscalPrinter.DisplayName = "Menumate Fiscal Printer Sevice";
             this.serviceInstallerFiscalPrinter.ServiceName = "MenumateServiceFiscalPrinter";
-            this.serviceInstallerFiscalPrinter.StartType = System.ServiceProcess.ServiceStartMode.Disabled;
+            this.serviceInstallerFiscalPrinter.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 

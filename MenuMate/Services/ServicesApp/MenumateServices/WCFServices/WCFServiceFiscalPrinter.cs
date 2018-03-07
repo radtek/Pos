@@ -5,10 +5,14 @@ using System.Text;
 
 namespace MenumateServices.WCFServices
 {
-    class WCFServiceFiscalPrinter :IWCFServiceFiscalPrinter
+    public class WCFServiceFiscalPrinter :IWCFServiceFiscalPrinter
     {
         public WCFServiceFiscalPrinter()
         {
+        }
+        public void GetRoomDetails()
+        {
+            int i = 0;
         }
     }
 }
