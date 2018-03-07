@@ -9222,7 +9222,7 @@ void TPrintSection::PrintPatronSection(TReqPrintJob *PrintJob)
     Empty = false;
     if(CheckToPrintPatronSection(PrintJob))
     {
-        pPrinter->DrawLine();
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
         pPrinter->Line->ColCount = 2;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
         pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
