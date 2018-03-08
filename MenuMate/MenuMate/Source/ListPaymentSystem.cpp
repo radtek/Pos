@@ -2909,7 +2909,7 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 					}
                     if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
                     {
-                        Csv.Add((Payment->CSVString) + "," + FormatDateTime("mm/dd/yyyy", Date()) + "," + FormatDateTime("hh:nn",
+                        Csv.Add((Payment->CSVString) + "," + Now().FormatString("dd/mm/yyyy") + "," + FormatDateTime("hh:nn",
                         Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
                         (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
                     }
