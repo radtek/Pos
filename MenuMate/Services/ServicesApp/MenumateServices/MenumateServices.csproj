@@ -366,6 +366,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FiscalPrinterIntegration\FiscalPrinterIntegration.csproj">
+      <Project>{1B34FF05-082E-4099-A8BC-0ACB65D80D03}</Project>
+      <Name>FiscalPrinterIntegration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Loyaltymate\Loyaltymate.csproj">
       <Project>{5926EAF0-F930-4522-8EDE-E27F76E109C7}</Project>
       <Name>Loyaltymate</Name>

@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FiscalPrinterIntegration.Domain;
 
 namespace MenumateServices.WCFServices
 {
-    public class WCFServiceFiscalPrinter :IWCFServiceFiscalPrinter
+    public class WCFServiceFiscalPrinter : IWCFServiceFiscalPrinter
     {
         public WCFServiceFiscalPrinter()
         {
         }
-        public void GetRoomDetails()
+
+        public FiscalResponseDetails PrintFiscalReceipt(FiscalDataDetails fiscalDataDetails)
         {
-            int i = 0;
+            FiscalResponseDetails response = new FiscalResponseDetails();
+            try
+            {
+                int i = 0;
+            }
+            catch (Exception ex)
+            {
+            }
+            return response;
         }
     }
 }

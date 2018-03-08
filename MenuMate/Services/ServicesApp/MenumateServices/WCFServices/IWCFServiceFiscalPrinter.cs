@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FiscalPrinterIntegration.Domain;
+using System.Runtime.Serialization;
 using System.ServiceModel;
 
 namespace MenumateServices.WCFServices
@@ -10,6 +12,6 @@ namespace MenumateServices.WCFServices
     public interface IWCFServiceFiscalPrinter
     {
         [OperationContract]
-         void GetRoomDetails();
+        FiscalResponseDetails PrintFiscalReceipt(FiscalDataDetails fiscalDataDetails);
     }
 }
