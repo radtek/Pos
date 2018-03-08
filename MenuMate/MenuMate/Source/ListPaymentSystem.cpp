@@ -70,6 +70,7 @@
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
 #include "ManagerSiHot.h"
+#include "FiscalPrinterAdapter.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1055,6 +1056,10 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
+
+    MessageBox("Teting communication","Error",MB_OK);
+    std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+    fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
