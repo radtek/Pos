@@ -60,4 +60,10 @@ struct TFiscalBillDetails
     UnicodeString Cashier;
     UnicodeString Source;
 };
+
+struct TFiscalPrinterResponse
+{
+    bool IsSuccessful;
+    AnsiString ResponseMessage;
+};
 #endif

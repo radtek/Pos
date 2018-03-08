@@ -15,6 +15,6 @@ private:
        DiscountDetails* GetDiscount(std::vector<TFiscalDiscountDetails>::iterator it);
 public:
        TFiscalPrinting();
-       void PrintFiscalReceipt(TFiscalBillDetails receiptData);
+       TFiscalPrinterResponse PrintFiscalReceipt(TFiscalBillDetails receiptData);
 };
 #endif

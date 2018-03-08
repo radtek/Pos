@@ -23,47 +23,57 @@ void TFiscalPrinting::initFIClient()
                             useWSDL, fiscalURL, NULL );
 }
 //---------------------------------------------------------------------------
-void TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails receiptData)
+TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails receiptData)
 {
-    FiscalDataDetails *dataDetails = new  FiscalDataDetails();
-    dataDetails->Billno = receiptData.Billno;
-    dataDetails->Cashier = receiptData.Cashier;
-    dataDetails->Cashno = receiptData.Cashno;
-    dataDetails->Date = receiptData.Date;
-    dataDetails->InvoiceNumber = receiptData.InvoiceNumber;
-    dataDetails->Source = receiptData.Source;
-    dataDetails->Time = receiptData.Time;
-
-    ArrayOfDiscountDetails arrayOfDiscountDetails;
-    ArrayOfFiscalService arrayOfFiscalService;
-    ArrayOfFiscalPayment arrayOfFiscalPayment;
-
-    for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
+    TFiscalPrinterResponse response;
+    response.IsSuccessful = false;
+    try
     {
-        FiscalService *fiscalService = GetItemList(i);
-        arrayOfFiscalService.Length = (arrayOfFiscalService.Length + 1);
-        arrayOfFiscalService[arrayOfFiscalService.Length - 1] = fiscalService;
-    }
-     dataDetails->ItemList = arrayOfFiscalService;
+        FiscalDataDetails *dataDetails = new  FiscalDataDetails();
+        dataDetails->Billno = receiptData.Billno;
+        dataDetails->Cashier = receiptData.Cashier;
+        dataDetails->Cashno = receiptData.Cashno;
+        dataDetails->Date = receiptData.Date;
+        dataDetails->InvoiceNumber = receiptData.InvoiceNumber;
+        dataDetails->Source = receiptData.Source;
+        dataDetails->Time = receiptData.Time;
 
-    for(std::vector<TFiscalPaymentDetails>::iterator i = receiptData.PaymentList.begin(); i != receiptData.PaymentList.end() ; ++i)
-    {
-        FiscalPayment *fiscalPrinting = GetPayment(i);
-        arrayOfFiscalPayment.Length = (arrayOfFiscalPayment.Length + 1);
-        arrayOfFiscalPayment[arrayOfFiscalPayment.Length - 1] = fiscalPrinting;
-    }
-     dataDetails->PaymentList = arrayOfFiscalPayment;
+        ArrayOfDiscountDetails arrayOfDiscountDetails;
+        ArrayOfFiscalService arrayOfFiscalService;
+        ArrayOfFiscalPayment arrayOfFiscalPayment;
 
-    for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
-    {
-        DiscountDetails *discountDetails = GetDiscount(i);
-        arrayOfDiscountDetails.Length = (arrayOfDiscountDetails.Length + 1);
-        arrayOfDiscountDetails[arrayOfDiscountDetails.Length - 1] = discountDetails;
-    }
-     dataDetails->DiscountList = arrayOfDiscountDetails;
+        for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
+        {
+            FiscalService *fiscalService = GetItemList(i);
+            arrayOfFiscalService.Length = (arrayOfFiscalService.Length + 1);
+            arrayOfFiscalService[arrayOfFiscalService.Length - 1] = fiscalService;
+        }
+         dataDetails->ItemList = arrayOfFiscalService;
+
+        for(std::vector<TFiscalPaymentDetails>::iterator i = receiptData.PaymentList.begin(); i != receiptData.PaymentList.end() ; ++i)
+        {
+            FiscalPayment *fiscalPrinting = GetPayment(i);
+            arrayOfFiscalPayment.Length = (arrayOfFiscalPayment.Length + 1);
+            arrayOfFiscalPayment[arrayOfFiscalPayment.Length - 1] = fiscalPrinting;
+        }
+         dataDetails->PaymentList = arrayOfFiscalPayment;
+
+        for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
+        {
+            DiscountDetails *discountDetails = GetDiscount(i);
+            arrayOfDiscountDetails.Length = (arrayOfDiscountDetails.Length + 1);
+            arrayOfDiscountDetails[arrayOfDiscountDetails.Length - 1] = discountDetails;
+        }
+         dataDetails->DiscountList = arrayOfDiscountDetails;
     
-    CoInitialize(NULL);
-    fiscalClient->PrintFiscalReceipt(dataDetails);
+        CoInitialize(NULL);
+        fiscalClient->PrintFiscalReceipt(dataDetails);
+    }
+    catch(Exception & E)
+    {
+       //todo return response;
+	}
+    return response;
 }
 //----------------------------------------------------------------------------------
 FiscalService* TFiscalPrinting::GetItemList(std::vector<TFiscalItemDetails>::iterator it)
