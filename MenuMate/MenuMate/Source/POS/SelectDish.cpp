@@ -15664,27 +15664,36 @@ bool TfrmSelectDish::CloseActiveForm()
 //----------------------------------------------------------------------------
 void TfrmSelectDish::StorePatronsInformation(TPaymentTransaction &PaymentTransaction)
 {
-    for(int indexPatron = 0; indexPatron < PaymentTransaction.Patrons.size(); indexPatron)
+    for(int indexPatron = 0; indexPatron < PaymentTransaction.Patrons.size(); indexPatron++)
     {
         if(PaymentTransaction.Patrons[indexPatron].Default)
         {
             storedPatronCountFromMenu = PaymentTransaction.Patrons[indexPatron].Count;
+            PaymentTransaction.PatronCountFromMenu = PaymentTransaction.Patrons[indexPatron].Count;
             break;
         }
     }
+//    patronsStore = PaymentTransaction.Patrons;
 }
 //----------------------------------------------------------------------------
 void TfrmSelectDish::InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction)
 {
-    bool isDefaultInitRequired = true;
+    int totalPatronCount = 0;
     for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
     {
-        PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
-        if(PaymentTransaction.Patrons[indexPatrons].Count != 0)
-           isDefaultInitRequired = false;
+        if(patronsStore[indexPatrons].Default)
+        {
+            int backStore = patronsStore[indexPatrons].Count - storedPatronCountFromMenu;
+            PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
+            //backStore;
+        }
+        else
+            PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
+        totalPatronCount += patronsStore[indexPatrons].Count;
     }
-    if(isDefaultInitRequired)
+    if(totalPatronCount == 0)
           TManagerPatron::Instance().SetDefaultPatrons(PaymentTransaction.DBTransaction, PaymentTransaction.Patrons, 1);
+
     PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
     patronsStore = PaymentTransaction.Patrons;
 }
