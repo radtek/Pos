@@ -44,24 +44,29 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         itemDetails.PartyName = order->PartyName;
         itemDetails.ItemDescription = order->Item;
         itemDetails.SizeName = order->Size;
-        itemDetails.Quantity = order->GetQty();
+        itemDetails.Quantity = FloatToStrF(order->GetQty(), ffFixed, 15, 2);
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
+        Currency priceTotal = 0.00;
         if(order->HappyHour)
         {
              itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel0, ffCurrency, CurrencyDecimals);
+             priceTotal =  order->GetQty()*order->PriceLevel0;
         }
         else
         {
             itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel1, ffCurrency, CurrencyDecimals);
+            priceTotal =  order->GetQty()*order->PriceLevel1;
         }
-        itemDetails.PriceTotal = itemDetails.Quantity*itemDetails.PricePerUnit;
-        itemDetails.VATPercentage = 0;
+        itemDetails.PriceTotal = CurrToStrF(priceTotal, ffCurrency, CurrencyDecimals);
+        itemDetails.VATPercentage;
         std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
+        Currency taxPercentage = 0.00;
         for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
 	    {
             if(!itTaxes->TaxType)
-                itemDetails.VATPercentage += itTaxes->Percentage;
+                taxPercentage += itTaxes->Percentage;
         }
+        itemDetails.VATPercentage = CurrToStrF(taxPercentage, ffCurrency, CurrencyDecimals);
         itemList.push_back(itemDetails);
         PrepareDiscountDetails(discountList, order);
         for (int i = 0; i < order->SubOrders->Count; i++)
@@ -80,19 +85,21 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             if(order->HappyHour)
             {
                  itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel0, ffCurrency, CurrencyDecimals);
+                 priceTotal =  order->GetQty()*order->PriceLevel0;
             }
             else
             {
                 itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel1, ffCurrency, CurrencyDecimals);
+                priceTotal =  order->GetQty()*order->PriceLevel1;
             }
-            itemDetails.PriceTotal = itemDetails.Quantity*itemDetails.PricePerUnit;
-            itemDetails.VATPercentage = 0;
-            std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
+            itemDetails.PriceTotal = CurrToStrF(priceTotal, ffCurrency, CurrencyDecimals);
+            Currency taxPercentage = 0.00;
             for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
             {
                 if(!itTaxes->TaxType)
-                    itemDetails.VATPercentage += itTaxes->Percentage;
+                    taxPercentage += itTaxes->Percentage;
             }
+            itemDetails.VATPercentage = CurrToStrF(taxPercentage, ffCurrency, CurrencyDecimals);
             itemList.push_back(itemDetails);
             PrepareDiscountDetails(discountList, order);
         }
@@ -110,7 +117,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         if (SubPayment->GetPay() != 0)
         {
             TFiscalPaymentDetails paymentDetails;
-            paymentDetails.Amount = RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            paymentDetails.Amount = CurrToStrF(RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown), ffCurrency, CurrencyDecimals);
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
             PaymentList.push_back(paymentDetails);
@@ -124,13 +131,31 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = order->Discounts.begin(); ptrDiscounts != order->Discounts.end();
 	std::advance(ptrDiscounts, 1))
 	{
-        TFiscalDiscountDetails discountDetails;
-        discountDetails.Type = ptrDiscounts->Type;
-        discountDetails.Amount = ptrDiscounts->Amount;
-        discountDetails.Description = ptrDiscounts->Description;
-        discountDetails.DiscountGroup = ptrDiscounts->DiscountGroupList.size() > 0 ? ptrDiscounts->DiscountGroupList[0].Name : UnicodeString::UnicodeString("");
-        discountDetails.DiscountMode = ptrDiscounts->Mode;
-        discountList.push_back(discountDetails);
+        Currency totalDiscountAmount = 0.00;
+        bool isDiscountAlreadyExists = false;
+
+        for (std::vector<TFiscalDiscountDetails> ::iterator ptrFiscalDiscounts = discountList.begin(); ptrFiscalDiscounts != discountList.end();
+        std::advance(ptrFiscalDiscounts, 1))
+        {
+            if(ptrFiscalDiscounts->DiscountKey == ptrDiscounts->DiscountKey)
+            {
+                ptrFiscalDiscounts->Amount = CurrToStrF((StrToCurr(ptrFiscalDiscounts->Amount) + ptrDiscounts->Amount), ffCurrency, CurrencyDecimals);
+                isDiscountAlreadyExists = true;
+                break;
+            }
+        }
+
+        if(!isDiscountAlreadyExists)
+        {
+            TFiscalDiscountDetails discountDetails;
+            discountDetails.DiscountKey = ptrDiscounts->DiscountKey;
+            discountDetails.Type = ptrDiscounts->Type;
+            discountDetails.Amount = CurrToStrF(ptrDiscounts->Amount, ffCurrency, CurrencyDecimals);
+            discountDetails.Description = ptrDiscounts->Description;
+            discountDetails.DiscountGroup = ptrDiscounts->DiscountGroupList.size() > 0 ? ptrDiscounts->DiscountGroupList[0].Name : UnicodeString::UnicodeString("");
+            discountDetails.DiscountMode = ptrDiscounts->Mode;
+            discountList.push_back(discountDetails);
+        }
     }
 }
 

@@ -45,6 +45,7 @@ struct TFiscalDiscountDetails
     UnicodeString Description;
     UnicodeString DiscountGroup;
     UnicodeString DiscountMode;
+    int DiscountKey;
 };
 
 struct TFiscalBillDetails

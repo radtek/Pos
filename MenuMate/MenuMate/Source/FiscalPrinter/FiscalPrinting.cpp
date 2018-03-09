@@ -29,6 +29,7 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
     response.IsSuccessful = false;
     try
     {
+        FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
         FiscalDataDetails *dataDetails = new  FiscalDataDetails();
         dataDetails->Billno = receiptData.Billno;
         dataDetails->Cashier = receiptData.Cashier;
@@ -64,14 +65,15 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
             arrayOfDiscountDetails.Length = (arrayOfDiscountDetails.Length + 1);
             arrayOfDiscountDetails[arrayOfDiscountDetails.Length - 1] = discountDetails;
         }
-         dataDetails->DiscountList = arrayOfDiscountDetails;
-    
+        dataDetails->DiscountList = arrayOfDiscountDetails;
         CoInitialize(NULL);
-        fiscalClient->PrintFiscalReceipt(dataDetails);
+        fiscalPrinterResponse = fiscalClient->PrintFiscalReceipt(dataDetails);
+        response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
+        response.ResponseMessage = fiscalPrinterResponse->Response;
     }
     catch(Exception & E)
     {
-       //todo return response;
+       response.ResponseMessage = "Exception found in PrintFiscalReceipt()";
 	}
     return response;
 }
