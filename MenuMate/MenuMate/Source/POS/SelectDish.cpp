@@ -3786,9 +3786,9 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			else
 			{
                 if(TGlobalSettings::Instance().EnableMenuPatronCount)
-				{
                    PaymentTransaction.CalculatePatronCountFromMenu();
-				}
+                else
+                   PaymentTransaction.Patrons = patronsStore;
 
 				std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(this));
 				frmProcessing->Message = "Posting Orders";
@@ -4101,6 +4101,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             {
                                 InvoiceTransaction.CalculatePatronCountFromMenu();
                             }
+                            else
+                                InvoiceTransaction.Patrons = patronsStore;
+
+                            if(TabType == TabDelayedPayment && (!TGlobalSettings::Instance().EnableMenuPatronCount))
+                                InvoiceTransaction.Patrons = TDBTab::GetDelayedPatronCount(InvoiceTransaction.DBTransaction, SelectedTab);
 
                             if (InvoiceTransaction.Money.TotalAdjustment != 0)
                             {
@@ -4142,6 +4147,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
                             Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
                             TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+
                             if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
                             {
                                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
@@ -5525,7 +5531,7 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
             PrintTransaction.Patrons = selectedTablePatrons;
         }
     }
-
+    patronsStore = PrintTransaction.Patrons;
 	if(TGlobalSettings::Instance().CaptureCustomerName)
 	{
 		PrintTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
@@ -8751,6 +8757,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 {
   try
   {
+    int delayedTabKey = 0;
 	if (SelectedTable == 0)
 	{
 		if (CurrentTender != 0)
@@ -8764,7 +8771,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 	{
         bool OrderConfimOk = true;
 		if (!OrdersPending())
-		{   
+		{
+
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
@@ -8903,7 +8911,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                           TItemComplete* item = (TItemComplete*)ItemRedirector->ParentRedirector->ItemObject;
                             tabNumber = item->TabKey;
                             if(tabNumber)
-                            {         
+                            {
                                 OldAccNumber = item->AccNo;
                                 break;
                             }
@@ -8958,6 +8966,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                             {
                                 TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
                             }
+                            delayedTabKey = OrderContainer.Location["TabKey"];
                         }
                         else
                         {
@@ -8975,6 +8984,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
             int TabKey = TDBTab::GetOrCreateTab(DBTransaction,TDBTables::GetTabKey(DBTransaction,SeatKey));
+            if(delayedTabKey != 0)
+            {
+                TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,patronsStore);
+            }
              // check whether table's guest is linked to clipp tab
             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, TabKey );
 

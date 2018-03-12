@@ -3837,6 +3837,9 @@ void TfrmBillGroup::ShowReceipt()
               }
 			LoadCustNameAndOrderType(ReceiptTransaction);
 
+            if(CurrentTabType == TabDelayedPayment)
+                  PatronTypes = TDBTab::GetDelayedPatronCount(DBTransaction, CurrentSelectedTab);
+
 			if (TGlobalSettings::Instance().EnableMenuPatronCount)
 			{
 				ReceiptTransaction.CalculatePatronCountFromMenu();
@@ -3869,6 +3872,7 @@ void TfrmBillGroup::ShowReceipt()
             ReceiptTransaction.IgnoreLoyaltyKey = false;
 			ReceiptTransaction.Recalc();
             ReceiptTransaction.ProcessPoints();
+
             bool isTable = false;
             int tabKey = 0;
 			TStringList *TabHistory = new TStringList;
@@ -3976,7 +3980,6 @@ void TfrmBillGroup::ShowReceipt()
 			ReceiptTransaction.ApplyMembership(Membership);
 
 			TempReceipt->Transaction = &ReceiptTransaction;
-
             if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)||
                (!TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled))
                 TempReceipt->Transaction->Customer = TCustomer(0,0,"");

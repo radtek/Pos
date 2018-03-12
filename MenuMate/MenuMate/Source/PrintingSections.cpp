@@ -1624,7 +1624,6 @@ void TPrintSection::PrintReceiptInfo(TReqPrintJob *PrintJob)
 	{
 		PatronCount = TManagerPatron::Instance().GetTotalPatrons(PrintJob->Transaction->Patrons);
 	}
-
 	UnicodeString CurrentSeatCount = "";
 	if (PatronCount == 0)
 	{
@@ -9234,14 +9233,17 @@ void TPrintSection::PrintPatronSection(TReqPrintJob *PrintJob)
         std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
         for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
         {
-            pPrinter->Line->ColCount = 2;
-            pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
-            pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
-            pPrinter->Line->Columns[0]->Text = ptrPatronTypes->Name;//customerDetails[index];
-            pPrinter->Line->Columns[1]->Text = "#" + (AnsiString)ptrPatronTypes->Count;//customerData[index];
-            pPrinter->Line->Columns[1]->Alignment = taRightJustify;
-            pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
-            pPrinter->AddLine();
+            if(ptrPatronTypes->Count != 0)
+            {
+                pPrinter->Line->ColCount = 2;
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+                pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+                pPrinter->Line->Columns[0]->Text = ptrPatronTypes->Name;//customerDetails[index];
+                pPrinter->Line->Columns[1]->Text = "#" + (AnsiString)ptrPatronTypes->Count;//customerData[index];
+                pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+                pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+                pPrinter->AddLine();
+            }
         }
     }
     else

@@ -12,6 +12,7 @@
 #include "MMLogging.h"
 #include "Invoice.h"
 #include "TableManager.h"
+#include "ManagerPatron.h"
 #include <Memory>
 
 
@@ -2221,3 +2222,94 @@ UnicodeString TDBTab::GetAccountNumber(Database::TDBTransaction &dbTransaction, 
     }
     return AccNo;
 }
+//-----------------------------------------------------------------------------
+void TDBTab::SetDelayedPatronCount(Database::TDBTransaction &DBTransaction, int _tabKey, std::vector<TPatronType> _patrons)
+{
+    try
+	{
+		std::vector <TPatronType> ::iterator ptrPatronTypes;
+		for (ptrPatronTypes = _patrons.begin(); ptrPatronTypes != _patrons.end(); ptrPatronTypes++)
+		{
+			if (ptrPatronTypes->Count != 0)
+			{
+				TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+				IBInternalQuery->Close();
+				IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_TABPATRONCOUNT, 1) FROM RDB$DATABASE";
+				IBInternalQuery->ExecQuery();
+
+				int patronCountKey = IBInternalQuery->Fields[0]->AsInteger;
+				IBInternalQuery->Close();
+
+				IBInternalQuery->Close();
+				IBInternalQuery->SQL->Text =
+					 "INSERT INTO TABPATRONCOUNT (" "TABPATRONCOUNT_KEY, " "TAB_KEY, " "PATRON_TYPE, " "PATRON_COUNT) "
+					 "VALUES (" ":TABPATRONCOUNT_KEY, " ":TAB_KEY, " ":PATRON_TYPE, " ":PATRON_COUNT) ";
+
+				IBInternalQuery->ParamByName("TABPATRONCOUNT_KEY")->AsString = patronCountKey;
+				IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = _tabKey;
+				IBInternalQuery->ParamByName("PATRON_TYPE")->AsString = ptrPatronTypes->Name;
+				IBInternalQuery->ParamByName("PATRON_COUNT")->AsInteger = ptrPatronTypes->Count;
+
+				IBInternalQuery->ExecQuery();
+			}
+		}
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
+}
+//-----------------------------------------------------------------------------
+void TDBTab::DeleteDelayedPatronCount(Database::TDBTransaction &DBTransaction, int _tabKey)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text =
+             "DELETE FROM TABPATRONCOUNT WHERE TAB_KEY = :TAB_KEY ";
+
+        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = _tabKey;
+        IBInternalQuery->ExecQuery();
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
+}
+//-----------------------------------------------------------------------------
+std::vector<TPatronType> TDBTab::GetDelayedPatronCount(Database::TDBTransaction &DBTransaction, int _tabKey)
+{
+    std::vector<TPatronType> patrons;
+    patrons.clear();
+    TPatronType patronInfo;
+    try
+    {
+        std::auto_ptr<TManagerPatron> managerPatron(new TManagerPatron());
+        managerPatron->GetPatronTypes(DBTransaction, patrons);
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text =
+             "SELECT * FROM TABPATRONCOUNT WHERE TAB_KEY = :TAB_KEY ORDER BY PATRON_TYPE";
+
+        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = _tabKey;
+        IBInternalQuery->ExecQuery();
+        if (IBInternalQuery->RecordCount)
+		{
+            int index = 0;
+			for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+			{
+                patrons[index].Count = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
+                index++;
+			}
+		}
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
+    return patrons;
+}
+//-----------------------------------------------------------------------------

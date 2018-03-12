@@ -47,6 +47,11 @@ void TApplyParser::upgrade6_46Tables()
 {
     update6_46Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_47Tables()
+{
+    update6_47Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -1709,6 +1714,42 @@ void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
     catch( Exception &E )
     {
         transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_47Tables()
+{
+   Create6_47Generator(_dbControl);
+   CreateTabPatronCount6_47Table(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_47Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_TABPATRONCOUNT", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_TABPATRONCOUNT;", inDBControl);
+		executeQuery("SET GENERATOR GEN_TABPATRONCOUNT TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTabPatronCount6_47Table(TDBControl* const inDBControl)
+{
+
+    if ( !tableExists( "TABPATRONCOUNT", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE TABPATRONCOUNT "
+        "( "
+        "  TABPATRONCOUNT_KEY Integer NOT NULL, "
+        "  TAB_KEY Integer,                "
+        "  PATRON_TYPE Varchar(40),          "
+        "  PATRON_COUNT Integer,             "
+        "  PRIMARY KEY (TABPATRONCOUNT_KEY)     "
+        ");",
+		inDBControl );
+        executeQuery(
+		"ALTER TABLE TABPATRONCOUNT ADD CONSTRAINT TABPATRONCOUNT_TABLE_KEY "
+		"FOREIGN KEY (TAB_KEY) REFERENCES TAB (TAB_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
     }
 }
 //------------------------------------------------------------------------------
