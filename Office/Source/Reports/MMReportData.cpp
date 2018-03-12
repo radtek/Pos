@@ -7519,9 +7519,6 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 			"Archive.Qty Quantity,"
 			"ArcCategories.Category,"
 			"CategoryGroups.Name CategoryGroup, "
-            "cast(0.00 as numeric(17,4)) DiscountAmount, "
-             "ArcBill.Time_Stamp, "
-            "cast('' as VARCHAR(50)) Name, "
 			"cast(round(Archive.DISCOUNT_WITHOUT_TAX,2)+ round(Archive.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
 
 
@@ -7592,9 +7589,6 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 			"DayArchive.Qty Quantity,"
 			"ArcCategories.Category,"
 			"CategoryGroups.Name CategoryGroup, "
-            "cast(0.00 as numeric(17,4)) DiscountAmount, "
-            "DayArcBill.Time_Stamp, "
-            "cast('' as VARCHAR(50)) Name, "
             "cast(round(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,2)+ round(DAYARCHIVE.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
 
 		"From "
