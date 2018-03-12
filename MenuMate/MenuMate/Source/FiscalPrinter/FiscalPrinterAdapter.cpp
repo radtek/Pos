@@ -5,7 +5,8 @@
 
 #include "FiscalPrinterAdapter.h"
 #include "IBillCalculator.h"
-//#include "MMMessageBox.h";
+#include <Math.hpp>
+#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -45,34 +46,28 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         itemDetails.PartyName = order->PartyName;
         itemDetails.ItemDescription = order->Item;
         itemDetails.SizeName = order->Size;
-        itemDetails.Quantity = FloatToStrF(order->GetQty(), ffFixed, 15, 2);
+        itemDetails.Quantity = Double(order->GetQty()); 
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
-        Currency priceTotal = 0.00;
-        if(order->HappyHour)
-        {
-             itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel0, ffCurrency, 2);
-             priceTotal =  order->GetQty()*order->PriceLevel0;
-        }
-        else
-        {
-            itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel1, ffCurrency, 2);
-            priceTotal =  order->GetQty()*order->PriceLevel1;
-        }
-        itemDetails.PriceTotal = CurrToStrF(priceTotal, ffCurrency, 2);
+        double priceTotal = 0;
+        double ItemPrice = 0;
+        ItemPrice = (double)(order->BillCalcResult.FinalPrice/order->GetQty());
+         priceTotal =  (double)(order->BillCalcResult.FinalPrice);
+        itemDetails.PricePerUnit = ItemPrice;
+        itemDetails.PriceTotal = priceTotal;
         itemDetails.VATPercentage;
         std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
-        Currency taxPercentage = 0.00;
+        double taxPercentage = 0;
         for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
 	    {
             if(!itTaxes->TaxType)
-                taxPercentage += itTaxes->Percentage;
+                taxPercentage += (double)itTaxes->Percentage;
         }
-        itemDetails.VATPercentage = CurrToStrF(taxPercentage, ffCurrency, CurrencyDecimals);
+        itemDetails.VATPercentage = taxPercentage;
         itemList.push_back(itemDetails);
         PrepareDiscountDetails(discountList, order);
         for (int i = 0; i < order->SubOrders->Count; i++)
 		{
-		    TItemCompleteSub *currentSubOrder = (TItemCompleteSub*)order->SubOrders->Items[i];
+		    TItemMinorComplete *currentSubOrder = (TItemMinorComplete*)order->SubOrders->Items[i];
             TFiscalItemDetails itemDetails;
             itemDetails.TableNo = order->TabContainerName;
             itemDetails.GuestName = order->TabContainerName;
@@ -83,26 +78,22 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             itemDetails.SizeName = order->Size;
             itemDetails.Quantity = order->GetQty();
             itemDetails.ItemCategory = order->Categories->FinancialCategory;
-            if(order->HappyHour)
-            {
-                 itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel0, ffCurrency, 2);
-                 priceTotal =  order->GetQty()*order->PriceLevel0;
-            }
-            else
-            {
-                itemDetails.PricePerUnit = CurrToStrF(order->PriceLevel1, ffCurrency, 2);
-                priceTotal =  order->GetQty()*order->PriceLevel1;
-            }
-            itemDetails.PriceTotal = CurrToStrF(priceTotal, ffCurrency, CurrencyDecimals);
-            Currency taxPercentage = 0.00;
+            priceTotal = 0;
+            ItemPrice = 0;
+            ItemPrice = (double)(currentSubOrder->BillCalcResult.FinalPrice/currentSubOrder->GetQty());
+            priceTotal =  (double)(currentSubOrder->BillCalcResult.FinalPrice);
+            itemDetails.PricePerUnit = ItemPrice;
+            itemDetails.PriceTotal = priceTotal;
+            double taxPercentage = 0;
+            std::vector<BillCalculator::TTaxResult> taxInfomation = currentSubOrder->BillCalcResult.Tax;
             for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
             {
                 if(!itTaxes->TaxType)
-                    taxPercentage += itTaxes->Percentage;
+                    taxPercentage = taxPercentage + itTaxes->Percentage;
             }
-            itemDetails.VATPercentage = CurrToStrF(taxPercentage, ffCurrency, 2);
+            itemDetails.VATPercentage = taxPercentage;//RoundTo(taxPercentage, -2);
             itemList.push_back(itemDetails);
-            PrepareDiscountDetails(discountList, order);
+            PrepareDiscountDetails(discountList, currentSubOrder);
         }
     }
     billDetails.ItemList = itemList;
@@ -118,7 +109,8 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         if (SubPayment->GetPay() != 0)
         {
             TFiscalPaymentDetails paymentDetails;
-            paymentDetails.Amount = CurrToStrF(RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown), ffCurrency, 2);
+            double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            paymentDetails.Amount = subTotal;
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
             PaymentList.push_back(paymentDetails);
@@ -132,17 +124,19 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = order->Discounts.begin(); ptrDiscounts != order->Discounts.end();
 	std::advance(ptrDiscounts, 1))
 	{
-
         if(order->DiscountValue_BillCalc(ptrDiscounts) == 0)
             continue;
         bool isDiscountAlreadyExists = false;
-
+        double discountAmount = 0;
+        discountAmount = (double)RoundToNearest(order->DiscountValue_BillCalc(ptrDiscounts),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+        MessageBox(discountAmount,"Error1",MB_OK);
         for (std::vector<TFiscalDiscountDetails> ::iterator ptrFiscalDiscounts = discountList.begin(); ptrFiscalDiscounts != discountList.end();
         std::advance(ptrFiscalDiscounts, 1))
         {
             if(ptrFiscalDiscounts->DiscountKey == ptrDiscounts->DiscountKey)
             {
-               ptrFiscalDiscounts->Amount = CurrToStrF((StrToCurr(ptrFiscalDiscounts->Amount) + ptrDiscounts->Amount), ffNumber, 2);
+                discountAmount = (double)(StrToCurr(ptrFiscalDiscounts->Amount) + discountAmount);
+                ptrFiscalDiscounts->Amount = discountAmount;
                 isDiscountAlreadyExists = true;
                 break;
             }
@@ -153,8 +147,7 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
             TFiscalDiscountDetails discountDetails;
             discountDetails.DiscountKey = ptrDiscounts->DiscountKey;
             discountDetails.Type = ptrDiscounts->Type;
-            discountDetails.Amount = CurrToStrF(ptrDiscounts->Amount, ffNumber, 2);
-          //  MessageBox(ptrDiscounts->Amount, "Error",MB_OK);
+            discountDetails.Amount = discountAmount;
             discountDetails.Description = ptrDiscounts->Description;
             discountDetails.DiscountGroup = ptrDiscounts->DiscountGroupList.size() > 0 ? ptrDiscounts->DiscountGroupList[0].Name : UnicodeString::UnicodeString("");
             discountDetails.DiscountMode = ptrDiscounts->Mode;
