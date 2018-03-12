@@ -1057,9 +1057,11 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
         }
 	}
 
-    MessageBox("Teting communication","Error",MB_OK);
-    std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
-    fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+    }
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)

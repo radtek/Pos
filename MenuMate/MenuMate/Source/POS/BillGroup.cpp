@@ -522,7 +522,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
 			TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
             ReceiptTransaction.DeleteOrders();
-            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
 
 			DBTransaction.Commit();
             if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
@@ -619,7 +618,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                                     Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
                                     TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
                                     ReceiptTransaction.DeleteOrders();
-                                    //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
                                 }
                             }
                             if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
