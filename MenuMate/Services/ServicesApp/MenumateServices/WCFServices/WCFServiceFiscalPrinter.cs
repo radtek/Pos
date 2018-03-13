@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using FiscalPrinterIntegration;
 using FiscalPrinterIntegration.Domain;
 
 namespace MenumateServices.WCFServices
 {
     public class WCFServiceFiscalPrinter : IWCFServiceFiscalPrinter
-    {
+    {      
+
         public WCFServiceFiscalPrinter()
         {
         }
@@ -17,12 +16,17 @@ namespace MenumateServices.WCFServices
             FiscalResponseDetails response = new FiscalResponseDetails();
             try
             {
-                int i = 0;
+                FiscalPrinter_FP81II fiscalPrinter = new FiscalPrinterIntegration.FiscalPrinter_FP81II();
+                response = fiscalPrinter.PrintDetails(fiscalDataDetails);
+
             }
-            catch (Exception ex)
+            catch (Exception Ex)
             {
+
             }
             return response;
         }
+
+       
     }
 }
