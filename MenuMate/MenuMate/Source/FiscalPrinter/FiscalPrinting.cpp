@@ -119,3 +119,22 @@ DiscountDetails* TFiscalPrinting::GetDiscount(std::vector<TFiscalDiscountDetails
     discount->Type = it->Type;
     return discount;
 }
+//----------------------------------------------------------------------------------
+TFiscalPrinterResponse TFiscalPrinting::PrintZReport()
+{
+    TFiscalPrinterResponse response;
+    response.IsSuccessful = false;
+    try
+    {
+        FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
+        CoInitialize(NULL);
+        fiscalPrinterResponse = fiscalClient->PrintZReport();
+        response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
+        response.ResponseMessage = fiscalPrinterResponse->Response;
+    }
+    catch(Exception & E)
+    {
+       response.ResponseMessage = "Exception found in PrintZReport()";
+	}
+    return response;
+}

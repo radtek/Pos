@@ -155,4 +155,20 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
         }
     }
 }
+//-----------------------------------------------------------------------------------------------
+TFiscalPrinterResponse TFiscalPrinterAdapter::FiscalZReportSettlement()
+{
+    TFiscalPrinterResponse response;
+    try
+    {
+        response.IsSuccessful = false;
+        std::auto_ptr<TFiscalPrinting> fiscalPrinting(new TFiscalPrinting());
+        response = fiscalPrinting->PrintZReport();
+    }
+    catch(Exception & E)
+    {
+       response.ResponseMessage = "Exception found in FiscalZReportSettlement()";
+	}
+    return response;
+}
 

@@ -16,5 +16,6 @@ private:
 public:
        TFiscalPrinting();
        TFiscalPrinterResponse PrintFiscalReceipt(TFiscalBillDetails receiptData);
+       TFiscalPrinterResponse PrintZReport();
 };
 #endif

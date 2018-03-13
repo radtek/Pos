@@ -52,6 +52,7 @@
 #include "ExportCSV.h"
 #include "StringTools.h"
 #include "MallFactory.h"
+#include "FiscalPrinterAdapter.h"
 
 #include <string>
 #include <cassert>
@@ -8887,5 +8888,14 @@ void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransactio
 //-------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
 {
-	//todo
+    TFiscalPrinterResponse fiscalZReportResponse;
+    try
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        fiscalZReportResponse = fiscalAdapter->FiscalZReportSettlement();
+    }
+    catch(Exception & E)
+    {
+       fiscalZReportResponse.ResponseMessage = "Exception found in FiscalPrinterSettlement()";
+	}
 }

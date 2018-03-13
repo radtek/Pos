@@ -18,5 +18,6 @@ private:
 public:
        TFiscalPrinterAdapter();
        void ConvertInToFiscalData(TPaymentTransaction paymentTransaction);
+       TFiscalPrinterResponse FiscalZReportSettlement();
 };
 #endif
