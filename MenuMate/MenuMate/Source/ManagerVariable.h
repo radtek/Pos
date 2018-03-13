@@ -220,7 +220,8 @@ enum vmVariables
     vmFiscalBaudRate, vmFiscalDataBits,vmFiscalStopBits,vmFiscalParityBits,
     vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,
     vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
-    vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate
+    vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
+    vmIsSiHotPostInProgress
 };
 
 // ---------------------------------------------------------------------------

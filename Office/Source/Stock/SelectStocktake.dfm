@@ -240,11 +240,13 @@ object frmSelectStocktake: TfrmSelectStocktake
       'group by'
       '   StockCategory.Stock_Category,'
       '   StockGroup.Stock_Group,'
-      '   Stock.Description   '
+      '   Stock.Description   ,'
+      '   StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order'
       '   '
       'Order By'
-      'upper (StockCategory.Stock_Category),'
-      ' upper(StockGroup.Stock_Group) asc,'
+      'StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order,'
       ' upper(Stock.Description) asc')
     Transaction = Transaction
     Left = 208
