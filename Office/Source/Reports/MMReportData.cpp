@@ -7634,7 +7634,7 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 	}
 	qrDiscounts->SQL->Text        = qrDiscounts->SQL->Text +
 		"Order By "
-		"12,11,5" ;
+		"8,12,11,5" ;
         
 	for (int i=0; i<Discounts->Count; i++)
 	{
