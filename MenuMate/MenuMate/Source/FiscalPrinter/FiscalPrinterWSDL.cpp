@@ -98,10 +98,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(FiscalResponseDetails2), L"http://schemas.datacontract.org/2004/07/FiscalPrinterIntegration.Domain", L"FiscalResponseDetails2", L"FiscalResponseDetails");
   /* ArrayOfFiscalService */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfFiscalService), L"http://schemas.datacontract.org/2004/07/FiscalPrinterIntegration.Domain", L"ArrayOfFiscalService");
-  /* ArrayOfFiscalPayment */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfFiscalPayment), L"http://schemas.datacontract.org/2004/07/FiscalPrinterIntegration.Domain", L"ArrayOfFiscalPayment");
   /* ArrayOfDiscountDetails */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountDetails), L"http://schemas.datacontract.org/2004/07/FiscalPrinterIntegration.Domain", L"ArrayOfDiscountDetails");
+  /* ArrayOfFiscalPayment */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfFiscalPayment), L"http://schemas.datacontract.org/2004/07/FiscalPrinterIntegration.Domain", L"ArrayOfFiscalPayment");
 }
 #pragma startup RegTypes 32
 

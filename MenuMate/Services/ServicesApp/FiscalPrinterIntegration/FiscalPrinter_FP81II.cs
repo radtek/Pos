@@ -12,7 +12,7 @@ namespace FiscalPrinterIntegration
 
         public FiscalPrinter_FP81II()
         {
-            posExplorer = new PosExplorer();            
+            posExplorer = new PosExplorer();
             fp = posExplorer.GetDevice("FiscalPrinter", "EpsonFP1");
             posCommonFP = (PosCommon)posExplorer.CreateInstance(fp);
         }
@@ -21,7 +21,7 @@ namespace FiscalPrinterIntegration
         {
             FiscalResponseDetails response = new FiscalResponseDetails();
             try
-            {                              
+            {
                 posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
                 FiscalPrinter fiscalprinter = (FiscalPrinter)posCommonFP;
 
@@ -189,6 +189,43 @@ namespace FiscalPrinterIntegration
             catch (Exception Ex)
             {
 
+            }
+            return response;
+        }
+
+        public FiscalResponseDetails GetPrinterState()
+        {
+            FiscalResponseDetails response = new FiscalResponseDetails();
+            response.IsSuccessful = false;
+            try
+            {
+                posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
+                FiscalPrinter fiscalprinter = (FiscalPrinter)posCommonFP;
+                ControlState printerState = fiscalprinter.State;
+
+                switch (fiscalprinter.State)
+                {
+                    case ControlState.Closed:
+                        response.Response = "Printer is in closed state";
+                        break;
+                    case ControlState.Idle:
+                        response.Response = "Printer is in idle state";
+                        response.IsSuccessful = true;
+                        break;
+                    case ControlState.Busy:
+                        response.Response = "Printer is in busy state.";
+                        break;
+                    case ControlState.Error:
+                        response.Response = "Printer is in error state.";
+                        break;
+                    default:
+                        response.Response = "Unknown response.";
+                        break;
+                }
+            }
+            catch (Exception Ex)
+            {
+                response.Response = "Exception caught in getting printer state.";
             }
             return response;
         }

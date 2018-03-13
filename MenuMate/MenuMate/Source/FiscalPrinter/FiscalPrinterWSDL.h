@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8744/MenumateServices/FiscalPrinter/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (13/03/2018 7:45:09 p.m. - - $Rev: 25127 $)
+// (8/03/2018 12:49:47 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   FiscalPrinterWSDLH
@@ -453,13 +453,14 @@ __interface INTERFACE_UUID("{BCA88294-6E3E-74DE-222B-1B2239432EB1}") IWCFService
 public:
   virtual FiscalResponseDetails* PrintFiscalReceipt(const FiscalDataDetails* fiscalDataDetails) = 0; 
   virtual FiscalResponseDetails* PrintZSettlement() = 0; 
+  virtual FiscalResponseDetails* GetPrinterStatus() = 0; 
 };
 typedef DelphiInterface<IWCFServiceFiscalPrinter> _di_IWCFServiceFiscalPrinter;
 
 _di_IWCFServiceFiscalPrinter GetIWCFServiceFiscalPrinter(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__FIscalPrinterWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__FIscalPrinterWSDL;
