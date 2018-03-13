@@ -128,7 +128,7 @@ TFiscalPrinterResponse TFiscalPrinting::PrintZReport()
     {
         FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
         CoInitialize(NULL);
-        fiscalPrinterResponse = fiscalClient->PrintZReport();
+        fiscalPrinterResponse = fiscalClient->PrintZSettlement();
         response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
         response.ResponseMessage = fiscalPrinterResponse->Response;
     }

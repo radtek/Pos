@@ -13,5 +13,7 @@ namespace MenumateServices.WCFServices
     {
         [OperationContract]
         FiscalResponseDetails PrintFiscalReceipt(FiscalDataDetails fiscalDataDetails);
+        [OperationContract]
+        FiscalResponseDetails PrintZSettlement();
     }
 }

@@ -1232,10 +1232,6 @@
 				<DependentOn>SetUpPosPlus.h</DependentOn>
 				<BuildOrder>775</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="FiscalPrinter\FiscalPrinterWSDL.cpp">
-				<DependentOn>FiscalPrinter\FiscalPrinterWSDL.h</DependentOn>
-				<BuildOrder>783</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="FiscalPrinter\FiscalPrinterAdapter.cpp">
 				<DependentOn>FiscalPrinter\FiscalPrinterAdapter.h</DependentOn>
 				<BuildOrder>782</BuildOrder>
@@ -3446,6 +3442,10 @@
 			</CppCompile>
 			<CppCompile Include="FiscalPrinter\FiscalPrinting.cpp">
 				<DependentOn>FiscalPrinter\FiscalPrinting.h</DependentOn>
+				<BuildOrder>785</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="FiscalPrinter\FiscalPrinterWSDL.cpp">
+				<DependentOn>FiscalPrinter\FiscalPrinterWSDL.h</DependentOn>
 				<BuildOrder>785</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartCardConfigGUI.dfm"/>

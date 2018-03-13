@@ -27,6 +27,22 @@ namespace MenumateServices.WCFServices
             return response;
         }
 
+        public FiscalResponseDetails PrintZSettlement()
+        {
+            FiscalResponseDetails response = new FiscalResponseDetails();
+            try
+            {
+                FiscalPrinter_FP81II fiscalPrinter = new FiscalPrinterIntegration.FiscalPrinter_FP81II();
+                response = fiscalPrinter.PrintZReport();
+
+            }
+            catch (Exception Ex)
+            {
+
+            }
+            return response;
+        }
+
        
     }
 }

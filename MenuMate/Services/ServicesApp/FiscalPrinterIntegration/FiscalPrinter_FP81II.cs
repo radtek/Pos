@@ -22,7 +22,7 @@ namespace FiscalPrinterIntegration
             FiscalResponseDetails response = new FiscalResponseDetails();
             try
             {                              
-                //   posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
+                posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
                 FiscalPrinter fiscalprinter = (FiscalPrinter)posCommonFP;
 
                 fiscalprinter.Open();
@@ -169,6 +169,28 @@ namespace FiscalPrinterIntegration
             {
 
             }
+        }
+
+        public FiscalResponseDetails PrintZReport()
+        {
+            FiscalResponseDetails response = new FiscalResponseDetails();
+            try
+            {
+                posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
+                FiscalPrinter fiscalprinter = (FiscalPrinter)posCommonFP;
+                fiscalprinter.Open();
+                fiscalprinter.Claim(1000);
+                fiscalprinter.PowerNotify = PowerNotification.Enabled;
+                fiscalprinter.DeviceEnabled = true;
+                fiscalprinter.ResetPrinter();
+                fiscalprinter.PrintZReport();
+                fiscalprinter.Close();
+            }
+            catch (Exception Ex)
+            {
+
+            }
+            return response;
         }
     }
 }

@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8744/MenumateServices/FiscalPrinter/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (8/03/2018 12:49:47 a.m. - - $Rev: 25127 $)
+// (13/03/2018 7:45:09 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   FiscalPrinterWSDLH
@@ -440,7 +440,7 @@ __published:
 
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
-// soapAction: http://tempuri.org/IWCFServiceFiscalPrinter/PrintFiscalReceipt
+// soapAction: http://tempuri.org/IWCFServiceFiscalPrinter/%operationName%
 // transport : http://schemas.xmlsoap.org/soap/http
 // style     : document
 // binding   : basicHttpBinding_ServiceFiscalPrinter
@@ -452,6 +452,7 @@ __interface INTERFACE_UUID("{BCA88294-6E3E-74DE-222B-1B2239432EB1}") IWCFService
 {
 public:
   virtual FiscalResponseDetails* PrintFiscalReceipt(const FiscalDataDetails* fiscalDataDetails) = 0; 
+  virtual FiscalResponseDetails* PrintZSettlement() = 0; 
 };
 typedef DelphiInterface<IWCFServiceFiscalPrinter> _di_IWCFServiceFiscalPrinter;
 
