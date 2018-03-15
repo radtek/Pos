@@ -1124,9 +1124,9 @@ object frmStock: TfrmStock
       '   Stock.Enabled,'
       '   Stock.Deleted'
       'Order by'
-      '   StockCategory.Stock_Category,'
-      '   StockGroup.Stock_Group,'
-      '   Stock.Description')
+      '   StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order,'
+      'Stock.Description')
     Transaction = Transaction
     Left = 160
     Top = 168
@@ -1137,6 +1137,7 @@ object frmStock: TfrmStock
       'Select'
       '   StockCategory.Stock_Category,'
       '   StockCategory.Stock_Category_Key,'
+      '   StockCategory.SORT_ORDER Category_Sort_Order, '
       ''
       '   StockGroup.Stock_Group_Key,'
       '   StockGroup.Stock_Group,'
@@ -1166,6 +1167,7 @@ object frmStock: TfrmStock
       'Select'
       '   StockCategory.Stock_Category,'
       '   StockCategory.Stock_Category_Key,'
+      '   StockCategory.SORT_ORDER Category_Sort_Order, '
       ''
       '   StockGroup.Stock_Group_Key,'
       '   StockGroup.Stock_Group,'
@@ -1177,7 +1179,7 @@ object frmStock: TfrmStock
       '   Stock.Code,'
       '   Stock.Stocktake_Unit,'
       '   Stock.Enabled,'
-      '   Cast('#39'F'#39' As Char)'
+      '   Cast(''F'' As Char)'
       ''
       'From'
       
@@ -1190,9 +1192,9 @@ object frmStock: TfrmStock
       '   Stock.Deleted Is Null And'
       '   StockGroup.Stock_Category_Key = :Stock_Category_Key'
       'Order by'
-      '   12 Desc,'
-      '   6,'
-      '   8')
+      '   13 Desc,'
+       '   7,'
+      '   9')
     Transaction = Transaction
     Left = 160
     Top = 264
@@ -1227,9 +1229,9 @@ object frmStock: TfrmStock
         '   Left Join Stock On StockGroup.Stock_Group_Key = Stock.Stock_G' +
         'roup_Key'
       'Where'
-      '   Stock.Deleted = '#39'T'#39' Or'
-      '   StockGroup.Deleted = '#39'T'#39' Or'
-      '   StockCategory.Deleted = '#39'T'#39
+      '   Stock.Deleted = ''T'' Or'
+      '   StockGroup.Deleted = ''T'' Or'
+      '   StockCategory.Deleted = ''T'''
       'Order by'
       '   Stock.Description,'
       '   4,'
@@ -1378,6 +1380,8 @@ object frmStock: TfrmStock
       '   SUPPLIERSTOCK.LATEST_COST'
       ''
       'Order by'
+      ' StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order,'
       '   StockCategory.Stock_Category,'
       '   StockGroup.Stock_Group,'
       '   Stock.Description')
