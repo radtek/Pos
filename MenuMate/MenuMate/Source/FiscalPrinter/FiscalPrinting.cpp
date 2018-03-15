@@ -55,46 +55,33 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
             fpclass->LoadReceiptItemInfo(11, WideString(i->VATPercentage).c_bstr());
             fpclass->AddItemToList();
         }
-//        MessageBox("dddd","",MB_OK);
-          int number = fpclass->PrintReceipt();
-          MessageBox(number,number,MB_OK);
-//          number = fpclass->PrintReceipt(s1.c_str(),s2.c_str());
-//          MessageBox(number,number,MB_OK);
-//        fpclass->PrintReceipt(str1.c_str(),str2.c_str());
-//        FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
-//        FiscalDataDetails *dataDetails = new  FiscalDataDetails();
-//        dataDetails->Billno = receiptData.Billno;
-//        dataDetails->Cashier = receiptData.Cashier;
-//        dataDetails->Cashno = receiptData.Cashno;
-//        dataDetails->Date = receiptData.Date;
-//        dataDetails->InvoiceNumber = receiptData.InvoiceNumber;
-//        dataDetails->Source = receiptData.Source;
-//        dataDetails->Time = receiptData.Time;
-//
-//        ArrayOfDiscountDetails arrayOfDiscountDetails;
-//        ArrayOfFiscalService arrayOfFiscalService;
-//        ArrayOfFiscalPayment arrayOfFiscalPayment;
 
-//
         for(std::vector<TFiscalPaymentDetails>::iterator i = receiptData.PaymentList.begin(); i != receiptData.PaymentList.end() ; ++i)
         {
-//            FiscalPayment *fiscalPrinting = GetPayment(i);
-//            arrayOfFiscalPayment.Length = (arrayOfFiscalPayment.Length + 1);
-//            arrayOfFiscalPayment[arrayOfFiscalPayment.Length - 1] = fiscalPrinting;
+            fpclass->InitializePaymentProperties();
+            fpclass->LoadReceiptPaymentInfo(0, WideString(i->Type).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(1, WideString(i->Amount).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(2, WideString(i->Billno).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(3, WideString(i->Cashno).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(4, WideString(i->Cashier).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(5, WideString(i->Source).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(6, WideString(i->Description).c_bstr());
+            fpclass->AddPaymentInfoToList();
         }
-//         dataDetails->PaymentList = arrayOfFiscalPayment;
-//
+
         for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
         {
-//            DiscountDetails *discountDetails = GetDiscount(i);
-//            arrayOfDiscountDetails.Length = (arrayOfDiscountDetails.Length + 1);
-//            arrayOfDiscountDetails[arrayOfDiscountDetails.Length - 1] = discountDetails;
+            fpclass->InitializeDiscountProperties();
+            fpclass->LoadReceiptItemInfo(0, WideString(i->Amount).c_bstr());
+            fpclass->LoadReceiptItemInfo(1, WideString(i->Description).c_bstr());
+            fpclass->LoadReceiptItemInfo(2, WideString(i->DiscountGroup).c_bstr());
+            fpclass->LoadReceiptItemInfo(3, WideString(i->DiscountMode).c_bstr());
+            fpclass->LoadReceiptItemInfo(4, WideString(i->Type).c_bstr());
+            fpclass->AddDiscountInfoToList();
         }
-//        dataDetails->DiscountList = arrayOfDiscountDetails;
-//        CoInitialize(NULL);
-//        fiscalPrinterResponse = fiscalClient->PrintFiscalReceipt(dataDetails);
-//        response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
-//        response.ResponseMessage = fiscalPrinterResponse->Response;
+
+        int number = fpclass->PrintReceipt();
+          MessageBox(number,number,MB_OK);
     }
     catch(Exception & E)
     {
