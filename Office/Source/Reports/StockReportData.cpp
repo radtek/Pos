@@ -1584,7 +1584,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
 }
 //---------------------------------------------------------------------------
 void TdmStockReportData::SetupStockVariance(int StocktakeKey)
-{         int prevStocktakeKey =StocktakeKey-1;
+{
 	// called from the Stocktake Menu ( after Commit ) & the Reports Menu
 	qrStockVariance->Close();
 	qrStockVariance->SQL->Text =
@@ -1715,7 +1715,19 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			"Left Join StockLocation On  "
 			"	Stock.Stock_Key = StockLocation.Stock_Key and StocktakeHistory.Location = StockLocation.Location "
 		   "Where "
-			"StocktakeHistory.Stocktake_Key = :prevStocktakeKey "
+           "StocktakeHistory.Stocktake_Key = (select  Max(StocktakeHistory.Stocktake_Key) stockkey from StocktakeHistory "
+           "where "
+            "StocktakeHistory.Stocktake_Key < :Stocktake_Key "
+	        "and StocktakeHistory.Location In (select StocktakeHistory.Location from StocktakeHistory "
+            "Left Join Stock On StocktakeHistory.Code = Stock.Code  "
+            "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key) "
+            "and StocktakeHistory.Stock_Group In (select StocktakeHistory.STOCK_GROUP from STOCKTAKEHISTORY "
+            "Left Join Stock On StocktakeHistory.Code = Stock.Code "
+            "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key) "
+            "and StocktakeHistory.Stock_Category In (select StocktakeHistory.Stock_Category from StocktakeHistory "
+            "Left Join Stock On StocktakeHistory.Code = Stock.Code "
+             "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key  where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key) )  "
+
 			
 		"Group By  "
 			"LocationA, "
@@ -1737,7 +1749,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 		  "group by STOCKTRANS.STOCK_CATEGORY, stocktrans.STOCK_GROUP)K on R.Stock_Category=K.Stock_Category and R.STOCK_GROUP=K.STOCK_GROUP " ;
 
     qrStockGroupVariance->ParamByName("Stocktake_Key")->AsInteger = StocktakeKey;
-    qrStockGroupVariance->ParamByName("prevStocktakeKey")->AsInteger = prevStocktakeKey;
+   
   }
 
 //---------------------------------------------------------------------------
