@@ -2910,12 +2910,12 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 
                     if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
                     {
-                        Formatdateseparator(Now().FormatString("dd/mm/yyyy")) ;
-                        Csv.Add((Payment->CSVString) + "," + storedate + "," + FormatDateTime("hh:nn",
+                        char * storedataformat = Formatdateseparator(Now().FormatString("dd/mm/yyyy")) ;
+                        Csv.Add((Payment->CSVString) + "," + storedataformat + "," + FormatDateTime("hh:nn",
                         Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
                         (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
 
-                        delete storedate;
+                        delete storedataformat;
                     }
                     else
                     {
@@ -6477,21 +6477,23 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
-
-void TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
+//-------------------------------------------------------------------------------------------
+char* TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
 {
-        AnsiString Dateformat(dateformat);
-         storedate = new char[Dateformat.Length()+1];
-         strcpy(storedate,Dateformat.c_str() ) ;
-         int count = 0;
-         while(storedate[count] != '\0')
-         {
-            if(storedate[count] == '-')
-            {
-                storedate[count] = '/' ;
-            }
-            count++;
-         }
+     char *storedate;
+     AnsiString Dateformat(dateformat);
+     storedate = new char[Dateformat.Length()+1];
+     strcpy(storedate,Dateformat.c_str() ) ;
+     int count = 0;
+     while(storedate[count] != '\0')
+     {
+        if(storedate[count] == '-')
+        {
+            storedate[count] = '/' ;
+        }
+        count++;
+     }
+     return storedate;
 }
 
 

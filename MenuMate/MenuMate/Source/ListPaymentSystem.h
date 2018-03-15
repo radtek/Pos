@@ -227,8 +227,7 @@ protected:
      bool TryToEnableSiHot();
      void PrintReceipt(bool RequestEFTPOSReceipt);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
-     void Formatdateseparator( UnicodeString date) ;
-     char *storedate;
+     char* Formatdateseparator( UnicodeString date) ;
 };
 
 #endif
