@@ -2907,11 +2907,15 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 					{
 						Csv.LoadFromFile(File);
 					}
+
                     if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
                     {
-                        Csv.Add((Payment->CSVString) + "," + Now().FormatString("dd/mm/yyyy") + "," + FormatDateTime("hh:nn",
+                        Formatdateseparator(Now().FormatString("dd/mm/yyyy")) ;
+                        Csv.Add((Payment->CSVString) + "," + storedate + "," + FormatDateTime("hh:nn",
                         Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
                         (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
+
+                        delete storedate;
                     }
                     else
                     {
@@ -6473,4 +6477,21 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
+
+void TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
+{
+        AnsiString Dateformat(dateformat);
+         storedate = new char[Dateformat.Length()+1];
+         strcpy(storedate,Dateformat.c_str() ) ;
+         int count = 0;
+         while(storedate[count] != '\0')
+         {
+            if(storedate[count] == '-')
+            {
+                storedate[count] = '/' ;
+            }
+            count++;
+         }
+}
+
 
