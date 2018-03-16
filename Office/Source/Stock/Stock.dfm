@@ -1137,7 +1137,6 @@ object frmStock: TfrmStock
       'Select'
       '   StockCategory.Stock_Category,'
       '   StockCategory.Stock_Category_Key,'
-      '   StockCategory.SORT_ORDER Category_Sort_Order, '
       ''
       '   StockGroup.Stock_Group_Key,'
       '   StockGroup.Stock_Group,'
@@ -1167,7 +1166,6 @@ object frmStock: TfrmStock
       'Select'
       '   StockCategory.Stock_Category,'
       '   StockCategory.Stock_Category_Key,'
-      '   StockCategory.SORT_ORDER Category_Sort_Order, '
       ''
       '   StockGroup.Stock_Group_Key,'
       '   StockGroup.Stock_Group,'
@@ -1179,7 +1177,7 @@ object frmStock: TfrmStock
       '   Stock.Code,'
       '   Stock.Stocktake_Unit,'
       '   Stock.Enabled,'
-      '   Cast(''F'' As Char)'
+      '   Cast('#39'F'#39' As Char)'
       ''
       'From'
       
@@ -1192,9 +1190,9 @@ object frmStock: TfrmStock
       '   Stock.Deleted Is Null And'
       '   StockGroup.Stock_Category_Key = :Stock_Category_Key'
       'Order by'
-      '   13 Desc,'
-       '   7,'
-      '   9')
+      '   12 Desc,'
+      '   6,'
+      '   8')
     Transaction = Transaction
     Left = 160
     Top = 264
@@ -1229,9 +1227,9 @@ object frmStock: TfrmStock
         '   Left Join Stock On StockGroup.Stock_Group_Key = Stock.Stock_G' +
         'roup_Key'
       'Where'
-      '   Stock.Deleted = ''T'' Or'
-      '   StockGroup.Deleted = ''T'' Or'
-      '   StockCategory.Deleted = ''T'''
+      '   Stock.Deleted = '#39'T'#39' Or'
+      '   StockGroup.Deleted = '#39'T'#39' Or'
+      '   StockCategory.Deleted = '#39'T'#39
       'Order by'
       '   Stock.Description,'
       '   4,'
