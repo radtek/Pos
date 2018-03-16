@@ -54,10 +54,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         double priceTotal = 0;
         double ItemPrice = 0;
         ItemPrice = (double)RoundToNearest(order->TotalPriceSides()/order->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-       // ItemPrice = (double)(order->TotalPriceSides());
          priceTotal =  (double)RoundToNearest((order->TotalPriceSides()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
-        //itemDetails.PricePerUnit = double(ItemPrice*1000);
-       // itemDetails.PriceTotal = double(priceTotal);
 		itemDetails.PricePerUnit = ItemPrice;
         itemDetails.PriceTotal = priceTotal;
         itemDetails.VATPercentage;
@@ -68,7 +65,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             if(!itTaxes->TaxType)
                 taxPercentage += (double)itTaxes->Percentage;
         }
-        itemDetails.VATPercentage = taxPercentage;//double(taxPercentage*1000);
+        itemDetails.VATPercentage = taxPercentage;
         itemList.push_back(itemDetails);
         PrepareDiscountDetails(discountList, order);
         for (int i = 0; i < order->SubOrders->Count; i++)
@@ -91,8 +88,8 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             ItemPrice = 0;
             ItemPrice = (double)RoundToNearest(currentSubOrder->TotalPriceSides()/currentSubOrder->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
             priceTotal =  (double)(currentSubOrder->TotalPriceSides());
-            itemDetails.PricePerUnit = ItemPrice;//double(ItemPrice*1000);
-            itemDetails.PriceTotal = priceTotal;//double(priceTotal*1000);
+            itemDetails.PricePerUnit = ItemPrice;
+            itemDetails.PriceTotal = priceTotal;
             double taxPercentage = 0;
             std::vector<BillCalculator::TTaxResult> taxInfomation = currentSubOrder->BillCalcResult.Tax;
             for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
@@ -100,7 +97,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
                 if(!itTaxes->TaxType)
                     taxPercentage = taxPercentage + itTaxes->Percentage;
             }
-            itemDetails.VATPercentage = taxPercentage;//double(taxPercentage*1000);//RoundTo(taxPercentage, -2);
+            itemDetails.VATPercentage = taxPercentage;
             itemList.push_back(itemDetails);
             PrepareDiscountDetails(discountList, currentSubOrder);
         }
