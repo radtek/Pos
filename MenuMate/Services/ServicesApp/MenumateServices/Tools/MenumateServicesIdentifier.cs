@@ -15,7 +15,6 @@ namespace MenumateServices
         PocketVoucher,
         SalesForceIntegration,
         SiHotIntegration,
-        WalletPayments,
-        FiscalPrinter
+        WalletPayments
     };
 }

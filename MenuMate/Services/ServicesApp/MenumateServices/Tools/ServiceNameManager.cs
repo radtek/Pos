@@ -47,7 +47,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SalesForceIntegration: return "SalesForceIntegrationWebService";
                 case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
                 case MenumateServicesIdentifier.WalletPayments: return "MenumateServiceWalletPayments";
-                case MenumateServicesIdentifier.FiscalPrinter: return "MenumateServiceFiscalPrinter";
                 default: return @"";
             }
         }
@@ -71,7 +70,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
-                case MenumateServicesIdentifier.FiscalPrinter: return "Menumate FiscalPrinter Sevice";
                 default: return @"";
             }
         }
@@ -95,7 +93,6 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
-                case MenumateServicesIdentifier.FiscalPrinter: return "Menumate Fiscal Printer Sevice";
                 default: return @"";
             }
         }
