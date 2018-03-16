@@ -37,6 +37,8 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
         fpclass->Date = WideString(receiptData.Date).c_bstr();
         fpclass->Source = WideString(receiptData.Source).c_bstr();
         fpclass->Time = WideString(receiptData.Time).c_bstr();
+        fpclass->InvoiceNumber = WideString(receiptData.InvoiceNumber).c_bstr();
+        // MessageBox(WideString(receiptData.InvoiceNumber).c_bstr(),"Item price",MB_OK);
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
@@ -48,6 +50,7 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
             fpclass->LoadReceiptItemInfo(4, WideString(i->MemberName).c_bstr());
             fpclass->LoadReceiptItemInfo(5, WideString(i->PartyName).c_bstr());
             fpclass->LoadReceiptItemInfo(6, WideString(i->PricePerUnit).c_bstr());
+           // MessageBox(WideString(i->PricePerUnit).c_bstr(),"Item price",MB_OK);
             fpclass->LoadReceiptItemInfo(7, WideString(i->PriceTotal).c_bstr());
             fpclass->LoadReceiptItemInfo(8, WideString(i->Quantity).c_bstr());
             fpclass->LoadReceiptItemInfo(9, WideString(i->SizeName).c_bstr());

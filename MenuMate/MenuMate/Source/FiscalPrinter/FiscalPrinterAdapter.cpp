@@ -47,13 +47,17 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         itemDetails.MemberName = paymentTransaction.Membership.Member.Name;
         itemDetails.PartyName = order->PartyName;
         itemDetails.ItemDescription = order->Item;
-        itemDetails.SizeName = order->Size;
+        if (UpperCase(order->Size) != "DEFAULT")
+                itemDetails.SizeName = order->Size;
+        else
+            itemDetails.SizeName = "";
         itemDetails.Quantity = Double(order->GetQty()); 
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
         double priceTotal = 0;
         double ItemPrice = 0;
-        ItemPrice = (double)(order->BillCalcResult.FinalPrice/order->GetQty());
-         priceTotal =  (double)(order->BillCalcResult.FinalPrice);
+        ItemPrice = (double)RoundToNearest(order->TotalPriceSides(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+       // ItemPrice = (double)(order->TotalPriceSides());
+         priceTotal =  (double)RoundToNearest((order->TotalPriceSides() * order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
         //itemDetails.PricePerUnit = double(ItemPrice*1000);
        // itemDetails.PriceTotal = double(priceTotal);
 		itemDetails.PricePerUnit = ItemPrice;
@@ -78,14 +82,17 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             itemDetails.ChitNumber = order->ChitNumber.ChitNumber;
             itemDetails.MemberName = paymentTransaction.Membership.Member.Name;
             itemDetails.PartyName = order->PartyName;
-            itemDetails.ItemDescription = order->Item;
-            itemDetails.SizeName = order->Size;
-            itemDetails.Quantity = order->GetQty();
-            itemDetails.ItemCategory = order->Categories->FinancialCategory;
+            itemDetails.ItemDescription = currentSubOrder->Item;
+            if (UpperCase(currentSubOrder->Size) != "DEFAULT")
+                itemDetails.SizeName = currentSubOrder->Size;
+            else
+                itemDetails.SizeName = "";
+            itemDetails.Quantity = currentSubOrder->GetQty();
+            itemDetails.ItemCategory = currentSubOrder->Categories->FinancialCategory;
             priceTotal = 0;
             ItemPrice = 0;
-            ItemPrice = (double)(currentSubOrder->BillCalcResult.FinalPrice/currentSubOrder->GetQty());
-            priceTotal =  (double)(currentSubOrder->BillCalcResult.FinalPrice);
+            ItemPrice = (double)(currentSubOrder->TotalPriceSides());
+            priceTotal =  (double)(currentSubOrder->TotalPriceSides() * currentSubOrder->GetQty());
             itemDetails.PricePerUnit = ItemPrice;//double(ItemPrice*1000);
             itemDetails.PriceTotal = priceTotal;//double(priceTotal*1000);
             double taxPercentage = 0;
