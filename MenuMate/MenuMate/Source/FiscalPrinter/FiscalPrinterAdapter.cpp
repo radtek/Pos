@@ -5,7 +5,6 @@
 
 #include "FiscalPrinterAdapter.h"
 #include "main.h"
-#include "IBillCalculator.h"
 #include <Math.hpp>
 #include "MMMessageBox.h"
 #include "FiscalIntegration_OCX.h"
@@ -28,10 +27,7 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.Time = Now().FormatString("hh:nn");
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
-    //std::auto_ptr<TFiscalPrinting> fiscalPrinting(new TFiscalPrinting());
-   // MessageBox("1","",MB_OK);
     PrintFiscalReceipt(billDetails).ResponseMessage;
-    //MessageBox(message,"",MB_OK);
 }
 //------------------------------------------------------------------------------
 void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransaction)
@@ -123,7 +119,6 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         {
             TFiscalPaymentDetails paymentDetails;
             double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-           // subTotal = subTotal*1000;
             paymentDetails.Amount = subTotal;
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
@@ -143,8 +138,6 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
         bool isDiscountAlreadyExists = false;
         double discountAmount = 0;
         discountAmount = (double)RoundToNearest(order->DiscountValue_BillCalc(ptrDiscounts),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
-      //  discountAmount = discountAmount*1000;
-//        MessageBox(discountAmount,"Error1",MB_OK);
         for (std::vector<TFiscalDiscountDetails> ::iterator ptrFiscalDiscounts = discountList.begin(); ptrFiscalDiscounts != discountList.end();
         std::advance(ptrFiscalDiscounts, 1))
         {
@@ -201,7 +194,6 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->Source = WideString(receiptData.Source).c_bstr();
         fpclass->Time = WideString(receiptData.Time).c_bstr();
         fpclass->InvoiceNumber = WideString(receiptData.InvoiceNumber).c_bstr();
-        // MessageBox(WideString(receiptData.InvoiceNumber).c_bstr(),"Item price",MB_OK);
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
@@ -210,21 +202,11 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptItemInfo(1, WideString(i->GuestName).c_bstr());
             fpclass->LoadReceiptItemInfo(2, WideString(i->ItemCategory).c_bstr());
             fpclass->LoadReceiptItemInfo(3, WideString(i->ItemDescription).c_bstr());
-//            AnsiString s1 = "Item name: " + i->ItemDescription;
-//            makeLogFile(s1);
             fpclass->LoadReceiptItemInfo(4, WideString(i->MemberName).c_bstr());
             fpclass->LoadReceiptItemInfo(5, WideString(i->PartyName).c_bstr());
             fpclass->LoadReceiptItemInfo(6, WideString(i->PricePerUnit).c_bstr());
-//            s1 = "PricePerUnit: " + i->PricePerUnit;
-//            makeLogFile(s1);
-           // MessageBox(WideString(i->PricePerUnit).c_bstr(),"Item price",MB_OK);
             fpclass->LoadReceiptItemInfo(7, WideString(i->PriceTotal).c_bstr());
-//            s1 = "Item name: " + i->ItemDescription;
-//            makeLogFile(s1);
-//            makeLogFile(i->PriceTotal);
             fpclass->LoadReceiptItemInfo(8, WideString(i->Quantity).c_bstr());
-//            s1 = "Item Quantity: " + i->Quantity;
-            //makeLogFile(s1);
             fpclass->LoadReceiptItemInfo(9, WideString(i->SizeName).c_bstr());
             fpclass->LoadReceiptItemInfo(10, WideString(i->TableNo).c_bstr());
             fpclass->LoadReceiptItemInfo(11, WideString(i->VATPercentage).c_bstr());
@@ -256,7 +238,6 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         }
 
         int number = fpclass->PrintReceipt();
-          //MessageBox(number,number,MB_OK);
     }
     catch(Exception & E)
     {
@@ -265,23 +246,5 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
     return response;
 }
 //------------------------------------------------------------------------------------------
-//TFiscalPrinterAdapter TFiscalPrinterAdapter::PrintZReport()
-//{
-//    TFiscalPrinterResponse response;
-//    response.IsSuccessful = false;
-//    try
-//    {
-//        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
-////        FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
-////        CoInitialize(NULL);
-//        fpclass->PrintZReport();
-////        response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
-////        response.ResponseMessage = fiscalPrinterResponse->Response;
-//    }
-//    catch(Exception & E)
-//    {
-//       response.ResponseMessage = "Exception found in PrintZReport()";
-//	}
-//    return response;
-//}
+
 
