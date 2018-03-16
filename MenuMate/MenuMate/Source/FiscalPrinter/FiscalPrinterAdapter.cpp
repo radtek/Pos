@@ -57,7 +57,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         double ItemPrice = 0;
         ItemPrice = (double)RoundToNearest(order->TotalPriceSides(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
        // ItemPrice = (double)(order->TotalPriceSides());
-         priceTotal =  (double)RoundToNearest((order->TotalPriceSides() * order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
+         priceTotal =  (double)RoundToNearest((order->TotalPriceSides()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
         //itemDetails.PricePerUnit = double(ItemPrice*1000);
        // itemDetails.PriceTotal = double(priceTotal);
 		itemDetails.PricePerUnit = ItemPrice;

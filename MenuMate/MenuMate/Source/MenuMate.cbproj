@@ -3439,12 +3439,12 @@
 				<DependentOn>FiscalPrinter\FiscalPrinting.h</DependentOn>
 				<BuildOrder>785</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\FiscalIntegration_TLB.cpp">
-				<DependentOn>C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\FiscalIntegration_TLB.h</DependentOn>
+			<CppCompile Include="FiscalPrinter\FiscalIntegration_TLB.cpp">
+				<DependentOn>FiscalPrinter\FiscalIntegration_TLB.h</DependentOn>
 				<BuildOrder>784</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\FiscalIntegration_OCX.cpp">
-				<DependentOn>C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\FiscalIntegration_OCX.h</DependentOn>
+			<CppCompile Include="FiscalPrinter\FiscalIntegration_OCX.cpp">
+				<DependentOn>FiscalPrinter\FiscalIntegration_OCX.h</DependentOn>
 				<BuildOrder>785</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\SelectReceipt.dfm"/>
