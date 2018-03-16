@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 16/03/2018 8:58:05 p.m. from Type Library described below.
+// File generated on 17/03/2018 12:51:01 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -327,6 +327,12 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OleProcedure(_dispid);
   }
 
+  void __fastcall PrintZReport()
+  {
+    _TDispID _dispid(/* PrintZReport */ DISPID(18));
+    OleProcedure(_dispid);
+  }
+
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -491,6 +497,7 @@ public:
   void            __fastcall AddItemToList();
   void            __fastcall AddPaymentInfoToList();
   void            __fastcall AddDiscountInfoToList();
+  void            __fastcall PrintZReport();
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -1031,6 +1038,13 @@ template <class T> void __fastcall
 IFiscalLibraryDispT<T>::AddDiscountInfoToList()
 {
   _TDispID _dispid(*this, OLETEXT("AddDiscountInfoToList"), DISPID(17));
+  OleProcedure(_dispid);
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::PrintZReport()
+{
+  _TDispID _dispid(*this, OLETEXT("PrintZReport"), DISPID(18));
   OleProcedure(_dispid);
 }
 

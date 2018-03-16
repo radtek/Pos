@@ -47,21 +47,21 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
             fpclass->LoadReceiptItemInfo(1, WideString(i->GuestName).c_bstr());
             fpclass->LoadReceiptItemInfo(2, WideString(i->ItemCategory).c_bstr());
             fpclass->LoadReceiptItemInfo(3, WideString(i->ItemDescription).c_bstr());
-            AnsiString s1 = "Item name: " + i->ItemDescription;
-            makeLogFile(s1);
+//            AnsiString s1 = "Item name: " + i->ItemDescription;
+//            makeLogFile(s1);
             fpclass->LoadReceiptItemInfo(4, WideString(i->MemberName).c_bstr());
             fpclass->LoadReceiptItemInfo(5, WideString(i->PartyName).c_bstr());
             fpclass->LoadReceiptItemInfo(6, WideString(i->PricePerUnit).c_bstr());
-            s1 = "PricePerUnit: " + i->PricePerUnit;
-            makeLogFile(s1);
+//            s1 = "PricePerUnit: " + i->PricePerUnit;
+//            makeLogFile(s1);
            // MessageBox(WideString(i->PricePerUnit).c_bstr(),"Item price",MB_OK);
             fpclass->LoadReceiptItemInfo(7, WideString(i->PriceTotal).c_bstr());
-            s1 = "Item name: " + i->ItemDescription;
-            makeLogFile(s1);
-            makeLogFile(i->PriceTotal);
+//            s1 = "Item name: " + i->ItemDescription;
+//            makeLogFile(s1);
+//            makeLogFile(i->PriceTotal);
             fpclass->LoadReceiptItemInfo(8, WideString(i->Quantity).c_bstr());
-            s1 = "Item Quantity: " + i->Quantity;
-            makeLogFile(s1);
+//            s1 = "Item Quantity: " + i->Quantity;
+            //makeLogFile(s1);
             fpclass->LoadReceiptItemInfo(9, WideString(i->SizeName).c_bstr());
             fpclass->LoadReceiptItemInfo(10, WideString(i->TableNo).c_bstr());
             fpclass->LoadReceiptItemInfo(11, WideString(i->VATPercentage).c_bstr());
@@ -93,7 +93,7 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
         }
 
         int number = fpclass->PrintReceipt();
-          MessageBox(number,number,MB_OK);
+          //MessageBox(number,number,MB_OK);
     }
     catch(Exception & E)
     {
