@@ -985,7 +985,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		throw;
 	}
-     MessageBox("Test6","Error 6",MB_OK);
 	Busy = false;
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
@@ -1061,7 +1060,6 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
-    MessageBox("Test5","Error 5",MB_OK);
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
