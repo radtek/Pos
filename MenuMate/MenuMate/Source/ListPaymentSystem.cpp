@@ -1061,12 +1061,6 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
-
-    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
-    {
-        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
-        fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
-    }
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
@@ -3473,35 +3467,48 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-	if (PaymentTransaction.Type == eTransQuickSale)
-	{
-		if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+
+        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))
+        {
             PrintReceipt(RequestEFTPOSReceipt);
-		}
-	}
-	else
-	{
-		if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
-			PrintReceipt(RequestEFTPOSReceipt);
-		}
-		else
-		{
-			if (CloseAndPrint)
-			{
-				PrintReceipt(RequestEFTPOSReceipt);
-			}
-			else
-			{
-				// Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
-		}
-	}
+        }
+    }
+    else
+    {
+        if (PaymentTransaction.Type == eTransQuickSale)
+        {
+            if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+        }
+        else
+        {
+            if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+            else
+            {
+                if (CloseAndPrint)
+                {
+                    PrintReceipt(RequestEFTPOSReceipt);
+                }
+                else
+                {
+                    // Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
+                    if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+                    {
+                        LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void TListPaymentSystem::RemoveOrders(TPaymentTransaction &PaymentTransaction)
