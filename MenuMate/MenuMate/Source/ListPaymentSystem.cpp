@@ -3472,7 +3472,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
         fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
 
-        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))
+        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
         {
             PrintReceipt(RequestEFTPOSReceipt);
         }
