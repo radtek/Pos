@@ -145,24 +145,26 @@ TFiscalPrinterResponse TFiscalPrinting::PrintFiscalReceipt(TFiscalBillDetails re
 //    return discount;
 //}
 //----------------------------------------------------------------------------------
-//TFiscalPrinterResponse TFiscalPrinting::PrintZReport()
-//{
-//    TFiscalPrinterResponse response;
-//    response.IsSuccessful = false;
-//    try
-//    {
+TFiscalPrinterResponse TFiscalPrinting::PrintZReport()
+{
+    TFiscalPrinterResponse response;
+    response.IsSuccessful = false;
+    try
+    {
+        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
 //        FiscalResponseDetails* fiscalPrinterResponse = new FiscalResponseDetails();
 //        CoInitialize(NULL);
-//        fiscalPrinterResponse = fiscalClient->PrintZSettlement();
+        fpclass->PrintZReport();
 //        response.IsSuccessful = fiscalPrinterResponse->IsSuccessful;
 //        response.ResponseMessage = fiscalPrinterResponse->Response;
-//    }
-//    catch(Exception & E)
-//    {
-//       response.ResponseMessage = "Exception found in PrintZReport()";
-//	}
-//    return response;
-//}void TFiscalPrinting::makeLogFile(AnsiString str1){
+    }
+    catch(Exception & E)
+    {
+       response.ResponseMessage = "Exception found in PrintZReport()";
+	}
+    return response;
+}
+void TFiscalPrinting::makeLogFile(AnsiString str1){
     AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/fiscalPrinter Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);

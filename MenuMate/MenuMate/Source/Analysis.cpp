@@ -9046,7 +9046,7 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
     try
     {
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
-        fiscalZReportResponse = fiscalAdapter->FiscalZReportSettlement();
+        fiscalAdapter->FiscalZReportSettlement();
     }
     catch(Exception & E)
     {

@@ -176,7 +176,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::FiscalZReportSettlement()
     {
         response.IsSuccessful = false;
         std::auto_ptr<TFiscalPrinting> fiscalPrinting(new TFiscalPrinting());
-//        response = fiscalPrinting->PrintZReport();
+        fiscalPrinting->PrintZReport();
     }
     catch(Exception & E)
     {
