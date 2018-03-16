@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 16/03/2018 8:58:05 p.m. from Type Library described below.
+// File generated on 17/03/2018 12:51:01 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -159,6 +159,11 @@ void __fastcall TFiscalLibraryClass::AddPaymentInfoToList(void)
 void __fastcall TFiscalLibraryClass::AddDiscountInfoToList(void)
 {
   GetDefaultInterface()->AddDiscountInfoToList();
+}
+
+void __fastcall TFiscalLibraryClass::PrintZReport(void)
+{
+  GetDefaultInterface()->PrintZReport();
 }
 
 BSTR __fastcall TFiscalLibraryClass::get_InvoiceNumber(void)

@@ -55,7 +55,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
         double priceTotal = 0;
         double ItemPrice = 0;
-        ItemPrice = (double)RoundToNearest(order->TotalPriceSides(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+        ItemPrice = (double)RoundToNearest(order->TotalPriceSides()/order->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
        // ItemPrice = (double)(order->TotalPriceSides());
          priceTotal =  (double)RoundToNearest((order->TotalPriceSides()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
         //itemDetails.PricePerUnit = double(ItemPrice*1000);
@@ -91,8 +91,8 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             itemDetails.ItemCategory = currentSubOrder->Categories->FinancialCategory;
             priceTotal = 0;
             ItemPrice = 0;
-            ItemPrice = (double)(currentSubOrder->TotalPriceSides());
-            priceTotal =  (double)(currentSubOrder->TotalPriceSides() * currentSubOrder->GetQty());
+            ItemPrice = (double)RoundToNearest(currentSubOrder->TotalPriceSides()/currentSubOrder->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            priceTotal =  (double)(currentSubOrder->TotalPriceSides());
             itemDetails.PricePerUnit = ItemPrice;//double(ItemPrice*1000);
             itemDetails.PriceTotal = priceTotal;//double(priceTotal*1000);
             double taxPercentage = 0;
@@ -176,7 +176,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::FiscalZReportSettlement()
     {
         response.IsSuccessful = false;
         std::auto_ptr<TFiscalPrinting> fiscalPrinting(new TFiscalPrinting());
-//        response = fiscalPrinting->PrintZReport();
+        fiscalPrinting->PrintZReport();
     }
     catch(Exception & E)
     {

@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 16/03/2018 8:58:05 p.m. from Type Library described below.
+// File generated on 17/03/2018 12:51:01 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -112,6 +112,7 @@ public:
   void            __fastcall AddItemToList(void);
   void            __fastcall AddPaymentInfoToList(void);
   void            __fastcall AddDiscountInfoToList(void);
+  void            __fastcall PrintZReport(void);
   __property BSTR InvoiceNumber={ read=get_InvoiceNumber, write=set_InvoiceNumber, stored=false };
   __property BSTR Date={ read=get_Date, write=set_Date, stored=false };
   __property BSTR Time={ read=get_Time, write=set_Time, stored=false };

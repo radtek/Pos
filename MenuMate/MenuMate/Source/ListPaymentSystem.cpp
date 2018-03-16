@@ -1025,7 +1025,6 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
-
 	if (PaymentTransaction.Type == eTransQuickSale && PaymentTransaction.SalesType == eTab)
     {
          ReceiptPrint(PaymentTransaction, RequestEFTPOSReceipt, false);
@@ -3472,8 +3471,11 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
     {
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
         fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+
         if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))
+        {
             PrintReceipt(RequestEFTPOSReceipt);
+        }
     }
     else
     {

@@ -39,7 +39,6 @@ namespace MenumateServices
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWalletPayments = new System.ServiceProcess.ServiceInstaller();
-            this.serviceInstallerFiscalPrinter = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -104,14 +103,6 @@ namespace MenumateServices
             this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
             this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Disabled;
-
-            // 
-            // serviceInstallerFiscalPrinter
-            // 
-            this.serviceInstallerFiscalPrinter.Description = "Menumate Fiscal Printer Sevice";
-            this.serviceInstallerFiscalPrinter.DisplayName = "Menumate Fiscal Printer Sevice";
-            this.serviceInstallerFiscalPrinter.ServiceName = "MenumateServiceFiscalPrinter";
-            this.serviceInstallerFiscalPrinter.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
@@ -124,8 +115,7 @@ namespace MenumateServices
             this.serviceInstallerPocketVoucher,
             this.serviceInstallerSalesForceIntegration,
             this.serviceInstallerSiHotIntegration,
-            this.serviceInstallerWalletPayments,
-            this.serviceInstallerFiscalPrinter});
+            this.serviceInstallerWalletPayments});
 
         }
 
@@ -170,6 +160,5 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerSalesForceIntegration;
         private ServiceInstaller serviceInstallerSiHotIntegration;
         private ServiceInstaller serviceInstallerWalletPayments;
-        private ServiceInstaller serviceInstallerFiscalPrinter;
     }
 }
