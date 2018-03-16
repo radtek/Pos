@@ -1301,8 +1301,8 @@ object frmStock: TfrmStock
       '        Stock.Deleted,'
       '        StockLocation.LOCATION'
       '     Order by'
-      '        StockCategory.Stock_Category,'
-      '        StockGroup.Stock_Group,'
+      '        StockCategory.Sort_Order,'
+      '        StockGroup.Sort_Order,'
       '        Stock.Description')
     Transaction = Transaction
     Left = 168
