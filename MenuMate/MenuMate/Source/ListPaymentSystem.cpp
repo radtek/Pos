@@ -985,7 +985,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		throw;
 	}
-
+     MessageBox("Test6","Error 6",MB_OK);
 	Busy = false;
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
@@ -1061,6 +1061,7 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
+    MessageBox("Test5","Error 5",MB_OK);
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
@@ -3469,13 +3470,13 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
     {
+        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
+        {   
+            PrintReceipt(RequestEFTPOSReceipt);
+        }
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
         fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
 
-        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
-        {
-            PrintReceipt(RequestEFTPOSReceipt);
-        }
     }
     else
     {
