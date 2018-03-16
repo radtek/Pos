@@ -175,7 +175,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::FiscalZReportSettlement()
     }
     catch(Exception & E)
     {
-       response.ResponseMessage = "Exception found in FiscalZReportSettlement()";
+       response.ResponseMessage = E.Message;
 	}
     return response;
 }
@@ -241,7 +241,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
     }
     catch(Exception & E)
     {
-       response.ResponseMessage = E.Message;//"Exception found in PrintFiscalReceipt()";
+       response.ResponseMessage = E.Message;
 	}
     return response;
 }
