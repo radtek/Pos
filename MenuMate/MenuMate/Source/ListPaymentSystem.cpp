@@ -3468,7 +3468,8 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
     {
-        if(Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
+        if((Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
+                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
         {   
             PrintReceipt(RequestEFTPOSReceipt);
         }
@@ -6479,3 +6480,24 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
+//------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+        else if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}
+//--------------------------------------------------------------------------------------

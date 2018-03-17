@@ -227,6 +227,7 @@ protected:
      bool TryToEnableSiHot();
      void PrintReceipt(bool RequestEFTPOSReceipt);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
+     bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
 };
 
 #endif
