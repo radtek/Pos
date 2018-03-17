@@ -53,8 +53,9 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
         double priceTotal = 0;
         double ItemPrice = 0;
-        ItemPrice = (double)RoundToNearest(order->TotalPriceSides()/order->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-         priceTotal =  (double)RoundToNearest((order->TotalPriceSides()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
+        ItemPrice = (double)RoundToNearest(order->PriceEach(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+       // MessageBox(order->PriceEach(),"Me1",MB_OK);
+         priceTotal =  (double)RoundToNearest((order->PriceEach()*order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
 		itemDetails.PricePerUnit = ItemPrice;
         itemDetails.PriceTotal = priceTotal;
         itemDetails.VATPercentage;
@@ -88,6 +89,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             ItemPrice = 0;
             ItemPrice = (double)RoundToNearest(currentSubOrder->TotalPriceSides()/currentSubOrder->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
             priceTotal =  (double)(currentSubOrder->TotalPriceSides());
+         //   MessageBox(currentSubOrder->TotalPriceSides(),"Me1",MB_OK);
             itemDetails.PricePerUnit = ItemPrice;
             itemDetails.PriceTotal = priceTotal;
             double taxPercentage = 0;
