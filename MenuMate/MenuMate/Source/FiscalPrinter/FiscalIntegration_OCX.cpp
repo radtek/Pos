@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 17/03/2018 6:00:19 a.m. from Type Library described below.
+// File generated on 17/03/2018 5:32:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -234,6 +234,16 @@ BSTR __fastcall TFiscalLibraryClass::get_Source(void)
 void __fastcall TFiscalLibraryClass::set_Source(BSTR Param1/*[in]*/)
 {
   GetDefaultInterface()->set_Source(Param1/*[in]*/);
+}
+
+BSTR __fastcall TFiscalLibraryClass::get_TerminalName(void)
+{
+  return  GetDefaultInterface()->get_TerminalName();
+}
+
+void __fastcall TFiscalLibraryClass::set_TerminalName(BSTR Param1/*[in]*/)
+{
+  GetDefaultInterface()->set_TerminalName(Param1/*[in]*/);
 }
 
 _DiscountDetailsPtr& TDiscountDetails::GetDefaultInterface()

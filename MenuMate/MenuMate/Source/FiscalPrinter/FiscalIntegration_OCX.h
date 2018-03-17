@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 17/03/2018 6:00:19 a.m. from Type Library described below.
+// File generated on 17/03/2018 5:32:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -100,6 +100,8 @@ public:
   void            __fastcall set_Cashier(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_Source(void);
   void            __fastcall set_Source(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_TerminalName(void);
+  void            __fastcall set_TerminalName(BSTR Param1/*[in]*/);
   long            __fastcall PrintReceipt(void);
   void            __fastcall LoadReceiptItemInfo(long identifier/*[in]*/, BSTR InvoiceNumber/*[in]*/);
   void            __fastcall LoadReceiptPaymentInfo(long identifier/*[in]*/, 
@@ -120,6 +122,7 @@ public:
   __property BSTR Cashno={ read=get_Cashno, write=set_Cashno, stored=false };
   __property BSTR Cashier={ read=get_Cashier, write=set_Cashier, stored=false };
   __property BSTR Source={ read=get_Source, write=set_Source, stored=false };
+  __property BSTR TerminalName={ read=get_TerminalName, write=set_TerminalName, stored=false };
 };
 
 

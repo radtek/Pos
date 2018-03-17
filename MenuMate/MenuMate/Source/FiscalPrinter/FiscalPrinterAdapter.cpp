@@ -23,7 +23,7 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.InvoiceNumber = paymentTransaction.InvoiceNumber;
     billDetails.Date = Now().FormatString("dd/mm/yyyy");
     billDetails.Billno = paymentTransaction.InvoiceNumber;
-    //billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
+//    billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
     billDetails.Time = Now().FormatString("hh:nn");
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
@@ -112,13 +112,39 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
     {
         TPayment *SubPayment = paymentTransaction.PaymentGet(i);
-        if (SubPayment->GetPay() != 0)
+        double tipAmount = 0, surcharge = 0, change = 0, subTotal = 0;
+        bool AddedToList = false;
+        if(SubPayment->GetPaymentAttribute(ePayTypeCustomSurcharge) && SubPayment->GetAdjustment() != 0)
+        {
+            tipAmount += (double)SubPayment->GetAdjustment();
+            AddedToList = true;
+        }
+        if(SubPayment->GetPaymentAttribute(ePayTypeSurcharge) && SubPayment->GetAdjustment() != 0)
+        {
+            AddedToList = true;
+            surcharge += (double)SubPayment->GetAdjustment();
+        }
+        if ((SubPayment->GetPay() != 0) || (SubPayment->GetCashOut() != 0.0))
+        {
+            AddedToList = true;
+            tipAmount += (double)SubPayment->TipAmount;
+//            TFiscalPaymentDetails paymentDetails;
+//            double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+//            paymentDetails.Amount = subTotal;
+//            paymentDetails.Description = SubPayment->Name;
+//            paymentDetails.Billno = paymentTransaction.InvoiceNumber;
+//            PaymentList.push_back(paymentDetails);
+        }
+        if(AddedToList)
         {
             TFiscalPaymentDetails paymentDetails;
             double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
             paymentDetails.Amount = subTotal;
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
+            paymentDetails.TipAmount = tipAmount;
+            paymentDetails.PaymentSurcharge = surcharge;
+            paymentDetails.Change = SubPayment->GetChange();
             PaymentList.push_back(paymentDetails);
         }
     }
@@ -220,6 +246,12 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptPaymentInfo(4, WideString(i->Cashier).c_bstr());
             fpclass->LoadReceiptPaymentInfo(5, WideString(i->Source).c_bstr());
             fpclass->LoadReceiptPaymentInfo(6, WideString(i->Description).c_bstr());
+          //  MessageBox(WideString(i->TipAmount).c_bstr(),"Tip Amount",MB_OK);
+            fpclass->LoadReceiptPaymentInfo(7, WideString(i->TipAmount).c_bstr());
+          //  MessageBox(WideString(i->PaymentSurcharge).c_bstr(),"Payment surcharge",MB_OK);
+            fpclass->LoadReceiptPaymentInfo(8, WideString(i->PaymentSurcharge).c_bstr());
+          //  MessageBox(WideString(i->Change).c_bstr(),"Change Amount",MB_OK);
+            fpclass->LoadReceiptPaymentInfo(9, WideString(i->Change).c_bstr());
             fpclass->AddPaymentInfoToList();
         }
 

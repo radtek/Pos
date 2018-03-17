@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 17/03/2018 6:00:19 a.m. from Type Library described below.
+// File generated on 17/03/2018 5:32:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -333,6 +333,22 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OleProcedure(_dispid);
   }
 
+  BSTR __fastcall get_TerminalName()
+  {
+    _TDispID _dispid(/* TerminalName */ DISPID(19));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_TerminalName(BSTR Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* TerminalName */ DISPID(19));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BSTR:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -341,6 +357,7 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
   __property   BSTR            Cashno = {read = get_Cashno, write = set_Cashno};
   __property   BSTR            Cashier = {read = get_Cashier, write = set_Cashier};
   __property   BSTR            Source = {read = get_Source, write = set_Source};
+  __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
 };
 // *********************************************************************//
 // Interface: _DiscountDetails
@@ -498,6 +515,8 @@ public:
   void            __fastcall AddPaymentInfoToList();
   void            __fastcall AddDiscountInfoToList();
   void            __fastcall PrintZReport();
+  BSTR            __fastcall get_TerminalName();
+  void            __fastcall set_TerminalName(BSTR Param1/*[in]*/);
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -506,6 +525,7 @@ public:
   __property   BSTR            Cashno = {read = get_Cashno, write = set_Cashno};
   __property   BSTR            Cashier = {read = get_Cashier, write = set_Cashier};
   __property   BSTR            Source = {read = get_Source, write = set_Source};
+  __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
 };
 typedef IFiscalLibraryDispT<IFiscalLibrary> IFiscalLibraryDisp;
 
@@ -1046,6 +1066,24 @@ IFiscalLibraryDispT<T>::PrintZReport()
 {
   _TDispID _dispid(*this, OLETEXT("PrintZReport"), DISPID(18));
   OleProcedure(_dispid);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::get_TerminalName()
+{
+  _TDispID _dispid(*this, OLETEXT("TerminalName"), DISPID(19));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_TerminalName(BSTR Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("TerminalName"), DISPID(19));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BSTR:0]*/;
+  OlePropertyPut(_dispid, _args);
 }
 
 // *********************************************************************//

@@ -36,6 +36,7 @@ struct TFiscalPaymentDetails
     UnicodeString Description;
     UnicodeString PaymentSurcharge;
     UnicodeString TipAmount;
+    UnicodeString Change;
 };
 
 struct TFiscalDiscountDetails
@@ -60,6 +61,7 @@ struct TFiscalBillDetails
     UnicodeString Cashno;
     UnicodeString Cashier;
     UnicodeString Source;
+    UnicodeString TerminalName;
 };
 
 struct TFiscalPrinterResponse
