@@ -256,6 +256,7 @@ void TfrmTaxMaintenance::ReadVariablesFromDatabase()
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateTaxPostDiscount,           TGlobalSettings::Instance().ReCalculateTaxPostDiscount);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateServiceChargePostDiscount, TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUseItalyFiscalPrinter,                 TGlobalSettings::Instance().UseItalyFiscalPrinter);
         }
         DBTransaction.Commit();
     }
