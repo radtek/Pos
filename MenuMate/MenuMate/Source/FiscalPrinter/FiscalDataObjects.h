@@ -62,6 +62,8 @@ struct TFiscalBillDetails
     UnicodeString Cashier;
     UnicodeString Source;
     UnicodeString TerminalName;
+    UnicodeString PointPurchased;
+    UnicodeString TabCredit;
 };
 
 struct TFiscalPrinterResponse

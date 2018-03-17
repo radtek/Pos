@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 18/03/2018 2:03:10 a.m. from Type Library described below.
+// File generated on 18/03/2018 2:21:26 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -244,6 +244,26 @@ BSTR __fastcall TFiscalLibraryClass::get_TerminalName(void)
 void __fastcall TFiscalLibraryClass::set_TerminalName(BSTR Param1/*[in]*/)
 {
   GetDefaultInterface()->set_TerminalName(Param1/*[in]*/);
+}
+
+BSTR __fastcall TFiscalLibraryClass::get_PointPurchased(void)
+{
+  return  GetDefaultInterface()->get_PointPurchased();
+}
+
+void __fastcall TFiscalLibraryClass::set_PointPurchased(BSTR Param1/*[in]*/)
+{
+  GetDefaultInterface()->set_PointPurchased(Param1/*[in]*/);
+}
+
+BSTR __fastcall TFiscalLibraryClass::get_TabCredit(void)
+{
+  return  GetDefaultInterface()->get_TabCredit();
+}
+
+void __fastcall TFiscalLibraryClass::set_TabCredit(BSTR Param1/*[in]*/)
+{
+  GetDefaultInterface()->set_TabCredit(Param1/*[in]*/);
 }
 
 _DiscountDetailsPtr& TDiscountDetails::GetDefaultInterface()

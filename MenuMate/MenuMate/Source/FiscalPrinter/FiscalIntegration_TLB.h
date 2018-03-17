@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 18/03/2018 2:03:10 a.m. from Type Library described below.
+// File generated on 18/03/2018 2:21:26 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -349,6 +349,38 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OlePropertyPut(_dispid, _args);
   }
 
+  BSTR __fastcall get_PointPurchased()
+  {
+    _TDispID _dispid(/* PointPurchased */ DISPID(20));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PointPurchased(BSTR Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* PointPurchased */ DISPID(20));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BSTR:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR __fastcall get_TabCredit()
+  {
+    _TDispID _dispid(/* TabCredit */ DISPID(21));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_TabCredit(BSTR Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* TabCredit */ DISPID(21));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BSTR:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -358,6 +390,8 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
   __property   BSTR            Cashier = {read = get_Cashier, write = set_Cashier};
   __property   BSTR            Source = {read = get_Source, write = set_Source};
   __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
+  __property   BSTR            PointPurchased = {read = get_PointPurchased, write = set_PointPurchased};
+  __property   BSTR            TabCredit = {read = get_TabCredit, write = set_TabCredit};
 };
 // *********************************************************************//
 // Interface: _DiscountDetails
@@ -517,6 +551,10 @@ public:
   void            __fastcall PrintZReport();
   BSTR            __fastcall get_TerminalName();
   void            __fastcall set_TerminalName(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_PointPurchased();
+  void            __fastcall set_PointPurchased(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_TabCredit();
+  void            __fastcall set_TabCredit(BSTR Param1/*[in]*/);
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -526,6 +564,8 @@ public:
   __property   BSTR            Cashier = {read = get_Cashier, write = set_Cashier};
   __property   BSTR            Source = {read = get_Source, write = set_Source};
   __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
+  __property   BSTR            PointPurchased = {read = get_PointPurchased, write = set_PointPurchased};
+  __property   BSTR            TabCredit = {read = get_TabCredit, write = set_TabCredit};
 };
 typedef IFiscalLibraryDispT<IFiscalLibrary> IFiscalLibraryDisp;
 
@@ -1081,6 +1121,42 @@ template <class T> void __fastcall
 IFiscalLibraryDispT<T>::set_TerminalName(BSTR Param1/*[in]*/)
 {
   _TDispID _dispid(*this, OLETEXT("TerminalName"), DISPID(19));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BSTR:0]*/;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::get_PointPurchased()
+{
+  _TDispID _dispid(*this, OLETEXT("PointPurchased"), DISPID(20));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_PointPurchased(BSTR Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("PointPurchased"), DISPID(20));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BSTR:0]*/;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::get_TabCredit()
+{
+  _TDispID _dispid(*this, OLETEXT("TabCredit"), DISPID(21));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_TabCredit(BSTR Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("TabCredit"), DISPID(21));
   TAutoArgs<1> _args;
   _args[1] = Param1 /*[VT_BSTR:0]*/;
   OlePropertyPut(_dispid, _args);

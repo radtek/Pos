@@ -8,6 +8,7 @@
 #include <Math.hpp>
 #include "MMMessageBox.h"
 #include "FiscalIntegration_OCX.h"
+#include "DeviceRealTerminal.h"
 
 //---------------------------------------------------------------------------
 
@@ -23,8 +24,11 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.InvoiceNumber = paymentTransaction.InvoiceNumber;
     billDetails.Date = Now().FormatString("dd/mm/yyyy");
     billDetails.Billno = paymentTransaction.InvoiceNumber;
-//    billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
+    billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
+    billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
     billDetails.Time = Now().FormatString("hh:nn");
+    billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
+
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
     PrintFiscalReceipt(billDetails).ResponseMessage;
@@ -130,12 +134,6 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         {
             AddedToList = true;
             tipAmount += (double)SubPayment->TipAmount;
-//            TFiscalPaymentDetails paymentDetails;
-//            double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-//            paymentDetails.Amount = subTotal;
-//            paymentDetails.Description = SubPayment->Name;
-//            paymentDetails.Billno = paymentTransaction.InvoiceNumber;
-//            PaymentList.push_back(paymentDetails);
         }
         if(AddedToList)
         {
@@ -219,6 +217,8 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->Source = WideString(receiptData.Source).c_bstr();
         fpclass->Time = WideString(receiptData.Time).c_bstr();
         fpclass->InvoiceNumber = WideString(receiptData.InvoiceNumber).c_bstr();
+        fpclass->TerminalName = WideString(receiptData.TerminalName).c_bstr();
+        fpclass->PointPurchased = WideString(receiptData.PointPurchased).c_bstr();
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
