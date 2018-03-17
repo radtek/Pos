@@ -179,7 +179,7 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
             discountDetails.DiscountKey = ptrDiscounts->DiscountKey;
             discountDetails.Type = ptrDiscounts->Type;
             discountDetails.Amount = discountAmount;
-            discountDetails.Description = ptrDiscounts->Description;
+            discountDetails.Description = ptrDiscounts->Name;
             discountDetails.DiscountGroup = ptrDiscounts->DiscountGroupList.size() > 0 ? ptrDiscounts->DiscountGroupList[0].Name : UnicodeString::UnicodeString("");
             discountDetails.DiscountMode = ptrDiscounts->Mode;
             discountList.push_back(discountDetails);
@@ -258,11 +258,11 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
         {
             fpclass->InitializeDiscountProperties();
-            fpclass->LoadReceiptItemInfo(0, WideString(i->Amount).c_bstr());
-            fpclass->LoadReceiptItemInfo(1, WideString(i->Description).c_bstr());
-            fpclass->LoadReceiptItemInfo(2, WideString(i->DiscountGroup).c_bstr());
-            fpclass->LoadReceiptItemInfo(3, WideString(i->DiscountMode).c_bstr());
-            fpclass->LoadReceiptItemInfo(4, WideString(i->Type).c_bstr());
+            fpclass->LoadReceiptDiscountInfo(0, WideString(i->Amount).c_bstr());
+            fpclass->LoadReceiptDiscountInfo(1, WideString(i->Description).c_bstr());
+            fpclass->LoadReceiptDiscountInfo(2, WideString(i->DiscountGroup).c_bstr());
+            fpclass->LoadReceiptDiscountInfo(3, WideString(i->DiscountMode).c_bstr());
+            fpclass->LoadReceiptDiscountInfo(4, WideString(i->Type).c_bstr());
             fpclass->AddDiscountInfoToList();
         }
 
