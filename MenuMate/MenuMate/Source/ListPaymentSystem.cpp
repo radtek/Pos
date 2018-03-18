@@ -70,6 +70,7 @@
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
 #include "ManagerSiHot.h"
+#include "ManagerOraclePMS.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1352,7 +1353,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction)
 {
 	bool RetVal = false;
-
 	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
@@ -3570,30 +3570,27 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
           else
           {
               PhoenixHSOk = false;
-              for(int paymentIndex = 0; paymentIndex < PaymentTransaction.PaymentsCount(); paymentIndex++)
-              {
-                  TPayment *payment = PaymentTransaction.PaymentGet(paymentIndex);
-                  if(payment->GetPay() != 0)
-                  {
-                    payment->SetPay(0);
-                    payment->SetAdjustment(0);
-                    payment->SetCashOut(0);
-                    payment->Result = eFailed;
-                  }
-              }
+              ResetPayments(PaymentTransaction);
           }
         }
     }
-//    else if(TGlobalSettings::Instance().PMSType == Oracle &&
-//        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-//        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
-//        TDeviceRealTerminal::Instance().BasePMS->Slots.size() > 0 &&
-//        TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.size() > 0 &&
-//        (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
-//        (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
-//        (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL))
-//    {
-//    }
+    else if(IsOracleConfigured())
+    {
+        bool isOracleEnabled = TryToEnableOracle();
+        if(isOracleEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              ResetPayments(PaymentTransaction);
+          }
+        }
+
+    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
@@ -6415,6 +6412,7 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         throw;
     }
 }
+//----------------------------------------------------------------------------
 bool TListPaymentSystem::TryToEnableSiHot()
 {
     bool retValue = false;
@@ -6431,6 +6429,32 @@ bool TListPaymentSystem::TryToEnableSiHot()
         retValue = false;
     }
     return retValue;
+}
+//--------------------------------------------------------------------------
+bool TListPaymentSystem::IsOracleConfigured()
+{
+    return (TGlobalSettings::Instance().PMSType == Oracle &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->Slots.size() > 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.size() > 0 &&
+        (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
+        (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
+        (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL));
+}
+//---------------------------------------------------------------------------
+void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
+{
+  for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+  {
+      TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+      if(payment->GetPay() != 0)
+      {
+        payment->SetPay(0);
+        payment->SetAdjustment(0);
+        payment->SetCashOut(0);
+        payment->Result = eFailed;
+      }
+  }
 }
 //------------------------------------------------------------------------------------------
 void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
@@ -6476,3 +6500,23 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
+//----------------------------------------------------------------------------
+bool TListPaymentSystem::TryToEnableOracle()
+{
+    bool retValue = false;
+    try
+    {
+        std::auto_ptr<TManagerOraclePMS> oracleManager(new TManagerOraclePMS());
+        oracleManager->LogPMSEnabling(eSelf);
+        retValue = oracleManager->EnableOraclePMSSilently();
+        if(retValue)
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
+    }
+    catch(Exception &Exc)
+    {
+        retValue = false;
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------

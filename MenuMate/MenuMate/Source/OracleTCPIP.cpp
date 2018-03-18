@@ -46,8 +46,14 @@ void TOracleTCPIP::CreateTCPClient()
 bool TOracleTCPIP::Connect()
 {
     bool retValue = false;
+    std::auto_ptr<TStringList> List(new TStringList);
+    AnsiString fileName = GetFileName();
+
 	try
 	{
+        if (FileExists(fileName) )
+            List->LoadFromFile(fileName);
+
        if( tcpClient->Connected() )
 	   {
             Disconnect();
@@ -66,9 +72,22 @@ bool TOracleTCPIP::Connect()
         Disconnect();
         UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-       	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
+        if(!IsSilentConnect)
+           	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
                                                  "Abort", MB_OK + MB_ICONERROR);
+        List->Add("Exception Occurred " + E.Message + "\n");
 	}
+
+    if(retValue)
+    {
+        List->Add("Connection Attempt was successful at  " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+    }
+    else
+    {
+        List->Add("Connection Attempt was unsuccessful at  " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+    }
+    List->Add("=================================================================================");
+    MakeOracleLogFile(List,fileName);
     return retValue;
 }
 //----------------------------------------------------------------------------
@@ -83,7 +102,7 @@ bool TOracleTCPIP::Disconnect()
 AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 {
     AnsiString outResponse = "";
-    AnsiString directoryName = "";
+//    AnsiString directoryName = "";
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = "";
     WaitOrProceedWithPost();
@@ -91,21 +110,17 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 	{
         try
         {
-            directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
-            if (!DirectoryExists(directoryName))
-                CreateDir(directoryName);
-            AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
-            fileName = directoryName + "/" + name;
+            fileName = GetFileName();
             if (FileExists(fileName) )
               List->LoadFromFile(fileName);
             List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Request Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+            List->Add("Request Time- " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
             List->Add("Request Data:- " +inData + "\n");
             sendData(inData);
             outResponse = fetchResponse();
             UnsetPostingFlag();
             List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Response Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
+            List->Add("Response Time- " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
             List->Add("Response Data:- " +outResponse + "\n");
         }
         catch( Exception& exc)
@@ -119,15 +134,24 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     else if (!tcpClient->Connected())
     {
           UnsetPostingFlag();
-          if(RetryMakingConnection());
+          if(RetryMakingConnection())
               outResponse = SendAndFetch(inData);
+          else
+              TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     }
     MakeOracleLogFile(List,fileName);
     return outResponse;
 }
+//--------------------------------------------------------------------------
 bool TOracleTCPIP::RetryMakingConnection()
 {
-    return Connect();
+    bool retValue = false;
+    std::auto_ptr<TStringList> reConnectLogs(new TStringList);
+    reConnectLogs->Add("Trying to reconnect at                    " + Now().FormatString("hh:mm:ss tt"));
+    IsSilentConnect = false;
+    retValue = Connect();
+    LogWaitStatus(reConnectLogs);
+    return retValue;
 }
 //--------------------------------------------------------------------------
 void TOracleTCPIP::WaitOrProceedWithPost()
@@ -151,15 +175,23 @@ void TOracleTCPIP::WaitOrProceedWithPost()
         global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
         #pragma warn .pia
         TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
+        if(isPosting)
+            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
         while(isPosting)
         {
-            Sleep(100);
+            Sleep(600);
             TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
         }
         mv.SetProfileBool(tr,global_profile_key,
         vmIsOraclePostInProgress,true);
         tr.Commit();
         //SetPostingFlag();
+        if(waitLogs->Count > 0)
+        {
+            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("=================================================================================");
+            LogWaitStatus(waitLogs);
+        }
     }
     catch(Exception &Exc)
     {
@@ -237,6 +269,39 @@ void TOracleTCPIP::MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString 
     catch(Exception &Exc)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TOracleTCPIP::GetFileName()
+{
+    AnsiString directoryName = "";
+    AnsiString fileName = "";
+    directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    fileName = directoryName + "/" + name;
+    return fileName;
+}
+//---------------------------------------------------------------------------
+void TOracleTCPIP::LogWaitStatus(std::auto_ptr<TStringList> waitLogs)
+{
+    try
+    {
+        AnsiString fileName = GetFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        for(int index = 0; index < waitLogs->Count; index++)
+        {
+            AnsiString value = waitLogs->operator [](index);
+            List->Add(value);
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }
 //---------------------------------------------------------------------------

@@ -227,6 +227,9 @@ protected:
      bool TryToEnableSiHot();
      void PrintReceipt(bool RequestEFTPOSReceipt);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
+     bool IsOracleConfigured();
+     bool TryToEnableOracle();
+     void ResetPayments(TPaymentTransaction &paymentTransaction);
 };
 
 #endif

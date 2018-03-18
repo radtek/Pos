@@ -35,6 +35,7 @@ class TOracleTCPIP
         bool Connect();
         bool Disconnect();
         void UnsetPostingFlag();
+        bool IsSilentConnect;
     private:
         void CreateTCPClient();
         TIdTCPClient* tcpClient;
@@ -44,9 +45,10 @@ class TOracleTCPIP
         TBytes CreateSTX();
         TBytes CreateETX();
         void MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString infileName);
-        int retry;
         void SetPostingFlag();
         void WaitOrProceedWithPost();
         bool RetryMakingConnection();
+        AnsiString GetFileName();
+        void LogWaitStatus(std::auto_ptr<TStringList> waitLogs);
 };
 #endif
