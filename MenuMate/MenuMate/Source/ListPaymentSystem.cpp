@@ -3584,6 +3584,16 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
           }
         }
     }
+//    else if(TGlobalSettings::Instance().PMSType == Oracle &&
+//        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+//        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+//        TDeviceRealTerminal::Instance().BasePMS->Slots.size() > 0 &&
+//        TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.size() > 0 &&
+//        (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
+//        (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
+//        (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL))
+//    {
+//    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 

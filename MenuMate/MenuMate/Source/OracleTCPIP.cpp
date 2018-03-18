@@ -64,6 +64,7 @@ bool TOracleTCPIP::Connect()
 	catch( Exception& E)
 	{
         Disconnect();
+        UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
        	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
                                                  "Abort", MB_OK + MB_ICONERROR);
@@ -85,6 +86,7 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     AnsiString directoryName = "";
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = "";
+    WaitOrProceedWithPost();
 	if (inData != "" && tcpClient->Connected() /*&& isLinkActive*/)
 	{
         try
@@ -101,6 +103,7 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
             List->Add("Request Data:- " +inData + "\n");
             sendData(inData);
             outResponse = fetchResponse();
+            UnsetPostingFlag();
             List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
             List->Add("Response Time- " + (AnsiString)Now().FormatString("hhnnss") + "\n");
             List->Add("Response Data:- " +outResponse + "\n");
@@ -110,14 +113,117 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
             TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
             List->Add("Exception Message- " + exc.Message + "\n");
             MessageBox("Could not communicate with Oracle Server.\n" +exc.Message,"Error",MB_OK + MB_ICONERROR);
+            UnsetPostingFlag();
         }
 	}
     else if (!tcpClient->Connected())
     {
-        MessageBox("Connection Not Open for Oracle PMS", "Error",MB_OK + MB_ICONERROR);
+          UnsetPostingFlag();
+          if(RetryMakingConnection());
+              outResponse = SendAndFetch(inData);
     }
     MakeOracleLogFile(List,fileName);
     return outResponse;
+}
+bool TOracleTCPIP::RetryMakingConnection()
+{
+    return Connect();
+}
+//--------------------------------------------------------------------------
+void TOracleTCPIP::WaitOrProceedWithPost()
+{
+    bool isPosting = false;
+    int global_profile_key;
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    std::auto_ptr<TStringList> waitLogs(new TStringList);
+    try
+    {
+        Sleep(Random(3));
+        Sleep(Random(4));
+        Sleep(Random(15));
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        tr.StartTransaction();
+        // This is used to retain the state of the checkbox if the POS is exited
+        #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        #pragma warn .pia
+        TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
+        while(isPosting)
+        {
+            Sleep(100);
+            TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
+        }
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsOraclePostInProgress,true);
+        tr.Commit();
+        //SetPostingFlag();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TOracleTCPIP::SetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsOraclePostInProgress,true);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+void TOracleTCPIP::UnsetPostingFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int global_profile_key;
+
+        // This is used to retain the state of the checkbox if the POS is exited
+    #pragma warn -pia
+        if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+    #pragma warn .pia
+
+        mv.SetProfileBool(tr,global_profile_key,
+        vmIsOraclePostInProgress,false);
+
+        tr.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        tr.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //--------------------------------------------------------------------------
 void TOracleTCPIP::MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString infileName)

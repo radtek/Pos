@@ -54,6 +54,7 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
+        TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
         {
             if(LoadRevenueCodes(DBTransaction))
