@@ -6,7 +6,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'Tax'
-  ClientHeight = 787
+  ClientHeight = 768
   ClientWidth = 1019
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -14,15 +14,12 @@ object frmTaxMaintenance: TfrmTaxMaintenance
   Font.Height = -15
   Font.Name = 'Tahoma'
   Font.Style = []
-  Menu = MainMenu1
   OldCreateOrder = False
   Position = poDesigned
   Scaled = False
   WindowState = wsMaximized
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 18
   object pnlButtons: TPanel
@@ -66,10 +63,6 @@ object frmTaxMaintenance: TfrmTaxMaintenance
     object tsTaxSettings: TTabSheet
       Caption = 'Tax Settings.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -331,8 +324,5 @@ object frmTaxMaintenance: TfrmTaxMaintenance
     TabOrder = 3
     OnClick = edLogicalNameClick
   end
-  object MainMenu1: TMainMenu
-    Left = 712
-    Top = 544
   end
 end

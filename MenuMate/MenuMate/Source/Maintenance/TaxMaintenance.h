@@ -43,7 +43,6 @@ __published:	// IDE-managed Components
     TComboBox *cbTaxProfileRounding;
     TEdit *edPrinterName;
     TEdit *edLogicalName;
-    TMainMenu *MainMenu1;
     TLabel *lbPrinterName;
     TLabel *lbLogicalName;
 
