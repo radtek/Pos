@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 18/03/2018 2:21:26 a.m. from Type Library described below.
+// File generated on 19/03/2018 5:51:04 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -381,6 +381,38 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OlePropertyPut(_dispid, _args);
   }
 
+  BSTR __fastcall get_PrinterType()
+  {
+    _TDispID _dispid(/* PrinterType */ DISPID(22));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrinterType(BSTR Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* PrinterType */ DISPID(22));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BSTR:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR __fastcall get_PrinterLogicalName()
+  {
+    _TDispID _dispid(/* PrinterLogicalName */ DISPID(23));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* PrinterLogicalName */ DISPID(23));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BSTR:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -392,6 +424,8 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
   __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
   __property   BSTR            PointPurchased = {read = get_PointPurchased, write = set_PointPurchased};
   __property   BSTR            TabCredit = {read = get_TabCredit, write = set_TabCredit};
+  __property   BSTR            PrinterType = {read = get_PrinterType, write = set_PrinterType};
+  __property   BSTR            PrinterLogicalName = {read = get_PrinterLogicalName, write = set_PrinterLogicalName};
 };
 // *********************************************************************//
 // Interface: _DiscountDetails
@@ -555,6 +589,10 @@ public:
   void            __fastcall set_PointPurchased(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_TabCredit();
   void            __fastcall set_TabCredit(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_PrinterType();
+  void            __fastcall set_PrinterType(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_PrinterLogicalName();
+  void            __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/);
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -566,6 +604,8 @@ public:
   __property   BSTR            TerminalName = {read = get_TerminalName, write = set_TerminalName};
   __property   BSTR            PointPurchased = {read = get_PointPurchased, write = set_PointPurchased};
   __property   BSTR            TabCredit = {read = get_TabCredit, write = set_TabCredit};
+  __property   BSTR            PrinterType = {read = get_PrinterType, write = set_PrinterType};
+  __property   BSTR            PrinterLogicalName = {read = get_PrinterLogicalName, write = set_PrinterLogicalName};
 };
 typedef IFiscalLibraryDispT<IFiscalLibrary> IFiscalLibraryDisp;
 
@@ -1157,6 +1197,42 @@ template <class T> void __fastcall
 IFiscalLibraryDispT<T>::set_TabCredit(BSTR Param1/*[in]*/)
 {
   _TDispID _dispid(*this, OLETEXT("TabCredit"), DISPID(21));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BSTR:0]*/;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::get_PrinterType()
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterType"), DISPID(22));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_PrinterType(BSTR Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterType"), DISPID(22));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BSTR:0]*/;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::get_PrinterLogicalName()
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterLogicalName"), DISPID(23));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_PrinterLogicalName(BSTR Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterLogicalName"), DISPID(23));
   TAutoArgs<1> _args;
   _args[1] = Param1 /*[VT_BSTR:0]*/;
   OlePropertyPut(_dispid, _args);

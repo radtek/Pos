@@ -28,7 +28,8 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
     billDetails.Time = Now().FormatString("hh:nn");
     billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
-
+    billDetails.PrinterType  = "FiscalPrinter";
+    billDetails.PrinterLogicalName = "EpsonFP1";
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
     PrintFiscalReceipt(billDetails).ResponseMessage;
@@ -119,11 +120,12 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
     {
         TPayment *SubPayment = paymentTransaction.PaymentGet(i);
         double tipAmount = 0, surcharge = 0, change = 0, subTotal = 0;
-        bool AddedToList = false;
+        bool AddedToList = false, IsTipAppliedFromPOS = false;
         if(SubPayment->GetPaymentAttribute(ePayTypeCustomSurcharge) && SubPayment->GetAdjustment() != 0)
         {
             tipAmount += (double)SubPayment->GetAdjustment();
             AddedToList = true;
+            IsTipAppliedFromPOS = true;
         }
         if(SubPayment->GetPaymentAttribute(ePayTypeSurcharge) && SubPayment->GetAdjustment() != 0)
         {
@@ -145,6 +147,10 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             paymentDetails.TipAmount = tipAmount;
             paymentDetails.PaymentSurcharge = surcharge;
             paymentDetails.Change = SubPayment->GetChange();
+            if(IsTipAppliedFromPOS)
+                paymentDetails.TipAppliedFromPOS = "1";
+            else
+                paymentDetails.TipAppliedFromPOS = "0";
             PaymentList.push_back(paymentDetails);
         }
     }
@@ -219,6 +225,8 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->InvoiceNumber = WideString(receiptData.InvoiceNumber).c_bstr();
         fpclass->TerminalName = WideString(receiptData.TerminalName).c_bstr();
         fpclass->PointPurchased = WideString(receiptData.PointPurchased).c_bstr();
+        fpclass->PrinterType = WideString(receiptData.PrinterType).c_bstr();
+        fpclass->PrinterLogicalName = WideString(receiptData.PrinterLogicalName).c_bstr();
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
@@ -254,6 +262,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptPaymentInfo(8, WideString(i->PaymentSurcharge).c_bstr());
           //  MessageBox(WideString(i->Change).c_bstr(),"Change Amount",MB_OK);
             fpclass->LoadReceiptPaymentInfo(9, WideString(i->Change).c_bstr());
+            fpclass->LoadReceiptPaymentInfo(10, WideString(i->TipAppliedFromPOS).c_bstr());
             fpclass->AddPaymentInfoToList();
         }
 

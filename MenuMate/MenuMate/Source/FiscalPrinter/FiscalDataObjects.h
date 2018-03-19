@@ -37,6 +37,7 @@ struct TFiscalPaymentDetails
     UnicodeString PaymentSurcharge;
     UnicodeString TipAmount;
     UnicodeString Change;
+    UnicodeString TipAppliedFromPOS;
 };
 
 struct TFiscalDiscountDetails
@@ -64,6 +65,8 @@ struct TFiscalBillDetails
     UnicodeString TerminalName;
     UnicodeString PointPurchased;
     UnicodeString TabCredit;
+    UnicodeString PrinterType;
+    UnicodeString PrinterLogicalName;
 };
 
 struct TFiscalPrinterResponse
