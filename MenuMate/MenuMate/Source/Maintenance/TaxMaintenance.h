@@ -14,6 +14,7 @@
 #include "ZForm.h"
 #include "DBTax.h"
 #include "ManagerVariable.h"
+#include <Menus.hpp>
 #include <vector>
 #include <System.hpp>
 //---------------------------------------------------------------------------
@@ -40,6 +41,12 @@ __published:	// IDE-managed Components
     TTabSheet *tsTaxSettings;
     TCheckBox *cbApplyTaxToRounding;
     TComboBox *cbTaxProfileRounding;
+    TEdit *edPrinterName;
+    TEdit *edLogicalName;
+    TMainMenu *MainMenu1;
+    TLabel *lbPrinterName;
+    TLabel *lbLogicalName;
+
 
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
@@ -56,6 +63,8 @@ __published:	// IDE-managed Components
     void __fastcall cbRoundingTaxProfileChange(TObject *Sender);
 
     void __fastcall cbUseItalyFiscalPrinterClick(TObject *Sender);
+    void __fastcall edPrinterNameClick(TObject *Sender);
+    void __fastcall edLogicalNameClick(TObject *Sender);
 public:		// User declarations
     __fastcall TfrmTaxMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
 

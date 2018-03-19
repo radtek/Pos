@@ -507,6 +507,8 @@ public:
     int RoundingTaxProfileKey;
     double RoundingTaxRate;
     bool UseItalyFiscalPrinter;
+    UnicodeString PrinterType;
+    UnicodeString PrinterlogicalName;
 };
 
 #endif

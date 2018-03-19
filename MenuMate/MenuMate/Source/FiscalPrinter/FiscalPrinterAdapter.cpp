@@ -28,8 +28,10 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
     billDetails.Time = Now().FormatString("hh:nn");
     billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
-    billDetails.PrinterType  = "FiscalPrinter";
-    billDetails.PrinterLogicalName = "EpsonFP1";
+    billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;//"FiscalPrinter";
+    //MessageBox(billDetails.PrinterType ,"billDetails.PrinterType ",MB_OK);
+    billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;//"EpsonFP1";
+    //MessageBox(billDetails.PrinterLogicalName ,"billDetails.PrinterLogicalName ",MB_OK);
     billDetails.TabCredit = "0";
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
@@ -226,7 +228,9 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
     response.IsSuccessful = false;
     try
     {
+        MessageBox("Before creating object" ,"1",MB_OK);
         TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
+        MessageBox("After creating object" ,"2",MB_OK);
         fpclass->Billno = WideString(receiptData.Billno).c_bstr();
         fpclass->Cashier = WideString(receiptData.Cashier).c_bstr();
         fpclass->Cashno = WideString(receiptData.Cashno).c_bstr();
