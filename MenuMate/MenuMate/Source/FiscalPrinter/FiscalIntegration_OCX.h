@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 19/03/2018 5:51:04 p.m. from Type Library described below.
+// File generated on 19/03/2018 8:50:52 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -110,6 +110,8 @@ public:
   void            __fastcall set_PrinterType(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_PrinterLogicalName(void);
   void            __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/);
+  BSTR            __fastcall get_Saletype(void);
+  void            __fastcall set_Saletype(BSTR Param1/*[in]*/);
   long            __fastcall PrintReceipt(void);
   void            __fastcall LoadReceiptItemInfo(long identifier/*[in]*/, BSTR InvoiceNumber/*[in]*/);
   void            __fastcall LoadReceiptPaymentInfo(long identifier/*[in]*/, 
@@ -135,6 +137,7 @@ public:
   __property BSTR TabCredit={ read=get_TabCredit, write=set_TabCredit, stored=false };
   __property BSTR PrinterType={ read=get_PrinterType, write=set_PrinterType, stored=false };
   __property BSTR PrinterLogicalName={ read=get_PrinterLogicalName, write=set_PrinterLogicalName, stored=false };
+  __property BSTR Saletype={ read=get_Saletype, write=set_Saletype, stored=false };
 };
 
 

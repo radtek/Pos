@@ -33,6 +33,7 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;//"EpsonFP1";
     //MessageBox(billDetails.PrinterLogicalName ,"billDetails.PrinterLogicalName ",MB_OK);
     billDetails.TabCredit = "0";
+    billDetails.SaleType = "1";
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
     PrintFiscalReceipt(billDetails).ResponseMessage;
@@ -119,14 +120,14 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
 void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTransaction)
 {
     std::vector<TFiscalPaymentDetails> PaymentList;
-    double tabCredit = 0;
+    double tabCredit = 0, totalPaymentCollected = 0;
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
     {
         TPayment *SubPayment = paymentTransaction.PaymentGet(i);
         double tipAmount = 0, surcharge = 0, change = 0, subTotal = 0;
         bool AddedToList = false, IsTipAppliedFromPOS = false;
 
-        if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() < 0.0)
+        if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() != 0.0)
         {
             tabCredit = (double)fabs(SubPayment->GetPayTendered());
                continue;
@@ -152,6 +153,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         {
             TFiscalPaymentDetails paymentDetails;
             double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            totalPaymentCollected += subTotal;
             paymentDetails.Amount = subTotal;
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
@@ -162,9 +164,13 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
                 paymentDetails.TipAppliedFromPOS = "1";
             else
                 paymentDetails.TipAppliedFromPOS = "0";
+
             PaymentList.push_back(paymentDetails);
         }
     }
+
+    if(totalPaymentCollected < 0)
+        billDetails.SaleType = "0";
 
     billDetails.TabCredit = tabCredit;
     billDetails.PaymentList = PaymentList;
@@ -243,6 +249,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->PrinterType = WideString(receiptData.PrinterType).c_bstr();
         fpclass->PrinterLogicalName = WideString(receiptData.PrinterLogicalName).c_bstr();
         fpclass->TabCredit =  WideString(receiptData.TabCredit).c_bstr();
+        fpclass->Saletype =  WideString(receiptData.SaleType).c_bstr();
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
