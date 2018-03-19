@@ -30,6 +30,7 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
     billDetails.PrinterType  = "FiscalPrinter";
     billDetails.PrinterLogicalName = "EpsonFP1";
+    billDetails.TabCredit = "0";
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
     PrintFiscalReceipt(billDetails).ResponseMessage;
@@ -116,11 +117,19 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
 void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTransaction)
 {
     std::vector<TFiscalPaymentDetails> PaymentList;
+    double tabCredit = 0;
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
     {
         TPayment *SubPayment = paymentTransaction.PaymentGet(i);
         double tipAmount = 0, surcharge = 0, change = 0, subTotal = 0;
         bool AddedToList = false, IsTipAppliedFromPOS = false;
+
+        if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() < 0.0)
+        {
+            tabCredit = (double)fabs(SubPayment->GetPayTendered());
+               continue;
+        }
+
         if(SubPayment->GetPaymentAttribute(ePayTypeCustomSurcharge) && SubPayment->GetAdjustment() != 0)
         {
             tipAmount += (double)SubPayment->GetAdjustment();
@@ -154,6 +163,8 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             PaymentList.push_back(paymentDetails);
         }
     }
+
+    billDetails.TabCredit = tabCredit;
     billDetails.PaymentList = PaymentList;
 }
 //------------------------------------------------------------------------------
@@ -227,6 +238,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->PointPurchased = WideString(receiptData.PointPurchased).c_bstr();
         fpclass->PrinterType = WideString(receiptData.PrinterType).c_bstr();
         fpclass->PrinterLogicalName = WideString(receiptData.PrinterLogicalName).c_bstr();
+        fpclass->TabCredit =  WideString(receiptData.TabCredit).c_bstr();
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
