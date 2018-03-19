@@ -170,8 +170,6 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
     if(totalPaymentCollected < 0)
         billDetails.SaleType = "0";
 
-        MessageBox(billDetails.SaleType,"billDetails.SaleType",MB_OK);
-
     billDetails.TabCredit = tabCredit;
     billDetails.PaymentList = PaymentList;
 }
