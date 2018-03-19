@@ -67,6 +67,7 @@ struct TFiscalBillDetails
     UnicodeString TabCredit;
     UnicodeString PrinterType;
     UnicodeString PrinterLogicalName;
+    UnicodeString SaleType;
 };
 
 struct TFiscalPrinterResponse
