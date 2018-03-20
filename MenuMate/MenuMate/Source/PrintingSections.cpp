@@ -3939,15 +3939,15 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 			ffNumber,
 			CurrencyDecimals);
 
-//            if(Adjustment != "0.00")
-//            {
+            if(Adjustment != "0.00")
+            {
                 pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
                 pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
                 pPrinter->Line->Columns[1]->Text = Adjustment;
                 pPrinter->AddLine();
-//            }
+            }
 		}
 	}
 	else
@@ -7678,7 +7678,8 @@ bool TOrderBundle::isDifferentItemFromInitial( TItemComplete* InitialOrder, TIte
 	|| (InitialOrder->Size != CurrentOrder->Size)
 	|| ( seperatePriceChangedItemsNMI( InitialOrder, CurrentOrder )) 		// for NMI standards, tackles the same item, but with different prices
 	|| ( seperateWeightedItemsNMI( CurrentOrder ) )							// for NMI standards, add each weighted item in its own bundle
-	|| ( seperatePriceBarcodedItemsNMI( CurrentOrder) );					// for NMI standards, add price barcoded items in its own bundle
+	|| ( seperatePriceBarcodedItemsNMI( CurrentOrder) ) 					// for NMI standards, add price barcoded items in its own bundle
+    || (InitialOrder->SplitMessage != CurrentOrder->SplitMessage);          // If order is splitted on basis of SCD and SC patron, items should not get clubbed.
 
 	return result;
 }

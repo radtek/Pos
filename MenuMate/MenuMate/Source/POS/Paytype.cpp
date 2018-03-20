@@ -47,6 +47,7 @@
 #include "ComboDiscount.h"
 #include "DiscountGroup.h"
 #include "CardSwipe.h"
+#include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_PAYMENT_TYPES_IN_VIEW 9
 #define ALTCOL 0
@@ -2898,6 +2899,9 @@ __fastcall TPaymentTypeTouchButton::TPaymentTypeTouchButton(Classes::TComponent*
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 {
+    std::vector<TPatronType> patronsOld = CurrentTransaction.Patrons;
+    std::vector<TPatronType> patronsNew;
+    patronsNew.clear();
 	if (TManagerPatron::Instance().GetCount(CurrentTransaction.DBTransaction) > 0)
 	{
 		std::auto_ptr <TfrmPatronCount> frmPatronCount(TfrmPatronCount::Create <TfrmPatronCount> (this,
@@ -2906,7 +2910,12 @@ void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 		frmPatronCount->ShowModal();
 		tbPatronCount->Caption = "Patron Count \r" + IntToStr(TManagerPatron::Instance().GetTotalPatrons(frmPatronCount->Patrons));
 		CurrentTransaction.Patrons = frmPatronCount->Patrons;
-
+        // ReStructure Bill
+        patronsNew = CurrentTransaction.Patrons;
+        if(ArePatronsChanged(patronsOld,patronsNew))
+        {
+            RestructureBillForPatrons();
+        }
 		Reset();
 		ShowPaymentTotals();
 	}
@@ -2914,6 +2923,30 @@ void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 	{
 		MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
 	}
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
+{
+    double nonSCDOld = 0;
+    double SCDOld = 0;
+    double nonSCDNew = 0;
+    double SCDNew = 0;
+    bool retValue = false;
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+
+    scdpatronUtility->GetPatronDistribution(patronsOld, nonSCDOld, SCDOld);
+    scdpatronUtility->GetPatronDistribution(patronsNew, nonSCDNew, SCDNew);
+
+    if(nonSCDOld != nonSCDNew || SCDOld != SCDNew)
+        retValue = true;
+
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TfrmPaymentType::RestructureBillForPatrons()
+{
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+    scdpatronUtility->RestructureBill(CurrentTransaction);
 }
 // ---------------------------------------------------------------------------
 bool TfrmPaymentType::SecurePaymentAccess(TPayment * Payment)
@@ -4325,12 +4358,19 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 	bool ProcessDiscount = true;
 	TDiscount CurrentDiscount;
 	TSCDPWDChecker SCDChecker;
-
 	bool bailout = false;
 	CurrentDiscount.DiscountKey = DiscountKey;
 	ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
+    std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+    if(patronUtility->CanByPassSCDValidity(CurrentTransaction,CurrentDiscount))
+    {
+        ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
+    }
+    else
+    {
+        ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
                       SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
+    }
     if(DiscountSource == dsMMMembership)
     {
        CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
@@ -4455,7 +4495,9 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
          CurrentTransaction.DiscountReason = CurrentDiscount.Description;
 		 CurrentTransaction.Discounts.clear();
          ManagerDiscount->ClearDiscount(CurrentTransaction.Orders, CurrentDiscount);
-         ManagerDiscount->AddDiscount(CurrentTransaction.Orders, CurrentDiscount);
+         // Check if Discount application needs restructure of bill on patron basis
+         ApplyDiscount(CurrentDiscount);
+//         ManagerDiscount->AddDiscount(CurrentTransaction.Orders, CurrentDiscount);
         if( CurrentDiscount.Source == dsMMMebersPoints && CurrentTransaction.Membership.Member.ContactKey != 0)
             {
                 TPointsTypePair Pair(pttRedeemed,ptstLoyalty);
@@ -4479,6 +4521,44 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 		TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityAdd(SecRef);
 		ShowPaymentTotals(true);
 	}
+}
+//----------------------------------------------------------------------------
+void TfrmPaymentType::ApplyDiscount(TDiscount discount)
+{
+    std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+    if(patronUtility->CheckPatronsAvailable(CurrentTransaction))
+    {
+        std::auto_ptr <TList> SCDOrders(new TList);
+        SCDOrders->Clear();
+        std::auto_ptr <TList> NormalOrders(new TList);
+        NormalOrders->Clear();
+
+        patronUtility->DivideBill(CurrentTransaction,SCDOrders,NormalOrders);
+
+        if(discount.IsSeniorCitizensDiscount())
+           ManagerDiscount->AddDiscount(SCDOrders.get(), discount);
+        else
+           ManagerDiscount->AddDiscount(NormalOrders.get(), discount);
+
+        CurrentTransaction.Orders->Clear();
+        for(int indexSCD = 0; indexSCD < SCDOrders->Count; indexSCD++)
+        {
+            TItemComplete *Order = (TItemComplete *)SCDOrders->Items[indexSCD];
+            CurrentTransaction.Orders->Add(Order);
+        }
+        for(int indexNormal = 0; indexNormal < NormalOrders->Count; indexNormal++)
+        {
+            TItemComplete *Order = (TItemComplete *)NormalOrders->Items[indexNormal];
+            CurrentTransaction.Orders->Add(Order);
+        }
+        CurrentTransaction.Money.Recalc(CurrentTransaction);
+
+    }
+    else
+    {
+        ManagerDiscount->AddDiscount(CurrentTransaction.Orders, discount);
+    }
+
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ApplyAccount(TMMContactInfo &Member)

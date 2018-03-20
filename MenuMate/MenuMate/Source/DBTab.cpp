@@ -2297,11 +2297,13 @@ std::vector<TPatronType> TDBTab::GetDelayedPatronCount(Database::TDBTransaction 
         IBInternalQuery->ExecQuery();
         if (IBInternalQuery->RecordCount)
 		{
-            int index = 0;
 			for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 			{
-                patrons[index].Count = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
-                index++;
+                for(int index = 0; index < patrons.size(); index++)
+                {
+                    if(patrons[index].Name == IBInternalQuery->FieldByName("PATRON_TYPE")->AsString)
+                        patrons[index].Count = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
+                }
 			}
 		}
 	}

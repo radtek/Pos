@@ -3771,6 +3771,16 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 							SubOrder->Security->SecurityDelete(SubOrder->Security->SecurityGetType(secOrderedBy));
 						}
 					}
+                    if(PaymentTransaction.Orders->Count != SeatOrders[SelectedSeat]->Orders->Count)
+                    {
+                       SeatOrders[SelectedSeat]->Orders->Clear();
+                       for(int index = 0; index < PaymentTransaction.Orders->Count; index++)
+                       {
+                           TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[index];
+                           if(itemComplete->GetQty() != 0)
+                               SeatOrders[SelectedSeat]->Orders->Add(itemComplete,itemComplete->ItemOrderedFrom);
+                       }
+                    }
 
                     if (Membership.Member.ContactKey != PaymentTransaction.Membership.Member.ContactKey)
                         ApplyMembership(OrdersTransaction, PaymentTransaction.Membership.Member);

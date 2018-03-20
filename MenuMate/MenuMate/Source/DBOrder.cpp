@@ -5007,4 +5007,26 @@ void TDBOrder::LoadOrderKeysWIthoutDiscount(Database::TDBTransaction &DBTransact
 	}
 }
 //-----------------------------------------------------------------------------
-
+int __fastcall SortBySCDNONSCD(void *Item1,void *Item2)
+{
+	TItemMinorComplete *Order1 = (TItemMinorComplete *)Item1;
+	TItemMinorComplete *Order2 = (TItemMinorComplete *)Item2;
+	if (Order1->SplitMessage.Length() > Order2->SplitMessage.Length())
+	{
+		return -1;
+	}
+	else if (Order1->SplitMessage.Length() == Order2->SplitMessage.Length())
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+//-----------------------------------------------------------------------------
+void TDBOrder::SortOrders(TList * Orders)
+{
+    Orders->Sort(&SortByFinalPrice);
+}
+//-----------------------------------------------------------------------------
