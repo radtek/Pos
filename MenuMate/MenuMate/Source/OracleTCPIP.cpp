@@ -162,9 +162,9 @@ void TOracleTCPIP::WaitOrProceedWithPost()
     std::auto_ptr<TStringList> waitLogs(new TStringList);
     try
     {
-        Sleep(Random(3));
-        Sleep(Random(4));
-        Sleep(Random(15));
+        Sleep(Random(50));
+        Sleep(Random(10));
+        Sleep(Random(50));
         TGlobalSettings  &gs = TGlobalSettings::Instance();
         TManagerVariable &mv = TManagerVariable::Instance();
 
@@ -179,7 +179,7 @@ void TOracleTCPIP::WaitOrProceedWithPost()
             waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
         while(isPosting)
         {
-            Sleep(600);
+            Sleep(1500);
             TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
         }
         mv.SetProfileBool(tr,global_profile_key,

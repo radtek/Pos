@@ -302,13 +302,19 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             }
          }
          bool isNotCompleteCancel = false;
+         bool hasCancelledItems = false;
          for(int itemNumber = 0; itemNumber < _paymentTransaction.Orders->Count; itemNumber++)
          {
             TItemComplete *itemThis = (TItemComplete*)_paymentTransaction.Orders->Items[itemNumber];
             if(itemThis->OrderType != CanceledOrder)
             {
                isNotCompleteCancel = true;
+               hasCancelledItems = false;
                break;
+            }
+            else if(itemThis->OrderType == CanceledOrder)
+            {
+                hasCancelledItems = true;
             }
          }
          if(totalPayTendered == 0 && isNotCompleteCancel) // case for cancelled,100% discount
@@ -321,8 +327,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             AnsiString data = oracledata->SerializeOut(doc);
             resultData = TOracleTCPIP::Instance().SendAndFetch(data);
             retValue = oracledata->DeserializeData(resultData, _postResult);
-
          }
+         else if(totalPayTendered == 0 && hasCancelledItems)
+         {
+            retValue = true;
+         }
+
     }
     catch(Exception &E)
     {
