@@ -28,8 +28,10 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
     billDetails.Time = Now().FormatString("hh:nn");
     billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
-    billDetails.PrinterType  = "FiscalPrinter";
-    billDetails.PrinterLogicalName = "EpsonFP1";
+    billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;//"FiscalPrinter";
+    //MessageBox(billDetails.PrinterType ,"billDetails.PrinterType ",MB_OK);
+    billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;//"EpsonFP1";
+    //MessageBox(billDetails.PrinterLogicalName ,"billDetails.PrinterLogicalName ",MB_OK);
     billDetails.TabCredit = "0";
     billDetails.SaleType = "1";
     PrepareItemInfo(paymentTransaction);

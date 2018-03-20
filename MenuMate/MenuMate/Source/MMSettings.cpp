@@ -228,6 +228,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
 
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUseItalyFiscalPrinter, TGlobalSettings::Instance().UseItalyFiscalPrinter);
+            TManagerVariable::Instance().GetProfileStr(DBTransaction, GlobalProfileKey, vmFPPrinterType, TGlobalSettings::Instance().PrinterType);
+            TManagerVariable::Instance().GetProfileStr(DBTransaction, GlobalProfileKey,vmFPPrinterLogicalName, TGlobalSettings::Instance().PrinterlogicalName);
         }
 
         TGlobalSettings::Instance().XeroMachineName	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroMachineName,"");

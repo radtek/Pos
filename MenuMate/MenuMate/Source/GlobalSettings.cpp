@@ -411,5 +411,7 @@ TGlobalSettings::TGlobalSettings()
     RoundingTaxProfileKey = 0;
     RoundingTaxRate = 0;
     UseItalyFiscalPrinter = false;
+    PrinterType = "";
+    PrinterlogicalName = "";
 }
 
