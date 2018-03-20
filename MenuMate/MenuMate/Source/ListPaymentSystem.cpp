@@ -2908,10 +2908,21 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 						Csv.LoadFromFile(File);
 					}
 
-					Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
-					Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
-					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+                    if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
+                    {
+                        char * storedataformat = Formatdateseparator(Now().FormatString("dd/mm/yyyy")) ;
+                        Csv.Add((Payment->CSVString) + "," + storedataformat + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
 
+                        delete storedataformat;
+                    }
+                    else
+                    {
+                        Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+                    }
 					Csv.SaveToFile(File);
 				}
 				__finally
@@ -6466,3 +6477,23 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
+//-------------------------------------------------------------------------------------------
+char* TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
+{
+     char *storedate;
+     AnsiString Dateformat(dateformat);
+     storedate = new char[Dateformat.Length()+1];
+     strcpy(storedate,Dateformat.c_str() ) ;
+     int count = 0;
+     while(storedate[count] != '\0')
+     {
+        if(storedate[count] == '-')
+        {
+            storedate[count] = '/' ;
+        }
+        count++;
+     }
+     return storedate;
+}
+
+
