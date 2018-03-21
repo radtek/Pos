@@ -67,7 +67,8 @@ void TdmStockReportData::SetupStockValueByGroup(TStrings *Groups)
 		"Order By "
 			"StockCategory.Sort_Order, "
 			"StockGroup.Sort_Order, "
-			"StockLocation.Location";
+			"StockLocation.Location, "
+             "stock.DESCRIPTION asc ";
 	for (int i=0; i<Groups->Count; i++)
 	{
 		qrStockValue->ParamByName("Param" + IntToStr(i))->AsString = Groups->Strings[i];
@@ -120,7 +121,8 @@ void TdmStockReportData::SetupStockValueByLocation(TStrings *Locations, TStrings
 			"12,16,"
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order, "
-			"StockGroup.Sort_Order ";
+			"StockGroup.Sort_Order, "
+             "stock.DESCRIPTION asc ";
 	for (int i=0; i<Locations->Count; i++)
 	{
 		qrStockValue->ParamByName("LocParam" + IntToStr(i))->AsString = Locations->Strings[i];
@@ -424,7 +426,8 @@ void TdmStockReportData::SetupStockDetails(TStrings *Locations, TStrings *Groups
 		"Order By "
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order,"
-			"StockGroup.Sort_Order ";
+			"StockGroup.Sort_Order, "
+            "Stock.Description asc ";
 	if (Locations)
 	{
 		for (int i=0; i<Locations->Count; i++)

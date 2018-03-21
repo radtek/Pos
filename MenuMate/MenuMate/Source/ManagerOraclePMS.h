@@ -15,6 +15,9 @@ class TManagerOraclePMS : public TBasePMS
        bool ExportData(TPaymentTransaction &_paymentTransaction,int StaffId);
        void LoadMeals(Database::TDBTransaction &DBTransaction);
        void GetRoomStatus(AnsiString _roomNumber,  TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> &roomResult);
+       void LogPMSEnabling(TriggerLocation triggerType);
+       AnsiString GetFileName();
+       bool EnableOraclePMSSilently();
     private:
        bool GetLinkStatus();
        bool InitializeoracleTCP();
