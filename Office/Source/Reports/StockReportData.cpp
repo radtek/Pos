@@ -1584,7 +1584,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
 }
 //---------------------------------------------------------------------------
 void TdmStockReportData::SetupStockVariance(int StocktakeKey)
-{
+{    //     int prevStocktakeKey =StocktakeKey-1;
 	// called from the Stocktake Menu ( after Commit ) & the Reports Menu
 	qrStockVariance->Close();
 	qrStockVariance->SQL->Text =
@@ -1645,7 +1645,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 
 	qrStockGroupVariance->Close();
 	qrStockGroupVariance->SQL->Text =
-     "select R.Opening, "
+     "select R.opening_New Opening , " //R.Opening, "
             "R.Location, "
             "R.Stock_Category, "
             "R.Stock_Group, "
@@ -1660,7 +1660,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 
 
    "(Select  "
-            "A.Opening, "
+            "B.opening_New, "//Opening, "
             "B.Location, "
             "B.Stock_Category, "
             "B.Stock_Group, "
@@ -1670,6 +1670,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
             "B.Usage, "
             "B.Assessed_Total, "
             "B.QTY  "
+
             "from "
 		  	"(	Select "
 			"StocktakeHistory.Location, "
@@ -1682,7 +1683,8 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 				 "* StocktakeHistory.Average_Unit_Cost As Numeric(15, 4))) Usage, "
 			"Sum(Cast((StocktakeHistory.Opening + StocktakeHistory.Inwards + StocktakeHistory.Transfer - StocktakeHistory.Closing) "
 			"	 * StockLocation.Assessed_Value As Numeric(15, 4))) Assessed_Total, "
-            " coalesce(STK.QTY,0)  QTY "
+            " coalesce(STK.QTY,0)  QTY, "
+            "sum(cast((coalesce(STOCKTAKEHISTORY.AVERAGE_UNIT_COST,0 )* coalesce(STOCKTAKEHISTORY.OPENING, 0))as numeric(17,4))) opening_New  "
 		"From "
 			"StocktakeHistory Left Join Stock On  "
 			 "StocktakeHistory.Code = Stock.Code left join (select sum(abs(stocktrans.QTY))QTY,STOCKTRANS.LOCATION,STOCKTRANS.STOCK_GROUP from STOCKTRANS where stocktrans.TRANSACTION_TYPE='Manufacture'  and STOCKTRANS.CREATED>= "
@@ -1702,39 +1704,32 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			"StocktakeHistory.Location,  "
 			"StocktakeHistory.Stock_Category, "
 			"StocktakeHistory.Stock_Group) B "
-			"		  	left Join "
+		  /*	"		  	left Join "
 
 "(   	Select "
-			"  Max(StocktakeHistory.Stocktake_Key) stockkey, "
-             "StocktakeHistory.Location LocationA , "
-              "StocktakeHistory.Stock_Category Stock_CategoryA, "
-              "StocktakeHistory.Stock_Group Stock_GroupA,  "
-              "Sum(Cast(COALESCE(StocktakeHistory.Average_Unit_Cost,0) * COALESCE(StocktakeHistory.Closing ,0) As Numeric(15, 4))) Opening "
-              "from  "
+			"StocktakeHistory.Location LocationA,  "
+			"StocktakeHistory.Stock_Category Stock_CategoryA,  "
+			"StocktakeHistory.Stock_Group Stock_GroupA,  "
+			"Sum(Cast(COALESCE(StocktakeHistory.Average_Unit_Cost,0) * COALESCE(StocktakeHistory.Closing ,0) As Numeric(15, 4))) Opening "
+		"From  "
+			"StocktakeHistory Left Join Stock On  "
+			"	StocktakeHistory.Code = Stock.Code  "
+			"Left Join StockLocation On  "
+			"	Stock.Stock_Key = StockLocation.Stock_Key and StocktakeHistory.Location = StockLocation.Location "
+		   "Where "
+			"StocktakeHistory.Stocktake_Key = :prevStocktakeKey "
+			
+		"Group By  "
+			"LocationA, "
+			"Stock_CategoryA, "
+			"Stock_GroupA  "
+		"Order By "
+		"	LocationA, "
+		"	Stock_CategoryA, "  
+		 " 	Stock_GroupA  ) A "
 
-               "StocktakeHistory "
-               "where "
-               "StocktakeHistory.Stocktake_Key < :Stocktake_Key "
-               "and StocktakeHistory.Location In (select StocktakeHistory.Location from StocktakeHistory "
-              "Left Join Stock On StocktakeHistory.Code = Stock.Code  "
-              "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key) "
-               "and StocktakeHistory.Stock_Group In (select StocktakeHistory.STOCK_GROUP from STOCKTAKEHISTORY "
-              "Left Join Stock On StocktakeHistory.Code = Stock.Code "
-              "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key) "
-              "and StocktakeHistory.Stock_Category In (select StocktakeHistory.Stock_Category from StocktakeHistory "
-              "Left Join Stock On StocktakeHistory.Code = Stock.Code "
-              "Left Join StockLocation On Stock.Stock_Key = StockLocation.Stock_Key  where STOCKTAKEHISTORY.STOCKTAKE_Key=:Stocktake_Key)  "
-              "Group By  "
-              "LocationA, "
-              "Stock_CategoryA, "
-               "Stock_GroupA  "
-               "Order By "
-              "	 LocationA, "
-             " Stock_CategoryA, "  
-              " 	Stock_GroupA  ) A "
-		 
-
- "on A.LocationA = B.Location and A.Stock_CategoryA = B.Stock_Category and A.Stock_GroupA= B.Stock_Group ) R "
+ "on A.LocationA = B.Location and A.Stock_CategoryA = B.Stock_Category and A.Stock_GroupA= B.Stock_Group */
+ " ) R "
  " left join (select stocktrans.STOCK_CATEGORY, "
  " stocktrans.STOCK_GROUP, "
      " sum(  "
@@ -1745,7 +1740,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 		  "group by STOCKTRANS.STOCK_CATEGORY, stocktrans.STOCK_GROUP)K on R.Stock_Category=K.Stock_Category and R.STOCK_GROUP=K.STOCK_GROUP " ;
 
     qrStockGroupVariance->ParamByName("Stocktake_Key")->AsInteger = StocktakeKey;
-   
+   // qrStockGroupVariance->ParamByName("prevStocktakeKey")->AsInteger = prevStocktakeKey;
   }
 
 //---------------------------------------------------------------------------
