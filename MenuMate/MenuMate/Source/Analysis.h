@@ -103,6 +103,7 @@ private:	// User declarations
     TDateTime TimeStampValue;
     std::map<UnicodeString, UnicodeString> DataRead;
     std::vector<int> GetContactKeys;
+    TStringList* zedLogsList;
 
     __fastcall TfrmAnalysis(TComponent* Owner);
     void __fastcall ReportXReport();
@@ -228,6 +229,7 @@ private:	// User declarations
     double GetTipAmount(Database::TDBTransaction &DBTransaction,TDateTime startTime,UnicodeString &tipGLCode);
     double GetOldAccumulatedSales(Database::TDBTransaction &DBTransaction, int fieldIndex);
     void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
+    void MakeZEDLogFile(TStringList *List);
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

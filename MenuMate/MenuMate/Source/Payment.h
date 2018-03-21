@@ -53,6 +53,8 @@ enum ePaymentAttribute
     ePayTypeAllowTips,             //32
     ePayTypeClipp,                 //33
     ePayTypeWallet,                //34
+    ePayTypeReservationMasterPay,  //35
+
 };
 
 enum eWalletType{eNoWallet,eWeChatWallet,eJioWallet,};
@@ -169,6 +171,8 @@ public:
     void ClearPaymentAttribute();
     bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
     AnsiString GetPropertyString();
+    UnicodeString CSVString;
+
 };
 
 #endif
