@@ -24,6 +24,7 @@ namespace SiHotIntegration.Utility
             List<string> detailsList = new List<string>();
             detailsList.Add("transno:" + roomRequest.TransactionNumber);
             detailsList.Add("roomreq:" + roomRequest.RoomNumber);
+            detailsList.Add("extraInfo:" + "bed");
             return detailsList;
         }
 
