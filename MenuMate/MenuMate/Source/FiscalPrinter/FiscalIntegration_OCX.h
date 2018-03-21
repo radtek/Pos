@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 20/03/2018 2:06:21 a.m. from Type Library described below.
+// File generated on 22/03/2018 6:32:55 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -20,7 +20,7 @@
 // HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
-//   (2) v2.4 mscorlib, (C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
+//   (2) v2.0 mscorlib, (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb)
 // ************************************************************************ //
 #ifndef   FiscalIntegration_OCXH
 #define   FiscalIntegration_OCXH

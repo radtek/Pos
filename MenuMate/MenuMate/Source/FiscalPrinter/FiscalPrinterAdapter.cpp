@@ -234,9 +234,9 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
     response.IsSuccessful = false;
     try
     {
-        MessageBox("Before creating object in pos","Message 1", MB_OK);
+//        MessageBox("Before creating object in pos","Message 1", MB_OK);
         TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
-        MessageBox("After creating object in pos","Message 2",MB_OK);
+//        MessageBox("After creating object in pos","Message 2",MB_OK);
         fpclass->Billno = WideString(receiptData.Billno).c_bstr();
         fpclass->Cashier = WideString(receiptData.Cashier).c_bstr();
         fpclass->Cashno = WideString(receiptData.Cashno).c_bstr();
@@ -251,7 +251,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->TabCredit =  WideString(receiptData.TabCredit).c_bstr();
         fpclass->Saletype =  WideString(receiptData.SaleType).c_bstr();
 
-        MessageBox("First iteration","Message 3", MB_OK);
+//        MessageBox("First iteration","Message 3", MB_OK);
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
             fpclass->InitializeItemProperties();
@@ -269,7 +269,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptItemInfo(11, WideString(i->VATPercentage).c_bstr());
             fpclass->AddItemToList();
         }
-        MessageBox("Second iteration","Message 3", MB_OK);
+//        MessageBox("Second iteration","Message 3", MB_OK);
         for(std::vector<TFiscalPaymentDetails>::iterator i = receiptData.PaymentList.begin(); i != receiptData.PaymentList.end() ; ++i)
         {
             fpclass->InitializePaymentProperties();
@@ -289,7 +289,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptPaymentInfo(10, WideString(i->TipAppliedFromPOS).c_bstr());
             fpclass->AddPaymentInfoToList();
         }
-        MessageBox("Third iteration","Message 3", MB_OK);
+//        MessageBox("Third iteration","Message 3", MB_OK);
         for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
         {
             fpclass->InitializeDiscountProperties();
@@ -300,9 +300,9 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptDiscountInfo(4, WideString(i->Type).c_bstr());
             fpclass->AddDiscountInfoToList();
         }
-        MessageBox("Calling Print","Message 3", MB_OK);
+//        MessageBox("Calling Print","Message 3", MB_OK);
         int number = fpclass->PrintReceipt();
-        MessageBox("Called Print","Message 3", MB_OK);
+//        MessageBox("Called Print","Message 3", MB_OK);
     }
     catch(Exception & E)
     {

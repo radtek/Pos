@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 20/03/2018 2:06:21 a.m. from Type Library described below.
+// File generated on 22/03/2018 6:32:55 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -20,7 +20,7 @@
 // HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
-//   (2) v2.4 mscorlib, (C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
+//   (2) v2.0 mscorlib, (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb)
 // ************************************************************************ //
 #ifndef   FiscalIntegration_TLBH
 #define   FiscalIntegration_TLBH
@@ -91,7 +91,7 @@ extern __declspec (package) const GUID CLSID_FiscalService;
 // *********************************************************************//
 // Forward declaration of types defined in TypeLibrary                    
 // *********************************************************************//
-interface DECLSPEC_UUID("{F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}") IFiscalLibrary;
+interface DECLSPEC_UUID("{7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}") IFiscalLibrary;
 typedef TComInterface<IFiscalLibrary, &DIID_IFiscalLibrary> IFiscalLibraryPtr;
 
 interface DECLSPEC_UUID("{FF1F61B0-AB19-3193-BA99-D9837AE38812}") _DiscountDetails;
@@ -140,7 +140,7 @@ typedef _FiscalServicePtr FiscalServicePtr;
 // *********************************************************************//
 // Interface: IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
+// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
 // *********************************************************************//
 interface IFiscalLibrary : public TDispWrapper<IDispatch>
 {
@@ -533,7 +533,7 @@ public:
 // *********************************************************************//
 // DispIntf:  IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
+// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
 // *********************************************************************//
 template<class T>
 class IFiscalLibraryDispT : public TAutoDriver<IFiscalLibrary>
@@ -952,7 +952,7 @@ typedef _FiscalServiceDispT<_FiscalService> _FiscalServiceDisp;
 // *********************************************************************//
 // DispIntf:  IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
+// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
 // *********************************************************************//
 template <class T> BSTR __fastcall
 IFiscalLibraryDispT<T>::get_InvoiceNumber()
