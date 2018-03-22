@@ -313,6 +313,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
     Top = 468
     Width = 169
     Height = 26
+    Enabled = False
     TabOrder = 2
     OnClick = edPrinterNameClick
   end
@@ -321,6 +322,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
     Top = 521
     Width = 169
     Height = 26
+    Enabled = False
     TabOrder = 3
     OnClick = edLogicalNameClick
   end
