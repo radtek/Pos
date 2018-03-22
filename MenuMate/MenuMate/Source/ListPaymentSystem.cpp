@@ -3481,10 +3481,18 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
     {
 //        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
 //                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
+//        if(CloseAndPrint ||
+//            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
+//                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
         if(CloseAndPrint ||
-            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
-            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
-                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
+            ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
+																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
+																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
+
+
+            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
+                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
         {
             PrintReceipt(RequestEFTPOSReceipt);
         }
