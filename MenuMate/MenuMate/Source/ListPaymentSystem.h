@@ -227,6 +227,10 @@ protected:
      bool TryToEnableSiHot();
      void PrintReceipt(bool RequestEFTPOSReceipt);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
+     char* Formatdateseparator( UnicodeString date) ;
+     bool IsOracleConfigured();
+     bool TryToEnableOracle();
+     void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction);
 };
 

@@ -121,6 +121,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
+        Payment.SetPaymentAttribute(ePayTypeReservationMasterPay,cbreservationmaster->Checked);
         Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
         if (Reason != "")
         {
@@ -322,6 +323,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbPVAcceptedMsg->Checked = Payment.GetPaymentAttribute(ePayTypeDispPVMsg);
         cbRMSInterface->Checked = Payment.GetPaymentAttribute(ePayTypeRMSInterface);
         cbAllowTips->Checked = Payment.GetPaymentAttribute(ePayTypeAllowTips);
+        cbreservationmaster->Checked = Payment.GetPaymentAttribute(ePayTypeReservationMasterPay);
         if (Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
         {
             CheckBoxExport->Checked = true;
@@ -369,6 +371,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
    }
+    cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
+
    cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 }
 // ---------------------------------------------------------------------------
@@ -1276,6 +1280,21 @@ void __fastcall TfrmNewPaymentType::cbWalletPaymentsClick(TObject *Sender)
   btnWalletType->Enabled = cbWalletPayments->Checked;
   btnWalletConfig->Enabled = cbWalletPayments->Checked;
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
+{
+    if(cbCSVPaymentType->Checked)
+    {
+        cbreservationmaster->Enabled = true;
+
+    }
+    else if(!cbCSVPaymentType->Checked)
+    {
+        cbreservationmaster->Enabled = false;
+        cbreservationmaster->Checked = cbreservationmaster->Enabled ;
+    }
+}
+
 //---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
 {

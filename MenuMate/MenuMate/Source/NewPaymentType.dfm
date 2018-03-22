@@ -32,7 +32,7 @@ object frmNewPaymentType: TfrmNewPaymentType
     Left = 878
     Top = 0
     Width = 130
-    Height = 748
+    Height = 608
     Alignment = taRightJustify
     Anchors = [akTop, akRight, akBottom]
     BorderWidth = 5
@@ -151,7 +151,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 738
+        Height = 598
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -187,18 +187,6 @@ object frmNewPaymentType: TfrmNewPaymentType
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-        end
-        object ccgColour: TCColorGrid
-          Left = 264
-          Top = 48
-          Width = 576
-          Height = 168
-          ClickEnablesColor = True
-          GridOrdering = go8x2
-          ForegroundEnabled = False
-          BackgroundEnabled = False
-          TabOrder = 0
-          OnClick = ccgColourChange
         end
         object tbExchange: TTouchBtn
           Left = 256
@@ -520,7 +508,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 738
+        Height = 598
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -642,7 +630,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 738
+        Height = 598
         Align = alClient
         BevelOuter = bvNone
         Color = 14342874
@@ -855,7 +843,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           Left = 260
           Top = 48
           Width = 240
-          Height = 249
+          Height = 302
           Caption = 'Payment Exporting'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText
@@ -886,10 +874,11 @@ object frmNewPaymentType: TfrmNewPaymentType
             ParentColor = False
             ParentFont = False
             TabOrder = 0
+            OnClick = cbCSVPaymentTypeClick
           end
           object CheckBoxExport: TCheckBox
             Left = 10
-            Top = 71
+            Top = 120
             Width = 220
             Height = 40
             Caption = 'Charge To Account'
@@ -901,12 +890,12 @@ object frmNewPaymentType: TfrmNewPaymentType
             Font.Style = []
             ParentColor = False
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 1
             OnClick = ExportMouseClick
           end
           object tbChargeToXero: TCheckBox
             Left = 10
-            Top = 118
+            Top = 175
             Width = 220
             Height = 51
             Caption = 'Charge To Accounting System'
@@ -924,7 +913,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbGLCode: TTouchBtn
             Left = 10
-            Top = 175
+            Top = 235
             Width = 220
             Height = 60
             Font.Charset = ANSI_CHARSET
@@ -941,10 +930,26 @@ object frmNewPaymentType: TfrmNewPaymentType
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbGLCodeMouseClick
           end
+          object cbreservationmaster: TCheckBox
+            Left = 10
+            Top = 70
+            Width = 220
+            Height = 40
+            Caption = 'Use Reservation Master'
+            Color = clNavy
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentColor = False
+            ParentFont = False
+            TabOrder = 4
+          end
         end
         object GroupBox9: TGroupBox
           Left = 260
-          Top = 305
+          Top = 350
           Width = 240
           Height = 286
           Caption = 'PMS System'
@@ -1302,7 +1307,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           ParentBackground = False
           ParentFont = False
           TabOrder = 9
-		  Visible = False
+          Visible = False
           object cbWalletPayments: TCheckBox
             Left = 10
             Top = 24

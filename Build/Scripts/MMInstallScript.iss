@@ -58,6 +58,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags:
 Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5 Casino.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Printers.dat; DestDir: {app}; Flags: ignoreversion
@@ -350,6 +351,7 @@ Name: {group}\MenuMate; Filename: {app}\MenuMate.exe; IconIndex: 0; Flags: creat
 Name: {group}\DeskMate; Filename: {app}\DeskMate.exe; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
 Name: {group}\PalmMate; Filename: {app}\PalmMate.exe; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
 Name: {group}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
+Name: {userdesktop}\Office Version 5 Casino; Filename: {app}\Office Version 5 Casino.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office Version 5; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\MenuMate; Filename: {app}\MenuMate.exe; Tasks: desktopicon; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
