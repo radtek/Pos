@@ -3479,8 +3479,8 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
     {
-        if((Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales)
-                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
+        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
         {   
             PrintReceipt(RequestEFTPOSReceipt);
         }
