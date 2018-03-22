@@ -35,5 +35,7 @@ namespace SiHotIntegration.Domain
         public string IPAddress { get; set; }
         [DataMember]
         public int PortNumber { get; set; }
+        [DataMember]
+        public string Total { get; set; }
     }
 }
