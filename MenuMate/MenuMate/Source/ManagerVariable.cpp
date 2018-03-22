@@ -3355,6 +3355,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction, vmIsSiHotPostInProgress, "Shows status of posting",
 		"Gets true while posting to SiHot ",
 		vmgPOS, false);
+		SetVarBool(DBTransaction, vmIsOraclePostInProgress, "Shows status of posting",
+		"Gets true while posting to Oracle ",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
