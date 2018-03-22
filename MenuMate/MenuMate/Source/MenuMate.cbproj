@@ -3431,16 +3431,16 @@
 				<DependentOn>OracleManagerDB.h</DependentOn>
 				<BuildOrder>776</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="FiscalPrinter\FiscalPrinterAdapter.cpp">
+				<DependentOn>FiscalPrinter\FiscalPrinterAdapter.h</DependentOn>
+				<BuildOrder>784</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="FiscalPrinter\FiscalIntegration_TLB.cpp">
 				<DependentOn>FiscalPrinter\FiscalIntegration_TLB.h</DependentOn>
-				<BuildOrder>782</BuildOrder>
+				<BuildOrder>783</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="FiscalPrinter\FiscalIntegration_OCX.cpp">
 				<DependentOn>FiscalPrinter\FiscalIntegration_OCX.h</DependentOn>
-				<BuildOrder>783</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="FiscalPrinter\FiscalPrinterAdapter.cpp">
-				<DependentOn>FiscalPrinter\FiscalPrinterAdapter.h</DependentOn>
 				<BuildOrder>784</BuildOrder>
 			</CppCompile>
 			<FormResources Include="GenericGroupGUI.dfm"/>
