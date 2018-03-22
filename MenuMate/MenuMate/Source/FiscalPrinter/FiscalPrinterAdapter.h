@@ -15,10 +15,11 @@ private:
     void PrepareItemInfo(TPaymentTransaction paymentTransaction);
     void PrepartePaymnetInfo(TPaymentTransaction paymentTransaction);
     void PrepareDiscountDetails(std::vector<TFiscalDiscountDetails> &discountList,TItemMinorComplete *order);
-    TFiscalPrinterResponse PrintFiscalReceipt(TFiscalBillDetails receiptData);
+    UnicodeString PrintFiscalReceipt(TFiscalBillDetails receiptData);
 public:
        TFiscalPrinterAdapter();
-       void ConvertInToFiscalData(TPaymentTransaction paymentTransaction);
-       TFiscalPrinterResponse FiscalZReportSettlement();
+       UnicodeString ConvertInToFiscalData(TPaymentTransaction paymentTransaction);
+       UnicodeString FiscalZReportSettlement();
+       UnicodeString GetFiscalPrinterStatus();
 };
 #endif

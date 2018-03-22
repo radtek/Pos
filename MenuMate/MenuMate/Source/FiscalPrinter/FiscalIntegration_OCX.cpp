@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 22/03/2018 6:32:55 a.m. from Type Library described below.
+// File generated on 22/03/2018 8:40:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -20,7 +20,7 @@
 // HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
-//   (2) v2.0 mscorlib, (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb)
+//   (2) v2.4 mscorlib, (C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
 // Errors:
 //   Error creating palette bitmap of (TFiscalLibraryClass) : No Server registered for this CoClass
 //   Error creating palette bitmap of (TDiscountDetails) : No Server registered for this CoClass
@@ -108,7 +108,7 @@ void __fastcall TFiscalLibraryClass::InitServerData()
   ServerData = &sd;
 }
 
-long __fastcall TFiscalLibraryClass::PrintReceipt(void)
+BSTR __fastcall TFiscalLibraryClass::PrintReceipt(void)
 {
   return  GetDefaultInterface()->PrintReceipt();
 }
@@ -161,9 +161,14 @@ void __fastcall TFiscalLibraryClass::AddDiscountInfoToList(void)
   GetDefaultInterface()->AddDiscountInfoToList();
 }
 
-void __fastcall TFiscalLibraryClass::PrintZReport(void)
+BSTR __fastcall TFiscalLibraryClass::PrintZReport(void)
 {
-  GetDefaultInterface()->PrintZReport();
+  return  GetDefaultInterface()->PrintZReport();
+}
+
+BSTR __fastcall TFiscalLibraryClass::CheckPrinterAvailable(void)
+{
+  return  GetDefaultInterface()->CheckPrinterAvailable();
 }
 
 BSTR __fastcall TFiscalLibraryClass::get_InvoiceNumber(void)

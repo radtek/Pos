@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include "MMMessageBox.h"
 #include "MMTouchKeyboard.h"
+#include "FiscalPrinterAdapter.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -17,6 +18,7 @@
 __fastcall TfrmTaxMaintenance::TfrmTaxMaintenance(TComponent* Owner, Database::TDBControl &inDBControl)
     : TZForm(Owner), DBControl(inDBControl)
 {
+    responseMessage = "";
 }
 //---------------------------------------------------------------------------
 
@@ -105,6 +107,19 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
         if(cbApplyTaxToRounding->Checked && cbTaxProfileRounding->ItemIndex == -1)
         {
             MessageBox("Rounding tax must be selected.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+        {
+            std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+            responseMessage = fiscalAdapter->GetFiscalPrinterStatus();
+            if(responseMessage.Pos("OK") == 0)
+            {
+                MessageBox("Set The Fiscal Printer first","Error",MB_ICONERROR + MB_OK);
+            }
+            else
+            {
+                Close();
+            }
         }
         else
         {

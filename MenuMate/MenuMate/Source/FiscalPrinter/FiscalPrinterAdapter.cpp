@@ -19,7 +19,7 @@ TFiscalPrinterAdapter::TFiscalPrinterAdapter()
     //billDetails = new TFiscalBillDetails();
 }
 //---------------------------------------------------------------------------
-void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTransaction)
+UnicodeString TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTransaction)
 {
     billDetails.InvoiceNumber = paymentTransaction.InvoiceNumber;
     billDetails.Date = Now().FormatString("dd/mm/yyyy");
@@ -27,16 +27,20 @@ void TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTra
     billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
     billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
     billDetails.Time = Now().FormatString("hh:nn");
-    billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
-    billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;//"FiscalPrinter";
-    //MessageBox(billDetails.PrinterType ,"billDetails.PrinterType ",MB_OK);
-    billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;//"EpsonFP1";
-    //MessageBox(billDetails.PrinterLogicalName ,"billDetails.PrinterLogicalName ",MB_OK);
     billDetails.TabCredit = "0";
     billDetails.SaleType = "1";
+    billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
+    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
+    {
+        billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+        billDetails.SaleType = "0";
+    }
+    billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;
+    billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;
     PrepareItemInfo(paymentTransaction);
     PrepartePaymnetInfo(paymentTransaction);
-    PrintFiscalReceipt(billDetails).ResponseMessage;
+    UnicodeString responseMessage = PrintFiscalReceipt(billDetails);
+    return responseMessage;
 }
 //------------------------------------------------------------------------------
 void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransaction)
@@ -63,7 +67,6 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         double priceTotal = 0;
         double ItemPrice = 0;
         ItemPrice = (double)RoundToNearest(order->PriceEach(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-       // MessageBox(order->PriceEach(),"Me1",MB_OK);
          priceTotal =  (double)RoundToNearest((order->PriceEach()*order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
 		itemDetails.PricePerUnit = ItemPrice;
         itemDetails.PriceTotal = priceTotal;
@@ -98,7 +101,6 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
             ItemPrice = 0;
             ItemPrice = (double)RoundToNearest(currentSubOrder->TotalPriceSides()/currentSubOrder->GetQty(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
             priceTotal =  (double)(currentSubOrder->TotalPriceSides());
-         //   MessageBox(currentSubOrder->TotalPriceSides(),"Me1",MB_OK);
             itemDetails.PricePerUnit = ItemPrice;
             itemDetails.PriceTotal = priceTotal;
             double taxPercentage = 0;
@@ -127,10 +129,13 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
         double tipAmount = 0, surcharge = 0, change = 0, subTotal = 0;
         bool AddedToList = false, IsTipAppliedFromPOS = false;
 
-        if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() != 0.0)
+        if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() != 0.0 && !paymentTransaction.Orders->Count)
         {
-            tabCredit = (double)fabs(SubPayment->GetPayTendered());
+            tabCredit = (double)SubPayment->GetPayTendered();
+            if(tabCredit < 0)
                continue;
+            else
+                billDetails.SaleType = "0";
         }
 
         if(SubPayment->GetPaymentAttribute(ePayTypeCustomSurcharge) && SubPayment->GetAdjustment() != 0)
@@ -212,31 +217,32 @@ void TFiscalPrinterAdapter::PrepareDiscountDetails(std::vector<TFiscalDiscountDe
     }
 }
 //-----------------------------------------------------------------------------------------------
-TFiscalPrinterResponse TFiscalPrinterAdapter::FiscalZReportSettlement()
+UnicodeString TFiscalPrinterAdapter::FiscalZReportSettlement()
 {
-    TFiscalPrinterResponse response;
+    UnicodeString response = "";
+    TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
     try
     {
-        response.IsSuccessful = false;
-        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
-        fpclass->PrintZReport();
+        fpclass->PrinterType = WideString(TGlobalSettings::Instance().PrinterType).c_bstr();
+        fpclass->PrinterLogicalName = WideString(TGlobalSettings::Instance().PrinterlogicalName).c_bstr();
+        BSTR responseMessage = fpclass->PrintZReport();
+        response = UnicodeString(responseMessage).t_str();
     }
     catch(Exception & E)
     {
-       response.ResponseMessage = E.Message;
+       response = E.Message;
 	}
+    delete fpclass;
+    fpclass = NULL;
     return response;
 }
 //----------------------------------------------------------------------------------------------------
-TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails receiptData)
+UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails receiptData)
 {
-    TFiscalPrinterResponse response;
-    response.IsSuccessful = false;
+    UnicodeString response = "";
+    TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
     try
     {
-//        MessageBox("Before creating object in pos","Message 1", MB_OK);
-        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
-//        MessageBox("After creating object in pos","Message 2",MB_OK);
         fpclass->Billno = WideString(receiptData.Billno).c_bstr();
         fpclass->Cashier = WideString(receiptData.Cashier).c_bstr();
         fpclass->Cashno = WideString(receiptData.Cashno).c_bstr();
@@ -251,7 +257,6 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
         fpclass->TabCredit =  WideString(receiptData.TabCredit).c_bstr();
         fpclass->Saletype =  WideString(receiptData.SaleType).c_bstr();
 
-//        MessageBox("First iteration","Message 3", MB_OK);
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
             fpclass->InitializeItemProperties();
@@ -269,7 +274,7 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptItemInfo(11, WideString(i->VATPercentage).c_bstr());
             fpclass->AddItemToList();
         }
-//        MessageBox("Second iteration","Message 3", MB_OK);
+
         for(std::vector<TFiscalPaymentDetails>::iterator i = receiptData.PaymentList.begin(); i != receiptData.PaymentList.end() ; ++i)
         {
             fpclass->InitializePaymentProperties();
@@ -280,16 +285,13 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptPaymentInfo(4, WideString(i->Cashier).c_bstr());
             fpclass->LoadReceiptPaymentInfo(5, WideString(i->Source).c_bstr());
             fpclass->LoadReceiptPaymentInfo(6, WideString(i->Description).c_bstr());
-          //  MessageBox(WideString(i->TipAmount).c_bstr(),"Tip Amount",MB_OK);
             fpclass->LoadReceiptPaymentInfo(7, WideString(i->TipAmount).c_bstr());
-          //  MessageBox(WideString(i->PaymentSurcharge).c_bstr(),"Payment surcharge",MB_OK);
             fpclass->LoadReceiptPaymentInfo(8, WideString(i->PaymentSurcharge).c_bstr());
-          //  MessageBox(WideString(i->Change).c_bstr(),"Change Amount",MB_OK);
             fpclass->LoadReceiptPaymentInfo(9, WideString(i->Change).c_bstr());
             fpclass->LoadReceiptPaymentInfo(10, WideString(i->TipAppliedFromPOS).c_bstr());
             fpclass->AddPaymentInfoToList();
         }
-//        MessageBox("Third iteration","Message 3", MB_OK);
+
         for(std::vector<TFiscalDiscountDetails>::iterator i = receiptData.DiscountList.begin(); i != receiptData.DiscountList.end() ; ++i)
         {
             fpclass->InitializeDiscountProperties();
@@ -300,17 +302,32 @@ TFiscalPrinterResponse TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDeta
             fpclass->LoadReceiptDiscountInfo(4, WideString(i->Type).c_bstr());
             fpclass->AddDiscountInfoToList();
         }
-//        MessageBox("Calling Print","Message 3", MB_OK);
-        int number = fpclass->PrintReceipt();
-//        MessageBox("Called Print","Message 3", MB_OK);
+        BSTR responseMessage = fpclass->PrintReceipt();
+        response = UnicodeString(responseMessage).t_str();
     }
     catch(Exception & E)
     {
-       MessageBox(E.Message,"Exception",MB_OK);
-       response.ResponseMessage = E.Message;
+        response = E.Message;
 	}
+    delete fpclass;
+    fpclass = NULL;
     return response;
 }
 //------------------------------------------------------------------------------------------
-
+UnicodeString TFiscalPrinterAdapter::GetFiscalPrinterStatus()
+{
+    UnicodeString printerStatus = "";
+    try
+    {
+        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
+        fpclass->PrinterType = WideString(TGlobalSettings::Instance().PrinterType).c_bstr();
+        fpclass->PrinterLogicalName = WideString(TGlobalSettings::Instance().PrinterlogicalName).c_bstr();
+        printerStatus = UnicodeString(fpclass->CheckPrinterAvailable()).t_str();
+    }
+    catch(Exception & E)
+    {
+        printerStatus = E.Message;
+    }
+    return printerStatus;
+}
 

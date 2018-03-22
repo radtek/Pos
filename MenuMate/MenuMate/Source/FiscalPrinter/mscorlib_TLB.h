@@ -10,10 +10,10 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 22/03/2018 6:32:54 a.m. from Type Library described below.
+// File generated on 22/03/2018 8:40:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb (1)
+// Type Lib: C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb (1)
 // LIBID: {BED7F4EA-1A96-11D2-8F08-00A0C9A6186D}
 // LCID: 0
 // Helpfile: 
@@ -63,7 +63,7 @@ namespace Mscorlib_tlb
 
 // *********************************************************************//
 // HelpString: mscorlib.dll
-// Version:    2.0
+// Version:    2.4
 // *********************************************************************//
 
 
@@ -76,27 +76,29 @@ namespace Mscorlib_tlb
 // *********************************************************************//
 extern __declspec (package) const GUID LIBID_mscorlib;
 extern __declspec (package) const GUID IID__Object;
-extern __declspec (package) const GUID IID_ICloneable;
-extern __declspec (package) const GUID IID_IEnumerable;
-extern __declspec (package) const GUID IID_ICollection;
-extern __declspec (package) const GUID IID_IList;
-extern __declspec (package) const GUID IID__Array;
+extern __declspec (package) const GUID IID_ISerializable;
+extern __declspec (package) const GUID IID__Exception;
+extern __declspec (package) const GUID CLSID_CLRException;
 extern __declspec (package) const GUID IID__ValueType;
-extern __declspec (package) const GUID IID_IEnumerator;
-extern __declspec (package) const GUID IID_IDisposable;
 extern __declspec (package) const GUID IID_IComparable;
 extern __declspec (package) const GUID IID_IFormattable;
 extern __declspec (package) const GUID IID_IConvertible;
 extern __declspec (package) const GUID IID__Enum;
+extern __declspec (package) const GUID IID_ICloneable;
+extern __declspec (package) const GUID IID__Delegate;
+extern __declspec (package) const GUID IID__MulticastDelegate;
+extern __declspec (package) const GUID IID_IEnumerable;
+extern __declspec (package) const GUID IID_ICollection;
+extern __declspec (package) const GUID IID_IList;
+extern __declspec (package) const GUID IID__Array;
+extern __declspec (package) const GUID IID_IEnumerator;
+extern __declspec (package) const GUID IID_IDisposable;
 extern __declspec (package) const GUID IID__String;
 extern __declspec (package) const GUID IID_IComparer;
 extern __declspec (package) const GUID IID_IEqualityComparer;
 extern __declspec (package) const GUID IID__StringComparer;
 extern __declspec (package) const GUID GUID_StringComparison;
-extern __declspec (package) const GUID IID_ISerializable;
 extern __declspec (package) const GUID IID__StringBuilder;
-extern __declspec (package) const GUID IID__Exception;
-extern __declspec (package) const GUID CLSID_CLRException;
 extern __declspec (package) const GUID GUID_DateTimeKind;
 extern __declspec (package) const GUID IID_IDeserializationCallback;
 extern __declspec (package) const GUID IID__SystemException;
@@ -104,8 +106,6 @@ extern __declspec (package) const GUID IID__OutOfMemoryException;
 extern __declspec (package) const GUID IID__StackOverflowException;
 extern __declspec (package) const GUID IID__DataMisalignedException;
 extern __declspec (package) const GUID IID__ExecutionEngineException;
-extern __declspec (package) const GUID IID__Delegate;
-extern __declspec (package) const GUID IID__MulticastDelegate;
 extern __declspec (package) const GUID IID__MemberAccessException;
 extern __declspec (package) const GUID IID__Activator;
 extern __declspec (package) const GUID CLSID_Activator;
@@ -132,6 +132,7 @@ extern __declspec (package) const GUID IID__Attribute;
 extern __declspec (package) const GUID CLSID_Attribute;
 extern __declspec (package) const GUID IID__LoaderOptimizationAttribute;
 extern __declspec (package) const GUID IID__AppDomainUnloadedException;
+extern __declspec (package) const GUID IID__EvidenceBase;
 extern __declspec (package) const GUID IID__ActivationArguments;
 extern __declspec (package) const GUID IID__ApplicationId;
 extern __declspec (package) const GUID IID__ArgumentException;
@@ -223,6 +224,8 @@ extern __declspec (package) const GUID GUID_ModuleHandle;
 extern __declspec (package) const GUID GUID_SByte;
 extern __declspec (package) const GUID IID__SerializableAttribute;
 extern __declspec (package) const GUID GUID_CLRSingle;
+extern __declspec (package) const GUID IID__STAThreadAttribute;
+extern __declspec (package) const GUID IID__MTAThreadAttribute;
 extern __declspec (package) const GUID IID__TimeoutException;
 extern __declspec (package) const GUID GUID_TimeSpan;
 extern __declspec (package) const GUID GUID_TypeCode;
@@ -267,24 +270,22 @@ extern __declspec (package) const GUID IID__Timeout;
 extern __declspec (package) const GUID IID__TimerCallback;
 extern __declspec (package) const GUID IID__Timer;
 extern __declspec (package) const GUID GUID_ApartmentState;
-extern __declspec (package) const GUID IID__STAThreadAttribute;
-extern __declspec (package) const GUID IID__MTAThreadAttribute;
-extern __declspec (package) const GUID IID__ArrayList;
-extern __declspec (package) const GUID IID__BitArray;
 extern __declspec (package) const GUID IID__CaseInsensitiveComparer;
 extern __declspec (package) const GUID IID_IHashCodeProvider;
 extern __declspec (package) const GUID IID__CaseInsensitiveHashCodeProvider;
 extern __declspec (package) const GUID IID__CollectionBase;
-extern __declspec (package) const GUID IID__Comparer;
 extern __declspec (package) const GUID IID_IDictionary;
 extern __declspec (package) const GUID IID__DictionaryBase;
-extern __declspec (package) const GUID GUID_DictionaryEntry;
+extern __declspec (package) const GUID IID__ReadOnlyCollectionBase;
+extern __declspec (package) const GUID IID__Queue;
+extern __declspec (package) const GUID IID__ArrayList;
+extern __declspec (package) const GUID IID__BitArray;
+extern __declspec (package) const GUID IID__Stack;
+extern __declspec (package) const GUID IID__Comparer;
 extern __declspec (package) const GUID IID_IDictionaryEnumerator;
 extern __declspec (package) const GUID IID__Hashtable;
-extern __declspec (package) const GUID IID__Queue;
-extern __declspec (package) const GUID IID__ReadOnlyCollectionBase;
+extern __declspec (package) const GUID GUID_DictionaryEntry;
 extern __declspec (package) const GUID IID__SortedList;
-extern __declspec (package) const GUID IID__Stack;
 extern __declspec (package) const GUID IID__Nullable;
 extern __declspec (package) const GUID IID__KeyNotFoundException;
 extern __declspec (package) const GUID IID__ConditionalAttribute;
@@ -398,35 +399,35 @@ extern __declspec (package) const GUID CLSID_FieldInfo;
 extern __declspec (package) const GUID CLSID_EventInfo;
 extern __declspec (package) const GUID CLSID_PropertyInfo;
 extern __declspec (package) const GUID CLSID_ParameterInfo;
-extern __declspec (package) const GUID IID_IFormatter;
-extern __declspec (package) const GUID IID__Formatter;
 extern __declspec (package) const GUID IID_IFormatterConverter;
 extern __declspec (package) const GUID IID__FormatterConverter;
 extern __declspec (package) const GUID IID__FormatterServices;
 extern __declspec (package) const GUID IID_ISerializationSurrogate;
+extern __declspec (package) const GUID IID_IFormatter;
 extern __declspec (package) const GUID IID_ISurrogateSelector;
-extern __declspec (package) const GUID IID__ObjectIDGenerator;
-extern __declspec (package) const GUID IID__ObjectManager;
 extern __declspec (package) const GUID IID__OptionalFieldAttribute;
 extern __declspec (package) const GUID IID__OnSerializingAttribute;
 extern __declspec (package) const GUID IID__OnSerializedAttribute;
 extern __declspec (package) const GUID IID__OnDeserializingAttribute;
 extern __declspec (package) const GUID IID__OnDeserializedAttribute;
 extern __declspec (package) const GUID IID__SerializationBinder;
+extern __declspec (package) const GUID IID__SerializationException;
 extern __declspec (package) const GUID IID__SerializationInfo;
 extern __declspec (package) const GUID GUID_SerializationEntry;
 extern __declspec (package) const GUID IID__SerializationInfoEnumerator;
-extern __declspec (package) const GUID IID__SerializationException;
 extern __declspec (package) const GUID GUID_StreamingContext;
 extern __declspec (package) const GUID GUID_StreamingContextStates;
+extern __declspec (package) const GUID IID__Formatter;
+extern __declspec (package) const GUID IID__ObjectIDGenerator;
+extern __declspec (package) const GUID IID__ObjectManager;
 extern __declspec (package) const GUID IID__SurrogateSelector;
 extern __declspec (package) const GUID IID__Calendar;
 extern __declspec (package) const GUID GUID_CalendarAlgorithmType;
 extern __declspec (package) const GUID GUID_CalendarWeekRule;
-extern __declspec (package) const GUID IID__EastAsianLunisolarCalendar;
 extern __declspec (package) const GUID GUID_CompareOptions;
 extern __declspec (package) const GUID IID__CompareInfo;
 extern __declspec (package) const GUID IID__CultureInfo;
+extern __declspec (package) const GUID IID__CultureNotFoundException;
 extern __declspec (package) const GUID GUID_CultureTypes;
 extern __declspec (package) const GUID GUID_DateTimeStyles;
 extern __declspec (package) const GUID IID__DateTimeFormatInfo;
@@ -436,8 +437,9 @@ extern __declspec (package) const GUID IID__GregorianCalendar;
 extern __declspec (package) const GUID GUID_GregorianCalendarTypes;
 extern __declspec (package) const GUID IID__HebrewCalendar;
 extern __declspec (package) const GUID IID__HijriCalendar;
-extern __declspec (package) const GUID IID__JapaneseCalendar;
+extern __declspec (package) const GUID IID__EastAsianLunisolarCalendar;
 extern __declspec (package) const GUID IID__JulianCalendar;
+extern __declspec (package) const GUID IID__JapaneseCalendar;
 extern __declspec (package) const GUID IID__KoreanCalendar;
 extern __declspec (package) const GUID IID__RegionInfo;
 extern __declspec (package) const GUID IID__SortKey;
@@ -748,9 +750,6 @@ extern __declspec (package) const GUID IID__ContextAttribute;
 extern __declspec (package) const GUID IID_IActivator;
 extern __declspec (package) const GUID IID_IMessageSink;
 extern __declspec (package) const GUID IID__AsyncResult;
-extern __declspec (package) const GUID IID__CallContext;
-extern __declspec (package) const GUID IID_ILogicalThreadAffinative;
-extern __declspec (package) const GUID IID__LogicalCallContext;
 extern __declspec (package) const GUID IID__ChannelServices;
 extern __declspec (package) const GUID IID_IClientResponseChannelSinkStack;
 extern __declspec (package) const GUID IID_IClientChannelSinkStack;
@@ -772,8 +771,6 @@ extern __declspec (package) const GUID IID_IServerChannelSinkProvider;
 extern __declspec (package) const GUID IID_IChannelSinkBase;
 extern __declspec (package) const GUID IID_IServerChannelSink;
 extern __declspec (package) const GUID IID__EnterpriseServicesHelper;
-extern __declspec (package) const GUID IID__Header;
-extern __declspec (package) const GUID IID__HeaderHandler;
 extern __declspec (package) const GUID GUID_ActivatorLevel;
 extern __declspec (package) const GUID IID_IMessage;
 extern __declspec (package) const GUID IID_IMethodMessage;
@@ -817,7 +814,6 @@ extern __declspec (package) const GUID IID__ConstructionResponse;
 extern __declspec (package) const GUID IID__InternalMessageWrapper;
 extern __declspec (package) const GUID IID__MethodCallMessageWrapper;
 extern __declspec (package) const GUID IID__MethodReturnMessageWrapper;
-extern __declspec (package) const GUID IID__ObjectHandle;
 extern __declspec (package) const GUID IID_IRemotingTypeInfo;
 extern __declspec (package) const GUID IID_IChannelInfo;
 extern __declspec (package) const GUID IID_IEnvoyInfo;
@@ -883,12 +879,18 @@ extern __declspec (package) const GUID IID__SynchronizationAttribute;
 extern __declspec (package) const GUID IID_ITrackingHandler;
 extern __declspec (package) const GUID IID__TrackingServices;
 extern __declspec (package) const GUID IID__UrlAttribute;
+extern __declspec (package) const GUID IID__Header;
+extern __declspec (package) const GUID IID__HeaderHandler;
+extern __declspec (package) const GUID IID__CallContext;
+extern __declspec (package) const GUID IID_ILogicalThreadAffinative;
+extern __declspec (package) const GUID IID__LogicalCallContext;
+extern __declspec (package) const GUID IID__ObjectHandle;
 extern __declspec (package) const GUID GUID_IsolatedStorageScope;
 extern __declspec (package) const GUID IID__IsolatedStorage;
-extern __declspec (package) const GUID IID__IsolatedStorageFile;
 extern __declspec (package) const GUID IID__IsolatedStorageFileStream;
 extern __declspec (package) const GUID IID__IsolatedStorageException;
 extern __declspec (package) const GUID IID_INormalizeForIsolatedStorage;
+extern __declspec (package) const GUID IID__IsolatedStorageFile;
 extern __declspec (package) const GUID GUID_FormatterTypeStyle;
 extern __declspec (package) const GUID GUID_FormatterAssemblyStyle;
 extern __declspec (package) const GUID GUID_TypeFilterLevel;
@@ -962,6 +964,7 @@ extern __declspec (package) const GUID IID__CryptographicUnexpectedOperationExce
 extern __declspec (package) const GUID IID_ICryptoTransform;
 extern __declspec (package) const GUID IID__RandomNumberGenerator;
 extern __declspec (package) const GUID IID__RNGCryptoServiceProvider;
+extern __declspec (package) const GUID IID__SymmetricAlgorithm;
 extern __declspec (package) const GUID IID__AsymmetricAlgorithm;
 extern __declspec (package) const GUID IID__AsymmetricKeyExchangeDeformatter;
 extern __declspec (package) const GUID IID__AsymmetricKeyExchangeFormatter;
@@ -976,7 +979,6 @@ extern __declspec (package) const GUID IID__CspParameters;
 extern __declspec (package) const GUID IID__CryptoConfig;
 extern __declspec (package) const GUID GUID_CryptoStreamMode;
 extern __declspec (package) const GUID IID__CryptoStream;
-extern __declspec (package) const GUID IID__SymmetricAlgorithm;
 extern __declspec (package) const GUID IID__DES;
 extern __declspec (package) const GUID IID__DESCryptoServiceProvider;
 extern __declspec (package) const GUID IID__DeriveBytes;
@@ -1036,9 +1038,11 @@ extern __declspec (package) const GUID GUID_X509ContentType;
 extern __declspec (package) const GUID GUID_X509KeyStorageFlags;
 extern __declspec (package) const GUID IID__X509Certificate;
 extern __declspec (package) const GUID CLSID_CLRObject;
-extern __declspec (package) const GUID CLSID_CLRArray;
 extern __declspec (package) const GUID CLSID_ValueType;
 extern __declspec (package) const GUID CLSID_CLREnum;
+extern __declspec (package) const GUID CLSID_Delegate;
+extern __declspec (package) const GUID CLSID_MulticastDelegate;
+extern __declspec (package) const GUID CLSID_CLRArray;
 extern __declspec (package) const GUID CLSID_CLRString;
 extern __declspec (package) const GUID CLSID_StringComparer;
 extern __declspec (package) const GUID CLSID_StringBuilder;
@@ -1047,8 +1051,6 @@ extern __declspec (package) const GUID CLSID_OutOfMemoryException;
 extern __declspec (package) const GUID CLSID_StackOverflowException;
 extern __declspec (package) const GUID CLSID_DataMisalignedException;
 extern __declspec (package) const GUID CLSID_ExecutionEngineException;
-extern __declspec (package) const GUID CLSID_Delegate;
-extern __declspec (package) const GUID CLSID_MulticastDelegate;
 extern __declspec (package) const GUID CLSID_MemberAccessException;
 extern __declspec (package) const GUID CLSID_AccessViolationException;
 extern __declspec (package) const GUID CLSID_ApplicationActivator;
@@ -1064,6 +1066,7 @@ extern __declspec (package) const GUID CLSID_CrossAppDomainDelegate;
 extern __declspec (package) const GUID CLSID_AppDomainManager;
 extern __declspec (package) const GUID CLSID_LoaderOptimizationAttribute;
 extern __declspec (package) const GUID CLSID_AppDomainUnloadedException;
+extern __declspec (package) const GUID CLSID_EvidenceBase;
 extern __declspec (package) const GUID CLSID_ActivationArguments;
 extern __declspec (package) const GUID CLSID_ApplicationId;
 extern __declspec (package) const GUID CLSID_ArgumentException;
@@ -1121,6 +1124,8 @@ extern __declspec (package) const GUID CLSID_PlatformNotSupportedException;
 extern __declspec (package) const GUID CLSID_Random;
 extern __declspec (package) const GUID CLSID_RankException;
 extern __declspec (package) const GUID CLSID_SerializableAttribute;
+extern __declspec (package) const GUID CLSID_STAThreadAttribute;
+extern __declspec (package) const GUID CLSID_MTAThreadAttribute;
 extern __declspec (package) const GUID CLSID_TimeoutException;
 extern __declspec (package) const GUID CLSID_TypeInitializationException;
 extern __declspec (package) const GUID CLSID_UnauthorizedAccessException;
@@ -1150,20 +1155,18 @@ extern __declspec (package) const GUID CLSID_ThreadStaticAttribute;
 extern __declspec (package) const GUID CLSID_Timeout;
 extern __declspec (package) const GUID CLSID_TimerCallback;
 extern __declspec (package) const GUID CLSID_Timer;
-extern __declspec (package) const GUID CLSID_STAThreadAttribute;
-extern __declspec (package) const GUID CLSID_MTAThreadAttribute;
-extern __declspec (package) const GUID CLSID_ArrayList;
-extern __declspec (package) const GUID CLSID_BitArray;
 extern __declspec (package) const GUID CLSID_CaseInsensitiveComparer;
 extern __declspec (package) const GUID CLSID_CaseInsensitiveHashCodeProvider;
 extern __declspec (package) const GUID CLSID_CollectionBase;
-extern __declspec (package) const GUID CLSID_Comparer;
 extern __declspec (package) const GUID CLSID_DictionaryBase;
-extern __declspec (package) const GUID CLSID_Hashtable;
-extern __declspec (package) const GUID CLSID_Queue;
 extern __declspec (package) const GUID CLSID_ReadOnlyCollectionBase;
-extern __declspec (package) const GUID CLSID_SortedList;
+extern __declspec (package) const GUID CLSID_Queue;
+extern __declspec (package) const GUID CLSID_ArrayList;
+extern __declspec (package) const GUID CLSID_BitArray;
 extern __declspec (package) const GUID CLSID_Stack;
+extern __declspec (package) const GUID CLSID_Comparer;
+extern __declspec (package) const GUID CLSID_Hashtable;
+extern __declspec (package) const GUID CLSID_SortedList;
 extern __declspec (package) const GUID CLSID_Nullable;
 extern __declspec (package) const GUID CLSID_KeyNotFoundException;
 extern __declspec (package) const GUID CLSID_ConditionalAttribute;
@@ -1222,32 +1225,33 @@ extern __declspec (package) const GUID CLSID_TargetInvocationException;
 extern __declspec (package) const GUID CLSID_TargetParameterCountException;
 extern __declspec (package) const GUID CLSID_TypeDelegator;
 extern __declspec (package) const GUID CLSID_TypeFilter;
-extern __declspec (package) const GUID CLSID_Formatter;
 extern __declspec (package) const GUID CLSID_FormatterConverter;
 extern __declspec (package) const GUID CLSID_FormatterServices;
-extern __declspec (package) const GUID CLSID_ObjectIDGenerator;
-extern __declspec (package) const GUID CLSID_ObjectManager;
 extern __declspec (package) const GUID CLSID_OptionalFieldAttribute;
 extern __declspec (package) const GUID CLSID_OnSerializingAttribute;
 extern __declspec (package) const GUID CLSID_OnSerializedAttribute;
 extern __declspec (package) const GUID CLSID_OnDeserializingAttribute;
 extern __declspec (package) const GUID CLSID_OnDeserializedAttribute;
 extern __declspec (package) const GUID CLSID_SerializationBinder;
+extern __declspec (package) const GUID CLSID_SerializationException;
 extern __declspec (package) const GUID CLSID_SerializationInfo;
 extern __declspec (package) const GUID CLSID_SerializationInfoEnumerator;
-extern __declspec (package) const GUID CLSID_SerializationException;
+extern __declspec (package) const GUID CLSID_Formatter;
+extern __declspec (package) const GUID CLSID_ObjectIDGenerator;
+extern __declspec (package) const GUID CLSID_ObjectManager;
 extern __declspec (package) const GUID CLSID_SurrogateSelector;
 extern __declspec (package) const GUID CLSID_Calendar;
-extern __declspec (package) const GUID CLSID_EastAsianLunisolarCalendar;
 extern __declspec (package) const GUID CLSID_CompareInfo;
 extern __declspec (package) const GUID CLSID_CultureInfo;
+extern __declspec (package) const GUID CLSID_CultureNotFoundException;
 extern __declspec (package) const GUID CLSID_DateTimeFormatInfo;
 extern __declspec (package) const GUID CLSID_DaylightTime;
 extern __declspec (package) const GUID CLSID_GregorianCalendar;
 extern __declspec (package) const GUID CLSID_HebrewCalendar;
 extern __declspec (package) const GUID CLSID_HijriCalendar;
-extern __declspec (package) const GUID CLSID_JapaneseCalendar;
+extern __declspec (package) const GUID CLSID_EastAsianLunisolarCalendar;
 extern __declspec (package) const GUID CLSID_JulianCalendar;
+extern __declspec (package) const GUID CLSID_JapaneseCalendar;
 extern __declspec (package) const GUID CLSID_KoreanCalendar;
 extern __declspec (package) const GUID CLSID_RegionInfo;
 extern __declspec (package) const GUID CLSID_SortKey;
@@ -1469,8 +1473,6 @@ extern __declspec (package) const GUID CLSID_SecurityManager;
 extern __declspec (package) const GUID CLSID_VerificationException;
 extern __declspec (package) const GUID CLSID_ContextAttribute;
 extern __declspec (package) const GUID CLSID_AsyncResult;
-extern __declspec (package) const GUID CLSID_CallContext;
-extern __declspec (package) const GUID CLSID_LogicalCallContext;
 extern __declspec (package) const GUID CLSID_ChannelServices;
 extern __declspec (package) const GUID CLSID_ClientChannelSinkStack;
 extern __declspec (package) const GUID CLSID_ServerChannelSinkStack;
@@ -1479,8 +1481,6 @@ extern __declspec (package) const GUID CLSID_CrossContextDelegate;
 extern __declspec (package) const GUID CLSID_Context;
 extern __declspec (package) const GUID CLSID_ContextProperty;
 extern __declspec (package) const GUID CLSID_EnterpriseServicesHelper;
-extern __declspec (package) const GUID CLSID_Header;
-extern __declspec (package) const GUID CLSID_HeaderHandler;
 extern __declspec (package) const GUID CLSID_ChannelDataStore;
 extern __declspec (package) const GUID CLSID_TransportHeaders;
 extern __declspec (package) const GUID CLSID_SinkProviderData;
@@ -1496,7 +1496,6 @@ extern __declspec (package) const GUID CLSID_ConstructionResponse;
 extern __declspec (package) const GUID CLSID_InternalMessageWrapper;
 extern __declspec (package) const GUID CLSID_MethodCallMessageWrapper;
 extern __declspec (package) const GUID CLSID_MethodReturnMessageWrapper;
-extern __declspec (package) const GUID CLSID_ObjectHandle;
 extern __declspec (package) const GUID CLSID_ObjRef;
 extern __declspec (package) const GUID CLSID_OneWayAttribute;
 extern __declspec (package) const GUID CLSID_ProxyAttribute;
@@ -1554,10 +1553,15 @@ extern __declspec (package) const GUID CLSID_SoapEntity;
 extern __declspec (package) const GUID CLSID_SynchronizationAttribute;
 extern __declspec (package) const GUID CLSID_TrackingServices;
 extern __declspec (package) const GUID CLSID_UrlAttribute;
+extern __declspec (package) const GUID CLSID_Header;
+extern __declspec (package) const GUID CLSID_HeaderHandler;
+extern __declspec (package) const GUID CLSID_CallContext;
+extern __declspec (package) const GUID CLSID_LogicalCallContext;
+extern __declspec (package) const GUID CLSID_ObjectHandle;
 extern __declspec (package) const GUID CLSID_IsolatedStorage;
-extern __declspec (package) const GUID CLSID_IsolatedStorageFile;
 extern __declspec (package) const GUID CLSID_IsolatedStorageFileStream;
 extern __declspec (package) const GUID CLSID_IsolatedStorageException;
+extern __declspec (package) const GUID CLSID_IsolatedStorageFile;
 extern __declspec (package) const GUID CLSID_InternalRM;
 extern __declspec (package) const GUID CLSID_InternalST;
 extern __declspec (package) const GUID CLSID_SoapMessage;
@@ -1574,6 +1578,7 @@ extern __declspec (package) const GUID CLSID_CryptographicException;
 extern __declspec (package) const GUID CLSID_CryptographicUnexpectedOperationException;
 extern __declspec (package) const GUID CLSID_RandomNumberGenerator;
 extern __declspec (package) const GUID CLSID_RNGCryptoServiceProvider;
+extern __declspec (package) const GUID CLSID_SymmetricAlgorithm;
 extern __declspec (package) const GUID CLSID_AsymmetricAlgorithm;
 extern __declspec (package) const GUID CLSID_AsymmetricKeyExchangeDeformatter;
 extern __declspec (package) const GUID CLSID_AsymmetricKeyExchangeFormatter;
@@ -1585,7 +1590,6 @@ extern __declspec (package) const GUID CLSID_CryptoAPITransform;
 extern __declspec (package) const GUID CLSID_CspParameters;
 extern __declspec (package) const GUID CLSID_CryptoConfig;
 extern __declspec (package) const GUID CLSID_CryptoStream;
-extern __declspec (package) const GUID CLSID_SymmetricAlgorithm;
 extern __declspec (package) const GUID CLSID_DES;
 extern __declspec (package) const GUID CLSID_DESCryptoServiceProvider;
 extern __declspec (package) const GUID CLSID_DeriveBytes;
@@ -1824,29 +1828,14 @@ enum class    X509KeyStorageFlags;
 interface DECLSPEC_UUID("{65074F7F-63C0-304E-AF0A-D51741CB4A8D}") _Object;
 typedef TComInterface<_Object, &IID__Object> _ObjectPtr;
 
-interface DECLSPEC_UUID("{0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}") ICloneable;
-typedef TComInterface<ICloneable, &IID_ICloneable> ICloneablePtr;
+interface DECLSPEC_UUID("{D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}") ISerializable;
+typedef TComInterface<ISerializable, &IID_ISerializable> ISerializablePtr;
 
-interface DECLSPEC_UUID("{496B0ABE-CDEE-11D3-88E8-00902754C43A}") IEnumerable;
-typedef TComInterface<IEnumerable, &IID_IEnumerable> IEnumerablePtr;
-
-interface DECLSPEC_UUID("{DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}") ICollection;
-typedef TComInterface<ICollection, &IID_ICollection> ICollectionPtr;
-
-interface DECLSPEC_UUID("{7BCFA00F-F764-3113-9140-3BBD127A96BB}") IList;
-typedef TComInterface<IList, &IID_IList> IListPtr;
-
-interface DECLSPEC_UUID("{2B67CECE-71C3-36A9-A136-925CCC1935A8}") _Array;
-typedef TComInterface<_Array, &IID__Array> _ArrayPtr;
+interface DECLSPEC_UUID("{B36B5C63-42EF-38BC-A07E-0B34C98F164A}") _Exception;
+typedef TComInterface<_Exception, &IID__Exception> _ExceptionPtr;
 
 interface DECLSPEC_UUID("{139E041D-0E41-39F5-A302-C4387E9D0A6C}") _ValueType;
 typedef TComInterface<_ValueType, &IID__ValueType> _ValueTypePtr;
-
-interface DECLSPEC_UUID("{496B0ABF-CDEE-11D3-88E8-00902754C43A}") IEnumerator;
-typedef TComInterface<IEnumerator, &IID_IEnumerator> IEnumeratorPtr;
-
-interface DECLSPEC_UUID("{805D7A98-D4AF-3F0F-967F-E5CF45312D2C}") IDisposable;
-typedef TComInterface<IDisposable, &IID_IDisposable> IDisposablePtr;
 
 interface DECLSPEC_UUID("{DEB0E770-91FD-3CF6-9A6C-E6A3656F3965}") IComparable;
 typedef TComInterface<IComparable, &IID_IComparable> IComparablePtr;
@@ -1860,6 +1849,33 @@ typedef TComInterface<IConvertible, &IID_IConvertible> IConvertiblePtr;
 interface DECLSPEC_UUID("{D09D1E04-D590-39A3-B517-B734A49A9277}") _Enum;
 typedef TComInterface<_Enum, &IID__Enum> _EnumPtr;
 
+interface DECLSPEC_UUID("{0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}") ICloneable;
+typedef TComInterface<ICloneable, &IID_ICloneable> ICloneablePtr;
+
+interface DECLSPEC_UUID("{FB6AB00F-5096-3AF8-A33D-D7885A5FA829}") _Delegate;
+typedef TComInterface<_Delegate, &IID__Delegate> _DelegatePtr;
+
+interface DECLSPEC_UUID("{16FE0885-9129-3884-A232-90B58C5B2AA9}") _MulticastDelegate;
+typedef TComInterface<_MulticastDelegate, &IID__MulticastDelegate> _MulticastDelegatePtr;
+
+interface DECLSPEC_UUID("{496B0ABE-CDEE-11D3-88E8-00902754C43A}") IEnumerable;
+typedef TComInterface<IEnumerable, &IID_IEnumerable> IEnumerablePtr;
+
+interface DECLSPEC_UUID("{DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}") ICollection;
+typedef TComInterface<ICollection, &IID_ICollection> ICollectionPtr;
+
+interface DECLSPEC_UUID("{7BCFA00F-F764-3113-9140-3BBD127A96BB}") IList;
+typedef TComInterface<IList, &IID_IList> IListPtr;
+
+interface DECLSPEC_UUID("{2B67CECE-71C3-36A9-A136-925CCC1935A8}") _Array;
+typedef TComInterface<_Array, &IID__Array> _ArrayPtr;
+
+interface DECLSPEC_UUID("{496B0ABF-CDEE-11D3-88E8-00902754C43A}") IEnumerator;
+typedef TComInterface<IEnumerator, &IID_IEnumerator> IEnumeratorPtr;
+
+interface DECLSPEC_UUID("{805D7A98-D4AF-3F0F-967F-E5CF45312D2C}") IDisposable;
+typedef TComInterface<IDisposable, &IID_IDisposable> IDisposablePtr;
+
 interface DECLSPEC_UUID("{36936699-FC79-324D-AB43-E33C1F94E263}") _String;
 typedef TComInterface<_String, &IID__String> _StringPtr;
 
@@ -1872,14 +1888,8 @@ typedef TComInterface<IEqualityComparer, &IID_IEqualityComparer> IEqualityCompar
 interface DECLSPEC_UUID("{7499E7E8-DF01-3948-B8D4-FA4B9661D36B}") _StringComparer;
 typedef TComInterface<_StringComparer, &IID__StringComparer> _StringComparerPtr;
 
-interface DECLSPEC_UUID("{D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}") ISerializable;
-typedef TComInterface<ISerializable, &IID_ISerializable> ISerializablePtr;
-
 interface DECLSPEC_UUID("{9FB09782-8D39-3B0C-B79E-F7A37A65B3DA}") _StringBuilder;
 typedef TComInterface<_StringBuilder, &IID__StringBuilder> _StringBuilderPtr;
-
-interface DECLSPEC_UUID("{B36B5C63-42EF-38BC-A07E-0B34C98F164A}") _Exception;
-typedef TComInterface<_Exception, &IID__Exception> _ExceptionPtr;
 
 interface DECLSPEC_UUID("{AB3F47E4-C227-3B05-BF9F-94649BEF9888}") IDeserializationCallback;
 typedef TComInterface<IDeserializationCallback, &IID_IDeserializationCallback> IDeserializationCallbackPtr;
@@ -1898,12 +1908,6 @@ typedef TComInterface<_DataMisalignedException, &IID__DataMisalignedException> _
 
 interface DECLSPEC_UUID("{CCF0139C-79F7-3D0A-AFFE-2B0762C65B07}") _ExecutionEngineException;
 typedef TComInterface<_ExecutionEngineException, &IID__ExecutionEngineException> _ExecutionEngineExceptionPtr;
-
-interface DECLSPEC_UUID("{FB6AB00F-5096-3AF8-A33D-D7885A5FA829}") _Delegate;
-typedef TComInterface<_Delegate, &IID__Delegate> _DelegatePtr;
-
-interface DECLSPEC_UUID("{16FE0885-9129-3884-A232-90B58C5B2AA9}") _MulticastDelegate;
-typedef TComInterface<_MulticastDelegate, &IID__MulticastDelegate> _MulticastDelegatePtr;
 
 interface DECLSPEC_UUID("{7EABA4E2-1259-3CF2-B084-9854278E5897}") _MemberAccessException;
 typedef TComInterface<_MemberAccessException, &IID__MemberAccessException> _MemberAccessExceptionPtr;
@@ -1964,6 +1968,9 @@ typedef TComInterface<_LoaderOptimizationAttribute, &IID__LoaderOptimizationAttr
 
 interface DECLSPEC_UUID("{6E96AA70-9FFB-399D-96BF-A68436095C54}") _AppDomainUnloadedException;
 typedef TComInterface<_AppDomainUnloadedException, &IID__AppDomainUnloadedException> _AppDomainUnloadedExceptionPtr;
+
+interface DECLSPEC_UUID("{F4B8D231-6028-39EF-B017-72988A3F6766}") _EvidenceBase;
+typedef TComInterface<_EvidenceBase, &IID__EvidenceBase> _EvidenceBasePtr;
 
 interface DECLSPEC_UUID("{CFD9CA27-F0BA-388A-ACDE-B7E20FCAD79C}") _ActivationArguments;
 typedef TComInterface<_ActivationArguments, &IID__ActivationArguments> _ActivationArgumentsPtr;
@@ -2163,6 +2170,12 @@ typedef TComInterface<IReflect, &IID_IReflect> IReflectPtr;
 interface DECLSPEC_UUID("{1B96E53C-4028-38BC-9DC3-8D7A9555C311}") _SerializableAttribute;
 typedef TComInterface<_SerializableAttribute, &IID__SerializableAttribute> _SerializableAttributePtr;
 
+interface DECLSPEC_UUID("{85D72F83-BE91-3CB1-B4F0-76B56FF04033}") _STAThreadAttribute;
+typedef TComInterface<_STAThreadAttribute, &IID__STAThreadAttribute> _STAThreadAttributePtr;
+
+interface DECLSPEC_UUID("{C02468D1-8713-3225-BDA3-49B2FE37DDBB}") _MTAThreadAttribute;
+typedef TComInterface<_MTAThreadAttribute, &IID__MTAThreadAttribute> _MTAThreadAttributePtr;
+
 interface DECLSPEC_UUID("{7AB88CA9-17F4-385E-AD41-4EE0AA316FA1}") _TimeoutException;
 typedef TComInterface<_TimeoutException, &IID__TimeoutException> _TimeoutExceptionPtr;
 
@@ -2253,18 +2266,6 @@ typedef TComInterface<_TimerCallback, &IID__TimerCallback> _TimerCallbackPtr;
 interface DECLSPEC_UUID("{B49A029B-406B-3B1E-88E4-F86690D20364}") _Timer;
 typedef TComInterface<_Timer, &IID__Timer> _TimerPtr;
 
-interface DECLSPEC_UUID("{85D72F83-BE91-3CB1-B4F0-76B56FF04033}") _STAThreadAttribute;
-typedef TComInterface<_STAThreadAttribute, &IID__STAThreadAttribute> _STAThreadAttributePtr;
-
-interface DECLSPEC_UUID("{C02468D1-8713-3225-BDA3-49B2FE37DDBB}") _MTAThreadAttribute;
-typedef TComInterface<_MTAThreadAttribute, &IID__MTAThreadAttribute> _MTAThreadAttributePtr;
-
-interface DECLSPEC_UUID("{401F89CB-C127-3041-82FD-B67035395C56}") _ArrayList;
-typedef TComInterface<_ArrayList, &IID__ArrayList> _ArrayListPtr;
-
-interface DECLSPEC_UUID("{F145C46A-D170-3170-B52F-4678DFCA0300}") _BitArray;
-typedef TComInterface<_BitArray, &IID__BitArray> _BitArrayPtr;
-
 interface DECLSPEC_UUID("{EA6795AC-97D6-3377-BE64-829ABD67607B}") _CaseInsensitiveComparer;
 typedef TComInterface<_CaseInsensitiveComparer, &IID__CaseInsensitiveComparer> _CaseInsensitiveComparerPtr;
 
@@ -2277,14 +2278,29 @@ typedef TComInterface<_CaseInsensitiveHashCodeProvider, &IID__CaseInsensitiveHas
 interface DECLSPEC_UUID("{B7D29E26-7798-3FA4-90F4-E6A22D2099F9}") _CollectionBase;
 typedef TComInterface<_CollectionBase, &IID__CollectionBase> _CollectionBasePtr;
 
-interface DECLSPEC_UUID("{8064A157-B5C8-3A4A-AD3D-02DC1A39C417}") _Comparer;
-typedef TComInterface<_Comparer, &IID__Comparer> _ComparerPtr;
-
 interface DECLSPEC_UUID("{6A6841DF-3287-3D87-8060-CE0B4C77D2A1}") IDictionary;
 typedef TComInterface<IDictionary, &IID_IDictionary> IDictionaryPtr;
 
 interface DECLSPEC_UUID("{DDD44DA2-BC6B-3620-9317-C0372968C741}") _DictionaryBase;
 typedef TComInterface<_DictionaryBase, &IID__DictionaryBase> _DictionaryBasePtr;
+
+interface DECLSPEC_UUID("{BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}") _ReadOnlyCollectionBase;
+typedef TComInterface<_ReadOnlyCollectionBase, &IID__ReadOnlyCollectionBase> _ReadOnlyCollectionBasePtr;
+
+interface DECLSPEC_UUID("{3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}") _Queue;
+typedef TComInterface<_Queue, &IID__Queue> _QueuePtr;
+
+interface DECLSPEC_UUID("{401F89CB-C127-3041-82FD-B67035395C56}") _ArrayList;
+typedef TComInterface<_ArrayList, &IID__ArrayList> _ArrayListPtr;
+
+interface DECLSPEC_UUID("{F145C46A-D170-3170-B52F-4678DFCA0300}") _BitArray;
+typedef TComInterface<_BitArray, &IID__BitArray> _BitArrayPtr;
+
+interface DECLSPEC_UUID("{AB538809-3C2F-35D9-80E6-7BAD540484A1}") _Stack;
+typedef TComInterface<_Stack, &IID__Stack> _StackPtr;
+
+interface DECLSPEC_UUID("{8064A157-B5C8-3A4A-AD3D-02DC1A39C417}") _Comparer;
+typedef TComInterface<_Comparer, &IID__Comparer> _ComparerPtr;
 
 interface DECLSPEC_UUID("{35D574BF-7A4F-3588-8C19-12212A0FE4DC}") IDictionaryEnumerator;
 typedef TComInterface<IDictionaryEnumerator, &IID_IDictionaryEnumerator> IDictionaryEnumeratorPtr;
@@ -2292,17 +2308,8 @@ typedef TComInterface<IDictionaryEnumerator, &IID_IDictionaryEnumerator> IDictio
 interface DECLSPEC_UUID("{D25A197E-3E69-3271-A989-23D85E97F920}") _Hashtable;
 typedef TComInterface<_Hashtable, &IID__Hashtable> _HashtablePtr;
 
-interface DECLSPEC_UUID("{3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}") _Queue;
-typedef TComInterface<_Queue, &IID__Queue> _QueuePtr;
-
-interface DECLSPEC_UUID("{BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}") _ReadOnlyCollectionBase;
-typedef TComInterface<_ReadOnlyCollectionBase, &IID__ReadOnlyCollectionBase> _ReadOnlyCollectionBasePtr;
-
 interface DECLSPEC_UUID("{56421139-A143-3AE9-9852-1DBDFE3D6BFA}") _SortedList;
 typedef TComInterface<_SortedList, &IID__SortedList> _SortedListPtr;
-
-interface DECLSPEC_UUID("{AB538809-3C2F-35D9-80E6-7BAD540484A1}") _Stack;
-typedef TComInterface<_Stack, &IID__Stack> _StackPtr;
 
 interface DECLSPEC_UUID("{84E7AC09-795A-3EA9-A36A-5B81EBAB0558}") _Nullable;
 typedef TComInterface<_Nullable, &IID__Nullable> _NullablePtr;
@@ -2538,12 +2545,6 @@ typedef TComInterface<_TypeDelegator, &IID__TypeDelegator> _TypeDelegatorPtr;
 interface DECLSPEC_UUID("{E1817846-3745-3C97-B4A6-EE20A1641B29}") _TypeFilter;
 typedef TComInterface<_TypeFilter, &IID__TypeFilter> _TypeFilterPtr;
 
-interface DECLSPEC_UUID("{93D7A8C5-D2EB-319B-A374-A65D321F2AA9}") IFormatter;
-typedef TComInterface<IFormatter, &IID_IFormatter> IFormatterPtr;
-
-interface DECLSPEC_UUID("{D9BD3C8D-9395-3657-B6EE-D1B509C38B70}") _Formatter;
-typedef TComInterface<_Formatter, &IID__Formatter> _FormatterPtr;
-
 interface DECLSPEC_UUID("{F4F5C303-FAD3-3D0C-A4DF-BB82B5EE308F}") IFormatterConverter;
 typedef TComInterface<IFormatterConverter, &IID_IFormatterConverter> IFormatterConverterPtr;
 
@@ -2556,14 +2557,11 @@ typedef TComInterface<_FormatterServices, &IID__FormatterServices> _FormatterSer
 interface DECLSPEC_UUID("{62339172-DBFA-337B-8AC8-053B241E06AB}") ISerializationSurrogate;
 typedef TComInterface<ISerializationSurrogate, &IID_ISerializationSurrogate> ISerializationSurrogatePtr;
 
+interface DECLSPEC_UUID("{93D7A8C5-D2EB-319B-A374-A65D321F2AA9}") IFormatter;
+typedef TComInterface<IFormatter, &IID_IFormatter> IFormatterPtr;
+
 interface DECLSPEC_UUID("{7C66FF18-A1A5-3E19-857B-0E7B6A9E3F38}") ISurrogateSelector;
 typedef TComInterface<ISurrogateSelector, &IID_ISurrogateSelector> ISurrogateSelectorPtr;
-
-interface DECLSPEC_UUID("{A30646CC-F710-3BFA-A356-B4C858D4ED8E}") _ObjectIDGenerator;
-typedef TComInterface<_ObjectIDGenerator, &IID__ObjectIDGenerator> _ObjectIDGeneratorPtr;
-
-interface DECLSPEC_UUID("{F28E7D04-3319-3968-8201-C6E55BECD3D4}") _ObjectManager;
-typedef TComInterface<_ObjectManager, &IID__ObjectManager> _ObjectManagerPtr;
 
 interface DECLSPEC_UUID("{FECA70D4-AE27-3D94-93DD-A90F02E299D5}") _OptionalFieldAttribute;
 typedef TComInterface<_OptionalFieldAttribute, &IID__OptionalFieldAttribute> _OptionalFieldAttributePtr;
@@ -2583,14 +2581,23 @@ typedef TComInterface<_OnDeserializedAttribute, &IID__OnDeserializedAttribute> _
 interface DECLSPEC_UUID("{450222D0-87CA-3699-A7B4-D8A0FDB72357}") _SerializationBinder;
 typedef TComInterface<_SerializationBinder, &IID__SerializationBinder> _SerializationBinderPtr;
 
+interface DECLSPEC_UUID("{245FE7FD-E020-3053-B5F6-7467FD2C6883}") _SerializationException;
+typedef TComInterface<_SerializationException, &IID__SerializationException> _SerializationExceptionPtr;
+
 interface DECLSPEC_UUID("{B58D62CF-B03A-3A14-B0B6-B1E5AD4E4AD5}") _SerializationInfo;
 typedef TComInterface<_SerializationInfo, &IID__SerializationInfo> _SerializationInfoPtr;
 
 interface DECLSPEC_UUID("{607056C6-1BCA-36C8-AB87-33B202EBF0D8}") _SerializationInfoEnumerator;
 typedef TComInterface<_SerializationInfoEnumerator, &IID__SerializationInfoEnumerator> _SerializationInfoEnumeratorPtr;
 
-interface DECLSPEC_UUID("{245FE7FD-E020-3053-B5F6-7467FD2C6883}") _SerializationException;
-typedef TComInterface<_SerializationException, &IID__SerializationException> _SerializationExceptionPtr;
+interface DECLSPEC_UUID("{D9BD3C8D-9395-3657-B6EE-D1B509C38B70}") _Formatter;
+typedef TComInterface<_Formatter, &IID__Formatter> _FormatterPtr;
+
+interface DECLSPEC_UUID("{A30646CC-F710-3BFA-A356-B4C858D4ED8E}") _ObjectIDGenerator;
+typedef TComInterface<_ObjectIDGenerator, &IID__ObjectIDGenerator> _ObjectIDGeneratorPtr;
+
+interface DECLSPEC_UUID("{F28E7D04-3319-3968-8201-C6E55BECD3D4}") _ObjectManager;
+typedef TComInterface<_ObjectManager, &IID__ObjectManager> _ObjectManagerPtr;
 
 interface DECLSPEC_UUID("{6DE1230E-1F52-3779-9619-F5184103466C}") _SurrogateSelector;
 typedef TComInterface<_SurrogateSelector, &IID__SurrogateSelector> _SurrogateSelectorPtr;
@@ -2598,14 +2605,14 @@ typedef TComInterface<_SurrogateSelector, &IID__SurrogateSelector> _SurrogateSel
 interface DECLSPEC_UUID("{4CCA29E4-584B-3CD0-AD25-855DC5799C16}") _Calendar;
 typedef TComInterface<_Calendar, &IID__Calendar> _CalendarPtr;
 
-interface DECLSPEC_UUID("{89E148C4-2424-30AE-80F5-C5D21EA3366C}") _EastAsianLunisolarCalendar;
-typedef TComInterface<_EastAsianLunisolarCalendar, &IID__EastAsianLunisolarCalendar> _EastAsianLunisolarCalendarPtr;
-
 interface DECLSPEC_UUID("{505DEFE5-AEFA-3E23-82B0-D5EB085BB840}") _CompareInfo;
 typedef TComInterface<_CompareInfo, &IID__CompareInfo> _CompareInfoPtr;
 
 interface DECLSPEC_UUID("{152722C2-F0B1-3D19-ADA8-F40CA5CAECB8}") _CultureInfo;
 typedef TComInterface<_CultureInfo, &IID__CultureInfo> _CultureInfoPtr;
+
+interface DECLSPEC_UUID("{AB20BF9E-7549-3226-BA87-C1EDFB6CDA6C}") _CultureNotFoundException;
+typedef TComInterface<_CultureNotFoundException, &IID__CultureNotFoundException> _CultureNotFoundExceptionPtr;
 
 interface DECLSPEC_UUID("{015E9F67-337C-398A-A0C1-DA4AF1905571}") _DateTimeFormatInfo;
 typedef TComInterface<_DateTimeFormatInfo, &IID__DateTimeFormatInfo> _DateTimeFormatInfoPtr;
@@ -2622,11 +2629,14 @@ typedef TComInterface<_HebrewCalendar, &IID__HebrewCalendar> _HebrewCalendarPtr;
 interface DECLSPEC_UUID("{28DDC187-56B2-34CF-A078-48BD1E113D1E}") _HijriCalendar;
 typedef TComInterface<_HijriCalendar, &IID__HijriCalendar> _HijriCalendarPtr;
 
-interface DECLSPEC_UUID("{D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}") _JapaneseCalendar;
-typedef TComInterface<_JapaneseCalendar, &IID__JapaneseCalendar> _JapaneseCalendarPtr;
+interface DECLSPEC_UUID("{89E148C4-2424-30AE-80F5-C5D21EA3366C}") _EastAsianLunisolarCalendar;
+typedef TComInterface<_EastAsianLunisolarCalendar, &IID__EastAsianLunisolarCalendar> _EastAsianLunisolarCalendarPtr;
 
 interface DECLSPEC_UUID("{36E2DE92-1FB3-3D7D-BA26-9CAD5B98DD52}") _JulianCalendar;
 typedef TComInterface<_JulianCalendar, &IID__JulianCalendar> _JulianCalendarPtr;
+
+interface DECLSPEC_UUID("{D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}") _JapaneseCalendar;
+typedef TComInterface<_JapaneseCalendar, &IID__JapaneseCalendar> _JapaneseCalendarPtr;
 
 interface DECLSPEC_UUID("{48BEA6C4-752E-3974-8CA8-CFB6274E2379}") _KoreanCalendar;
 typedef TComInterface<_KoreanCalendar, &IID__KoreanCalendar> _KoreanCalendarPtr;
@@ -3366,15 +3376,6 @@ typedef TComInterface<IMessageSink, &IID_IMessageSink> IMessageSinkPtr;
 interface DECLSPEC_UUID("{3936ABE1-B29E-3593-83F1-793D1A7F3898}") _AsyncResult;
 typedef TComInterface<_AsyncResult, &IID__AsyncResult> _AsyncResultPtr;
 
-interface DECLSPEC_UUID("{53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}") _CallContext;
-typedef TComInterface<_CallContext, &IID__CallContext> _CallContextPtr;
-
-interface DECLSPEC_UUID("{4D125449-BA27-3927-8589-3E1B34B622E5}") ILogicalThreadAffinative;
-typedef TComInterface<ILogicalThreadAffinative, &IID_ILogicalThreadAffinative> ILogicalThreadAffinativePtr;
-
-interface DECLSPEC_UUID("{9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}") _LogicalCallContext;
-typedef TComInterface<_LogicalCallContext, &IID__LogicalCallContext> _LogicalCallContextPtr;
-
 interface DECLSPEC_UUID("{FFB2E16E-E5C7-367C-B326-965ABF510F24}") _ChannelServices;
 typedef TComInterface<_ChannelServices, &IID__ChannelServices> _ChannelServicesPtr;
 
@@ -3434,12 +3435,6 @@ typedef TComInterface<IServerChannelSink, &IID_IServerChannelSink> IServerChanne
 
 interface DECLSPEC_UUID("{77C9BCEB-9958-33C0-A858-599F66697DA7}") _EnterpriseServicesHelper;
 typedef TComInterface<_EnterpriseServicesHelper, &IID__EnterpriseServicesHelper> _EnterpriseServicesHelperPtr;
-
-interface DECLSPEC_UUID("{0D296515-AD19-3602-B415-D8EC77066081}") _Header;
-typedef TComInterface<_Header, &IID__Header> _HeaderPtr;
-
-interface DECLSPEC_UUID("{5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}") _HeaderHandler;
-typedef TComInterface<_HeaderHandler, &IID__HeaderHandler> _HeaderHandlerPtr;
 
 interface DECLSPEC_UUID("{1A8B0DE6-B825-38C5-B744-8F93075FD6FA}") IMessage;
 typedef TComInterface<IMessage, &IID_IMessage> IMessagePtr;
@@ -3560,9 +3555,6 @@ typedef TComInterface<_MethodCallMessageWrapper, &IID__MethodCallMessageWrapper>
 
 interface DECLSPEC_UUID("{89304439-A24F-30F6-9A8F-89CE472D85DA}") _MethodReturnMessageWrapper;
 typedef TComInterface<_MethodReturnMessageWrapper, &IID__MethodReturnMessageWrapper> _MethodReturnMessageWrapperPtr;
-
-interface DECLSPEC_UUID("{EA675B47-64E0-3B5F-9BE7-F7DC2990730D}") _ObjectHandle;
-typedef TComInterface<_ObjectHandle, &IID__ObjectHandle> _ObjectHandlePtr;
 
 interface DECLSPEC_UUID("{C09EFFA9-1FFE-3A52-A733-6236CBC45E7B}") IRemotingTypeInfo;
 typedef TComInterface<IRemotingTypeInfo, &IID_IRemotingTypeInfo> IRemotingTypeInfoPtr;
@@ -3750,11 +3742,26 @@ typedef TComInterface<_TrackingServices, &IID__TrackingServices> _TrackingServic
 interface DECLSPEC_UUID("{717105A3-739B-3BC3-A2B7-AD215903FAD2}") _UrlAttribute;
 typedef TComInterface<_UrlAttribute, &IID__UrlAttribute> _UrlAttributePtr;
 
+interface DECLSPEC_UUID("{0D296515-AD19-3602-B415-D8EC77066081}") _Header;
+typedef TComInterface<_Header, &IID__Header> _HeaderPtr;
+
+interface DECLSPEC_UUID("{5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}") _HeaderHandler;
+typedef TComInterface<_HeaderHandler, &IID__HeaderHandler> _HeaderHandlerPtr;
+
+interface DECLSPEC_UUID("{53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}") _CallContext;
+typedef TComInterface<_CallContext, &IID__CallContext> _CallContextPtr;
+
+interface DECLSPEC_UUID("{4D125449-BA27-3927-8589-3E1B34B622E5}") ILogicalThreadAffinative;
+typedef TComInterface<ILogicalThreadAffinative, &IID_ILogicalThreadAffinative> ILogicalThreadAffinativePtr;
+
+interface DECLSPEC_UUID("{9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}") _LogicalCallContext;
+typedef TComInterface<_LogicalCallContext, &IID__LogicalCallContext> _LogicalCallContextPtr;
+
+interface DECLSPEC_UUID("{EA675B47-64E0-3B5F-9BE7-F7DC2990730D}") _ObjectHandle;
+typedef TComInterface<_ObjectHandle, &IID__ObjectHandle> _ObjectHandlePtr;
+
 interface DECLSPEC_UUID("{34EC3BD7-F2F6-3C20-A639-804BFF89DF65}") _IsolatedStorage;
 typedef TComInterface<_IsolatedStorage, &IID__IsolatedStorage> _IsolatedStoragePtr;
-
-interface DECLSPEC_UUID("{6BBB7DEE-186F-3D51-9486-BE0A71E915CE}") _IsolatedStorageFile;
-typedef TComInterface<_IsolatedStorageFile, &IID__IsolatedStorageFile> _IsolatedStorageFilePtr;
 
 interface DECLSPEC_UUID("{68D5592B-47C8-381A-8D51-3925C16CF025}") _IsolatedStorageFileStream;
 typedef TComInterface<_IsolatedStorageFileStream, &IID__IsolatedStorageFileStream> _IsolatedStorageFileStreamPtr;
@@ -3764,6 +3771,9 @@ typedef TComInterface<_IsolatedStorageException, &IID__IsolatedStorageException>
 
 interface DECLSPEC_UUID("{F5006531-D4D7-319E-9EDA-9B4B65AD8D4F}") INormalizeForIsolatedStorage;
 typedef TComInterface<INormalizeForIsolatedStorage, &IID_INormalizeForIsolatedStorage> INormalizeForIsolatedStoragePtr;
+
+interface DECLSPEC_UUID("{6BBB7DEE-186F-3D51-9486-BE0A71E915CE}") _IsolatedStorageFile;
+typedef TComInterface<_IsolatedStorageFile, &IID__IsolatedStorageFile> _IsolatedStorageFilePtr;
 
 interface DECLSPEC_UUID("{E699146C-7793-3455-9BEF-964C90D8F995}") ISoapMessage;
 typedef TComInterface<ISoapMessage, &IID_ISoapMessage> ISoapMessagePtr;
@@ -3864,6 +3874,9 @@ typedef TComInterface<_RandomNumberGenerator, &IID__RandomNumberGenerator> _Rand
 interface DECLSPEC_UUID("{2C65D4C0-584C-3E4E-8E6D-1AFB112BFF69}") _RNGCryptoServiceProvider;
 typedef TComInterface<_RNGCryptoServiceProvider, &IID__RNGCryptoServiceProvider> _RNGCryptoServiceProviderPtr;
 
+interface DECLSPEC_UUID("{05BC0E38-7136-3825-9E34-26C1CF2142C9}") _SymmetricAlgorithm;
+typedef TComInterface<_SymmetricAlgorithm, &IID__SymmetricAlgorithm> _SymmetricAlgorithmPtr;
+
 interface DECLSPEC_UUID("{09343AC0-D19A-3E62-BC16-0F600F10180A}") _AsymmetricAlgorithm;
 typedef TComInterface<_AsymmetricAlgorithm, &IID__AsymmetricAlgorithm> _AsymmetricAlgorithmPtr;
 
@@ -3896,9 +3909,6 @@ typedef TComInterface<_CryptoConfig, &IID__CryptoConfig> _CryptoConfigPtr;
 
 interface DECLSPEC_UUID("{4134F762-D0EC-3210-93C0-DE4F443D5669}") _CryptoStream;
 typedef TComInterface<_CryptoStream, &IID__CryptoStream> _CryptoStreamPtr;
-
-interface DECLSPEC_UUID("{05BC0E38-7136-3825-9E34-26C1CF2142C9}") _SymmetricAlgorithm;
-typedef TComInterface<_SymmetricAlgorithm, &IID__SymmetricAlgorithm> _SymmetricAlgorithmPtr;
 
 interface DECLSPEC_UUID("{C7EF0214-B91C-3799-98DD-C994AABFC741}") _DES;
 typedef TComInterface<_DES, &IID__DES> _DESPtr;
@@ -4140,12 +4150,16 @@ typedef _EnumBuilder EnumBuilder;
 typedef _EnumBuilderPtr EnumBuilderPtr;
 typedef _Object CLRObject;
 typedef _ObjectPtr CLRObjectPtr;
-typedef _Array CLRArray;
-typedef _ArrayPtr CLRArrayPtr;
 typedef _ValueType ValueType;
 typedef _ValueTypePtr ValueTypePtr;
 typedef _Enum CLREnum;
 typedef _EnumPtr CLREnumPtr;
+typedef _Delegate Delegate;
+typedef _DelegatePtr DelegatePtr;
+typedef _MulticastDelegate MulticastDelegate;
+typedef _MulticastDelegatePtr MulticastDelegatePtr;
+typedef _Array CLRArray;
+typedef _ArrayPtr CLRArrayPtr;
 typedef _String CLRString;
 typedef _StringPtr CLRStringPtr;
 typedef _StringComparer StringComparer;
@@ -4162,10 +4176,6 @@ typedef _DataMisalignedException DataMisalignedException;
 typedef _DataMisalignedExceptionPtr DataMisalignedExceptionPtr;
 typedef _ExecutionEngineException ExecutionEngineException;
 typedef _ExecutionEngineExceptionPtr ExecutionEngineExceptionPtr;
-typedef _Delegate Delegate;
-typedef _DelegatePtr DelegatePtr;
-typedef _MulticastDelegate MulticastDelegate;
-typedef _MulticastDelegatePtr MulticastDelegatePtr;
 typedef _MemberAccessException MemberAccessException;
 typedef _MemberAccessExceptionPtr MemberAccessExceptionPtr;
 typedef _AccessViolationException AccessViolationException;
@@ -4196,6 +4206,8 @@ typedef _LoaderOptimizationAttribute LoaderOptimizationAttribute;
 typedef _LoaderOptimizationAttributePtr LoaderOptimizationAttributePtr;
 typedef _AppDomainUnloadedException AppDomainUnloadedException;
 typedef _AppDomainUnloadedExceptionPtr AppDomainUnloadedExceptionPtr;
+typedef _EvidenceBase EvidenceBase;
+typedef _EvidenceBasePtr EvidenceBasePtr;
 typedef _ActivationArguments ActivationArguments;
 typedef _ActivationArgumentsPtr ActivationArgumentsPtr;
 typedef _ApplicationId ApplicationId;
@@ -4310,6 +4322,10 @@ typedef _RankException RankException;
 typedef _RankExceptionPtr RankExceptionPtr;
 typedef _SerializableAttribute SerializableAttribute;
 typedef _SerializableAttributePtr SerializableAttributePtr;
+typedef _STAThreadAttribute STAThreadAttribute;
+typedef _STAThreadAttributePtr STAThreadAttributePtr;
+typedef _MTAThreadAttribute MTAThreadAttribute;
+typedef _MTAThreadAttributePtr MTAThreadAttributePtr;
 typedef _TimeoutException TimeoutException;
 typedef _TimeoutExceptionPtr TimeoutExceptionPtr;
 typedef _TypeInitializationException TypeInitializationException;
@@ -4368,34 +4384,30 @@ typedef _TimerCallback TimerCallback;
 typedef _TimerCallbackPtr TimerCallbackPtr;
 typedef _Timer Timer;
 typedef _TimerPtr TimerPtr;
-typedef _STAThreadAttribute STAThreadAttribute;
-typedef _STAThreadAttributePtr STAThreadAttributePtr;
-typedef _MTAThreadAttribute MTAThreadAttribute;
-typedef _MTAThreadAttributePtr MTAThreadAttributePtr;
-typedef _ArrayList ArrayList;
-typedef _ArrayListPtr ArrayListPtr;
-typedef _BitArray BitArray;
-typedef _BitArrayPtr BitArrayPtr;
 typedef _CaseInsensitiveComparer CaseInsensitiveComparer;
 typedef _CaseInsensitiveComparerPtr CaseInsensitiveComparerPtr;
 typedef _CaseInsensitiveHashCodeProvider CaseInsensitiveHashCodeProvider;
 typedef _CaseInsensitiveHashCodeProviderPtr CaseInsensitiveHashCodeProviderPtr;
 typedef _CollectionBase CollectionBase;
 typedef _CollectionBasePtr CollectionBasePtr;
-typedef _Comparer Comparer;
-typedef _ComparerPtr ComparerPtr;
 typedef _DictionaryBase DictionaryBase;
 typedef _DictionaryBasePtr DictionaryBasePtr;
-typedef _Hashtable Hashtable;
-typedef _HashtablePtr HashtablePtr;
-typedef _Queue Queue;
-typedef _QueuePtr QueuePtr;
 typedef _ReadOnlyCollectionBase ReadOnlyCollectionBase;
 typedef _ReadOnlyCollectionBasePtr ReadOnlyCollectionBasePtr;
-typedef _SortedList SortedList;
-typedef _SortedListPtr SortedListPtr;
+typedef _Queue Queue;
+typedef _QueuePtr QueuePtr;
+typedef _ArrayList ArrayList;
+typedef _ArrayListPtr ArrayListPtr;
+typedef _BitArray BitArray;
+typedef _BitArrayPtr BitArrayPtr;
 typedef _Stack Stack;
 typedef _StackPtr StackPtr;
+typedef _Comparer Comparer;
+typedef _ComparerPtr ComparerPtr;
+typedef _Hashtable Hashtable;
+typedef _HashtablePtr HashtablePtr;
+typedef _SortedList SortedList;
+typedef _SortedListPtr SortedListPtr;
 typedef _Nullable Nullable;
 typedef _NullablePtr NullablePtr;
 typedef _KeyNotFoundException KeyNotFoundException;
@@ -4512,16 +4524,10 @@ typedef _TypeDelegator TypeDelegator;
 typedef _TypeDelegatorPtr TypeDelegatorPtr;
 typedef _TypeFilter TypeFilter;
 typedef _TypeFilterPtr TypeFilterPtr;
-typedef _Formatter Formatter;
-typedef _FormatterPtr FormatterPtr;
 typedef _FormatterConverter FormatterConverter;
 typedef _FormatterConverterPtr FormatterConverterPtr;
 typedef _FormatterServices FormatterServices;
 typedef _FormatterServicesPtr FormatterServicesPtr;
-typedef _ObjectIDGenerator ObjectIDGenerator;
-typedef _ObjectIDGeneratorPtr ObjectIDGeneratorPtr;
-typedef _ObjectManager ObjectManager;
-typedef _ObjectManagerPtr ObjectManagerPtr;
 typedef _OptionalFieldAttribute OptionalFieldAttribute;
 typedef _OptionalFieldAttributePtr OptionalFieldAttributePtr;
 typedef _OnSerializingAttribute OnSerializingAttribute;
@@ -4534,22 +4540,28 @@ typedef _OnDeserializedAttribute OnDeserializedAttribute;
 typedef _OnDeserializedAttributePtr OnDeserializedAttributePtr;
 typedef _SerializationBinder SerializationBinder;
 typedef _SerializationBinderPtr SerializationBinderPtr;
+typedef _SerializationException SerializationException;
+typedef _SerializationExceptionPtr SerializationExceptionPtr;
 typedef _SerializationInfo SerializationInfo;
 typedef _SerializationInfoPtr SerializationInfoPtr;
 typedef _SerializationInfoEnumerator SerializationInfoEnumerator;
 typedef _SerializationInfoEnumeratorPtr SerializationInfoEnumeratorPtr;
-typedef _SerializationException SerializationException;
-typedef _SerializationExceptionPtr SerializationExceptionPtr;
+typedef _Formatter Formatter;
+typedef _FormatterPtr FormatterPtr;
+typedef _ObjectIDGenerator ObjectIDGenerator;
+typedef _ObjectIDGeneratorPtr ObjectIDGeneratorPtr;
+typedef _ObjectManager ObjectManager;
+typedef _ObjectManagerPtr ObjectManagerPtr;
 typedef _SurrogateSelector SurrogateSelector;
 typedef _SurrogateSelectorPtr SurrogateSelectorPtr;
 typedef _Calendar Calendar;
 typedef _CalendarPtr CalendarPtr;
-typedef _EastAsianLunisolarCalendar EastAsianLunisolarCalendar;
-typedef _EastAsianLunisolarCalendarPtr EastAsianLunisolarCalendarPtr;
 typedef _CompareInfo CompareInfo;
 typedef _CompareInfoPtr CompareInfoPtr;
 typedef _CultureInfo CultureInfo;
 typedef _CultureInfoPtr CultureInfoPtr;
+typedef _CultureNotFoundException CultureNotFoundException;
+typedef _CultureNotFoundExceptionPtr CultureNotFoundExceptionPtr;
 typedef _DateTimeFormatInfo DateTimeFormatInfo;
 typedef _DateTimeFormatInfoPtr DateTimeFormatInfoPtr;
 typedef _DaylightTime DaylightTime;
@@ -4560,10 +4572,12 @@ typedef _HebrewCalendar HebrewCalendar;
 typedef _HebrewCalendarPtr HebrewCalendarPtr;
 typedef _HijriCalendar HijriCalendar;
 typedef _HijriCalendarPtr HijriCalendarPtr;
-typedef _JapaneseCalendar JapaneseCalendar;
-typedef _JapaneseCalendarPtr JapaneseCalendarPtr;
+typedef _EastAsianLunisolarCalendar EastAsianLunisolarCalendar;
+typedef _EastAsianLunisolarCalendarPtr EastAsianLunisolarCalendarPtr;
 typedef _JulianCalendar JulianCalendar;
 typedef _JulianCalendarPtr JulianCalendarPtr;
+typedef _JapaneseCalendar JapaneseCalendar;
+typedef _JapaneseCalendarPtr JapaneseCalendarPtr;
 typedef _KoreanCalendar KoreanCalendar;
 typedef _KoreanCalendarPtr KoreanCalendarPtr;
 typedef _RegionInfo RegionInfo;
@@ -5006,10 +5020,6 @@ typedef _ContextAttribute ContextAttribute;
 typedef _ContextAttributePtr ContextAttributePtr;
 typedef _AsyncResult AsyncResult;
 typedef _AsyncResultPtr AsyncResultPtr;
-typedef _CallContext CallContext;
-typedef _CallContextPtr CallContextPtr;
-typedef _LogicalCallContext LogicalCallContext;
-typedef _LogicalCallContextPtr LogicalCallContextPtr;
 typedef _ChannelServices ChannelServices;
 typedef _ChannelServicesPtr ChannelServicesPtr;
 typedef _ClientChannelSinkStack ClientChannelSinkStack;
@@ -5026,10 +5036,6 @@ typedef _ContextProperty ContextProperty;
 typedef _ContextPropertyPtr ContextPropertyPtr;
 typedef _EnterpriseServicesHelper EnterpriseServicesHelper;
 typedef _EnterpriseServicesHelperPtr EnterpriseServicesHelperPtr;
-typedef _Header Header;
-typedef _HeaderPtr HeaderPtr;
-typedef _HeaderHandler HeaderHandler;
-typedef _HeaderHandlerPtr HeaderHandlerPtr;
 typedef _ChannelDataStore ChannelDataStore;
 typedef _ChannelDataStorePtr ChannelDataStorePtr;
 typedef _TransportHeaders TransportHeaders;
@@ -5060,8 +5066,6 @@ typedef _MethodCallMessageWrapper MethodCallMessageWrapper;
 typedef _MethodCallMessageWrapperPtr MethodCallMessageWrapperPtr;
 typedef _MethodReturnMessageWrapper MethodReturnMessageWrapper;
 typedef _MethodReturnMessageWrapperPtr MethodReturnMessageWrapperPtr;
-typedef _ObjectHandle ObjectHandle;
-typedef _ObjectHandlePtr ObjectHandlePtr;
 typedef _ObjRef ObjRef;
 typedef _ObjRefPtr ObjRefPtr;
 typedef _OneWayAttribute OneWayAttribute;
@@ -5176,14 +5180,24 @@ typedef _TrackingServices TrackingServices;
 typedef _TrackingServicesPtr TrackingServicesPtr;
 typedef _UrlAttribute UrlAttribute;
 typedef _UrlAttributePtr UrlAttributePtr;
+typedef _Header Header;
+typedef _HeaderPtr HeaderPtr;
+typedef _HeaderHandler HeaderHandler;
+typedef _HeaderHandlerPtr HeaderHandlerPtr;
+typedef _CallContext CallContext;
+typedef _CallContextPtr CallContextPtr;
+typedef _LogicalCallContext LogicalCallContext;
+typedef _LogicalCallContextPtr LogicalCallContextPtr;
+typedef _ObjectHandle ObjectHandle;
+typedef _ObjectHandlePtr ObjectHandlePtr;
 typedef _IsolatedStorage IsolatedStorage;
 typedef _IsolatedStoragePtr IsolatedStoragePtr;
-typedef _IsolatedStorageFile IsolatedStorageFile;
-typedef _IsolatedStorageFilePtr IsolatedStorageFilePtr;
 typedef _IsolatedStorageFileStream IsolatedStorageFileStream;
 typedef _IsolatedStorageFileStreamPtr IsolatedStorageFileStreamPtr;
 typedef _IsolatedStorageException IsolatedStorageException;
 typedef _IsolatedStorageExceptionPtr IsolatedStorageExceptionPtr;
+typedef _IsolatedStorageFile IsolatedStorageFile;
+typedef _IsolatedStorageFilePtr IsolatedStorageFilePtr;
 typedef _InternalRM InternalRM;
 typedef _InternalRMPtr InternalRMPtr;
 typedef _InternalST InternalST;
@@ -5216,6 +5230,8 @@ typedef _RandomNumberGenerator RandomNumberGenerator;
 typedef _RandomNumberGeneratorPtr RandomNumberGeneratorPtr;
 typedef _RNGCryptoServiceProvider RNGCryptoServiceProvider;
 typedef _RNGCryptoServiceProviderPtr RNGCryptoServiceProviderPtr;
+typedef _SymmetricAlgorithm SymmetricAlgorithm;
+typedef _SymmetricAlgorithmPtr SymmetricAlgorithmPtr;
 typedef _AsymmetricAlgorithm AsymmetricAlgorithm;
 typedef _AsymmetricAlgorithmPtr AsymmetricAlgorithmPtr;
 typedef _AsymmetricKeyExchangeDeformatter AsymmetricKeyExchangeDeformatter;
@@ -5238,8 +5254,6 @@ typedef _CryptoConfig CryptoConfig;
 typedef _CryptoConfigPtr CryptoConfigPtr;
 typedef _CryptoStream CryptoStream;
 typedef _CryptoStreamPtr CryptoStreamPtr;
-typedef _SymmetricAlgorithm SymmetricAlgorithm;
-typedef _SymmetricAlgorithmPtr SymmetricAlgorithmPtr;
 typedef _DES DES;
 typedef _DESPtr DESPtr;
 typedef _DESCryptoServiceProvider DESCryptoServiceProvider;
@@ -5381,9 +5395,11 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_TypeBuilder (&LIBID_mscorlib)
 #define LIBID_OF_EnumBuilder (&LIBID_mscorlib)
 #define LIBID_OF_CLRObject (&LIBID_mscorlib)
-#define LIBID_OF_CLRArray (&LIBID_mscorlib)
 #define LIBID_OF_ValueType (&LIBID_mscorlib)
 #define LIBID_OF_CLREnum (&LIBID_mscorlib)
+#define LIBID_OF_Delegate (&LIBID_mscorlib)
+#define LIBID_OF_MulticastDelegate (&LIBID_mscorlib)
+#define LIBID_OF_CLRArray (&LIBID_mscorlib)
 #define LIBID_OF_CLRString (&LIBID_mscorlib)
 #define LIBID_OF_StringComparer (&LIBID_mscorlib)
 #define LIBID_OF_StringBuilder (&LIBID_mscorlib)
@@ -5392,8 +5408,6 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_StackOverflowException (&LIBID_mscorlib)
 #define LIBID_OF_DataMisalignedException (&LIBID_mscorlib)
 #define LIBID_OF_ExecutionEngineException (&LIBID_mscorlib)
-#define LIBID_OF_Delegate (&LIBID_mscorlib)
-#define LIBID_OF_MulticastDelegate (&LIBID_mscorlib)
 #define LIBID_OF_MemberAccessException (&LIBID_mscorlib)
 #define LIBID_OF_AccessViolationException (&LIBID_mscorlib)
 #define LIBID_OF_ApplicationActivator (&LIBID_mscorlib)
@@ -5409,6 +5423,7 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_AppDomainManager (&LIBID_mscorlib)
 #define LIBID_OF_LoaderOptimizationAttribute (&LIBID_mscorlib)
 #define LIBID_OF_AppDomainUnloadedException (&LIBID_mscorlib)
+#define LIBID_OF_EvidenceBase (&LIBID_mscorlib)
 #define LIBID_OF_ActivationArguments (&LIBID_mscorlib)
 #define LIBID_OF_ApplicationId (&LIBID_mscorlib)
 #define LIBID_OF_ArgumentException (&LIBID_mscorlib)
@@ -5466,6 +5481,8 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_Random (&LIBID_mscorlib)
 #define LIBID_OF_RankException (&LIBID_mscorlib)
 #define LIBID_OF_SerializableAttribute (&LIBID_mscorlib)
+#define LIBID_OF_STAThreadAttribute (&LIBID_mscorlib)
+#define LIBID_OF_MTAThreadAttribute (&LIBID_mscorlib)
 #define LIBID_OF_TimeoutException (&LIBID_mscorlib)
 #define LIBID_OF_TypeInitializationException (&LIBID_mscorlib)
 #define LIBID_OF_UnauthorizedAccessException (&LIBID_mscorlib)
@@ -5495,20 +5512,18 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_Timeout (&LIBID_mscorlib)
 #define LIBID_OF_TimerCallback (&LIBID_mscorlib)
 #define LIBID_OF_Timer (&LIBID_mscorlib)
-#define LIBID_OF_STAThreadAttribute (&LIBID_mscorlib)
-#define LIBID_OF_MTAThreadAttribute (&LIBID_mscorlib)
-#define LIBID_OF_ArrayList (&LIBID_mscorlib)
-#define LIBID_OF_BitArray (&LIBID_mscorlib)
 #define LIBID_OF_CaseInsensitiveComparer (&LIBID_mscorlib)
 #define LIBID_OF_CaseInsensitiveHashCodeProvider (&LIBID_mscorlib)
 #define LIBID_OF_CollectionBase (&LIBID_mscorlib)
-#define LIBID_OF_Comparer (&LIBID_mscorlib)
 #define LIBID_OF_DictionaryBase (&LIBID_mscorlib)
-#define LIBID_OF_Hashtable (&LIBID_mscorlib)
-#define LIBID_OF_Queue (&LIBID_mscorlib)
 #define LIBID_OF_ReadOnlyCollectionBase (&LIBID_mscorlib)
-#define LIBID_OF_SortedList (&LIBID_mscorlib)
+#define LIBID_OF_Queue (&LIBID_mscorlib)
+#define LIBID_OF_ArrayList (&LIBID_mscorlib)
+#define LIBID_OF_BitArray (&LIBID_mscorlib)
 #define LIBID_OF_Stack (&LIBID_mscorlib)
+#define LIBID_OF_Comparer (&LIBID_mscorlib)
+#define LIBID_OF_Hashtable (&LIBID_mscorlib)
+#define LIBID_OF_SortedList (&LIBID_mscorlib)
 #define LIBID_OF_Nullable (&LIBID_mscorlib)
 #define LIBID_OF_KeyNotFoundException (&LIBID_mscorlib)
 #define LIBID_OF_ConditionalAttribute (&LIBID_mscorlib)
@@ -5567,32 +5582,33 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_TargetParameterCountException (&LIBID_mscorlib)
 #define LIBID_OF_TypeDelegator (&LIBID_mscorlib)
 #define LIBID_OF_TypeFilter (&LIBID_mscorlib)
-#define LIBID_OF_Formatter (&LIBID_mscorlib)
 #define LIBID_OF_FormatterConverter (&LIBID_mscorlib)
 #define LIBID_OF_FormatterServices (&LIBID_mscorlib)
-#define LIBID_OF_ObjectIDGenerator (&LIBID_mscorlib)
-#define LIBID_OF_ObjectManager (&LIBID_mscorlib)
 #define LIBID_OF_OptionalFieldAttribute (&LIBID_mscorlib)
 #define LIBID_OF_OnSerializingAttribute (&LIBID_mscorlib)
 #define LIBID_OF_OnSerializedAttribute (&LIBID_mscorlib)
 #define LIBID_OF_OnDeserializingAttribute (&LIBID_mscorlib)
 #define LIBID_OF_OnDeserializedAttribute (&LIBID_mscorlib)
 #define LIBID_OF_SerializationBinder (&LIBID_mscorlib)
+#define LIBID_OF_SerializationException (&LIBID_mscorlib)
 #define LIBID_OF_SerializationInfo (&LIBID_mscorlib)
 #define LIBID_OF_SerializationInfoEnumerator (&LIBID_mscorlib)
-#define LIBID_OF_SerializationException (&LIBID_mscorlib)
+#define LIBID_OF_Formatter (&LIBID_mscorlib)
+#define LIBID_OF_ObjectIDGenerator (&LIBID_mscorlib)
+#define LIBID_OF_ObjectManager (&LIBID_mscorlib)
 #define LIBID_OF_SurrogateSelector (&LIBID_mscorlib)
 #define LIBID_OF_Calendar (&LIBID_mscorlib)
-#define LIBID_OF_EastAsianLunisolarCalendar (&LIBID_mscorlib)
 #define LIBID_OF_CompareInfo (&LIBID_mscorlib)
 #define LIBID_OF_CultureInfo (&LIBID_mscorlib)
+#define LIBID_OF_CultureNotFoundException (&LIBID_mscorlib)
 #define LIBID_OF_DateTimeFormatInfo (&LIBID_mscorlib)
 #define LIBID_OF_DaylightTime (&LIBID_mscorlib)
 #define LIBID_OF_GregorianCalendar (&LIBID_mscorlib)
 #define LIBID_OF_HebrewCalendar (&LIBID_mscorlib)
 #define LIBID_OF_HijriCalendar (&LIBID_mscorlib)
-#define LIBID_OF_JapaneseCalendar (&LIBID_mscorlib)
+#define LIBID_OF_EastAsianLunisolarCalendar (&LIBID_mscorlib)
 #define LIBID_OF_JulianCalendar (&LIBID_mscorlib)
+#define LIBID_OF_JapaneseCalendar (&LIBID_mscorlib)
 #define LIBID_OF_KoreanCalendar (&LIBID_mscorlib)
 #define LIBID_OF_RegionInfo (&LIBID_mscorlib)
 #define LIBID_OF_SortKey (&LIBID_mscorlib)
@@ -5814,8 +5830,6 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_VerificationException (&LIBID_mscorlib)
 #define LIBID_OF_ContextAttribute (&LIBID_mscorlib)
 #define LIBID_OF_AsyncResult (&LIBID_mscorlib)
-#define LIBID_OF_CallContext (&LIBID_mscorlib)
-#define LIBID_OF_LogicalCallContext (&LIBID_mscorlib)
 #define LIBID_OF_ChannelServices (&LIBID_mscorlib)
 #define LIBID_OF_ClientChannelSinkStack (&LIBID_mscorlib)
 #define LIBID_OF_ServerChannelSinkStack (&LIBID_mscorlib)
@@ -5824,8 +5838,6 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_Context (&LIBID_mscorlib)
 #define LIBID_OF_ContextProperty (&LIBID_mscorlib)
 #define LIBID_OF_EnterpriseServicesHelper (&LIBID_mscorlib)
-#define LIBID_OF_Header (&LIBID_mscorlib)
-#define LIBID_OF_HeaderHandler (&LIBID_mscorlib)
 #define LIBID_OF_ChannelDataStore (&LIBID_mscorlib)
 #define LIBID_OF_TransportHeaders (&LIBID_mscorlib)
 #define LIBID_OF_SinkProviderData (&LIBID_mscorlib)
@@ -5841,7 +5853,6 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_InternalMessageWrapper (&LIBID_mscorlib)
 #define LIBID_OF_MethodCallMessageWrapper (&LIBID_mscorlib)
 #define LIBID_OF_MethodReturnMessageWrapper (&LIBID_mscorlib)
-#define LIBID_OF_ObjectHandle (&LIBID_mscorlib)
 #define LIBID_OF_ObjRef (&LIBID_mscorlib)
 #define LIBID_OF_OneWayAttribute (&LIBID_mscorlib)
 #define LIBID_OF_ProxyAttribute (&LIBID_mscorlib)
@@ -5899,10 +5910,15 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_SynchronizationAttribute (&LIBID_mscorlib)
 #define LIBID_OF_TrackingServices (&LIBID_mscorlib)
 #define LIBID_OF_UrlAttribute (&LIBID_mscorlib)
+#define LIBID_OF_Header (&LIBID_mscorlib)
+#define LIBID_OF_HeaderHandler (&LIBID_mscorlib)
+#define LIBID_OF_CallContext (&LIBID_mscorlib)
+#define LIBID_OF_LogicalCallContext (&LIBID_mscorlib)
+#define LIBID_OF_ObjectHandle (&LIBID_mscorlib)
 #define LIBID_OF_IsolatedStorage (&LIBID_mscorlib)
-#define LIBID_OF_IsolatedStorageFile (&LIBID_mscorlib)
 #define LIBID_OF_IsolatedStorageFileStream (&LIBID_mscorlib)
 #define LIBID_OF_IsolatedStorageException (&LIBID_mscorlib)
+#define LIBID_OF_IsolatedStorageFile (&LIBID_mscorlib)
 #define LIBID_OF_InternalRM (&LIBID_mscorlib)
 #define LIBID_OF_InternalST (&LIBID_mscorlib)
 #define LIBID_OF_SoapMessage (&LIBID_mscorlib)
@@ -5919,6 +5935,7 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_CryptographicUnexpectedOperationException (&LIBID_mscorlib)
 #define LIBID_OF_RandomNumberGenerator (&LIBID_mscorlib)
 #define LIBID_OF_RNGCryptoServiceProvider (&LIBID_mscorlib)
+#define LIBID_OF_SymmetricAlgorithm (&LIBID_mscorlib)
 #define LIBID_OF_AsymmetricAlgorithm (&LIBID_mscorlib)
 #define LIBID_OF_AsymmetricKeyExchangeDeformatter (&LIBID_mscorlib)
 #define LIBID_OF_AsymmetricKeyExchangeFormatter (&LIBID_mscorlib)
@@ -5930,7 +5947,6 @@ typedef _X509CertificatePtr X509CertificatePtr;
 #define LIBID_OF_CspParameters (&LIBID_mscorlib)
 #define LIBID_OF_CryptoConfig (&LIBID_mscorlib)
 #define LIBID_OF_CryptoStream (&LIBID_mscorlib)
-#define LIBID_OF_SymmetricAlgorithm (&LIBID_mscorlib)
 #define LIBID_OF_DES (&LIBID_mscorlib)
 #define LIBID_OF_DESCryptoServiceProvider (&LIBID_mscorlib)
 #define LIBID_OF_DeriveBytes (&LIBID_mscorlib)
@@ -6082,7 +6098,31 @@ enum class SpecialFolder
   SpecialFolder_Personal = 5, 
   SpecialFolder_MyDocuments = 5, 
   SpecialFolder_ProgramFiles = 38, 
-  SpecialFolder_CommonProgramFiles = 43
+  SpecialFolder_CommonProgramFiles = 43, 
+  SpecialFolder_AdminTools = 48, 
+  SpecialFolder_CDBurning = 59, 
+  SpecialFolder_CommonAdminTools = 47, 
+  SpecialFolder_CommonDocuments = 46, 
+  SpecialFolder_CommonMusic = 53, 
+  SpecialFolder_CommonOemLinks = 58, 
+  SpecialFolder_CommonPictures = 54, 
+  SpecialFolder_CommonStartMenu = 22, 
+  SpecialFolder_CommonPrograms = 23, 
+  SpecialFolder_CommonStartup = 24, 
+  SpecialFolder_CommonDesktopDirectory = 25, 
+  SpecialFolder_CommonTemplates = 45, 
+  SpecialFolder_CommonVideos = 55, 
+  SpecialFolder_Fonts = 20, 
+  SpecialFolder_MyVideos = 14, 
+  SpecialFolder_NetworkShortcuts = 19, 
+  SpecialFolder_PrinterShortcuts = 27, 
+  SpecialFolder_UserProfile = 40, 
+  SpecialFolder_CommonProgramFilesX86 = 44, 
+  SpecialFolder_ProgramFilesX86 = 42, 
+  SpecialFolder_Resources = 56, 
+  SpecialFolder_LocalizedResources = 57, 
+  SpecialFolder_SystemX86 = 41, 
+  SpecialFolder_Windows = 36
 };
 
 enum class MidpointRounding
@@ -6893,7 +6933,8 @@ enum class TypeLibImporterFlags
   TypeLibImporterFlags_ImportAsX64 = 512, 
   TypeLibImporterFlags_ImportAsItanium = 1024, 
   TypeLibImporterFlags_ImportAsAgnostic = 2048, 
-  TypeLibImporterFlags_ReflectionOnlyLoading = 4096
+  TypeLibImporterFlags_ReflectionOnlyLoading = 4096, 
+  TypeLibImporterFlags_NoDefineVersionResource = 8192
 };
 
 enum class TypeLibExporterFlags
@@ -7106,7 +7147,6 @@ enum class ReflectionPermissionFlag
   ReflectionPermissionFlag_TypeInformation = 1, 
   ReflectionPermissionFlag_MemberAccess = 2, 
   ReflectionPermissionFlag_ReflectionEmit = 4, 
-  ReflectionPermissionFlag_RestrictedMemberAccess = 8, 
   ReflectionPermissionFlag_AllFlags = 7
 };
 
@@ -7288,7 +7328,8 @@ enum class AssemblyBuilderAccess
   AssemblyBuilderAccess_Run = 1, 
   AssemblyBuilderAccess_Save = 2, 
   AssemblyBuilderAccess_RunAndSave = 3, 
-  AssemblyBuilderAccess_ReflectionOnly = 6
+  AssemblyBuilderAccess_ReflectionOnly = 6, 
+  AssemblyBuilderAccess_RunAndCollect = 9
 };
 
 enum class PEFileKinds
@@ -7436,7 +7477,8 @@ enum class CspProviderFlags
   CspProviderFlags_UseExistingKey = 8, 
   CspProviderFlags_UseArchivableKey = 16, 
   CspProviderFlags_UseUserProtectedKey = 32, 
-  CspProviderFlags_NoPrompt = 64
+  CspProviderFlags_NoPrompt = 64, 
+  CspProviderFlags_CreateEphemeralKey = 128
 };
 
 enum class CryptoStreamMode
@@ -7557,22 +7599,22 @@ struct RuntimeArgumentHandle
 
 struct RuntimeTypeHandle
 {
-  long m_ptr;
+  LPUNKNOWN m_type;
 };
 
 struct RuntimeMethodHandle
 {
-  long m_ptr;
+  LPUNKNOWN m_value;
 };
 
 struct RuntimeFieldHandle
 {
-  long m_ptr;
+  LPUNKNOWN m_ptr;
 };
 
 struct ModuleHandle
 {
-  long m_ptr;
+  LPUNKNOWN m_ptr;
 };
 
 #pragma pack(push, 1)
@@ -7858,23 +7900,17 @@ public:
 };
 
 // *********************************************************************//
-// Interface: ICloneable
+// Interface: ISerializable
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
+// GUID:      {D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}
 // *********************************************************************//
-interface ICloneable  : public IDispatch
+interface ISerializable  : public IDispatch
 {
 public:
-  virtual HRESULT STDMETHODCALLTYPE Clone(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                                  Mscorlib_tlb::StreamingContext Context/*[in]*/) = 0; // [-1]
 
 #if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  VARIANT __fastcall Clone(void)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->Clone((VARIANT*)&pRetVal));
-    return pRetVal;
-  }
 
 
 
@@ -7883,159 +7919,117 @@ public:
 };
 
 // *********************************************************************//
-// Interface: IEnumerable
+// Interface: _Exception
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
+// GUID:      {B36B5C63-42EF-38BC-A07E-0B34C98F164A}
 // *********************************************************************//
-interface IEnumerable  : public IDispatch
+interface _Exception  : public IDispatch
 {
 public:
-  virtual HRESULT STDMETHODCALLTYPE GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/) = 0; // [-4]
+  virtual HRESULT STDMETHODCALLTYPE get_ToString(BSTR* pRetVal/*[out,retval]*/) = 0; // [0]
+  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT obj/*[in]*/, 
+                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetHashCode(long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_Message(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_StackTrace(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_HelpLink(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE set_HelpLink(BSTR pRetVal/*[in]*/) = 0; // [1610743815]
+  virtual HRESULT STDMETHODCALLTYPE get_Source(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE set_Source(BSTR pRetVal/*[in]*/) = 0; // [1610743817]
+  virtual HRESULT STDMETHODCALLTYPE GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                                  Mscorlib_tlb::StreamingContext Context/*[in]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/) = 0; // [-1]
 
 #if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
-  IEnumVARIANT* __fastcall GetEnumerator(void)
+  BSTR __fastcall get_ToString(void)
   {
-    IEnumVARIANT* pRetVal = 0;
-    OLECHECK(this->GetEnumerator((IEnumVARIANT**)&pRetVal));
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_ToString((BSTR*)&pRetVal));
     return pRetVal;
   }
 
+  VARIANT_BOOL __fastcall Equals(VARIANT obj/*[in]*/)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->Equals(obj, (VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
 
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: ICollection
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
-// *********************************************************************//
-interface ICollection  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_Count(long* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  long __fastcall get_Count(void)
+  long __fastcall GetHashCode(void)
   {
     long pRetVal;
-    OLECHECK(this->get_Count((long*)&pRetVal));
+    OLECHECK(this->GetHashCode((long*)&pRetVal));
     return pRetVal;
   }
 
-  VARIANT __fastcall get_SyncRoot(void)
+  Mscorlib_tlb::_Type* __fastcall GetType(void)
   {
-    VARIANT pRetVal;
-    OLECHECK(this->get_SyncRoot((VARIANT*)&pRetVal));
+    Mscorlib_tlb::_Type* pRetVal = 0;
+    OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
     return pRetVal;
   }
 
-  VARIANT_BOOL __fastcall get_IsSynchronized(void)
+  BSTR __fastcall get_Message(void)
   {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->get_IsSynchronized((VARIANT_BOOL*)&pRetVal));
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_Message((BSTR*)&pRetVal));
     return pRetVal;
   }
 
-
-  __property   long            Count = {read = get_Count};
-  __property   VARIANT_BOOL    IsSynchronized = {read = get_IsSynchronized};
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IList
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
-// *********************************************************************//
-interface IList  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/) = 0; // [0]
-  virtual HRESULT STDMETHODCALLTYPE _set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/) = 0; // [0]
-  virtual HRESULT STDMETHODCALLTYPE Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Contains(VARIANT value/*[in]*/, 
-                                             VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Clear(void) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Insert(long index/*[in]*/, VARIANT value/*[in]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Remove(VARIANT value/*[in]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE RemoveAt(long index/*[in]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  VARIANT __fastcall get_Item(long index/*[in]*/)
+  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void)
   {
-    VARIANT pRetVal;
-    OLECHECK(this->get_Item(index, (VARIANT*)&pRetVal));
+    Mscorlib_tlb::_Exception* pRetVal = 0;
+    OLECHECK(this->GetBaseException((Mscorlib_tlb::_Exception**)&pRetVal));
     return pRetVal;
   }
 
-  long __fastcall Add(VARIANT value/*[in]*/)
+  BSTR __fastcall get_StackTrace(void)
   {
-    long pRetVal;
-    OLECHECK(this->Add(value, (long*)&pRetVal));
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_StackTrace((BSTR*)&pRetVal));
     return pRetVal;
   }
 
-  VARIANT_BOOL __fastcall Contains(VARIANT value/*[in]*/)
+  BSTR __fastcall get_HelpLink(void)
   {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->Contains(value, (VARIANT_BOOL*)&pRetVal));
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_HelpLink((BSTR*)&pRetVal));
     return pRetVal;
   }
 
-  VARIANT_BOOL __fastcall get_IsReadOnly(void)
+  BSTR __fastcall get_Source(void)
   {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->get_IsReadOnly((VARIANT_BOOL*)&pRetVal));
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_Source((BSTR*)&pRetVal));
     return pRetVal;
   }
 
-  VARIANT_BOOL __fastcall get_IsFixedSize(void)
+  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void)
   {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->get_IsFixedSize((VARIANT_BOOL*)&pRetVal));
+    Mscorlib_tlb::_ExceptionPtr pRetVal;
+    OLECHECK(this->get_InnerException(&pRetVal));
     return pRetVal;
   }
 
-  long __fastcall IndexOf(VARIANT value/*[in]*/)
+  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void)
   {
-    long pRetVal;
-    OLECHECK(this->IndexOf(value, (long*)&pRetVal));
+    Mscorlib_tlb::_MethodBasePtr pRetVal;
+    OLECHECK(this->get_TargetSite(&pRetVal));
     return pRetVal;
   }
 
 
-  __property   VARIANT_BOOL    IsReadOnly = {read = get_IsReadOnly};
-  __property   VARIANT_BOOL    IsFixedSize = {read = get_IsFixedSize};
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Array
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
-// *********************************************************************//
-interface _Array  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
+  __property   BSTR            ToString = {read = get_ToString};
+  __property   BSTR            Message = {read = get_Message};
+  __property   BSTR            StackTrace = {read = get_StackTrace};
+  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
+  __property   BSTR            Source = {read = get_Source, write = set_Source};
+  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
+  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
 
 #endif //   __TLB_NO_INTERFACE_WRAPPERS
 
@@ -8049,58 +8043,6 @@ public:
 interface _ValueType  : public IDispatch
 {
 public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IEnumerator
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
-// *********************************************************************//
-interface IEnumerator  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_Current(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Reset(void) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  VARIANT_BOOL __fastcall MoveNext(void)
-  {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->MoveNext((VARIANT_BOOL*)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT __fastcall get_Current(void)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->get_Current((VARIANT*)&pRetVal));
-    return pRetVal;
-  }
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IDisposable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
-// *********************************************************************//
-interface IDisposable  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE Dispose(void) = 0; // [-1]
 
 #if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
@@ -8352,348 +8294,23 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _String
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {36936699-FC79-324D-AB43-E33C1F94E263}
-// *********************************************************************//
-interface _String  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IComparer
+// Interface: ICloneable
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {C20FD3EB-7022-3D14-8477-760FAB54E50D}
+// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
 // *********************************************************************//
-interface IComparer  : public IDispatch
+interface ICloneable  : public IDispatch
 {
 public:
-  virtual HRESULT STDMETHODCALLTYPE Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
-                                            long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Clone(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
 
 #if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
-  long __fastcall Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
+  VARIANT __fastcall Clone(void)
   {
-    long pRetVal;
-    OLECHECK(this->Compare(x, y, (long*)&pRetVal));
+    VARIANT pRetVal;
+    OLECHECK(this->Clone((VARIANT*)&pRetVal));
     return pRetVal;
   }
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IEqualityComparer
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {AAB7C6EA-CAB0-3ADB-82AA-CF32E29AF238}
-// *********************************************************************//
-interface IEqualityComparer  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
-                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetHashCode(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  VARIANT_BOOL __fastcall Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
-  {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->Equals(x, y, (VARIANT_BOOL*)&pRetVal));
-    return pRetVal;
-  }
-
-  long __fastcall GetHashCode(VARIANT obj/*[in]*/)
-  {
-    long pRetVal;
-    OLECHECK(this->GetHashCode(obj, (long*)&pRetVal));
-    return pRetVal;
-  }
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _StringComparer
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {7499E7E8-DF01-3948-B8D4-FA4B9661D36B}
-// *********************************************************************//
-interface _StringComparer  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: ISerializable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}
-// *********************************************************************//
-interface ISerializable  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                                  Mscorlib_tlb::StreamingContext Context/*[in]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _StringBuilder
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9FB09782-8D39-3B0C-B79E-F7A37A65B3DA}
-// *********************************************************************//
-interface _StringBuilder  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Exception
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {B36B5C63-42EF-38BC-A07E-0B34C98F164A}
-// *********************************************************************//
-interface _Exception  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE get_ToString(BSTR* pRetVal/*[out,retval]*/) = 0; // [0]
-  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT obj/*[in]*/, 
-                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetHashCode(long* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_Message(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_StackTrace(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_HelpLink(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE set_HelpLink(BSTR pRetVal/*[in]*/) = 0; // [1610743815]
-  virtual HRESULT STDMETHODCALLTYPE get_Source(BSTR* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE set_Source(BSTR pRetVal/*[in]*/) = 0; // [1610743817]
-  virtual HRESULT STDMETHODCALLTYPE GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                                  Mscorlib_tlb::StreamingContext Context/*[in]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  BSTR __fastcall get_ToString(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_ToString((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT_BOOL __fastcall Equals(VARIANT obj/*[in]*/)
-  {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->Equals(obj, (VARIANT_BOOL*)&pRetVal));
-    return pRetVal;
-  }
-
-  long __fastcall GetHashCode(void)
-  {
-    long pRetVal;
-    OLECHECK(this->GetHashCode((long*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_Type* __fastcall GetType(void)
-  {
-    Mscorlib_tlb::_Type* pRetVal = 0;
-    OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
-    return pRetVal;
-  }
-
-  BSTR __fastcall get_Message(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_Message((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void)
-  {
-    Mscorlib_tlb::_Exception* pRetVal = 0;
-    OLECHECK(this->GetBaseException((Mscorlib_tlb::_Exception**)&pRetVal));
-    return pRetVal;
-  }
-
-  BSTR __fastcall get_StackTrace(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_StackTrace((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  BSTR __fastcall get_HelpLink(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_HelpLink((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  BSTR __fastcall get_Source(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_Source((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void)
-  {
-    Mscorlib_tlb::_ExceptionPtr pRetVal;
-    OLECHECK(this->get_InnerException(&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void)
-  {
-    Mscorlib_tlb::_MethodBasePtr pRetVal;
-    OLECHECK(this->get_TargetSite(&pRetVal));
-    return pRetVal;
-  }
-
-
-  __property   BSTR            ToString = {read = get_ToString};
-  __property   BSTR            Message = {read = get_Message};
-  __property   BSTR            StackTrace = {read = get_StackTrace};
-  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
-  __property   BSTR            Source = {read = get_Source, write = set_Source};
-  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
-  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: IDeserializationCallback
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {AB3F47E4-C227-3B05-BF9F-94649BEF9888}
-// *********************************************************************//
-interface IDeserializationCallback  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE OnDeserialization(VARIANT sender/*[in]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _SystemException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {4C482CC2-68E9-37C6-8353-9A94BD2D7F0B}
-// *********************************************************************//
-interface _SystemException  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _OutOfMemoryException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {CF3EDB7E-0574-3383-A44F-292F7C145DB4}
-// *********************************************************************//
-interface _OutOfMemoryException  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _StackOverflowException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9CF4339A-2911-3B8A-8F30-E5C6B5BE9A29}
-// *********************************************************************//
-interface _StackOverflowException  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _DataMisalignedException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {152A6B4D-09AF-3EDF-8CBA-11797EEEEA4E}
-// *********************************************************************//
-interface _DataMisalignedException  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _ExecutionEngineException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {CCF0139C-79F7-3D0A-AFFE-2B0762C65B07}
-// *********************************************************************//
-interface _ExecutionEngineException  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
 
 
@@ -8802,6 +8419,431 @@ public:
 // GUID:      {16FE0885-9129-3884-A232-90B58C5B2AA9}
 // *********************************************************************//
 interface _MulticastDelegate  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IEnumerable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+interface IEnumerable  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/) = 0; // [-4]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  IEnumVARIANT* __fastcall GetEnumerator(void)
+  {
+    IEnumVARIANT* pRetVal = 0;
+    OLECHECK(this->GetEnumerator((IEnumVARIANT**)&pRetVal));
+    return pRetVal;
+  }
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: ICollection
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
+// *********************************************************************//
+interface ICollection  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_Count(long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  long __fastcall get_Count(void)
+  {
+    long pRetVal;
+    OLECHECK(this->get_Count((long*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT __fastcall get_SyncRoot(void)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->get_SyncRoot((VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT_BOOL __fastcall get_IsSynchronized(void)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->get_IsSynchronized((VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+
+  __property   long            Count = {read = get_Count};
+  __property   VARIANT_BOOL    IsSynchronized = {read = get_IsSynchronized};
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
+// *********************************************************************//
+interface IList  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/) = 0; // [0]
+  virtual HRESULT STDMETHODCALLTYPE _set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/) = 0; // [0]
+  virtual HRESULT STDMETHODCALLTYPE Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Contains(VARIANT value/*[in]*/, 
+                                             VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Clear(void) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Insert(long index/*[in]*/, VARIANT value/*[in]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Remove(VARIANT value/*[in]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE RemoveAt(long index/*[in]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  VARIANT __fastcall get_Item(long index/*[in]*/)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->get_Item(index, (VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+  long __fastcall Add(VARIANT value/*[in]*/)
+  {
+    long pRetVal;
+    OLECHECK(this->Add(value, (long*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT_BOOL __fastcall Contains(VARIANT value/*[in]*/)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->Contains(value, (VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT_BOOL __fastcall get_IsReadOnly(void)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->get_IsReadOnly((VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT_BOOL __fastcall get_IsFixedSize(void)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->get_IsFixedSize((VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  long __fastcall IndexOf(VARIANT value/*[in]*/)
+  {
+    long pRetVal;
+    OLECHECK(this->IndexOf(value, (long*)&pRetVal));
+    return pRetVal;
+  }
+
+
+  __property   VARIANT_BOOL    IsReadOnly = {read = get_IsReadOnly};
+  __property   VARIANT_BOOL    IsFixedSize = {read = get_IsFixedSize};
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _Array
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
+// *********************************************************************//
+interface _Array  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IEnumerator
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+interface IEnumerator  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_Current(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Reset(void) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  VARIANT_BOOL __fastcall MoveNext(void)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->MoveNext((VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT __fastcall get_Current(void)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->get_Current((VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IDisposable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
+// *********************************************************************//
+interface IDisposable  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE Dispose(void) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _String
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {36936699-FC79-324D-AB43-E33C1F94E263}
+// *********************************************************************//
+interface _String  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IComparer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C20FD3EB-7022-3D14-8477-760FAB54E50D}
+// *********************************************************************//
+interface IComparer  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
+                                            long* pRetVal/*[out,retval]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  long __fastcall Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
+  {
+    long pRetVal;
+    OLECHECK(this->Compare(x, y, (long*)&pRetVal));
+    return pRetVal;
+  }
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IEqualityComparer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AAB7C6EA-CAB0-3ADB-82AA-CF32E29AF238}
+// *********************************************************************//
+interface IEqualityComparer  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
+                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetHashCode(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  VARIANT_BOOL __fastcall Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->Equals(x, y, (VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  long __fastcall GetHashCode(VARIANT obj/*[in]*/)
+  {
+    long pRetVal;
+    OLECHECK(this->GetHashCode(obj, (long*)&pRetVal));
+    return pRetVal;
+  }
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _StringComparer
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {7499E7E8-DF01-3948-B8D4-FA4B9661D36B}
+// *********************************************************************//
+interface _StringComparer  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _StringBuilder
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9FB09782-8D39-3B0C-B79E-F7A37A65B3DA}
+// *********************************************************************//
+interface _StringBuilder  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: IDeserializationCallback
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AB3F47E4-C227-3B05-BF9F-94649BEF9888}
+// *********************************************************************//
+interface IDeserializationCallback  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE OnDeserialization(VARIANT sender/*[in]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _SystemException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {4C482CC2-68E9-37C6-8353-9A94BD2D7F0B}
+// *********************************************************************//
+interface _SystemException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _OutOfMemoryException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {CF3EDB7E-0574-3383-A44F-292F7C145DB4}
+// *********************************************************************//
+interface _OutOfMemoryException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _StackOverflowException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9CF4339A-2911-3B8A-8F30-E5C6B5BE9A29}
+// *********************************************************************//
+interface _StackOverflowException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _DataMisalignedException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {152A6B4D-09AF-3EDF-8CBA-11797EEEEA4E}
+// *********************************************************************//
+interface _DataMisalignedException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _ExecutionEngineException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {CCF0139C-79F7-3D0A-AFFE-2B0762C65B07}
+// *********************************************************************//
+interface _ExecutionEngineException  : public IDispatch
 {
 public:
 
@@ -9332,6 +9374,23 @@ public:
 // GUID:      {6E96AA70-9FFB-399D-96BF-A68436095C54}
 // *********************************************************************//
 interface _AppDomainUnloadedException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _EvidenceBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F4B8D231-6028-39EF-B017-72988A3F6766}
+// *********************************************************************//
+interface _EvidenceBase  : public IDispatch
 {
 public:
 
@@ -11061,6 +11120,40 @@ public:
 };
 
 // *********************************************************************//
+// Interface: _STAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
+// *********************************************************************//
+interface _STAThreadAttribute  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _MTAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
+// *********************************************************************//
+interface _MTAThreadAttribute  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
 // Interface: _TimeoutException
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {7AB88CA9-17F4-385E-AD41-4EE0AA316FA1}
@@ -11565,74 +11658,6 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _STAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
-// *********************************************************************//
-interface _STAThreadAttribute  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _MTAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
-// *********************************************************************//
-interface _MTAThreadAttribute  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _ArrayList
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
-// *********************************************************************//
-interface _ArrayList  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _BitArray
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
-// *********************************************************************//
-interface _BitArray  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: _CaseInsensitiveComparer
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {EA6795AC-97D6-3377-BE64-829ABD67607B}
@@ -11697,23 +11722,6 @@ public:
 // GUID:      {B7D29E26-7798-3FA4-90F4-E6A22D2099F9}
 // *********************************************************************//
 interface _CollectionBase  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Comparer
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
-// *********************************************************************//
-interface _Comparer  : public IDispatch
 {
 public:
 
@@ -11825,6 +11833,108 @@ public:
 };
 
 // *********************************************************************//
+// Interface: _ReadOnlyCollectionBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
+// *********************************************************************//
+interface _ReadOnlyCollectionBase  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _Queue
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
+// *********************************************************************//
+interface _Queue  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _ArrayList
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
+// *********************************************************************//
+interface _ArrayList  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _BitArray
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
+// *********************************************************************//
+interface _BitArray  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _Stack
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
+// *********************************************************************//
+interface _Stack  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _Comparer
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
+// *********************************************************************//
+interface _Comparer  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
 // Interface: IDictionaryEnumerator
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {35D574BF-7A4F-3588-8C19-12212A0FE4DC}
@@ -11884,62 +11994,11 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _Queue
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
-// *********************************************************************//
-interface _Queue  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _ReadOnlyCollectionBase
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
-// *********************************************************************//
-interface _ReadOnlyCollectionBase  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: _SortedList
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {56421139-A143-3AE9-9852-1DBDFE3D6BFA}
 // *********************************************************************//
 interface _SortedList  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Stack
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
-// *********************************************************************//
-interface _Stack  : public IDispatch
 {
 public:
 
@@ -14522,81 +14581,6 @@ public:
 };
 
 // *********************************************************************//
-// Interface: IFormatter
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
-// *********************************************************************//
-interface IFormatter  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                                                VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                                              VARIANT graph/*[in]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE _set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/) = 0; // [1610743810]
-  virtual HRESULT STDMETHODCALLTYPE get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE _set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/) = 0; // [1610743812]
-  virtual HRESULT STDMETHODCALLTYPE get_Context(Mscorlib_tlb::StreamingContext* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE set_Context(Mscorlib_tlb::StreamingContext pRetVal/*[in]*/) = 0; // [1610743814]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  VARIANT __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->Deserialize(serializationStream, (VARIANT*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::ISurrogateSelectorPtr __fastcall get_SurrogateSelector(void)
-  {
-    Mscorlib_tlb::ISurrogateSelectorPtr pRetVal;
-    OLECHECK(this->get_SurrogateSelector(&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_SerializationBinderPtr __fastcall get_Binder(void)
-  {
-    Mscorlib_tlb::_SerializationBinderPtr pRetVal;
-    OLECHECK(this->get_Binder(&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::StreamingContext __fastcall get_Context(void)
-  {
-    Mscorlib_tlb::StreamingContext pRetVal;
-    OLECHECK(this->get_Context((Mscorlib_tlb::StreamingContext*)&pRetVal));
-    return pRetVal;
-  }
-
-
-  __property   Mscorlib_tlb::ISurrogateSelectorPtr SurrogateSelector = {read = get_SurrogateSelector};
-  __property   Mscorlib_tlb::_SerializationBinderPtr Binder = {read = get_Binder};
-  __property   Mscorlib_tlb::StreamingContext Context = {read = get_Context, write = set_Context};
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Formatter
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
-// *********************************************************************//
-interface _Formatter  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: IFormatterConverter
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {F4F5C303-FAD3-3D0C-A4DF-BB82B5EE308F}
@@ -14831,6 +14815,64 @@ public:
 };
 
 // *********************************************************************//
+// Interface: IFormatter
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
+// *********************************************************************//
+interface IFormatter  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                                                VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                                              VARIANT graph/*[in]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE _set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/) = 0; // [1610743810]
+  virtual HRESULT STDMETHODCALLTYPE get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE _set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/) = 0; // [1610743812]
+  virtual HRESULT STDMETHODCALLTYPE get_Context(Mscorlib_tlb::StreamingContext* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE set_Context(Mscorlib_tlb::StreamingContext pRetVal/*[in]*/) = 0; // [1610743814]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  VARIANT __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->Deserialize(serializationStream, (VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+  Mscorlib_tlb::ISurrogateSelectorPtr __fastcall get_SurrogateSelector(void)
+  {
+    Mscorlib_tlb::ISurrogateSelectorPtr pRetVal;
+    OLECHECK(this->get_SurrogateSelector(&pRetVal));
+    return pRetVal;
+  }
+
+  Mscorlib_tlb::_SerializationBinderPtr __fastcall get_Binder(void)
+  {
+    Mscorlib_tlb::_SerializationBinderPtr pRetVal;
+    OLECHECK(this->get_Binder(&pRetVal));
+    return pRetVal;
+  }
+
+  Mscorlib_tlb::StreamingContext __fastcall get_Context(void)
+  {
+    Mscorlib_tlb::StreamingContext pRetVal;
+    OLECHECK(this->get_Context((Mscorlib_tlb::StreamingContext*)&pRetVal));
+    return pRetVal;
+  }
+
+
+  __property   Mscorlib_tlb::ISurrogateSelectorPtr SurrogateSelector = {read = get_SurrogateSelector};
+  __property   Mscorlib_tlb::_SerializationBinderPtr Binder = {read = get_Binder};
+  __property   Mscorlib_tlb::StreamingContext Context = {read = get_Context, write = set_Context};
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
 // Interface: ISurrogateSelector
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {7C66FF18-A1A5-3E19-857B-0E7B6A9E3F38}
@@ -14862,40 +14904,6 @@ public:
     OLECHECK(this->GetNextSelector((Mscorlib_tlb::ISurrogateSelector**)&pRetVal));
     return pRetVal;
   }
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _ObjectIDGenerator
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
-// *********************************************************************//
-interface _ObjectIDGenerator  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _ObjectManager
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
-// *********************************************************************//
-interface _ObjectManager  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
 
 
@@ -15006,6 +15014,23 @@ public:
 };
 
 // *********************************************************************//
+// Interface: _SerializationException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// *********************************************************************//
+interface _SerializationException  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
 // Interface: _SerializationInfo
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {B58D62CF-B03A-3A14-B0B6-B1E5AD4E4AD5}
@@ -15040,11 +15065,45 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _SerializationException
+// Interface: _Formatter
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
 // *********************************************************************//
-interface _SerializationException  : public IDispatch
+interface _Formatter  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _ObjectIDGenerator
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
+// *********************************************************************//
+interface _ObjectIDGenerator  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _ObjectManager
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
+// *********************************************************************//
+interface _ObjectManager  : public IDispatch
 {
 public:
 
@@ -15091,23 +15150,6 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _EastAsianLunisolarCalendar
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
-// *********************************************************************//
-interface _EastAsianLunisolarCalendar  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: _CompareInfo
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {505DEFE5-AEFA-3E23-82B0-D5EB085BB840}
@@ -15130,6 +15172,23 @@ public:
 // GUID:      {152722C2-F0B1-3D19-ADA8-F40CA5CAECB8}
 // *********************************************************************//
 interface _CultureInfo  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _CultureNotFoundException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB20BF9E-7549-3226-BA87-C1EDFB6CDA6C}
+// *********************************************************************//
+interface _CultureNotFoundException  : public IDispatch
 {
 public:
 
@@ -15227,11 +15286,11 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _JapaneseCalendar
+// Interface: _EastAsianLunisolarCalendar
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
+// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
 // *********************************************************************//
-interface _JapaneseCalendar  : public IDispatch
+interface _EastAsianLunisolarCalendar  : public IDispatch
 {
 public:
 
@@ -15249,6 +15308,23 @@ public:
 // GUID:      {36E2DE92-1FB3-3D7D-BA26-9CAD5B98DD52}
 // *********************************************************************//
 interface _JulianCalendar  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _JapaneseCalendar
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
+// *********************************************************************//
+interface _JapaneseCalendar  : public IDispatch
 {
 public:
 
@@ -19863,57 +19939,6 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _CallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
-// *********************************************************************//
-interface _CallContext  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: ILogicalThreadAffinative
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
-// *********************************************************************//
-interface ILogicalThreadAffinative  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _LogicalCallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
-// *********************************************************************//
-interface _LogicalCallContext  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: _ChannelServices
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {FFB2E16E-E5C7-367C-B326-965ABF510F24}
@@ -20464,40 +20489,6 @@ public:
 // GUID:      {77C9BCEB-9958-33C0-A858-599F66697DA7}
 // *********************************************************************//
 interface _EnterpriseServicesHelper  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _Header
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
-// *********************************************************************//
-interface _Header  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _HeaderHandler
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
-// *********************************************************************//
-interface _HeaderHandler  : public IDispatch
 {
 public:
 
@@ -21695,90 +21686,6 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _ObjectHandle
-// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
-// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
-// *********************************************************************//
-interface _ObjectHandle  : public IDispatch
-{
-public:
-  virtual HRESULT STDMETHODCALLTYPE get_ToString(BSTR* pRetVal/*[out,retval]*/) = 0; // [0]
-  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT obj/*[in]*/, 
-                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetHashCode(long* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
-                                                 Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/) = 0; // [-1]
-  virtual HRESULT STDMETHODCALLTYPE Unwrap(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-  BSTR __fastcall get_ToString(void)
-  {
-    BSTR pRetVal = 0;
-    OLECHECK(this->get_ToString((BSTR*)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT_BOOL __fastcall Equals(VARIANT obj/*[in]*/)
-  {
-    VARIANT_BOOL pRetVal;
-    OLECHECK(this->Equals(obj, (VARIANT_BOOL*)&pRetVal));
-    return pRetVal;
-  }
-
-  long __fastcall GetHashCode(void)
-  {
-    long pRetVal;
-    OLECHECK(this->GetHashCode((long*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_Type* __fastcall GetType(void)
-  {
-    Mscorlib_tlb::_Type* pRetVal = 0;
-    OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT __fastcall GetLifetimeService(void)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->GetLifetimeService((VARIANT*)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT __fastcall InitializeLifetimeService(void)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->InitializeLifetimeService((VARIANT*)&pRetVal));
-    return pRetVal;
-  }
-
-  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
-  {
-    Mscorlib_tlb::_ObjRef* pRetVal = 0;
-    OLECHECK(this->CreateObjRef(requestedType, (Mscorlib_tlb::_ObjRef**)&pRetVal));
-    return pRetVal;
-  }
-
-  VARIANT __fastcall Unwrap(void)
-  {
-    VARIANT pRetVal;
-    OLECHECK(this->Unwrap((VARIANT*)&pRetVal));
-    return pRetVal;
-  }
-
-
-  __property   BSTR            ToString = {read = get_ToString};
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
 // Interface: IRemotingTypeInfo
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {C09EFFA9-1FFE-3A52-A733-6236CBC45E7B}
@@ -22885,11 +22792,11 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _IsolatedStorage
+// Interface: _Header
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {34EC3BD7-F2F6-3C20-A639-804BFF89DF65}
+// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
 // *********************************************************************//
-interface _IsolatedStorage  : public IDispatch
+interface _Header  : public IDispatch
 {
 public:
 
@@ -22902,11 +22809,163 @@ public:
 };
 
 // *********************************************************************//
-// Interface: _IsolatedStorageFile
+// Interface: _HeaderHandler
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
+// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
 // *********************************************************************//
-interface _IsolatedStorageFile  : public IDispatch
+interface _HeaderHandler  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _CallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
+// *********************************************************************//
+interface _CallContext  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: ILogicalThreadAffinative
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
+// *********************************************************************//
+interface ILogicalThreadAffinative  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _LogicalCallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
+// *********************************************************************//
+interface _LogicalCallContext  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _ObjectHandle
+// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
+// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
+// *********************************************************************//
+interface _ObjectHandle  : public IDispatch
+{
+public:
+  virtual HRESULT STDMETHODCALLTYPE get_ToString(BSTR* pRetVal/*[out,retval]*/) = 0; // [0]
+  virtual HRESULT STDMETHODCALLTYPE Equals(VARIANT obj/*[in]*/, 
+                                           VARIANT_BOOL* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetHashCode(long* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
+                                                 Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/) = 0; // [-1]
+  virtual HRESULT STDMETHODCALLTYPE Unwrap(VARIANT* pRetVal/*[out,retval]*/) = 0; // [-1]
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+  BSTR __fastcall get_ToString(void)
+  {
+    BSTR pRetVal = 0;
+    OLECHECK(this->get_ToString((BSTR*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT_BOOL __fastcall Equals(VARIANT obj/*[in]*/)
+  {
+    VARIANT_BOOL pRetVal;
+    OLECHECK(this->Equals(obj, (VARIANT_BOOL*)&pRetVal));
+    return pRetVal;
+  }
+
+  long __fastcall GetHashCode(void)
+  {
+    long pRetVal;
+    OLECHECK(this->GetHashCode((long*)&pRetVal));
+    return pRetVal;
+  }
+
+  Mscorlib_tlb::_Type* __fastcall GetType(void)
+  {
+    Mscorlib_tlb::_Type* pRetVal = 0;
+    OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT __fastcall GetLifetimeService(void)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->GetLifetimeService((VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT __fastcall InitializeLifetimeService(void)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->InitializeLifetimeService((VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
+  {
+    Mscorlib_tlb::_ObjRef* pRetVal = 0;
+    OLECHECK(this->CreateObjRef(requestedType, (Mscorlib_tlb::_ObjRef**)&pRetVal));
+    return pRetVal;
+  }
+
+  VARIANT __fastcall Unwrap(void)
+  {
+    VARIANT pRetVal;
+    OLECHECK(this->Unwrap((VARIANT*)&pRetVal));
+    return pRetVal;
+  }
+
+
+  __property   BSTR            ToString = {read = get_ToString};
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _IsolatedStorage
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {34EC3BD7-F2F6-3C20-A639-804BFF89DF65}
+// *********************************************************************//
+interface _IsolatedStorage  : public IDispatch
 {
 public:
 
@@ -22970,6 +23029,23 @@ public:
     OLECHECK(this->Normalize((VARIANT*)&pRetVal));
     return pRetVal;
   }
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
+// Interface: _IsolatedStorageFile
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
+// *********************************************************************//
+interface _IsolatedStorageFile  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
 
 
 
@@ -23732,6 +23808,23 @@ public:
 };
 
 // *********************************************************************//
+// Interface: _SymmetricAlgorithm
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
+// *********************************************************************//
+interface _SymmetricAlgorithm  : public IDispatch
+{
+public:
+
+#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
+
+
+
+#endif //   __TLB_NO_INTERFACE_WRAPPERS
+
+};
+
+// *********************************************************************//
 // Interface: _AsymmetricAlgorithm
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {09343AC0-D19A-3E62-BC16-0F600F10180A}
@@ -23907,23 +24000,6 @@ public:
 // GUID:      {4134F762-D0EC-3210-93C0-DE4F443D5669}
 // *********************************************************************//
 interface _CryptoStream  : public IDispatch
-{
-public:
-
-#if !defined(__TLB_NO_INTERFACE_WRAPPERS)
-
-
-
-#endif //   __TLB_NO_INTERFACE_WRAPPERS
-
-};
-
-// *********************************************************************//
-// Interface: _SymmetricAlgorithm
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
-// *********************************************************************//
-interface _SymmetricAlgorithm  : public IDispatch
 {
 public:
 
@@ -24938,257 +25014,176 @@ public:
 };
 typedef _ObjectDispT<_Object> _ObjectDisp;
 
-typedef TComInterface<ICloneable>  TCOMICloneable;
+typedef TComInterface<ISerializable>  TCOMISerializable;
 
 // *********************************************************************//
-// DispIntf:  ICloneable
+// DispIntf:  ISerializable
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
+// GUID:      {D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}
 // *********************************************************************//
 template<class T>
-class ICloneableDispT : public TAutoDriver<ICloneable>
+class ISerializableDispT : public TAutoDriver<ISerializable>
 {
 public:
-  ICloneableDispT(){}
+  ISerializableDispT(){}
 
-  ICloneableDispT(ICloneable *pintf)
+  ISerializableDispT(ISerializable *pintf)
   {
-    TAutoDriver<ICloneable>::Bind(pintf, false);
+    TAutoDriver<ISerializable>::Bind(pintf, false);
   }
 
-  ICloneableDispT(ICloneablePtr pintf)
+  ISerializableDispT(ISerializablePtr pintf)
   {
-    TAutoDriver<ICloneable>::Bind(pintf, true);
+    TAutoDriver<ISerializable>::Bind(pintf, true);
   }
 
-  ICloneableDispT& operator=(ICloneable *pintf)
+  ISerializableDispT& operator=(ISerializable *pintf)
   {
-    TAutoDriver<ICloneable>::Bind(pintf, false);
+    TAutoDriver<ISerializable>::Bind(pintf, false);
     return *this;
   }
 
-  ICloneableDispT& operator=(ICloneablePtr pintf)
+  ISerializableDispT& operator=(ISerializablePtr pintf)
   {
-    TAutoDriver<ICloneable>::Bind(pintf, true);
+    TAutoDriver<ISerializable>::Bind(pintf, true);
     return *this;
   }
 
-  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Clone(void);
+  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
 
 };
-typedef ICloneableDispT<ICloneable> ICloneableDisp;
-
-typedef TComInterface<IEnumerable>  TCOMIEnumerable;
+typedef ISerializableDispT<ISerializable> ISerializableDisp;
 
 // *********************************************************************//
-// DispIntf:  IEnumerable
+// SmartIntf: TCOM_Exception
+// Interface: _Exception
+// *********************************************************************//
+template <class T /* _Exception */ >
+class TCOM_ExceptionT : public TComInterface<_Exception>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ExceptionT() {}
+  TCOM_ExceptionT(_Exception *intf, bool addRef = false) : TComInterface<_Exception>(intf, addRef) {}
+  TCOM_ExceptionT(const TCOM_ExceptionT& src) : TComInterface<_Exception>(src) {}
+  TCOM_ExceptionT& operator=(const TCOM_ExceptionT& src) { Bind(src, true); return *this;}
+
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall get_Message(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_Message(void);
+  HRESULT         __fastcall GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void);
+  HRESULT         __fastcall get_StackTrace(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_StackTrace(void);
+  HRESULT         __fastcall get_HelpLink(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_HelpLink(void);
+  HRESULT         __fastcall set_HelpLink(BSTR pRetVal/*[in]*/);
+  HRESULT         __fastcall get_Source(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_Source(void);
+  HRESULT         __fastcall set_Source(BSTR pRetVal/*[in]*/);
+  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                           Mscorlib_tlb::StreamingContext Context/*[in]*/);
+  HRESULT         __fastcall get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void);
+  HRESULT         __fastcall get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void);
+
+  __property   BSTR            ToString = {read = get_ToString};
+  __property   BSTR            Message = {read = get_Message};
+  __property   BSTR            StackTrace = {read = get_StackTrace};
+  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
+  __property   BSTR            Source = {read = get_Source, write = set_Source};
+  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
+  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
+};
+typedef TCOM_ExceptionT<_Exception> TCOM_Exception;
+
+// *********************************************************************//
+// DispIntf:  _Exception
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
+// GUID:      {B36B5C63-42EF-38BC-A07E-0B34C98F164A}
 // *********************************************************************//
 template<class T>
-class IEnumerableDispT : public TAutoDriver<IEnumerable>
+class _ExceptionDispT : public TAutoDriver<_Exception>
 {
 public:
-  IEnumerableDispT(){}
+  _ExceptionDispT(){}
 
-  IEnumerableDispT(IEnumerable *pintf)
+  _ExceptionDispT(_Exception *pintf)
   {
-    TAutoDriver<IEnumerable>::Bind(pintf, false);
+    TAutoDriver<_Exception>::Bind(pintf, false);
   }
 
-  IEnumerableDispT(IEnumerablePtr pintf)
+  _ExceptionDispT(_ExceptionPtr pintf)
   {
-    TAutoDriver<IEnumerable>::Bind(pintf, true);
+    TAutoDriver<_Exception>::Bind(pintf, true);
   }
 
-  IEnumerableDispT& operator=(IEnumerable *pintf)
+  _ExceptionDispT& operator=(_Exception *pintf)
   {
-    TAutoDriver<IEnumerable>::Bind(pintf, false);
+    TAutoDriver<_Exception>::Bind(pintf, false);
     return *this;
   }
 
-  IEnumerableDispT& operator=(IEnumerablePtr pintf)
+  _ExceptionDispT& operator=(_ExceptionPtr pintf)
   {
-    TAutoDriver<IEnumerable>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/);
-  IEnumVARIANT*   __fastcall GetEnumerator(void);
-
-};
-typedef IEnumerableDispT<IEnumerable> IEnumerableDisp;
-
-typedef TComInterface<ICollection>  TCOMICollection;
-
-// *********************************************************************//
-// DispIntf:  ICollection
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
-// *********************************************************************//
-template<class T>
-class ICollectionDispT : public TAutoDriver<ICollection>
-{
-public:
-  ICollectionDispT(){}
-
-  ICollectionDispT(ICollection *pintf)
-  {
-    TAutoDriver<ICollection>::Bind(pintf, false);
-  }
-
-  ICollectionDispT(ICollectionPtr pintf)
-  {
-    TAutoDriver<ICollection>::Bind(pintf, true);
-  }
-
-  ICollectionDispT& operator=(ICollection *pintf)
-  {
-    TAutoDriver<ICollection>::Bind(pintf, false);
-    return *this;
-  }
-
-  ICollectionDispT& operator=(ICollectionPtr pintf)
-  {
-    TAutoDriver<ICollection>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/);
-  HRESULT         __fastcall get_Count(long* pRetVal/*[out,retval]*/);
-  long            __fastcall get_Count(void);
-  HRESULT         __fastcall get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall get_SyncRoot(void);
-  HRESULT         __fastcall get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall get_IsSynchronized(void);
-
-  __property   long            Count = {read = get_Count};
-  __property   VARIANT_BOOL    IsSynchronized = {read = get_IsSynchronized};
-};
-typedef ICollectionDispT<ICollection> ICollectionDisp;
-
-typedef TComInterface<IList>  TCOMIList;
-
-// *********************************************************************//
-// DispIntf:  IList
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
-// *********************************************************************//
-template<class T>
-class IListDispT : public TAutoDriver<IList>
-{
-public:
-  IListDispT(){}
-
-  IListDispT(IList *pintf)
-  {
-    TAutoDriver<IList>::Bind(pintf, false);
-  }
-
-  IListDispT(IListPtr pintf)
-  {
-    TAutoDriver<IList>::Bind(pintf, true);
-  }
-
-  IListDispT& operator=(IList *pintf)
-  {
-    TAutoDriver<IList>::Bind(pintf, false);
-    return *this;
-  }
-
-  IListDispT& operator=(IListPtr pintf)
-  {
-    TAutoDriver<IList>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall get_Item(long index/*[in]*/);
-  HRESULT         __fastcall _set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/);
-  HRESULT         __fastcall Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/);
-  long            __fastcall Add(VARIANT value/*[in]*/);
-  HRESULT         __fastcall Contains(VARIANT value/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Contains(VARIANT value/*[in]*/);
-  HRESULT         __fastcall Clear();
-  HRESULT         __fastcall get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall get_IsReadOnly(void);
-  HRESULT         __fastcall get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall get_IsFixedSize(void);
-  HRESULT         __fastcall IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/);
-  long            __fastcall IndexOf(VARIANT value/*[in]*/);
-  HRESULT         __fastcall Insert(long index/*[in]*/, VARIANT value/*[in]*/);
-  HRESULT         __fastcall Remove(VARIANT value/*[in]*/);
-  HRESULT         __fastcall RemoveAt(long index/*[in]*/);
-
-  __property   VARIANT_BOOL    IsReadOnly = {read = get_IsReadOnly};
-  __property   VARIANT_BOOL    IsFixedSize = {read = get_IsFixedSize};
-};
-typedef IListDispT<IList> IListDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Array
-// Interface: _Array
-// *********************************************************************//
-template <class T /* _Array */ >
-class TCOM_ArrayT : public TComInterface<_Array>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ArrayT() {}
-  TCOM_ArrayT(_Array *intf, bool addRef = false) : TComInterface<_Array>(intf, addRef) {}
-  TCOM_ArrayT(const TCOM_ArrayT& src) : TComInterface<_Array>(src) {}
-  TCOM_ArrayT& operator=(const TCOM_ArrayT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ArrayT<_Array> TCOM_Array;
-
-// *********************************************************************//
-// DispIntf:  _Array
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
-// *********************************************************************//
-template<class T>
-class _ArrayDispT : public TAutoDriver<_Array>
-{
-public:
-  _ArrayDispT(){}
-
-  _ArrayDispT(_Array *pintf)
-  {
-    TAutoDriver<_Array>::Bind(pintf, false);
-  }
-
-  _ArrayDispT(_ArrayPtr pintf)
-  {
-    TAutoDriver<_Array>::Bind(pintf, true);
-  }
-
-  _ArrayDispT& operator=(_Array *pintf)
-  {
-    TAutoDriver<_Array>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ArrayDispT& operator=(_ArrayPtr pintf)
-  {
-    TAutoDriver<_Array>::Bind(pintf, true);
+    TAutoDriver<_Exception>::Bind(pintf, true);
     return *this;
   }
 
   HRESULT BindDefault()
   {
-    return OLECHECK(Bind(CLSID_CLRArray));
+    return OLECHECK(Bind(CLSID_CLRException));
   }
 
   HRESULT BindRunning()
   {
-    return BindToActive(CLSID_CLRArray);
+    return BindToActive(CLSID_CLRException);
   }
 
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall get_Message(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_Message(void);
+  HRESULT         __fastcall GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void);
+  HRESULT         __fastcall get_StackTrace(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_StackTrace(void);
+  HRESULT         __fastcall get_HelpLink(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_HelpLink(void);
+  HRESULT         __fastcall set_HelpLink(BSTR pRetVal/*[in]*/);
+  HRESULT         __fastcall get_Source(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_Source(void);
+  HRESULT         __fastcall set_Source(BSTR pRetVal/*[in]*/);
+  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
+  HRESULT         __fastcall get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void);
+  HRESULT         __fastcall get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void);
 
+  __property   BSTR            ToString = {read = get_ToString};
+  __property   BSTR            Message = {read = get_Message};
+  __property   BSTR            StackTrace = {read = get_StackTrace};
+  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
+  __property   BSTR            Source = {read = get_Source, write = set_Source};
+  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
+  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
 };
-typedef _ArrayDispT<_Array> _ArrayDisp;
+typedef _ExceptionDispT<_Exception> _ExceptionDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_ValueType
@@ -25253,90 +25248,6 @@ public:
 
 };
 typedef _ValueTypeDispT<_ValueType> _ValueTypeDisp;
-
-typedef TComInterface<IEnumerator>  TCOMIEnumerator;
-
-// *********************************************************************//
-// DispIntf:  IEnumerator
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
-// *********************************************************************//
-template<class T>
-class IEnumeratorDispT : public TAutoDriver<IEnumerator>
-{
-public:
-  IEnumeratorDispT(){}
-
-  IEnumeratorDispT(IEnumerator *pintf)
-  {
-    TAutoDriver<IEnumerator>::Bind(pintf, false);
-  }
-
-  IEnumeratorDispT(IEnumeratorPtr pintf)
-  {
-    TAutoDriver<IEnumerator>::Bind(pintf, true);
-  }
-
-  IEnumeratorDispT& operator=(IEnumerator *pintf)
-  {
-    TAutoDriver<IEnumerator>::Bind(pintf, false);
-    return *this;
-  }
-
-  IEnumeratorDispT& operator=(IEnumeratorPtr pintf)
-  {
-    TAutoDriver<IEnumerator>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall MoveNext(void);
-  HRESULT         __fastcall get_Current(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall get_Current(void);
-  HRESULT         __fastcall Reset();
-
-};
-typedef IEnumeratorDispT<IEnumerator> IEnumeratorDisp;
-
-typedef TComInterface<IDisposable>  TCOMIDisposable;
-
-// *********************************************************************//
-// DispIntf:  IDisposable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
-// *********************************************************************//
-template<class T>
-class IDisposableDispT : public TAutoDriver<IDisposable>
-{
-public:
-  IDisposableDispT(){}
-
-  IDisposableDispT(IDisposable *pintf)
-  {
-    TAutoDriver<IDisposable>::Bind(pintf, false);
-  }
-
-  IDisposableDispT(IDisposablePtr pintf)
-  {
-    TAutoDriver<IDisposable>::Bind(pintf, true);
-  }
-
-  IDisposableDispT& operator=(IDisposable *pintf)
-  {
-    TAutoDriver<IDisposable>::Bind(pintf, false);
-    return *this;
-  }
-
-  IDisposableDispT& operator=(IDisposablePtr pintf)
-  {
-    TAutoDriver<IDisposable>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall Dispose();
-
-};
-typedef IDisposableDispT<IDisposable> IDisposableDisp;
 
 typedef TComInterface<IComparable>  TCOMIComparable;
 
@@ -25578,6 +25489,516 @@ public:
 };
 typedef _EnumDispT<_Enum> _EnumDisp;
 
+typedef TComInterface<ICloneable>  TCOMICloneable;
+
+// *********************************************************************//
+// DispIntf:  ICloneable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
+// *********************************************************************//
+template<class T>
+class ICloneableDispT : public TAutoDriver<ICloneable>
+{
+public:
+  ICloneableDispT(){}
+
+  ICloneableDispT(ICloneable *pintf)
+  {
+    TAutoDriver<ICloneable>::Bind(pintf, false);
+  }
+
+  ICloneableDispT(ICloneablePtr pintf)
+  {
+    TAutoDriver<ICloneable>::Bind(pintf, true);
+  }
+
+  ICloneableDispT& operator=(ICloneable *pintf)
+  {
+    TAutoDriver<ICloneable>::Bind(pintf, false);
+    return *this;
+  }
+
+  ICloneableDispT& operator=(ICloneablePtr pintf)
+  {
+    TAutoDriver<ICloneable>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Clone(void);
+
+};
+typedef ICloneableDispT<ICloneable> ICloneableDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_Delegate
+// Interface: _Delegate
+// *********************************************************************//
+template <class T /* _Delegate */ >
+class TCOM_DelegateT : public TComInterface<_Delegate>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_DelegateT() {}
+  TCOM_DelegateT(_Delegate *intf, bool addRef = false) : TComInterface<_Delegate>(intf, addRef) {}
+  TCOM_DelegateT(const TCOM_DelegateT& src) : TComInterface<_Delegate>(src) {}
+  TCOM_DelegateT& operator=(const TCOM_DelegateT& src) { Bind(src, true); return *this;}
+
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall GetInvocationList(LPSAFEARRAY* pRetVal/*[out,retval]*/);
+  LPSAFEARRAY     __fastcall GetInvocationList(void);
+  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Clone(void);
+  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                           Mscorlib_tlb::StreamingContext Context/*[in]*/);
+  HRESULT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/, 
+                                           VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/);
+  HRESULT         __fastcall get_Method(Mscorlib_tlb::_MethodInfo** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_MethodInfoPtr __fastcall get_Method(void);
+  HRESULT         __fastcall get_Target(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall get_Target(void);
+
+  __property   BSTR            ToString = {read = get_ToString};
+  __property   Mscorlib_tlb::_MethodInfoPtr Method = {read = get_Method};
+};
+typedef TCOM_DelegateT<_Delegate> TCOM_Delegate;
+
+// *********************************************************************//
+// DispIntf:  _Delegate
+// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
+// GUID:      {FB6AB00F-5096-3AF8-A33D-D7885A5FA829}
+// *********************************************************************//
+template<class T>
+class _DelegateDispT : public TAutoDriver<_Delegate>
+{
+public:
+  _DelegateDispT(){}
+
+  _DelegateDispT(_Delegate *pintf)
+  {
+    TAutoDriver<_Delegate>::Bind(pintf, false);
+  }
+
+  _DelegateDispT(_DelegatePtr pintf)
+  {
+    TAutoDriver<_Delegate>::Bind(pintf, true);
+  }
+
+  _DelegateDispT& operator=(_Delegate *pintf)
+  {
+    TAutoDriver<_Delegate>::Bind(pintf, false);
+    return *this;
+  }
+
+  _DelegateDispT& operator=(_DelegatePtr pintf)
+  {
+    TAutoDriver<_Delegate>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_Delegate));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_Delegate);
+  }
+
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall GetInvocationList(LPSAFEARRAY* pRetVal/*[out,retval]*/);
+  LPSAFEARRAY     __fastcall GetInvocationList(void);
+  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Clone(void);
+  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
+                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
+  HRESULT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/, 
+                                           VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/);
+  HRESULT         __fastcall get_Method(Mscorlib_tlb::_MethodInfo** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_MethodInfoPtr __fastcall get_Method(void);
+  HRESULT         __fastcall get_Target(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall get_Target(void);
+
+  __property   BSTR            ToString = {read = get_ToString};
+  __property   Mscorlib_tlb::_MethodInfoPtr Method = {read = get_Method};
+};
+typedef _DelegateDispT<_Delegate> _DelegateDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_MulticastDelegate
+// Interface: _MulticastDelegate
+// *********************************************************************//
+template <class T /* _MulticastDelegate */ >
+class TCOM_MulticastDelegateT : public TComInterface<_MulticastDelegate>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_MulticastDelegateT() {}
+  TCOM_MulticastDelegateT(_MulticastDelegate *intf, bool addRef = false) : TComInterface<_MulticastDelegate>(intf, addRef) {}
+  TCOM_MulticastDelegateT(const TCOM_MulticastDelegateT& src) : TComInterface<_MulticastDelegate>(src) {}
+  TCOM_MulticastDelegateT& operator=(const TCOM_MulticastDelegateT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_MulticastDelegateT<_MulticastDelegate> TCOM_MulticastDelegate;
+
+// *********************************************************************//
+// DispIntf:  _MulticastDelegate
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {16FE0885-9129-3884-A232-90B58C5B2AA9}
+// *********************************************************************//
+template<class T>
+class _MulticastDelegateDispT : public TAutoDriver<_MulticastDelegate>
+{
+public:
+  _MulticastDelegateDispT(){}
+
+  _MulticastDelegateDispT(_MulticastDelegate *pintf)
+  {
+    TAutoDriver<_MulticastDelegate>::Bind(pintf, false);
+  }
+
+  _MulticastDelegateDispT(_MulticastDelegatePtr pintf)
+  {
+    TAutoDriver<_MulticastDelegate>::Bind(pintf, true);
+  }
+
+  _MulticastDelegateDispT& operator=(_MulticastDelegate *pintf)
+  {
+    TAutoDriver<_MulticastDelegate>::Bind(pintf, false);
+    return *this;
+  }
+
+  _MulticastDelegateDispT& operator=(_MulticastDelegatePtr pintf)
+  {
+    TAutoDriver<_MulticastDelegate>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_MulticastDelegate));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_MulticastDelegate);
+  }
+
+
+};
+typedef _MulticastDelegateDispT<_MulticastDelegate> _MulticastDelegateDisp;
+
+typedef TComInterface<IEnumerable>  TCOMIEnumerable;
+
+// *********************************************************************//
+// DispIntf:  IEnumerable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+template<class T>
+class IEnumerableDispT : public TAutoDriver<IEnumerable>
+{
+public:
+  IEnumerableDispT(){}
+
+  IEnumerableDispT(IEnumerable *pintf)
+  {
+    TAutoDriver<IEnumerable>::Bind(pintf, false);
+  }
+
+  IEnumerableDispT(IEnumerablePtr pintf)
+  {
+    TAutoDriver<IEnumerable>::Bind(pintf, true);
+  }
+
+  IEnumerableDispT& operator=(IEnumerable *pintf)
+  {
+    TAutoDriver<IEnumerable>::Bind(pintf, false);
+    return *this;
+  }
+
+  IEnumerableDispT& operator=(IEnumerablePtr pintf)
+  {
+    TAutoDriver<IEnumerable>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/);
+  IEnumVARIANT*   __fastcall GetEnumerator(void);
+
+};
+typedef IEnumerableDispT<IEnumerable> IEnumerableDisp;
+
+typedef TComInterface<ICollection>  TCOMICollection;
+
+// *********************************************************************//
+// DispIntf:  ICollection
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
+// *********************************************************************//
+template<class T>
+class ICollectionDispT : public TAutoDriver<ICollection>
+{
+public:
+  ICollectionDispT(){}
+
+  ICollectionDispT(ICollection *pintf)
+  {
+    TAutoDriver<ICollection>::Bind(pintf, false);
+  }
+
+  ICollectionDispT(ICollectionPtr pintf)
+  {
+    TAutoDriver<ICollection>::Bind(pintf, true);
+  }
+
+  ICollectionDispT& operator=(ICollection *pintf)
+  {
+    TAutoDriver<ICollection>::Bind(pintf, false);
+    return *this;
+  }
+
+  ICollectionDispT& operator=(ICollectionPtr pintf)
+  {
+    TAutoDriver<ICollection>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/);
+  HRESULT         __fastcall get_Count(long* pRetVal/*[out,retval]*/);
+  long            __fastcall get_Count(void);
+  HRESULT         __fastcall get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall get_SyncRoot(void);
+  HRESULT         __fastcall get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall get_IsSynchronized(void);
+
+  __property   long            Count = {read = get_Count};
+  __property   VARIANT_BOOL    IsSynchronized = {read = get_IsSynchronized};
+};
+typedef ICollectionDispT<ICollection> ICollectionDisp;
+
+typedef TComInterface<IList>  TCOMIList;
+
+// *********************************************************************//
+// DispIntf:  IList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
+// *********************************************************************//
+template<class T>
+class IListDispT : public TAutoDriver<IList>
+{
+public:
+  IListDispT(){}
+
+  IListDispT(IList *pintf)
+  {
+    TAutoDriver<IList>::Bind(pintf, false);
+  }
+
+  IListDispT(IListPtr pintf)
+  {
+    TAutoDriver<IList>::Bind(pintf, true);
+  }
+
+  IListDispT& operator=(IList *pintf)
+  {
+    TAutoDriver<IList>::Bind(pintf, false);
+    return *this;
+  }
+
+  IListDispT& operator=(IListPtr pintf)
+  {
+    TAutoDriver<IList>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall get_Item(long index/*[in]*/);
+  HRESULT         __fastcall _set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/);
+  HRESULT         __fastcall Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/);
+  long            __fastcall Add(VARIANT value/*[in]*/);
+  HRESULT         __fastcall Contains(VARIANT value/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Contains(VARIANT value/*[in]*/);
+  HRESULT         __fastcall Clear();
+  HRESULT         __fastcall get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall get_IsReadOnly(void);
+  HRESULT         __fastcall get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall get_IsFixedSize(void);
+  HRESULT         __fastcall IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/);
+  long            __fastcall IndexOf(VARIANT value/*[in]*/);
+  HRESULT         __fastcall Insert(long index/*[in]*/, VARIANT value/*[in]*/);
+  HRESULT         __fastcall Remove(VARIANT value/*[in]*/);
+  HRESULT         __fastcall RemoveAt(long index/*[in]*/);
+
+  __property   VARIANT_BOOL    IsReadOnly = {read = get_IsReadOnly};
+  __property   VARIANT_BOOL    IsFixedSize = {read = get_IsFixedSize};
+};
+typedef IListDispT<IList> IListDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_Array
+// Interface: _Array
+// *********************************************************************//
+template <class T /* _Array */ >
+class TCOM_ArrayT : public TComInterface<_Array>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ArrayT() {}
+  TCOM_ArrayT(_Array *intf, bool addRef = false) : TComInterface<_Array>(intf, addRef) {}
+  TCOM_ArrayT(const TCOM_ArrayT& src) : TComInterface<_Array>(src) {}
+  TCOM_ArrayT& operator=(const TCOM_ArrayT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ArrayT<_Array> TCOM_Array;
+
+// *********************************************************************//
+// DispIntf:  _Array
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
+// *********************************************************************//
+template<class T>
+class _ArrayDispT : public TAutoDriver<_Array>
+{
+public:
+  _ArrayDispT(){}
+
+  _ArrayDispT(_Array *pintf)
+  {
+    TAutoDriver<_Array>::Bind(pintf, false);
+  }
+
+  _ArrayDispT(_ArrayPtr pintf)
+  {
+    TAutoDriver<_Array>::Bind(pintf, true);
+  }
+
+  _ArrayDispT& operator=(_Array *pintf)
+  {
+    TAutoDriver<_Array>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ArrayDispT& operator=(_ArrayPtr pintf)
+  {
+    TAutoDriver<_Array>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_CLRArray));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_CLRArray);
+  }
+
+
+};
+typedef _ArrayDispT<_Array> _ArrayDisp;
+
+typedef TComInterface<IEnumerator>  TCOMIEnumerator;
+
+// *********************************************************************//
+// DispIntf:  IEnumerator
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+template<class T>
+class IEnumeratorDispT : public TAutoDriver<IEnumerator>
+{
+public:
+  IEnumeratorDispT(){}
+
+  IEnumeratorDispT(IEnumerator *pintf)
+  {
+    TAutoDriver<IEnumerator>::Bind(pintf, false);
+  }
+
+  IEnumeratorDispT(IEnumeratorPtr pintf)
+  {
+    TAutoDriver<IEnumerator>::Bind(pintf, true);
+  }
+
+  IEnumeratorDispT& operator=(IEnumerator *pintf)
+  {
+    TAutoDriver<IEnumerator>::Bind(pintf, false);
+    return *this;
+  }
+
+  IEnumeratorDispT& operator=(IEnumeratorPtr pintf)
+  {
+    TAutoDriver<IEnumerator>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall MoveNext(void);
+  HRESULT         __fastcall get_Current(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall get_Current(void);
+  HRESULT         __fastcall Reset();
+
+};
+typedef IEnumeratorDispT<IEnumerator> IEnumeratorDisp;
+
+typedef TComInterface<IDisposable>  TCOMIDisposable;
+
+// *********************************************************************//
+// DispIntf:  IDisposable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
+// *********************************************************************//
+template<class T>
+class IDisposableDispT : public TAutoDriver<IDisposable>
+{
+public:
+  IDisposableDispT(){}
+
+  IDisposableDispT(IDisposable *pintf)
+  {
+    TAutoDriver<IDisposable>::Bind(pintf, false);
+  }
+
+  IDisposableDispT(IDisposablePtr pintf)
+  {
+    TAutoDriver<IDisposable>::Bind(pintf, true);
+  }
+
+  IDisposableDispT& operator=(IDisposable *pintf)
+  {
+    TAutoDriver<IDisposable>::Bind(pintf, false);
+    return *this;
+  }
+
+  IDisposableDispT& operator=(IDisposablePtr pintf)
+  {
+    TAutoDriver<IDisposable>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall Dispose();
+
+};
+typedef IDisposableDispT<IDisposable> IDisposableDisp;
+
 // *********************************************************************//
 // SmartIntf: TCOM_String
 // Interface: _String
@@ -25792,47 +26213,6 @@ public:
 };
 typedef _StringComparerDispT<_StringComparer> _StringComparerDisp;
 
-typedef TComInterface<ISerializable>  TCOMISerializable;
-
-// *********************************************************************//
-// DispIntf:  ISerializable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}
-// *********************************************************************//
-template<class T>
-class ISerializableDispT : public TAutoDriver<ISerializable>
-{
-public:
-  ISerializableDispT(){}
-
-  ISerializableDispT(ISerializable *pintf)
-  {
-    TAutoDriver<ISerializable>::Bind(pintf, false);
-  }
-
-  ISerializableDispT(ISerializablePtr pintf)
-  {
-    TAutoDriver<ISerializable>::Bind(pintf, true);
-  }
-
-  ISerializableDispT& operator=(ISerializable *pintf)
-  {
-    TAutoDriver<ISerializable>::Bind(pintf, false);
-    return *this;
-  }
-
-  ISerializableDispT& operator=(ISerializablePtr pintf)
-  {
-    TAutoDriver<ISerializable>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
-
-};
-typedef ISerializableDispT<ISerializable> ISerializableDisp;
-
 // *********************************************************************//
 // SmartIntf: TCOM_StringBuilder
 // Interface: _StringBuilder
@@ -25896,136 +26276,6 @@ public:
 
 };
 typedef _StringBuilderDispT<_StringBuilder> _StringBuilderDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Exception
-// Interface: _Exception
-// *********************************************************************//
-template <class T /* _Exception */ >
-class TCOM_ExceptionT : public TComInterface<_Exception>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ExceptionT() {}
-  TCOM_ExceptionT(_Exception *intf, bool addRef = false) : TComInterface<_Exception>(intf, addRef) {}
-  TCOM_ExceptionT(const TCOM_ExceptionT& src) : TComInterface<_Exception>(src) {}
-  TCOM_ExceptionT& operator=(const TCOM_ExceptionT& src) { Bind(src, true); return *this;}
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall get_Message(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_Message(void);
-  HRESULT         __fastcall GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void);
-  HRESULT         __fastcall get_StackTrace(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_StackTrace(void);
-  HRESULT         __fastcall get_HelpLink(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_HelpLink(void);
-  HRESULT         __fastcall set_HelpLink(BSTR pRetVal/*[in]*/);
-  HRESULT         __fastcall get_Source(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_Source(void);
-  HRESULT         __fastcall set_Source(BSTR pRetVal/*[in]*/);
-  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                           Mscorlib_tlb::StreamingContext Context/*[in]*/);
-  HRESULT         __fastcall get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void);
-  HRESULT         __fastcall get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-  __property   BSTR            Message = {read = get_Message};
-  __property   BSTR            StackTrace = {read = get_StackTrace};
-  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
-  __property   BSTR            Source = {read = get_Source, write = set_Source};
-  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
-  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
-};
-typedef TCOM_ExceptionT<_Exception> TCOM_Exception;
-
-// *********************************************************************//
-// DispIntf:  _Exception
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {B36B5C63-42EF-38BC-A07E-0B34C98F164A}
-// *********************************************************************//
-template<class T>
-class _ExceptionDispT : public TAutoDriver<_Exception>
-{
-public:
-  _ExceptionDispT(){}
-
-  _ExceptionDispT(_Exception *pintf)
-  {
-    TAutoDriver<_Exception>::Bind(pintf, false);
-  }
-
-  _ExceptionDispT(_ExceptionPtr pintf)
-  {
-    TAutoDriver<_Exception>::Bind(pintf, true);
-  }
-
-  _ExceptionDispT& operator=(_Exception *pintf)
-  {
-    TAutoDriver<_Exception>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ExceptionDispT& operator=(_ExceptionPtr pintf)
-  {
-    TAutoDriver<_Exception>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_CLRException));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_CLRException);
-  }
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall get_Message(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_Message(void);
-  HRESULT         __fastcall GetBaseException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Exception* __fastcall GetBaseException(void);
-  HRESULT         __fastcall get_StackTrace(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_StackTrace(void);
-  HRESULT         __fastcall get_HelpLink(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_HelpLink(void);
-  HRESULT         __fastcall set_HelpLink(BSTR pRetVal/*[in]*/);
-  HRESULT         __fastcall get_Source(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_Source(void);
-  HRESULT         __fastcall set_Source(BSTR pRetVal/*[in]*/);
-  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
-  HRESULT         __fastcall get_InnerException(Mscorlib_tlb::_Exception** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_ExceptionPtr __fastcall get_InnerException(void);
-  HRESULT         __fastcall get_TargetSite(Mscorlib_tlb::_MethodBase** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_MethodBasePtr __fastcall get_TargetSite(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-  __property   BSTR            Message = {read = get_Message};
-  __property   BSTR            StackTrace = {read = get_StackTrace};
-  __property   BSTR            HelpLink = {read = get_HelpLink, write = set_HelpLink};
-  __property   BSTR            Source = {read = get_Source, write = set_Source};
-  __property   Mscorlib_tlb::_ExceptionPtr InnerException = {read = get_InnerException};
-  __property   Mscorlib_tlb::_MethodBasePtr TargetSite = {read = get_TargetSite};
-};
-typedef _ExceptionDispT<_Exception> _ExceptionDisp;
 
 typedef TComInterface<IDeserializationCallback>  TCOMIDeserializationCallback;
 
@@ -26386,180 +26636,6 @@ public:
 
 };
 typedef _ExecutionEngineExceptionDispT<_ExecutionEngineException> _ExecutionEngineExceptionDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Delegate
-// Interface: _Delegate
-// *********************************************************************//
-template <class T /* _Delegate */ >
-class TCOM_DelegateT : public TComInterface<_Delegate>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_DelegateT() {}
-  TCOM_DelegateT(_Delegate *intf, bool addRef = false) : TComInterface<_Delegate>(intf, addRef) {}
-  TCOM_DelegateT(const TCOM_DelegateT& src) : TComInterface<_Delegate>(src) {}
-  TCOM_DelegateT& operator=(const TCOM_DelegateT& src) { Bind(src, true); return *this;}
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall GetInvocationList(LPSAFEARRAY* pRetVal/*[out,retval]*/);
-  LPSAFEARRAY     __fastcall GetInvocationList(void);
-  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Clone(void);
-  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                           Mscorlib_tlb::StreamingContext Context/*[in]*/);
-  HRESULT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/, 
-                                           VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/);
-  HRESULT         __fastcall get_Method(Mscorlib_tlb::_MethodInfo** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_MethodInfoPtr __fastcall get_Method(void);
-  HRESULT         __fastcall get_Target(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall get_Target(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-  __property   Mscorlib_tlb::_MethodInfoPtr Method = {read = get_Method};
-};
-typedef TCOM_DelegateT<_Delegate> TCOM_Delegate;
-
-// *********************************************************************//
-// DispIntf:  _Delegate
-// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
-// GUID:      {FB6AB00F-5096-3AF8-A33D-D7885A5FA829}
-// *********************************************************************//
-template<class T>
-class _DelegateDispT : public TAutoDriver<_Delegate>
-{
-public:
-  _DelegateDispT(){}
-
-  _DelegateDispT(_Delegate *pintf)
-  {
-    TAutoDriver<_Delegate>::Bind(pintf, false);
-  }
-
-  _DelegateDispT(_DelegatePtr pintf)
-  {
-    TAutoDriver<_Delegate>::Bind(pintf, true);
-  }
-
-  _DelegateDispT& operator=(_Delegate *pintf)
-  {
-    TAutoDriver<_Delegate>::Bind(pintf, false);
-    return *this;
-  }
-
-  _DelegateDispT& operator=(_DelegatePtr pintf)
-  {
-    TAutoDriver<_Delegate>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Delegate));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Delegate);
-  }
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall GetInvocationList(LPSAFEARRAY* pRetVal/*[out,retval]*/);
-  LPSAFEARRAY     __fastcall GetInvocationList(void);
-  HRESULT         __fastcall Clone(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Clone(void);
-  HRESULT         __fastcall GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in]*/, 
-                                           /*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext Context)*/ VARIANT  Context);
-  HRESULT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/, 
-                                           VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall DynamicInvoke(LPSAFEARRAY args/*[in]*/);
-  HRESULT         __fastcall get_Method(Mscorlib_tlb::_MethodInfo** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_MethodInfoPtr __fastcall get_Method(void);
-  HRESULT         __fastcall get_Target(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall get_Target(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-  __property   Mscorlib_tlb::_MethodInfoPtr Method = {read = get_Method};
-};
-typedef _DelegateDispT<_Delegate> _DelegateDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_MulticastDelegate
-// Interface: _MulticastDelegate
-// *********************************************************************//
-template <class T /* _MulticastDelegate */ >
-class TCOM_MulticastDelegateT : public TComInterface<_MulticastDelegate>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_MulticastDelegateT() {}
-  TCOM_MulticastDelegateT(_MulticastDelegate *intf, bool addRef = false) : TComInterface<_MulticastDelegate>(intf, addRef) {}
-  TCOM_MulticastDelegateT(const TCOM_MulticastDelegateT& src) : TComInterface<_MulticastDelegate>(src) {}
-  TCOM_MulticastDelegateT& operator=(const TCOM_MulticastDelegateT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_MulticastDelegateT<_MulticastDelegate> TCOM_MulticastDelegate;
-
-// *********************************************************************//
-// DispIntf:  _MulticastDelegate
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {16FE0885-9129-3884-A232-90B58C5B2AA9}
-// *********************************************************************//
-template<class T>
-class _MulticastDelegateDispT : public TAutoDriver<_MulticastDelegate>
-{
-public:
-  _MulticastDelegateDispT(){}
-
-  _MulticastDelegateDispT(_MulticastDelegate *pintf)
-  {
-    TAutoDriver<_MulticastDelegate>::Bind(pintf, false);
-  }
-
-  _MulticastDelegateDispT(_MulticastDelegatePtr pintf)
-  {
-    TAutoDriver<_MulticastDelegate>::Bind(pintf, true);
-  }
-
-  _MulticastDelegateDispT& operator=(_MulticastDelegate *pintf)
-  {
-    TAutoDriver<_MulticastDelegate>::Bind(pintf, false);
-    return *this;
-  }
-
-  _MulticastDelegateDispT& operator=(_MulticastDelegatePtr pintf)
-  {
-    TAutoDriver<_MulticastDelegate>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_MulticastDelegate));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_MulticastDelegate);
-  }
-
-
-};
-typedef _MulticastDelegateDispT<_MulticastDelegate> _MulticastDelegateDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_MemberAccessException
@@ -27958,6 +28034,70 @@ public:
 
 };
 typedef _AppDomainUnloadedExceptionDispT<_AppDomainUnloadedException> _AppDomainUnloadedExceptionDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_EvidenceBase
+// Interface: _EvidenceBase
+// *********************************************************************//
+template <class T /* _EvidenceBase */ >
+class TCOM_EvidenceBaseT : public TComInterface<_EvidenceBase>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_EvidenceBaseT() {}
+  TCOM_EvidenceBaseT(_EvidenceBase *intf, bool addRef = false) : TComInterface<_EvidenceBase>(intf, addRef) {}
+  TCOM_EvidenceBaseT(const TCOM_EvidenceBaseT& src) : TComInterface<_EvidenceBase>(src) {}
+  TCOM_EvidenceBaseT& operator=(const TCOM_EvidenceBaseT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_EvidenceBaseT<_EvidenceBase> TCOM_EvidenceBase;
+
+// *********************************************************************//
+// DispIntf:  _EvidenceBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F4B8D231-6028-39EF-B017-72988A3F6766}
+// *********************************************************************//
+template<class T>
+class _EvidenceBaseDispT : public TAutoDriver<_EvidenceBase>
+{
+public:
+  _EvidenceBaseDispT(){}
+
+  _EvidenceBaseDispT(_EvidenceBase *pintf)
+  {
+    TAutoDriver<_EvidenceBase>::Bind(pintf, false);
+  }
+
+  _EvidenceBaseDispT(_EvidenceBasePtr pintf)
+  {
+    TAutoDriver<_EvidenceBase>::Bind(pintf, true);
+  }
+
+  _EvidenceBaseDispT& operator=(_EvidenceBase *pintf)
+  {
+    TAutoDriver<_EvidenceBase>::Bind(pintf, false);
+    return *this;
+  }
+
+  _EvidenceBaseDispT& operator=(_EvidenceBasePtr pintf)
+  {
+    TAutoDriver<_EvidenceBase>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_EvidenceBase));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_EvidenceBase);
+  }
+
+
+};
+typedef _EvidenceBaseDispT<_EvidenceBase> _EvidenceBaseDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_ActivationArguments
@@ -32585,6 +32725,134 @@ public:
 typedef _SerializableAttributeDispT<_SerializableAttribute> _SerializableAttributeDisp;
 
 // *********************************************************************//
+// SmartIntf: TCOM_STAThreadAttribute
+// Interface: _STAThreadAttribute
+// *********************************************************************//
+template <class T /* _STAThreadAttribute */ >
+class TCOM_STAThreadAttributeT : public TComInterface<_STAThreadAttribute>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_STAThreadAttributeT() {}
+  TCOM_STAThreadAttributeT(_STAThreadAttribute *intf, bool addRef = false) : TComInterface<_STAThreadAttribute>(intf, addRef) {}
+  TCOM_STAThreadAttributeT(const TCOM_STAThreadAttributeT& src) : TComInterface<_STAThreadAttribute>(src) {}
+  TCOM_STAThreadAttributeT& operator=(const TCOM_STAThreadAttributeT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_STAThreadAttributeT<_STAThreadAttribute> TCOM_STAThreadAttribute;
+
+// *********************************************************************//
+// DispIntf:  _STAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
+// *********************************************************************//
+template<class T>
+class _STAThreadAttributeDispT : public TAutoDriver<_STAThreadAttribute>
+{
+public:
+  _STAThreadAttributeDispT(){}
+
+  _STAThreadAttributeDispT(_STAThreadAttribute *pintf)
+  {
+    TAutoDriver<_STAThreadAttribute>::Bind(pintf, false);
+  }
+
+  _STAThreadAttributeDispT(_STAThreadAttributePtr pintf)
+  {
+    TAutoDriver<_STAThreadAttribute>::Bind(pintf, true);
+  }
+
+  _STAThreadAttributeDispT& operator=(_STAThreadAttribute *pintf)
+  {
+    TAutoDriver<_STAThreadAttribute>::Bind(pintf, false);
+    return *this;
+  }
+
+  _STAThreadAttributeDispT& operator=(_STAThreadAttributePtr pintf)
+  {
+    TAutoDriver<_STAThreadAttribute>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_STAThreadAttribute));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_STAThreadAttribute);
+  }
+
+
+};
+typedef _STAThreadAttributeDispT<_STAThreadAttribute> _STAThreadAttributeDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_MTAThreadAttribute
+// Interface: _MTAThreadAttribute
+// *********************************************************************//
+template <class T /* _MTAThreadAttribute */ >
+class TCOM_MTAThreadAttributeT : public TComInterface<_MTAThreadAttribute>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_MTAThreadAttributeT() {}
+  TCOM_MTAThreadAttributeT(_MTAThreadAttribute *intf, bool addRef = false) : TComInterface<_MTAThreadAttribute>(intf, addRef) {}
+  TCOM_MTAThreadAttributeT(const TCOM_MTAThreadAttributeT& src) : TComInterface<_MTAThreadAttribute>(src) {}
+  TCOM_MTAThreadAttributeT& operator=(const TCOM_MTAThreadAttributeT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_MTAThreadAttributeT<_MTAThreadAttribute> TCOM_MTAThreadAttribute;
+
+// *********************************************************************//
+// DispIntf:  _MTAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
+// *********************************************************************//
+template<class T>
+class _MTAThreadAttributeDispT : public TAutoDriver<_MTAThreadAttribute>
+{
+public:
+  _MTAThreadAttributeDispT(){}
+
+  _MTAThreadAttributeDispT(_MTAThreadAttribute *pintf)
+  {
+    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, false);
+  }
+
+  _MTAThreadAttributeDispT(_MTAThreadAttributePtr pintf)
+  {
+    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, true);
+  }
+
+  _MTAThreadAttributeDispT& operator=(_MTAThreadAttribute *pintf)
+  {
+    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, false);
+    return *this;
+  }
+
+  _MTAThreadAttributeDispT& operator=(_MTAThreadAttributePtr pintf)
+  {
+    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_MTAThreadAttribute));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_MTAThreadAttribute);
+  }
+
+
+};
+typedef _MTAThreadAttributeDispT<_MTAThreadAttribute> _MTAThreadAttributeDisp;
+
+// *********************************************************************//
 // SmartIntf: TCOM_TimeoutException
 // Interface: _TimeoutException
 // *********************************************************************//
@@ -34443,262 +34711,6 @@ public:
 typedef _TimerDispT<_Timer> _TimerDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_STAThreadAttribute
-// Interface: _STAThreadAttribute
-// *********************************************************************//
-template <class T /* _STAThreadAttribute */ >
-class TCOM_STAThreadAttributeT : public TComInterface<_STAThreadAttribute>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_STAThreadAttributeT() {}
-  TCOM_STAThreadAttributeT(_STAThreadAttribute *intf, bool addRef = false) : TComInterface<_STAThreadAttribute>(intf, addRef) {}
-  TCOM_STAThreadAttributeT(const TCOM_STAThreadAttributeT& src) : TComInterface<_STAThreadAttribute>(src) {}
-  TCOM_STAThreadAttributeT& operator=(const TCOM_STAThreadAttributeT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_STAThreadAttributeT<_STAThreadAttribute> TCOM_STAThreadAttribute;
-
-// *********************************************************************//
-// DispIntf:  _STAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
-// *********************************************************************//
-template<class T>
-class _STAThreadAttributeDispT : public TAutoDriver<_STAThreadAttribute>
-{
-public:
-  _STAThreadAttributeDispT(){}
-
-  _STAThreadAttributeDispT(_STAThreadAttribute *pintf)
-  {
-    TAutoDriver<_STAThreadAttribute>::Bind(pintf, false);
-  }
-
-  _STAThreadAttributeDispT(_STAThreadAttributePtr pintf)
-  {
-    TAutoDriver<_STAThreadAttribute>::Bind(pintf, true);
-  }
-
-  _STAThreadAttributeDispT& operator=(_STAThreadAttribute *pintf)
-  {
-    TAutoDriver<_STAThreadAttribute>::Bind(pintf, false);
-    return *this;
-  }
-
-  _STAThreadAttributeDispT& operator=(_STAThreadAttributePtr pintf)
-  {
-    TAutoDriver<_STAThreadAttribute>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_STAThreadAttribute));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_STAThreadAttribute);
-  }
-
-
-};
-typedef _STAThreadAttributeDispT<_STAThreadAttribute> _STAThreadAttributeDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_MTAThreadAttribute
-// Interface: _MTAThreadAttribute
-// *********************************************************************//
-template <class T /* _MTAThreadAttribute */ >
-class TCOM_MTAThreadAttributeT : public TComInterface<_MTAThreadAttribute>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_MTAThreadAttributeT() {}
-  TCOM_MTAThreadAttributeT(_MTAThreadAttribute *intf, bool addRef = false) : TComInterface<_MTAThreadAttribute>(intf, addRef) {}
-  TCOM_MTAThreadAttributeT(const TCOM_MTAThreadAttributeT& src) : TComInterface<_MTAThreadAttribute>(src) {}
-  TCOM_MTAThreadAttributeT& operator=(const TCOM_MTAThreadAttributeT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_MTAThreadAttributeT<_MTAThreadAttribute> TCOM_MTAThreadAttribute;
-
-// *********************************************************************//
-// DispIntf:  _MTAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
-// *********************************************************************//
-template<class T>
-class _MTAThreadAttributeDispT : public TAutoDriver<_MTAThreadAttribute>
-{
-public:
-  _MTAThreadAttributeDispT(){}
-
-  _MTAThreadAttributeDispT(_MTAThreadAttribute *pintf)
-  {
-    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, false);
-  }
-
-  _MTAThreadAttributeDispT(_MTAThreadAttributePtr pintf)
-  {
-    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, true);
-  }
-
-  _MTAThreadAttributeDispT& operator=(_MTAThreadAttribute *pintf)
-  {
-    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, false);
-    return *this;
-  }
-
-  _MTAThreadAttributeDispT& operator=(_MTAThreadAttributePtr pintf)
-  {
-    TAutoDriver<_MTAThreadAttribute>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_MTAThreadAttribute));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_MTAThreadAttribute);
-  }
-
-
-};
-typedef _MTAThreadAttributeDispT<_MTAThreadAttribute> _MTAThreadAttributeDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_ArrayList
-// Interface: _ArrayList
-// *********************************************************************//
-template <class T /* _ArrayList */ >
-class TCOM_ArrayListT : public TComInterface<_ArrayList>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ArrayListT() {}
-  TCOM_ArrayListT(_ArrayList *intf, bool addRef = false) : TComInterface<_ArrayList>(intf, addRef) {}
-  TCOM_ArrayListT(const TCOM_ArrayListT& src) : TComInterface<_ArrayList>(src) {}
-  TCOM_ArrayListT& operator=(const TCOM_ArrayListT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ArrayListT<_ArrayList> TCOM_ArrayList;
-
-// *********************************************************************//
-// DispIntf:  _ArrayList
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
-// *********************************************************************//
-template<class T>
-class _ArrayListDispT : public TAutoDriver<_ArrayList>
-{
-public:
-  _ArrayListDispT(){}
-
-  _ArrayListDispT(_ArrayList *pintf)
-  {
-    TAutoDriver<_ArrayList>::Bind(pintf, false);
-  }
-
-  _ArrayListDispT(_ArrayListPtr pintf)
-  {
-    TAutoDriver<_ArrayList>::Bind(pintf, true);
-  }
-
-  _ArrayListDispT& operator=(_ArrayList *pintf)
-  {
-    TAutoDriver<_ArrayList>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ArrayListDispT& operator=(_ArrayListPtr pintf)
-  {
-    TAutoDriver<_ArrayList>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_ArrayList));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_ArrayList);
-  }
-
-
-};
-typedef _ArrayListDispT<_ArrayList> _ArrayListDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_BitArray
-// Interface: _BitArray
-// *********************************************************************//
-template <class T /* _BitArray */ >
-class TCOM_BitArrayT : public TComInterface<_BitArray>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_BitArrayT() {}
-  TCOM_BitArrayT(_BitArray *intf, bool addRef = false) : TComInterface<_BitArray>(intf, addRef) {}
-  TCOM_BitArrayT(const TCOM_BitArrayT& src) : TComInterface<_BitArray>(src) {}
-  TCOM_BitArrayT& operator=(const TCOM_BitArrayT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_BitArrayT<_BitArray> TCOM_BitArray;
-
-// *********************************************************************//
-// DispIntf:  _BitArray
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
-// *********************************************************************//
-template<class T>
-class _BitArrayDispT : public TAutoDriver<_BitArray>
-{
-public:
-  _BitArrayDispT(){}
-
-  _BitArrayDispT(_BitArray *pintf)
-  {
-    TAutoDriver<_BitArray>::Bind(pintf, false);
-  }
-
-  _BitArrayDispT(_BitArrayPtr pintf)
-  {
-    TAutoDriver<_BitArray>::Bind(pintf, true);
-  }
-
-  _BitArrayDispT& operator=(_BitArray *pintf)
-  {
-    TAutoDriver<_BitArray>::Bind(pintf, false);
-    return *this;
-  }
-
-  _BitArrayDispT& operator=(_BitArrayPtr pintf)
-  {
-    TAutoDriver<_BitArray>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_BitArray));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_BitArray);
-  }
-
-
-};
-typedef _BitArrayDispT<_BitArray> _BitArrayDisp;
-
-// *********************************************************************//
 // SmartIntf: TCOM_CaseInsensitiveComparer
 // Interface: _CaseInsensitiveComparer
 // *********************************************************************//
@@ -34931,70 +34943,6 @@ public:
 };
 typedef _CollectionBaseDispT<_CollectionBase> _CollectionBaseDisp;
 
-// *********************************************************************//
-// SmartIntf: TCOM_Comparer
-// Interface: _Comparer
-// *********************************************************************//
-template <class T /* _Comparer */ >
-class TCOM_ComparerT : public TComInterface<_Comparer>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ComparerT() {}
-  TCOM_ComparerT(_Comparer *intf, bool addRef = false) : TComInterface<_Comparer>(intf, addRef) {}
-  TCOM_ComparerT(const TCOM_ComparerT& src) : TComInterface<_Comparer>(src) {}
-  TCOM_ComparerT& operator=(const TCOM_ComparerT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ComparerT<_Comparer> TCOM_Comparer;
-
-// *********************************************************************//
-// DispIntf:  _Comparer
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
-// *********************************************************************//
-template<class T>
-class _ComparerDispT : public TAutoDriver<_Comparer>
-{
-public:
-  _ComparerDispT(){}
-
-  _ComparerDispT(_Comparer *pintf)
-  {
-    TAutoDriver<_Comparer>::Bind(pintf, false);
-  }
-
-  _ComparerDispT(_ComparerPtr pintf)
-  {
-    TAutoDriver<_Comparer>::Bind(pintf, true);
-  }
-
-  _ComparerDispT& operator=(_Comparer *pintf)
-  {
-    TAutoDriver<_Comparer>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ComparerDispT& operator=(_ComparerPtr pintf)
-  {
-    TAutoDriver<_Comparer>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Comparer));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Comparer);
-  }
-
-
-};
-typedef _ComparerDispT<_Comparer> _ComparerDisp;
-
 typedef TComInterface<IDictionary>  TCOMIDictionary;
 
 // *********************************************************************//
@@ -35120,6 +35068,390 @@ public:
 };
 typedef _DictionaryBaseDispT<_DictionaryBase> _DictionaryBaseDisp;
 
+// *********************************************************************//
+// SmartIntf: TCOM_ReadOnlyCollectionBase
+// Interface: _ReadOnlyCollectionBase
+// *********************************************************************//
+template <class T /* _ReadOnlyCollectionBase */ >
+class TCOM_ReadOnlyCollectionBaseT : public TComInterface<_ReadOnlyCollectionBase>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ReadOnlyCollectionBaseT() {}
+  TCOM_ReadOnlyCollectionBaseT(_ReadOnlyCollectionBase *intf, bool addRef = false) : TComInterface<_ReadOnlyCollectionBase>(intf, addRef) {}
+  TCOM_ReadOnlyCollectionBaseT(const TCOM_ReadOnlyCollectionBaseT& src) : TComInterface<_ReadOnlyCollectionBase>(src) {}
+  TCOM_ReadOnlyCollectionBaseT& operator=(const TCOM_ReadOnlyCollectionBaseT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ReadOnlyCollectionBaseT<_ReadOnlyCollectionBase> TCOM_ReadOnlyCollectionBase;
+
+// *********************************************************************//
+// DispIntf:  _ReadOnlyCollectionBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
+// *********************************************************************//
+template<class T>
+class _ReadOnlyCollectionBaseDispT : public TAutoDriver<_ReadOnlyCollectionBase>
+{
+public:
+  _ReadOnlyCollectionBaseDispT(){}
+
+  _ReadOnlyCollectionBaseDispT(_ReadOnlyCollectionBase *pintf)
+  {
+    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, false);
+  }
+
+  _ReadOnlyCollectionBaseDispT(_ReadOnlyCollectionBasePtr pintf)
+  {
+    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, true);
+  }
+
+  _ReadOnlyCollectionBaseDispT& operator=(_ReadOnlyCollectionBase *pintf)
+  {
+    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ReadOnlyCollectionBaseDispT& operator=(_ReadOnlyCollectionBasePtr pintf)
+  {
+    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_ReadOnlyCollectionBase));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_ReadOnlyCollectionBase);
+  }
+
+
+};
+typedef _ReadOnlyCollectionBaseDispT<_ReadOnlyCollectionBase> _ReadOnlyCollectionBaseDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_Queue
+// Interface: _Queue
+// *********************************************************************//
+template <class T /* _Queue */ >
+class TCOM_QueueT : public TComInterface<_Queue>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_QueueT() {}
+  TCOM_QueueT(_Queue *intf, bool addRef = false) : TComInterface<_Queue>(intf, addRef) {}
+  TCOM_QueueT(const TCOM_QueueT& src) : TComInterface<_Queue>(src) {}
+  TCOM_QueueT& operator=(const TCOM_QueueT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_QueueT<_Queue> TCOM_Queue;
+
+// *********************************************************************//
+// DispIntf:  _Queue
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
+// *********************************************************************//
+template<class T>
+class _QueueDispT : public TAutoDriver<_Queue>
+{
+public:
+  _QueueDispT(){}
+
+  _QueueDispT(_Queue *pintf)
+  {
+    TAutoDriver<_Queue>::Bind(pintf, false);
+  }
+
+  _QueueDispT(_QueuePtr pintf)
+  {
+    TAutoDriver<_Queue>::Bind(pintf, true);
+  }
+
+  _QueueDispT& operator=(_Queue *pintf)
+  {
+    TAutoDriver<_Queue>::Bind(pintf, false);
+    return *this;
+  }
+
+  _QueueDispT& operator=(_QueuePtr pintf)
+  {
+    TAutoDriver<_Queue>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_Queue));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_Queue);
+  }
+
+
+};
+typedef _QueueDispT<_Queue> _QueueDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_ArrayList
+// Interface: _ArrayList
+// *********************************************************************//
+template <class T /* _ArrayList */ >
+class TCOM_ArrayListT : public TComInterface<_ArrayList>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ArrayListT() {}
+  TCOM_ArrayListT(_ArrayList *intf, bool addRef = false) : TComInterface<_ArrayList>(intf, addRef) {}
+  TCOM_ArrayListT(const TCOM_ArrayListT& src) : TComInterface<_ArrayList>(src) {}
+  TCOM_ArrayListT& operator=(const TCOM_ArrayListT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ArrayListT<_ArrayList> TCOM_ArrayList;
+
+// *********************************************************************//
+// DispIntf:  _ArrayList
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
+// *********************************************************************//
+template<class T>
+class _ArrayListDispT : public TAutoDriver<_ArrayList>
+{
+public:
+  _ArrayListDispT(){}
+
+  _ArrayListDispT(_ArrayList *pintf)
+  {
+    TAutoDriver<_ArrayList>::Bind(pintf, false);
+  }
+
+  _ArrayListDispT(_ArrayListPtr pintf)
+  {
+    TAutoDriver<_ArrayList>::Bind(pintf, true);
+  }
+
+  _ArrayListDispT& operator=(_ArrayList *pintf)
+  {
+    TAutoDriver<_ArrayList>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ArrayListDispT& operator=(_ArrayListPtr pintf)
+  {
+    TAutoDriver<_ArrayList>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_ArrayList));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_ArrayList);
+  }
+
+
+};
+typedef _ArrayListDispT<_ArrayList> _ArrayListDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_BitArray
+// Interface: _BitArray
+// *********************************************************************//
+template <class T /* _BitArray */ >
+class TCOM_BitArrayT : public TComInterface<_BitArray>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_BitArrayT() {}
+  TCOM_BitArrayT(_BitArray *intf, bool addRef = false) : TComInterface<_BitArray>(intf, addRef) {}
+  TCOM_BitArrayT(const TCOM_BitArrayT& src) : TComInterface<_BitArray>(src) {}
+  TCOM_BitArrayT& operator=(const TCOM_BitArrayT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_BitArrayT<_BitArray> TCOM_BitArray;
+
+// *********************************************************************//
+// DispIntf:  _BitArray
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
+// *********************************************************************//
+template<class T>
+class _BitArrayDispT : public TAutoDriver<_BitArray>
+{
+public:
+  _BitArrayDispT(){}
+
+  _BitArrayDispT(_BitArray *pintf)
+  {
+    TAutoDriver<_BitArray>::Bind(pintf, false);
+  }
+
+  _BitArrayDispT(_BitArrayPtr pintf)
+  {
+    TAutoDriver<_BitArray>::Bind(pintf, true);
+  }
+
+  _BitArrayDispT& operator=(_BitArray *pintf)
+  {
+    TAutoDriver<_BitArray>::Bind(pintf, false);
+    return *this;
+  }
+
+  _BitArrayDispT& operator=(_BitArrayPtr pintf)
+  {
+    TAutoDriver<_BitArray>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_BitArray));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_BitArray);
+  }
+
+
+};
+typedef _BitArrayDispT<_BitArray> _BitArrayDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_Stack
+// Interface: _Stack
+// *********************************************************************//
+template <class T /* _Stack */ >
+class TCOM_StackT : public TComInterface<_Stack>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_StackT() {}
+  TCOM_StackT(_Stack *intf, bool addRef = false) : TComInterface<_Stack>(intf, addRef) {}
+  TCOM_StackT(const TCOM_StackT& src) : TComInterface<_Stack>(src) {}
+  TCOM_StackT& operator=(const TCOM_StackT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_StackT<_Stack> TCOM_Stack;
+
+// *********************************************************************//
+// DispIntf:  _Stack
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
+// *********************************************************************//
+template<class T>
+class _StackDispT : public TAutoDriver<_Stack>
+{
+public:
+  _StackDispT(){}
+
+  _StackDispT(_Stack *pintf)
+  {
+    TAutoDriver<_Stack>::Bind(pintf, false);
+  }
+
+  _StackDispT(_StackPtr pintf)
+  {
+    TAutoDriver<_Stack>::Bind(pintf, true);
+  }
+
+  _StackDispT& operator=(_Stack *pintf)
+  {
+    TAutoDriver<_Stack>::Bind(pintf, false);
+    return *this;
+  }
+
+  _StackDispT& operator=(_StackPtr pintf)
+  {
+    TAutoDriver<_Stack>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_Stack));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_Stack);
+  }
+
+
+};
+typedef _StackDispT<_Stack> _StackDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_Comparer
+// Interface: _Comparer
+// *********************************************************************//
+template <class T /* _Comparer */ >
+class TCOM_ComparerT : public TComInterface<_Comparer>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ComparerT() {}
+  TCOM_ComparerT(_Comparer *intf, bool addRef = false) : TComInterface<_Comparer>(intf, addRef) {}
+  TCOM_ComparerT(const TCOM_ComparerT& src) : TComInterface<_Comparer>(src) {}
+  TCOM_ComparerT& operator=(const TCOM_ComparerT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ComparerT<_Comparer> TCOM_Comparer;
+
+// *********************************************************************//
+// DispIntf:  _Comparer
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
+// *********************************************************************//
+template<class T>
+class _ComparerDispT : public TAutoDriver<_Comparer>
+{
+public:
+  _ComparerDispT(){}
+
+  _ComparerDispT(_Comparer *pintf)
+  {
+    TAutoDriver<_Comparer>::Bind(pintf, false);
+  }
+
+  _ComparerDispT(_ComparerPtr pintf)
+  {
+    TAutoDriver<_Comparer>::Bind(pintf, true);
+  }
+
+  _ComparerDispT& operator=(_Comparer *pintf)
+  {
+    TAutoDriver<_Comparer>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ComparerDispT& operator=(_ComparerPtr pintf)
+  {
+    TAutoDriver<_Comparer>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_Comparer));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_Comparer);
+  }
+
+
+};
+typedef _ComparerDispT<_Comparer> _ComparerDisp;
+
 typedef TComInterface<IDictionaryEnumerator>  TCOMIDictionaryEnumerator;
 
 // *********************************************************************//
@@ -35229,134 +35561,6 @@ public:
 typedef _HashtableDispT<_Hashtable> _HashtableDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_Queue
-// Interface: _Queue
-// *********************************************************************//
-template <class T /* _Queue */ >
-class TCOM_QueueT : public TComInterface<_Queue>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_QueueT() {}
-  TCOM_QueueT(_Queue *intf, bool addRef = false) : TComInterface<_Queue>(intf, addRef) {}
-  TCOM_QueueT(const TCOM_QueueT& src) : TComInterface<_Queue>(src) {}
-  TCOM_QueueT& operator=(const TCOM_QueueT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_QueueT<_Queue> TCOM_Queue;
-
-// *********************************************************************//
-// DispIntf:  _Queue
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
-// *********************************************************************//
-template<class T>
-class _QueueDispT : public TAutoDriver<_Queue>
-{
-public:
-  _QueueDispT(){}
-
-  _QueueDispT(_Queue *pintf)
-  {
-    TAutoDriver<_Queue>::Bind(pintf, false);
-  }
-
-  _QueueDispT(_QueuePtr pintf)
-  {
-    TAutoDriver<_Queue>::Bind(pintf, true);
-  }
-
-  _QueueDispT& operator=(_Queue *pintf)
-  {
-    TAutoDriver<_Queue>::Bind(pintf, false);
-    return *this;
-  }
-
-  _QueueDispT& operator=(_QueuePtr pintf)
-  {
-    TAutoDriver<_Queue>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Queue));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Queue);
-  }
-
-
-};
-typedef _QueueDispT<_Queue> _QueueDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_ReadOnlyCollectionBase
-// Interface: _ReadOnlyCollectionBase
-// *********************************************************************//
-template <class T /* _ReadOnlyCollectionBase */ >
-class TCOM_ReadOnlyCollectionBaseT : public TComInterface<_ReadOnlyCollectionBase>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ReadOnlyCollectionBaseT() {}
-  TCOM_ReadOnlyCollectionBaseT(_ReadOnlyCollectionBase *intf, bool addRef = false) : TComInterface<_ReadOnlyCollectionBase>(intf, addRef) {}
-  TCOM_ReadOnlyCollectionBaseT(const TCOM_ReadOnlyCollectionBaseT& src) : TComInterface<_ReadOnlyCollectionBase>(src) {}
-  TCOM_ReadOnlyCollectionBaseT& operator=(const TCOM_ReadOnlyCollectionBaseT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ReadOnlyCollectionBaseT<_ReadOnlyCollectionBase> TCOM_ReadOnlyCollectionBase;
-
-// *********************************************************************//
-// DispIntf:  _ReadOnlyCollectionBase
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
-// *********************************************************************//
-template<class T>
-class _ReadOnlyCollectionBaseDispT : public TAutoDriver<_ReadOnlyCollectionBase>
-{
-public:
-  _ReadOnlyCollectionBaseDispT(){}
-
-  _ReadOnlyCollectionBaseDispT(_ReadOnlyCollectionBase *pintf)
-  {
-    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, false);
-  }
-
-  _ReadOnlyCollectionBaseDispT(_ReadOnlyCollectionBasePtr pintf)
-  {
-    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, true);
-  }
-
-  _ReadOnlyCollectionBaseDispT& operator=(_ReadOnlyCollectionBase *pintf)
-  {
-    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ReadOnlyCollectionBaseDispT& operator=(_ReadOnlyCollectionBasePtr pintf)
-  {
-    TAutoDriver<_ReadOnlyCollectionBase>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_ReadOnlyCollectionBase));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_ReadOnlyCollectionBase);
-  }
-
-
-};
-typedef _ReadOnlyCollectionBaseDispT<_ReadOnlyCollectionBase> _ReadOnlyCollectionBaseDisp;
-
-// *********************************************************************//
 // SmartIntf: TCOM_SortedList
 // Interface: _SortedList
 // *********************************************************************//
@@ -35419,70 +35623,6 @@ public:
 
 };
 typedef _SortedListDispT<_SortedList> _SortedListDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Stack
-// Interface: _Stack
-// *********************************************************************//
-template <class T /* _Stack */ >
-class TCOM_StackT : public TComInterface<_Stack>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_StackT() {}
-  TCOM_StackT(_Stack *intf, bool addRef = false) : TComInterface<_Stack>(intf, addRef) {}
-  TCOM_StackT(const TCOM_StackT& src) : TComInterface<_Stack>(src) {}
-  TCOM_StackT& operator=(const TCOM_StackT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_StackT<_Stack> TCOM_Stack;
-
-// *********************************************************************//
-// DispIntf:  _Stack
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
-// *********************************************************************//
-template<class T>
-class _StackDispT : public TAutoDriver<_Stack>
-{
-public:
-  _StackDispT(){}
-
-  _StackDispT(_Stack *pintf)
-  {
-    TAutoDriver<_Stack>::Bind(pintf, false);
-  }
-
-  _StackDispT(_StackPtr pintf)
-  {
-    TAutoDriver<_Stack>::Bind(pintf, true);
-  }
-
-  _StackDispT& operator=(_Stack *pintf)
-  {
-    TAutoDriver<_Stack>::Bind(pintf, false);
-    return *this;
-  }
-
-  _StackDispT& operator=(_StackPtr pintf)
-  {
-    TAutoDriver<_Stack>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Stack));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Stack);
-  }
-
-
-};
-typedef _StackDispT<_Stack> _StackDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_Nullable
@@ -40944,124 +41084,6 @@ public:
 };
 typedef _TypeFilterDispT<_TypeFilter> _TypeFilterDisp;
 
-typedef TComInterface<IFormatter>  TCOMIFormatter;
-
-// *********************************************************************//
-// DispIntf:  IFormatter
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
-// *********************************************************************//
-template<class T>
-class IFormatterDispT : public TAutoDriver<IFormatter>
-{
-public:
-  IFormatterDispT(){}
-
-  IFormatterDispT(IFormatter *pintf)
-  {
-    TAutoDriver<IFormatter>::Bind(pintf, false);
-  }
-
-  IFormatterDispT(IFormatterPtr pintf)
-  {
-    TAutoDriver<IFormatter>::Bind(pintf, true);
-  }
-
-  IFormatterDispT& operator=(IFormatter *pintf)
-  {
-    TAutoDriver<IFormatter>::Bind(pintf, false);
-    return *this;
-  }
-
-  IFormatterDispT& operator=(IFormatterPtr pintf)
-  {
-    TAutoDriver<IFormatter>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT         __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                                         VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/);
-  HRESULT         __fastcall Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                                       VARIANT graph/*[in]*/);
-  HRESULT         __fastcall get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::ISurrogateSelectorPtr __fastcall get_SurrogateSelector(void);
-  HRESULT         __fastcall _set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/);
-  HRESULT         __fastcall get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_SerializationBinderPtr __fastcall get_Binder(void);
-  HRESULT         __fastcall _set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/);
-  HRESULT         __fastcall get_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext* pRetVal)*/ VARIANT*  pRetVal);
-  HRESULT         __fastcall set_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext pRetVal)*/ VARIANT  pRetVal);
-
-  __property   Mscorlib_tlb::ISurrogateSelectorPtr SurrogateSelector = {read = get_SurrogateSelector};
-  __property   Mscorlib_tlb::_SerializationBinderPtr Binder = {read = get_Binder};
-};
-typedef IFormatterDispT<IFormatter> IFormatterDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Formatter
-// Interface: _Formatter
-// *********************************************************************//
-template <class T /* _Formatter */ >
-class TCOM_FormatterT : public TComInterface<_Formatter>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_FormatterT() {}
-  TCOM_FormatterT(_Formatter *intf, bool addRef = false) : TComInterface<_Formatter>(intf, addRef) {}
-  TCOM_FormatterT(const TCOM_FormatterT& src) : TComInterface<_Formatter>(src) {}
-  TCOM_FormatterT& operator=(const TCOM_FormatterT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_FormatterT<_Formatter> TCOM_Formatter;
-
-// *********************************************************************//
-// DispIntf:  _Formatter
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
-// *********************************************************************//
-template<class T>
-class _FormatterDispT : public TAutoDriver<_Formatter>
-{
-public:
-  _FormatterDispT(){}
-
-  _FormatterDispT(_Formatter *pintf)
-  {
-    TAutoDriver<_Formatter>::Bind(pintf, false);
-  }
-
-  _FormatterDispT(_FormatterPtr pintf)
-  {
-    TAutoDriver<_Formatter>::Bind(pintf, true);
-  }
-
-  _FormatterDispT& operator=(_Formatter *pintf)
-  {
-    TAutoDriver<_Formatter>::Bind(pintf, false);
-    return *this;
-  }
-
-  _FormatterDispT& operator=(_FormatterPtr pintf)
-  {
-    TAutoDriver<_Formatter>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Formatter));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Formatter);
-  }
-
-
-};
-typedef _FormatterDispT<_Formatter> _FormatterDisp;
-
 typedef TComInterface<IFormatterConverter>  TCOMIFormatterConverter;
 
 // *********************************************************************//
@@ -41314,6 +41336,60 @@ public:
 };
 typedef ISerializationSurrogateDispT<ISerializationSurrogate> ISerializationSurrogateDisp;
 
+typedef TComInterface<IFormatter>  TCOMIFormatter;
+
+// *********************************************************************//
+// DispIntf:  IFormatter
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
+// *********************************************************************//
+template<class T>
+class IFormatterDispT : public TAutoDriver<IFormatter>
+{
+public:
+  IFormatterDispT(){}
+
+  IFormatterDispT(IFormatter *pintf)
+  {
+    TAutoDriver<IFormatter>::Bind(pintf, false);
+  }
+
+  IFormatterDispT(IFormatterPtr pintf)
+  {
+    TAutoDriver<IFormatter>::Bind(pintf, true);
+  }
+
+  IFormatterDispT& operator=(IFormatter *pintf)
+  {
+    TAutoDriver<IFormatter>::Bind(pintf, false);
+    return *this;
+  }
+
+  IFormatterDispT& operator=(IFormatterPtr pintf)
+  {
+    TAutoDriver<IFormatter>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT         __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                                         VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/);
+  HRESULT         __fastcall Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                                       VARIANT graph/*[in]*/);
+  HRESULT         __fastcall get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::ISurrogateSelectorPtr __fastcall get_SurrogateSelector(void);
+  HRESULT         __fastcall _set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/);
+  HRESULT         __fastcall get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_SerializationBinderPtr __fastcall get_Binder(void);
+  HRESULT         __fastcall _set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/);
+  HRESULT         __fastcall get_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext* pRetVal)*/ VARIANT*  pRetVal);
+  HRESULT         __fastcall set_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext pRetVal)*/ VARIANT  pRetVal);
+
+  __property   Mscorlib_tlb::ISurrogateSelectorPtr SurrogateSelector = {read = get_SurrogateSelector};
+  __property   Mscorlib_tlb::_SerializationBinderPtr Binder = {read = get_Binder};
+};
+typedef IFormatterDispT<IFormatter> IFormatterDisp;
+
 typedef TComInterface<ISurrogateSelector>  TCOMISurrogateSelector;
 
 // *********************************************************************//
@@ -41359,134 +41435,6 @@ public:
 
 };
 typedef ISurrogateSelectorDispT<ISurrogateSelector> ISurrogateSelectorDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_ObjectIDGenerator
-// Interface: _ObjectIDGenerator
-// *********************************************************************//
-template <class T /* _ObjectIDGenerator */ >
-class TCOM_ObjectIDGeneratorT : public TComInterface<_ObjectIDGenerator>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ObjectIDGeneratorT() {}
-  TCOM_ObjectIDGeneratorT(_ObjectIDGenerator *intf, bool addRef = false) : TComInterface<_ObjectIDGenerator>(intf, addRef) {}
-  TCOM_ObjectIDGeneratorT(const TCOM_ObjectIDGeneratorT& src) : TComInterface<_ObjectIDGenerator>(src) {}
-  TCOM_ObjectIDGeneratorT& operator=(const TCOM_ObjectIDGeneratorT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ObjectIDGeneratorT<_ObjectIDGenerator> TCOM_ObjectIDGenerator;
-
-// *********************************************************************//
-// DispIntf:  _ObjectIDGenerator
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
-// *********************************************************************//
-template<class T>
-class _ObjectIDGeneratorDispT : public TAutoDriver<_ObjectIDGenerator>
-{
-public:
-  _ObjectIDGeneratorDispT(){}
-
-  _ObjectIDGeneratorDispT(_ObjectIDGenerator *pintf)
-  {
-    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, false);
-  }
-
-  _ObjectIDGeneratorDispT(_ObjectIDGeneratorPtr pintf)
-  {
-    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, true);
-  }
-
-  _ObjectIDGeneratorDispT& operator=(_ObjectIDGenerator *pintf)
-  {
-    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ObjectIDGeneratorDispT& operator=(_ObjectIDGeneratorPtr pintf)
-  {
-    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_ObjectIDGenerator));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_ObjectIDGenerator);
-  }
-
-
-};
-typedef _ObjectIDGeneratorDispT<_ObjectIDGenerator> _ObjectIDGeneratorDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_ObjectManager
-// Interface: _ObjectManager
-// *********************************************************************//
-template <class T /* _ObjectManager */ >
-class TCOM_ObjectManagerT : public TComInterface<_ObjectManager>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ObjectManagerT() {}
-  TCOM_ObjectManagerT(_ObjectManager *intf, bool addRef = false) : TComInterface<_ObjectManager>(intf, addRef) {}
-  TCOM_ObjectManagerT(const TCOM_ObjectManagerT& src) : TComInterface<_ObjectManager>(src) {}
-  TCOM_ObjectManagerT& operator=(const TCOM_ObjectManagerT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_ObjectManagerT<_ObjectManager> TCOM_ObjectManager;
-
-// *********************************************************************//
-// DispIntf:  _ObjectManager
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
-// *********************************************************************//
-template<class T>
-class _ObjectManagerDispT : public TAutoDriver<_ObjectManager>
-{
-public:
-  _ObjectManagerDispT(){}
-
-  _ObjectManagerDispT(_ObjectManager *pintf)
-  {
-    TAutoDriver<_ObjectManager>::Bind(pintf, false);
-  }
-
-  _ObjectManagerDispT(_ObjectManagerPtr pintf)
-  {
-    TAutoDriver<_ObjectManager>::Bind(pintf, true);
-  }
-
-  _ObjectManagerDispT& operator=(_ObjectManager *pintf)
-  {
-    TAutoDriver<_ObjectManager>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ObjectManagerDispT& operator=(_ObjectManagerPtr pintf)
-  {
-    TAutoDriver<_ObjectManager>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_ObjectManager));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_ObjectManager);
-  }
-
-
-};
-typedef _ObjectManagerDispT<_ObjectManager> _ObjectManagerDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_OptionalFieldAttribute
@@ -41873,6 +41821,70 @@ public:
 typedef _SerializationBinderDispT<_SerializationBinder> _SerializationBinderDisp;
 
 // *********************************************************************//
+// SmartIntf: TCOM_SerializationException
+// Interface: _SerializationException
+// *********************************************************************//
+template <class T /* _SerializationException */ >
+class TCOM_SerializationExceptionT : public TComInterface<_SerializationException>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_SerializationExceptionT() {}
+  TCOM_SerializationExceptionT(_SerializationException *intf, bool addRef = false) : TComInterface<_SerializationException>(intf, addRef) {}
+  TCOM_SerializationExceptionT(const TCOM_SerializationExceptionT& src) : TComInterface<_SerializationException>(src) {}
+  TCOM_SerializationExceptionT& operator=(const TCOM_SerializationExceptionT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_SerializationExceptionT<_SerializationException> TCOM_SerializationException;
+
+// *********************************************************************//
+// DispIntf:  _SerializationException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// *********************************************************************//
+template<class T>
+class _SerializationExceptionDispT : public TAutoDriver<_SerializationException>
+{
+public:
+  _SerializationExceptionDispT(){}
+
+  _SerializationExceptionDispT(_SerializationException *pintf)
+  {
+    TAutoDriver<_SerializationException>::Bind(pintf, false);
+  }
+
+  _SerializationExceptionDispT(_SerializationExceptionPtr pintf)
+  {
+    TAutoDriver<_SerializationException>::Bind(pintf, true);
+  }
+
+  _SerializationExceptionDispT& operator=(_SerializationException *pintf)
+  {
+    TAutoDriver<_SerializationException>::Bind(pintf, false);
+    return *this;
+  }
+
+  _SerializationExceptionDispT& operator=(_SerializationExceptionPtr pintf)
+  {
+    TAutoDriver<_SerializationException>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_SerializationException));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_SerializationException);
+  }
+
+
+};
+typedef _SerializationExceptionDispT<_SerializationException> _SerializationExceptionDisp;
+
+// *********************************************************************//
 // SmartIntf: TCOM_SerializationInfo
 // Interface: _SerializationInfo
 // *********************************************************************//
@@ -42001,68 +42013,196 @@ public:
 typedef _SerializationInfoEnumeratorDispT<_SerializationInfoEnumerator> _SerializationInfoEnumeratorDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_SerializationException
-// Interface: _SerializationException
+// SmartIntf: TCOM_Formatter
+// Interface: _Formatter
 // *********************************************************************//
-template <class T /* _SerializationException */ >
-class TCOM_SerializationExceptionT : public TComInterface<_SerializationException>, public TComInterfaceBase<IUnknown>
+template <class T /* _Formatter */ >
+class TCOM_FormatterT : public TComInterface<_Formatter>, public TComInterfaceBase<IUnknown>
 {
 public:
-  TCOM_SerializationExceptionT() {}
-  TCOM_SerializationExceptionT(_SerializationException *intf, bool addRef = false) : TComInterface<_SerializationException>(intf, addRef) {}
-  TCOM_SerializationExceptionT(const TCOM_SerializationExceptionT& src) : TComInterface<_SerializationException>(src) {}
-  TCOM_SerializationExceptionT& operator=(const TCOM_SerializationExceptionT& src) { Bind(src, true); return *this;}
+  TCOM_FormatterT() {}
+  TCOM_FormatterT(_Formatter *intf, bool addRef = false) : TComInterface<_Formatter>(intf, addRef) {}
+  TCOM_FormatterT(const TCOM_FormatterT& src) : TComInterface<_Formatter>(src) {}
+  TCOM_FormatterT& operator=(const TCOM_FormatterT& src) { Bind(src, true); return *this;}
 
 
 };
-typedef TCOM_SerializationExceptionT<_SerializationException> TCOM_SerializationException;
+typedef TCOM_FormatterT<_Formatter> TCOM_Formatter;
 
 // *********************************************************************//
-// DispIntf:  _SerializationException
+// DispIntf:  _Formatter
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
 // *********************************************************************//
 template<class T>
-class _SerializationExceptionDispT : public TAutoDriver<_SerializationException>
+class _FormatterDispT : public TAutoDriver<_Formatter>
 {
 public:
-  _SerializationExceptionDispT(){}
+  _FormatterDispT(){}
 
-  _SerializationExceptionDispT(_SerializationException *pintf)
+  _FormatterDispT(_Formatter *pintf)
   {
-    TAutoDriver<_SerializationException>::Bind(pintf, false);
+    TAutoDriver<_Formatter>::Bind(pintf, false);
   }
 
-  _SerializationExceptionDispT(_SerializationExceptionPtr pintf)
+  _FormatterDispT(_FormatterPtr pintf)
   {
-    TAutoDriver<_SerializationException>::Bind(pintf, true);
+    TAutoDriver<_Formatter>::Bind(pintf, true);
   }
 
-  _SerializationExceptionDispT& operator=(_SerializationException *pintf)
+  _FormatterDispT& operator=(_Formatter *pintf)
   {
-    TAutoDriver<_SerializationException>::Bind(pintf, false);
+    TAutoDriver<_Formatter>::Bind(pintf, false);
     return *this;
   }
 
-  _SerializationExceptionDispT& operator=(_SerializationExceptionPtr pintf)
+  _FormatterDispT& operator=(_FormatterPtr pintf)
   {
-    TAutoDriver<_SerializationException>::Bind(pintf, true);
+    TAutoDriver<_Formatter>::Bind(pintf, true);
     return *this;
   }
 
   HRESULT BindDefault()
   {
-    return OLECHECK(Bind(CLSID_SerializationException));
+    return OLECHECK(Bind(CLSID_Formatter));
   }
 
   HRESULT BindRunning()
   {
-    return BindToActive(CLSID_SerializationException);
+    return BindToActive(CLSID_Formatter);
   }
 
 
 };
-typedef _SerializationExceptionDispT<_SerializationException> _SerializationExceptionDisp;
+typedef _FormatterDispT<_Formatter> _FormatterDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectIDGenerator
+// Interface: _ObjectIDGenerator
+// *********************************************************************//
+template <class T /* _ObjectIDGenerator */ >
+class TCOM_ObjectIDGeneratorT : public TComInterface<_ObjectIDGenerator>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ObjectIDGeneratorT() {}
+  TCOM_ObjectIDGeneratorT(_ObjectIDGenerator *intf, bool addRef = false) : TComInterface<_ObjectIDGenerator>(intf, addRef) {}
+  TCOM_ObjectIDGeneratorT(const TCOM_ObjectIDGeneratorT& src) : TComInterface<_ObjectIDGenerator>(src) {}
+  TCOM_ObjectIDGeneratorT& operator=(const TCOM_ObjectIDGeneratorT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ObjectIDGeneratorT<_ObjectIDGenerator> TCOM_ObjectIDGenerator;
+
+// *********************************************************************//
+// DispIntf:  _ObjectIDGenerator
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
+// *********************************************************************//
+template<class T>
+class _ObjectIDGeneratorDispT : public TAutoDriver<_ObjectIDGenerator>
+{
+public:
+  _ObjectIDGeneratorDispT(){}
+
+  _ObjectIDGeneratorDispT(_ObjectIDGenerator *pintf)
+  {
+    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, false);
+  }
+
+  _ObjectIDGeneratorDispT(_ObjectIDGeneratorPtr pintf)
+  {
+    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, true);
+  }
+
+  _ObjectIDGeneratorDispT& operator=(_ObjectIDGenerator *pintf)
+  {
+    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ObjectIDGeneratorDispT& operator=(_ObjectIDGeneratorPtr pintf)
+  {
+    TAutoDriver<_ObjectIDGenerator>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_ObjectIDGenerator));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_ObjectIDGenerator);
+  }
+
+
+};
+typedef _ObjectIDGeneratorDispT<_ObjectIDGenerator> _ObjectIDGeneratorDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectManager
+// Interface: _ObjectManager
+// *********************************************************************//
+template <class T /* _ObjectManager */ >
+class TCOM_ObjectManagerT : public TComInterface<_ObjectManager>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ObjectManagerT() {}
+  TCOM_ObjectManagerT(_ObjectManager *intf, bool addRef = false) : TComInterface<_ObjectManager>(intf, addRef) {}
+  TCOM_ObjectManagerT(const TCOM_ObjectManagerT& src) : TComInterface<_ObjectManager>(src) {}
+  TCOM_ObjectManagerT& operator=(const TCOM_ObjectManagerT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_ObjectManagerT<_ObjectManager> TCOM_ObjectManager;
+
+// *********************************************************************//
+// DispIntf:  _ObjectManager
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
+// *********************************************************************//
+template<class T>
+class _ObjectManagerDispT : public TAutoDriver<_ObjectManager>
+{
+public:
+  _ObjectManagerDispT(){}
+
+  _ObjectManagerDispT(_ObjectManager *pintf)
+  {
+    TAutoDriver<_ObjectManager>::Bind(pintf, false);
+  }
+
+  _ObjectManagerDispT(_ObjectManagerPtr pintf)
+  {
+    TAutoDriver<_ObjectManager>::Bind(pintf, true);
+  }
+
+  _ObjectManagerDispT& operator=(_ObjectManager *pintf)
+  {
+    TAutoDriver<_ObjectManager>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ObjectManagerDispT& operator=(_ObjectManagerPtr pintf)
+  {
+    TAutoDriver<_ObjectManager>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_ObjectManager));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_ObjectManager);
+  }
+
+
+};
+typedef _ObjectManagerDispT<_ObjectManager> _ObjectManagerDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_SurrogateSelector
@@ -42193,70 +42333,6 @@ public:
 typedef _CalendarDispT<_Calendar> _CalendarDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_EastAsianLunisolarCalendar
-// Interface: _EastAsianLunisolarCalendar
-// *********************************************************************//
-template <class T /* _EastAsianLunisolarCalendar */ >
-class TCOM_EastAsianLunisolarCalendarT : public TComInterface<_EastAsianLunisolarCalendar>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_EastAsianLunisolarCalendarT() {}
-  TCOM_EastAsianLunisolarCalendarT(_EastAsianLunisolarCalendar *intf, bool addRef = false) : TComInterface<_EastAsianLunisolarCalendar>(intf, addRef) {}
-  TCOM_EastAsianLunisolarCalendarT(const TCOM_EastAsianLunisolarCalendarT& src) : TComInterface<_EastAsianLunisolarCalendar>(src) {}
-  TCOM_EastAsianLunisolarCalendarT& operator=(const TCOM_EastAsianLunisolarCalendarT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_EastAsianLunisolarCalendarT<_EastAsianLunisolarCalendar> TCOM_EastAsianLunisolarCalendar;
-
-// *********************************************************************//
-// DispIntf:  _EastAsianLunisolarCalendar
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
-// *********************************************************************//
-template<class T>
-class _EastAsianLunisolarCalendarDispT : public TAutoDriver<_EastAsianLunisolarCalendar>
-{
-public:
-  _EastAsianLunisolarCalendarDispT(){}
-
-  _EastAsianLunisolarCalendarDispT(_EastAsianLunisolarCalendar *pintf)
-  {
-    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, false);
-  }
-
-  _EastAsianLunisolarCalendarDispT(_EastAsianLunisolarCalendarPtr pintf)
-  {
-    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, true);
-  }
-
-  _EastAsianLunisolarCalendarDispT& operator=(_EastAsianLunisolarCalendar *pintf)
-  {
-    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, false);
-    return *this;
-  }
-
-  _EastAsianLunisolarCalendarDispT& operator=(_EastAsianLunisolarCalendarPtr pintf)
-  {
-    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_EastAsianLunisolarCalendar));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_EastAsianLunisolarCalendar);
-  }
-
-
-};
-typedef _EastAsianLunisolarCalendarDispT<_EastAsianLunisolarCalendar> _EastAsianLunisolarCalendarDisp;
-
-// *********************************************************************//
 // SmartIntf: TCOM_CompareInfo
 // Interface: _CompareInfo
 // *********************************************************************//
@@ -42383,6 +42459,70 @@ public:
 
 };
 typedef _CultureInfoDispT<_CultureInfo> _CultureInfoDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_CultureNotFoundException
+// Interface: _CultureNotFoundException
+// *********************************************************************//
+template <class T /* _CultureNotFoundException */ >
+class TCOM_CultureNotFoundExceptionT : public TComInterface<_CultureNotFoundException>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_CultureNotFoundExceptionT() {}
+  TCOM_CultureNotFoundExceptionT(_CultureNotFoundException *intf, bool addRef = false) : TComInterface<_CultureNotFoundException>(intf, addRef) {}
+  TCOM_CultureNotFoundExceptionT(const TCOM_CultureNotFoundExceptionT& src) : TComInterface<_CultureNotFoundException>(src) {}
+  TCOM_CultureNotFoundExceptionT& operator=(const TCOM_CultureNotFoundExceptionT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_CultureNotFoundExceptionT<_CultureNotFoundException> TCOM_CultureNotFoundException;
+
+// *********************************************************************//
+// DispIntf:  _CultureNotFoundException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB20BF9E-7549-3226-BA87-C1EDFB6CDA6C}
+// *********************************************************************//
+template<class T>
+class _CultureNotFoundExceptionDispT : public TAutoDriver<_CultureNotFoundException>
+{
+public:
+  _CultureNotFoundExceptionDispT(){}
+
+  _CultureNotFoundExceptionDispT(_CultureNotFoundException *pintf)
+  {
+    TAutoDriver<_CultureNotFoundException>::Bind(pintf, false);
+  }
+
+  _CultureNotFoundExceptionDispT(_CultureNotFoundExceptionPtr pintf)
+  {
+    TAutoDriver<_CultureNotFoundException>::Bind(pintf, true);
+  }
+
+  _CultureNotFoundExceptionDispT& operator=(_CultureNotFoundException *pintf)
+  {
+    TAutoDriver<_CultureNotFoundException>::Bind(pintf, false);
+    return *this;
+  }
+
+  _CultureNotFoundExceptionDispT& operator=(_CultureNotFoundExceptionPtr pintf)
+  {
+    TAutoDriver<_CultureNotFoundException>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_CultureNotFoundException));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_CultureNotFoundException);
+  }
+
+
+};
+typedef _CultureNotFoundExceptionDispT<_CultureNotFoundException> _CultureNotFoundExceptionDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_DateTimeFormatInfo
@@ -42705,68 +42845,68 @@ public:
 typedef _HijriCalendarDispT<_HijriCalendar> _HijriCalendarDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_JapaneseCalendar
-// Interface: _JapaneseCalendar
+// SmartIntf: TCOM_EastAsianLunisolarCalendar
+// Interface: _EastAsianLunisolarCalendar
 // *********************************************************************//
-template <class T /* _JapaneseCalendar */ >
-class TCOM_JapaneseCalendarT : public TComInterface<_JapaneseCalendar>, public TComInterfaceBase<IUnknown>
+template <class T /* _EastAsianLunisolarCalendar */ >
+class TCOM_EastAsianLunisolarCalendarT : public TComInterface<_EastAsianLunisolarCalendar>, public TComInterfaceBase<IUnknown>
 {
 public:
-  TCOM_JapaneseCalendarT() {}
-  TCOM_JapaneseCalendarT(_JapaneseCalendar *intf, bool addRef = false) : TComInterface<_JapaneseCalendar>(intf, addRef) {}
-  TCOM_JapaneseCalendarT(const TCOM_JapaneseCalendarT& src) : TComInterface<_JapaneseCalendar>(src) {}
-  TCOM_JapaneseCalendarT& operator=(const TCOM_JapaneseCalendarT& src) { Bind(src, true); return *this;}
+  TCOM_EastAsianLunisolarCalendarT() {}
+  TCOM_EastAsianLunisolarCalendarT(_EastAsianLunisolarCalendar *intf, bool addRef = false) : TComInterface<_EastAsianLunisolarCalendar>(intf, addRef) {}
+  TCOM_EastAsianLunisolarCalendarT(const TCOM_EastAsianLunisolarCalendarT& src) : TComInterface<_EastAsianLunisolarCalendar>(src) {}
+  TCOM_EastAsianLunisolarCalendarT& operator=(const TCOM_EastAsianLunisolarCalendarT& src) { Bind(src, true); return *this;}
 
 
 };
-typedef TCOM_JapaneseCalendarT<_JapaneseCalendar> TCOM_JapaneseCalendar;
+typedef TCOM_EastAsianLunisolarCalendarT<_EastAsianLunisolarCalendar> TCOM_EastAsianLunisolarCalendar;
 
 // *********************************************************************//
-// DispIntf:  _JapaneseCalendar
+// DispIntf:  _EastAsianLunisolarCalendar
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
+// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
 // *********************************************************************//
 template<class T>
-class _JapaneseCalendarDispT : public TAutoDriver<_JapaneseCalendar>
+class _EastAsianLunisolarCalendarDispT : public TAutoDriver<_EastAsianLunisolarCalendar>
 {
 public:
-  _JapaneseCalendarDispT(){}
+  _EastAsianLunisolarCalendarDispT(){}
 
-  _JapaneseCalendarDispT(_JapaneseCalendar *pintf)
+  _EastAsianLunisolarCalendarDispT(_EastAsianLunisolarCalendar *pintf)
   {
-    TAutoDriver<_JapaneseCalendar>::Bind(pintf, false);
+    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, false);
   }
 
-  _JapaneseCalendarDispT(_JapaneseCalendarPtr pintf)
+  _EastAsianLunisolarCalendarDispT(_EastAsianLunisolarCalendarPtr pintf)
   {
-    TAutoDriver<_JapaneseCalendar>::Bind(pintf, true);
+    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, true);
   }
 
-  _JapaneseCalendarDispT& operator=(_JapaneseCalendar *pintf)
+  _EastAsianLunisolarCalendarDispT& operator=(_EastAsianLunisolarCalendar *pintf)
   {
-    TAutoDriver<_JapaneseCalendar>::Bind(pintf, false);
+    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, false);
     return *this;
   }
 
-  _JapaneseCalendarDispT& operator=(_JapaneseCalendarPtr pintf)
+  _EastAsianLunisolarCalendarDispT& operator=(_EastAsianLunisolarCalendarPtr pintf)
   {
-    TAutoDriver<_JapaneseCalendar>::Bind(pintf, true);
+    TAutoDriver<_EastAsianLunisolarCalendar>::Bind(pintf, true);
     return *this;
   }
 
   HRESULT BindDefault()
   {
-    return OLECHECK(Bind(CLSID_JapaneseCalendar));
+    return OLECHECK(Bind(CLSID_EastAsianLunisolarCalendar));
   }
 
   HRESULT BindRunning()
   {
-    return BindToActive(CLSID_JapaneseCalendar);
+    return BindToActive(CLSID_EastAsianLunisolarCalendar);
   }
 
 
 };
-typedef _JapaneseCalendarDispT<_JapaneseCalendar> _JapaneseCalendarDisp;
+typedef _EastAsianLunisolarCalendarDispT<_EastAsianLunisolarCalendar> _EastAsianLunisolarCalendarDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_JulianCalendar
@@ -42831,6 +42971,70 @@ public:
 
 };
 typedef _JulianCalendarDispT<_JulianCalendar> _JulianCalendarDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_JapaneseCalendar
+// Interface: _JapaneseCalendar
+// *********************************************************************//
+template <class T /* _JapaneseCalendar */ >
+class TCOM_JapaneseCalendarT : public TComInterface<_JapaneseCalendar>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_JapaneseCalendarT() {}
+  TCOM_JapaneseCalendarT(_JapaneseCalendar *intf, bool addRef = false) : TComInterface<_JapaneseCalendar>(intf, addRef) {}
+  TCOM_JapaneseCalendarT(const TCOM_JapaneseCalendarT& src) : TComInterface<_JapaneseCalendar>(src) {}
+  TCOM_JapaneseCalendarT& operator=(const TCOM_JapaneseCalendarT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_JapaneseCalendarT<_JapaneseCalendar> TCOM_JapaneseCalendar;
+
+// *********************************************************************//
+// DispIntf:  _JapaneseCalendar
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
+// *********************************************************************//
+template<class T>
+class _JapaneseCalendarDispT : public TAutoDriver<_JapaneseCalendar>
+{
+public:
+  _JapaneseCalendarDispT(){}
+
+  _JapaneseCalendarDispT(_JapaneseCalendar *pintf)
+  {
+    TAutoDriver<_JapaneseCalendar>::Bind(pintf, false);
+  }
+
+  _JapaneseCalendarDispT(_JapaneseCalendarPtr pintf)
+  {
+    TAutoDriver<_JapaneseCalendar>::Bind(pintf, true);
+  }
+
+  _JapaneseCalendarDispT& operator=(_JapaneseCalendar *pintf)
+  {
+    TAutoDriver<_JapaneseCalendar>::Bind(pintf, false);
+    return *this;
+  }
+
+  _JapaneseCalendarDispT& operator=(_JapaneseCalendarPtr pintf)
+  {
+    TAutoDriver<_JapaneseCalendar>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_JapaneseCalendar));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_JapaneseCalendar);
+  }
+
+
+};
+typedef _JapaneseCalendarDispT<_JapaneseCalendar> _JapaneseCalendarDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_KoreanCalendar
@@ -58067,173 +58271,6 @@ public:
 typedef _AsyncResultDispT<_AsyncResult> _AsyncResultDisp;
 
 // *********************************************************************//
-// SmartIntf: TCOM_CallContext
-// Interface: _CallContext
-// *********************************************************************//
-template <class T /* _CallContext */ >
-class TCOM_CallContextT : public TComInterface<_CallContext>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_CallContextT() {}
-  TCOM_CallContextT(_CallContext *intf, bool addRef = false) : TComInterface<_CallContext>(intf, addRef) {}
-  TCOM_CallContextT(const TCOM_CallContextT& src) : TComInterface<_CallContext>(src) {}
-  TCOM_CallContextT& operator=(const TCOM_CallContextT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_CallContextT<_CallContext> TCOM_CallContext;
-
-// *********************************************************************//
-// DispIntf:  _CallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
-// *********************************************************************//
-template<class T>
-class _CallContextDispT : public TAutoDriver<_CallContext>
-{
-public:
-  _CallContextDispT(){}
-
-  _CallContextDispT(_CallContext *pintf)
-  {
-    TAutoDriver<_CallContext>::Bind(pintf, false);
-  }
-
-  _CallContextDispT(_CallContextPtr pintf)
-  {
-    TAutoDriver<_CallContext>::Bind(pintf, true);
-  }
-
-  _CallContextDispT& operator=(_CallContext *pintf)
-  {
-    TAutoDriver<_CallContext>::Bind(pintf, false);
-    return *this;
-  }
-
-  _CallContextDispT& operator=(_CallContextPtr pintf)
-  {
-    TAutoDriver<_CallContext>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_CallContext));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_CallContext);
-  }
-
-
-};
-typedef _CallContextDispT<_CallContext> _CallContextDisp;
-
-typedef TComInterface<ILogicalThreadAffinative>  TCOMILogicalThreadAffinative;
-
-// *********************************************************************//
-// DispIntf:  ILogicalThreadAffinative
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
-// *********************************************************************//
-template<class T>
-class ILogicalThreadAffinativeDispT : public TAutoDriver<ILogicalThreadAffinative>
-{
-public:
-  ILogicalThreadAffinativeDispT(){}
-
-  ILogicalThreadAffinativeDispT(ILogicalThreadAffinative *pintf)
-  {
-    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, false);
-  }
-
-  ILogicalThreadAffinativeDispT(ILogicalThreadAffinativePtr pintf)
-  {
-    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, true);
-  }
-
-  ILogicalThreadAffinativeDispT& operator=(ILogicalThreadAffinative *pintf)
-  {
-    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, false);
-    return *this;
-  }
-
-  ILogicalThreadAffinativeDispT& operator=(ILogicalThreadAffinativePtr pintf)
-  {
-    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, true);
-    return *this;
-  }
-
-
-};
-typedef ILogicalThreadAffinativeDispT<ILogicalThreadAffinative> ILogicalThreadAffinativeDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_LogicalCallContext
-// Interface: _LogicalCallContext
-// *********************************************************************//
-template <class T /* _LogicalCallContext */ >
-class TCOM_LogicalCallContextT : public TComInterface<_LogicalCallContext>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_LogicalCallContextT() {}
-  TCOM_LogicalCallContextT(_LogicalCallContext *intf, bool addRef = false) : TComInterface<_LogicalCallContext>(intf, addRef) {}
-  TCOM_LogicalCallContextT(const TCOM_LogicalCallContextT& src) : TComInterface<_LogicalCallContext>(src) {}
-  TCOM_LogicalCallContextT& operator=(const TCOM_LogicalCallContextT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_LogicalCallContextT<_LogicalCallContext> TCOM_LogicalCallContext;
-
-// *********************************************************************//
-// DispIntf:  _LogicalCallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
-// *********************************************************************//
-template<class T>
-class _LogicalCallContextDispT : public TAutoDriver<_LogicalCallContext>
-{
-public:
-  _LogicalCallContextDispT(){}
-
-  _LogicalCallContextDispT(_LogicalCallContext *pintf)
-  {
-    TAutoDriver<_LogicalCallContext>::Bind(pintf, false);
-  }
-
-  _LogicalCallContextDispT(_LogicalCallContextPtr pintf)
-  {
-    TAutoDriver<_LogicalCallContext>::Bind(pintf, true);
-  }
-
-  _LogicalCallContextDispT& operator=(_LogicalCallContext *pintf)
-  {
-    TAutoDriver<_LogicalCallContext>::Bind(pintf, false);
-    return *this;
-  }
-
-  _LogicalCallContextDispT& operator=(_LogicalCallContextPtr pintf)
-  {
-    TAutoDriver<_LogicalCallContext>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_LogicalCallContext));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_LogicalCallContext);
-  }
-
-
-};
-typedef _LogicalCallContextDispT<_LogicalCallContext> _LogicalCallContextDisp;
-
-// *********************************************************************//
 // SmartIntf: TCOM_ChannelServices
 // Interface: _ChannelServices
 // *********************************************************************//
@@ -59319,134 +59356,6 @@ public:
 
 };
 typedef _EnterpriseServicesHelperDispT<_EnterpriseServicesHelper> _EnterpriseServicesHelperDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_Header
-// Interface: _Header
-// *********************************************************************//
-template <class T /* _Header */ >
-class TCOM_HeaderT : public TComInterface<_Header>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_HeaderT() {}
-  TCOM_HeaderT(_Header *intf, bool addRef = false) : TComInterface<_Header>(intf, addRef) {}
-  TCOM_HeaderT(const TCOM_HeaderT& src) : TComInterface<_Header>(src) {}
-  TCOM_HeaderT& operator=(const TCOM_HeaderT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_HeaderT<_Header> TCOM_Header;
-
-// *********************************************************************//
-// DispIntf:  _Header
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
-// *********************************************************************//
-template<class T>
-class _HeaderDispT : public TAutoDriver<_Header>
-{
-public:
-  _HeaderDispT(){}
-
-  _HeaderDispT(_Header *pintf)
-  {
-    TAutoDriver<_Header>::Bind(pintf, false);
-  }
-
-  _HeaderDispT(_HeaderPtr pintf)
-  {
-    TAutoDriver<_Header>::Bind(pintf, true);
-  }
-
-  _HeaderDispT& operator=(_Header *pintf)
-  {
-    TAutoDriver<_Header>::Bind(pintf, false);
-    return *this;
-  }
-
-  _HeaderDispT& operator=(_HeaderPtr pintf)
-  {
-    TAutoDriver<_Header>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_Header));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_Header);
-  }
-
-
-};
-typedef _HeaderDispT<_Header> _HeaderDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_HeaderHandler
-// Interface: _HeaderHandler
-// *********************************************************************//
-template <class T /* _HeaderHandler */ >
-class TCOM_HeaderHandlerT : public TComInterface<_HeaderHandler>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_HeaderHandlerT() {}
-  TCOM_HeaderHandlerT(_HeaderHandler *intf, bool addRef = false) : TComInterface<_HeaderHandler>(intf, addRef) {}
-  TCOM_HeaderHandlerT(const TCOM_HeaderHandlerT& src) : TComInterface<_HeaderHandler>(src) {}
-  TCOM_HeaderHandlerT& operator=(const TCOM_HeaderHandlerT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_HeaderHandlerT<_HeaderHandler> TCOM_HeaderHandler;
-
-// *********************************************************************//
-// DispIntf:  _HeaderHandler
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
-// *********************************************************************//
-template<class T>
-class _HeaderHandlerDispT : public TAutoDriver<_HeaderHandler>
-{
-public:
-  _HeaderHandlerDispT(){}
-
-  _HeaderHandlerDispT(_HeaderHandler *pintf)
-  {
-    TAutoDriver<_HeaderHandler>::Bind(pintf, false);
-  }
-
-  _HeaderHandlerDispT(_HeaderHandlerPtr pintf)
-  {
-    TAutoDriver<_HeaderHandler>::Bind(pintf, true);
-  }
-
-  _HeaderHandlerDispT& operator=(_HeaderHandler *pintf)
-  {
-    TAutoDriver<_HeaderHandler>::Bind(pintf, false);
-    return *this;
-  }
-
-  _HeaderHandlerDispT& operator=(_HeaderHandlerPtr pintf)
-  {
-    TAutoDriver<_HeaderHandler>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_HeaderHandler));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_HeaderHandler);
-  }
-
-
-};
-typedef _HeaderHandlerDispT<_HeaderHandler> _HeaderHandlerDisp;
 
 typedef TComInterface<IMessage>  TCOMIMessage;
 
@@ -61561,106 +61470,6 @@ public:
 
 };
 typedef _MethodReturnMessageWrapperDispT<_MethodReturnMessageWrapper> _MethodReturnMessageWrapperDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_ObjectHandle
-// Interface: _ObjectHandle
-// *********************************************************************//
-template <class T /* _ObjectHandle */ >
-class TCOM_ObjectHandleT : public TComInterface<_ObjectHandle>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_ObjectHandleT() {}
-  TCOM_ObjectHandleT(_ObjectHandle *intf, bool addRef = false) : TComInterface<_ObjectHandle>(intf, addRef) {}
-  TCOM_ObjectHandleT(const TCOM_ObjectHandleT& src) : TComInterface<_ObjectHandle>(src) {}
-  TCOM_ObjectHandleT& operator=(const TCOM_ObjectHandleT& src) { Bind(src, true); return *this;}
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall GetLifetimeService(void);
-  HRESULT         __fastcall InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall InitializeLifetimeService(void);
-  HRESULT         __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
-                                          Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/);
-  HRESULT         __fastcall Unwrap(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Unwrap(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-};
-typedef TCOM_ObjectHandleT<_ObjectHandle> TCOM_ObjectHandle;
-
-// *********************************************************************//
-// DispIntf:  _ObjectHandle
-// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
-// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
-// *********************************************************************//
-template<class T>
-class _ObjectHandleDispT : public TAutoDriver<_ObjectHandle>
-{
-public:
-  _ObjectHandleDispT(){}
-
-  _ObjectHandleDispT(_ObjectHandle *pintf)
-  {
-    TAutoDriver<_ObjectHandle>::Bind(pintf, false);
-  }
-
-  _ObjectHandleDispT(_ObjectHandlePtr pintf)
-  {
-    TAutoDriver<_ObjectHandle>::Bind(pintf, true);
-  }
-
-  _ObjectHandleDispT& operator=(_ObjectHandle *pintf)
-  {
-    TAutoDriver<_ObjectHandle>::Bind(pintf, false);
-    return *this;
-  }
-
-  _ObjectHandleDispT& operator=(_ObjectHandlePtr pintf)
-  {
-    TAutoDriver<_ObjectHandle>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_ObjectHandle));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_ObjectHandle);
-  }
-
-  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
-  BSTR            __fastcall get_ToString(void);
-  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
-  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
-  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
-  long            __fastcall GetHashCode(void);
-  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_Type* __fastcall GetType(void);
-  HRESULT         __fastcall GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall GetLifetimeService(void);
-  HRESULT         __fastcall InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall InitializeLifetimeService(void);
-  HRESULT         __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
-                                          Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/);
-  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/);
-  HRESULT         __fastcall Unwrap(VARIANT* pRetVal/*[out,retval]*/);
-  VARIANT         __fastcall Unwrap(void);
-
-  __property   BSTR            ToString = {read = get_ToString};
-};
-typedef _ObjectHandleDispT<_ObjectHandle> _ObjectHandleDisp;
 
 typedef TComInterface<IRemotingTypeInfo>  TCOMIRemotingTypeInfo;
 
@@ -65526,6 +65335,401 @@ public:
 typedef _UrlAttributeDispT<_UrlAttribute> _UrlAttributeDisp;
 
 // *********************************************************************//
+// SmartIntf: TCOM_Header
+// Interface: _Header
+// *********************************************************************//
+template <class T /* _Header */ >
+class TCOM_HeaderT : public TComInterface<_Header>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_HeaderT() {}
+  TCOM_HeaderT(_Header *intf, bool addRef = false) : TComInterface<_Header>(intf, addRef) {}
+  TCOM_HeaderT(const TCOM_HeaderT& src) : TComInterface<_Header>(src) {}
+  TCOM_HeaderT& operator=(const TCOM_HeaderT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_HeaderT<_Header> TCOM_Header;
+
+// *********************************************************************//
+// DispIntf:  _Header
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
+// *********************************************************************//
+template<class T>
+class _HeaderDispT : public TAutoDriver<_Header>
+{
+public:
+  _HeaderDispT(){}
+
+  _HeaderDispT(_Header *pintf)
+  {
+    TAutoDriver<_Header>::Bind(pintf, false);
+  }
+
+  _HeaderDispT(_HeaderPtr pintf)
+  {
+    TAutoDriver<_Header>::Bind(pintf, true);
+  }
+
+  _HeaderDispT& operator=(_Header *pintf)
+  {
+    TAutoDriver<_Header>::Bind(pintf, false);
+    return *this;
+  }
+
+  _HeaderDispT& operator=(_HeaderPtr pintf)
+  {
+    TAutoDriver<_Header>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_Header));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_Header);
+  }
+
+
+};
+typedef _HeaderDispT<_Header> _HeaderDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_HeaderHandler
+// Interface: _HeaderHandler
+// *********************************************************************//
+template <class T /* _HeaderHandler */ >
+class TCOM_HeaderHandlerT : public TComInterface<_HeaderHandler>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_HeaderHandlerT() {}
+  TCOM_HeaderHandlerT(_HeaderHandler *intf, bool addRef = false) : TComInterface<_HeaderHandler>(intf, addRef) {}
+  TCOM_HeaderHandlerT(const TCOM_HeaderHandlerT& src) : TComInterface<_HeaderHandler>(src) {}
+  TCOM_HeaderHandlerT& operator=(const TCOM_HeaderHandlerT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_HeaderHandlerT<_HeaderHandler> TCOM_HeaderHandler;
+
+// *********************************************************************//
+// DispIntf:  _HeaderHandler
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
+// *********************************************************************//
+template<class T>
+class _HeaderHandlerDispT : public TAutoDriver<_HeaderHandler>
+{
+public:
+  _HeaderHandlerDispT(){}
+
+  _HeaderHandlerDispT(_HeaderHandler *pintf)
+  {
+    TAutoDriver<_HeaderHandler>::Bind(pintf, false);
+  }
+
+  _HeaderHandlerDispT(_HeaderHandlerPtr pintf)
+  {
+    TAutoDriver<_HeaderHandler>::Bind(pintf, true);
+  }
+
+  _HeaderHandlerDispT& operator=(_HeaderHandler *pintf)
+  {
+    TAutoDriver<_HeaderHandler>::Bind(pintf, false);
+    return *this;
+  }
+
+  _HeaderHandlerDispT& operator=(_HeaderHandlerPtr pintf)
+  {
+    TAutoDriver<_HeaderHandler>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_HeaderHandler));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_HeaderHandler);
+  }
+
+
+};
+typedef _HeaderHandlerDispT<_HeaderHandler> _HeaderHandlerDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_CallContext
+// Interface: _CallContext
+// *********************************************************************//
+template <class T /* _CallContext */ >
+class TCOM_CallContextT : public TComInterface<_CallContext>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_CallContextT() {}
+  TCOM_CallContextT(_CallContext *intf, bool addRef = false) : TComInterface<_CallContext>(intf, addRef) {}
+  TCOM_CallContextT(const TCOM_CallContextT& src) : TComInterface<_CallContext>(src) {}
+  TCOM_CallContextT& operator=(const TCOM_CallContextT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_CallContextT<_CallContext> TCOM_CallContext;
+
+// *********************************************************************//
+// DispIntf:  _CallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
+// *********************************************************************//
+template<class T>
+class _CallContextDispT : public TAutoDriver<_CallContext>
+{
+public:
+  _CallContextDispT(){}
+
+  _CallContextDispT(_CallContext *pintf)
+  {
+    TAutoDriver<_CallContext>::Bind(pintf, false);
+  }
+
+  _CallContextDispT(_CallContextPtr pintf)
+  {
+    TAutoDriver<_CallContext>::Bind(pintf, true);
+  }
+
+  _CallContextDispT& operator=(_CallContext *pintf)
+  {
+    TAutoDriver<_CallContext>::Bind(pintf, false);
+    return *this;
+  }
+
+  _CallContextDispT& operator=(_CallContextPtr pintf)
+  {
+    TAutoDriver<_CallContext>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_CallContext));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_CallContext);
+  }
+
+
+};
+typedef _CallContextDispT<_CallContext> _CallContextDisp;
+
+typedef TComInterface<ILogicalThreadAffinative>  TCOMILogicalThreadAffinative;
+
+// *********************************************************************//
+// DispIntf:  ILogicalThreadAffinative
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
+// *********************************************************************//
+template<class T>
+class ILogicalThreadAffinativeDispT : public TAutoDriver<ILogicalThreadAffinative>
+{
+public:
+  ILogicalThreadAffinativeDispT(){}
+
+  ILogicalThreadAffinativeDispT(ILogicalThreadAffinative *pintf)
+  {
+    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, false);
+  }
+
+  ILogicalThreadAffinativeDispT(ILogicalThreadAffinativePtr pintf)
+  {
+    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, true);
+  }
+
+  ILogicalThreadAffinativeDispT& operator=(ILogicalThreadAffinative *pintf)
+  {
+    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, false);
+    return *this;
+  }
+
+  ILogicalThreadAffinativeDispT& operator=(ILogicalThreadAffinativePtr pintf)
+  {
+    TAutoDriver<ILogicalThreadAffinative>::Bind(pintf, true);
+    return *this;
+  }
+
+
+};
+typedef ILogicalThreadAffinativeDispT<ILogicalThreadAffinative> ILogicalThreadAffinativeDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_LogicalCallContext
+// Interface: _LogicalCallContext
+// *********************************************************************//
+template <class T /* _LogicalCallContext */ >
+class TCOM_LogicalCallContextT : public TComInterface<_LogicalCallContext>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_LogicalCallContextT() {}
+  TCOM_LogicalCallContextT(_LogicalCallContext *intf, bool addRef = false) : TComInterface<_LogicalCallContext>(intf, addRef) {}
+  TCOM_LogicalCallContextT(const TCOM_LogicalCallContextT& src) : TComInterface<_LogicalCallContext>(src) {}
+  TCOM_LogicalCallContextT& operator=(const TCOM_LogicalCallContextT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_LogicalCallContextT<_LogicalCallContext> TCOM_LogicalCallContext;
+
+// *********************************************************************//
+// DispIntf:  _LogicalCallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
+// *********************************************************************//
+template<class T>
+class _LogicalCallContextDispT : public TAutoDriver<_LogicalCallContext>
+{
+public:
+  _LogicalCallContextDispT(){}
+
+  _LogicalCallContextDispT(_LogicalCallContext *pintf)
+  {
+    TAutoDriver<_LogicalCallContext>::Bind(pintf, false);
+  }
+
+  _LogicalCallContextDispT(_LogicalCallContextPtr pintf)
+  {
+    TAutoDriver<_LogicalCallContext>::Bind(pintf, true);
+  }
+
+  _LogicalCallContextDispT& operator=(_LogicalCallContext *pintf)
+  {
+    TAutoDriver<_LogicalCallContext>::Bind(pintf, false);
+    return *this;
+  }
+
+  _LogicalCallContextDispT& operator=(_LogicalCallContextPtr pintf)
+  {
+    TAutoDriver<_LogicalCallContext>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_LogicalCallContext));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_LogicalCallContext);
+  }
+
+
+};
+typedef _LogicalCallContextDispT<_LogicalCallContext> _LogicalCallContextDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectHandle
+// Interface: _ObjectHandle
+// *********************************************************************//
+template <class T /* _ObjectHandle */ >
+class TCOM_ObjectHandleT : public TComInterface<_ObjectHandle>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_ObjectHandleT() {}
+  TCOM_ObjectHandleT(_ObjectHandle *intf, bool addRef = false) : TComInterface<_ObjectHandle>(intf, addRef) {}
+  TCOM_ObjectHandleT(const TCOM_ObjectHandleT& src) : TComInterface<_ObjectHandle>(src) {}
+  TCOM_ObjectHandleT& operator=(const TCOM_ObjectHandleT& src) { Bind(src, true); return *this;}
+
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall GetLifetimeService(void);
+  HRESULT         __fastcall InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall InitializeLifetimeService(void);
+  HRESULT         __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
+                                          Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/);
+  HRESULT         __fastcall Unwrap(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Unwrap(void);
+
+  __property   BSTR            ToString = {read = get_ToString};
+};
+typedef TCOM_ObjectHandleT<_ObjectHandle> TCOM_ObjectHandle;
+
+// *********************************************************************//
+// DispIntf:  _ObjectHandle
+// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
+// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
+// *********************************************************************//
+template<class T>
+class _ObjectHandleDispT : public TAutoDriver<_ObjectHandle>
+{
+public:
+  _ObjectHandleDispT(){}
+
+  _ObjectHandleDispT(_ObjectHandle *pintf)
+  {
+    TAutoDriver<_ObjectHandle>::Bind(pintf, false);
+  }
+
+  _ObjectHandleDispT(_ObjectHandlePtr pintf)
+  {
+    TAutoDriver<_ObjectHandle>::Bind(pintf, true);
+  }
+
+  _ObjectHandleDispT& operator=(_ObjectHandle *pintf)
+  {
+    TAutoDriver<_ObjectHandle>::Bind(pintf, false);
+    return *this;
+  }
+
+  _ObjectHandleDispT& operator=(_ObjectHandlePtr pintf)
+  {
+    TAutoDriver<_ObjectHandle>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_ObjectHandle));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_ObjectHandle);
+  }
+
+  HRESULT         __fastcall get_ToString(BSTR* pRetVal/*[out,retval]*/);
+  BSTR            __fastcall get_ToString(void);
+  HRESULT         __fastcall Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/);
+  VARIANT_BOOL    __fastcall Equals(VARIANT obj/*[in]*/);
+  HRESULT         __fastcall GetHashCode(long* pRetVal/*[out,retval]*/);
+  long            __fastcall GetHashCode(void);
+  HRESULT         __fastcall GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_Type* __fastcall GetType(void);
+  HRESULT         __fastcall GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall GetLifetimeService(void);
+  HRESULT         __fastcall InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall InitializeLifetimeService(void);
+  HRESULT         __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
+                                          Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/);
+  Mscorlib_tlb::_ObjRef* __fastcall CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/);
+  HRESULT         __fastcall Unwrap(VARIANT* pRetVal/*[out,retval]*/);
+  VARIANT         __fastcall Unwrap(void);
+
+  __property   BSTR            ToString = {read = get_ToString};
+};
+typedef _ObjectHandleDispT<_ObjectHandle> _ObjectHandleDisp;
+
+// *********************************************************************//
 // SmartIntf: TCOM_IsolatedStorage
 // Interface: _IsolatedStorage
 // *********************************************************************//
@@ -65588,70 +65792,6 @@ public:
 
 };
 typedef _IsolatedStorageDispT<_IsolatedStorage> _IsolatedStorageDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_IsolatedStorageFile
-// Interface: _IsolatedStorageFile
-// *********************************************************************//
-template <class T /* _IsolatedStorageFile */ >
-class TCOM_IsolatedStorageFileT : public TComInterface<_IsolatedStorageFile>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_IsolatedStorageFileT() {}
-  TCOM_IsolatedStorageFileT(_IsolatedStorageFile *intf, bool addRef = false) : TComInterface<_IsolatedStorageFile>(intf, addRef) {}
-  TCOM_IsolatedStorageFileT(const TCOM_IsolatedStorageFileT& src) : TComInterface<_IsolatedStorageFile>(src) {}
-  TCOM_IsolatedStorageFileT& operator=(const TCOM_IsolatedStorageFileT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_IsolatedStorageFileT<_IsolatedStorageFile> TCOM_IsolatedStorageFile;
-
-// *********************************************************************//
-// DispIntf:  _IsolatedStorageFile
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
-// *********************************************************************//
-template<class T>
-class _IsolatedStorageFileDispT : public TAutoDriver<_IsolatedStorageFile>
-{
-public:
-  _IsolatedStorageFileDispT(){}
-
-  _IsolatedStorageFileDispT(_IsolatedStorageFile *pintf)
-  {
-    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, false);
-  }
-
-  _IsolatedStorageFileDispT(_IsolatedStorageFilePtr pintf)
-  {
-    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, true);
-  }
-
-  _IsolatedStorageFileDispT& operator=(_IsolatedStorageFile *pintf)
-  {
-    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, false);
-    return *this;
-  }
-
-  _IsolatedStorageFileDispT& operator=(_IsolatedStorageFilePtr pintf)
-  {
-    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_IsolatedStorageFile));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_IsolatedStorageFile);
-  }
-
-
-};
-typedef _IsolatedStorageFileDispT<_IsolatedStorageFile> _IsolatedStorageFileDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_IsolatedStorageFileStream
@@ -65821,6 +65961,70 @@ public:
 
 };
 typedef INormalizeForIsolatedStorageDispT<INormalizeForIsolatedStorage> INormalizeForIsolatedStorageDisp;
+
+// *********************************************************************//
+// SmartIntf: TCOM_IsolatedStorageFile
+// Interface: _IsolatedStorageFile
+// *********************************************************************//
+template <class T /* _IsolatedStorageFile */ >
+class TCOM_IsolatedStorageFileT : public TComInterface<_IsolatedStorageFile>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_IsolatedStorageFileT() {}
+  TCOM_IsolatedStorageFileT(_IsolatedStorageFile *intf, bool addRef = false) : TComInterface<_IsolatedStorageFile>(intf, addRef) {}
+  TCOM_IsolatedStorageFileT(const TCOM_IsolatedStorageFileT& src) : TComInterface<_IsolatedStorageFile>(src) {}
+  TCOM_IsolatedStorageFileT& operator=(const TCOM_IsolatedStorageFileT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_IsolatedStorageFileT<_IsolatedStorageFile> TCOM_IsolatedStorageFile;
+
+// *********************************************************************//
+// DispIntf:  _IsolatedStorageFile
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
+// *********************************************************************//
+template<class T>
+class _IsolatedStorageFileDispT : public TAutoDriver<_IsolatedStorageFile>
+{
+public:
+  _IsolatedStorageFileDispT(){}
+
+  _IsolatedStorageFileDispT(_IsolatedStorageFile *pintf)
+  {
+    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, false);
+  }
+
+  _IsolatedStorageFileDispT(_IsolatedStorageFilePtr pintf)
+  {
+    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, true);
+  }
+
+  _IsolatedStorageFileDispT& operator=(_IsolatedStorageFile *pintf)
+  {
+    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, false);
+    return *this;
+  }
+
+  _IsolatedStorageFileDispT& operator=(_IsolatedStorageFilePtr pintf)
+  {
+    TAutoDriver<_IsolatedStorageFile>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_IsolatedStorageFile));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_IsolatedStorageFile);
+  }
+
+
+};
+typedef _IsolatedStorageFileDispT<_IsolatedStorageFile> _IsolatedStorageFileDisp;
 
 typedef TComInterface<ISoapMessage>  TCOMISoapMessage;
 
@@ -67375,6 +67579,70 @@ public:
 typedef _RNGCryptoServiceProviderDispT<_RNGCryptoServiceProvider> _RNGCryptoServiceProviderDisp;
 
 // *********************************************************************//
+// SmartIntf: TCOM_SymmetricAlgorithm
+// Interface: _SymmetricAlgorithm
+// *********************************************************************//
+template <class T /* _SymmetricAlgorithm */ >
+class TCOM_SymmetricAlgorithmT : public TComInterface<_SymmetricAlgorithm>, public TComInterfaceBase<IUnknown>
+{
+public:
+  TCOM_SymmetricAlgorithmT() {}
+  TCOM_SymmetricAlgorithmT(_SymmetricAlgorithm *intf, bool addRef = false) : TComInterface<_SymmetricAlgorithm>(intf, addRef) {}
+  TCOM_SymmetricAlgorithmT(const TCOM_SymmetricAlgorithmT& src) : TComInterface<_SymmetricAlgorithm>(src) {}
+  TCOM_SymmetricAlgorithmT& operator=(const TCOM_SymmetricAlgorithmT& src) { Bind(src, true); return *this;}
+
+
+};
+typedef TCOM_SymmetricAlgorithmT<_SymmetricAlgorithm> TCOM_SymmetricAlgorithm;
+
+// *********************************************************************//
+// DispIntf:  _SymmetricAlgorithm
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
+// *********************************************************************//
+template<class T>
+class _SymmetricAlgorithmDispT : public TAutoDriver<_SymmetricAlgorithm>
+{
+public:
+  _SymmetricAlgorithmDispT(){}
+
+  _SymmetricAlgorithmDispT(_SymmetricAlgorithm *pintf)
+  {
+    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, false);
+  }
+
+  _SymmetricAlgorithmDispT(_SymmetricAlgorithmPtr pintf)
+  {
+    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, true);
+  }
+
+  _SymmetricAlgorithmDispT& operator=(_SymmetricAlgorithm *pintf)
+  {
+    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, false);
+    return *this;
+  }
+
+  _SymmetricAlgorithmDispT& operator=(_SymmetricAlgorithmPtr pintf)
+  {
+    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, true);
+    return *this;
+  }
+
+  HRESULT BindDefault()
+  {
+    return OLECHECK(Bind(CLSID_SymmetricAlgorithm));
+  }
+
+  HRESULT BindRunning()
+  {
+    return BindToActive(CLSID_SymmetricAlgorithm);
+  }
+
+
+};
+typedef _SymmetricAlgorithmDispT<_SymmetricAlgorithm> _SymmetricAlgorithmDisp;
+
+// *********************************************************************//
 // SmartIntf: TCOM_AsymmetricAlgorithm
 // Interface: _AsymmetricAlgorithm
 // *********************************************************************//
@@ -68077,70 +68345,6 @@ public:
 
 };
 typedef _CryptoStreamDispT<_CryptoStream> _CryptoStreamDisp;
-
-// *********************************************************************//
-// SmartIntf: TCOM_SymmetricAlgorithm
-// Interface: _SymmetricAlgorithm
-// *********************************************************************//
-template <class T /* _SymmetricAlgorithm */ >
-class TCOM_SymmetricAlgorithmT : public TComInterface<_SymmetricAlgorithm>, public TComInterfaceBase<IUnknown>
-{
-public:
-  TCOM_SymmetricAlgorithmT() {}
-  TCOM_SymmetricAlgorithmT(_SymmetricAlgorithm *intf, bool addRef = false) : TComInterface<_SymmetricAlgorithm>(intf, addRef) {}
-  TCOM_SymmetricAlgorithmT(const TCOM_SymmetricAlgorithmT& src) : TComInterface<_SymmetricAlgorithm>(src) {}
-  TCOM_SymmetricAlgorithmT& operator=(const TCOM_SymmetricAlgorithmT& src) { Bind(src, true); return *this;}
-
-
-};
-typedef TCOM_SymmetricAlgorithmT<_SymmetricAlgorithm> TCOM_SymmetricAlgorithm;
-
-// *********************************************************************//
-// DispIntf:  _SymmetricAlgorithm
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
-// *********************************************************************//
-template<class T>
-class _SymmetricAlgorithmDispT : public TAutoDriver<_SymmetricAlgorithm>
-{
-public:
-  _SymmetricAlgorithmDispT(){}
-
-  _SymmetricAlgorithmDispT(_SymmetricAlgorithm *pintf)
-  {
-    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, false);
-  }
-
-  _SymmetricAlgorithmDispT(_SymmetricAlgorithmPtr pintf)
-  {
-    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, true);
-  }
-
-  _SymmetricAlgorithmDispT& operator=(_SymmetricAlgorithm *pintf)
-  {
-    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, false);
-    return *this;
-  }
-
-  _SymmetricAlgorithmDispT& operator=(_SymmetricAlgorithmPtr pintf)
-  {
-    TAutoDriver<_SymmetricAlgorithm>::Bind(pintf, true);
-    return *this;
-  }
-
-  HRESULT BindDefault()
-  {
-    return OLECHECK(Bind(CLSID_SymmetricAlgorithm));
-  }
-
-  HRESULT BindRunning()
-  {
-    return BindToActive(CLSID_SymmetricAlgorithm);
-  }
-
-
-};
-typedef _SymmetricAlgorithmDispT<_SymmetricAlgorithm> _SymmetricAlgorithmDisp;
 
 // *********************************************************************//
 // SmartIntf: TCOM_DES
@@ -71647,786 +71851,6 @@ _ObjectDispT<T>::GetType(void)
 }
 
 // *********************************************************************//
-// DispIntf:  ICloneable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-ICloneableDispT<T>::Clone(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Clone"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-ICloneableDispT<T>::Clone(void)
-{
-  VARIANT pRetVal;
-  this->Clone((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  IEnumerable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IEnumerableDispT<T>::GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetEnumerator"), DISPID(-4));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr((LPUNKNOWN*)(IEnumVARIANT**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> IEnumVARIANT* __fastcall
-IEnumerableDispT<T>::GetEnumerator(void)
-{
-  IEnumVARIANT* pRetVal;
-  this->GetEnumerator((IEnumVARIANT**)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  ICollection
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-ICollectionDispT<T>::CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("CopyTo"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<2> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Array*)Array /*[VT_USERDEFINED:1]*/;
-  _args[2] = index /*[VT_I4:0]*/;
-  return OleFunction(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-ICollectionDispT<T>::get_Count(long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Count"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> long __fastcall
-ICollectionDispT<T>::get_Count(void)
-{
-  long pRetVal;
-  this->get_Count((long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-ICollectionDispT<T>::get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("SyncRoot"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-ICollectionDispT<T>::get_SyncRoot(void)
-{
-  VARIANT pRetVal;
-  this->get_SyncRoot((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-ICollectionDispT<T>::get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("IsSynchronized"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-ICollectionDispT<T>::get_IsSynchronized(void)
-{
-  VARIANT_BOOL pRetVal;
-  this->get_IsSynchronized((VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  IList
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IListDispT<T>::get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Item"), DISPID(0));
-  TAutoArgs<1> _args;
-  _args[1] = index /*[VT_I4:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-IListDispT<T>::get_Item(long index/*[in]*/)
-{
-  VARIANT pRetVal;
-  this->get_Item(index, (VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::_set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Item"), DISPID(0));
-  TAutoArgs<2> _args;
-  _args[1] = index /*[VT_I4:0]*/;
-  _args[2] = pRetVal /*[VT_VARIANT:0]*/;
-  return OlePropertyPut(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Add"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  TAutoArgs<1> _args;
-  _args[1] = value /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IListDispT<T>::Add(VARIANT value/*[in]*/)
-{
-  long pRetVal;
-  this->Add(value, (long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::Contains(VARIANT value/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Contains"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
-  TAutoArgs<1> _args;
-  _args[1] = value /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IListDispT<T>::Contains(VARIANT value/*[in]*/)
-{
-  VARIANT_BOOL pRetVal;
-  this->Contains(value, (VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::Clear()
-{
-  _TDispID _dispid(*this, OLETEXT("Clear"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
-  return OleFunction(_dispid);
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("IsReadOnly"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IListDispT<T>::get_IsReadOnly(void)
-{
-  VARIANT_BOOL pRetVal;
-  this->get_IsReadOnly((VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("IsFixedSize"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IListDispT<T>::get_IsFixedSize(void)
-{
-  VARIANT_BOOL pRetVal;
-  this->get_IsFixedSize((VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("IndexOf"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
-  TAutoArgs<1> _args;
-  _args[1] = value /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IListDispT<T>::IndexOf(VARIANT value/*[in]*/)
-{
-  long pRetVal;
-  this->IndexOf(value, (long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::Insert(long index/*[in]*/, VARIANT value/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Insert"), DISPID(DISPID_UNKNOWN/*[1610743816]*/));
-  TAutoArgs<2> _args;
-  _args[1] = index /*[VT_I4:0]*/;
-  _args[2] = value /*[VT_VARIANT:0]*/;
-  return OleFunction(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::Remove(VARIANT value/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Remove"), DISPID(DISPID_UNKNOWN/*[1610743817]*/));
-  TAutoArgs<1> _args;
-  _args[1] = value /*[VT_VARIANT:0]*/;
-  return OleFunction(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IListDispT<T>::RemoveAt(long index/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("RemoveAt"), DISPID(DISPID_UNKNOWN/*[1610743818]*/));
-  TAutoArgs<1> _args;
-  _args[1] = index /*[VT_I4:0]*/;
-  return OleFunction(_dispid, _args);
-}
-
-// *********************************************************************//
-// SmartIntf: TCOM_Array
-// Interface: _Array
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Array
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_ValueType
-// Interface: _ValueType
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ValueType
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {139E041D-0E41-39F5-A302-C4387E9D0A6C}
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  IEnumerator
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IEnumeratorDispT<T>::MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("MoveNext"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IEnumeratorDispT<T>::MoveNext(void)
-{
-  VARIANT_BOOL pRetVal;
-  this->MoveNext((VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IEnumeratorDispT<T>::get_Current(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Current"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-IEnumeratorDispT<T>::get_Current(void)
-{
-  VARIANT pRetVal;
-  this->get_Current((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IEnumeratorDispT<T>::Reset()
-{
-  _TDispID _dispid(*this, OLETEXT("Reset"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  return OleFunction(_dispid);
-}
-
-// *********************************************************************//
-// DispIntf:  IDisposable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IDisposableDispT<T>::Dispose()
-{
-  _TDispID _dispid(*this, OLETEXT("Dispose"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  return OleFunction(_dispid);
-}
-
-// *********************************************************************//
-// DispIntf:  IComparable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {DEB0E770-91FD-3CF6-9A6C-E6A3656F3965}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IComparableDispT<T>::CompareTo(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("CompareTo"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<1> _args;
-  _args[1] = obj /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IComparableDispT<T>::CompareTo(VARIANT obj/*[in]*/)
-{
-  long pRetVal;
-  this->CompareTo(obj, (long*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  IFormattable
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {9A604EE7-E630-3DED-9444-BAAE247075AB}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IFormattableDispT<T>::get_ToString(BSTR format/*[in]*/, 
-                                   Mscorlib_tlb::IFormatProvider* formatProvider/*[in]*/, 
-                                   BSTR* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<2> _args;
-  _args[1] = format /*[VT_BSTR:0]*/;
-  _args[2] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)formatProvider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> BSTR __fastcall
-IFormattableDispT<T>::get_ToString(BSTR format/*[in]*/, 
-                                   Mscorlib_tlb::IFormatProvider* formatProvider/*[in]*/)
-{
-  BSTR pRetVal;
-  this->get_ToString(format, formatProvider, (BSTR*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  IConvertible
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {805E3B62-B5E9-393D-8941-377D8BF4556B}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::GetTypeCode(Mscorlib_tlb::TypeCode* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetTypeCode"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr((int*)pRetVal /*[VT_USERDEFINED:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> Mscorlib_tlb::TypeCode __fastcall
-IConvertibleDispT<T>::GetTypeCode(void)
-{
-  Mscorlib_tlb::TypeCode pRetVal;
-  this->GetTypeCode((Mscorlib_tlb::TypeCode*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToBoolean(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                                VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToBoolean"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IConvertibleDispT<T>::ToBoolean(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  VARIANT_BOOL pRetVal;
-  this->ToBoolean(provider, (VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToChar(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                             unsigned_short* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToChar"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_UI2:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> unsigned_short __fastcall
-IConvertibleDispT<T>::ToChar(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  unsigned_short pRetVal;
-  this->ToChar(provider, (unsigned_short*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToSByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                              signed_char* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToSByte"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I1:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> signed_char __fastcall
-IConvertibleDispT<T>::ToSByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  signed_char pRetVal;
-  this->ToSByte(provider, (signed_char*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                             unsigned_char* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToByte"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_UI1:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> unsigned_char __fastcall
-IConvertibleDispT<T>::ToByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  unsigned_char pRetVal;
-  this->ToByte(provider, (unsigned_char*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                              short* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToInt16"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I2:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> short __fastcall
-IConvertibleDispT<T>::ToInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  short pRetVal;
-  this->ToInt16(provider, (short*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToUInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                               unsigned_short* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToUInt16"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_UI2:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> unsigned_short __fastcall
-IConvertibleDispT<T>::ToUInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  unsigned_short pRetVal;
-  this->ToUInt16(provider, (unsigned_short*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                              long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToInt32"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IConvertibleDispT<T>::ToInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  long pRetVal;
-  this->ToInt32(provider, (long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToUInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                               unsigned_long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToUInt32"), DISPID(DISPID_UNKNOWN/*[1610743816]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_UI4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> unsigned_long __fastcall
-IConvertibleDispT<T>::ToUInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  unsigned_long pRetVal;
-  this->ToUInt32(provider, (unsigned_long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                              __int64* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToInt64"), DISPID(DISPID_UNKNOWN/*[1610743817]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I8:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> __int64 __fastcall
-IConvertibleDispT<T>::ToInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  __int64 pRetVal;
-  this->ToInt64(provider, (__int64*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToUInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                               unsigned_int64* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToUInt64"), DISPID(DISPID_UNKNOWN/*[1610743818]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_UI8:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> unsigned_int64 __fastcall
-IConvertibleDispT<T>::ToUInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  unsigned_int64 pRetVal;
-  this->ToUInt64(provider, (unsigned_int64*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToSingle(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                               float* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToSingle"), DISPID(DISPID_UNKNOWN/*[1610743819]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_R4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> float __fastcall
-IConvertibleDispT<T>::ToSingle(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  float pRetVal;
-  this->ToSingle(provider, (float*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToDouble(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                               double* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToDouble"), DISPID(DISPID_UNKNOWN/*[1610743820]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_R8:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> double __fastcall
-IConvertibleDispT<T>::ToDouble(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  double pRetVal;
-  this->ToDouble(provider, (double*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToDecimal(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                                DECIMAL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToDecimal"), DISPID(DISPID_UNKNOWN/*[1610743821]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_DECIMAL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> DECIMAL __fastcall
-IConvertibleDispT<T>::ToDecimal(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  DECIMAL pRetVal;
-  this->ToDecimal(provider, (DECIMAL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToDateTime(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                                 DATE* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToDateTime"), DISPID(DISPID_UNKNOWN/*[1610743822]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_DATE:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> DATE __fastcall
-IConvertibleDispT<T>::ToDateTime(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  DATE pRetVal;
-  this->ToDateTime(provider, (DATE*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::get_ToString(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                                   BSTR* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(DISPID_UNKNOWN/*[1610743823]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> BSTR __fastcall
-IConvertibleDispT<T>::get_ToString(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  BSTR pRetVal;
-  this->get_ToString(provider, (BSTR*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IConvertibleDispT<T>::ToType(Mscorlib_tlb::_Type* conversionType/*[in]*/, 
-                             Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
-                             VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToType"), DISPID(DISPID_UNKNOWN/*[1610743824]*/));
-  TAutoArgs<2> _args;
-  _args[1] = (LPUNKNOWN)(Mscorlib_tlb::_Type*)conversionType /*[VT_USERDEFINED:1]*/;
-  _args[2] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-IConvertibleDispT<T>::ToType(Mscorlib_tlb::_Type* conversionType/*[in]*/, 
-                             Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
-{
-  VARIANT pRetVal;
-  this->ToType(conversionType, provider, (VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// SmartIntf: TCOM_Enum
-// Interface: _Enum
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Enum
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D09D1E04-D590-39A3-B517-B734A49A9277}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_String
-// Interface: _String
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _String
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {36936699-FC79-324D-AB43-E33C1F94E263}
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  IComparer
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {C20FD3EB-7022-3D14-8477-760FAB54E50D}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IComparerDispT<T>::Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/, long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Compare"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<2> _args;
-  _args[1] = x /*[VT_VARIANT:0]*/;
-  _args[2] = y /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IComparerDispT<T>::Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
-{
-  long pRetVal;
-  this->Compare(x, y, (long*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  IEqualityComparer
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {AAB7C6EA-CAB0-3ADB-82AA-CF32E29AF238}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IEqualityComparerDispT<T>::Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
-                                  VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Equals"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<2> _args;
-  _args[1] = x /*[VT_VARIANT:0]*/;
-  _args[2] = y /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-IEqualityComparerDispT<T>::Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
-{
-  VARIANT_BOOL pRetVal;
-  this->Equals(x, y, (VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IEqualityComparerDispT<T>::GetHashCode(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetHashCode"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<1> _args;
-  _args[1] = obj /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-IEqualityComparerDispT<T>::GetHashCode(VARIANT obj/*[in]*/)
-{
-  long pRetVal;
-  this->GetHashCode(obj, (long*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
-// SmartIntf: TCOM_StringComparer
-// Interface: _StringComparer
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _StringComparer
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {7499E7E8-DF01-3948-B8D4-FA4B9661D36B}
-// *********************************************************************//
-// *********************************************************************//
 // DispIntf:  ISerializable
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {D0EEAA62-3D30-3EE2-B896-A2F34DDA47D8}
@@ -72442,15 +71866,6 @@ ISerializableDispT<T>::GetObjectData(Mscorlib_tlb::_SerializationInfo* info/*[in
   return OleFunction(_dispid, _args);
 }
 
-// *********************************************************************//
-// SmartIntf: TCOM_StringBuilder
-// Interface: _StringBuilder
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _StringBuilder
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9FB09782-8D39-3B0C-B79E-F7A37A65B3DA}
-// *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_Exception
 // Interface: _Exception
@@ -72840,64 +72255,404 @@ _ExceptionDispT<T>::get_TargetSite(void)
 }
 
 // *********************************************************************//
-// DispIntf:  IDeserializationCallback
+// SmartIntf: TCOM_ValueType
+// Interface: _ValueType
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ValueType
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {139E041D-0E41-39F5-A302-C4387E9D0A6C}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  IComparable
 // Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {AB3F47E4-C227-3B05-BF9F-94649BEF9888}
+// GUID:      {DEB0E770-91FD-3CF6-9A6C-E6A3656F3965}
 // *********************************************************************//
 template <class T> HRESULT __fastcall
-IDeserializationCallbackDispT<T>::OnDeserialization(VARIANT sender/*[in]*/)
+IComparableDispT<T>::CompareTo(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/)
 {
-  _TDispID _dispid(*this, OLETEXT("OnDeserialization"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  _TDispID _dispid(*this, OLETEXT("CompareTo"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
   TAutoArgs<1> _args;
-  _args[1] = sender /*[VT_VARIANT:0]*/;
-  return OleFunction(_dispid, _args);
+  _args[1] = obj /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IComparableDispT<T>::CompareTo(VARIANT obj/*[in]*/)
+{
+  long pRetVal;
+  this->CompareTo(obj, (long*)&pRetVal);
+  return pRetVal;
 }
 
 // *********************************************************************//
-// SmartIntf: TCOM_SystemException
-// Interface: _SystemException
+// DispIntf:  IFormattable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {9A604EE7-E630-3DED-9444-BAAE247075AB}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IFormattableDispT<T>::get_ToString(BSTR format/*[in]*/, 
+                                   Mscorlib_tlb::IFormatProvider* formatProvider/*[in]*/, 
+                                   BSTR* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<2> _args;
+  _args[1] = format /*[VT_BSTR:0]*/;
+  _args[2] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)formatProvider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> BSTR __fastcall
+IFormattableDispT<T>::get_ToString(BSTR format/*[in]*/, 
+                                   Mscorlib_tlb::IFormatProvider* formatProvider/*[in]*/)
+{
+  BSTR pRetVal;
+  this->get_ToString(format, formatProvider, (BSTR*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// DispIntf:  IConvertible
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {805E3B62-B5E9-393D-8941-377D8BF4556B}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::GetTypeCode(Mscorlib_tlb::TypeCode* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetTypeCode"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr((int*)pRetVal /*[VT_USERDEFINED:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> Mscorlib_tlb::TypeCode __fastcall
+IConvertibleDispT<T>::GetTypeCode(void)
+{
+  Mscorlib_tlb::TypeCode pRetVal;
+  this->GetTypeCode((Mscorlib_tlb::TypeCode*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToBoolean(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                                VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToBoolean"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IConvertibleDispT<T>::ToBoolean(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  VARIANT_BOOL pRetVal;
+  this->ToBoolean(provider, (VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToChar(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                             unsigned_short* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToChar"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_UI2:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> unsigned_short __fastcall
+IConvertibleDispT<T>::ToChar(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  unsigned_short pRetVal;
+  this->ToChar(provider, (unsigned_short*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToSByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                              signed_char* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToSByte"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I1:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> signed_char __fastcall
+IConvertibleDispT<T>::ToSByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  signed_char pRetVal;
+  this->ToSByte(provider, (signed_char*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                             unsigned_char* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToByte"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_UI1:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> unsigned_char __fastcall
+IConvertibleDispT<T>::ToByte(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  unsigned_char pRetVal;
+  this->ToByte(provider, (unsigned_char*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                              short* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToInt16"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I2:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> short __fastcall
+IConvertibleDispT<T>::ToInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  short pRetVal;
+  this->ToInt16(provider, (short*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToUInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                               unsigned_short* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToUInt16"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_UI2:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> unsigned_short __fastcall
+IConvertibleDispT<T>::ToUInt16(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  unsigned_short pRetVal;
+  this->ToUInt16(provider, (unsigned_short*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                              long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToInt32"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IConvertibleDispT<T>::ToInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  long pRetVal;
+  this->ToInt32(provider, (long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToUInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                               unsigned_long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToUInt32"), DISPID(DISPID_UNKNOWN/*[1610743816]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_UI4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> unsigned_long __fastcall
+IConvertibleDispT<T>::ToUInt32(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  unsigned_long pRetVal;
+  this->ToUInt32(provider, (unsigned_long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                              __int64* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToInt64"), DISPID(DISPID_UNKNOWN/*[1610743817]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I8:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> __int64 __fastcall
+IConvertibleDispT<T>::ToInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  __int64 pRetVal;
+  this->ToInt64(provider, (__int64*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToUInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                               unsigned_int64* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToUInt64"), DISPID(DISPID_UNKNOWN/*[1610743818]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_UI8:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> unsigned_int64 __fastcall
+IConvertibleDispT<T>::ToUInt64(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  unsigned_int64 pRetVal;
+  this->ToUInt64(provider, (unsigned_int64*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToSingle(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                               float* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToSingle"), DISPID(DISPID_UNKNOWN/*[1610743819]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_R4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> float __fastcall
+IConvertibleDispT<T>::ToSingle(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  float pRetVal;
+  this->ToSingle(provider, (float*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToDouble(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                               double* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToDouble"), DISPID(DISPID_UNKNOWN/*[1610743820]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_R8:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> double __fastcall
+IConvertibleDispT<T>::ToDouble(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  double pRetVal;
+  this->ToDouble(provider, (double*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToDecimal(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                                DECIMAL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToDecimal"), DISPID(DISPID_UNKNOWN/*[1610743821]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_DECIMAL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> DECIMAL __fastcall
+IConvertibleDispT<T>::ToDecimal(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  DECIMAL pRetVal;
+  this->ToDecimal(provider, (DECIMAL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToDateTime(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                                 DATE* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToDateTime"), DISPID(DISPID_UNKNOWN/*[1610743822]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_DATE:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> DATE __fastcall
+IConvertibleDispT<T>::ToDateTime(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  DATE pRetVal;
+  this->ToDateTime(provider, (DATE*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::get_ToString(Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                                   BSTR* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(DISPID_UNKNOWN/*[1610743823]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> BSTR __fastcall
+IConvertibleDispT<T>::get_ToString(Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  BSTR pRetVal;
+  this->get_ToString(provider, (BSTR*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IConvertibleDispT<T>::ToType(Mscorlib_tlb::_Type* conversionType/*[in]*/, 
+                             Mscorlib_tlb::IFormatProvider* provider/*[in]*/, 
+                             VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToType"), DISPID(DISPID_UNKNOWN/*[1610743824]*/));
+  TAutoArgs<2> _args;
+  _args[1] = (LPUNKNOWN)(Mscorlib_tlb::_Type*)conversionType /*[VT_USERDEFINED:1]*/;
+  _args[2] = (LPDISPATCH)(Mscorlib_tlb::IFormatProvider*)provider /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+IConvertibleDispT<T>::ToType(Mscorlib_tlb::_Type* conversionType/*[in]*/, 
+                             Mscorlib_tlb::IFormatProvider* provider/*[in]*/)
+{
+  VARIANT pRetVal;
+  this->ToType(conversionType, provider, (VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// SmartIntf: TCOM_Enum
+// Interface: _Enum
 // *********************************************************************//
 // *********************************************************************//
-// DispIntf:  _SystemException
+// DispIntf:  _Enum
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {4C482CC2-68E9-37C6-8353-9A94BD2D7F0B}
+// GUID:      {D09D1E04-D590-39A3-B517-B734A49A9277}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_OutOfMemoryException
-// Interface: _OutOfMemoryException
+// DispIntf:  ICloneable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {0CB251A7-3AB3-3B5C-A0B8-9DDF88824B85}
 // *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _OutOfMemoryException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {CF3EDB7E-0574-3383-A44F-292F7C145DB4}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_StackOverflowException
-// Interface: _StackOverflowException
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _StackOverflowException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9CF4339A-2911-3B8A-8F30-E5C6B5BE9A29}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_DataMisalignedException
-// Interface: _DataMisalignedException
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _DataMisalignedException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {152A6B4D-09AF-3EDF-8CBA-11797EEEEA4E}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_ExecutionEngineException
-// Interface: _ExecutionEngineException
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ExecutionEngineException
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {CCF0139C-79F7-3D0A-AFFE-2B0762C65B07}
-// *********************************************************************//
+template <class T> HRESULT __fastcall
+ICloneableDispT<T>::Clone(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Clone"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+ICloneableDispT<T>::Clone(void)
+{
+  VARIANT pRetVal;
+  this->Clone((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
 // *********************************************************************//
 // SmartIntf: TCOM_Delegate
 // Interface: _Delegate
@@ -73205,6 +72960,455 @@ _DelegateDispT<T>::get_Target(void)
 // DispIntf:  _MulticastDelegate
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {16FE0885-9129-3884-A232-90B58C5B2AA9}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  IEnumerable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABE-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IEnumerableDispT<T>::GetEnumerator(IEnumVARIANT** pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetEnumerator"), DISPID(-4));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr((LPUNKNOWN*)(IEnumVARIANT**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> IEnumVARIANT* __fastcall
+IEnumerableDispT<T>::GetEnumerator(void)
+{
+  IEnumVARIANT* pRetVal;
+  this->GetEnumerator((IEnumVARIANT**)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// DispIntf:  ICollection
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {DE8DB6F8-D101-3A92-8D1C-E72E5F10E992}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+ICollectionDispT<T>::CopyTo(Mscorlib_tlb::_Array* Array/*[in]*/, long index/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("CopyTo"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<2> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Array*)Array /*[VT_USERDEFINED:1]*/;
+  _args[2] = index /*[VT_I4:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+ICollectionDispT<T>::get_Count(long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Count"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> long __fastcall
+ICollectionDispT<T>::get_Count(void)
+{
+  long pRetVal;
+  this->get_Count((long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+ICollectionDispT<T>::get_SyncRoot(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("SyncRoot"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+ICollectionDispT<T>::get_SyncRoot(void)
+{
+  VARIANT pRetVal;
+  this->get_SyncRoot((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+ICollectionDispT<T>::get_IsSynchronized(VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("IsSynchronized"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+ICollectionDispT<T>::get_IsSynchronized(void)
+{
+  VARIANT_BOOL pRetVal;
+  this->get_IsSynchronized((VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// DispIntf:  IList
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {7BCFA00F-F764-3113-9140-3BBD127A96BB}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IListDispT<T>::get_Item(long index/*[in]*/, VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Item"), DISPID(0));
+  TAutoArgs<1> _args;
+  _args[1] = index /*[VT_I4:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+IListDispT<T>::get_Item(long index/*[in]*/)
+{
+  VARIANT pRetVal;
+  this->get_Item(index, (VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::_set_Item(long index/*[in]*/, VARIANT pRetVal/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Item"), DISPID(0));
+  TAutoArgs<2> _args;
+  _args[1] = index /*[VT_I4:0]*/;
+  _args[2] = pRetVal /*[VT_VARIANT:0]*/;
+  return OlePropertyPut(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::Add(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Add"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  TAutoArgs<1> _args;
+  _args[1] = value /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IListDispT<T>::Add(VARIANT value/*[in]*/)
+{
+  long pRetVal;
+  this->Add(value, (long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::Contains(VARIANT value/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Contains"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
+  TAutoArgs<1> _args;
+  _args[1] = value /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IListDispT<T>::Contains(VARIANT value/*[in]*/)
+{
+  VARIANT_BOOL pRetVal;
+  this->Contains(value, (VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::Clear()
+{
+  _TDispID _dispid(*this, OLETEXT("Clear"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
+  return OleFunction(_dispid);
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::get_IsReadOnly(VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("IsReadOnly"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IListDispT<T>::get_IsReadOnly(void)
+{
+  VARIANT_BOOL pRetVal;
+  this->get_IsReadOnly((VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::get_IsFixedSize(VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("IsFixedSize"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IListDispT<T>::get_IsFixedSize(void)
+{
+  VARIANT_BOOL pRetVal;
+  this->get_IsFixedSize((VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::IndexOf(VARIANT value/*[in]*/, long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("IndexOf"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
+  TAutoArgs<1> _args;
+  _args[1] = value /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IListDispT<T>::IndexOf(VARIANT value/*[in]*/)
+{
+  long pRetVal;
+  this->IndexOf(value, (long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::Insert(long index/*[in]*/, VARIANT value/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Insert"), DISPID(DISPID_UNKNOWN/*[1610743816]*/));
+  TAutoArgs<2> _args;
+  _args[1] = index /*[VT_I4:0]*/;
+  _args[2] = value /*[VT_VARIANT:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::Remove(VARIANT value/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Remove"), DISPID(DISPID_UNKNOWN/*[1610743817]*/));
+  TAutoArgs<1> _args;
+  _args[1] = value /*[VT_VARIANT:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IListDispT<T>::RemoveAt(long index/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("RemoveAt"), DISPID(DISPID_UNKNOWN/*[1610743818]*/));
+  TAutoArgs<1> _args;
+  _args[1] = index /*[VT_I4:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+// *********************************************************************//
+// SmartIntf: TCOM_Array
+// Interface: _Array
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _Array
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {2B67CECE-71C3-36A9-A136-925CCC1935A8}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  IEnumerator
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {496B0ABF-CDEE-11D3-88E8-00902754C43A}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IEnumeratorDispT<T>::MoveNext(VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("MoveNext"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IEnumeratorDispT<T>::MoveNext(void)
+{
+  VARIANT_BOOL pRetVal;
+  this->MoveNext((VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IEnumeratorDispT<T>::get_Current(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Current"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+IEnumeratorDispT<T>::get_Current(void)
+{
+  VARIANT pRetVal;
+  this->get_Current((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IEnumeratorDispT<T>::Reset()
+{
+  _TDispID _dispid(*this, OLETEXT("Reset"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  return OleFunction(_dispid);
+}
+
+// *********************************************************************//
+// DispIntf:  IDisposable
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {805D7A98-D4AF-3F0F-967F-E5CF45312D2C}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IDisposableDispT<T>::Dispose()
+{
+  _TDispID _dispid(*this, OLETEXT("Dispose"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  return OleFunction(_dispid);
+}
+
+// *********************************************************************//
+// SmartIntf: TCOM_String
+// Interface: _String
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _String
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {36936699-FC79-324D-AB43-E33C1F94E263}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  IComparer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {C20FD3EB-7022-3D14-8477-760FAB54E50D}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IComparerDispT<T>::Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/, long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Compare"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<2> _args;
+  _args[1] = x /*[VT_VARIANT:0]*/;
+  _args[2] = y /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IComparerDispT<T>::Compare(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
+{
+  long pRetVal;
+  this->Compare(x, y, (long*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// DispIntf:  IEqualityComparer
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AAB7C6EA-CAB0-3ADB-82AA-CF32E29AF238}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IEqualityComparerDispT<T>::Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/, 
+                                  VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Equals"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<2> _args;
+  _args[1] = x /*[VT_VARIANT:0]*/;
+  _args[2] = y /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IEqualityComparerDispT<T>::Equals(VARIANT x/*[in]*/, VARIANT y/*[in]*/)
+{
+  VARIANT_BOOL pRetVal;
+  this->Equals(x, y, (VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IEqualityComparerDispT<T>::GetHashCode(VARIANT obj/*[in]*/, long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetHashCode"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<1> _args;
+  _args[1] = obj /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+IEqualityComparerDispT<T>::GetHashCode(VARIANT obj/*[in]*/)
+{
+  long pRetVal;
+  this->GetHashCode(obj, (long*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
+// SmartIntf: TCOM_StringComparer
+// Interface: _StringComparer
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _StringComparer
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {7499E7E8-DF01-3948-B8D4-FA4B9661D36B}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_StringBuilder
+// Interface: _StringBuilder
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _StringBuilder
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9FB09782-8D39-3B0C-B79E-F7A37A65B3DA}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  IDeserializationCallback
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {AB3F47E4-C227-3B05-BF9F-94649BEF9888}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IDeserializationCallbackDispT<T>::OnDeserialization(VARIANT sender/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("OnDeserialization"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<1> _args;
+  _args[1] = sender /*[VT_VARIANT:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+// *********************************************************************//
+// SmartIntf: TCOM_SystemException
+// Interface: _SystemException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _SystemException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {4C482CC2-68E9-37C6-8353-9A94BD2D7F0B}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_OutOfMemoryException
+// Interface: _OutOfMemoryException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _OutOfMemoryException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {CF3EDB7E-0574-3383-A44F-292F7C145DB4}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_StackOverflowException
+// Interface: _StackOverflowException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _StackOverflowException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9CF4339A-2911-3B8A-8F30-E5C6B5BE9A29}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_DataMisalignedException
+// Interface: _DataMisalignedException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _DataMisalignedException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {152A6B4D-09AF-3EDF-8CBA-11797EEEEA4E}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_ExecutionEngineException
+// Interface: _ExecutionEngineException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ExecutionEngineException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {CCF0139C-79F7-3D0A-AFFE-2B0762C65B07}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_MemberAccessException
@@ -74519,6 +74723,15 @@ TCOM_AttributeT<T>::Invoke(unsigned_long dispIdMember/*[in]*/, System::TGUID* ri
 // DispIntf:  _AppDomainUnloadedException
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {6E96AA70-9FFB-399D-96BF-A68436095C54}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_EvidenceBase
+// Interface: _EvidenceBase
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _EvidenceBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F4B8D231-6028-39EF-B017-72988A3F6766}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_ActivationArguments
@@ -77735,6 +77948,24 @@ IReflectDispT<T>::get_UnderlyingSystemType(void)
 // GUID:      {1B96E53C-4028-38BC-9DC3-8D7A9555C311}
 // *********************************************************************//
 // *********************************************************************//
+// SmartIntf: TCOM_STAThreadAttribute
+// Interface: _STAThreadAttribute
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _STAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_MTAThreadAttribute
+// Interface: _MTAThreadAttribute
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _MTAThreadAttribute
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
+// *********************************************************************//
+// *********************************************************************//
 // SmartIntf: TCOM_TimeoutException
 // Interface: _TimeoutException
 // *********************************************************************//
@@ -77996,42 +78227,6 @@ IReflectDispT<T>::get_UnderlyingSystemType(void)
 // GUID:      {B49A029B-406B-3B1E-88E4-F86690D20364}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_STAThreadAttribute
-// Interface: _STAThreadAttribute
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _STAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {85D72F83-BE91-3CB1-B4F0-76B56FF04033}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_MTAThreadAttribute
-// Interface: _MTAThreadAttribute
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _MTAThreadAttribute
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {C02468D1-8713-3225-BDA3-49B2FE37DDBB}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_ArrayList
-// Interface: _ArrayList
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ArrayList
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_BitArray
-// Interface: _BitArray
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _BitArray
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
-// *********************************************************************//
-// *********************************************************************//
 // SmartIntf: TCOM_CaseInsensitiveComparer
 // Interface: _CaseInsensitiveComparer
 // *********************************************************************//
@@ -78079,15 +78274,6 @@ IHashCodeProviderDispT<T>::GetHashCode(VARIANT obj/*[in]*/)
 // DispIntf:  _CollectionBase
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {B7D29E26-7798-3FA4-90F4-E6A22D2099F9}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_Comparer
-// Interface: _Comparer
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Comparer
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
 // *********************************************************************//
 // *********************************************************************//
 // DispIntf:  IDictionary
@@ -78254,6 +78440,60 @@ IDictionaryDispT<T>::Remove(VARIANT key/*[in]*/)
 // GUID:      {DDD44DA2-BC6B-3620-9317-C0372968C741}
 // *********************************************************************//
 // *********************************************************************//
+// SmartIntf: TCOM_ReadOnlyCollectionBase
+// Interface: _ReadOnlyCollectionBase
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ReadOnlyCollectionBase
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_Queue
+// Interface: _Queue
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _Queue
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_ArrayList
+// Interface: _ArrayList
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ArrayList
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {401F89CB-C127-3041-82FD-B67035395C56}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_BitArray
+// Interface: _BitArray
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _BitArray
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F145C46A-D170-3170-B52F-4678DFCA0300}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_Stack
+// Interface: _Stack
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _Stack
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_Comparer
+// Interface: _Comparer
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _Comparer
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {8064A157-B5C8-3A4A-AD3D-02DC1A39C417}
+// *********************************************************************//
+// *********************************************************************//
 // DispIntf:  IDictionaryEnumerator
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {35D574BF-7A4F-3588-8C19-12212A0FE4DC}
@@ -78308,24 +78548,6 @@ IDictionaryEnumeratorDispT<T>::get_Entry(/*AUTO_PARAM_ERROR(Mscorlib_tlb::Dictio
 // GUID:      {D25A197E-3E69-3271-A989-23D85E97F920}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_Queue
-// Interface: _Queue
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Queue
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {3A7D3CA4-B7D1-3A2A-800C-8FC2ACFCBDA4}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_ReadOnlyCollectionBase
-// Interface: _ReadOnlyCollectionBase
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ReadOnlyCollectionBase
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {BD32D878-A59B-3E5C-BFE0-A96B1A1E9D6F}
-// *********************************************************************//
-// *********************************************************************//
 // SmartIntf: TCOM_SortedList
 // Interface: _SortedList
 // *********************************************************************//
@@ -78333,15 +78555,6 @@ IDictionaryEnumeratorDispT<T>::get_Entry(/*AUTO_PARAM_ERROR(Mscorlib_tlb::Dictio
 // DispIntf:  _SortedList
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {56421139-A143-3AE9-9852-1DBDFE3D6BFA}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_Stack
-// Interface: _Stack
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Stack
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {AB538809-3C2F-35D9-80E6-7BAD540484A1}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_Nullable
@@ -84249,116 +84462,6 @@ TCOM_ModuleT<T>::Invoke(unsigned_long dispIdMember/*[in]*/, System::TGUID* riid/
 // GUID:      {E1817846-3745-3C97-B4A6-EE20A1641B29}
 // *********************************************************************//
 // *********************************************************************//
-// DispIntf:  IFormatter
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                                VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Deserialize"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Stream*)serializationStream /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-IFormatterDispT<T>::Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/)
-{
-  VARIANT pRetVal;
-  this->Deserialize(serializationStream, (VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
-                              VARIANT graph/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Serialize"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<2> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Stream*)serializationStream /*[VT_USERDEFINED:1]*/;
-  _args[2] = graph /*[VT_VARIANT:0]*/;
-  return OleFunction(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("SurrogateSelector"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::ISurrogateSelector**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> Mscorlib_tlb::ISurrogateSelectorPtr __fastcall
-IFormatterDispT<T>::get_SurrogateSelector(void)
-{
-  Mscorlib_tlb::ISurrogateSelectorPtr pRetVal;
-  this->get_SurrogateSelector(&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::_set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("SurrogateSelector"), DISPID(1610743810));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::ISurrogateSelector*)pRetVal /*[VT_USERDEFINED:1]*/;
-  return OlePropertyPut(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Binder"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::_SerializationBinder**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> Mscorlib_tlb::_SerializationBinderPtr __fastcall
-IFormatterDispT<T>::get_Binder(void)
-{
-  Mscorlib_tlb::_SerializationBinderPtr pRetVal;
-  this->get_Binder(&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::_set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Binder"), DISPID(1610743812));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_SerializationBinder*)pRetVal /*[VT_USERDEFINED:1]*/;
-  return OlePropertyPut(_dispid, _args);
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::get_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext* pRetVal)*/ VARIANT*  pRetVal)
-{
-  _TDispID _dispid(*this, OLETEXT("Context"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_USERDEFINED:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> HRESULT __fastcall
-IFormatterDispT<T>::set_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext pRetVal)*/ VARIANT  pRetVal)
-{
-  _TDispID _dispid(*this, OLETEXT("Context"), DISPID(1610743814));
-  TAutoArgs<1> _args;
-  _args[1] = pRetVal /*[VT_USERDEFINED:0]*/;
-  return OlePropertyPut(_dispid, _args);
-}
-
-// *********************************************************************//
-// SmartIntf: TCOM_Formatter
-// Interface: _Formatter
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Formatter
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
-// *********************************************************************//
-// *********************************************************************//
 // DispIntf:  IFormatterConverter
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {F4F5C303-FAD3-3D0C-A4DF-BB82B5EE308F}
@@ -84711,6 +84814,107 @@ ISerializationSurrogateDispT<T>::SetObjectData(VARIANT obj/*[in]*/,
 }
 
 // *********************************************************************//
+// DispIntf:  IFormatter
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {93D7A8C5-D2EB-319B-A374-A65D321F2AA9}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                                VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Deserialize"), DISPID(DISPID_UNKNOWN/*[1610743808]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Stream*)serializationStream /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+IFormatterDispT<T>::Deserialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/)
+{
+  VARIANT pRetVal;
+  this->Deserialize(serializationStream, (VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::Serialize(Mscorlib_tlb::_Stream* serializationStream/*[in]*/, 
+                              VARIANT graph/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Serialize"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<2> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_Stream*)serializationStream /*[VT_USERDEFINED:1]*/;
+  _args[2] = graph /*[VT_VARIANT:0]*/;
+  return OleFunction(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::get_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector** pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("SurrogateSelector"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::ISurrogateSelector**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> Mscorlib_tlb::ISurrogateSelectorPtr __fastcall
+IFormatterDispT<T>::get_SurrogateSelector(void)
+{
+  Mscorlib_tlb::ISurrogateSelectorPtr pRetVal;
+  this->get_SurrogateSelector(&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::_set_SurrogateSelector(Mscorlib_tlb::ISurrogateSelector* pRetVal/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("SurrogateSelector"), DISPID(1610743810));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::ISurrogateSelector*)pRetVal /*[VT_USERDEFINED:1]*/;
+  return OlePropertyPut(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::get_Binder(Mscorlib_tlb::_SerializationBinder** pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Binder"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::_SerializationBinder**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> Mscorlib_tlb::_SerializationBinderPtr __fastcall
+IFormatterDispT<T>::get_Binder(void)
+{
+  Mscorlib_tlb::_SerializationBinderPtr pRetVal;
+  this->get_Binder(&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::_set_Binder(Mscorlib_tlb::_SerializationBinder* pRetVal/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Binder"), DISPID(1610743812));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH)(Mscorlib_tlb::_SerializationBinder*)pRetVal /*[VT_USERDEFINED:1]*/;
+  return OlePropertyPut(_dispid, _args);
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::get_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext* pRetVal)*/ VARIANT*  pRetVal)
+{
+  _TDispID _dispid(*this, OLETEXT("Context"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_USERDEFINED:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> HRESULT __fastcall
+IFormatterDispT<T>::set_Context(/*AUTO_PARAM_ERROR(Mscorlib_tlb::StreamingContext pRetVal)*/ VARIANT  pRetVal)
+{
+  _TDispID _dispid(*this, OLETEXT("Context"), DISPID(1610743814));
+  TAutoArgs<1> _args;
+  _args[1] = pRetVal /*[VT_USERDEFINED:0]*/;
+  return OlePropertyPut(_dispid, _args);
+}
+
+// *********************************************************************//
 // DispIntf:  ISurrogateSelector
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {7C66FF18-A1A5-3E19-857B-0E7B6A9E3F38}
@@ -84754,24 +84958,6 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
   return pRetVal;
 }
 
-// *********************************************************************//
-// SmartIntf: TCOM_ObjectIDGenerator
-// Interface: _ObjectIDGenerator
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ObjectIDGenerator
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_ObjectManager
-// Interface: _ObjectManager
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _ObjectManager
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
-// *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_OptionalFieldAttribute
 // Interface: _OptionalFieldAttribute
@@ -84827,6 +85013,15 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // GUID:      {450222D0-87CA-3699-A7B4-D8A0FDB72357}
 // *********************************************************************//
 // *********************************************************************//
+// SmartIntf: TCOM_SerializationException
+// Interface: _SerializationException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _SerializationException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// *********************************************************************//
+// *********************************************************************//
 // SmartIntf: TCOM_SerializationInfo
 // Interface: _SerializationInfo
 // *********************************************************************//
@@ -84845,13 +85040,31 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // GUID:      {607056C6-1BCA-36C8-AB87-33B202EBF0D8}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_SerializationException
-// Interface: _SerializationException
+// SmartIntf: TCOM_Formatter
+// Interface: _Formatter
 // *********************************************************************//
 // *********************************************************************//
-// DispIntf:  _SerializationException
+// DispIntf:  _Formatter
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {245FE7FD-E020-3053-B5F6-7467FD2C6883}
+// GUID:      {D9BD3C8D-9395-3657-B6EE-D1B509C38B70}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectIDGenerator
+// Interface: _ObjectIDGenerator
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ObjectIDGenerator
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {A30646CC-F710-3BFA-A356-B4C858D4ED8E}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectManager
+// Interface: _ObjectManager
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _ObjectManager
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {F28E7D04-3319-3968-8201-C6E55BECD3D4}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_SurrogateSelector
@@ -84872,15 +85085,6 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // GUID:      {4CCA29E4-584B-3CD0-AD25-855DC5799C16}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_EastAsianLunisolarCalendar
-// Interface: _EastAsianLunisolarCalendar
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _EastAsianLunisolarCalendar
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
-// *********************************************************************//
-// *********************************************************************//
 // SmartIntf: TCOM_CompareInfo
 // Interface: _CompareInfo
 // *********************************************************************//
@@ -84897,6 +85101,15 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // DispIntf:  _CultureInfo
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {152722C2-F0B1-3D19-ADA8-F40CA5CAECB8}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_CultureNotFoundException
+// Interface: _CultureNotFoundException
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _CultureNotFoundException
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {AB20BF9E-7549-3226-BA87-C1EDFB6CDA6C}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_DateTimeFormatInfo
@@ -84944,13 +85157,13 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // GUID:      {28DDC187-56B2-34CF-A078-48BD1E113D1E}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_JapaneseCalendar
-// Interface: _JapaneseCalendar
+// SmartIntf: TCOM_EastAsianLunisolarCalendar
+// Interface: _EastAsianLunisolarCalendar
 // *********************************************************************//
 // *********************************************************************//
-// DispIntf:  _JapaneseCalendar
+// DispIntf:  _EastAsianLunisolarCalendar
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
+// GUID:      {89E148C4-2424-30AE-80F5-C5D21EA3366C}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_JulianCalendar
@@ -84960,6 +85173,15 @@ ISurrogateSelectorDispT<T>::GetNextSelector(void)
 // DispIntf:  _JulianCalendar
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {36E2DE92-1FB3-3D7D-BA26-9CAD5B98DD52}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_JapaneseCalendar
+// Interface: _JapaneseCalendar
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _JapaneseCalendar
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {D662AE3F-CEF9-38B4-BB8E-5D8DD1DBF806}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_KoreanCalendar
@@ -88196,29 +88418,6 @@ IMessageSinkDispT<T>::get_NextSink(void)
 // GUID:      {3936ABE1-B29E-3593-83F1-793D1A7F3898}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_CallContext
-// Interface: _CallContext
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _CallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  ILogicalThreadAffinative
-// Flags:     (4416) Dual OleAutomation Dispatchable
-// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_LogicalCallContext
-// Interface: _LogicalCallContext
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _LogicalCallContext
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
-// *********************************************************************//
-// *********************************************************************//
 // SmartIntf: TCOM_ChannelServices
 // Interface: _ChannelServices
 // *********************************************************************//
@@ -88876,24 +89075,6 @@ IServerChannelSinkDispT<T>::get_NextChannelSink(void)
 // DispIntf:  _EnterpriseServicesHelper
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {77C9BCEB-9958-33C0-A858-599F66697DA7}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_Header
-// Interface: _Header
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _Header
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_HeaderHandler
-// Interface: _HeaderHandler
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _HeaderHandler
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
 // *********************************************************************//
 // *********************************************************************//
 // DispIntf:  IMessage
@@ -90221,259 +90402,6 @@ IFieldInfoDispT<T>::set_FieldTypes(LPSAFEARRAY pRetVal/*[in]*/)
 // GUID:      {89304439-A24F-30F6-9A8F-89CE472D85DA}
 // *********************************************************************//
 // *********************************************************************//
-// SmartIntf: TCOM_ObjectHandle
-// Interface: _ObjectHandle
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::get_ToString(BSTR* pRetVal/*[out,retval]*/)
-{
-  return (*this)->get_ToString(pRetVal);
-}
-
-template <class T> BSTR __fastcall
-TCOM_ObjectHandleT<T>::get_ToString(void)
-{
-  BSTR pRetVal = 0;
-  OLECHECK(this->get_ToString((BSTR*)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  return (*this)->Equals(obj, pRetVal);
-}
-
-template <class T> VARIANT_BOOL __fastcall
-TCOM_ObjectHandleT<T>::Equals(VARIANT obj/*[in]*/)
-{
-  VARIANT_BOOL pRetVal;
-  OLECHECK(this->Equals(obj/*[in]*/, (VARIANT_BOOL*)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::GetHashCode(long* pRetVal/*[out,retval]*/)
-{
-  return (*this)->GetHashCode(pRetVal);
-}
-
-template <class T> long __fastcall
-TCOM_ObjectHandleT<T>::GetHashCode(void)
-{
-  long pRetVal;
-  OLECHECK(this->GetHashCode((long*)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/)
-{
-  return (*this)->GetType(pRetVal);
-}
-
-template <class T> Mscorlib_tlb::_Type* __fastcall
-TCOM_ObjectHandleT<T>::GetType(void)
-{
-  Mscorlib_tlb::_Type* pRetVal;
-  OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
-{
-  return (*this)->GetLifetimeService(pRetVal);
-}
-
-template <class T> VARIANT __fastcall
-TCOM_ObjectHandleT<T>::GetLifetimeService(void)
-{
-  VARIANT pRetVal;
-  OLECHECK(this->GetLifetimeService((VARIANT*)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
-{
-  return (*this)->InitializeLifetimeService(pRetVal);
-}
-
-template <class T> VARIANT __fastcall
-TCOM_ObjectHandleT<T>::InitializeLifetimeService(void)
-{
-  VARIANT pRetVal;
-  OLECHECK(this->InitializeLifetimeService((VARIANT*)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
-                                    Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/)
-{
-  return (*this)->CreateObjRef(requestedType, pRetVal);
-}
-
-template <class T> Mscorlib_tlb::_ObjRef* __fastcall
-TCOM_ObjectHandleT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
-{
-  Mscorlib_tlb::_ObjRef* pRetVal;
-  OLECHECK(this->CreateObjRef(requestedType/*[in]*/, (Mscorlib_tlb::_ObjRef**)&pRetVal));
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-TCOM_ObjectHandleT<T>::Unwrap(VARIANT* pRetVal/*[out,retval]*/)
-{
-  return (*this)->Unwrap(pRetVal);
-}
-
-template <class T> VARIANT __fastcall
-TCOM_ObjectHandleT<T>::Unwrap(void)
-{
-  VARIANT pRetVal;
-  OLECHECK(this->Unwrap((VARIANT*)&pRetVal));
-  return pRetVal;
-}
-
-// *********************************************************************//
-// DispIntf:  _ObjectHandle
-// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
-// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
-// *********************************************************************//
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::get_ToString(BSTR* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(0));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
-}
-
-template <class T> BSTR __fastcall
-_ObjectHandleDispT<T>::get_ToString(void)
-{
-  BSTR pRetVal;
-  this->get_ToString((BSTR*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Equals"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
-  TAutoArgs<1> _args;
-  _args[1] = obj /*[VT_VARIANT:0]*/;
-  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT_BOOL __fastcall
-_ObjectHandleDispT<T>::Equals(VARIANT obj/*[in]*/)
-{
-  VARIANT_BOOL pRetVal;
-  this->Equals(obj, (VARIANT_BOOL*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::GetHashCode(long* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetHashCode"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> long __fastcall
-_ObjectHandleDispT<T>::GetHashCode(void)
-{
-  long pRetVal;
-  this->GetHashCode((long*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetType"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr((LPUNKNOWN*)(Mscorlib_tlb::_Type**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> Mscorlib_tlb::_Type* __fastcall
-_ObjectHandleDispT<T>::GetType(void)
-{
-  Mscorlib_tlb::_Type* pRetVal;
-  this->GetType((Mscorlib_tlb::_Type**)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("GetLifetimeService"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-_ObjectHandleDispT<T>::GetLifetimeService(void)
-{
-  VARIANT pRetVal;
-  this->GetLifetimeService((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("InitializeLifetimeService"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-_ObjectHandleDispT<T>::InitializeLifetimeService(void)
-{
-  VARIANT pRetVal;
-  this->InitializeLifetimeService((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
-                                    Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("CreateObjRef"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
-  TAutoArgs<1> _args;
-  _args[1] = (LPUNKNOWN)(Mscorlib_tlb::_Type*)requestedType /*[VT_USERDEFINED:1]*/;
-  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::_ObjRef**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> Mscorlib_tlb::_ObjRef* __fastcall
-_ObjectHandleDispT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
-{
-  Mscorlib_tlb::_ObjRef* pRetVal;
-  this->CreateObjRef(requestedType, (Mscorlib_tlb::_ObjRef**)&pRetVal);
-  return pRetVal;
-}
-
-template <class T> HRESULT __fastcall
-_ObjectHandleDispT<T>::Unwrap(VARIANT* pRetVal/*[out,retval]*/)
-{
-  _TDispID _dispid(*this, OLETEXT("Unwrap"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
-  TAutoArgs<0> _args;
-  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
-}
-
-template <class T> VARIANT __fastcall
-_ObjectHandleDispT<T>::Unwrap(void)
-{
-  VARIANT pRetVal;
-  this->Unwrap((VARIANT*)&pRetVal);
-  return pRetVal;
-}
-
-// *********************************************************************//
 // DispIntf:  IRemotingTypeInfo
 // Flags:     (4416) Dual OleAutomation Dispatchable
 // GUID:      {C09EFFA9-1FFE-3A52-A733-6236CBC45E7B}
@@ -91151,6 +91079,300 @@ ITrackingHandlerDispT<T>::DisconnectedObject(VARIANT obj/*[in]*/)
 // GUID:      {717105A3-739B-3BC3-A2B7-AD215903FAD2}
 // *********************************************************************//
 // *********************************************************************//
+// SmartIntf: TCOM_Header
+// Interface: _Header
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _Header
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {0D296515-AD19-3602-B415-D8EC77066081}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_HeaderHandler
+// Interface: _HeaderHandler
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _HeaderHandler
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {5DBBAF39-A3DF-30B7-AAEA-9FD11394123F}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_CallContext
+// Interface: _CallContext
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _CallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {53BCE4D4-6209-396D-BD4A-0B0A0A177DF9}
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  ILogicalThreadAffinative
+// Flags:     (4416) Dual OleAutomation Dispatchable
+// GUID:      {4D125449-BA27-3927-8589-3E1B34B622E5}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_LogicalCallContext
+// Interface: _LogicalCallContext
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _LogicalCallContext
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {9AFF21F5-1C9C-35E7-AEA4-C3AA0BEB3B77}
+// *********************************************************************//
+// *********************************************************************//
+// SmartIntf: TCOM_ObjectHandle
+// Interface: _ObjectHandle
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::get_ToString(BSTR* pRetVal/*[out,retval]*/)
+{
+  return (*this)->get_ToString(pRetVal);
+}
+
+template <class T> BSTR __fastcall
+TCOM_ObjectHandleT<T>::get_ToString(void)
+{
+  BSTR pRetVal = 0;
+  OLECHECK(this->get_ToString((BSTR*)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  return (*this)->Equals(obj, pRetVal);
+}
+
+template <class T> VARIANT_BOOL __fastcall
+TCOM_ObjectHandleT<T>::Equals(VARIANT obj/*[in]*/)
+{
+  VARIANT_BOOL pRetVal;
+  OLECHECK(this->Equals(obj/*[in]*/, (VARIANT_BOOL*)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::GetHashCode(long* pRetVal/*[out,retval]*/)
+{
+  return (*this)->GetHashCode(pRetVal);
+}
+
+template <class T> long __fastcall
+TCOM_ObjectHandleT<T>::GetHashCode(void)
+{
+  long pRetVal;
+  OLECHECK(this->GetHashCode((long*)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/)
+{
+  return (*this)->GetType(pRetVal);
+}
+
+template <class T> Mscorlib_tlb::_Type* __fastcall
+TCOM_ObjectHandleT<T>::GetType(void)
+{
+  Mscorlib_tlb::_Type* pRetVal;
+  OLECHECK(this->GetType((Mscorlib_tlb::_Type**)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
+{
+  return (*this)->GetLifetimeService(pRetVal);
+}
+
+template <class T> VARIANT __fastcall
+TCOM_ObjectHandleT<T>::GetLifetimeService(void)
+{
+  VARIANT pRetVal;
+  OLECHECK(this->GetLifetimeService((VARIANT*)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
+{
+  return (*this)->InitializeLifetimeService(pRetVal);
+}
+
+template <class T> VARIANT __fastcall
+TCOM_ObjectHandleT<T>::InitializeLifetimeService(void)
+{
+  VARIANT pRetVal;
+  OLECHECK(this->InitializeLifetimeService((VARIANT*)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
+                                    Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/)
+{
+  return (*this)->CreateObjRef(requestedType, pRetVal);
+}
+
+template <class T> Mscorlib_tlb::_ObjRef* __fastcall
+TCOM_ObjectHandleT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
+{
+  Mscorlib_tlb::_ObjRef* pRetVal;
+  OLECHECK(this->CreateObjRef(requestedType/*[in]*/, (Mscorlib_tlb::_ObjRef**)&pRetVal));
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+TCOM_ObjectHandleT<T>::Unwrap(VARIANT* pRetVal/*[out,retval]*/)
+{
+  return (*this)->Unwrap(pRetVal);
+}
+
+template <class T> VARIANT __fastcall
+TCOM_ObjectHandleT<T>::Unwrap(void)
+{
+  VARIANT pRetVal;
+  OLECHECK(this->Unwrap((VARIANT*)&pRetVal));
+  return pRetVal;
+}
+
+// *********************************************************************//
+// DispIntf:  _ObjectHandle
+// Flags:     (4560) Hidden Dual NonExtensible OleAutomation Dispatchable
+// GUID:      {EA675B47-64E0-3B5F-9BE7-F7DC2990730D}
+// *********************************************************************//
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::get_ToString(BSTR* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("ToString"), DISPID(0));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_BSTR:1]*/, _args, OlePropertyGet(_dispid, _args));
+}
+
+template <class T> BSTR __fastcall
+_ObjectHandleDispT<T>::get_ToString(void)
+{
+  BSTR pRetVal;
+  this->get_ToString((BSTR*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::Equals(VARIANT obj/*[in]*/, VARIANT_BOOL* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Equals"), DISPID(DISPID_UNKNOWN/*[1610743809]*/));
+  TAutoArgs<1> _args;
+  _args[1] = obj /*[VT_VARIANT:0]*/;
+  return OutRetValSetterPtr(pRetVal /*[VT_BOOL:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT_BOOL __fastcall
+_ObjectHandleDispT<T>::Equals(VARIANT obj/*[in]*/)
+{
+  VARIANT_BOOL pRetVal;
+  this->Equals(obj, (VARIANT_BOOL*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::GetHashCode(long* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetHashCode"), DISPID(DISPID_UNKNOWN/*[1610743810]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_I4:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> long __fastcall
+_ObjectHandleDispT<T>::GetHashCode(void)
+{
+  long pRetVal;
+  this->GetHashCode((long*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::GetType(Mscorlib_tlb::_Type** pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetType"), DISPID(DISPID_UNKNOWN/*[1610743811]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr((LPUNKNOWN*)(Mscorlib_tlb::_Type**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> Mscorlib_tlb::_Type* __fastcall
+_ObjectHandleDispT<T>::GetType(void)
+{
+  Mscorlib_tlb::_Type* pRetVal;
+  this->GetType((Mscorlib_tlb::_Type**)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::GetLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("GetLifetimeService"), DISPID(DISPID_UNKNOWN/*[1610743812]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+_ObjectHandleDispT<T>::GetLifetimeService(void)
+{
+  VARIANT pRetVal;
+  this->GetLifetimeService((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::InitializeLifetimeService(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("InitializeLifetimeService"), DISPID(DISPID_UNKNOWN/*[1610743813]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+_ObjectHandleDispT<T>::InitializeLifetimeService(void)
+{
+  VARIANT pRetVal;
+  this->InitializeLifetimeService((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/, 
+                                    Mscorlib_tlb::_ObjRef** pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("CreateObjRef"), DISPID(DISPID_UNKNOWN/*[1610743814]*/));
+  TAutoArgs<1> _args;
+  _args[1] = (LPUNKNOWN)(Mscorlib_tlb::_Type*)requestedType /*[VT_USERDEFINED:1]*/;
+  return OutRetValSetterPtr((LPDISPATCH*)(Mscorlib_tlb::_ObjRef**)pRetVal /*[VT_USERDEFINED:2]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> Mscorlib_tlb::_ObjRef* __fastcall
+_ObjectHandleDispT<T>::CreateObjRef(Mscorlib_tlb::_Type* requestedType/*[in]*/)
+{
+  Mscorlib_tlb::_ObjRef* pRetVal;
+  this->CreateObjRef(requestedType, (Mscorlib_tlb::_ObjRef**)&pRetVal);
+  return pRetVal;
+}
+
+template <class T> HRESULT __fastcall
+_ObjectHandleDispT<T>::Unwrap(VARIANT* pRetVal/*[out,retval]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("Unwrap"), DISPID(DISPID_UNKNOWN/*[1610743815]*/));
+  TAutoArgs<0> _args;
+  return OutRetValSetterPtr(pRetVal /*[VT_VARIANT:1]*/, _args, OleFunction(_dispid, _args));
+}
+
+template <class T> VARIANT __fastcall
+_ObjectHandleDispT<T>::Unwrap(void)
+{
+  VARIANT pRetVal;
+  this->Unwrap((VARIANT*)&pRetVal);
+  return pRetVal;
+}
+
+// *********************************************************************//
 // SmartIntf: TCOM_IsolatedStorage
 // Interface: _IsolatedStorage
 // *********************************************************************//
@@ -91158,15 +91380,6 @@ ITrackingHandlerDispT<T>::DisconnectedObject(VARIANT obj/*[in]*/)
 // DispIntf:  _IsolatedStorage
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {34EC3BD7-F2F6-3C20-A639-804BFF89DF65}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_IsolatedStorageFile
-// Interface: _IsolatedStorageFile
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _IsolatedStorageFile
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_IsolatedStorageFileStream
@@ -91207,6 +91420,15 @@ INormalizeForIsolatedStorageDispT<T>::Normalize(void)
   return pRetVal;
 }
 
+// *********************************************************************//
+// SmartIntf: TCOM_IsolatedStorageFile
+// Interface: _IsolatedStorageFile
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _IsolatedStorageFile
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {6BBB7DEE-186F-3D51-9486-BE0A71E915CE}
+// *********************************************************************//
 // *********************************************************************//
 // DispIntf:  ISoapMessage
 // Flags:     (4416) Dual OleAutomation Dispatchable
@@ -92149,6 +92371,15 @@ ICryptoTransformDispT<T>::TransformFinalBlock(LPSAFEARRAY inputBuffer/*[in]*/,
 // GUID:      {2C65D4C0-584C-3E4E-8E6D-1AFB112BFF69}
 // *********************************************************************//
 // *********************************************************************//
+// SmartIntf: TCOM_SymmetricAlgorithm
+// Interface: _SymmetricAlgorithm
+// *********************************************************************//
+// *********************************************************************//
+// DispIntf:  _SymmetricAlgorithm
+// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
+// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
+// *********************************************************************//
+// *********************************************************************//
 // SmartIntf: TCOM_AsymmetricAlgorithm
 // Interface: _AsymmetricAlgorithm
 // *********************************************************************//
@@ -92246,15 +92477,6 @@ ICryptoTransformDispT<T>::TransformFinalBlock(LPSAFEARRAY inputBuffer/*[in]*/,
 // DispIntf:  _CryptoStream
 // Flags:     (4432) Hidden Dual OleAutomation Dispatchable
 // GUID:      {4134F762-D0EC-3210-93C0-DE4F443D5669}
-// *********************************************************************//
-// *********************************************************************//
-// SmartIntf: TCOM_SymmetricAlgorithm
-// Interface: _SymmetricAlgorithm
-// *********************************************************************//
-// *********************************************************************//
-// DispIntf:  _SymmetricAlgorithm
-// Flags:     (4432) Hidden Dual OleAutomation Dispatchable
-// GUID:      {05BC0E38-7136-3825-9E34-26C1CF2142C9}
 // *********************************************************************//
 // *********************************************************************//
 // SmartIntf: TCOM_DES
@@ -93034,13 +93256,6 @@ typedef TCoClassCreatorT<TCOM_Object, _Object, &CLSID_CLRObject, &IID__Object> C
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : CLRArray
-// Interface: TCOM_Array
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Array, _Array, &CLSID_CLRArray, &IID__Array> CoCLRArray;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : ValueType
 // Interface: TCOM_ValueType
 // *********************************************************************//
@@ -93052,6 +93267,27 @@ typedef TCoClassCreatorT<TCOM_ValueType, _ValueType, &CLSID_ValueType, &IID__Val
 // Interface: TCOM_Enum
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_Enum, _Enum, &CLSID_CLREnum, &IID__Enum> CoCLREnum;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : Delegate
+// Interface: TCOM_Delegate
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_Delegate, _Delegate, &CLSID_Delegate, &IID__Delegate> CoDelegate;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : MulticastDelegate
+// Interface: TCOM_MulticastDelegate
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_MulticastDelegate, _MulticastDelegate, &CLSID_MulticastDelegate, &IID__MulticastDelegate> CoMulticastDelegate;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : CLRArray
+// Interface: TCOM_Array
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_Array, _Array, &CLSID_CLRArray, &IID__Array> CoCLRArray;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -93108,20 +93344,6 @@ typedef TCoClassCreatorT<TCOM_DataMisalignedException, _DataMisalignedException,
 // Interface: TCOM_ExecutionEngineException
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_ExecutionEngineException, _ExecutionEngineException, &CLSID_ExecutionEngineException, &IID__ExecutionEngineException> CoExecutionEngineException;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Delegate
-// Interface: TCOM_Delegate
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Delegate, _Delegate, &CLSID_Delegate, &IID__Delegate> CoDelegate;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : MulticastDelegate
-// Interface: TCOM_MulticastDelegate
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_MulticastDelegate, _MulticastDelegate, &CLSID_MulticastDelegate, &IID__MulticastDelegate> CoMulticastDelegate;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -93227,6 +93449,13 @@ typedef TCoClassCreatorT<TCOM_LoaderOptimizationAttribute, _LoaderOptimizationAt
 // Interface: TCOM_AppDomainUnloadedException
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_AppDomainUnloadedException, _AppDomainUnloadedException, &CLSID_AppDomainUnloadedException, &IID__AppDomainUnloadedException> CoAppDomainUnloadedException;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : EvidenceBase
+// Interface: TCOM_EvidenceBase
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_EvidenceBase, _EvidenceBase, &CLSID_EvidenceBase, &IID__EvidenceBase> CoEvidenceBase;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -93629,6 +93858,20 @@ typedef TCoClassCreatorT<TCOM_SerializableAttribute, _SerializableAttribute, &CL
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : STAThreadAttribute
+// Interface: TCOM_STAThreadAttribute
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_STAThreadAttribute, _STAThreadAttribute, &CLSID_STAThreadAttribute, &IID__STAThreadAttribute> CoSTAThreadAttribute;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : MTAThreadAttribute
+// Interface: TCOM_MTAThreadAttribute
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_MTAThreadAttribute, _MTAThreadAttribute, &CLSID_MTAThreadAttribute, &IID__MTAThreadAttribute> CoMTAThreadAttribute;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : TimeoutException
 // Interface: TCOM_TimeoutException
 // *********************************************************************//
@@ -93832,34 +94075,6 @@ typedef TCoClassCreatorT<TCOM_Timer, _Timer, &CLSID_Timer, &IID__Timer> CoTimer;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : STAThreadAttribute
-// Interface: TCOM_STAThreadAttribute
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_STAThreadAttribute, _STAThreadAttribute, &CLSID_STAThreadAttribute, &IID__STAThreadAttribute> CoSTAThreadAttribute;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : MTAThreadAttribute
-// Interface: TCOM_MTAThreadAttribute
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_MTAThreadAttribute, _MTAThreadAttribute, &CLSID_MTAThreadAttribute, &IID__MTAThreadAttribute> CoMTAThreadAttribute;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : ArrayList
-// Interface: TCOM_ArrayList
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_ArrayList, _ArrayList, &CLSID_ArrayList, &IID__ArrayList> CoArrayList;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : BitArray
-// Interface: TCOM_BitArray
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_BitArray, _BitArray, &CLSID_BitArray, &IID__BitArray> CoBitArray;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : CaseInsensitiveComparer
 // Interface: TCOM_CaseInsensitiveComparer
 // *********************************************************************//
@@ -93881,31 +94096,10 @@ typedef TCoClassCreatorT<TCOM_CollectionBase, _CollectionBase, &CLSID_Collection
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Comparer
-// Interface: TCOM_Comparer
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Comparer, _Comparer, &CLSID_Comparer, &IID__Comparer> CoComparer;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : DictionaryBase
 // Interface: TCOM_DictionaryBase
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_DictionaryBase, _DictionaryBase, &CLSID_DictionaryBase, &IID__DictionaryBase> CoDictionaryBase;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Hashtable
-// Interface: TCOM_Hashtable
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Hashtable, _Hashtable, &CLSID_Hashtable, &IID__Hashtable> CoHashtable;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Queue
-// Interface: TCOM_Queue
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Queue, _Queue, &CLSID_Queue, &IID__Queue> CoQueue;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -93916,10 +94110,24 @@ typedef TCoClassCreatorT<TCOM_ReadOnlyCollectionBase, _ReadOnlyCollectionBase, &
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : SortedList
-// Interface: TCOM_SortedList
+// CoClass  : Queue
+// Interface: TCOM_Queue
 // *********************************************************************//
-typedef TCoClassCreatorT<TCOM_SortedList, _SortedList, &CLSID_SortedList, &IID__SortedList> CoSortedList;
+typedef TCoClassCreatorT<TCOM_Queue, _Queue, &CLSID_Queue, &IID__Queue> CoQueue;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : ArrayList
+// Interface: TCOM_ArrayList
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_ArrayList, _ArrayList, &CLSID_ArrayList, &IID__ArrayList> CoArrayList;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : BitArray
+// Interface: TCOM_BitArray
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_BitArray, _BitArray, &CLSID_BitArray, &IID__BitArray> CoBitArray;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -93927,6 +94135,27 @@ typedef TCoClassCreatorT<TCOM_SortedList, _SortedList, &CLSID_SortedList, &IID__
 // Interface: TCOM_Stack
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_Stack, _Stack, &CLSID_Stack, &IID__Stack> CoStack;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : Comparer
+// Interface: TCOM_Comparer
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_Comparer, _Comparer, &CLSID_Comparer, &IID__Comparer> CoComparer;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : Hashtable
+// Interface: TCOM_Hashtable
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_Hashtable, _Hashtable, &CLSID_Hashtable, &IID__Hashtable> CoHashtable;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : SortedList
+// Interface: TCOM_SortedList
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_SortedList, _SortedList, &CLSID_SortedList, &IID__SortedList> CoSortedList;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -94336,13 +94565,6 @@ typedef TCoClassCreatorT<TCOM_TypeFilter, _TypeFilter, &CLSID_TypeFilter, &IID__
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Formatter
-// Interface: TCOM_Formatter
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Formatter, _Formatter, &CLSID_Formatter, &IID__Formatter> CoFormatter;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : FormatterConverter
 // Interface: TCOM_FormatterConverter
 // *********************************************************************//
@@ -94354,20 +94576,6 @@ typedef TCoClassCreatorT<TCOM_FormatterConverter, _FormatterConverter, &CLSID_Fo
 // Interface: TCOM_FormatterServices
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_FormatterServices, _FormatterServices, &CLSID_FormatterServices, &IID__FormatterServices> CoFormatterServices;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : ObjectIDGenerator
-// Interface: TCOM_ObjectIDGenerator
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_ObjectIDGenerator, _ObjectIDGenerator, &CLSID_ObjectIDGenerator, &IID__ObjectIDGenerator> CoObjectIDGenerator;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : ObjectManager
-// Interface: TCOM_ObjectManager
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_ObjectManager, _ObjectManager, &CLSID_ObjectManager, &IID__ObjectManager> CoObjectManager;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -94413,6 +94621,13 @@ typedef TCoClassCreatorT<TCOM_SerializationBinder, _SerializationBinder, &CLSID_
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : SerializationException
+// Interface: TCOM_SerializationException
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_SerializationException, _SerializationException, &CLSID_SerializationException, &IID__SerializationException> CoSerializationException;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : SerializationInfo
 // Interface: TCOM_SerializationInfo
 // *********************************************************************//
@@ -94427,10 +94642,24 @@ typedef TCoClassCreatorT<TCOM_SerializationInfoEnumerator, _SerializationInfoEnu
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : SerializationException
-// Interface: TCOM_SerializationException
+// CoClass  : Formatter
+// Interface: TCOM_Formatter
 // *********************************************************************//
-typedef TCoClassCreatorT<TCOM_SerializationException, _SerializationException, &CLSID_SerializationException, &IID__SerializationException> CoSerializationException;
+typedef TCoClassCreatorT<TCOM_Formatter, _Formatter, &CLSID_Formatter, &IID__Formatter> CoFormatter;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : ObjectIDGenerator
+// Interface: TCOM_ObjectIDGenerator
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_ObjectIDGenerator, _ObjectIDGenerator, &CLSID_ObjectIDGenerator, &IID__ObjectIDGenerator> CoObjectIDGenerator;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : ObjectManager
+// Interface: TCOM_ObjectManager
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_ObjectManager, _ObjectManager, &CLSID_ObjectManager, &IID__ObjectManager> CoObjectManager;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -94448,13 +94677,6 @@ typedef TCoClassCreatorT<TCOM_Calendar, _Calendar, &CLSID_Calendar, &IID__Calend
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : EastAsianLunisolarCalendar
-// Interface: TCOM_EastAsianLunisolarCalendar
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_EastAsianLunisolarCalendar, _EastAsianLunisolarCalendar, &CLSID_EastAsianLunisolarCalendar, &IID__EastAsianLunisolarCalendar> CoEastAsianLunisolarCalendar;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : CompareInfo
 // Interface: TCOM_CompareInfo
 // *********************************************************************//
@@ -94466,6 +94688,13 @@ typedef TCoClassCreatorT<TCOM_CompareInfo, _CompareInfo, &CLSID_CompareInfo, &II
 // Interface: TCOM_CultureInfo
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_CultureInfo, _CultureInfo, &CLSID_CultureInfo, &IID__CultureInfo> CoCultureInfo;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : CultureNotFoundException
+// Interface: TCOM_CultureNotFoundException
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_CultureNotFoundException, _CultureNotFoundException, &CLSID_CultureNotFoundException, &IID__CultureNotFoundException> CoCultureNotFoundException;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -94504,10 +94733,10 @@ typedef TCoClassCreatorT<TCOM_HijriCalendar, _HijriCalendar, &CLSID_HijriCalenda
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : JapaneseCalendar
-// Interface: TCOM_JapaneseCalendar
+// CoClass  : EastAsianLunisolarCalendar
+// Interface: TCOM_EastAsianLunisolarCalendar
 // *********************************************************************//
-typedef TCoClassCreatorT<TCOM_JapaneseCalendar, _JapaneseCalendar, &CLSID_JapaneseCalendar, &IID__JapaneseCalendar> CoJapaneseCalendar;
+typedef TCoClassCreatorT<TCOM_EastAsianLunisolarCalendar, _EastAsianLunisolarCalendar, &CLSID_EastAsianLunisolarCalendar, &IID__EastAsianLunisolarCalendar> CoEastAsianLunisolarCalendar;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -94515,6 +94744,13 @@ typedef TCoClassCreatorT<TCOM_JapaneseCalendar, _JapaneseCalendar, &CLSID_Japane
 // Interface: TCOM_JulianCalendar
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_JulianCalendar, _JulianCalendar, &CLSID_JulianCalendar, &IID__JulianCalendar> CoJulianCalendar;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : JapaneseCalendar
+// Interface: TCOM_JapaneseCalendar
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_JapaneseCalendar, _JapaneseCalendar, &CLSID_JapaneseCalendar, &IID__JapaneseCalendar> CoJapaneseCalendar;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -96065,20 +96301,6 @@ typedef TCoClassCreatorT<TCOM_AsyncResult, _AsyncResult, &CLSID_AsyncResult, &II
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : CallContext
-// Interface: TCOM_CallContext
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_CallContext, _CallContext, &CLSID_CallContext, &IID__CallContext> CoCallContext;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : LogicalCallContext
-// Interface: TCOM_LogicalCallContext
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_LogicalCallContext, _LogicalCallContext, &CLSID_LogicalCallContext, &IID__LogicalCallContext> CoLogicalCallContext;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : ChannelServices
 // Interface: TCOM_ChannelServices
 // *********************************************************************//
@@ -96132,20 +96354,6 @@ typedef TCoClassCreatorT<TCOM_ContextProperty, _ContextProperty, &CLSID_ContextP
 // Interface: TCOM_EnterpriseServicesHelper
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_EnterpriseServicesHelper, _EnterpriseServicesHelper, &CLSID_EnterpriseServicesHelper, &IID__EnterpriseServicesHelper> CoEnterpriseServicesHelper;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : Header
-// Interface: TCOM_Header
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_Header, _Header, &CLSID_Header, &IID__Header> CoHeader;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : HeaderHandler
-// Interface: TCOM_HeaderHandler
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_HeaderHandler, _HeaderHandler, &CLSID_HeaderHandler, &IID__HeaderHandler> CoHeaderHandler;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -96251,13 +96459,6 @@ typedef TCoClassCreatorT<TCOM_MethodCallMessageWrapper, _MethodCallMessageWrappe
 // Interface: TCOM_MethodReturnMessageWrapper
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_MethodReturnMessageWrapper, _MethodReturnMessageWrapper, &CLSID_MethodReturnMessageWrapper, &IID__MethodReturnMessageWrapper> CoMethodReturnMessageWrapper;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : ObjectHandle
-// Interface: TCOM_ObjectHandle
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_ObjectHandle, _ObjectHandle, &CLSID_ObjectHandle, &IID__ObjectHandle> CoObjectHandle;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -96660,17 +96861,45 @@ typedef TCoClassCreatorT<TCOM_UrlAttribute, _UrlAttribute, &CLSID_UrlAttribute, 
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : Header
+// Interface: TCOM_Header
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_Header, _Header, &CLSID_Header, &IID__Header> CoHeader;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : HeaderHandler
+// Interface: TCOM_HeaderHandler
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_HeaderHandler, _HeaderHandler, &CLSID_HeaderHandler, &IID__HeaderHandler> CoHeaderHandler;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : CallContext
+// Interface: TCOM_CallContext
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_CallContext, _CallContext, &CLSID_CallContext, &IID__CallContext> CoCallContext;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : LogicalCallContext
+// Interface: TCOM_LogicalCallContext
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_LogicalCallContext, _LogicalCallContext, &CLSID_LogicalCallContext, &IID__LogicalCallContext> CoLogicalCallContext;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : ObjectHandle
+// Interface: TCOM_ObjectHandle
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_ObjectHandle, _ObjectHandle, &CLSID_ObjectHandle, &IID__ObjectHandle> CoObjectHandle;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : IsolatedStorage
 // Interface: TCOM_IsolatedStorage
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_IsolatedStorage, _IsolatedStorage, &CLSID_IsolatedStorage, &IID__IsolatedStorage> CoIsolatedStorage;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : IsolatedStorageFile
-// Interface: TCOM_IsolatedStorageFile
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_IsolatedStorageFile, _IsolatedStorageFile, &CLSID_IsolatedStorageFile, &IID__IsolatedStorageFile> CoIsolatedStorageFile;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -96685,6 +96914,13 @@ typedef TCoClassCreatorT<TCOM_IsolatedStorageFileStream, _IsolatedStorageFileStr
 // Interface: TCOM_IsolatedStorageException
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_IsolatedStorageException, _IsolatedStorageException, &CLSID_IsolatedStorageException, &IID__IsolatedStorageException> CoIsolatedStorageException;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : IsolatedStorageFile
+// Interface: TCOM_IsolatedStorageFile
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_IsolatedStorageFile, _IsolatedStorageFile, &CLSID_IsolatedStorageFile, &IID__IsolatedStorageFile> CoIsolatedStorageFile;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
@@ -96800,6 +97036,13 @@ typedef TCoClassCreatorT<TCOM_RNGCryptoServiceProvider, _RNGCryptoServiceProvide
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR
+// CoClass  : SymmetricAlgorithm
+// Interface: TCOM_SymmetricAlgorithm
+// *********************************************************************//
+typedef TCoClassCreatorT<TCOM_SymmetricAlgorithm, _SymmetricAlgorithm, &CLSID_SymmetricAlgorithm, &IID__SymmetricAlgorithm> CoSymmetricAlgorithm;
+
+// *********************************************************************//
+// COCLASS DEFAULT INTERFACE CREATOR
 // CoClass  : AsymmetricAlgorithm
 // Interface: TCOM_AsymmetricAlgorithm
 // *********************************************************************//
@@ -96874,13 +97117,6 @@ typedef TCoClassCreatorT<TCOM_CryptoConfig, _CryptoConfig, &CLSID_CryptoConfig, 
 // Interface: TCOM_CryptoStream
 // *********************************************************************//
 typedef TCoClassCreatorT<TCOM_CryptoStream, _CryptoStream, &CLSID_CryptoStream, &IID__CryptoStream> CoCryptoStream;
-
-// *********************************************************************//
-// COCLASS DEFAULT INTERFACE CREATOR
-// CoClass  : SymmetricAlgorithm
-// Interface: TCOM_SymmetricAlgorithm
-// *********************************************************************//
-typedef TCoClassCreatorT<TCOM_SymmetricAlgorithm, _SymmetricAlgorithm, &CLSID_SymmetricAlgorithm, &IID__SymmetricAlgorithm> CoSymmetricAlgorithm;
 
 // *********************************************************************//
 // COCLASS DEFAULT INTERFACE CREATOR

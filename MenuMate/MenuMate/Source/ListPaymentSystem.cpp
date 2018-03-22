@@ -3485,7 +3485,17 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
             PrintReceipt(RequestEFTPOSReceipt);
         }
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
-        fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+        UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+        if(responseMessage.Pos("OK") == 0)
+        {
+            MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
+            for(int i = 0; i < LastReceipt->Printouts->Count; i++)
+            {
+               ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
+            }
+            if(LastReceipt->Printouts->Count)
+                PrintReceipt(RequestEFTPOSReceipt);
+        } 
 
     }
     else

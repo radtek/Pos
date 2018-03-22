@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 22/03/2018 6:32:55 a.m. from Type Library described below.
+// File generated on 22/03/2018 8:40:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -20,7 +20,7 @@
 // HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
-//   (2) v2.0 mscorlib, (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb)
+//   (2) v2.4 mscorlib, (C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
 // ************************************************************************ //
 #ifndef   FiscalIntegration_TLBH
 #define   FiscalIntegration_TLBH
@@ -91,7 +91,7 @@ extern __declspec (package) const GUID CLSID_FiscalService;
 // *********************************************************************//
 // Forward declaration of types defined in TypeLibrary                    
 // *********************************************************************//
-interface DECLSPEC_UUID("{7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}") IFiscalLibrary;
+interface DECLSPEC_UUID("{F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}") IFiscalLibrary;
 typedef TComInterface<IFiscalLibrary, &DIID_IFiscalLibrary> IFiscalLibraryPtr;
 
 interface DECLSPEC_UUID("{FF1F61B0-AB19-3193-BA99-D9837AE38812}") _DiscountDetails;
@@ -140,7 +140,7 @@ typedef _FiscalServicePtr FiscalServicePtr;
 // *********************************************************************//
 // Interface: IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
+// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
 // *********************************************************************//
 interface IFiscalLibrary : public TDispWrapper<IDispatch>
 {
@@ -256,7 +256,7 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OlePropertyPut(_dispid, _args);
   }
 
-  long __fastcall PrintReceipt()
+  BSTR __fastcall PrintReceipt()
   {
     _TDispID _dispid(/* PrintReceipt */ DISPID(8));
     TAutoArgs<0> _args;
@@ -327,10 +327,12 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     OleProcedure(_dispid);
   }
 
-  void __fastcall PrintZReport()
+  BSTR __fastcall PrintZReport()
   {
     _TDispID _dispid(/* PrintZReport */ DISPID(18));
-    OleProcedure(_dispid);
+    TAutoArgs<0> _args;
+    OleFunction(_dispid, _args);
+    return _args.GetRetVariant();
   }
 
   BSTR __fastcall get_TerminalName()
@@ -427,6 +429,14 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     TAutoArgs<1> _args;
     _args[1] = Param1 /*[VT_BSTR:0]*/;
     OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR __fastcall CheckPrinterAvailable()
+  {
+    _TDispID _dispid(/* CheckPrinterAvailable */ DISPID(25));
+    TAutoArgs<0> _args;
+    OleFunction(_dispid, _args);
+    return _args.GetRetVariant();
   }
 
 
@@ -533,7 +543,7 @@ public:
 // *********************************************************************//
 // DispIntf:  IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
+// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
 // *********************************************************************//
 template<class T>
 class IFiscalLibraryDispT : public TAutoDriver<IFiscalLibrary>
@@ -587,7 +597,7 @@ public:
   void            __fastcall set_Cashier(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_Source();
   void            __fastcall set_Source(BSTR Param1/*[in]*/);
-  long            __fastcall PrintReceipt();
+  BSTR            __fastcall PrintReceipt();
   void            __fastcall LoadReceiptItemInfo(long identifier/*[in]*/, BSTR InvoiceNumber/*[in]*/);
   void            __fastcall LoadReceiptPaymentInfo(long identifier/*[in]*/, 
                                                     BSTR InvoiceNumber/*[in]*/);
@@ -599,7 +609,7 @@ public:
   void            __fastcall AddItemToList();
   void            __fastcall AddPaymentInfoToList();
   void            __fastcall AddDiscountInfoToList();
-  void            __fastcall PrintZReport();
+  BSTR            __fastcall PrintZReport();
   BSTR            __fastcall get_TerminalName();
   void            __fastcall set_TerminalName(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_PointPurchased();
@@ -612,6 +622,7 @@ public:
   void            __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_Saletype();
   void            __fastcall set_Saletype(BSTR Param1/*[in]*/);
+  BSTR            __fastcall CheckPrinterAvailable();
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -952,7 +963,7 @@ typedef _FiscalServiceDispT<_FiscalService> _FiscalServiceDisp;
 // *********************************************************************//
 // DispIntf:  IFiscalLibrary
 // Flags:     (4096) Dispatchable
-// GUID:      {7BB15282-5485-4DB3-B01E-BDC1EE2D5ED2}
+// GUID:      {F04DF0AA-C1D5-4F9E-95C8-61E6474899E2}
 // *********************************************************************//
 template <class T> BSTR __fastcall
 IFiscalLibraryDispT<T>::get_InvoiceNumber()
@@ -1080,7 +1091,7 @@ IFiscalLibraryDispT<T>::set_Source(BSTR Param1/*[in]*/)
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> long __fastcall
+template <class T> BSTR __fastcall
 IFiscalLibraryDispT<T>::PrintReceipt()
 {
   _TDispID _dispid(*this, OLETEXT("PrintReceipt"), DISPID(8));
@@ -1161,11 +1172,13 @@ IFiscalLibraryDispT<T>::AddDiscountInfoToList()
   OleProcedure(_dispid);
 }
 
-template <class T> void __fastcall
+template <class T> BSTR __fastcall
 IFiscalLibraryDispT<T>::PrintZReport()
 {
   _TDispID _dispid(*this, OLETEXT("PrintZReport"), DISPID(18));
-  OleProcedure(_dispid);
+  TAutoArgs<0> _args;
+  OleFunction(_dispid, _args);
+  return _args.GetRetVariant();
 }
 
 template <class T> BSTR __fastcall
@@ -1274,6 +1287,15 @@ IFiscalLibraryDispT<T>::set_Saletype(BSTR Param1/*[in]*/)
   TAutoArgs<1> _args;
   _args[1] = Param1 /*[VT_BSTR:0]*/;
   OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::CheckPrinterAvailable()
+{
+  _TDispID _dispid(*this, OLETEXT("CheckPrinterAvailable"), DISPID(25));
+  TAutoArgs<0> _args;
+  OleFunction(_dispid, _args);
+  return _args.GetRetVariant();
 }
 
 // *********************************************************************//

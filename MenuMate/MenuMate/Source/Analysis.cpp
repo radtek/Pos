@@ -9042,7 +9042,7 @@ void TfrmAnalysis::MakeZEDLogFile(TStringList *List)
 //-------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
 {
-    TFiscalPrinterResponse fiscalZReportResponse;
+    UnicodeString zPrinterResponse;
     try
     {
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
@@ -9050,6 +9050,6 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
     }
     catch(Exception & E)
     {
-       fiscalZReportResponse.ResponseMessage = "Exception found in FiscalPrinterSettlement()";
+       zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
 }

@@ -70,7 +70,7 @@ private:	// User declarations
 
 	Database::TDBControl &DBControl;
     std::vector<TTaxProfile> taxProfiles;
-
+    UnicodeString responseMessage;
     void loadTaxProfiles(TStrings* serviceChargeTaxList);
     int getTaxProfileIndexFromKey(int profileKey);
     void saveBoolSettingToDatabase(vmVariables vmVariable, bool value);

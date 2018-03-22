@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 22/03/2018 6:32:55 a.m. from Type Library described below.
+// File generated on 22/03/2018 8:40:08 p.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -20,7 +20,7 @@
 // HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
-//   (2) v2.0 mscorlib, (c:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\mscorlib.tlb)
+//   (2) v2.4 mscorlib, (C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\mscorlib.tlb)
 // ************************************************************************ //
 #ifndef   FiscalIntegration_OCXH
 #define   FiscalIntegration_OCXH
@@ -112,7 +112,7 @@ public:
   void            __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_Saletype(void);
   void            __fastcall set_Saletype(BSTR Param1/*[in]*/);
-  long            __fastcall PrintReceipt(void);
+  BSTR            __fastcall PrintReceipt(void);
   void            __fastcall LoadReceiptItemInfo(long identifier/*[in]*/, BSTR InvoiceNumber/*[in]*/);
   void            __fastcall LoadReceiptPaymentInfo(long identifier/*[in]*/, 
                                                     BSTR InvoiceNumber/*[in]*/);
@@ -124,7 +124,8 @@ public:
   void            __fastcall AddItemToList(void);
   void            __fastcall AddPaymentInfoToList(void);
   void            __fastcall AddDiscountInfoToList(void);
-  void            __fastcall PrintZReport(void);
+  BSTR            __fastcall PrintZReport(void);
+  BSTR            __fastcall CheckPrinterAvailable(void);
   __property BSTR InvoiceNumber={ read=get_InvoiceNumber, write=set_InvoiceNumber, stored=false };
   __property BSTR Date={ read=get_Date, write=set_Date, stored=false };
   __property BSTR Time={ read=get_Time, write=set_Time, stored=false };
