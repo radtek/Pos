@@ -122,11 +122,13 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
             if(responseMessage.Pos("OK") == 0)
             {
                 MessageBox("Set The Fiscal Printer first","Error",MB_ICONERROR + MB_OK);
+                TGlobalSettings::Instance().UseItalyFiscalPrinter = false;
+                Database::TDBTransaction DBTransaction(DBControl);
+                DBTransaction.StartTransaction();
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+                DBTransaction.Commit();
             }
-            else
-            {
-                Close();
-            }
+            Close();
         }
         else
         {
