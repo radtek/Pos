@@ -3479,9 +3479,13 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
     {
-        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
-                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
-        {   
+//        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
+        if(CloseAndPrint ||
+            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && Receipt->PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && Receipt->PrintSignatureWithDiscountSales))
+            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
+                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
+        {
             PrintReceipt(RequestEFTPOSReceipt);
         }
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
