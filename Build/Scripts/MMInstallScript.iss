@@ -57,7 +57,6 @@ Source: {#GetEnv('BASEDIR')}\Runtime\MenuMate.exe; DestDir: {app}; Flags: ignore
 Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Printers.dat; DestDir: {app}; Flags: ignoreversion
@@ -74,6 +73,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\UnzDLL.dll; DestDir: {app}; Flags: ign
 Source: {#GetEnv('BASEDIR')}\Static Files\ZipDll.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dbexpint.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.tlb; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.pdb; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
@@ -349,7 +352,6 @@ Name: {group}\MenuMate; Filename: {app}\MenuMate.exe; IconIndex: 0; Flags: creat
 Name: {group}\DeskMate; Filename: {app}\DeskMate.exe; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
 Name: {group}\PalmMate; Filename: {app}\PalmMate.exe; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
 Name: {group}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
-Name: {userdesktop}\Office Version 5; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\MenuMate; Filename: {app}\MenuMate.exe; Tasks: desktopicon; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}
 Name: {userdesktop}\DeskMate; Filename: {app}\DeskMate.exe; Tasks: desktopicon; IconIndex: 0; Flags: createonlyiffileexists; WorkingDir: {app}

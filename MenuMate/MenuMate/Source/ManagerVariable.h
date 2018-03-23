@@ -167,7 +167,7 @@ enum vmVariables
    vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
-    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate,
+    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,
 
    // MallExport ------------------------------------------------------------
     vmMallPath = 9000, vmMallIndex, vmTenantNo, vmMallLocation, vmClassCode, vmTradeCode, vmOutletCode, vmBranchCode,
@@ -220,7 +220,8 @@ enum vmVariables
     vmFiscalBaudRate, vmFiscalDataBits,vmFiscalStopBits,vmFiscalParityBits,
     vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,
     vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
-    vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate
+    vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
+    vmIsSiHotPostInProgress,vmIsOraclePostInProgress
 };
 
 // ---------------------------------------------------------------------------

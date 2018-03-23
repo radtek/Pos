@@ -451,7 +451,6 @@ void __fastcall TfrmReceiveStockItem::neCostChange(TObject *Sender)
 			Cost2 = Cost1 * (qrStock->FieldByName("GST_Percent")->AsFloat + 100) / 100;
 			Cost3 = Cost1 * neQty->Value;
 			Cost4 = Cost2 * neQty->Value;
-            neCost1->SelStart = ((AnsiString)neCost1->Value).Length();
 		}
 		else if (Sender == neCost2)
 		{

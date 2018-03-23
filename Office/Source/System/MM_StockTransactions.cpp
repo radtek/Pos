@@ -305,7 +305,7 @@ bool TStockTransaction::fCreateBatch(TTransactionBatchInfo& BatchInfo)
 		sqlCreateBatch->ParamByName("Export_2")->AsString			= BatchInfo.Export_2;
 		sqlCreateBatch->ParamByName("Export_3")->AsString			= BatchInfo.Export_3;
 		sqlCreateBatch->ParamByName("Order_Number")->AsString		= BatchInfo.Order_Number;
-		sqlCreateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? BatchInfo.Total_Cost : 0;
+		sqlCreateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? double(BatchInfo.Total_Cost) : 0;
 		sqlCreateBatch->ParamByName("Total_GST")->AsDouble			= BatchInfo.Total_GST;
 		sqlCreateBatch->ParamByName("Closed")->AsString				= BatchInfo.Closed?"T":"F";
 		sqlCreateBatch->ParamByName("Exported")->AsString			= BatchInfo.Exported?"T":"F";
@@ -337,7 +337,7 @@ bool TStockTransaction::fUpdateBatch(TTransactionBatchInfo& BatchInfo)
         case ttPackingSlip: sqlUpdateBatch->ParamByName("Transaction_Type")->AsString = "Packing Slip";     break;
 	}
 		sqlUpdateBatch->ParamByName("Batch_Key")->AsInteger 		= BatchInfo.BatchID;
-		sqlUpdateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? BatchInfo.Total_Cost : 0;
+		sqlUpdateBatch->ParamByName("Total_Cost")->AsDouble		    = BatchInfo.Total_Cost > -1000000 ? double(BatchInfo.Total_Cost) : 0;
 		sqlUpdateBatch->ParamByName("Total_GST")->AsDouble			= BatchInfo.Total_GST;
         sqlUpdateBatch->ParamByName("Reference")->AsString			= BatchInfo.Reference;
         sqlUpdateBatch->ParamByName("ISCOMMITTED_PACKINGSLIP")->AsString			= BatchInfo.ISCOMMITTED_PACKINGSLIP?"T":"F";
@@ -381,8 +381,8 @@ void TStockTransaction::fAddBatchTransaction(TTransactionInfo const& Transaction
 	sqlCreateTransaction->ParamByName("GL_Code")->AsString			= TransactionInfo.GL_Code;
 	sqlCreateTransaction->ParamByName("Qty")->AsDouble					= TransactionInfo.Qty;
 	sqlCreateTransaction->ParamByName("Unit")->AsString				= TransactionInfo.Unit;
-	sqlCreateTransaction->ParamByName("Unit_Cost")->AsCurrency		= TransactionInfo.Unit_Cost > -1000000 ? TransactionInfo.Unit_Cost : 0;;
-	sqlCreateTransaction->ParamByName("Total_Cost")->AsCurrency		= TransactionInfo.Total_Cost > -1000000 ? TransactionInfo.Total_Cost : 0; //cww
+	sqlCreateTransaction->ParamByName("Unit_Cost")->AsCurrency		= TransactionInfo.Unit_Cost > -1000000 ? double(TransactionInfo.Unit_Cost) : 0;;
+	sqlCreateTransaction->ParamByName("Total_Cost")->AsCurrency		= TransactionInfo.Total_Cost > -1000000 ? double(TransactionInfo.Total_Cost) : 0; //cww
 	sqlCreateTransaction->ParamByName("Location")->AsString			= TransactionInfo.Location;
 	sqlCreateTransaction->ParamByName("Purchaser_Name")->AsString	= TransactionInfo.Purchaser_Name;
  	sqlCreateTransaction->ParamByName("Order_Unit")->AsString		= TransactionInfo.Order_Unit;

@@ -1770,12 +1770,14 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 	qrWages->Close();
 	qrWages->SQL->Text =
 
- "select "
+   "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1807,7 +1809,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
-        
+
 
     if (Names && Names->Count > 0)
 	{
@@ -1818,14 +1820,16 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 
                             " ) "
 
-    "Union All "
+     "Union All "
 
         "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "Login_DateTime, "
-           "Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1855,6 +1859,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
 
+
     if (Names && Names->Count > 0)
 	{
 		qrWages->SQL->Text	=	qrWages->SQL->Text + "and (" +
@@ -1865,7 +1870,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                             " )"
 
                             "Order by "
-                                "9,2,4";
+                                "11,2,4";
 
 	if (Names)
 	{
@@ -1888,8 +1893,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+           "Cast(Logout_DateTime As Date) Logout_Date, "
+            "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
@@ -1902,8 +1909,9 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                         "C.Contact_Type, "
                         "C.Name, "
                         "C.Payroll_ID, "
-                        "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
+                          "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
+                        
                         "ct.Breaks, "
                         "ct.TOTALHOURS, "
                         "TCL.Name Department, "
@@ -1936,8 +1944,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Cast(Login_DateTime As Date) Login_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Login_DateTime) )  * 60) + (Extract (Hour From Login_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Login_Time, "
+            "Cast(Logout_DateTime As Date) Logout_Date, "
+           "Cast(Cast('12/30/1899' AS TIMESTAMP) + Cast(((Extract (Minute From Logout_DateTime) )  * 60) + (Extract (Hour From Logout_DateTime) * 60 * 60) As Double Precision) / 86400  as Time) Logout_Time, "
            "Breaks, "
            "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
@@ -1977,7 +1987,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                             " )"
 
                             "Order by "
-                                "2,9,4";
+                                "2,11,4";
 
 	if (Names)
 	{
@@ -6851,6 +6861,7 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
              "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0),2)))) as Numeric(17,4)) Total,    "
 		    "cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT),2)))as numeric(17, 2))  Discount,  "
             " cast(sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)),2))as numeric(17, 2))  AS DiscountTax ,  "
+
 			"cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE,2))) as numeric(17,4))DiscountAmount, "
 			"ARCBILL.ArcBill_Key,  "
 			"Cast(Archive.Size_Name As VarChar(30)) Size_Name, "
@@ -6865,7 +6876,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
               "cast ('' as varchar(25) )CategoryGroup, "
               "cast ('' as varchar(25) ) Category, "
               "cast (0 as numeric(15,4)) Quantity, "
-              "cast (0 as numeric(15,4)) Cost "
+              "cast (0 as numeric(15,4)) Cost, "
+              "cast ((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT),2))) + (sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)),2)))as numeric(17, 2)) AS TotalDiscount "
 		"From "
 			"Security Left Join ArcBill On "
 				"Security.Security_Ref = ArcBill.Security_Ref "
@@ -6951,6 +6963,7 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
             "  ))) as Numeric(17,4)) Total, "
 		    "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))as numeric(17, 2))  Discount,  "
             "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 2))  AS DiscountTax ,  "
+
 			"cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE)) as numeric(17,4))DiscountAmount, "
 			"DAYARCBILL.ArcBill_Key,  "
 			"Cast(DAYARCHIVE.Size_Name As VarChar(30)) Size_Name, "
@@ -6964,7 +6977,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
             "cast ('' as varchar(25) )CategoryGroup, "
             "cast ('' as varchar(25) ) Category, "
             "cast (0 as numeric(15,4)) Quantity, "
-            "cast (0 as numeric(15,4)) Cost "
+            "cast (0 as numeric(15,4)) Cost, "
+             "cast ((sum(round(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT),2))) + (sum(round(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)),2)))as numeric(17, 2)) AS TotalDiscount "
 
 		"From "
 			"Security Left Join DAYARCBILL On "
@@ -7223,7 +7237,8 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
 			"Menu.Menu_Type,"
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location, "
             "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Food_Menu_Total ,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total , "
+             "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)))+(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT))))as numeric(17, 4)) AS TotalDiscount "
         //    "Cast(0 as Numeric(17,4)) PriceTotalByLocation,  "
          //   "Cast( 0 as Numeric(17,4)) TotalByLocation "
 
@@ -7316,7 +7331,8 @@ if (Locations->Count)
 			"MENU.MENU_TYPE,  "
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,  "
             " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Food_Menu_Total , "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total  "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total ,  "
+            "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))+(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 4)) AS TotalDiscount "
            // "Cast(0 as Numeric(17,4)) PriceTotalByLocation,  "
           //  "Cast( 0 as Numeric(17,4)) TotalByLocation "
 		"From "
@@ -7497,14 +7513,15 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 			"Cast(Archive.Item_Name As VarChar(50)) Item_Name,"
 	 	  //   "Cast(((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)- coalesce(Archive.TAX_ON_DISCOUNT,0) )) as Numeric(17,4)) Price,  "
               "Cast(((round(coalesce (abs(Archive.QTY) * Archive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price,  "
-
-            "Cast(((abs(Archive.QTY) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))) as Numeric(17,4)) Total, "
-
+             "Cast((((abs(Archive.QTY) * coalesce(Archive.BASE_PRICE,0) +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)))) as Numeric(17,4)) Total, "
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location,"
 			"cast((Archive.Cost * Archive.Qty) as numeric(17, 2)) Cost,"
 			"Archive.Qty Quantity,"
 			"ArcCategories.Category,"
-			"CategoryGroups.Name CategoryGroup "
+			"CategoryGroups.Name CategoryGroup, "
+			"cast(round(Archive.DISCOUNT_WITHOUT_TAX,2)+ round(Archive.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
+
+
 		"From "
 			" ArcBill  "
 				"Left Join (	SELECT  a.SECURITY_REF, a.SECURITY_EVENT, a.FROM_VAL FROM SECURITY a where a.SECURITY_EVENT='Discounted By') SECURITY "
@@ -7565,14 +7582,15 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
        //     "Cast(((DayArchive.QTY * DayArchive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0) - coalesce(DayArchive.TAX_ON_DISCOUNT,0))) as Numeric(17,4)) Price, "
 
             "Cast(((round(coalesce (DayArchive.QTY * DAYARCHIVE.PRICE_INCL,0),2) )) as Numeric(17,4)) Price,  "
-             " Cast(((abs(DayArchive.QTY) * DAYARCHIVE.BASE_PRICE  +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0))) as Numeric(17,4)) Total, "
-
+             "Cast((((abs(DayArchive.QTY) * coalesce(DayArchive.BASE_PRICE,0) +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)))) as Numeric(17,4)) Total, "
 
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,"
 			"cast((DayArchive.Cost * DayArchive.Qty) as numeric(17, 2)) Cost,"
 			"DayArchive.Qty Quantity,"
 			"ArcCategories.Category,"
-			"CategoryGroups.Name CategoryGroup "
+			"CategoryGroups.Name CategoryGroup, "
+            "cast(round(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,2)+ round(DAYARCHIVE.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
+
 		"From "
 			" DayArcBill  "
 				"Left Join (	SELECT  a.SECURITY_REF, a.SECURITY_EVENT, a.FROM_VAL FROM SECURITY a where a.SECURITY_EVENT='Discounted By') SECURITY "
@@ -7624,7 +7642,8 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 	}
 	qrDiscounts->SQL->Text        = qrDiscounts->SQL->Text +
 		"Order By "
-			"7, 11, 10, 4, 3";
+		"8,12,11,5" ;
+        
 	for (int i=0; i<Discounts->Count; i++)
 	{
 		qrDiscounts->ParamByName("DiscParam" + IntToStr(i))->AsString = Discounts->Strings[i];

@@ -65,6 +65,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     WalletPassword = "";
     WalletSecurityToken = "";
     WalletQrCode = "";
+    CSVString = "";
 }
 
 void TPayment:: operator = (const TPayment & Data)

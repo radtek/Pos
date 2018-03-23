@@ -70,6 +70,8 @@
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
 #include "ManagerSiHot.h"
+#include "ManagerOraclePMS.h"
+#include "FiscalPrinterAdapter.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -971,15 +973,19 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		    TDeviceRealTerminal::Instance().ProcessingController.Pop();
         }
 		OnAfterTransactionComplete.Occured();
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 	}
 	catch(Exception & E)
 	{
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+          TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
 		throw;
 	}
-
 	Busy = false;
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
@@ -1347,7 +1353,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction)
 {
 	bool RetVal = false;
-
 	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
@@ -2903,10 +2908,21 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 						Csv.LoadFromFile(File);
 					}
 
-					Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
-					Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
-					(Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+                    if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
+                    {
+                        char * storedataformat = Formatdateseparator(Now().FormatString("dd/mm/yyyy")) ;
+                        Csv.Add((Payment->CSVString) + "," + storedataformat + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffFixed, 15, 2));
 
+                        delete storedataformat;
+                    }
+                    else
+                    {
+                        Csv.Add(IntToStr(Payment->CSVNumber) + "," + FormatDateTime("ddmmyyyy", Date()) + "," + FormatDateTime("hh:nn",
+                        Now()) + "," + PaymentTransaction.InvoiceNumber + "," + FloatToStrF
+                        (Payment->GetPay() + Payment->GetCashOut() + Payment->GetAdjustment(), ffCurrency, 15, 2));
+                    }
 					Csv.SaveToFile(File);
 				}
 				__finally
@@ -3461,35 +3477,71 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-	if (PaymentTransaction.Type == eTransQuickSale)
-	{
-		if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    {
+//        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
+//        if(CloseAndPrint ||
+//            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
+//                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
+        if(CloseAndPrint ||
+            ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
+																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
+																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
+
+
+            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
+                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
+        {
             PrintReceipt(RequestEFTPOSReceipt);
-		}
-	}
-	else
-	{
-		if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
-			PrintReceipt(RequestEFTPOSReceipt);
-		}
-		else
-		{
-			if (CloseAndPrint)
-			{
-				PrintReceipt(RequestEFTPOSReceipt);
-			}
-			else
-			{
-				// Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
-		}
-	}
+        }
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+        if(responseMessage.Pos("OK") == 0)
+        {
+            MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
+            for(int i = 0; i < LastReceipt->Printouts->Count; i++)
+            {
+               ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
+            }
+            if(LastReceipt->Printouts->Count)
+                PrintReceipt(RequestEFTPOSReceipt);
+        } 
+
+    }
+    else
+    {
+        if (PaymentTransaction.Type == eTransQuickSale)
+        {
+            if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+        }
+        else
+        {
+            if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+            else
+            {
+                if (CloseAndPrint)
+                {
+                    PrintReceipt(RequestEFTPOSReceipt);
+                }
+                else
+                {
+                    // Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
+                    if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+                    {
+                        LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void TListPaymentSystem::RemoveOrders(TPaymentTransaction &PaymentTransaction)
@@ -3565,19 +3617,26 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
           else
           {
               PhoenixHSOk = false;
-              for(int paymentIndex = 0; paymentIndex < PaymentTransaction.PaymentsCount(); paymentIndex++)
-              {
-                  TPayment *payment = PaymentTransaction.PaymentGet(paymentIndex);
-                  if(payment->GetPay() != 0)
-                  {
-                    payment->SetPay(0);
-                    payment->SetAdjustment(0);
-                    payment->SetCashOut(0);
-                    payment->Result = eFailed;
-                  }
-              }
+              ResetPayments(PaymentTransaction);
           }
         }
+    }
+    else if(IsOracleConfigured())
+    {
+        bool isOracleEnabled = TryToEnableOracle();
+        if(isOracleEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              ResetPayments(PaymentTransaction);
+          }
+        }
+
     }
 	if(!PhoenixHSOk)
 	   return RetVal;
@@ -6400,6 +6459,7 @@ void TListPaymentSystem::InsertMezzanineSales(TPaymentTransaction &paymentTransa
         throw;
     }
 }
+//----------------------------------------------------------------------------
 bool TListPaymentSystem::TryToEnableSiHot()
 {
     bool retValue = false;
@@ -6416,6 +6476,32 @@ bool TListPaymentSystem::TryToEnableSiHot()
         retValue = false;
     }
     return retValue;
+}
+//--------------------------------------------------------------------------
+bool TListPaymentSystem::IsOracleConfigured()
+{
+    return (TGlobalSettings::Instance().PMSType == Oracle &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->Slots.size() > 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.size() > 0 &&
+        (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
+        (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
+        (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL));
+}
+//---------------------------------------------------------------------------
+void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
+{
+  for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+  {
+      TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+      if(payment->GetPay() != 0)
+      {
+        payment->SetPay(0);
+        payment->SetAdjustment(0);
+        payment->SetCashOut(0);
+        payment->Result = eFailed;
+      }
+  }
 }
 //------------------------------------------------------------------------------------------
 void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
@@ -6461,3 +6547,64 @@ bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransa
     }
     return false;
 }
+//-------------------------------------------------------------------------------------------
+char* TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
+{
+     char *storedate;
+     AnsiString Dateformat(dateformat);
+     storedate = new char[Dateformat.Length()+1];
+     strcpy(storedate,Dateformat.c_str() ) ;
+     int count = 0;
+     while(storedate[count] != '\0')
+     {
+        if(storedate[count] == '-')
+        {
+            storedate[count] = '/' ;
+        }
+        count++;
+     }
+     return storedate;
+}
+
+
+//----------------------------------------------------------------------------
+bool TListPaymentSystem::TryToEnableOracle()
+{
+    bool retValue = false;
+    try
+    {
+        std::auto_ptr<TManagerOraclePMS> oracleManager(new TManagerOraclePMS());
+        oracleManager->LogPMSEnabling(eSelf);
+        retValue = oracleManager->EnableOraclePMSSilently();
+        if(retValue)
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
+    }
+    catch(Exception &Exc)
+    {
+        retValue = false;
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+        else if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}
+//--------------------------------------------------------------------------------------
