@@ -41,7 +41,7 @@ protected:
    END_MESSAGE_MAP(TComponent)
 private:	// User declarations
 	void __fastcall BtnExeClick(TObject *Sender);
-	std::map<AnsiString,TFunctionEvent> Buttons;
+
 	__fastcall TfrmDropDownFunc(TComponent* Owner);
 	bool CreateCancel;
 	void CreateCancelBtn();
@@ -50,6 +50,7 @@ public:		// User declarations
 	void Clear();
 	void AddButton(AnsiString ButtonName,TFunctionEvent FunctionToCall);
 	void RemoveCancelBtn(){CreateCancel = false;}
+    std::map<AnsiString,TFunctionEvent> Buttons;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmDropDownFunc *frmDropDownFunc;

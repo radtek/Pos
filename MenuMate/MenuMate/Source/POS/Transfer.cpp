@@ -1489,6 +1489,7 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
    {
       TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
    }
+   //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
    
 }
 //----------------------------------------------------------------------------
@@ -3494,6 +3495,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 				  {
 					 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
 				  }
+                  //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
 			}
 		 }
         if(CheckToOverwriteSourceStatus(DBTransaction,true))
