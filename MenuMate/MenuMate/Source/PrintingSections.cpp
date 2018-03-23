@@ -9133,7 +9133,7 @@ void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
 {
-    if(TGlobalSettings::Instance().PMSType == Oracle && IsRoomPayment(PrintJob))
+	if(TGlobalSettings::Instance().PMSType == Oracle && IsRoomPayment(PrintJob))
     {
         PrintJob->Transaction->Customer.Name = PrintJob->Transaction->PMSClientDetails.FirstName + " " + PrintJob->Transaction->PMSClientDetails.LastName;
         PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->PMSClientDetails.RoomNumber;

@@ -521,7 +521,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			TempReceipt->PaymentType = ptPreliminary;
 			Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
 			TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-                        ReceiptTransaction.DeleteOrders();
+            ReceiptTransaction.DeleteOrders();
 
 			DBTransaction.Commit();
             if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""

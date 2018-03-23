@@ -3351,6 +3351,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction, vmIsOraclePostInProgress, "Shows status of posting",
 		"Gets true while posting to Oracle ",
 		vmgPOS, false);
+
+        SetVarBool(DBTransaction, vmUseItalyFiscalPrinter,"Use Italy Fiscal Printer", "This setting will print receipt to fiscal printer", vmgTax, false);
+        SetVarStr(DBTransaction, vmFPPrinterType, "Fiscal Printer Type",  "Fiscal Printer Name", vmgTax, "FiscalPrinter");
+        SetVarStr(DBTransaction, vmFPPrinterLogicalName,  "Logical Name", "Fiscal Printer Logical Name", vmgTax, "EpsonFP1");
 	}
 	catch(Exception &E)
 	{
