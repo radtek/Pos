@@ -6,6 +6,8 @@
 #include "TaxMaintenance.h"
 #include "GlobalSettings.h"
 #include "MMMessageBox.h"
+#include "MMTouchKeyboard.h"
+#include "FiscalPrinterAdapter.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -16,6 +18,7 @@
 __fastcall TfrmTaxMaintenance::TfrmTaxMaintenance(TComponent* Owner, Database::TDBControl &inDBControl)
     : TZForm(Owner), DBControl(inDBControl)
 {
+    responseMessage = "";
 }
 //---------------------------------------------------------------------------
 
@@ -56,6 +59,17 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
     {
         cbTaxProfileRounding->Enabled = true;
         cbTaxProfileRounding->ItemIndex = getTaxProfileIndexFromKey(TGlobalSettings::Instance().RoundingTaxProfileKey);
+    }
+    cbUseItalyFiscalPrinter->OnClick = NULL;
+    //edPrinterName->OnClick = NULL;
+    cbUseItalyFiscalPrinter->Checked = TGlobalSettings::Instance().UseItalyFiscalPrinter;
+    cbUseItalyFiscalPrinter->OnClick =  cbUseItalyFiscalPrinterClick;
+    edPrinterName->Text = TGlobalSettings::Instance().PrinterType;
+    edLogicalName->Text = TGlobalSettings::Instance().PrinterlogicalName;
+    if(cbUseItalyFiscalPrinter->Checked)
+    {
+        edPrinterName->Enabled = true;
+        edLogicalName->Enabled = true;
     }
 }
 //---------------------------------------------------------------------------
@@ -100,6 +114,21 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
         if(cbApplyTaxToRounding->Checked && cbTaxProfileRounding->ItemIndex == -1)
         {
             MessageBox("Rounding tax must be selected.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+        {
+            std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+            responseMessage = fiscalAdapter->GetFiscalPrinterStatus();
+            if(responseMessage.Pos("OK") == 0)
+            {
+                MessageBox("Set The Fiscal Printer first","Error",MB_ICONERROR + MB_OK);
+                TGlobalSettings::Instance().UseItalyFiscalPrinter = false;
+                Database::TDBTransaction DBTransaction(DBControl);
+                DBTransaction.StartTransaction();
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+                DBTransaction.Commit();
+            }
+            Close();
         }
         else
         {
@@ -243,9 +272,9 @@ void TfrmTaxMaintenance::ReadVariablesFromDatabase()
         int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
         if(GlobalProfileKey != 0)
         {
-            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,              TGlobalSettings::Instance().ApplyRoundingTax);
-            TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,         TGlobalSettings::Instance().RoundingTaxProfileKey);
-            TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,                   TGlobalSettings::Instance().ApplyRoundingTax);
+            TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,              TGlobalSettings::Instance().RoundingTaxProfileKey);
+            TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,                    TGlobalSettings::Instance().RoundingTaxRate);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyServiceChargeTax,              TGlobalSettings::Instance().ApplyServiceChargeTax);
             TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmServiceChargeTaxProfileKey,         TGlobalSettings::Instance().ServiceChargeTaxProfileKey);
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               TGlobalSettings::Instance().ServiceChargeTaxRate);
@@ -253,7 +282,7 @@ void TfrmTaxMaintenance::ReadVariablesFromDatabase()
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmItemPriceIncludeServiceCharge,      TGlobalSettings::Instance().ItemPriceIncludeServiceCharge);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateTaxPostDiscount,           TGlobalSettings::Instance().ReCalculateTaxPostDiscount);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmCalculateServiceChargePostDiscount, TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount);
-            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmUsingServiceCharge,                 TGlobalSettings::Instance().UsingServiceCharge );
         }
         DBTransaction.Commit();
     }
@@ -312,3 +341,61 @@ void __fastcall TfrmTaxMaintenance::cbRoundingTaxProfileChange(TObject *Sender)
     saveNumSettingToDatabase(vmRoundingTaxRate,       TGlobalSettings::Instance().RoundingTaxRate);
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().UseItalyFiscalPrinter = cbUseItalyFiscalPrinter->Checked;
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+    DBTransaction.Commit();
+    if(cbUseItalyFiscalPrinter->Checked)
+    {
+        edPrinterName->Enabled = true;
+        edLogicalName->Enabled = true;
+    }
+    else
+    {
+        edPrinterName->Enabled = false;
+        edLogicalName->Enabled = false;
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::edPrinterNameClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+    frmTouchKeyboard->MaxLength = 50;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().PrinterType;
+    frmTouchKeyboard->Caption = "Enter Printer Name";
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+	    TGlobalSettings::Instance().PrinterType = frmTouchKeyboard->KeyboardText.Trim();
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmFPPrinterType,TGlobalSettings::Instance().PrinterType);
+        edPrinterName->Text = TGlobalSettings::Instance().PrinterType;
+        DBTransaction.Commit();
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::edLogicalNameClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+    frmTouchKeyboard->MaxLength = 50;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().PrinterlogicalName;
+    frmTouchKeyboard->Caption = "Enter Printer Logical Name";
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+	    TGlobalSettings::Instance().PrinterlogicalName = frmTouchKeyboard->KeyboardText.Trim();
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmFPPrinterLogicalName,TGlobalSettings::Instance().PrinterlogicalName);
+        edLogicalName->Text = TGlobalSettings::Instance().PrinterlogicalName;
+        DBTransaction.Commit();
+    }
+}
+//---------------------------------------------------------------------------
+

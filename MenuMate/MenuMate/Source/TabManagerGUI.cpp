@@ -1605,6 +1605,7 @@ void __fastcall TfrmTabManager::btnManInvoiceClick(TObject *Sender)
 							{
 								TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
 							}
+                            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
 						}
 						__finally
 						{
