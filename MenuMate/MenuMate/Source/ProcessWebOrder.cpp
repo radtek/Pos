@@ -267,7 +267,7 @@ void TfrmProcessWebOrder::ShowReceipt()
 		Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), DefaultScreenPrinter, eDispBCOff);
 		memReceipt->Lines->Clear();
 		TempReceipt->Printouts->PrintToStrings(memReceipt->Lines);
-
+        //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
 		while (ReceiptTransaction.Orders->Count != 0)
 		{
 			delete(TItemComplete*)ReceiptTransaction.Orders->Items[0];
