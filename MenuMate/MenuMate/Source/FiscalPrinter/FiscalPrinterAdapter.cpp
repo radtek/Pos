@@ -174,7 +174,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             PaymentList.push_back(paymentDetails);
         }
     }
-	if(PaymentTransaction.TransOpenCashDraw())
+	if(paymentTransaction.TransOpenCashDraw())
 		billDetails.OpenCashDrawer = true;
 
     if(totalPaymentCollected < 0)
