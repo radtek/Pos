@@ -177,6 +177,7 @@ private:
 	Database::TcpIBSQL	sqlCreateTransaction;
     Database::TcpIBSQL	sqlUpdateTransaction;
 	Database::TcpIBSQL	sqlStockDetails;
+ 	Database::TcpIBSQL   sqlStockDetailsforclosing;
 	Database::TcpIBSQL	sqlAdjustStock;
 
 	class TStockLocationDetails
@@ -207,7 +208,9 @@ private:
 		double		Stocktake;
 		double		Transfer;
 		double		Inwards;
+        double	 Pev_Average_Unit_Cost;
         double      Last_latest_cost;
+        int stocktestprev;
 
         
 

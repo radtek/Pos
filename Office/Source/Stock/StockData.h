@@ -43,6 +43,7 @@ namespace DBVersion
         V6_18_0,
         V6_22_0,
         V6_23_0,
+        V6_24_0,
 	};
 };
 //---------------------------------------------------------------------------
@@ -120,6 +121,9 @@ private:	// User declarations
     bool Update6_22_0();
     void UpdateTables6_23_0();
     bool Update6_23_0();
+    void  UpdateTables6_24_0();
+    bool Update6_24_0();
+
 //	bool TransferStock(TIBTransaction *Transaction, int Key, double Quantity,
 //				AnsiString Source, AnsiString Destination, AnsiString UserName, AnsiString UserID);
 //	bool CreateStockLocation(TIBTransaction *Transaction, int Key, AnsiString Location);

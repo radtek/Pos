@@ -10,7 +10,7 @@ using std::auto_ptr;
 
 #include <cassert>
 
-#define STOCK_DB_VERSION "6.23.0"
+#define STOCK_DB_VERSION "6.24.0"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -329,6 +329,8 @@ bool TdmStockData::RequiresUpdateTo(DBVersion::DBVersions version)
       return !HasDBVersion("6.22.0");
     case DBVersion::V6_23_0:
       return !HasDBVersion("6.23.0");
+    case DBVersion::V6_24_0:
+      return !HasDBVersion("6.24.0");
       default:
          assert(0);
 	};
@@ -444,6 +446,11 @@ bool TdmStockData::UpdateDB(TLabel *Label)
                if(SuccessfulUpdate)
                {
                   SuccessfulUpdate =  dmStockData->Update6_23_0();
+               }
+
+              if(SuccessfulUpdate)
+               {
+                SuccessfulUpdate =  dmStockData->Update6_24_0();
                }
                     if (!SuccessfulUpdate)
                     {
@@ -2845,6 +2852,7 @@ bool TdmStockData::Update6_18_0()
    const AnsiString THIS_VER_56 = "5.6";
    const AnsiString THIS_VER_6180 = "6.18.0";
    const AnsiString THIS_VER_6220 = "6.22.0";
+
    if (!RequiresUpdateTo(DBVersion::V6_22_0)||RequiresUpdateTo(DBVersion::V6_22_0))
      {
         try
@@ -3025,4 +3033,41 @@ bool TdmStockData::Update6_23_0()
 
   return true;
 }
+//-------------------------------------------------------------------------------------------------------------------------
+void TdmStockData::UpdateTables6_24_0()
+{
+    const AnsiString THIS_VER_6240 = "6.24.0";
+
+    if(!HasDBVersionExist("6.24.0"))
+    {
+      RunSQL("Alter Table StocktakeHistory Add Prev_Average_Unit_Cost Numeric(15, 4) Default 0");
+  //   RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6240 + "', Current_TimeStamp) ");
+    }
+
+}
+//-------------------------------------------------------------------------------------------------------------------------
+bool TdmStockData::Update6_24_0()
+{
+  const AnsiString THIS_VER = "6.24.0";
+ if (RequiresUpdateTo(DBVersion::V6_24_0))
+     {
+    try
+      {
+         if (!Query->Transaction->InTransaction)
+             Query->Transaction->StartTransaction();
+            UpdateTables6_24_0();
+            RunSQL("Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER + "', Current_TimeStamp)");
+            if (Query->Transaction->InTransaction)
+                Query->Transaction->Commit();
+    }
+    catch (Exception &E)
+     {
+       if (Query->Transaction->InTransaction)
+            Query->Transaction->Rollback();
+              Application->ShowException(&E);
+            return false;
+     }
+      }
+  return true;
+}      
 
