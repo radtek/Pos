@@ -210,6 +210,7 @@ private:
 		double		Inwards;
         double	 Pev_Average_Unit_Cost;
         double      Last_latest_cost;
+         double previouskey;
         int stocktestprev;
 
         
@@ -229,6 +230,7 @@ protected:
     void fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost, double onhand, double inwardsQty);
 
 	bool				fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails);
+    bool                  fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location,AnsiString Stock_Group ,AnsiString Stock_Category, TStockLocationDetails& StockLocationDetailsA) ;
 	void				fReadStockDetails(TStockLocationDetails& StockLocationDetails);
 
 public:
