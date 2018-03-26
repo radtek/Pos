@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 23/03/2018 12:51:36 p.m. from Type Library described below.
+// File generated on 27/03/2018 12:11:29 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -112,6 +112,8 @@ public:
   void            __fastcall set_PrinterLogicalName(BSTR Param1/*[in]*/);
   BSTR            __fastcall get_Saletype(void);
   void            __fastcall set_Saletype(BSTR Param1/*[in]*/);
+  VARIANT_BOOL    __fastcall get_OpenCD(void);
+  void            __fastcall set_OpenCD(VARIANT_BOOL Param1/*[in]*/);
   BSTR            __fastcall PrintReceipt(void);
   void            __fastcall LoadReceiptItemInfo(long identifier/*[in]*/, BSTR InvoiceNumber/*[in]*/);
   void            __fastcall LoadReceiptPaymentInfo(long identifier/*[in]*/, 
@@ -126,6 +128,7 @@ public:
   void            __fastcall AddDiscountInfoToList(void);
   BSTR            __fastcall PrintZReport(void);
   BSTR            __fastcall CheckPrinterAvailable(void);
+  BSTR            __fastcall OpenCashDrawer(void);
   __property BSTR InvoiceNumber={ read=get_InvoiceNumber, write=set_InvoiceNumber, stored=false };
   __property BSTR Date={ read=get_Date, write=set_Date, stored=false };
   __property BSTR Time={ read=get_Time, write=set_Time, stored=false };
@@ -139,6 +142,7 @@ public:
   __property BSTR PrinterType={ read=get_PrinterType, write=set_PrinterType, stored=false };
   __property BSTR PrinterLogicalName={ read=get_PrinterLogicalName, write=set_PrinterLogicalName, stored=false };
   __property BSTR Saletype={ read=get_Saletype, write=set_Saletype, stored=false };
+  __property VARIANT_BOOL OpenCD={ read=get_OpenCD, write=set_OpenCD, stored=false };
 };
 
 

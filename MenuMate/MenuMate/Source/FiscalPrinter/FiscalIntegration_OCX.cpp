@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 23/03/2018 12:51:36 p.m. from Type Library described below.
+// File generated on 27/03/2018 12:11:29 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -171,6 +171,11 @@ BSTR __fastcall TFiscalLibraryClass::CheckPrinterAvailable(void)
   return  GetDefaultInterface()->CheckPrinterAvailable();
 }
 
+BSTR __fastcall TFiscalLibraryClass::OpenCashDrawer(void)
+{
+  return  GetDefaultInterface()->OpenCashDrawer();
+}
+
 BSTR __fastcall TFiscalLibraryClass::get_InvoiceNumber(void)
 {
   return  GetDefaultInterface()->get_InvoiceNumber();
@@ -299,6 +304,16 @@ BSTR __fastcall TFiscalLibraryClass::get_Saletype(void)
 void __fastcall TFiscalLibraryClass::set_Saletype(BSTR Param1/*[in]*/)
 {
   GetDefaultInterface()->set_Saletype(Param1/*[in]*/);
+}
+
+VARIANT_BOOL __fastcall TFiscalLibraryClass::get_OpenCD(void)
+{
+  return  GetDefaultInterface()->get_OpenCD();
+}
+
+void __fastcall TFiscalLibraryClass::set_OpenCD(VARIANT_BOOL Param1/*[in]*/)
+{
+  GetDefaultInterface()->set_OpenCD(Param1/*[in]*/);
 }
 
 _DiscountDetailsPtr& TDiscountDetails::GetDefaultInterface()

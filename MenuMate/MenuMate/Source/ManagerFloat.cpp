@@ -11,6 +11,7 @@
 #include "DBSecurity.h"
 #include "Message.h"
 #include "Comms.h"
+#include "FiscalPrinterAdapter.h"
 
 //---------------------------------------------------------------------------
 
@@ -104,7 +105,7 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
                 FloatSkimData.InsertToDatabase(DBTransaction);
                 DBTransaction.Commit();
                 if (temp != eNochange)
-                    TComms::Instance().KickLocalDraw(DBTransaction);
+                    OpenCashDrawerAccordingToPrinter(DBTransaction);
 
                 FloatSkimData.PrintDocket();
            }
@@ -237,25 +238,39 @@ void TManagerFloat::SetFloat(Database::TDBTransaction &DBTransaction,TMMContactI
       }
    }
 
-		 int Zed_Key;
-		 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text =
-			"SELECT "
-			"Z_KEY FROM ZEDS "
-			"WHERE "
-			"TERMINAL_NAME = :TERMINAL_NAME AND "
-			"TIME_STAMP IS NULL";
+     int Zed_Key;
+     IBInternalQuery->Close();
+     IBInternalQuery->SQL->Text =
+        "SELECT "
+        "Z_KEY FROM ZEDS "
+        "WHERE "
+        "TERMINAL_NAME = :TERMINAL_NAME AND "
+        "TIME_STAMP IS NULL";
 
-		 IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
-		 IBInternalQuery->ExecQuery();
+     IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+     IBInternalQuery->ExecQuery();
 
-		 Zed_Key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+     Zed_Key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 
-		   TFloatSkimData FloatSkimData(Owner, UserInfo, eInitial, frmTouchNumpad->CURResult, Zed_Key);
-			TComms::Instance().KickLocalDraw(DBTransaction);
-	   //	   runReason(FloatSkimData);
-		   FloatSkimData.InsertToDatabase(DBTransaction);
-		   DBTransaction.Commit();
+    TFloatSkimData FloatSkimData(Owner, UserInfo, eInitial, frmTouchNumpad->CURResult, Zed_Key);
+    OpenCashDrawerAccordingToPrinter(DBTransaction);
+    //	   runReason(FloatSkimData);
+    FloatSkimData.InsertToDatabase(DBTransaction);
+    DBTransaction.Commit();
+}
+//------------------------------------------------------------------------------------
+void TManagerFloat::OpenCashDrawerAccordingToPrinter(Database::TDBTransaction &DBTransaction)
+{
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        UnicodeString responseMessage = fiscalAdapter->OpenCashDrawerForFiscalPrinter();
+        //will use responseMessage later.
+    }
+    else
+    {
+        TComms::Instance().KickLocalDraw(DBTransaction);
+    }
 }
 
 
