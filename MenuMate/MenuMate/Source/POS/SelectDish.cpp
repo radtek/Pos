@@ -4163,6 +4163,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
                             }
 
+                            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+
                             if (OrdersLoadedFromTabs)
                             {
                                 while (InvoiceTransaction.Orders->Count != 0)

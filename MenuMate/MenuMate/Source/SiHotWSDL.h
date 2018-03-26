@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (2/04/2017 1:55:20 a.m. - - $Rev: 25127 $)
+// (22/03/2018 6:00:11 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -456,6 +456,8 @@ private:
   bool            FShift_Specified;
   UnicodeString   FTime;
   bool            FTime_Specified;
+  UnicodeString   FTotal;
+  bool            FTotal_Specified;
   UnicodeString   FTransNo;
   bool            FTransNo_Specified;
   void __fastcall SetAccountNumber(int Index, UnicodeString _prop_val)
@@ -510,6 +512,10 @@ private:
   {  FTime = _prop_val; FTime_Specified = true;  }
   bool __fastcall Time_Specified(int Index)
   {  return FTime_Specified;  } 
+  void __fastcall SetTotal(int Index, UnicodeString _prop_val)
+  {  FTotal = _prop_val; FTotal_Specified = true;  }
+  bool __fastcall Total_Specified(int Index)
+  {  return FTotal_Specified;  } 
   void __fastcall SetTransNo(int Index, UnicodeString _prop_val)
   {  FTransNo = _prop_val; FTransNo_Specified = true;  }
   bool __fastcall TransNo_Specified(int Index)
@@ -531,6 +537,7 @@ __published:
   __property int        PortNumber = { index=(IS_OPTN), read=FPortNumber, write=SetPortNumber, stored = PortNumber_Specified };
   __property UnicodeString      Shift = { index=(IS_OPTN|IS_NLBL), read=FShift, write=SetShift, stored = Shift_Specified };
   __property UnicodeString       Time = { index=(IS_OPTN|IS_NLBL), read=FTime, write=SetTime, stored = Time_Specified };
+  __property UnicodeString      Total = { index=(IS_OPTN|IS_NLBL), read=FTotal, write=SetTotal, stored = Total_Specified };
   __property UnicodeString    TransNo = { index=(IS_OPTN|IS_NLBL), read=FTransNo, write=SetTransNo, stored = TransNo_Specified };
 };
 

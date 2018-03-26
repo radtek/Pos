@@ -1124,9 +1124,9 @@ object frmStock: TfrmStock
       '   Stock.Enabled,'
       '   Stock.Deleted'
       'Order by'
-      '   StockCategory.Stock_Category,'
-      '   StockGroup.Stock_Group,'
-      '   Stock.Description')
+      '   StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order,'
+      'Stock.Description')
     Transaction = Transaction
     Left = 160
     Top = 168
@@ -1301,8 +1301,8 @@ object frmStock: TfrmStock
       '        Stock.Deleted,'
       '        StockLocation.LOCATION'
       '     Order by'
-      '        StockCategory.Stock_Category,'
-      '        StockGroup.Stock_Group,'
+      '        StockCategory.Sort_Order,'
+      '        StockGroup.Sort_Order,'
       '        Stock.Description')
     Transaction = Transaction
     Left = 168
@@ -1378,6 +1378,8 @@ object frmStock: TfrmStock
       '   SUPPLIERSTOCK.LATEST_COST'
       ''
       'Order by'
+      ' StockCategory.Sort_Order,'
+      '   StockGroup.Sort_Order,'
       '   StockCategory.Stock_Category,'
       '   StockGroup.Stock_Group,'
       '   Stock.Description')

@@ -57,5 +57,6 @@ class TOracleDataBuilder
         TiXmlDocument PrepareXMLDocument();
         void GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
         std::vector<TPayment> PaymentLoad(Database::TDBTransaction &DBTransaction);
+        double SUrcharge;
 };
 #endif

@@ -20,51 +20,7 @@ namespace MenumateServices.WCFServices
             _salesForceInterface = new SalesForceInterface();
             _salesForceCredentialFactory = new SalesForceCredentialFactory();
         }
-        public RedemptionResponseDetails RedeemVoucher(VoucherRedemptionDetails redemptionDetails)
-        {
-            try
-            {
-                PocketVoucherCommunication pvCommunication = new PocketVoucherCommunication();
-                RedemptionResponseDetails responseDetails = new RedemptionResponseDetails();
-                responseDetails = pvCommunication.RedemptionRequest(redemptionDetails);
-                return responseDetails;
-            }
-            catch (Exception exception)
-            {
-                //EventLog.WriteEntry("In ForceCloseAllTabs Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 9, short.MaxValue);
-                ServiceLogger.LogException("Exception in RedeemVoucher", exception);
-            }
-            return null;
-        }
-        public PocketVoucherDetail GetPocketVoucherDetail(string accountName)
-        {
-            try
-            {
-                //We need to login to sales force to initiate the process..
-                //Get the credentials for logging into sales force..
-                accountName = "Dillingers Manilla";
-                var credentials = _salesForceCredentialFactory.Create();
-
-                if (_salesForceInterface.Login(credentials))
-                {
-                    //Get the pocket voucher fields from sales force to return to POS..
-                    var pocketVoucherDetail = _salesForceInterface.GetPocketVoucherDetail(accountName);
-
-                    //Since we have completed all the processing we will log out..
-                    _salesForceInterface.Logout();
-
-                    return pocketVoucherDetail;
-                }
-            }
-            catch (Exception exception)
-            {
-                //EventLog.WriteEntry("In GetPocketVoucherDetail Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 10, short.MaxValue);
-                ServiceLogger.LogException("Exception in GetPocketVoucherDetail", exception);
-            }
-
-            return null;
-        }
-
+        
         public bool EnablePocketVouchers(string accountName)
         {
             try
@@ -121,6 +77,50 @@ namespace MenumateServices.WCFServices
             }
 
             return false;
+        }
+        public RedemptionResponseDetails RedeemVoucher(VoucherRedemptionDetails redemptionDetails)
+        {
+            try
+            {
+                PocketVoucherCommunication pvCommunication = new PocketVoucherCommunication();
+                RedemptionResponseDetails responseDetails = new RedemptionResponseDetails();
+                responseDetails = pvCommunication.RedemptionRequest(redemptionDetails);
+                return responseDetails;
+            }
+            catch (Exception exception)
+            {
+                //EventLog.WriteEntry("In ForceCloseAllTabs Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 9, short.MaxValue);
+                ServiceLogger.LogException("Exception in RedeemVoucher", exception);
+            }
+            return null;
+        }
+        public PocketVoucherDetail GetPocketVoucherDetail(string accountName)
+        {
+            try
+            {
+                //We need to login to sales force to initiate the process..
+                //Get the credentials for logging into sales force..
+
+                var credentials = _salesForceCredentialFactory.Create();
+
+                if (_salesForceInterface.Login(credentials))
+                {
+                    //Get the pocket voucher fields from sales force to return to POS..
+                    var pocketVoucherDetail = _salesForceInterface.GetPocketVoucherDetail(accountName);
+
+                    //Since we have completed all the processing we will log out..
+                    _salesForceInterface.Logout();
+
+                    return pocketVoucherDetail;
+                }
+            }
+            catch (Exception exception)
+            {
+                //EventLog.WriteEntry("In GetPocketVoucherDetail Pocket Voucher", exception.Message + "Trace" + exception.StackTrace, EventLogEntryType.Error, 10, short.MaxValue);
+                ServiceLogger.LogException("Exception in GetPocketVoucherDetail", exception);
+            }
+
+            return null;
         }
     }
 }
