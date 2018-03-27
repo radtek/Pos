@@ -33,12 +33,18 @@ __published:	// IDE-managed Components
     TCheckBox *cbCalculateServiceChargePostDiscount;
     TCheckBox *cbApplyTaxToServiceCharge;
     TComboBox *cbTaxProfile;
+    TCheckBox *cbUseItalyFiscalPrinter;
 
     //add frn
     TPageControl *Pages;
     TTabSheet *tsTaxSettings;
     TCheckBox *cbApplyTaxToRounding;
     TComboBox *cbTaxProfileRounding;
+    TEdit *edPrinterName;
+    TEdit *edLogicalName;
+    TLabel *lbPrinterName;
+    TLabel *lbLogicalName;
+
 
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
@@ -54,6 +60,9 @@ __published:	// IDE-managed Components
     void __fastcall cbApplyTaxToRoundingClick(TObject *Sender);
     void __fastcall cbRoundingTaxProfileChange(TObject *Sender);
 
+    void __fastcall cbUseItalyFiscalPrinterClick(TObject *Sender);
+    void __fastcall edPrinterNameClick(TObject *Sender);
+    void __fastcall edLogicalNameClick(TObject *Sender);
 public:		// User declarations
     __fastcall TfrmTaxMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
 
@@ -61,7 +70,7 @@ private:	// User declarations
 
 	Database::TDBControl &DBControl;
     std::vector<TTaxProfile> taxProfiles;
-
+    UnicodeString responseMessage;
     void loadTaxProfiles(TStrings* serviceChargeTaxList);
     int getTaxProfileIndexFromKey(int profileKey);
     void saveBoolSettingToDatabase(vmVariables vmVariable, bool value);

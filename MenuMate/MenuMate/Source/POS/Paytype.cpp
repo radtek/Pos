@@ -908,6 +908,7 @@ void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
         PopulateReceipt(TempReceipt);
         Receipt->GetPrintouts(CurrentTransaction.DBTransaction, TempReceipt, TComms::Instance().ReceiptPrinter);
         TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
         delete TempReceipt;
 	}
     PrintCancelEvent++;
@@ -1378,22 +1379,44 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
         }
         if (Payment->GetPaymentAttribute(ePayTypeCSV))
         {
-            Payment->CSVNumber = 0;
-            do
+            if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
             {
-                std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
-                frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
-                frmTouchNumpad->btnSurcharge->Caption = "Ok";
-                frmTouchNumpad->btnSurcharge->Visible = true;
-                frmTouchNumpad->btnDiscount->Visible = false;
-                frmTouchNumpad->Mode = pmNumber;
-                frmTouchNumpad->INTInitial = 0;
-                if (frmTouchNumpad->ShowModal() == mrOk)
+                do
                 {
-                    Payment->CSVNumber = frmTouchNumpad->INTResult;
+                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                    frmTouchKeyboard->MaxLength = 30;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = false;
+                    frmTouchKeyboard->MustHaveValue = true;
+                    frmTouchKeyboard->KeyboardText = "";
+                    frmTouchKeyboard->Caption = "Enter the " + Payment->Name + " number";
+                    if(frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        Payment->CSVString = frmTouchKeyboard->KeyboardText ;
+                    }
                 }
+                while (Payment->CSVString == "");
             }
-            while (Payment->CSVNumber == 0);
+
+            else
+            {
+                Payment->CSVNumber = 0;
+                do
+                {
+                    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+                    frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
+                    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                    frmTouchNumpad->btnSurcharge->Visible = true;
+                    frmTouchNumpad->btnDiscount->Visible = false;
+                    frmTouchNumpad->Mode = pmNumber;
+                    frmTouchNumpad->INTInitial = 0;
+                    if (frmTouchNumpad->ShowModal() == mrOk)
+                    {
+                        Payment->CSVNumber = frmTouchNumpad->INTResult;
+                    }
+                }
+                while (Payment->CSVNumber == 0);
+            }
         }
 
         if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
@@ -1840,22 +1863,43 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
         if (Payment->GetPaymentAttribute(ePayTypeCSV))
         {
-            Payment->CSVNumber = 0;
-            do
+            if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
             {
-                std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
-                frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
-                frmTouchNumpad->btnSurcharge->Caption = "Ok";
-                frmTouchNumpad->btnSurcharge->Visible = true;
-                frmTouchNumpad->btnDiscount->Visible = false;
-                frmTouchNumpad->Mode = pmNumber;
-                frmTouchNumpad->INTInitial = 0;
-                if (frmTouchNumpad->ShowModal() == mrOk)
+                do
                 {
-                    Payment->CSVNumber = frmTouchNumpad->INTResult;
+                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                    frmTouchKeyboard->MaxLength = 30;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = false;
+                    frmTouchKeyboard->MustHaveValue = true;
+                    frmTouchKeyboard->KeyboardText = "";
+                    frmTouchKeyboard->Caption = "Enter the " + Payment->Name + " number";
+                    if(frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        Payment->CSVString = frmTouchKeyboard->KeyboardText ;
+                    }
                 }
+                while (Payment->CSVString == "");
             }
-            while (Payment->CSVNumber == 0);
+            else
+            {
+                Payment->CSVNumber = 0;
+                do
+                {
+                    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+                    frmTouchNumpad->Caption = "Enter the " + Payment->Name + " number";
+                    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+                    frmTouchNumpad->btnSurcharge->Visible = true;
+                    frmTouchNumpad->btnDiscount->Visible = false;
+                    frmTouchNumpad->Mode = pmNumber;
+                    frmTouchNumpad->INTInitial = 0;
+                    if (frmTouchNumpad->ShowModal() == mrOk)
+                    {
+                        Payment->CSVNumber = frmTouchNumpad->INTResult;
+                    }
+                }
+                while (Payment->CSVNumber == 0);
+            }
         }
 
         if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))

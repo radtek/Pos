@@ -299,7 +299,7 @@ namespace SiHotIntegration
                         thisValue = thisValue * -1;
                     value += thisValue;
                 }
-                stringList.Add("Invoice Amount:                           " + value.ToString());
+                stringList.Add("Invoice Amount:                           " + roomChargeDetails.Total);
                 string paymentNames = "";
                 stringList.Add("*********Start Of Items**************");
                 for (int itemIndex = 0; itemIndex < roomChargeDetails.ItemList.Count; itemIndex++)

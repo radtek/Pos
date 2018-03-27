@@ -11,8 +11,7 @@
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
 #pragma resource "*.dfm"
-
-#define NUMBER_OF_MSG_IN_VIEW 8
+#define NUMBER_OF_MSG_IN_VIEW 10
 
 TfrmDropDownFunc *frmDropDownFunc;
 //---------------------------------------------------------------------------

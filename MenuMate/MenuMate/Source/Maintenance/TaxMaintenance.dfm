@@ -72,6 +72,33 @@ object frmTaxMaintenance: TfrmTaxMaintenance
         Color = 14342874
         ParentBackground = False
         TabOrder = 0
+        object lbPrinterName: TLabel
+          Left = 32
+          Top = 457
+          Width = 161
+          Height = 23
+          Caption = 'Fiscal Printer Name'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+        end
+        object lbLogicalName: TLabel
+          Left = 32
+          Top = 502
+          Width = 175
+          Height = 46
+          Caption = 'Fiscal Printer Logical Name'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          WordWrap = True
+        end
         object cbPriceIncludeTax: TCheckBox
           Left = 32
           Top = 80
@@ -211,6 +238,23 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           TabOrder = 8
           OnChange = cbTaxProfileChange
         end
+        object cbUseItalyFIscalPrinter: TCheckBox
+          Left = 32
+          Top = 410
+          Width = 265
+          Height = 25
+          Caption = 'Use Italy Fiscal Printer'
+          Ctl3D = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 11
+          OnClick = cbUseItalyFiscalPrinterClick
+        end
         object Panel11: TPanel
           Left = 1
           Top = 1
@@ -263,5 +307,23 @@ object frmTaxMaintenance: TfrmTaxMaintenance
         end
       end
     end
+  end
+  object edPrinterName: TEdit
+    Left = 248
+    Top = 468
+    Width = 169
+    Height = 26
+    Enabled = False
+    TabOrder = 2
+    OnClick = edPrinterNameClick
+  end
+  object edLogicalName: TEdit
+    Left = 248
+    Top = 521
+    Width = 169
+    Height = 26
+    Enabled = False
+    TabOrder = 3
+    OnClick = edLogicalNameClick
   end
 end
