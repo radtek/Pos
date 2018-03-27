@@ -67,8 +67,6 @@ Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignorever
 Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5 Casino.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\ZSummaryReports.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\Owner Details.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
@@ -89,6 +87,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\zip.exe; DestDir: {app}; Flags: ignore
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Palm\MenuMate Bluetooth.prc; DestDir: {app}\Palm; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.tlb; DestDir: {app}; Flags: ignoreversion
+ Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.pdb; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
@@ -314,9 +316,6 @@ Root: HKLM; Subkey: Software\IQWORKS\MenuMate\; Flags: createvalueifdoesntexist;
                                 
 [Icons]
 Name: {group}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
-Name: {group}\Office; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
-Name: {userdesktop}\Office Version 5 Casino; Filename: {app}\Office Version 5 Casino.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
-Name: {userdesktop}\Office Version 5; Filename: {app}\Office Version 5.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {userdesktop}\Office; Filename: {app}\Office.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 Name: {group}\Floorplan Editor; Filename: {app}\Floorplan\GuiClient\Menumate.WinServices.Client.FloorPlan.exe; WorkingDir: {app}; IconIndex: 0; Flags: createonlyiffileexists
 

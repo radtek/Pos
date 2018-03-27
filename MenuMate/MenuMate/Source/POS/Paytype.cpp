@@ -908,6 +908,7 @@ void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
         PopulateReceipt(TempReceipt);
         Receipt->GetPrintouts(CurrentTransaction.DBTransaction, TempReceipt, TComms::Instance().ReceiptPrinter);
         TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
         delete TempReceipt;
 	}
     PrintCancelEvent++;

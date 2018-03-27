@@ -52,6 +52,7 @@
 #include "ExportCSV.h"
 #include "StringTools.h"
 #include "MallFactory.h"
+#include "FiscalPrinterAdapter.h"
 
 #include <string>
 #include <cassert>
@@ -2612,6 +2613,8 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 		frmDropDown->AddButton("Consumption", &ReportConsumption);
 		frmDropDown->AddButton("Table & Tab Summary", &TableTabSummaryReport);
 		frmDropDown->AddButton("Site Summary", &ReportSiteSummary);
+		if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+            frmDropDown->AddButton("Fiscal Printer Settlement", &FiscalPrinterSettlement);
 
 		if (frmDropDown->ShowModal() == mrOk)
         {
@@ -9036,3 +9039,17 @@ void TfrmAnalysis::MakeZEDLogFile(TStringList *List)
     }
 }
 
+//-------------------------------------------------------------------------------
+void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
+{
+    UnicodeString zPrinterResponse;
+    try
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        fiscalAdapter->FiscalZReportSettlement();
+    }
+    catch(Exception & E)
+    {
+       zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
+	}
+}

@@ -231,6 +231,7 @@ protected:
      bool IsOracleConfigured();
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
+     bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
 };
 
 #endif

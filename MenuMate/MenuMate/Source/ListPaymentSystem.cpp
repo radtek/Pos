@@ -71,6 +71,7 @@
 #include "FiscalDataUtility.h"
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
+#include "FiscalPrinterAdapter.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -985,7 +986,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		throw;
 	}
-
 	Busy = false;
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
@@ -3477,35 +3477,71 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-	if (PaymentTransaction.Type == eTransQuickSale)
-	{
-		if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    {
+//        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
+//        if(CloseAndPrint ||
+//            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
+//            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
+//                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
+        if(CloseAndPrint ||
+            ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
+																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
+																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
+
+
+            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
+                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
+        {
             PrintReceipt(RequestEFTPOSReceipt);
-		}
-	}
-	else
-	{
-		if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
-		{
-			PrintReceipt(RequestEFTPOSReceipt);
-		}
-		else
-		{
-			if (CloseAndPrint)
-			{
-				PrintReceipt(RequestEFTPOSReceipt);
-			}
-			else
-			{
-				// Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
-				if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
-				{
-					LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
-				}
-			}
-		}
-	}
+        }
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+        if(responseMessage.Pos("OK") == 0)
+        {
+            MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
+            for(int i = 0; i < LastReceipt->Printouts->Count; i++)
+            {
+               ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
+            }
+            if(LastReceipt->Printouts->Count)
+                PrintReceipt(RequestEFTPOSReceipt);
+        } 
+
+    }
+    else
+    {
+        if (PaymentTransaction.Type == eTransQuickSale)
+        {
+            if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+        }
+        else
+        {
+            if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            {
+                PrintReceipt(RequestEFTPOSReceipt);
+            }
+            else
+            {
+                if (CloseAndPrint)
+                {
+                    PrintReceipt(RequestEFTPOSReceipt);
+                }
+                else
+                {
+                    // Print Only the EFTPOS Receipt as the want duplication of only the EFTPOS dockets.
+                    if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+                    {
+                        LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void TListPaymentSystem::RemoveOrders(TPaymentTransaction &PaymentTransaction)
@@ -6551,3 +6587,24 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+        else if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}
+//--------------------------------------------------------------------------------------
