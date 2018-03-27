@@ -232,6 +232,7 @@ protected:
 	bool				fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails);
     bool                  fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location,AnsiString Stock_Group ,AnsiString Stock_Category, TStockLocationDetails& StockLocationDetailsA) ;
 	void				fReadStockDetails(TStockLocationDetails& StockLocationDetails);
+    void                fReadStockDetailsAA(TStockLocationDetails& StockLocationDetails);
 
 public:
 						TStockTransaction(TIBDatabase *IBDatabase);
