@@ -343,6 +343,7 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
                 frmTransferMulti->Destination				= TransferLocations.Destination;
                 frmTransferMulti->SelectedStockRequestKeys = selectedStockRequestKeys;
                 frmTransferMulti->ShowModal();
+                delete selectedStockRequestKeys;
             }
 		}
 	}

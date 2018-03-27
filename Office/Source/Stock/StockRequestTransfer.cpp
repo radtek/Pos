@@ -149,10 +149,12 @@ void __fastcall TfrmStockRequestTransfer::vtvStockRequestGetText(TBaseVirtualTre
                 break;
         }
     }
+
     else
     {
         CellText = "";
     }
+  
 }
 //---------------------------------------------------------------------------
 
@@ -177,6 +179,7 @@ void __fastcall TfrmStockRequestTransfer::btnOkClick(TObject *Sender)
         Node = vtvStockRequest->GetNext(Node);
     }
     ModalResult = mrOk;
+  
 }
 //---------------------------------------------------------------------------
 

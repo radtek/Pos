@@ -83,9 +83,9 @@ void TfrmTransferMulti::LoadTreeView()
 		tvTransfers->Items->AddChild(PreviousTransferNode,qrGetPreviousTransfers->FieldByName("CREATED")->AsDateTime);
 		BatchKeyList->Add(AnsiString(qrGetPreviousTransfers->FieldByName("BATCH_KEY")->AsInteger));
 	}
-	Transaction->Commit();
-
-	tvTransfers->Items->EndUpdate();
+    Transaction->Commit();
+    BatchKeyList->Clear();
+    tvTransfers->Items->EndUpdate();
 	tvTransfers->OnChange = tvTransfersChange;
 	tvTransfers->Selected = CurrentTransferNode;
 	tvTransfersChange(tvTransfers, tvTransfers->Selected);
@@ -275,10 +275,10 @@ void TfrmTransferMulti::LoadStocksForStockRequestMode()
 
 
 				NodeData->StockRequestKey = qrStock->FieldByName("STOCK_REQUEST_KEY")->AsInteger;
+                   
 
 
-
-
+         
 
 			}
 
@@ -602,13 +602,15 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
         bool CheckQuantityExist=false;
         PVirtualNode NodeCheck = vtvStockQty->GetFirst();
         while (NodeCheck && ContinueCheck)
-        {  TStockNodeData *NodeDataCheck = (TStockNodeData *)vtvStockQty->GetNodeData(NodeCheck);
+        {
+           TStockNodeData *NodeDataCheck = (TStockNodeData *)vtvStockQty->GetNodeData(NodeCheck);
             if(NodeDataCheck->Quantity>0)
             {
              CheckQuantityExist=true;
+
                 break;
             }
-      
+
 
             NodeCheck = vtvStockQty->GetNext(NodeCheck);
         }
@@ -633,9 +635,9 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
   bool Continue = true;
 	bool IgnoreLowOnHand = false;
 	PVirtualNode Node = vtvStockQty->GetFirst();
-    while (Node && Continue)
+   while (Node && Continue)
 	{
-    TStockNodeData *NodeData = (TStockNodeData *)vtvStockQty->GetNodeData(Node);
+            TStockNodeData *NodeData = (TStockNodeData *)vtvStockQty->GetNodeData(Node);
         	if (NodeData->Quantity < 0)
 				{
 					if (Application->MessageBox(("You have requested a negative quantity transfer for the item \"" + NodeData->Text +
@@ -644,12 +646,12 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 								MB_OKCANCEL + MB_ICONQUESTION + MB_DEFBUTTON1) != IDOK)
 					{
 						Continue = false;
+
 					}
 				}
-
-   else if(NodeData->Quantity>=0)
-		{
-          getQuantity = NodeData->Quantity;
+                   else if(NodeData->Quantity>=0)
+		              {
+                    getQuantity = NodeData->Quantity;
                      item_in_source_is_less_than_transfer=true;
 
                     //     if (!Transaction->InTransaction)
@@ -658,7 +660,6 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                            qrfetch_request_number->Close();
                            qrfetch_request_number->ParamByName("STOCK_REQUEST_STOCKKEY")->AsInteger=NodeData->StockRequestKey ;
                            qrfetch_request_number->Open() ;
-
                            bool Stock_request_number_Present=false;
 
                           for(std::vector<int>::iterator i = stock_request_stock_key.begin(); i!= stock_request_stock_key.end();++i)
@@ -667,7 +668,9 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                               {
                                  Stock_request_number_Present =True;
                               }
-                         	}
+
+                        	}
+
 
                             if(  !Stock_request_number_Present)
                             {
@@ -675,7 +678,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                             }
 
                         // 	Transaction->Commit();
-
+                             stock_request_stock_key.clear();
 
 			if (vtvStockQty->GetNodeLevel(Node) == 2)
 			{
@@ -685,7 +688,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
 				 if (NodeData->Quantity > NodeData->SourceOnHand && !IgnoreLowOnHand&& NodeData->Quantity!=0)
 				{
-                    					int Result = MessageDlg("You have requested to transfer more than you have on hand for the item \"" +
+                    int Result = MessageDlg("You have requested to transfer more than you have on hand for the item \"" +
 					StringReplace(NodeData->Text, "&", "&&", TReplaceFlags() << rfReplaceAll) +
 					"\".\rDo you wish to continue?",
 					mtConfirmation,
@@ -708,10 +711,11 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 			}
 		}
 		Node = vtvStockQty->GetNext(Node);
+
 	}
 	bool Success = true;
 
-      	 if (!Transaction->InTransaction)
+     if (!Transaction->InTransaction)
 	Transaction->StartTransaction();
       sqlTransferNumber->Close();
     sqlTransferNumber->SQL->Text = "SELECT GEN_ID(GEN_TRANSFER_NUMBER, 1)FROM RDB$DATABASE" ;
@@ -737,7 +741,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
         for(std::vector<int>::iterator i = stock_request_stock_key.begin(); i!= stock_request_stock_key.end();++i)
         {
-                   stock_request_delete_option_selected=false;
+                stock_request_delete_option_selected=false;
 
             	PVirtualNode Node = vtvStockQty->GetFirst();
 
@@ -745,7 +749,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 	           	{
 
 
-	            	if (vtvStockQty->GetNodeLevel(Node) == 2  )
+	            	if (vtvStockQty->GetNodeLevel(Node) == 2)
 		               	{
                            stock_request_key_to_be_added=true;
 
@@ -844,6 +848,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                                                 TransferInfo.STOCK_REQUEST_STOCK_KEY = NodeData->StockRequestKey;
                                                 TransferInfo.Transfer_id = StrToInt( lbeTransferNumber->Caption);
                                                 Transfers.push_back(TransferInfo);
+                                               // Transfers.clear();
                                            }
                                             if( stock_request_key_to_be_added)
                                             {
@@ -862,9 +867,16 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 						                        }
 				                        	}
 			                       }
+
 			                }
 		                    	Node = vtvStockQty->GetNext(Node);
+
+                               // delete
+                               stock_request_stock_key.clear();
+
+
 	               	}
+
        }
 
 		if (Initialised)
@@ -883,6 +895,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 				}
 			}
 		}
+
 
 
 		 if (Continue)
@@ -933,7 +946,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
 
                            }
-
+                              delete TransfferedStockRequestKeys;
                             //delete Stock Request as per the user selection
                             for(std::vector<int>::iterator i = stock_request_to_be_deleted.begin(); i!= stock_request_to_be_deleted.end();++i)
                               {
@@ -941,13 +954,15 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                                   qrdelete_stock_request->ExecSQL();
                               }
 
-                         	Transaction->Commit();
+                         	   Transaction->Commit();
+                               stock_request_to_be_deleted.clear();
+
                       }
 
 
 				}
 
-        
+                    stock_request_stock_key.clear();
 
                     if(CurrentConnection.AutoPrintStockTransferAudit && getQuantity !=0  )
                     {
@@ -981,19 +996,21 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                                        
 					             	frmReports->rvStock->Execute();
                             }
-                     
+
                           }
                         __finally
 	                      {
 
                                dmStockReportData->StockTrans->Commit();
+                               delete Locations;
 
 	                         }
+
                       }
 
 
-
-                 Close();
+                // delete NodeData ;
+                Close();
 
 			}
 			else
@@ -1254,4 +1271,5 @@ void __fastcall TfrmTransferMulti::btnReprintClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
+
 
