@@ -1775,7 +1775,7 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 		sqlUpdateStockLocation->ParamByName("Location")->AsString				= StocktakeItemInfo->Location;
 		sqlUpdateStockLocation->ParamByName("Counted")->AsDouble					= StocktakeItemInfo->Counted;
         double previouskey;
-        if(fbstockdetailsusingstocktakekey(sqlStocktakeHistory->ParamByName("StocktakeHistory_Key")->AsInteger,StocktakeItemInfo->Location,StockDetails.Stock_Group,StockDetails.Stock_Category,StockDetails))
+        if(fbstockdetailsusingstocktakekey(sqlStocktakeHistory->ParamByName("StocktakeHistory_Key")->AsInteger,StocktakeItemInfo->Location,StockDetails.Stock_Group,StockDetails.Description,StockDetails.Stock_Category,StockDetails))
         {
         sqlStocktakeHistory->ParamByName("Prev_Average_Unit_Cost")->AsDouble   = StockDetails.Pev_Average_Unit_Cost;
         }
@@ -1785,13 +1785,14 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 }
 //---------------------------------------------------------------------------
 
-bool TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location, AnsiString Stock_Group, AnsiString Stock_Category ,TStockLocationDetails& StockLocationDetails)
+bool TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location, AnsiString Stock_Group, AnsiString Stock_Category ,AnsiString Description,TStockLocationDetails& StockLocationDetails)
 {
 	sqlStockDetailsforclosing->Close();
 
 	sqlStockDetailsforclosing->ParamByName("UpperLocation")->AsString	= Location.UpperCase();
     sqlStockDetailsforclosing->ParamByName("Stock_Group")->AsString =  Stock_Group;
     sqlStockDetailsforclosing->ParamByName("Stock_Category")->AsString = Stock_Category;
+    sqlStockDetailsforclosing->ParamByName("Description")->AsString =  Description;
     sqlStockDetailsforclosing->ParamByName("StocktakeHistory_Key")->AsInteger		= Stocktakekeyhistory;
 	sqlStockDetailsforclosing->ExecQuery();
 
