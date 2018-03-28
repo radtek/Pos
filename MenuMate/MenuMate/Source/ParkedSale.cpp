@@ -51,7 +51,7 @@ void TParkedSale::SetSale(UnicodeString inParkedBy, std::vector<TSeatOrders *> S
 void TParkedSale::AssignParkedSale(std::vector<TSeatOrders *> &SeatOrders)
 {
    // Move Orders across
-	for (int i = 0; i < Orders.size() ; i++)
+   for (int i = 0; i < Orders.size() ; i++)
    {
        while (Orders[i]->Orders->Count != 0)
       {
@@ -60,6 +60,7 @@ void TParkedSale::AssignParkedSale(std::vector<TSeatOrders *> &SeatOrders)
              Orders[i]->Orders->Items[0]->LastAddedItem = true;
          }
          Orders[i]->Orders->Items[0]->ThirdPartyCode = GetThirdPartyCode(Orders[i]->Orders->Items[0]->ThirdPartyKey);
+         Orders[i]->Orders->Items[0]->RevenueCode = GetRevenueCode(Orders[i]->Orders->Items[0]->ItemKey,Orders[i]->Orders->Items[0]->Size);
          SeatOrders[i]->Orders->Add(Orders[i]->Orders->Items[0],Orders[i]->Orders->Items[0]->ItemOrderedFrom);
          Orders[i]->Orders->Delete(0);
       }
@@ -87,7 +88,7 @@ void TParkedSale::AssignParkedSale(std::vector<TSeatOrders *> &SeatOrders)
    }
    Orders.clear();
 }
-
+//-----------------------------------------------------------------------------
 void TParkedSale::GetSaleCopy(std::vector<TSeatOrders *> &SeatOrders)
 {
    // Move Orders across
@@ -131,4 +132,33 @@ UnicodeString TParkedSale::GetThirdPartyCode(long key)
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
     }
     return code;
+}
+//-----------------------------------------------------------------------------
+int TParkedSale::GetRevenueCode(int _itemKey, UnicodeString _sizeName)
+{
+    int revenueCode = 0;
+    Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+    transaction.StartTransaction();
+    try
+    {
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			" Select a.REVENUECODE FROM ITEMSIZE a WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME = :SIZE_NAME" ;
+		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = _itemKey;
+        IBInternalQuery->ParamByName("SIZE_NAME")->AsString = _sizeName;
+		IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+             revenueCode = IBInternalQuery->FieldByName("REVENUECODE")->AsInteger;
+        }
+        transaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        transaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+    return revenueCode;
 }
