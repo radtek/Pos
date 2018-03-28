@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "ParkedSale.h"
-
+#include "DeviceRealterminal.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -59,6 +59,7 @@ void TParkedSale::AssignParkedSale(std::vector<TSeatOrders *> &SeatOrders)
          {
              Orders[i]->Orders->Items[0]->LastAddedItem = true;
          }
+         Orders[i]->Orders->Items[0]->ThirdPartyCode = GetThirdPartyCode(Orders[i]->Orders->Items[0]->ThirdPartyKey);
          SeatOrders[i]->Orders->Add(Orders[i]->Orders->Items[0],Orders[i]->Orders->Items[0]->ItemOrderedFrom);
          Orders[i]->Orders->Delete(0);
       }
@@ -102,4 +103,32 @@ void TParkedSale::GetSaleCopy(std::vector<TSeatOrders *> &SeatOrders)
 			SeatOrders[i]->Orders->AddPrev(Orders[i]->Orders->PrevItems[j]);
 		}
 	}
+}
+//----------------------------------------------------------------------------
+UnicodeString TParkedSale::GetThirdPartyCode(long key)
+{
+    UnicodeString code = "";
+    Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+    transaction.StartTransaction();
+    try
+    {
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			" Select a.CODE FROM THIRDPARTYCODES a WHERE a.THIRDPARTYCODES_KEY = :THIRDPARTYCODES_KEY" ;
+		IBInternalQuery->ParamByName("THIRDPARTYCODES_KEY")->AsInteger = key;
+		IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+             code = IBInternalQuery->FieldByName("CODE")->AsString;
+        }
+        transaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        transaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+    return code;
 }

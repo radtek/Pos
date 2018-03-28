@@ -9,6 +9,7 @@
 class TParkedSale
 {
 private:
+    UnicodeString GetThirdPartyCode(long key);
 public:
    bool StoreMembership;
    TContactMemberApplied Membership;
