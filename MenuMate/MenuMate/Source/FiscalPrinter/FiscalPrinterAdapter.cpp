@@ -165,7 +165,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
             paymentDetails.TipAmount = tipAmount;
             paymentDetails.PaymentSurcharge = surcharge;
-            paymentDetails.Change = SubPayment->GetChange();
+            paymentDetails.Change = SubPayment->GetChange() - SubPayment->GetCashOut();
             if(IsTipAppliedFromPOS)
                 paymentDetails.TipAppliedFromPOS = "1";
             else
