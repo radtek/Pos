@@ -84,10 +84,9 @@ void TfrmTransferMulti::LoadTreeView()
 		BatchKeyList->Add(AnsiString(qrGetPreviousTransfers->FieldByName("BATCH_KEY")->AsInteger));
 	}
     Transaction->Commit();
-    BatchKeyList->Clear();
-    tvTransfers->Items->EndUpdate();
-	tvTransfers->OnChange = tvTransfersChange;
-	tvTransfers->Selected = CurrentTransferNode;
+   tvTransfers->Items->EndUpdate();
+    tvTransfers->OnChange = tvTransfersChange;
+   tvTransfers->Selected = CurrentTransferNode;
 	tvTransfersChange(tvTransfers, tvTransfers->Selected);
 }
 
@@ -185,6 +184,7 @@ void TfrmTransferMulti::LoadStocksForManualMode()
 				Initialised = true;
 			}
 		}
+     
 	}
 
 	if (Initialised)
@@ -296,6 +296,7 @@ void TfrmTransferMulti::LoadStocksForStockRequestMode()
 				Initialised = true;
 			}
 		}
+        
 	}
 
 	if (Initialised)
@@ -508,7 +509,7 @@ IVTEditLink *EditLink)
 			TStockNodeData *NodeData = (TStockNodeData *)Sender->GetNodeData(Node);
 			neStockQty->Value = NodeData->Quantity;
             neStockQty->DecimalPlaces = CurrentConnection.SettingDecimalPlaces;
-			TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
+		    TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neStockQty);
 			PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 			PostMessage(neStockQty->Handle, EM_SETSEL, 0, -1);
 		}
@@ -678,7 +679,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                             }
 
                         // 	Transaction->Commit();
-                             stock_request_stock_key.clear();
+                       
 
 			if (vtvStockQty->GetNodeLevel(Node) == 2)
 			{
@@ -711,7 +712,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 			}
 		}
 		Node = vtvStockQty->GetNext(Node);
-
+  
 	}
 	bool Success = true;
 
@@ -722,6 +723,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
     sqlTransferNumber->ExecQuery();
     lbeTransferNumber->Caption = sqlTransferNumber->Fields[0]->AsInteger;
      Transfer_no  = sqlTransferNumber->Fields[0]->AsInteger;
+
      	Transaction->Commit();
 
 	if (Continue)
@@ -868,14 +870,17 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 				                        	}
 			                       }
 
+
 			                }
+
 		                    	Node = vtvStockQty->GetNext(Node);
 
                                // delete
-                               stock_request_stock_key.clear();
+
 
 
 	               	}
+
 
        }
 
@@ -946,16 +951,17 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
 
                            }
-                              delete TransfferedStockRequestKeys;
+                              
+
                             //delete Stock Request as per the user selection
                             for(std::vector<int>::iterator i = stock_request_to_be_deleted.begin(); i!= stock_request_to_be_deleted.end();++i)
                               {
                                    qrdelete_stock_request->ParamByName("REQUEST_NUMBER")->AsInteger= *i;
                                   qrdelete_stock_request->ExecSQL();
                               }
-
+                                 
                          	   Transaction->Commit();
-                               stock_request_to_be_deleted.clear();
+
 
                       }
 
@@ -1009,7 +1015,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
                       }
 
 
-                // delete NodeData ;
+              // delete NodeData ;
                 Close();
 
 			}
@@ -1017,9 +1023,23 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 			{
 				Application->MessageBox("There was a problem transferring the stock. No stock has been transferred", "Error", MB_OK + MB_ICONERROR);
 			}
+
 		}
 
 
+
+}
+//---------------------------------------------------------------------------
+void TfrmTransferMulti::ReleaseAllocations()
+{
+   SelectedStockRequestKeys->Clear();
+    vtvStockQty->Clear();
+
+   delete vtvStockQty;
+   vtvStockQty = NULL;
+   delete SelectedStockRequestKeys;
+   SelectedStockRequestKeys=NULL;
+       
 
 }
 //---------------------------------------------------------------------------

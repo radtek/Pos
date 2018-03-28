@@ -144,8 +144,10 @@ private:	// User declarations
 	END_MESSAGE_MAP(TForm)
         void LoadTreeView();
         TStringList *BatchKeyList;
+        
 		    void LoadStocksForManualMode();
     void LoadStocksForStockRequestMode();
+  
 public:		// User declarations
 	__fastcall TfrmTransferMulti(TComponent* Owner);
 	AnsiString Source;
@@ -159,8 +161,8 @@ public:		// User declarations
 
     TStringList*   CommittedStockRequestKeys;
     int Transfer_no;
-
-    	float	StockTakeQty  ;
+    float StockTakeQty  ;
+    void ReleaseAllocations();
 
 };
 //---------------------------------------------------------------------------

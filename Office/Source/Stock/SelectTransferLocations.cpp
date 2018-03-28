@@ -40,8 +40,16 @@ bool TSelectTransferLocations::Execute()
 																	frmSelectTransferLocations->lbSource->ItemIndex];
 				fTransferLocations.Destination	= frmSelectTransferLocations->lbDestination->Items->Strings[
 																	frmSelectTransferLocations->lbDestination->ItemIndex];
+                frmSelectTransferLocations->lbDestination->Clear();
+                frmSelectTransferLocations->lbDestination->Refresh();
+                frmSelectTransferLocations->lbSource->Clear();
+                frmSelectTransferLocations->lbSource->Refresh();
 				return true;
 			}
+            frmSelectTransferLocations->lbDestination->Clear();
+            frmSelectTransferLocations->lbDestination->Refresh();
+            frmSelectTransferLocations->lbSource->Clear();
+            frmSelectTransferLocations->lbSource->Refresh();
 		}
 	}
 	return false;
@@ -52,6 +60,11 @@ TTransferLocations TSelectTransferLocations::Locations()
 	return TTransferLocations(fTransferLocations);
 }
 //---------------------------------------------------------------------------
+TSelectTransferLocations::~TSelectTransferLocations()
+{
+    frmSelectTransferLocations->Release();
+    frmSelectTransferLocations->Refresh();
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 __fastcall TfrmSelectTransferLocations::TfrmSelectTransferLocations(TComponent* Owner)
