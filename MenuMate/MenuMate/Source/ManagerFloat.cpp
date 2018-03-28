@@ -267,10 +267,7 @@ void TManagerFloat::OpenCashDrawerAccordingToPrinter(Database::TDBTransaction &D
         UnicodeString responseMessage = fiscalAdapter->OpenCashDrawerForFiscalPrinter();
         //will use responseMessage later.
     }
-    else
-    {
-        TComms::Instance().KickLocalDraw(DBTransaction);
-    }
+    TComms::Instance().KickLocalDraw(DBTransaction);
 }
 
 
