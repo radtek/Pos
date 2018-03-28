@@ -21,5 +21,6 @@ public:
        UnicodeString ConvertInToFiscalData(TPaymentTransaction paymentTransaction);
        UnicodeString FiscalZReportSettlement();
        UnicodeString GetFiscalPrinterStatus();
+       UnicodeString OpenCashDrawerForFiscalPrinter();
 };
 #endif

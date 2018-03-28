@@ -68,6 +68,7 @@ struct TFiscalBillDetails
     UnicodeString PrinterType;
     UnicodeString PrinterLogicalName;
     UnicodeString SaleType;
+    bool OpenCashDrawer;
 };
 
 struct TFiscalPrinterResponse
