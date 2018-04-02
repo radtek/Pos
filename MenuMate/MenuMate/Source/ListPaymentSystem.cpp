@@ -6616,7 +6616,6 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
     return retVal;
 }
 //--------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction)
 {
     bool paymentComplete = true;

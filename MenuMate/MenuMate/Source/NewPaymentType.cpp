@@ -120,7 +120,9 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
+        
         Payment.SetPaymentAttribute(ePayTypeReservationMasterPay,cbreservationmaster->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
         if (Reason != "")
         {
             Payment.AdjustmentReason = Reason;
@@ -371,6 +373,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
    }
     cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
 
+   cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
