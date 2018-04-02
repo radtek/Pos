@@ -54,6 +54,7 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
+        TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
         {
             if(LoadRevenueCodes(DBTransaction))
@@ -135,6 +136,7 @@ bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
 {
+    TOracleTCPIP::Instance().IsSilentConnect = false;
     bool retValue = TOracleTCPIP::Instance().Connect();
     return retValue;
 }
@@ -202,9 +204,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             tipEftPOS += (double)payment->TipAmount;
         }
         double totalPayTendered = 0;
+        double tipAux = 0;
+        if(tip >= 0.0)
+            tipAux = tip;
         double roundedPaymentAmount = (double)_paymentTransaction.Money.PaymentAmount -
                                       (double)_paymentTransaction.Money.PaymentSurcharges
-                                      + tip;
+                                      + tipAux;
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -221,30 +226,45 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 tip += tipEftPOS;
                 double tipPortion = RoundTo(tip * portion,-2);
                 postRequest = oracledata->CreatePost(_paymentTransaction,portion, i,tipPortion);
-                if(payment->GetSurcharge() != 0)
+                double surcharge = 0;
+                if(_paymentTransaction.CreditTransaction)
+                    surcharge = payment->GetDiscount();
+                else
+                    surcharge = payment->GetSurcharge();
+                if(surcharge != 0)
                 {
-                   double surcharge = payment->GetSurcharge();
                    surcharge = RoundTo(surcharge * 100 , -2);
                    AnsiString strSurcharge = (AnsiString)surcharge;
                    if(strSurcharge.Pos(".") != 0)
                    {
                       strSurcharge = strSurcharge.SubString(1,strSurcharge.Pos(".")-1);
                    }
-                   int size = postRequest.Discount.size();
-                   if(size < 16)
+                   for(int subtotalindex = 0; subtotalindex < 16; subtotalindex++)
                    {
-                        int paymentSurcharge = 0;
+                      if(postRequest.Subtotal1[subtotalindex] != "" && postRequest.Subtotal1[subtotalindex] != 0)
+                      {
+                        int paymentSurcharge = atoi(postRequest.ServiceCharge[subtotalindex].c_str());
                         paymentSurcharge += atoi(strSurcharge.c_str());
                         AnsiString str = paymentSurcharge;
-                        postRequest.Discount.push_back(str);
+                        postRequest.ServiceCharge[subtotalindex] = str;
+                        break;
+                      }
                    }
-                   else
-                   {
-                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
-                        paymentSurcharge += atoi(strSurcharge.c_str());
-                        AnsiString str = paymentSurcharge;
-                        postRequest.Discount[15] = str;
-                   }
+//                   int size = postRequest.Discount.size();
+//                   if(size < 16)
+//                   {
+//                        int paymentSurcharge = 0;
+//                        paymentSurcharge += atoi(strSurcharge.c_str());
+//                        AnsiString str = paymentSurcharge;
+//                        postRequest.Discount.push_back(str);
+//                   }
+//                   else
+//                   {
+//                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
+//                        paymentSurcharge += atoi(strSurcharge.c_str());
+//                        AnsiString str = paymentSurcharge;
+//                        postRequest.Discount[15] = str;
+//                   }
                 }
 
                 if(_paymentTransaction.Money.TotalRounding  != 0)
@@ -282,13 +302,19 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             }
          }
          bool isNotCompleteCancel = false;
+         bool hasCancelledItems = false;
          for(int itemNumber = 0; itemNumber < _paymentTransaction.Orders->Count; itemNumber++)
          {
             TItemComplete *itemThis = (TItemComplete*)_paymentTransaction.Orders->Items[itemNumber];
             if(itemThis->OrderType != CanceledOrder)
             {
                isNotCompleteCancel = true;
+               hasCancelledItems = false;
                break;
+            }
+            else if(itemThis->OrderType == CanceledOrder)
+            {
+                hasCancelledItems = true;
             }
          }
          if(totalPayTendered == 0 && isNotCompleteCancel) // case for cancelled,100% discount
@@ -301,8 +327,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             AnsiString data = oracledata->SerializeOut(doc);
             resultData = TOracleTCPIP::Instance().SendAndFetch(data);
             retValue = oracledata->DeserializeData(resultData, _postResult);
-
          }
+         else if(totalPayTendered == 0 && hasCancelledItems)
+         {
+            retValue = true;
+         }
+
     }
     catch(Exception &E)
     {
@@ -343,3 +373,62 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
     }
 }
 //---------------------------------------------------------------------------
+void TManagerOraclePMS::LogPMSEnabling(TriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString fileName = GetFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Oracle as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Oracle at start of Menumate" +"\n");
+        }
+        else if(triggerType == eSelf)
+        {
+            List->Add("Note- "+ (AnsiString)"Found Oracle disabled with necessary details present" +"\n" +
+                  "      "+ "Menumate is trying to enable Oracle and then sale would be processed" +"\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TManagerOraclePMS::GetFileName()
+{
+    AnsiString directoryName = "";
+    AnsiString fileName = "";
+    directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    fileName = directoryName + "/" + name;
+    return fileName;
+}
+//----------------------------------------------------------------------------
+bool TManagerOraclePMS::EnableOraclePMSSilently()
+{
+    bool retValue = false;
+    try
+    {
+        TOracleTCPIP::Instance().IsSilentConnect = true;
+        if(TOracleTCPIP::Instance().Connect())
+        {
+            retValue = GetLinkStatus();
+        }
+    }
+    catch(Exception &Ex)
+    {
+        retValue = false;
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------

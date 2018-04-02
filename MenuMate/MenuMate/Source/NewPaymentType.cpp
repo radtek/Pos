@@ -90,7 +90,6 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.TabKey  =TabKey;
         Payment.GLCode = GLCode;
         Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
-        Payment.SmartConnectQREnabled = cbSmartConnectQR->Checked;
 
         Payment.SetPaymentAttribute(ePayTypeCustomSurcharge,cbIsTip->Checked);
         Payment.SetPaymentAttribute(ePayTypeOpensCashDrawer,cbOpendrawer->Checked);
@@ -121,7 +120,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
-        Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
+        Payment.SetPaymentAttribute(ePayTypeReservationMasterPay,cbreservationmaster->Checked);
         if (Reason != "")
         {
             Payment.AdjustmentReason = Reason;
@@ -191,8 +190,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         UniPass = Payment.UniVoucherPass;
         TabKey  = Payment.TabKey;
         GLCode  = Payment.GLCode;
-        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;
-        cbSmartConnectQR->Checked = Payment.SmartConnectQREnabled;
+        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;;
+
 
         if (Payment.PercentAdjust != 0)
         {
@@ -322,6 +321,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbPVAcceptedMsg->Checked = Payment.GetPaymentAttribute(ePayTypeDispPVMsg);
         cbRMSInterface->Checked = Payment.GetPaymentAttribute(ePayTypeRMSInterface);
         cbAllowTips->Checked = Payment.GetPaymentAttribute(ePayTypeAllowTips);
+        cbreservationmaster->Checked = Payment.GetPaymentAttribute(ePayTypeReservationMasterPay);
         if (Payment.GetPaymentAttribute(ePayTypeChargeToAccount))
         {
             CheckBoxExport->Checked = true;
@@ -369,7 +369,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
    }
-   cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+    cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
@@ -805,7 +806,8 @@ void __fastcall TfrmNewPaymentType::tbRoundingMouseClick(TObject *Sender)
 //		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
 //	  }
 //   }
-//}
+//}
+
 // ---------------------------------------------------------------------------
 void TfrmNewPaymentType::RedrawButtons(TObject * Sender)
 {
@@ -1277,11 +1279,24 @@ void __fastcall TfrmNewPaymentType::cbWalletPaymentsClick(TObject *Sender)
   btnWalletConfig->Enabled = cbWalletPayments->Checked;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
+{
+    if(cbCSVPaymentType->Checked)
+    {
+        cbreservationmaster->Enabled = true;
+
+    }
+    else if(!cbCSVPaymentType->Checked)
+    {
+        cbreservationmaster->Enabled = false;
+        cbreservationmaster->Checked = cbreservationmaster->Enabled ;
+    }
+}
+
+//---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
 {
 //  btnWalletType->Enabled = cbWalletPayments->Checked;
 //  btnWalletConfig->Enabled = cbWalletPayments->Checked;
 }
 //---------------------------------------------------------------------------
-
-

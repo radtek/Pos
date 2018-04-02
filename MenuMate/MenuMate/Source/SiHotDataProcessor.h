@@ -22,6 +22,7 @@ class TSiHotDataProcessor
        void AddRoundingAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
     private:
        double QtyServiceCharge;
+       double totalBill;
        double GetVATpercentage(TItemComplete *itemComplete);
        void AddSurchargeAndTip( TRoomCharge &_roomCharge, double surcharge, UnicodeString _billNo,double tip);
        void AddDiscountPartToService(TItemComplete *itemComplete,TRoomCharge &_roomCharge, TPaymentTransaction &_paymentTransaction,UnicodeString _billNo);

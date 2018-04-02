@@ -121,6 +121,7 @@ TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge)
             arrayofSiHotPayments[arrayofSiHotPayments.Length - 1] = siHotPayment;
         }
         roomChargeDetails->PaymentList = arrayofSiHotPayments;
+        roomChargeDetails->Total = _roomCharge.Total;
         CoInitialize(NULL);
         roomResponse = siHotClient->PostRoomCharge(roomChargeDetails);
         roomChargeResponse.IsSuccessful = roomResponse->IsSuccessful;

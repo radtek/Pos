@@ -102,6 +102,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbWalletPayments;
         TTouchBtn *btnWalletType;
         TTouchBtn *btnWalletConfig;
+        TCheckBox *cbreservationmaster;
         TCheckBox *cbSmartConnectQR;
         TGroupBox *GrpSmartConnect;
         void __fastcall pnlOkClick(TObject *Sender);
@@ -147,6 +148,7 @@ __published:	// IDE-managed Components
         void __fastcall btnWalletConfigMouseClick(TObject *Sender);
         void __fastcall btnWalletTypeMouseClick(TObject *Sender);
         void __fastcall cbWalletPaymentsClick(TObject *Sender);
+        void __fastcall cbCSVPaymentTypeClick(TObject *Sender);
         void __fastcall cbSmartConnectQRClick(TObject *Sender);
 
 private:	// User declarations

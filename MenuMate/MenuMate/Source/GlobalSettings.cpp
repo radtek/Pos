@@ -410,6 +410,9 @@ TGlobalSettings::TGlobalSettings()
     ApplyRoundingTax = false;
     RoundingTaxProfileKey = 0;
     RoundingTaxRate = 0;
+    UseItalyFiscalPrinter = false;
+    PrinterType = "";
+    PrinterlogicalName = "";
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
 }

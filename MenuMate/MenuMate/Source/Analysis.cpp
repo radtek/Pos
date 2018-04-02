@@ -52,6 +52,7 @@
 #include "ExportCSV.h"
 #include "StringTools.h"
 #include "MallFactory.h"
+#include "FiscalPrinterAdapter.h"
 
 #include <string>
 #include <cassert>
@@ -95,6 +96,7 @@ PaymentTypeListXML(new TPOS_XMLBase("List Payments Export")),
 GroupsListXML(new TPOS_XMLBase("List Category Groups Export")),
 CategoryListXML(new TPOS_XMLBase("List Categories Export"))
 {
+    zedLogsList = new TStringList();
 }
 
 TMMContactInfo TfrmAnalysis::lastAuthenticatedUser;
@@ -819,6 +821,7 @@ void TfrmAnalysis::PrintBlindBalance(Database::TDBTransaction &DBTransaction, TB
 {
 	try
 	{
+        zedLogsList->Add("Blind Balance printing section starts ");
 		std::auto_ptr <TPrintout> Printout(new TPrintout);
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
@@ -922,9 +925,11 @@ void TfrmAnalysis::PrintBlindBalance(Database::TDBTransaction &DBTransaction, TB
 	}
 	catch(Exception & E)
 	{
+        zedLogsList->Add("Blind Balance printing catch block ");
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		throw;
 	}
+    zedLogsList->Add("Blind Balance printing section ends ");
 }
 
 void TfrmAnalysis::PrintWriteOff(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName)
@@ -1724,6 +1729,7 @@ void TfrmAnalysis::PrintConsumption(Database::TDBTransaction &DBTransaction)
 // ---------------------------------------------------------------------------
 void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName, int zedKey)
 {
+    zedLogsList->Add("Update archive code execution starts: ");
 	long NewBillingKey;
 	try
 	{
@@ -1886,6 +1892,8 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBWebArchive->SQL->Text = "insert into \"ARCWEB \" "
 			"(\"WEBORDER_KEY\", \"ARCBILL_KEY\") values (:\"WEBORDER_KEY\", :\"ARCBILL_KEY\") ";
 
+            zedLogsList->Add("query object created and initialized with query. ");
+
             if(TGlobalSettings::Instance().mallInfo.MallId)
             {
                 IBMallQuery->Close();
@@ -1895,12 +1903,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                 IBMallSalesTypeQuery->Close();
                 IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
                                                   "AND A.DEVICE_KEY = :DEVICE_KEY AND A.DATE_CREATED = :DATE_CREATED ";
+                zedLogsList->Add("mall query object created and initialized with query. ");
             }
 
             try
             {
          	    IBDayArcBill->ExecQuery();
 
+                zedLogsList->Add("Data processing starts. Befor the loop of dayarcbill iteration.");
 			    for (; !IBDayArcBill->Eof; IBDayArcBill->Next())
                 {
                         IBInternalQuery->Close();
@@ -1909,6 +1919,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                         int ArcBillKey = IBInternalQuery->Fields[0]->AsInteger;
                         try
                         {
+
                         // Copy all the daily ArcBill Fields to the main archive
                             IBArcBill->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                             IBArcBill->ParamByName("Z_KEY")->AsInteger = Zedkey;
@@ -1936,20 +1947,29 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             }
 
                             IBArcBill->ExecQuery();
+                            zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " data moved from dayarcbill to arcbill: IBArcBill->ExecQuery() ");
+
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcBill->ExecQuery() " + ArcBillKey);
+                        zedLogsList->Add("Exception while moving from dayarcbill to arcbill: IBArcBill->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString );
                         throw;
                     }
 
-
-                    if (StockMasterPath != "")
+                    try
                     {
-                        Csv.Add("H," + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + "," + IBDayArcBill->FieldByName("TIME_STAMP")
-                        ->AsDateTime.FormatString("d/m/yyyy") + "," + IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime.FormatString("H:N:S")
-                        + "," + IBDayArcBill->FieldByName("STAFF_NAME")->AsString + "," + IBDayArcBill->FieldByName("DISCOUNT")
-                        ->AsString + "," + IBDayArcBill->FieldByName("PATRON_COUNT")->AsString);
+                        if (StockMasterPath != "")
+                        {
+                            Csv.Add("H," + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + "," + IBDayArcBill->FieldByName("TIME_STAMP")
+                            ->AsDateTime.FormatString("d/m/yyyy") + "," + IBDayArcBill->FieldByName("TIME_STAMP")->AsDateTime.FormatString("H:N:S")
+                            + "," + IBDayArcBill->FieldByName("STAFF_NAME")->AsString + "," + IBDayArcBill->FieldByName("DISCOUNT")
+                            ->AsString + "," + IBDayArcBill->FieldByName("PATRON_COUNT")->AsString);
+                        }
+                    }
+                    catch(Exception & E)
+                    {
+                        zedLogsList->Add("Exception while adding invoice number to csv IBArcBill->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
+                        throw;
                     }
                     int dayArcBillKeyRef = 0;
                     try
@@ -1984,10 +2004,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                                 ("SUBTOTAL")->AsString);
                             }
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : data moved from dayarcbillpay to arcbillpay: IBArcBill->ExecQuery() ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcBillPay->ExecQuery() "+   dayArcBillKeyRef);
+                        zedLogsList->Add("Exception while moving from dayarcbillpay to arcbillpay: IBArcBillPay->ExecQuery() and invoice number is " + IBArcBillPay->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2017,10 +2038,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             IBArcRef->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                             IBArcRef->ExecQuery();
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : data moved from dayarcbillref to arcbillref: IBArcRef->ExecQuery() ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBDayArcRef->ExecQuery() "+   dayArcBillKeyRef);
+                        zedLogsList->Add("Exception while moving from dayarcref to arcref: IBArcRef->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2056,10 +2078,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                                 ("SUBTOTAL")->AsString);
                             }
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : data moved from dayarcsurcharge to arcsurcharge: IBArcSurcharge->ExecQuery() ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArcSurcharge->ExecQuery() "+  dayArcBillKeyRef);
+                        zedLogsList->Add("Exception while moving from dayarcsurcharge to arcsurcharge : IBArcSurcharge->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2098,10 +2121,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     IBDayPartonCount->FieldByName("PATRON_COUNT")->AsString);
                     } */
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : patron data moved: IBPatronCount->ExecQuery() ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBPatronCount->ExecQuery() "+  dayArcBillKeyRef);
+                        zedLogsList->Add("Exception while moving patron count data : IBPatronCount->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2118,10 +2142,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             IBWebArchive->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                             IBWebArchive->ExecQuery();
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : data moved from dayarcweb to arcweb: IBWebArchive->ExecQuery() ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBWebArchive->ExecQuery() " + dayArcBillKeyRef);
+                        zedLogsList->Add("Exception while moving dayarcweb to arc web : IBWebArchive->ExecQuery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2155,7 +2180,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                                }
                                catch(Exception & E)
                                {
-                                    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+  dayArcBillKeyRef);
+                                    zedLogsList->Add("Exception while moving dayarchive to archive IBArchive->ExecQuery(); and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                                     throw;
                                }
 
@@ -2183,7 +2208,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             }
                             catch(Exception & E)
                             {
-                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+  dayArcBillKeyRef);
+                                zedLogsList->Add("Exception while moving dayarcorderdiscounts to arcorderdiscounts : IBArchiveDiscounts->execquery() and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                                 throw;
                             }
 
@@ -2211,7 +2236,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             }
                             catch(Exception & E)
                             {
-                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBArchiveTaxes->ExecQuery() "+ dayArcBillKeyRef);
+                                zedLogsList->Add("Exception while moving dayarcordertaxes to arcordertaxes and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                                 throw;
                             }
 
@@ -2234,42 +2259,52 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                             }
                             catch(Exception & E)
                             {
-                                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "DAYARCCATEGORY->ExecQuery() "+ dayArcBillKeyRef);
+                                zedLogsList->Add("Exception while moving dayarccategory to Arccategory and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                                 throw;
                             }
 
-                            if (StockMasterPath != "")
+                            try
                             {
-                                bool SetMunuItem = (IBDayArchive->FieldByName("PRICE")->AsCurrency == 0);
-                                UnicodeString ITEM_ID = IBDayArchive->FieldByName("ITEM_ID")->AsString;
-                                UnicodeString SIZE_NAME = IBDayArchive->FieldByName("SIZE_NAME")->AsString;
-                                UnicodeString TIME_STAMPDMY = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("d/m/yyyy");
-                                UnicodeString TIME_STAMPHMS = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn:ss");
-                                UnicodeString SERVER_NAME = IBDayArchive->FieldByName("SERVER_NAME")->AsString;
-                                UnicodeString ORDER_TYPE = IBDayArchive->FieldByName("ORDER_TYPE")->AsString;
-                                UnicodeString ORDER_LOCATION = IBDayArchive->FieldByName("ORDER_LOCATION")->AsString;
-                                UnicodeString LOYALTY_NAME = Membership->GetContactName(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
-                                UnicodeString MEMBER_NUMBER = Membership->GetContactNumber(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
-                                UnicodeString SITE_ID = FormatFloat("00000",TGlobalSettings::Instance().SiteID);
-                                UnicodeString DISCOUNT = FormatFloat("0.00", IBDayArchive->FieldByName("DISCOUNT")->AsCurrency);
-                                UnicodeString REDEEMED = FormatFloat("0.00", IBDayArchive->FieldByName("REDEEMED")->AsCurrency);
-                                UnicodeString POINTS_PERCENT = FloatToStr(IBDayArchive->FieldByName("POINTS_PERCENT")->AsFloat);
-                                UnicodeString POINTS_EARNED = FormatFloat("0.00", IBDayArchive->FieldByName("POINTS_EARNED")->AsCurrency);
-                                UnicodeString THIRDPARTYCODES_KEY = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,IBDayArchive->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
-                                UnicodeString PRICE = FormatFloat("0.00", IBDayArchive->FieldByName("PRICE")->AsCurrency * IBDayArchive->FieldByName("QTY")->AsCurrency);
-                                UnicodeString HAPPY_HOUR = IBDayArchive->FieldByName("HAPPY_HOUR")->AsString.UpperCase() == "F" ? "0" : "1";
-                                UnicodeString PLU = IBDayArchive->FieldByName("PLU")->AsString;
+                                if (StockMasterPath != "")
+                                {
+                                    bool SetMunuItem = (IBDayArchive->FieldByName("PRICE")->AsCurrency == 0);
+                                    UnicodeString ITEM_ID = IBDayArchive->FieldByName("ITEM_ID")->AsString;
+                                    UnicodeString SIZE_NAME = IBDayArchive->FieldByName("SIZE_NAME")->AsString;
+                                    UnicodeString TIME_STAMPDMY = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("d/m/yyyy");
+                                    UnicodeString TIME_STAMPHMS = IBDayArchive->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn:ss");
+                                    UnicodeString SERVER_NAME = IBDayArchive->FieldByName("SERVER_NAME")->AsString;
+                                    UnicodeString ORDER_TYPE = IBDayArchive->FieldByName("ORDER_TYPE")->AsString;
+                                    UnicodeString ORDER_LOCATION = IBDayArchive->FieldByName("ORDER_LOCATION")->AsString;
+                                    UnicodeString LOYALTY_NAME = Membership->GetContactName(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
+                                    UnicodeString MEMBER_NUMBER = Membership->GetContactNumber(DBTransaction, IBDayArchive->FieldByName("LOYALTY_KEY")->AsInteger);
+                                    UnicodeString SITE_ID = FormatFloat("00000",TGlobalSettings::Instance().SiteID);
+                                    UnicodeString DISCOUNT = FormatFloat("0.00", IBDayArchive->FieldByName("DISCOUNT")->AsCurrency);
+                                    UnicodeString REDEEMED = FormatFloat("0.00", IBDayArchive->FieldByName("REDEEMED")->AsCurrency);
+                                    UnicodeString POINTS_PERCENT = FloatToStr(IBDayArchive->FieldByName("POINTS_PERCENT")->AsFloat);
+                                    UnicodeString POINTS_EARNED = FormatFloat("0.00", IBDayArchive->FieldByName("POINTS_EARNED")->AsCurrency);
+                                    UnicodeString THIRDPARTYCODES_KEY = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,IBDayArchive->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
+                                    UnicodeString PRICE = FormatFloat("0.00", IBDayArchive->FieldByName("PRICE")->AsCurrency * IBDayArchive->FieldByName("QTY")->AsCurrency);
+                                    UnicodeString HAPPY_HOUR = IBDayArchive->FieldByName("HAPPY_HOUR")->AsString.UpperCase() == "F" ? "0" : "1";
+                                    UnicodeString PLU = IBDayArchive->FieldByName("PLU")->AsString;
 
-                                Csv.Add(UnicodeString("P,") + ITEM_ID + "," + SIZE_NAME + "," + "," + TIME_STAMPDMY + "," + TIME_STAMPHMS +
-                                "," + SERVER_NAME + "," + ORDER_TYPE + "," + ORDER_LOCATION + "," + HAPPY_HOUR + "," + LOYALTY_NAME + "," + SITE_ID +
-                                "," + MEMBER_NUMBER + "," + DISCOUNT + "," + REDEEMED + "," + POINTS_PERCENT + "," + POINTS_EARNED + "," +
-                                THIRDPARTYCODES_KEY + "," + (SetMunuItem ? "1" : "0") + "," + PRICE + "," + PLU);
+                                    Csv.Add(UnicodeString("P,") + ITEM_ID + "," + SIZE_NAME + "," + "," + TIME_STAMPDMY + "," + TIME_STAMPHMS +
+                                    "," + SERVER_NAME + "," + ORDER_TYPE + "," + ORDER_LOCATION + "," + HAPPY_HOUR + "," + LOYALTY_NAME + "," + SITE_ID +
+                                    "," + MEMBER_NUMBER + "," + DISCOUNT + "," + REDEEMED + "," + POINTS_PERCENT + "," + POINTS_EARNED + "," +
+                                    THIRDPARTYCODES_KEY + "," + (SetMunuItem ? "1" : "0") + "," + PRICE + "," + PLU);
+                                }
                             }
+                            catch(Exception & E)
+                            {
+                                zedLogsList->Add("Exception adding row to csv and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
+                                throw;
+                            }
+
                         }
+                        zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " : data moved from dayarchive to archive ");
                     }
                     catch(Exception & E)
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "IBDayArchive1->ExecQuery() " + dayArcBillKeyRef);
+                        zedLogsList->Add("Exception in moving from dayarchive to archive parent catch and invoice number is " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString);
                         throw;
                     }
 
@@ -2294,23 +2329,36 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             }
             catch(Exception & E)
 	        {
-                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "First Try Block");
+                zedLogsList->Add("Exception in overall data movement from day's table to arc's table.");
+                MakeZEDLogFile(zedLogsList);
+                zedLogsList->Clear();
+                throw;
             }
 
-			IBInternalQuery->Close();
-			IBInternalQuery->SQL->Text = "DELETE FROM DAYARCBILL where TERMINAL_NAME = :TERMINAL_NAME";
-			IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-			IBInternalQuery->ExecQuery();
-
-			if (StockMasterPath != "")
-			{
-				Csv.SaveToFile(ExportFile);
-			}
-
-            if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
-			{
-                UpdateArcMallExport(DBTransaction);
+            try
+            {
+                zedLogsList->Add("Deleting data from dayarcbill");
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "DELETE FROM DAYARCBILL where TERMINAL_NAME = :TERMINAL_NAME";
+                IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+                IBInternalQuery->ExecQuery();
+                zedLogsList->Add("Data deleted from dayarcbill");
             }
+            catch(Exception & E)
+	        {
+                zedLogsList->Add("Exception in deleting data from dayarcbill");
+                throw;
+            }
+
+                if (StockMasterPath != "")
+                {
+                    Csv.SaveToFile(ExportFile);
+                }
+
+                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
+                {   zedLogsList->Add("updating zed table for mall");
+                    UpdateArcMallExport(DBTransaction);
+                }
 
 		}
 		__finally
@@ -2318,13 +2366,19 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			if (StockMasterPath != "")
 			{
 				DeleteFile(StockMasterPath + "MMSTART");
+                zedLogsList->Add("Deleting stock file");
+                MakeZEDLogFile(zedLogsList);
+                zedLogsList->Clear();
 			}
 		}
 	}
 	catch(Exception & E)
 	{
+        zedLogsList->Add("Exception in data moving in updateArchive() function last catch()");
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        MakeZEDLogFile(zedLogsList);
+        zedLogsList->Clear();
 		throw E;
 	}
 }
@@ -2559,6 +2613,8 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 		frmDropDown->AddButton("Consumption", &ReportConsumption);
 		frmDropDown->AddButton("Table & Tab Summary", &TableTabSummaryReport);
 		frmDropDown->AddButton("Site Summary", &ReportSiteSummary);
+		if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+            frmDropDown->AddButton("Fiscal Printer Settlement", &FiscalPrinterSettlement);
 
 		if (frmDropDown->ShowModal() == mrOk)
         {
@@ -2739,10 +2795,12 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    zedLogsList->Clear();
+    zedLogsList->Add("-----------------------------Zed report button clicked.--------------------------------------------------------------" );
+    zedLogsList->Add("ZED starts at: " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
     ZedToArchive->Clear();
     ZedToArchive->Position = 0;
     int Zedkey = 0;
-
     TCashDenominationControllerInterface::Instance()->ResetCashDenominations();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
@@ -2754,7 +2812,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
         dcBill->FetchAllDCOpenSessions();
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
     }
-
+    zedLogsList->Add("After Drink command code execution." );
 	TGlobalSettings &gs = TGlobalSettings::Instance();
 	ZedCancel    = false;
 	ZedCompleted = false;
@@ -2798,7 +2856,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
         std::vector<TXeroInvoiceDetail> XeroInvoiceDetails;
         std::vector<TMYOBInvoiceDetail> MYOBInvoiceDetails;
         UnicodeString DeviceName = GetTerminalName();
-
+        zedLogsList->Add("Processing zed for" + DeviceName + " Terminal");
         bool CompleteZed;
 
 		try
@@ -2817,20 +2875,23 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			IBInternalQuery->ExecQuery();
 			z_key = IBInternalQuery->Fields[0]->AsInteger;
 
-
 		   if (TGlobalSettings::Instance().EnablePrinterCounts)
 			{
+                zedLogsList->Add("inside EnablePrinterCounts enable check ");
 				TPrinterReadingController PrinterReadings(this, DBTransaction);
 				PrinterReadings.Run(z_key);
 				PrinterReading = PrinterReadings.Get();
+                zedLogsList->Add("After EnablePrinterCounts enable check ");
 			}
 
 			if (TGlobalSettings::Instance().EnablePaxCount)
 			{
+                zedLogsList->Add("inside EnablePaxCount enable check ");
 				TPaxCountController PaxCountController(this, DBTransaction);
 				PaxCountController.Run();
 				PaxCountController.Show();
 				PaxCount = PaxCountController.Get();
+                zedLogsList->Add("After EnablePaxCount enable check ");
 			}
 
 			GroupTotalsXML->Clear();
@@ -2844,7 +2905,9 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 
             TTransactionInfo TransactionInfo;
             TTransactionInfoProcessor::Instance().RemoveEntryFromMap(DeviceName);
+            zedLogsList->Add("Befor calling  GetTransactionInfo(DBTransaction, DeviceName)");
             TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransaction, DeviceName);
+            zedLogsList->Add("After calling  GetTransactionInfo(DBTransaction, DeviceName)");
 
             Processing->Close();
             //Processing->Refresh(); // add to refresh...
@@ -2855,46 +2918,62 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
             TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 			ReportManager reportManager;
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
-             
+            zedLogsList->Add("Before form show of close till.");
              CompleteZed = zedReport->DisplayAndPrint(ZedToArchive);
-              
+
+             zedLogsList->Add("After  form of close till processed and zed completed falg is " + CompleteZed);
 			// Mall Export added variabnle
 			ZedCompleted =  CompleteZed;
 			ZedCancel    = !CompleteZed;
 			if (CompleteZed)
 			{
+                zedLogsList->Add("If complete zed flag is true after processing of close till form");
                 //Get terminal earning
                 Currency TotalEarnings = dataCalculationUtilities->GetTotalEarnings(DBTransaction, DeviceName);
+                zedLogsList->Add("After total earning calulation :");
                 //Get Accumulated zed
                 Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
                 AccumulatedZedTotal +=  TotalEarnings;
+                zedLogsList->Add("After calculating Accumulated zed total: ");
 
               OpenCashDrawer();
+              zedLogsList->Add("After opencash drawer");
               if(TGlobalSettings::Instance().EnableBlindBalances)
                 {
+                    zedLogsList->Add("Blind balance section start.");
                    Balances = TBlindBalanceControllerInterface::Instance()->GetBalances();
                    BagID = TBlindBalanceControllerInterface::Instance()->GetBagID();
+                   zedLogsList->Add("Blind balance section end.");
                 }
 
                 //For MYOB And XERO
                 if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled)
                 {
-                  XeroInvoiceDetails = CalculateAccountingSystemData(DBTransaction);
+                    zedLogsList->Add("zero section start.");
+                    XeroInvoiceDetails = CalculateAccountingSystemData(DBTransaction);
+                    zedLogsList->Add("zero section end.");
                 }
                 else if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsMYOBEnabled)
                 {
-                  MYOBInvoiceDetails = CalculateMYOBData(DBTransaction, Balances);
+                    zedLogsList->Add("Myob section start.");
+                    MYOBInvoiceDetails = CalculateMYOBData(DBTransaction, Balances);
+                    zedLogsList->Add("Myob section ends.");
                 }
 
 Zed:
 				TMallExportUpdateAdaptor exportUpdateAdaptor;
+                zedLogsList->Add("Befor GetFinancialDetails(DBTransaction, TransactionInfo, DeviceName) starts ");
 				TFinancialDetails FinancialDetails = GetFinancialDetails(DBTransaction, TransactionInfo, DeviceName);
+                zedLogsList->Add("After GetFinancialDetails(DBTransaction, TransactionInfo, DeviceName)  ");
+                zedLogsList->Add("Before UpdateExportTablesOnZed(FinancialDetails, &DBTransaction)  ");
 				exportUpdateAdaptor.UpdateExportTablesOnZed(FinancialDetails, &DBTransaction);
+                zedLogsList->Add("After UpdateExportTablesOnZed(FinancialDetails, &DBTransaction)  ");
 				TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 				if(TGlobalSettings::Instance().EnableDontClearZedData)
 				{
                     try
                     {
+                        zedLogsList->Add("if EnableDontClearZedData setting is on ");
                         IBInternalQuery->Close();
                         IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
                         IBInternalQuery->ExecQuery();
@@ -2913,6 +2992,7 @@ Zed:
                     catch(Exception & E)
                     {
                         DBTransaction.Rollback();
+                        zedLogsList->Add("Catch block of TGlobalSettings::Instance().EnableDontClearZedData ");
                         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
                         throw;
                     }
@@ -2920,13 +3000,14 @@ Zed:
 				}
 				else
 				{
-
+                    zedLogsList->Add("Else block if EnableDontClearZedData setting is off ");
 					IBInternalQuery->Close();
 					IBInternalQuery->SQL->Text = "SELECT " "* FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME AND " "TIME_STAMP IS NULL";
 					IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
 					IBInternalQuery->ExecQuery();
 					if (IBInternalQuery->RecordCount == 0)
 					{
+                        zedLogsList->Add("if zeds table contains no record having time stamp as null for that terminal. ");
 						int CurrentSecurityRef = TDBSecurity::GetNextSecurityRef(DBTransaction);
 						TDBSecurity::ProcessSecurity(DBTransaction, CurrentSecurityRef,
 						lastAuthenticatedUser.ContactKey, SecurityTypes[secZedded],
@@ -2943,7 +3024,8 @@ Zed:
 						IBInternalQuery->ExecQuery();
 						z_key = Zedkey = IBInternalQuery->Fields[0]->AsInteger;
                         int EMAIL_STATUS = 0;
-						IBInternalQuery->Close();                                                          //
+						IBInternalQuery->Close();
+                        zedLogsList->Add("After updating security table. Now will update zeds table.");                                                         //
 						IBInternalQuery->SQL->Text =
 						"INSERT INTO ZEDS ( Z_KEY, INITIAL_FLOAT, TERMINAL_NAME, TIME_STAMP, REPORT, SECURITY_REF, EMAIL_STATUS, TRANS_DATE, TERMINAL_EARNINGS, ZED_TOTAL ) "
 						"VALUES (:Z_KEY, :INITIAL_FLOAT, :TERMINAL_NAME, :TIME_STAMP, :REPORT, :SECURITY_REF, :EMAIL_STATUS, :TRANS_DATE, :TERMINAL_EARNINGS, :ZED_TOTAL ); ";
@@ -2960,6 +3042,7 @@ Zed:
                         IBInternalQuery->ParamByName("EMAIL_STATUS")->AsInteger = EMAIL_STATUS;
                         IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = trans_date;
 						IBInternalQuery->ExecQuery();
+                         zedLogsList->Add("After updating zeds table.");
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
 						UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
@@ -2972,6 +3055,7 @@ Zed:
 					}
 					else
 					{
+                        zedLogsList->Add("if zeds table contains record having time stamp as null for that terminal. ");
 						Zedkey = z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 						int CurrentSecurityRef = IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
 
@@ -2980,6 +3064,7 @@ Zed:
 						lastAuthenticatedUser.Name,
 						lastAuthenticatedUser.Initials, Now(), DeviceName);
 
+                        zedLogsList->Add("After updating security table. Now will update zeds table.");
 						IBInternalQuery->Close();
 						IBInternalQuery->SQL->Text =
 						"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT, " "TERMINAL_EARNINGS = :TERMINAL_EARNINGS, " "ZED_TOTAL = :ZED_TOTAL , TRANS_DATE = :TRANS_DATE  " "WHERE " "Z_KEY = :Z_KEY";
@@ -2991,6 +3076,7 @@ Zed:
                         IBInternalQuery->ParamByName("TERMINAL_EARNINGS")->AsCurrency = TotalEarnings;
                         IBInternalQuery->ParamByName("ZED_TOTAL")->AsCurrency = AccumulatedZedTotal;
 						IBInternalQuery->ExecQuery();
+                        zedLogsList->Add("After updating zeds table.");
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
 						UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
@@ -2999,8 +3085,8 @@ Zed:
 
 					}
 				}
-
                 TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
+                zedLogsList->Add("After chit reset. ");
 				PatronCountXML->Clear();
                 Processing->Message = "Processing End Of Day...";
                 UpdateSalesForce(); //update sales force
@@ -3010,19 +3096,22 @@ Zed:
 				Processing->Show();
 
 				TDeviceRealTerminal::Instance().UpdateClockSyncInfo();
+                zedLogsList->Add("After updating UpdateClockSyncInfo ");
                 Processing->Close();
 				Processing->Message = "Updating Archives...";
 				Processing->Show();
-
+                zedLogsList->Add("Before calling UpdateArchive ");
                 UpdateArchive(IBInternalQuery, DBTransaction, DeviceName, Zedkey);  // update archive..
-
+                zedLogsList->Add("After calling UpdateArchive and it was executed. ");
                 Processing->Close();
 				Processing->Message = "Archiving Report...";
 				Processing->Show();
                 Processing->Close();
 				Processing->Message = "Updating Stock...";
 			  	Processing->Show();
+                zedLogsList->Add("Before update stock ");
                 UpdateStock(UpdateingStock);  //update stock.
+                zedLogsList->Add("After update stock ");
 			}
             Processing->Close();
 			Processing->Message = "Committing Data...";
@@ -3030,11 +3119,14 @@ Zed:
 
 			if (CompleteZed)
             {
+                zedLogsList->Add("Inside Zed completed flag");
 			   DefaultItemQuantities(DBTransaction);
+               zedLogsList->Add("After  DefaultItemQuantities execution");
                UpdateContactTimeZedStatus(DBTransaction);
                if(TGlobalSettings::Instance().CashDenominationEntry)
                 {
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
+                  zedLogsList->Add("After  Cashdenomination execution");
                 }
             }
             //create CSV
@@ -3045,6 +3137,7 @@ Zed:
             }
 
 			DBTransaction.Commit();
+             zedLogsList->Add("Transaction committed.");
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
 
             Processing->Close();
@@ -3084,6 +3177,7 @@ Zed:
                       Processing->Close();
                       Processing->Message = "Completed";
                       Processing->Show();
+                      zedLogsList->Add("Z report emailed.");
                 }
             }
 
@@ -3115,19 +3209,21 @@ Zed:
       }
       catch(Exception & E)
       {
-        DBTransaction.Rollback();
-        if (UpdateingStock)
-        {
-            Database::TDBTransaction TransCloseStock(TDeviceRealTerminal::Instance().DBControl);
-            TransCloseStock.StartTransaction();
-            UpdateStockComplete(TransCloseStock);
-            TransCloseStock.Commit();
-        }
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-        MessageBox("Till not closed at this time. \r"
-       "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
-        MB_OK + MB_ICONERROR);
+            DBTransaction.Rollback();
+            if (UpdateingStock)
+            {
+                Database::TDBTransaction TransCloseStock(TDeviceRealTerminal::Instance().DBControl);
+                TransCloseStock.StartTransaction();
+                UpdateStockComplete(TransCloseStock);
+                TransCloseStock.Commit();
+            }
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+            TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+            MessageBox("Till not closed at this time. \r"
+           "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
+            MB_OK + MB_ICONERROR);
+            zedLogsList->Add("Till not closed at this time. Please write down and report the following message to your service provider.");
+            MakeZEDLogFile(zedLogsList);
       }
         if(CompleteZed)
         {
@@ -3135,6 +3231,8 @@ Zed:
             SyncCompanyDetails();
             // For Mall Export
             UpdateDLFMall();
+            zedLogsList->Add("Z Completed at " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
+            MakeZEDLogFile(zedLogsList);
 
         }
         frmSecurity->LogOut();
@@ -3197,7 +3295,7 @@ Zed:
 
 
             UnicodeString LocalPathFileName= TGlobalSettings::Instance().MallPath+ "\\DLFMall\\"+TGlobalSettings::Instance().DLFMallFileName; //"C:/trip.txt";//
-            UnicodeString LocalFileName=TGlobalSettings::Instance().DLFMallFileName ;
+            UnicodeString LocalFileName=TGlobalSettings::Instance().DLFMallFileName;
             int FCount=0;
             const char * hostName = HostName.t_str();
             const char * userPath = UserPath.t_str();
@@ -5512,6 +5610,7 @@ void TfrmAnalysis::UpdateBlindBlances(Database::TDBTransaction &DBTransaction, i
 {
     try
     {
+        zedLogsList->Add("Before updating blind balance ");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         for (TBlindBalanceContainer::iterator itBlindBalances = Balance.begin(); (itBlindBalances != Balance.end()) && ZedKey; itBlindBalances++)
@@ -5541,15 +5640,18 @@ void TfrmAnalysis::UpdateBlindBlances(Database::TDBTransaction &DBTransaction, i
     }
     catch(Exception &E)
     {
+        zedLogsList->Add("Exception caught in  UpdateBlindBlances()");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After updating blind balance ");
 }
 
 void TfrmAnalysis::UpdateCommissionDatabase(Database::TDBTransaction &DBTransaction, int ZedKey, TCommissionCache &Commission)
 {
     try
     {
+        zedLogsList->Add("Befor UpdateCommissionDatabase ");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
@@ -5592,9 +5694,10 @@ void TfrmAnalysis::UpdateCommissionDatabase(Database::TDBTransaction &DBTransact
                     date.operator++();
                 }
             }
+            zedLogsList->Add("INSERTING INTO  COMMISSION ");
         }
         else
-        {
+        {   zedLogsList->Add("updating  COMMISSION ");
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Text =
             "UPDATE COMMISSION "
@@ -5607,15 +5710,18 @@ void TfrmAnalysis::UpdateCommissionDatabase(Database::TDBTransaction &DBTransact
     }
     catch(Exception &E)
     {
+        zedLogsList->Add("Exception caught in UpdateCommissionDatabase() ");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After  UpdateCommissionDatabase");
 }
 
 void TfrmAnalysis::UpdatePrinterReadingsDatabase(Database::TDBTransaction &DBTransaction, int ZedKey, TPrinterReadingsInterface &PrinterReading)
 {
     try
     {
+        zedLogsList->Add("Before Updating PRINTERREADINGS table ");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
@@ -5646,6 +5752,8 @@ void TfrmAnalysis::UpdatePrinterReadingsDatabase(Database::TDBTransaction &DBTra
                 IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
                 IBInternalQuery->ExecQuery();
             }
+            if(PrinterReading.size())
+                zedLogsList->Add("After inserting record in PRINTERREADINGS table");
         }
         else if(IBInternalQuery->RecordCount == 0 || TGlobalSettings::Instance().EnableDontClearZedData)
         {
@@ -5664,6 +5772,8 @@ void TfrmAnalysis::UpdatePrinterReadingsDatabase(Database::TDBTransaction &DBTra
                 IBInternalQuery->ParamByName("PRINTER_NAME")->AsString = itPrinterReadings->second.GetPrinterName();
                 IBInternalQuery->ExecQuery();
             }
+            if(PrinterReading.size())
+                zedLogsList->Add("After update record in PRINTERREADINGS table");
         }
         else
         {
@@ -5675,19 +5785,23 @@ void TfrmAnalysis::UpdatePrinterReadingsDatabase(Database::TDBTransaction &DBTra
             "WHERE PRINTERREADINGS_KEY < 0;";
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
             IBInternalQuery->ExecQuery();
+            zedLogsList->Add("update printerreading table else block.");
         }
     }
     catch(Exception &E)
     {
+        zedLogsList->Add("Exception caught in UpdatePrinterReadingsDatabase() ");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After Updating PRINTERREADINGS table");
 }
 
 void TfrmAnalysis::UpdatePaxCountDatabase(Database::TDBTransaction &DBTransaction,int ZedKey, TPaxCount &inPaxCount)
 {
     try
     {
+        zedLogsList->Add("Before Updating PAXCOUNT table ");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
@@ -5712,13 +5826,16 @@ void TfrmAnalysis::UpdatePaxCountDatabase(Database::TDBTransaction &DBTransactio
             IBInternalQuery->ParamByName("DATE_TO")->AsDate = inPaxCount.GetDateTo();
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
             IBInternalQuery->ExecQuery();
+            zedLogsList->Add("Inserting records in PAXCOUNT table ");
         }
     }
     catch(Exception &E)
     {
+        zedLogsList->Add("Exception caught in  UpdatePaxCountDatabase()");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After Updating PAXCOUNT table ");
 }
 
 void TfrmAnalysis::BuildXMLListCalculated(TPOS_XMLBase &Data)
@@ -6101,7 +6218,7 @@ void TfrmAnalysis::CheckCancelItemsTable()
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
-    {
+    {   zedLogsList->Add("checking cancel items table");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text ="select count( a.ZED_PRINT), a.CANCELITEMS_KEY from CANCELITEMS a "
@@ -6129,9 +6246,11 @@ void TfrmAnalysis::CheckCancelItemsTable()
     catch(Exception &E)
     {
         DBTransaction.Rollback();
+        zedLogsList->Add("exception caught checking cancel items table: CheckCancelItemsTable() ");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After cancel items table");
 }
 // ---------------------------------------------------------------------------
 void TfrmAnalysis::UpdateCancelItemsTable()
@@ -6139,7 +6258,7 @@ void TfrmAnalysis::UpdateCancelItemsTable()
     try
     {
          CheckCancelItemsTable();
-
+         zedLogsList->Add("inside UpdateCancelItemsTable ");
          int zed_print = 1;
          if(CheckCANCELITEMS_KEY)
          {
@@ -6161,9 +6280,11 @@ void TfrmAnalysis::UpdateCancelItemsTable()
     }
     catch(Exception &E)
     {
+        zedLogsList->Add("exception caught in  UpdateCancelItemsTable UpdateCancelItemsTable ");
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+    zedLogsList->Add("After UpdateCancelItemsTable function execution.");
 }
 
 void TfrmAnalysis::GetReportData( int _key)
@@ -7974,6 +8095,7 @@ void TfrmAnalysis::UpdateZedStaffHoursEnable(Database::TDBTransaction &DBTransac
 {
    try
 	{
+        zedLogsList->Add("Before updating staff hour.");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text ="UPDATE ZEDS SET STAFF_HOUR_ENABLE = :STAFF_HOUR_ENABLE WHERE Z_KEY = :Z_KEY ";
@@ -7991,8 +8113,10 @@ void TfrmAnalysis::UpdateZedStaffHoursEnable(Database::TDBTransaction &DBTransac
     }
 	catch(Exception &E)
 	{
+        zedLogsList->Add("exception in  updating staff hour.");
 		throw;
 	}
+    zedLogsList->Add("After updating staff hour.");
 }
 
 TMemoryStream* TfrmAnalysis::FormattedZed(TMemoryStream *ZedToArchive)
@@ -8289,6 +8413,7 @@ void TfrmAnalysis::SyncCompanyDetails()
 
 void TfrmAnalysis::UpdateSalesForce()
 {
+  zedLogsList->Add("Before updating salesforce ");
    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
    DBTransaction1.StartTransaction();
    try
@@ -8300,11 +8425,12 @@ void TfrmAnalysis::UpdateSalesForce()
         sfComm->SalesForceCommunication(CompanyName);
     }
     catch(Exception & E)
-    {
+    {   zedLogsList->Add("Exception in updating salesforce ");
         DBTransaction1.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+    zedLogsList->Add("After updating salesforce ");
 }
 
 void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
@@ -8314,6 +8440,7 @@ void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
         if ((frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0) &&
             (MessageBox("There are currently parked sales. Do you wish to remove them?", "Clear all parked sales.", MB_YESNO + MB_ICONQUESTION) == IDYES))
         {
+            zedLogsList->Add("Clearing parked sale ");
             frmSelectDish->ClearAllParkedSales(DBTransaction);
         }
     }
@@ -8327,7 +8454,7 @@ void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
 void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName, int zedKey)
 {
    try
-   {
+   {   zedLogsList->Add("Inside UpdateArchive() ");
         if(TGlobalSettings::Instance().EnableDepositBagNum)
         {
             IBInternalQuery->Close();
@@ -8343,10 +8470,12 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
    }
     catch(Exception & E)
     {
+        zedLogsList->Add("Exception in  UpdateArchive() 2");
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
         throw;
     }
+    zedLogsList->Add("After successfull UpdateArchive() ");
 }
 
 void TfrmAnalysis::UpdateStock(bool UpdateingStock)
@@ -8507,11 +8636,13 @@ void TfrmAnalysis::UpdateMallExportDetails()
         exportHourlyUpdate.ResetHourlyExportTablesOnZed();
         exportTransactionUpdate.ResetTransactionExportTablesOnZed();
         exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
+        zedLogsList->Add("updating .UpdateMallExportDetails");
     }
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        zedLogsList->Add("Exception in .UpdateMallExportDetails");
     }
 }
 
@@ -8524,7 +8655,8 @@ void TfrmAnalysis::OpenCashDrawer()
     {
         if(TGlobalSettings::Instance().OpenCashDrawer)
         {
-            TComms::Instance().KickLocalDraw(OpenCashDrawerTransaction);
+            std::auto_ptr <TManagerFloat> (FloatManager)(new TManagerFloat((TForm*)this));
+            FloatManager->OpenCashDrawerAccordingToPrinter(OpenCashDrawerTransaction);
         }
         OpenCashDrawerTransaction.Commit();
     }
@@ -8597,6 +8729,7 @@ void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransa
 {
    try
 	{
+        zedLogsList->Add("Before  UpdateContactTimeZedStatus");
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text ="UPDATE CONTACTTIME SET ZED_STATUS = 1 WHERE CONTACTTIME.LOGOUT_DATETIME is not null ";
@@ -8604,8 +8737,10 @@ void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransa
     }
 	catch(Exception &E)
 	{
+        zedLogsList->Add("Exception in UpdateContactTimeZedStatus");
 		throw;
 	}
+    zedLogsList->Add("After  UpdateContactTimeZedStatus");
 }
 
 UnicodeString TfrmAnalysis::CheckRegistered()
@@ -8881,4 +9016,41 @@ void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransactio
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         throw;
     }
+}
+//-------------------------------------------------------------------------------------------------------
+void TfrmAnalysis::MakeZEDLogFile(TStringList *List)
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/ZED Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "/" + name;
+
+    if (FileExists(fileName) )
+    {
+        std::auto_ptr <TStringList> OldZedLogs(new TStringList);
+        OldZedLogs->LoadFromFile(fileName);
+        OldZedLogs->Add("---------------------------------------------------------------------------------------------------------------" );
+        OldZedLogs->AddStrings(List);
+        OldZedLogs->SaveToFile(fileName );
+    }
+    else
+    {
+        List->SaveToFile(fileName );
+    }
+}
+
+//-------------------------------------------------------------------------------
+void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
+{
+    UnicodeString zPrinterResponse;
+    try
+    {
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        fiscalAdapter->FiscalZReportSettlement();
+    }
+    catch(Exception & E)
+    {
+       zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
+	}
 }

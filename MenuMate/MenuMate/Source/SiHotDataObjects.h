@@ -106,6 +106,7 @@ struct TRoomCharge
     UnicodeString Time;
     UnicodeString IPAddress;
     int PortNumber;
+    UnicodeString Total;
 };
 
 struct TRoomChargeResponse

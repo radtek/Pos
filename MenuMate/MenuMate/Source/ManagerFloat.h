@@ -16,12 +16,12 @@ class TManagerFloat
 {
    private :
 	  TForm *Owner;
-
  //	  TFloatSkimData FloatSkimData;
    public :
    TManagerFloat(TForm * inOwner);
    void AlterFloat(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo);
    void SetFloat(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo);
+   void OpenCashDrawerAccordingToPrinter(Database::TDBTransaction &DBTransaction);
 };
 
 

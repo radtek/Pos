@@ -131,6 +131,7 @@
 #include "PaySubsUtility.h"
 #include "ManagerReportExport.h"
 #include "GuestList.h"
+#include "FiscalPrinterAdapter.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -8153,7 +8154,8 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
         }
         if(!openCashDrawer)
         {
-            TComms::Instance().KickLocalDraw(DBTransaction);
+            std::auto_ptr <TManagerFloat> (FloatManager)(new TManagerFloat((TForm*)this));
+            FloatManager->OpenCashDrawerAccordingToPrinter(DBTransaction);
             TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
             TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, quickMessage);
         }

@@ -6493,10 +6493,20 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
-				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
-				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-				ffNumber,
-				CurrencyDecimals));
+                if(SubPayment->GetPaymentAttribute(ePayTypeReservationMasterPay))
+                {
+                    pPrinter->Add(paymentName + " " + SubPayment->CSVString + "|" + CurrToStrF(
+                    RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
+                    ffNumber,
+                    CurrencyDecimals));
+                }
+                else
+                {
+                    pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+                    RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
+                    ffNumber,
+                    CurrencyDecimals));
+                }
 			}
 			else if (SubPayment->GetPaymentAttribute(ePayTypePocketVoucher))
 			{
@@ -6532,10 +6542,20 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
-				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
-				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-				ffNumber,
-				CurrencyDecimals));
+                if(SubPayment->GetPaymentAttribute(ePayTypeReservationMasterPay))
+                {
+                    pPrinter->Add(paymentName + " " + SubPayment->CSVString + "|" + CurrToStrF(
+                    RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
+                    ffNumber,
+                    CurrencyDecimals));
+                }
+                else
+                {
+                    pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+                    RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
+                    ffNumber,
+                    CurrencyDecimals));
+                }
 			}
 			else if (SubPayment->GetPaymentAttribute(ePayTypePocketVoucher))
 			{
@@ -9120,7 +9140,7 @@ void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
 {
-    if(TGlobalSettings::Instance().PMSType == Oracle && IsRoomPayment(PrintJob))
+	if(TGlobalSettings::Instance().PMSType == Oracle && IsRoomPayment(PrintJob))
     {
         PrintJob->Transaction->Customer.Name = PrintJob->Transaction->PMSClientDetails.FirstName + " " + PrintJob->Transaction->PMSClientDetails.LastName;
         PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->PMSClientDetails.RoomNumber;

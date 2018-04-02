@@ -506,6 +506,9 @@ public:
     bool ApplyRoundingTax;
     int RoundingTaxProfileKey;
     double RoundingTaxRate;
+    bool UseItalyFiscalPrinter;
+    UnicodeString PrinterType;
+    UnicodeString PrinterlogicalName;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
 };
