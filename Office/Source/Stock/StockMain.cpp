@@ -328,12 +328,11 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
 		if (SelectTransferLocations.Execute())
 		{
 			TTransferLocations TransferLocations	= SelectTransferLocations.Locations();
-
+            //SelectTransferLocations.~TSelectTransferLocations();
             std::auto_ptr<TfrmStockRequestTransfer>frmStockRequestTransfer(new TfrmStockRequestTransfer(NULL));
             frmStockRequestTransfer->Source = TransferLocations.Source;
             frmStockRequestTransfer->Destination = TransferLocations.Destination;
             frmStockRequestTransfer->ShowModal();
-
             if(frmStockRequestTransfer->ModalResult == mrOk)
             {
                 TStringList* selectedStockRequestKeys = frmStockRequestTransfer->GetSelectedRequestKeys();
@@ -344,24 +343,30 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
 
                 frmTransferMulti->SelectedStockRequestKeys = selectedStockRequestKeys;
 
-           
+
                  frmTransferMulti->ShowModal();
                  frmTransferMulti->ReleaseAllocations();
                  frmTransferMulti->Release();
                  frmTransferMulti->Refresh();
+                 frmTransferMulti->tvTransfers->Items->Clear();
+               // SelectTransferLocations.~TSelectTransferLocations();
+                 
+                
 
-               
             }
-           
+             
               frmStockRequestTransfer->Release();
               frmStockRequestTransfer->Refresh();
+           
+
 		}
 	}
 	else
 	{
 		Application->MessageBox("A connection to the MenuMate database is required for this.", "Error", MB_ICONERROR + MB_OK);
 	}
-}
+
+    }
 
 
 //-------------------------------------------------------------------------------

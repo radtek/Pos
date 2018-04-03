@@ -62,7 +62,10 @@ void TfrmStockRequestTransfer::LoadData()
 
             OrderItemNode->CheckState = csUncheckedNormal;
             OrderItemNode->CheckType = ctCheckBox;
+           
+             //NodeData->~TStockRequestNodeData();
         }
+               vtvStockRequest->Clear();
 
         if (Transaction->InTransaction)
             Transaction->Commit();
@@ -75,6 +78,7 @@ void TfrmStockRequestTransfer::LoadData()
     if (Transaction->InTransaction)
         Transaction->Commit();
 }
+//------------------------------------------------
 
 //---------------------------------------------------------------------------
 void __fastcall TfrmStockRequestTransfer::vtvStockRequestAfterPaint(TBaseVirtualTree *Sender, TCanvas *TargetCanvas)
@@ -179,7 +183,8 @@ void __fastcall TfrmStockRequestTransfer::btnOkClick(TObject *Sender)
         Node = vtvStockRequest->GetNext(Node);
     }
     ModalResult = mrOk;
-  
+    delete NodeData;
+    NodeData=NULL;
 }
 //---------------------------------------------------------------------------
 

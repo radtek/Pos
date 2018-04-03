@@ -155,11 +155,11 @@ public:		// User declarations
 
     TStringList* SelectedStockRequestKeys;
     TStringList* TransfferedStockRequestKeys;
-    TStringList*  StockRequestToBeDeletedKeys;
+   // TStringList*  StockRequestToBeDeletedKeys;
 	bool isStockRequestMode;
     TDateTime StartTime;
 
-    TStringList*   CommittedStockRequestKeys;
+   // TStringList*   CommittedStockRequestKeys;
     int Transfer_no;
     float StockTakeQty  ;
     void ReleaseAllocations();

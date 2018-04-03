@@ -60,7 +60,7 @@ void __fastcall TfrmTransferMulti::FormShow(TObject *Sender)
 void TfrmTransferMulti::LoadTreeView()
 {
 	BatchKeyList = new TStringList;
-	tvTransfers->Items->BeginUpdate();
+   	tvTransfers->Items->BeginUpdate();
 	tvTransfers->OnChange = NULL;
 	tvTransfers->Items->Clear();
 	TTreeNode *PreviousTransferNode		= NULL;
@@ -80,14 +80,18 @@ void TfrmTransferMulti::LoadTreeView()
 	qrGetPreviousTransfers->ParamByName("PURCHASER_NAME")->AsString =Destination;
 	for (qrGetPreviousTransfers->Open(); !qrGetPreviousTransfers->Eof; qrGetPreviousTransfers->Next())
 	{
-		tvTransfers->Items->AddChild(PreviousTransferNode,qrGetPreviousTransfers->FieldByName("CREATED")->AsDateTime);
+	   	tvTransfers->Items->AddChild(PreviousTransferNode,qrGetPreviousTransfers->FieldByName("CREATED")->AsDateTime);
 		BatchKeyList->Add(AnsiString(qrGetPreviousTransfers->FieldByName("BATCH_KEY")->AsInteger));
 	}
     Transaction->Commit();
+
    tvTransfers->Items->EndUpdate();
-    tvTransfers->OnChange = tvTransfersChange;
+
+   tvTransfers->OnChange = tvTransfersChange;
    tvTransfers->Selected = CurrentTransferNode;
-	tvTransfersChange(tvTransfers, tvTransfers->Selected);
+   tvTransfersChange(tvTransfers, tvTransfers->Selected);
+  
+
 }
 
 void __fastcall TfrmTransferMulti::WMLoadTransfer(TMessage& Message)
@@ -530,6 +534,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 	NodeData->Quantity = neStockQty->Value;
 	//	vtvStockQty->Repaint();
 	vtvStockQty->InvalidateNode(vtvStockQty->FocusedNode);
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmTransferMulti::neStockQtyKeyDown(TObject *Sender,
@@ -718,7 +723,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
      if (!Transaction->InTransaction)
 	Transaction->StartTransaction();
-      sqlTransferNumber->Close();
+    sqlTransferNumber->Close();
     sqlTransferNumber->SQL->Text = "SELECT GEN_ID(GEN_TRANSFER_NUMBER, 1)FROM RDB$DATABASE" ;
     sqlTransferNumber->ExecQuery();
     lbeTransferNumber->Caption = sqlTransferNumber->Fields[0]->AsInteger;
@@ -872,7 +877,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
 
 			                }
-
+                                
 		                    	Node = vtvStockQty->GetNext(Node);
 
                                // delete
@@ -967,11 +972,8 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
 
 				}
-
-                    stock_request_stock_key.clear();
-
-                    if(CurrentConnection.AutoPrintStockTransferAudit && getQuantity !=0  )
-                    {
+                        if(CurrentConnection.AutoPrintStockTransferAudit && getQuantity !=0  )
+                         {
                          TStringList *Locations=new TStringList;
                             Locations->Add(Source);
                             Locations->Add(Destination);
@@ -1009,6 +1011,7 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 
                                dmStockReportData->StockTrans->Commit();
                                delete Locations;
+                               Locations =NULL;
 
 	                         }
 
@@ -1032,13 +1035,17 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmTransferMulti::ReleaseAllocations()
 {
-   SelectedStockRequestKeys->Clear();
     vtvStockQty->Clear();
-
-   delete vtvStockQty;
-   vtvStockQty = NULL;
-   delete SelectedStockRequestKeys;
-   SelectedStockRequestKeys=NULL;
+    delete BatchKeyList;
+    BatchKeyList=NULL;
+    delete vtvStockQty;
+    vtvStockQty = NULL;
+    SelectedStockRequestKeys->Clear();
+    delete SelectedStockRequestKeys;
+    SelectedStockRequestKeys=NULL;
+    TransfferedStockRequestKeys->Clear();
+    delete TransfferedStockRequestKeys;
+    TransfferedStockRequestKeys=NULL;   
        
 
 }
