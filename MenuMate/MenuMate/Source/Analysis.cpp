@@ -3199,6 +3199,10 @@ Zed:
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
+                     else if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+                     {
+                         UpdateZKeyForMallExportSales(isMasterterminal, 20);
+                     }
 
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();

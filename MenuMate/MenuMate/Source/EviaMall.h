@@ -17,16 +17,18 @@ class TEviaMall : public TMallExport
        bool isMasterTerminal;
        int deviceKey;
        void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData);
-       bool IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData);
+       void CalculateTaxesFields(TItemMinorComplete *order, TEviaMallField &fieldData);
        void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
-       bool islocaltax;
-       bool issaletax;
-       double grosssaleamount;
-       double grosssaleamountwithoutvat;
+     //  double grosssaleamount;
+
        int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
        UnicodeString GetFieldIndexList(std::set<int> indexKeys);
        UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
+       UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey );
        int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
+       UnicodeString GetMaxTimeDateCreated(Database::TDBTransaction &dbTransaction, int zKey = 0);
+       void LoadCommonFields(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForHSF, std::list<TMallExportSettings> &mallSettings, std::set<int> keysToSelect,
+                                        int index, int zKey = 0);
 
 
 
@@ -40,8 +42,8 @@ class TEviaMall : public TMallExport
 
    public:
      TEviaMall();
-     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int zIndex,
-                                        TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
+     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,int zIndex,
+                                        TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
 
      std::set<int> InsertInToSet(int arr[], int size);
 

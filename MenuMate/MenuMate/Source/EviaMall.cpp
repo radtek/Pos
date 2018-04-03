@@ -181,7 +181,9 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
             {
                if(it->ControlName == "edMallTenantNo")
                 {
-                    fieldData->StallCode = it->Value;
+                    UnicodeString tenantcode =  it->Value;
+
+                    fieldData->StallCode =  "\"" + tenantcode + "\""   ;
 
                 }
                 else if(it->ControlName == "edMallTerminalNo" )
@@ -204,6 +206,17 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
 					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
                     PrepareDataByItem(paymentTransaction.DBTransaction, CurrentSubOrder, *fieldData);
                 }
+        }
+
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
+			if (SubPayment->GetPay() != 0)
+			{
+                amount = (double)(SubPayment->GetPayTendered() - SubPayment->GetChange() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
+
+                fieldData->GrossSales +=amount ;
+            }
         }
 
         fieldData->TotalRefund = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
@@ -238,20 +251,13 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
 //---------------------------------------------------------------------------
 void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TEviaMallField &fieldData)
 {
-    bool isVatable = IsItemVatable(order, fieldData);
+
+    double grossAmount = 0;
     double salesBySalesType = 0;
+    CalculateTaxesFields(order, fieldData);
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = order->Discounts.begin(); ptrDiscounts != order->Discounts.end();std::advance(ptrDiscounts, 1))
     {
         fieldData.TotalDiscount += (double)order->DiscountValue_BillCalc(ptrDiscounts);
-    }
-
-    if(isVatable)
-    {
-      if(order->GetQty() > 0 )
-      {
-      grosssaleamount = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
-      fieldData.GrossSales +=  grosssaleamount;
-      }
     }
 
      TItemComplete *cancelOrder =   (TItemComplete*)order;
@@ -260,12 +266,13 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
      if(fieldData.TotalcancelledAmount >0)
      fieldData.NoOfcancelledTransaction =  1;
 
-
     int salesTypeId = GetItemSalesId(dbTransaction, order->ItemKey);
-
 
     if(salesTypeId)
     {
+
+         UnicodeString salesdeptformat = GetSaleDeptName(dbTransaction, order->ItemKey) ;
+         fieldData.SalesDept =  "\"" + salesdeptformat + "\"";
         salesBySalesType = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
         std::map <int, double> ::iterator itr = fieldData.SalesBySalesType.find(salesTypeId);
 
@@ -295,14 +302,19 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
     try
     {
 
+
+
         std::set<int> keyToCheck;
+        std::set<int> keyToCheck2;
 
-        int hourSalekeys[4] = {17,18,19,20};
+      //  int hourSalekeys[7] = {1,2,3,17,18,19,20};
+        int hourSalekeys[5] = {1,17,18,19,20};
         int hourSalekeys2 = 20;
+        int hourSalekeys3[1]  ={1} ;
+        keyToCheck = InsertInToSet(hourSalekeys, 5);
+        keyToCheck2 = InsertInToSet(hourSalekeys3, 1);
 
-        keyToCheck = InsertInToSet(hourSalekeys, 4);
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, hourSalekeys2, preparedData, 1, zKey);
-
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2,hourSalekeys2, preparedData, 1, zKey);
 
         dbTransaction.Commit();
 
@@ -337,46 +349,35 @@ IExporterInterface* TEviaMall::CreateExportMedium()
 
 //---------------------------------------------------------------------------
 
-bool TEviaMall::IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData)
+void TEviaMall::CalculateTaxesFields(TItemMinorComplete *order, TEviaMallField &fieldData)
 {
+    double grosssaleamountwithoutvat;
     std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
-    bool isVatable = false;
-    double totaltax;
     for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
     {
         switch( itTaxes->TaxType )
         {
             case TTaxType::ttSale:
+                 fieldData.TotalVat += (double)itTaxes->Value;
+                 break;
 
-                fieldData.TotalVat += (double)itTaxes->Value;
-                isVatable = true;
-                break;
             case TTaxType::ttLocal:
-                fieldData.TotaltaxWithoutVat += (double)itTaxes->Value;
-                if(order->GetQty() > 0 )
-                {
+                 if(order->GetQty() > 0 )
+                 {
                     grosssaleamountwithoutvat = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
                     fieldData.NonVatableGrossSales +=grosssaleamountwithoutvat;
 
-                }
-                isVatable = true;
+                 }
                 break;
         }
-
 
     }
 
     if (order->BillCalcResult.ServiceCharge.Percentage != 0)
     {
         fieldData.TotalServiceCharge += (double)order->BillCalcResult.ServiceCharge.Value;
-        isVatable=true;
-    }
-    if(fieldData.TotalVat == 0.00 && fieldData.TotaltaxWithoutVat == 0.00 && fieldData.TotalServiceCharge == 0.00 )
-    {
-       isVatable = false;
     }
 
-    return isVatable;
 }
 //---------------------------------------------------------------------------
 void TEviaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
@@ -439,67 +440,119 @@ std::set<int> TEviaMall::InsertInToSet(int arr[], int size)
     return keyToCheck;
 }
 
-void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int zIndex,
-                                                   TMallExportPrepareData &prepareDataForDSF, int index, int zKey)
+//---------------------------------------------------------------------------
+UnicodeString TEviaMall::GetSaleDeptName(Database::TDBTransaction &dbTransaction, int itemKey)
 {
+   
+
+    UnicodeString salesDeptname = "";
+    try
+    {
+        Database::TcpIBSQL ibInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(ibInternalQuery);
+
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =  "SELECT upper(b.SALES_TYPE_NAME) SALES_TYPE_NAME "
+                                    "FROM MALL_SALES_TYPE_ITEMS_RELATION a "
+                                    "left join MALL_SALES_TYPE b on a.SALES_TYPE_ID = b.SALES_TYPE_ID" ;
+                                    "GROUP BY 1"  ;
+                                   //  "WHERE A.ITEM_ID = :ITEM_ID ";
+      //  ibInternalQuery->ParamByName("ITEM_ID")->AsInteger = itemKey;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            salesDeptname = ibInternalQuery->Fields[0]->AsString;
+
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+    return salesDeptname;
+}
+
+void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,std::set<int> indexKeys2, int zIndex,
+                                                   TMallExportPrepareData &prepareDataForHSF, int index, int zKey)
+{
+
    UnicodeString fileName;
    std::list<TMallExportSalesData> prepareListForHSF;
+   std::list<TMallExportSettings> mallSettings;
+
    try
    {
+      Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+      dBTransaction.RegisterQuery(IBInternalQuery);
+      int maxZedKey;
+      if(!zKey)
+      {
+        maxZedKey = GetMaxZedKey(dBTransaction);
+      }
+      else
+      {
+        maxZedKey = zKey;
+      }
 
-     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-     dBTransaction.RegisterQuery(IBInternalQuery);
-      std::set<int>keysToSelect;
-      UnicodeString fileNameext = ".sal";
+        std::set<int>keysToSelect;
+
       int  fileNameKeys[1] = {3};
 
       keysToSelect = InsertInToSet(fileNameKeys, 1);
-      fileName = GetFileName(dBTransaction, keysToSelect, zKey) + fileNameext ;
+      fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
       keysToSelect.clear();
 
-      prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
-
-     int maxZedKey;
-     if(!zKey)
-     {
-        maxZedKey = GetMaxZedKey(dBTransaction);
-     }
-     else
-     {
-        maxZedKey = zKey;
-     }
-
-     UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
-     IBInternalQuery->Close();
+      prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
 
-      IBInternalQuery->SQL->Text =
 
-                                "SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX , a.FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
+
+        keysToSelect.clear();
+
+      UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+       UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "SELECT HourlysalesData.ARCBILL_KEY,HourlysalesData.MALLEXPORT_SALE_KEY, HourlysalesData.FIELD, HourlysalesData.FIELD_INDEX , HourlysalesData.FIELD_VALUE, HourlysalesData.VALUE_TYPE, MAX(HourlysalesData.Z_KEY) Z_KEY "
+                               " FROM ( SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX , a.FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ")  "
                                              "AND a.MALL_KEY = :MALL_KEY AND (a.Z_KEY = :MAX_ZKEY ";
 
-      IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                                               " ) GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
-                                             "ORDER BY A.ARCBILL_KEY ASC " ;
 
 
-      IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
-      IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
 
-      IBInternalQuery->ExecQuery();
+        "UNION ALL  "
+                            "SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX , cast('01' as varchar(2)) FIELD_VALUE ,a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY  "
+                                             "FROM MALLEXPORT_SALES a "
+                                            " WHERE a.FIELD_INDEX IN( " + indexKeysList2 + ") "
+                                            "AND a.MALL_KEY = :MALL_KEY AND (a.Z_KEY = :MAX_ZKEY ";
 
-      for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-      {
-          TMallExportSalesData salesData;
-          salesData.FieldIndex  = IBInternalQuery->Fields[3]->AsInteger;
-          salesData.Field = IBInternalQuery->Fields[2]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[4]->AsString;
-          prepareListForHSF.push_back(salesData);
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                              " ) GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
 
-       }
-      IBInternalQuery->Close();
+                                            " )HourlysalesData "
+       " GROUP BY HourlysalesData.ARCBILL_KEY,HourlysalesData.MALLEXPORT_SALE_KEY, HourlysalesData.FIELD, HourlysalesData.FIELD_INDEX,  HourlysalesData.VALUE_TYPE, HourlysalesData.FIELD_VALUE "  ;
+
+
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3 ;
+        IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            TMallExportSalesData salesData;
+            salesData.DataValue = IBInternalQuery->Fields[4]->AsString;
+            prepareListForHSF.push_back(salesData);
+
+        }
+        prepareDataForHSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForHSF ));
+
+
     }
 
    catch(Exception &E)
@@ -509,7 +562,6 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
    }
 
 }
-
 
 UnicodeString TEviaMall::GetFieldIndexList(std::set<int> indexKeys)
 {
@@ -648,5 +700,97 @@ UnicodeString TEviaMall::GetExportType()
     return typeOfFile;
 }
 
+void TEviaMall::LoadCommonFields(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, std::list<TMallExportSettings> &mallSettings ,std::set<int> keysToSelect,
+                                                int index, int zKey)
+{
 
+    try
+    {
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);  //2,3
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, "
+                                                "MAX(a.FIELD_VALUE) FIELD_VALUE, a.VALUE_TYPE "
+                                      "FROM MALLEXPORT_SALES a "
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") "
+                                      "AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+
+		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,4 ";
+
+
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+
+        if(zKey)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSettings settings;
+          settings.Value  = IBInternalQuery->Fields[2]->AsString;
+          mallSettings.push_back(settings);
+        }
+
+         prepareData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
+UnicodeString TEviaMall::GetMaxTimeDateCreated(Database::TDBTransaction &dbTransaction, int zKey)
+{
+    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
+    dbTransaction.RegisterQuery(selectQuery);
+    UnicodeString MaxOfDateCreated = "";
+
+    try
+    {
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT MAX(A.DATE_CREATED) DATE_CREATED  "
+                                "FROM MALLEXPORT_SALES a "
+                                "WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(zKey)
+        {
+            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+
+         selectQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+         if(zKey)
+            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+                MaxOfDateCreated = selectQuery->Fields[0]->AsString;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+    return MaxOfDateCreated;
+
+}
 
+
