@@ -980,7 +980,7 @@ bool TOracleDataBuilder::DeserializeGetLinkStatus(AnsiString inData)
     bool retValue = inData.Pos("LinkAlive") != 0;
 
     if(inData.Trim().Length() == 0)
-        MessageBox("Oracle PMS was not enabled because no response was received.\nPlease check POS Server and Oracle are up and running","Error", MB_OK+MB_ICONERROR);
+        MessageBox("Oracle PMS was not enabled because no response was received.\nPlease check Oracle are up and running.","Error", MB_OK+MB_ICONERROR);
     if((inData.Trim().Length() != 0) && !retValue)
         MessageBox(inData,"Error", MB_OK+MB_ICONERROR);
     return (inData.Pos("LinkAlive") != 0);
@@ -1008,7 +1008,7 @@ bool TOracleDataBuilder::DeserializeInquiryData(AnsiString inData, TRoomInquiryR
             }
             else
             {
-                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running.";
+                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.";
             }
         }
     }
@@ -1022,7 +1022,7 @@ bool TOracleDataBuilder::DeserializeInquiryData(AnsiString inData, TRoomInquiryR
         }
         else
         {
-            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running.";
+            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.";
         }
     }
     return retValue;
@@ -1058,7 +1058,7 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
             }
             else
             {
-                MessageBox("No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running","Error",MB_OK + MB_ICONERROR);
+                MessageBox("No Response Received from Oracle.\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
             }
         }
     }
@@ -1074,7 +1074,7 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
         }
         else
         {
-            MessageBox("No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running","Error",MB_OK + MB_ICONERROR);
+            MessageBox("No Response Received from Oracle.\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
         }
     }
     return retValue;

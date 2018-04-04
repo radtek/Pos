@@ -48,6 +48,7 @@ bool TOracleTCPIP::Connect()
     bool retValue = false;
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = GetFileName();
+    CreateTCPClient();
 	try
 	{
         if (FileExists(fileName) )
@@ -73,10 +74,15 @@ bool TOracleTCPIP::Connect()
         Disconnect();
         UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        if(!IsSilentConnect)
-           	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
+//        if(!IsSilentConnect)
+//        {
+//           	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
+//                                                 "Abort", MB_OK + MB_ICONERROR);
+           MessageBox(E.Message+"\nPlease ensure Oracle Communication Server is running with same credentials.\nOracle is disabled.",
                                                  "Abort", MB_OK + MB_ICONERROR);
+//        }
         List->Add("Exception Occurred " + E.Message + "\n");
+        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
 	}
 
     if(retValue)
@@ -133,6 +139,7 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     else if (!tcpClient->Connected())
     {
           UnsetPostingFlag();
+          outResponse = "Connection Failed";
     }
     MakeOracleLogFile(List,fileName);
     Disconnect();

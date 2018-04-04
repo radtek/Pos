@@ -62,16 +62,17 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object Label2: TLabel
       Left = 310
-      Top = 489
-      Width = 163
-      Height = 22
-      Caption = 'Make POS Server'
+      Top = 482
+      Width = 217
+      Height = 44
+      Caption = 'Oracle Communication Server'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
+      WordWrap = True
     end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16

@@ -632,9 +632,9 @@ void __fastcall TfrmPHSConfiguration::cbMakePOSServer(TObject *Sender)
         if(CanEnablePOSServer())
         {
             if(cbMakeOracleServer->Checked)
-                MessageBox("Please make sure, this option is tick marked on this system only in the site.","Information",MB_OK + MB_ICONINFORMATION);
+                MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
             else
-                MessageBox("Please make sure, this option should be enabled on atleast 1 POS in the site.","Information",MB_OK + MB_ICONINFORMATION);
+                MessageBox("Please make sure, this option should be enabled on atleast 1 POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
             TGlobalSettings::Instance().IsOraclePOSServer = cbMakeOracleServer->Checked;
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();

@@ -38,7 +38,7 @@ namespace OracleTCPServer
                 MakeLogs(listLogs);
                 listLogs.Clear();
                 // Buffer for reading data
-                Byte[] bytes = new Byte[1000];
+                Byte[] bytes = new Byte[2000];
                 String data = null;
 
                 // Enter the listening loop.
@@ -78,7 +78,7 @@ namespace OracleTCPServer
         }
         private static byte[] SendRequestToOracle(byte[] buffer)
         {
-            byte[] byteReponse = new byte[1000];
+            byte[] byteReponse = new byte[2000];
             try
             {
                 Stream stm = tcpclnt.GetStream();

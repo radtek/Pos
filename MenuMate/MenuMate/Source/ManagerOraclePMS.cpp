@@ -77,7 +77,9 @@ void TManagerOraclePMS::Initialise()
                                    if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
                                    {
                                         if(TriggerApplication())
+                                        {
                                             Enabled = GetLinkStatus();
+                                        }
                                    }
                                    else
                                    {
@@ -88,6 +90,7 @@ void TManagerOraclePMS::Initialise()
                                 else
                                 {
                                     FindAndTerminateProcess();
+                                    Sleep(1000);
                                     if(InitializeoracleTCP())
                                     {
                                        Enabled = true;
@@ -95,7 +98,6 @@ void TManagerOraclePMS::Initialise()
                                     }
                                     else
                                     {
-                                        MessageBox("Could not connect to POS server for Oracle communication.\nOracle PMS is disabled.","Information",MB_OK + MB_ICONINFORMATION);
                                         Enabled = false;
                                     }
                                 }
@@ -150,6 +152,7 @@ bool TManagerOraclePMS::TriggerApplication()
     {
       // start the program up
         CloseExistingApplication();
+        Sleep(1000);
         UnicodeString strPath = ExtractFilePath(Application->ExeName);
         strPath +="OracleTCPServer.exe";
         isProcOpen = CreateProcess( strPath.t_str(),   // the path
@@ -164,7 +167,7 @@ bool TManagerOraclePMS::TriggerApplication()
         &TGlobalSettings::Instance().siOracleApp,            // Pointer to STARTUPINFO structure
         &TGlobalSettings::Instance().piOracleApp             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
         );
-        Sleep(1000);
+        Sleep(2000);
     }
     catch(Exception &E)
     {
@@ -182,7 +185,7 @@ void TManagerOraclePMS::CloseExistingApplication()
     isTerminated = FindAndTerminateProcess();
     if(isTerminated)
     {
-        Sleep(13000);
+        Sleep(16000);
     }
 }
 //---------------------------------------------------------------------------
@@ -249,7 +252,10 @@ bool TManagerOraclePMS::GetLinkStatus()
     AnsiString resultData = "";
     resultData = TOracleTCPIP::Instance().SendAndFetch(data);
     // deserialize the resposne
-    retValue = oracledata->DeserializeGetLinkStatus(resultData);
+    if(resultData.Pos("Connection Failed") == 0)
+        retValue = oracledata->DeserializeGetLinkStatus(resultData);
+    else
+        retValue = false;
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -396,7 +402,10 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 AnsiString resultData = "";
                 AnsiString data = oracledata->SerializeOut(doc);
                 resultData = TOracleTCPIP::Instance().SendAndFetch(data);
-                retValue = oracledata->DeserializeData(resultData, _postResult);
+                if(resultData.Pos("Connection Failed") == 0)
+                    retValue = oracledata->DeserializeData(resultData, _postResult);
+                else
+                    retValue = false;
             }
          }
          bool isNotCompleteCancel = false;
@@ -424,7 +433,10 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             AnsiString resultData = "";
             AnsiString data = oracledata->SerializeOut(doc);
             resultData = TOracleTCPIP::Instance().SendAndFetch(data);
-            retValue = oracledata->DeserializeData(resultData, _postResult);
+            if(resultData.Pos("Connection Failed") == 0)
+                retValue = oracledata->DeserializeData(resultData, _postResult);
+            else
+                retValue = false;
          }
          else if(totalPayTendered == 0 && hasCancelledItems)
          {
@@ -458,11 +470,13 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
         AnsiString resultData = "";
         AnsiString data = oracledata->SerializeOut(doc);
         resultData = TOracleTCPIP::Instance().SendAndFetch(data);
-
-        oracledata->DeserializeInquiryData(resultData, _roomResult);
-        if(!_roomResult.IsSuccessful)
+        if(resultData.Pos("Connection Failed") == 0)
         {
-            MessageBox(_roomResult.resultText,"Warning",MB_OK);
+            oracledata->DeserializeInquiryData(resultData, _roomResult);
+            if(!_roomResult.IsSuccessful)
+            {
+                MessageBox(_roomResult.resultText,"Warning",MB_OK);
+            }
         }
     }
     catch(Exception &E)
