@@ -72,6 +72,7 @@ private:	// User declarations
    void UpdateGUI();
    void InitializePMS();
    void LogPMSEnabling();
+   bool CanEnablePOSServer();
 public:		// User declarations
    ePMS PMSType;
 

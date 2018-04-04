@@ -172,9 +172,20 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbSurchargeCat->Enabled = false;
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
-        cbMakeOracleServer->OnClick = NULL;
-        cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
-        cbMakeOracleServer->OnClick = cbMakePOSServer;
+        if(CanEnablePOSServer())
+        {
+            cbMakeOracleServer->Enabled = true;
+            cbMakeOracleServer->OnClick = NULL;
+            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+            cbMakeOracleServer->OnClick = cbMakePOSServer;
+        }
+        else
+        {
+            cbMakeOracleServer->Enabled = false;
+            cbMakeOracleServer->OnClick = NULL;
+            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+            cbMakeOracleServer->OnClick = cbMakePOSServer;
+        }
         if(TGlobalSettings::Instance().IsOraclePOSServer)
         {
             tbOracleInterfaceIP->Enabled = true;
@@ -186,8 +197,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         {
             tbOracleInterfaceIP->Enabled = false;
             tbOracleInterfacePort->Enabled = false;
-            tbPhoenixIPAddress->Caption = "Oracle Interface IP";
-            tbPhoenixPortNumber->Caption = "Oracle Interface Port";
+            tbOracleInterfaceIP->Caption = "Oracle Interface IP";
+            tbOracleInterfaceIP->Caption = "Oracle Interface Port";
         }
     }
     else
@@ -618,15 +629,28 @@ void __fastcall TfrmPHSConfiguration::cbMakePOSServer(TObject *Sender)
 	}
 	else
 	{
-        if(cbMakeOracleServer->Checked)
-            MessageBox("Please make sure, this option is tick marked on this system only","Information",MB_OK + MB_ICONINFORMATION);
+        if(CanEnablePOSServer())
+        {
+            if(cbMakeOracleServer->Checked)
+                MessageBox("Please make sure, this option is tick marked on this system only in the site.","Information",MB_OK + MB_ICONINFORMATION);
+            else
+                MessageBox("Please make sure, this option should be enabled on atleast 1 POS in the site.","Information",MB_OK + MB_ICONINFORMATION);
+            TGlobalSettings::Instance().IsOraclePOSServer = cbMakeOracleServer->Checked;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+            DBTransaction.Commit();
+        }
         else
-            MessageBox("Please make sure, this option should be tick marked on atleast 1 POS","Information",MB_OK + MB_ICONINFORMATION);
-        TGlobalSettings::Instance().IsOraclePOSServer = cbMakeOracleServer->Checked;
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
-        DBTransaction.Commit();
+        {
+            cbMakeOracleServer->Checked = false;
+            TGlobalSettings::Instance().IsOraclePOSServer = false;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+            DBTransaction.Commit();
+            MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+        }
         UpdateGUI();
     }
 }
@@ -683,6 +707,37 @@ void __fastcall TfrmPHSConfiguration::tbOracleInterfaceIPMouseClick(TObject *Sen
             DBTransaction1.Commit();
 		}
 	}
+}
+//---------------------------------------------------------------------------
+bool TfrmPHSConfiguration::CanEnablePOSServer()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = 9622 AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY"; // vmIsOraclePOSServer
+        SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount == 0)
+        {
+            retValue = true;
+        }
+        else
+        {
+            TGlobalSettings::Instance().IsOraclePOSServer = false;
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 

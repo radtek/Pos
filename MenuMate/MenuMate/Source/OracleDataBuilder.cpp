@@ -988,10 +988,44 @@ bool TOracleDataBuilder::DeserializeGetLinkStatus(AnsiString inData)
 //----------------------------------------------------------------------------
 bool TOracleDataBuilder::DeserializeInquiryData(AnsiString inData, TRoomInquiryResult &_roomResult)
 {
-    TiXmlDocument* result = new TiXmlDocument();
-    result->Parse(inData.c_str());
-    ReadXML(result,_roomResult);
-    return true;
+    bool retValue = false;
+    try
+    {
+        TiXmlDocument* result = new TiXmlDocument();
+        if(inData.Trim().Length() != 0)
+        {
+            result->Parse(inData.c_str());
+            ReadXML(result,_roomResult);
+            retValue = true;
+        }
+        else
+        {
+            retValue= false;
+            _roomResult.IsSuccessful = false;
+            if(TGlobalSettings::Instance().IsOraclePOSServer)
+            {
+                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.\n";
+            }
+            else
+            {
+                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running.";
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+        retValue= false;
+        _roomResult.IsSuccessful = false;
+        if(TGlobalSettings::Instance().IsOraclePOSServer)
+        {
+            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.";
+        }
+        else
+        {
+            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running.";
+        }
+    }
+    return retValue;
 }
 //----------------------------------------------------------------------------
 bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &_postResult)
@@ -1014,25 +1048,33 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
         }
         else
         {
-            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-            MessageBox("No Response Received from Oracle.\nPMS is disabled now\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
             retValue= false;
             if(TGlobalSettings::Instance().IsOraclePOSServer)
             {
+                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                MessageBox("No Response Received from Oracle.\nPMS is disabled now\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
                 std::auto_ptr<TManagerOraclePMS> oraclePMS(new TManagerOraclePMS());
                 oraclePMS->FindAndTerminateProcess();
+            }
+            else
+            {
+                MessageBox("No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running","Error",MB_OK + MB_ICONERROR);
             }
         }
     }
     catch(Exception &ex)
     {
-        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-        MessageBox("Problem in receiving response from Oracle.\nPMS is disabled now\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
-        retValue = false;
+        retValue= false;
         if(TGlobalSettings::Instance().IsOraclePOSServer)
         {
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+            MessageBox("No Response Received from Oracle.\nPMS is disabled now\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
             std::auto_ptr<TManagerOraclePMS> oraclePMS(new TManagerOraclePMS());
             oraclePMS->FindAndTerminateProcess();
+        }
+        else
+        {
+            MessageBox("No Response Received from Oracle.\nPlease ensure POS Server and Oracle is up and running","Error",MB_OK + MB_ICONERROR);
         }
     }
     return retValue;

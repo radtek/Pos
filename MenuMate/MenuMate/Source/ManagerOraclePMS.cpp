@@ -87,6 +87,7 @@ void TManagerOraclePMS::Initialise()
                                 }
                                 else
                                 {
+                                    FindAndTerminateProcess();
                                     if(InitializeoracleTCP())
                                     {
                                        Enabled = true;
