@@ -1035,17 +1035,14 @@ void __fastcall TfrmTransferMulti::btnOkClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmTransferMulti::ReleaseAllocations()
 {
-    vtvStockQty->Clear();
+  
     delete BatchKeyList;
     BatchKeyList=NULL;
-    delete vtvStockQty;
-    vtvStockQty = NULL;
     SelectedStockRequestKeys->Clear();
     delete SelectedStockRequestKeys;
     SelectedStockRequestKeys=NULL;
-    TransfferedStockRequestKeys->Clear();
     delete TransfferedStockRequestKeys;
-    TransfferedStockRequestKeys=NULL;   
+    TransfferedStockRequestKeys=NULL;       
        
 
 }
@@ -1298,5 +1295,6 @@ void __fastcall TfrmTransferMulti::btnReprintClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
+
 
 
