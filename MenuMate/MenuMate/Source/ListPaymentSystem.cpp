@@ -3628,7 +3628,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
         else
         {
-          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration and check POS Server and Oracle are up and running\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
               PhoenixHSOk = true;
           else
           {
@@ -6575,9 +6575,11 @@ bool TListPaymentSystem::TryToEnableOracle()
     {
         std::auto_ptr<TManagerOraclePMS> oracleManager(new TManagerOraclePMS());
         oracleManager->LogPMSEnabling(eSelf);
-        retValue = oracleManager->EnableOraclePMSSilently();
-        if(retValue)
-            TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
+        //retValue = oracleManager->EnableOraclePMSSilently();
+        TDeviceRealTerminal::Instance().BasePMS->Initialise();
+        retValue = TDeviceRealTerminal::Instance().BasePMS->Enabled;
+//        if(retValue)
+//            TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
     }
     catch(Exception &Exc)
     {

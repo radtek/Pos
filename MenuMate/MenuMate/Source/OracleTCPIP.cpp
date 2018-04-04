@@ -48,7 +48,6 @@ bool TOracleTCPIP::Connect()
     bool retValue = false;
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = GetFileName();
-
 	try
 	{
         if (FileExists(fileName) )
@@ -57,11 +56,13 @@ bool TOracleTCPIP::Connect()
        if( tcpClient->Connected() )
 	   {
             Disconnect();
-            Sleep(12000);
+            if(TGlobalSettings::Instance().OracleInterfacePortNumber)
+                Sleep(12000);
             CreateTCPClient();
-            Sleep(1000);
+            if(TGlobalSettings::Instance().OracleInterfacePortNumber)
+                Sleep(1000);
        }
-       if(! tcpClient->Connected())
+       if(!tcpClient->Connected())
        {
            tcpClient->Connect();
            retValue = true;
@@ -80,13 +81,12 @@ bool TOracleTCPIP::Connect()
 
     if(retValue)
     {
-        List->Add("Connection Attempt was successful at  " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+        List->Add("Connection Attempt was successful at  " + (AnsiString)Now().FormatString("hh:nn:ss am/pm") + "\n");
     }
     else
     {
-        List->Add("Connection Attempt was unsuccessful at  " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+        List->Add("Connection Attempt was unsuccessful at  " + (AnsiString)Now().FormatString("hh:nn:ss am/pm") + "\n");
     }
-    List->Add("=================================================================================");
     MakeOracleLogFile(List,fileName);
     return retValue;
 }
@@ -102,7 +102,6 @@ bool TOracleTCPIP::Disconnect()
 AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 {
     AnsiString outResponse = "";
-//    AnsiString directoryName = "";
     std::auto_ptr<TStringList> List(new TStringList);
     AnsiString fileName = "";
     WaitOrProceedWithPost();
@@ -114,13 +113,13 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
             if (FileExists(fileName) )
               List->LoadFromFile(fileName);
             List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Request Time- " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+            List->Add("Request Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
             List->Add("Request Data:- " +inData + "\n");
             sendData(inData);
             outResponse = fetchResponse();
             UnsetPostingFlag();
             List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Response Time- " + (AnsiString)Now().FormatString("hh:mm:ss tt") + "\n");
+            List->Add("Response Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
             List->Add("Response Data:- " +outResponse + "\n");
         }
         catch( Exception& exc)
@@ -134,12 +133,9 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     else if (!tcpClient->Connected())
     {
           UnsetPostingFlag();
-          if(RetryMakingConnection())
-              outResponse = SendAndFetch(inData);
-          else
-              TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     }
     MakeOracleLogFile(List,fileName);
+    Disconnect();
     return outResponse;
 }
 //--------------------------------------------------------------------------
@@ -147,10 +143,10 @@ bool TOracleTCPIP::RetryMakingConnection()
 {
     bool retValue = false;
     std::auto_ptr<TStringList> reConnectLogs(new TStringList);
-    reConnectLogs->Add("Trying to reconnect at                    " + Now().FormatString("hh:mm:ss tt"));
+    reConnectLogs->Add("Trying to reconnect at                    " + Now().CurrentTime().FormatString("hh:nn:ss am/pm"));
+    LogWaitStatus(reConnectLogs);
     IsSilentConnect = false;
     retValue = Connect();
-    LogWaitStatus(reConnectLogs);
     return retValue;
 }
 //--------------------------------------------------------------------------
@@ -176,7 +172,7 @@ void TOracleTCPIP::WaitOrProceedWithPost()
         #pragma warn .pia
         TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsOraclePostInProgress, isPosting);
         if(isPosting)
-            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:nn:ss am/pm"));
         while(isPosting)
         {
             Sleep(1500);
@@ -188,10 +184,11 @@ void TOracleTCPIP::WaitOrProceedWithPost()
         //SetPostingFlag();
         if(waitLogs->Count > 0)
         {
-            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:nn:ss am/pm"));
             waitLogs->Add("=================================================================================");
             LogWaitStatus(waitLogs);
         }
+        Connect();
     }
     catch(Exception &Exc)
     {
@@ -275,7 +272,7 @@ void TOracleTCPIP::MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString 
 AnsiString TOracleTCPIP::GetFileName()
 {
     AnsiString directoryName = "";
-    AnsiString fileName = "";
+    AnsiString fileName      = "";
     directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
@@ -317,11 +314,11 @@ void TOracleTCPIP::sendData( AnsiString inData )
 	char   *buffer = new char[maxBufferSize];
 
 	// Send Data
-    tcpClient->IOHandler->Write( CreateSTX(), 1 );
+//    tcpClient->IOHandler->Write( CreateSTX(), 1 );
     __int32 bufferSize = ( remainedDataSize >= maxBufferSize ) ? maxBufferSize : remainedDataSize;
     data.copy( buffer, bufferSize, itPos );
     tcpClient->IOHandler->Write( CreateByteArray( buffer, bufferSize), bufferSize );
-    tcpClient->IOHandler->Write( CreateETX(), 1 );
+//    tcpClient->IOHandler->Write( CreateETX(), 1 );
 	delete[] buffer;
 }
 //---------------------------------------------------------------------------
@@ -357,7 +354,7 @@ TBytes TOracleTCPIP::CreateSTX()
 {
     TBytes STX;
     STX.Length = 1;
-    STX[0] = 0x02;
+    STX[0]     = 0x02;
     return STX;
 }
 //---------------------------------------------------------------------------
@@ -365,7 +362,7 @@ TBytes TOracleTCPIP::CreateETX()
 {
     TBytes ETX;
     ETX.Length = 1;
-    ETX[0] = 0x03;
+    ETX[0]     = 0x03;
     return ETX;
 }
 //---------------------------------------------------------------------------

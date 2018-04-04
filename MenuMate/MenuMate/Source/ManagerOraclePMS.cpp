@@ -8,6 +8,10 @@
 #include "MMMessageBox.h"
 #include "OracleManagerDB.h"
 #include "OracleTCPIP.h"
+#include <windows.h>
+#include <process.h>
+#include <Tlhelp32.h>
+#include <winbase.h>
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -36,6 +40,7 @@ void TManagerOraclePMS::Initialise()
     DBTransaction.StartTransaction();
     try
     {
+        MakeOracleSeedFile();
         TCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
         TCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
         POSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
@@ -67,9 +72,31 @@ void TManagerOraclePMS::Initialise()
                         {
                             if(CreditCategory.Trim() != "" && CreditCategory != NULL)
                             {
-                                if(InitializeoracleTCP())
+                                if(TGlobalSettings::Instance().IsOraclePOSServer)
                                 {
-                                    Enabled = GetLinkStatus();
+                                   if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
+                                   {
+                                        if(TriggerApplication())
+                                            Enabled = GetLinkStatus();
+                                   }
+                                   else
+                                   {
+                                        MessageBox("Oracle Interface IP Address and Oracle Port Number are must","Information",MB_OK);
+                                        Enabled = false;
+                                   }
+                                }
+                                else
+                                {
+                                    if(InitializeoracleTCP())
+                                    {
+                                       Enabled = true;
+                                       TOracleTCPIP::Instance().Disconnect();
+                                    }
+                                    else
+                                    {
+                                        MessageBox("Could not connect to POS server for Oracle communication.\nOracle PMS is disabled.","Information",MB_OK + MB_ICONINFORMATION);
+                                        Enabled = false;
+                                    }
                                 }
                             }
                             else
@@ -113,6 +140,76 @@ void TManagerOraclePMS::Initialise()
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction.Rollback();
     }
+}
+//---------------------------------------------------------------------------
+bool TManagerOraclePMS::TriggerApplication()
+{
+    bool isProcOpen = false;
+    try
+    {
+      // start the program up
+        CloseExistingApplication();
+        UnicodeString strPath = ExtractFilePath(Application->ExeName);
+        strPath +="OracleTCPServer.exe";
+        isProcOpen = CreateProcess( strPath.t_str(),   // the path
+        NULL,
+        //argv[1],        // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        0,              // No creation flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory
+        &TGlobalSettings::Instance().siOracleApp,            // Pointer to STARTUPINFO structure
+        &TGlobalSettings::Instance().piOracleApp             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+        );
+        Sleep(1000);
+    }
+    catch(Exception &E)
+    {
+        MessageBox(E.Message,"Exception",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess,0);
+    }
+      return isProcOpen;
+}
+//---------------------------------------------------------------------------
+void TManagerOraclePMS::CloseExistingApplication()
+{
+    //TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess,0);
+    bool isTerminated = false;
+    isTerminated = FindAndTerminateProcess();
+    if(isTerminated)
+    {
+        Sleep(13000);
+    }
+}
+//---------------------------------------------------------------------------
+bool TManagerOraclePMS::FindAndTerminateProcess()
+{
+    bool retValue = false;
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    if (Process32First(snapshot, &entry) == TRUE)
+    {
+        while (Process32Next(snapshot, &entry) == TRUE)
+        {
+            if (stricmp(entry.szExeFile, "OracleTCPServer.exe") == 0)
+            {
+                HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+                TerminateProcess(hProcess,0);
+                CloseHandle(hProcess);
+                retValue = true;
+                break;
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
+    return retValue;
 }
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
@@ -430,5 +527,22 @@ bool TManagerOraclePMS::EnableOraclePMSSilently()
         retValue = false;
     }
     return retValue;
+}
+//----------------------------------------------------------------------------
+void TManagerOraclePMS::MakeOracleSeedFile()
+{
+   AnsiString fileName = ExtractFilePath(Application->ExeName) + "OracleSeed.txt" ;
+
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+      List->Clear();
+    }
+    List->Add(TManagerVariable::Instance().DeviceProfileKey);
+    List->Add(TGlobalSettings::Instance().InterbaseIP);
+    List->Add(TGlobalSettings::Instance().DatabasePath);
+
+    List->SaveToFile(fileName );
 }
 //----------------------------------------------------------------------------

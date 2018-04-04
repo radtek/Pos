@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 560
+  ClientHeight = 632
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,13 +21,19 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 8
     Top = 8
     Width = 600
-    Height = 545
+    Height = 616
     Color = 10011108
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
     ParentBackground = False
+    ParentFont = False
     TabOrder = 0
     DesignSize = (
       600
-      545)
+      616)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -43,10 +49,23 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object Label1: TLabel
       Left = 310
-      Top = 384
+      Top = 379
       Width = 242
       Height = 22
       Caption = 'Enable Customer Journey'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 310
+      Top = 489
+      Width = 163
+      Height = 22
+      Caption = 'Make POS Server'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -301,22 +320,6 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbServiceChargeMouseClick
     end
-    object cbEnableCustomerJourney: TCheckBox
-      Left = 558
-      Top = 367
-      Width = 27
-      Height = 58
-      Anchors = [akLeft]
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -19
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 0
-      OnClick = cbEnableCustomerJourneyClick
-    end
     object tbRevenueCodes: TTouchBtn
       Left = 16
       Top = 477
@@ -374,12 +377,74 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbRevenueCentreMouseClick
     end
+    object cbEnableCustomerJourney: TCheckBox
+      Left = 558
+      Top = 365
+      Width = 27
+      Height = 58
+      Anchors = [akLeft]
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 16
+      OnClick = cbEnableCustomerJourneyClick
+    end
+    object cbMakeOracleServer: TCheckBox
+      Left = 558
+      Top = 495
+      Width = 11
+      Height = 17
+      TabOrder = 17
+      OnClick = cbMakePOSServer
+    end
+    object tbOracleInterfaceIP: TTouchBtn
+      Left = 16
+      Top = 532
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Oracle Interface IP'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbOracleInterfaceIPMouseClick
+    end
+    object tbOracleInterfacePort: TTouchBtn
+      Left = 310
+      Top = 532
+      Width = 259
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Oracle Interface Port'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbOracleInterfacePortMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 615
     Top = 8
     Width = 137
-    Height = 545
+    Height = 616
     Color = 10011108
     ParentBackground = False
     TabOrder = 1
