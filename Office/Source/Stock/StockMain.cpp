@@ -354,7 +354,7 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
                 
 
             }
-             
+              frmStockRequestTransfer->vtvStockRequest->Clear();
               frmStockRequestTransfer->Release();
               frmStockRequestTransfer->Refresh();
            

@@ -65,7 +65,7 @@ void TfrmStockRequestTransfer::LoadData()
            
              //NodeData->~TStockRequestNodeData();
         }
-               vtvStockRequest->Clear();
+               //vtvStockRequest->Clear();
 
         if (Transaction->InTransaction)
             Transaction->Commit();
@@ -183,8 +183,8 @@ void __fastcall TfrmStockRequestTransfer::btnOkClick(TObject *Sender)
         Node = vtvStockRequest->GetNext(Node);
     }
     ModalResult = mrOk;
-    delete NodeData;
-    NodeData=NULL;
+   // delete NodeData;
+   // NodeData=NULL;
 }
 //---------------------------------------------------------------------------
 
