@@ -30,6 +30,7 @@ UnicodeString TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction p
     billDetails.TabCredit = "0";
     billDetails.SaleType = "1";
     billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
+    billDetails.OpenCashDrawer = false;
     if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
     {
         billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
@@ -164,7 +165,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
             paymentDetails.TipAmount = tipAmount;
             paymentDetails.PaymentSurcharge = surcharge;
-            paymentDetails.Change = SubPayment->GetChange();
+            paymentDetails.Change = SubPayment->GetChange() - SubPayment->GetCashOut();
             if(IsTipAppliedFromPOS)
                 paymentDetails.TipAppliedFromPOS = "1";
             else
@@ -173,6 +174,8 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             PaymentList.push_back(paymentDetails);
         }
     }
+	if(paymentTransaction.TransOpenCashDraw())
+		billDetails.OpenCashDrawer = true;
 
     if(totalPaymentCollected < 0)
         billDetails.SaleType = "0";
@@ -256,6 +259,7 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
         fpclass->PrinterLogicalName = WideString(receiptData.PrinterLogicalName).c_bstr();
         fpclass->TabCredit =  WideString(receiptData.TabCredit).c_bstr();
         fpclass->Saletype =  WideString(receiptData.SaleType).c_bstr();
+        fpclass->OpenCD =  receiptData.OpenCashDrawer;
 
         for(std::vector<TFiscalItemDetails>::iterator i = receiptData.ItemList.begin(); i != receiptData.ItemList.end() ; ++i)
         {
@@ -329,5 +333,21 @@ UnicodeString TFiscalPrinterAdapter::GetFiscalPrinterStatus()
         printerStatus = E.Message;
     }
     return printerStatus;
+}
+//-----------------------------------------------------------------------------------------------
+UnicodeString TFiscalPrinterAdapter::OpenCashDrawerForFiscalPrinter()
+{
+    UnicodeString openDrawerMessage = "";
+    try
+    {
+        TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
+        BSTR responseMessage = fpclass->OpenCashDrawer();
+        openDrawerMessage = UnicodeString(responseMessage).t_str();
+    }
+    catch(Exception & E)
+    {
+        openDrawerMessage = E.Message;
+    }
+    return openDrawerMessage;
 }
 

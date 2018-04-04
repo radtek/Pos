@@ -8655,7 +8655,8 @@ void TfrmAnalysis::OpenCashDrawer()
     {
         if(TGlobalSettings::Instance().OpenCashDrawer)
         {
-            TComms::Instance().KickLocalDraw(OpenCashDrawerTransaction);
+            std::auto_ptr <TManagerFloat> (FloatManager)(new TManagerFloat((TForm*)this));
+            FloatManager->OpenCashDrawerAccordingToPrinter(OpenCashDrawerTransaction);
         }
         OpenCashDrawerTransaction.Commit();
     }
