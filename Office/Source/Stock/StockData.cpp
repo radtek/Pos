@@ -2255,7 +2255,7 @@ bool TdmStockData::Update4_0()
 			{
 				// set barcode to null for each duplicate entry
 				RunSQL("Update Stock set Barcode = NULL where barcode = '" + IBQuery1->FieldByName("BARCODE")->AsString + "'");
-			}	
+			}
 		}
 		// Insert into Barcode
 		RunSQL("Insert into Barcode select Stock_Key,-1,Barcode from Stock where Barcode is not null");
@@ -3042,10 +3042,68 @@ void TdmStockData::UpdateTables6_24_0()
     {
       RunSQL("Alter Table StocktakeHistory Add Prev_Average_Unit_Cost Numeric(15, 4) Default 0");
   //   RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6240 + "', Current_TimeStamp) ");
+             
+	  //	TStringList *TablesList = new TStringList();
+      //  UpdateAverageCost(TablesList);
+     Query->Close();
+     Query->SQL->Text = "Select * from StocktakeHistory ";
+
+
+    for (Query->ExecQuery(); !Query->Eof; Query->Next())
+   {
+     if(Query->RecordCount > 0)
+     {
+     IBQuery1->Close();
+     IBQuery1->SQL->Text = "select "
+          "AVERAGE_UNIT_COST "
+            "from "
+             "STOCKTAKEHISTORY  "
+             "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY=(select  Max(StocktakeHistory.STOCKTAKEHISTORY_KEY) "
+             "from  "
+             "StocktakeHistory "
+             "where "
+             "STOCKTAKEHISTORY.LOCATION = :LOCATION and "
+            "STOCKTAKEHISTORY.STOCK_GROUP= :STOCK_GROUP and "
+            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY and "
+            "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and "
+            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) ";
+
+       IBQuery1->Open();
+      IBQuery1->ParamByName("LOCATION")->AsString	=     Query->FieldByName("LOCATION")->AsString;
+	 IBQuery1->ParamByName("STOCK_GROUP")->AsString =     Query->FieldByName("STOCK_GROUP")->AsString;
+     IBQuery1->ParamByName("STOCK_CATEGORY")->AsString =  Query->FieldByName("STOCK_CATEGORY")->AsString;
+     IBQuery1->ParamByName("DESCRIPTION")->AsString =     Query->FieldByName("DESCRIPTION")->AsString;
+     IBQuery1->ParamByName("STOCKTAKEHISTORY_KEY")->AsString = Query->FieldByName("STOCKTAKEHISTORY_KEY")->AsString;
+	 IBQuery1->ExecSQL();
+                
+               }
+             }
+
+         }
+
     }
 
+
+ //=============================================================================================================================
+void TdmStockData::UpdateAverageCost(TStrings *Fields)
+{
+	Fields->Clear();
+	if (!Query->Transaction->InTransaction) Query->Transaction->StartTransaction();
+
+	Query->Close();
+	Query->SQL->Text =
+		"Select * "
+                "From "
+			"StocktakeHistory ";
+
+	for (Query->ExecQuery(); !Query->Eof; Query->Next())
+	{
+		Fields->Add(Query->FieldByName("Location")->AsString.Trim());
+	}
+	if (Query->Transaction->InTransaction) Query->Transaction->Commit();
 }
-//-------------------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
 bool TdmStockData::Update6_24_0()
 {
   const AnsiString THIS_VER = "6.24.0";
@@ -3069,5 +3127,8 @@ bool TdmStockData::Update6_24_0()
      }
       }
   return true;
-}      
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+
 

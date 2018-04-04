@@ -66,6 +66,7 @@ private:	// User declarations
 	bool HasDBVersion(AnsiString Version);
 	bool RequiresUpdateTo(DBVersion::DBVersions version);
 	void GetTableNames(TStrings *Fields);
+    void UpdateAverageCost(TStrings *Fields);
 	void GetFieldNames(AnsiString TableName, TStrings *Fields);
 	bool WaitForSingleUser();
 	bool BackupDB(AnsiString FileName, TLabel *Label);
