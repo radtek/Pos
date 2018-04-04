@@ -3051,8 +3051,7 @@ void TdmStockData::UpdateTables6_24_0()
 
     for (Query->ExecQuery(); !Query->Eof; Query->Next())
    {
-     if(Query->RecordCount > 0)
-     {
+
      IBQuery1->Close();
      IBQuery1->SQL->Text = "select "
           "AVERAGE_UNIT_COST "
@@ -3067,16 +3066,24 @@ void TdmStockData::UpdateTables6_24_0()
             "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY and "
             "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and "
             "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) ";
-
-       IBQuery1->Open();
+        IBQuery1->Close();
+      IBQuery1->Open();
       IBQuery1->ParamByName("LOCATION")->AsString	=     Query->FieldByName("LOCATION")->AsString;
 	 IBQuery1->ParamByName("STOCK_GROUP")->AsString =     Query->FieldByName("STOCK_GROUP")->AsString;
      IBQuery1->ParamByName("STOCK_CATEGORY")->AsString =  Query->FieldByName("STOCK_CATEGORY")->AsString;
      IBQuery1->ParamByName("DESCRIPTION")->AsString =     Query->FieldByName("DESCRIPTION")->AsString;
      IBQuery1->ParamByName("STOCKTAKEHISTORY_KEY")->AsString = Query->FieldByName("STOCKTAKEHISTORY_KEY")->AsString;
+
+           //	IBQuery1->Open();
+      //BQuery1->Open();
 	 IBQuery1->ExecSQL();
-                
-               }
+      IBQuery1->Close();
+      Query->Close();
+     Query->SQL->Text = "Update  StocktakeHistory  set PREV_AVERAGE_UNIT_COST = :AVERAGE_UNIT_COST"
+      "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY = :STOCKTAKEHISTORY_KEY " ;
+
+
+              
              }
 
          }
