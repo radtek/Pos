@@ -47,6 +47,11 @@ void TApplyParser::upgrade6_46Tables()
 {
     update6_46Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_47Tables()
+{
+    update6_47Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -108,6 +113,11 @@ void TApplyParser::update6_46Tables()
     Updatetable_PaymentTypes6_46(_dbControl);
 }
 //----------------------------------------------------
+void TApplyParser::update6_47Tables()
+{
+    AlterTableDiscount6_47(_dbControl);
+}
+//--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
     int invoiceInterface = 25;
@@ -679,142 +689,6 @@ void TApplyParser::UpdateItemSize(TDBControl* const inDBControl)
         "ALTER TABLE ITEMSIZE ADD REVENUECODE INT;",
         inDBControl );
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 //------------------------------------------------------------------------------
 
@@ -1712,5 +1586,29 @@ void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DAYARCORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+    if (fieldExists( "ARCORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+    if (fieldExists( "ORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+}
 }
 //------------------------------------------------------------------------------
