@@ -3630,7 +3630,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
                 PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
             else
             {
-              if(MessageBox("PMS interface is not enabled.\nPlease ensure Oracle are up and running\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              if(MessageBox("PMS interface is not enabled.\nPlease ensure Oracle is up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
                   PhoenixHSOk = true;
               else
               {
@@ -3641,12 +3641,18 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         }
         else
         {
-            if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and running\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
-                  PhoenixHSOk = true;
-            else
+            bool isOracleEnabled = TryToEnableOracle();
+            if(isOracleEnabled)
+                PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+            if(!PhoenixHSOk)
             {
-              PhoenixHSOk = false;
-              ResetPayments(PaymentTransaction);
+                if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                      PhoenixHSOk = true;
+                else
+                {
+                  PhoenixHSOk = false;
+                  ResetPayments(PaymentTransaction);
+                }
             }
         }
     }

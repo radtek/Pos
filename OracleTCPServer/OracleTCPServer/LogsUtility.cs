@@ -18,7 +18,15 @@ namespace OracleTCPServer
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
 
-                string location = Path.Combine(path, "Oracle Listner Logs");
+                string location = Path.Combine(path, "Logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                location = Path.Combine(location, "Oracle Listner Logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");
@@ -57,7 +65,7 @@ namespace OracleTCPServer
             }
             catch (Exception ex)
             {
-               
+
             }
         }
     }

@@ -52,19 +52,22 @@ namespace OracleTCPServer
 
                     while ((countBytes = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
+                        listLogs.Add("Count of bytes received                           " + countBytes);
                         data = System.Text.Encoding.ASCII.GetString(bytes, 0, countBytes);
                         //data = data.Trim();
                         listLogs.Add("Data Received from Client                         " + data);
+                        listLogs.Add("Time of reception                                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
                         byte[] responseBytes = SendRequestToOracle(msg);
                         string responseString = System.Text.Encoding.ASCII.GetString(responseBytes, 0, responseBytes.Length);
+                        listLogs.Add("Writing back to client at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
                         stream.Write(responseBytes, 0, responseBytes.Length);
                         listLogs.Add("Data sent to Client                               " + responseString);
-
-                        MakeLogs(listLogs);
-                        listLogs.Clear();
                     }
                     client.Close();
+                    listLogs.Add("Connection from MM client is closed at            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    MakeLogs(listLogs);
+                    listLogs.Clear();
                 }
             }
             catch (Exception exc)
@@ -79,25 +82,34 @@ namespace OracleTCPServer
         private static byte[] SendRequestToOracle(byte[] buffer)
         {
             byte[] byteReponse = new byte[2000];
+            tcpclnt.SendTimeout = 3000;
+            tcpclnt.ReceiveTimeout = 5000;
             try
             {
+                // to clear existing data if any
+                if (tcpclnt.Available > 0)
+                {
+                    listLogs.Add("Found existing data " + tcpclnt.Available);
+                    Stream old = tcpclnt.GetStream();
+                    byte[] oldBytes = new byte[2000];
+                    int l = old.Read(oldBytes, 0, oldBytes.Length);
+                    listLogs.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
+                }
+                ///////////////////////////////////////
                 Stream stm = tcpclnt.GetStream();
-                tcpclnt.SendTimeout = 3000;
                 byte[] STX = new byte[] { 0x02 };
                 byte[] ETX = new byte[] { 0x03 };
+                listLogs.Add("Writing back to Oracle APP at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stm.Write(STX, 0, 1);
                 stm.Write(buffer, 0, buffer.Length);
                 stm.Write(ETX, 0, 1);
 
                 string dataWritten = System.Text.Encoding.ASCII.GetString(buffer, 0, buffer.Length);
-                listLogs.Add("Data written to Oracle APP                        " + dataWritten + " with STX in start and ETX in end");
+                listLogs.Add("Data written to Oracle APP                        " + dataWritten);
 
                 int k = stm.Read(byteReponse, 0, byteReponse.Length);
-
+                listLogs.Add("Data read from Oracle APP at                      " + DateTime.Now.ToString("hh:mm:ss tt"));
                 dataWritten = System.Text.Encoding.ASCII.GetString(byteReponse, 0, k);
-                //listLogs.Add("Data Before Trim         " + dataWritten);
-                //dataWritten = dataWritten.Trim();
-                //listLogs.Add("Data After Trim          " + dataWritten);
                 byteReponse = System.Text.Encoding.ASCII.GetBytes(dataWritten);
                 listLogs.Add("Data read from Oracle APP                         " + dataWritten);
                 listLogs.Add("Time                                              " + DateTime.Now.ToString("hh:mm:ss tt"));

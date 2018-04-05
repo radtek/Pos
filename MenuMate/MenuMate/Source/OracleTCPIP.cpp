@@ -279,8 +279,11 @@ void TOracleTCPIP::MakeOracleLogFile(std::auto_ptr<TStringList> List,AnsiString 
 AnsiString TOracleTCPIP::GetFileName()
 {
     AnsiString directoryName = "";
-    AnsiString fileName      = "";
-    directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
+    AnsiString fileName = "";
+    directoryName = ExtractFilePath(Application->ExeName) + "/Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "/Oracle Posts Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
     AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
