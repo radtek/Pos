@@ -48,6 +48,7 @@
 #include "ManagerClippIntegration.h"
 #include "MallExportOtherDetailsUpdate.h"
 #include "ManagerLoyaltyVoucher.h"
+#include "OracleManagerDB.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -521,7 +522,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			TempReceipt->PaymentType = ptPreliminary;
 			Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
 			TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-                        ReceiptTransaction.DeleteOrders();
+            ReceiptTransaction.DeleteOrders();
 
 			DBTransaction.Commit();
             if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
@@ -4411,7 +4412,11 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		PaymentTransaction.ApplyMembership(Membership);
 
         TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, ItemsToBill);
-
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Oracle)
+        {
+            std::auto_ptr<TOracleManagerDB> oracleDB(new TOracleManagerDB());
+            oracleDB->GetRevenueCode(PaymentTransaction.Orders);
+        }
         TMMContactInfo Member;
         if(SelectedDiscount.IsComplimentaryDiscount())
           {

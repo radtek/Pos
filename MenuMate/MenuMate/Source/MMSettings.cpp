@@ -226,7 +226,6 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,              TGlobalSettings::Instance().ApplyRoundingTax);
             TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,         TGlobalSettings::Instance().RoundingTaxProfileKey);
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
-
         }
 
         TGlobalSettings::Instance().XeroMachineName	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroMachineName,"");
@@ -409,6 +408,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().DiningBal =  TManagerVariable::Instance().GetNum(DBTransaction, vmDiningBal, 0.00);
         TGlobalSettings::Instance().PrintSignatureWithDiscountSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithDiscountSales, false);
         TGlobalSettings::Instance().PrintSignatureWithRoomSales = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintSignatureWithRoomSales, false);
+        TGlobalSettings::Instance().UseItalyFiscalPrinter = TManagerVariable::Instance().GetBool(DBTransaction, vmUseItalyFiscalPrinter, false);
+        TGlobalSettings::Instance().PrinterType = TManagerVariable::Instance().GetStr(DBTransaction, vmFPPrinterType, "FiscalPrinter");
+        TGlobalSettings::Instance().PrinterlogicalName = TManagerVariable::Instance().GetStr(DBTransaction, vmFPPrinterLogicalName, "EpsonFP1");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

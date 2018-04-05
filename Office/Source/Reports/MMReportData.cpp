@@ -5430,7 +5430,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-"            CASE WHEN UPPER(paymentPercent.pay_type) = 'VOUCHER' THEN qpa.voucher_number WHEN(UPPER(paymentPercent.pay_type) = 'GIFT CARD') then qpa.GiftCard_number else '' END voucher_number, "
+       " CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number else '' END voucher_number,"
             " CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type) = 'EFTPOS' )THEN ABS(coalesce(aChange.CASHOUT,0))  "
             " WHEN (UPPER(paymentPercent.pay_type) = 'CASH' ) THEN (coalesce(aChange.CASHOUT,0)) "
             "  ELSE 0 END change_recv,   "
@@ -5450,7 +5450,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 	"ab.time_stamp billed_at, "
 	"ab.invoice_number receipt_no, "
 	"billpay.SUBTOTAL total_paid,  "
-	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'VOUCHER' THEN VoucherQuery.voucher_number END) AS voucher_number, "
+    "MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) <> 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS voucher_number, "
 	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
 	"abp.note note ,       "
 	"tn.TABLE_NAME,    "
@@ -5493,12 +5493,13 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "        abp.ARCBILL_KEY,                                                                                              "
 "        abp.PAY_TYPE,                                                                                                 "
         "CAST(CASE WHEN Sum(ARCBILL.TOTAL) <> 0 THEN (((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(ARCBILL.TOTAL))) ELSE COALESCE(sum(abp.SUBTOTAL),0) END as numeric(17, 4)) AS PayTypeTotal, "
-"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
+"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip, "
+"       abp.PROPERTIES "
 "        FROM ARCBILLPAY abp                                                                                                                         "
 "        left join ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where  abp.SUBTOTAL > 0 and abp.CASH_OUT<>'T'      "
  + selected_tenders +
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT "
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,abp.PROPERTIES "
 
 //Union for adding only cash out entries means bill total is 0 and cash out is done
  "UNION ALL "
@@ -5506,12 +5507,13 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
                 "abp.ARCBILL_KEY, "
                 "abp.PAY_TYPE,    "
                 "abp.SUBTOTAL AS PayTypeTotal, "
-                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip "
+                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip, "
+                "abp.PROPERTIES "
                 "FROM ARCBILLPAY abp "
                 "LEFT JOIN ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY "
                 "WHERE ARCBILL.TOTAL = 0  AND ABP.CASH_OUT = 'T' "
         + selected_tenders +
-                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL "
+                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL,abp.PROPERTIES "
 
 ")paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
 "                                                                                                                                                 "
@@ -5534,7 +5536,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "                      qpa.billed_at,                                                                              "
 "                      qpa.receipt_no,                                                                             "
 "                      qpa.voucher_number,                                                                         "
-"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip  "
+"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip,paymentPercent.PROPERTIES  "
 
 "UNION  all "
 
@@ -5545,7 +5547,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-"            CASE WHEN UPPER(paymentPercent.pay_type) = 'VOUCHER' THEN qpa.voucher_number WHEN(UPPER(paymentPercent.pay_type) = 'GIFT CARD') then qpa.GiftCard_number else '' END voucher_number, "
+
+ "CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number else '' END voucher_number, "
  "          CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type)= 'EFTPOS' )THEN abs(coalesce(aChange.CASHOUT,0))  "
             " WHEN (UPPER(paymentPercent.pay_type) = 'CASH'  ) THEN (coalesce(aChange.CASHOUT,0)) "
             "  else 0 END change_recv,   "
@@ -5565,7 +5568,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 	"ab.time_stamp billed_at, "
 	"ab.invoice_number receipt_no, "
 	"billpay.SUBTOTAL total_paid,  "
-	"MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) = 'VOUCHER' THEN VoucherQuery.voucher_number END) AS voucher_number, "
+    "MIN(CASE WHEN UPPER(VoucherQuery.PAY_TYPE) <> 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS voucher_number, "
 	"MIN(CASE WHEN VoucherQuery.PAY_TYPE = 'GIFT CARD' THEN VoucherQuery.voucher_number END) AS GiftCard_number, "
 	"abp.note note ,       "
 	"tn.TABLE_NAME,    "
@@ -5609,12 +5612,13 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "        abp.ARCBILL_KEY,                                                                                              "
 "        abp.PAY_TYPE,                                                                                                 "
 "     CAST(CASE WHEN Sum(DAYARCBILL.TOTAL) <> 0 THEN (((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(DAYARCBILL.TOTAL))) ELSE COALESCE(sum(abp.SUBTOTAL),0) END as numeric(17, 4)) AS PayTypeTotal, "
-"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
+"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip, "
+"       abp.PROPERTIES "
 "        FROM DAYARCBILLPAY abp                                                                                                                               "
 "        left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where abp.SUBTOTAL > 0 and   abp.CASH_OUT<>'T'   "
 + selected_tenders +
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT "
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,abp.PROPERTIES "
 
 //Union for adding only cash out entries means bill total is 0 and cash out is done
         "UNION ALL "
@@ -5622,12 +5626,13 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
                 "abp.ARCBILL_KEY, "
                 "abp.PAY_TYPE,    "
                 "abp.SUBTOTAL AS PayTypeTotal, "
-                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip "
+                "CAST(coalesce(abp.TIP_AMOUNT,0) AS NUMERIC(17,4)) tip, "
+                "       abp.PROPERTIES "
                 "FROM DAYARCBILLPAY abp "
                 "LEFT JOIN DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY "
                 "WHERE DAYARCBILL.TOTAL = 0  AND ABP.CASH_OUT = 'T' "
         + selected_tenders +
-                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL "
+                "GROUP BY abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT, abp.SUBTOTAL,abp.PROPERTIES"
 
 ")paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
 "                  inner join (select abp.arcbill_key,                                                             "
@@ -5642,7 +5647,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "                      qpa.billed_at,                                                                              "
 "                      qpa.receipt_no,                                                                             "
 "                      qpa.voucher_number,                                                                         "
-"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip  "
+"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip,paymentPercent.PROPERTIES  "
 
 "      order by 2,1, 5, 3, 4, 6, 7, 8 ,9  ;";
 
@@ -6861,6 +6866,7 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
              "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0),2)))) as Numeric(17,4)) Total,    "
 		    "cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT),2)))as numeric(17, 2))  Discount,  "
             " cast(sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)),2))as numeric(17, 2))  AS DiscountTax ,  "
+
 			"cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE,2))) as numeric(17,4))DiscountAmount, "
 			"ARCBILL.ArcBill_Key,  "
 			"Cast(Archive.Size_Name As VarChar(30)) Size_Name, "
@@ -6875,7 +6881,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
               "cast ('' as varchar(25) )CategoryGroup, "
               "cast ('' as varchar(25) ) Category, "
               "cast (0 as numeric(15,4)) Quantity, "
-              "cast (0 as numeric(15,4)) Cost "
+              "cast (0 as numeric(15,4)) Cost, "
+              "cast ((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT),2))) + (sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)),2)))as numeric(17, 2)) AS TotalDiscount "
 		"From "
 			"Security Left Join ArcBill On "
 				"Security.Security_Ref = ArcBill.Security_Ref "
@@ -6961,6 +6968,7 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
             "  ))) as Numeric(17,4)) Total, "
 		    "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))as numeric(17, 2))  Discount,  "
             "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 2))  AS DiscountTax ,  "
+
 			"cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE)) as numeric(17,4))DiscountAmount, "
 			"DAYARCBILL.ArcBill_Key,  "
 			"Cast(DAYARCHIVE.Size_Name As VarChar(30)) Size_Name, "
@@ -6974,7 +6982,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
             "cast ('' as varchar(25) )CategoryGroup, "
             "cast ('' as varchar(25) ) Category, "
             "cast (0 as numeric(15,4)) Quantity, "
-            "cast (0 as numeric(15,4)) Cost "
+            "cast (0 as numeric(15,4)) Cost, "
+             "cast ((sum(round(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT),2))) + (sum(round(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)),2)))as numeric(17, 2)) AS TotalDiscount "
 
 		"From "
 			"Security Left Join DAYARCBILL On "
@@ -7233,7 +7242,8 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
 			"Menu.Menu_Type,"
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location, "
             "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Food_Menu_Total ,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total , "
+             "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)))+(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT))))as numeric(17, 4)) AS TotalDiscount "
         //    "Cast(0 as Numeric(17,4)) PriceTotalByLocation,  "
          //   "Cast( 0 as Numeric(17,4)) TotalByLocation "
 
@@ -7326,7 +7336,8 @@ if (Locations->Count)
 			"MENU.MENU_TYPE,  "
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,  "
             " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Food_Menu_Total , "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total  "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total ,  "
+            "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))+(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 4)) AS TotalDiscount "
            // "Cast(0 as Numeric(17,4)) PriceTotalByLocation,  "
           //  "Cast( 0 as Numeric(17,4)) TotalByLocation "
 		"From "
@@ -7507,14 +7518,15 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 			"Cast(Archive.Item_Name As VarChar(50)) Item_Name,"
 	 	  //   "Cast(((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)- coalesce(Archive.TAX_ON_DISCOUNT,0) )) as Numeric(17,4)) Price,  "
               "Cast(((round(coalesce (abs(Archive.QTY) * Archive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price,  "
-
-            "Cast(((abs(Archive.QTY) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))) as Numeric(17,4)) Total, "
-
+             "Cast((((abs(Archive.QTY) * coalesce(Archive.BASE_PRICE,0) +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)))) as Numeric(17,4)) Total, "
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location,"
 			"cast((Archive.Cost * Archive.Qty) as numeric(17, 2)) Cost,"
 			"Archive.Qty Quantity,"
 			"ArcCategories.Category,"
-			"CategoryGroups.Name CategoryGroup "
+			"CategoryGroups.Name CategoryGroup, "
+			"cast(round(Archive.DISCOUNT_WITHOUT_TAX,2)+ round(Archive.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
+
+
 		"From "
 			" ArcBill  "
 				"Left Join (	SELECT  a.SECURITY_REF, a.SECURITY_EVENT, a.FROM_VAL FROM SECURITY a where a.SECURITY_EVENT='Discounted By') SECURITY "
@@ -7575,14 +7587,15 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
        //     "Cast(((DayArchive.QTY * DayArchive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0) - coalesce(DayArchive.TAX_ON_DISCOUNT,0))) as Numeric(17,4)) Price, "
 
             "Cast(((round(coalesce (DayArchive.QTY * DAYARCHIVE.PRICE_INCL,0),2) )) as Numeric(17,4)) Price,  "
-             " Cast(((abs(DayArchive.QTY) * DAYARCHIVE.BASE_PRICE  +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0))) as Numeric(17,4)) Total, "
-
+             "Cast((((abs(DayArchive.QTY) * coalesce(DayArchive.BASE_PRICE,0) +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)))) as Numeric(17,4)) Total, "
 
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,"
 			"cast((DayArchive.Cost * DayArchive.Qty) as numeric(17, 2)) Cost,"
 			"DayArchive.Qty Quantity,"
 			"ArcCategories.Category,"
-			"CategoryGroups.Name CategoryGroup "
+			"CategoryGroups.Name CategoryGroup, "
+            "cast(round(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,2)+ round(DAYARCHIVE.TAX_ON_DISCOUNT,2) as Numeric(17,4)) TotalDiscount "
+
 		"From "
 			" DayArcBill  "
 				"Left Join (	SELECT  a.SECURITY_REF, a.SECURITY_EVENT, a.FROM_VAL FROM SECURITY a where a.SECURITY_EVENT='Discounted By') SECURITY "
@@ -7634,7 +7647,8 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
 	}
 	qrDiscounts->SQL->Text        = qrDiscounts->SQL->Text +
 		"Order By "
-			"7, 11, 10, 4, 3";
+		"8,12,11,5" ;
+        
 	for (int i=0; i<Discounts->Count; i++)
 	{
 		qrDiscounts->ParamByName("DiscParam" + IntToStr(i))->AsString = Discounts->Strings[i];

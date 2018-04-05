@@ -135,7 +135,7 @@ void __fastcall TWebProcUtil::ProcessReceipt(Database::TDBTransaction &DBTransac
 		TempReceipt->PaymentType = ptPreliminary;
 		Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
 		TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-
+        //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
 		while (ReceiptTransaction.Orders->Count != 0)
 		{
 			delete(TItemComplete*)ReceiptTransaction.Orders->Items[0];
@@ -893,7 +893,7 @@ void __fastcall TWebProcUtil::AutoPrintReceipts(TMMTabType TabType, TPaymentTran
             {
                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
             }
-
+            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
             if (OrdersLoadedFromTabs)
             {
                 while (InvoiceTransaction.Orders->Count != 0)

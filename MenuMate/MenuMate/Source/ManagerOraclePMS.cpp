@@ -54,6 +54,7 @@ void TManagerOraclePMS::Initialise()
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
         LoadMeals(DBTransaction);
+        TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
         {
             if(LoadRevenueCodes(DBTransaction))
@@ -135,6 +136,7 @@ bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::InitializeoracleTCP()
 {
+    TOracleTCPIP::Instance().IsSilentConnect = false;
     bool retValue = TOracleTCPIP::Instance().Connect();
     return retValue;
 }
@@ -300,13 +302,19 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             }
          }
          bool isNotCompleteCancel = false;
+         bool hasCancelledItems = false;
          for(int itemNumber = 0; itemNumber < _paymentTransaction.Orders->Count; itemNumber++)
          {
             TItemComplete *itemThis = (TItemComplete*)_paymentTransaction.Orders->Items[itemNumber];
             if(itemThis->OrderType != CanceledOrder)
             {
                isNotCompleteCancel = true;
+               hasCancelledItems = false;
                break;
+            }
+            else if(itemThis->OrderType == CanceledOrder)
+            {
+                hasCancelledItems = true;
             }
          }
          if(totalPayTendered == 0 && isNotCompleteCancel) // case for cancelled,100% discount
@@ -319,8 +327,12 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             AnsiString data = oracledata->SerializeOut(doc);
             resultData = TOracleTCPIP::Instance().SendAndFetch(data);
             retValue = oracledata->DeserializeData(resultData, _postResult);
-
          }
+         else if(totalPayTendered == 0 && hasCancelledItems)
+         {
+            retValue = true;
+         }
+
     }
     catch(Exception &E)
     {
@@ -361,3 +373,62 @@ void TManagerOraclePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult
     }
 }
 //---------------------------------------------------------------------------
+void TManagerOraclePMS::LogPMSEnabling(TriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString fileName = GetFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Oracle as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Oracle at start of Menumate" +"\n");
+        }
+        else if(triggerType == eSelf)
+        {
+            List->Add("Note- "+ (AnsiString)"Found Oracle disabled with necessary details present" +"\n" +
+                  "      "+ "Menumate is trying to enable Oracle and then sale would be processed" +"\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TManagerOraclePMS::GetFileName()
+{
+    AnsiString directoryName = "";
+    AnsiString fileName = "";
+    directoryName = ExtractFilePath(Application->ExeName) + "/Oracle Posts Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "OraclePosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    fileName = directoryName + "/" + name;
+    return fileName;
+}
+//----------------------------------------------------------------------------
+bool TManagerOraclePMS::EnableOraclePMSSilently()
+{
+    bool retValue = false;
+    try
+    {
+        TOracleTCPIP::Instance().IsSilentConnect = true;
+        if(TOracleTCPIP::Instance().Connect())
+        {
+            retValue = GetLinkStatus();
+        }
+    }
+    catch(Exception &Ex)
+    {
+        retValue = false;
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------
