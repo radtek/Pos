@@ -45,3 +45,10 @@ C:\V6-Master\OracleTCPServer\OracleTCPServer\obj\Debug\ResolveAssemblyReference.
 C:\V6-Master\Runtime\OracleTCPServer.exe.config
 C:\V6-Master\Runtime\OracleTCPServer.exe
 C:\V6-Master\Runtime\OracleTCPServer.pdb
+C:\MM_Cloud_Git\V6-Master\Runtime\OracleTCPServer.exe.config
+C:\MM_Cloud_Git\V6-Master\OracleTCPServer\OracleTCPServer\obj\Debug\OracleTCPServer.exe
+C:\MM_Cloud_Git\V6-Master\OracleTCPServer\OracleTCPServer\obj\Debug\OracleTCPServer.pdb
+C:\MM_Cloud_Git\V6-Master\RunTime\OracleTCPServer.exe
+C:\MM_Cloud_Git\V6-Master\RunTime\OracleTCPServer.pdb
+C:\MM_Cloud_Git\V6-Master\OracleTCPServer\OracleTCPServer\obj\Debug\OracleTCPServer.csproj.App.config
+C:\MM_Cloud_Git\V6-Master\OracleTCPServer\OracleTCPServer\obj\Debug\ResolveAssemblyReference.cache
