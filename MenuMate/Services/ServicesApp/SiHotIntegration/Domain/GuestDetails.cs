@@ -229,5 +229,11 @@ namespace SiHotIntegration.Domain
             get;
             set;
         }
+        [DataMember]
+        public string RoomBedNo
+        {
+            get;
+            set;
+        }
     }
 }

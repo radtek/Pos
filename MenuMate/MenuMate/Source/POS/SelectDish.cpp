@@ -15515,10 +15515,12 @@ void TfrmSelectDish::GetRoomDetails()
                     for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
                     {
                         TAccountDetails accountDetails;
-                        accountDetails.RoomNumber = selectedRoomNumberStr;
+                        accountDetails.RoomNumber = accIt->RoomBedNumber;//selectedRoomNumberStr;
                         accountDetails.LastName = accIt->LastName;
                         accountDetails.FirstName = accIt->FirstName;
                         accountDetails.CreditLimit = accIt->CreditLimit;
+                        accountDetails.RoomBedNumber = accIt->RoomBedNumber;
+                        selectedRoomNumberStr = accountDetails.RoomBedNumber;
                         SiHotAccount.AccountDetails.push_back(accountDetails);
                     }
                 }
