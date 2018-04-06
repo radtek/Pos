@@ -411,6 +411,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().UseItalyFiscalPrinter = TManagerVariable::Instance().GetBool(DBTransaction, vmUseItalyFiscalPrinter, false);
         TGlobalSettings::Instance().PrinterType = TManagerVariable::Instance().GetStr(DBTransaction, vmFPPrinterType, "FiscalPrinter");
         TGlobalSettings::Instance().PrinterlogicalName = TManagerVariable::Instance().GetStr(DBTransaction, vmFPPrinterLogicalName, "EpsonFP1");
+        TGlobalSettings::Instance().IsOraclePOSServer = TManagerVariable::Instance().GetBool(DBTransaction, vmIsOraclePOSServer, false);
+        TGlobalSettings::Instance().OracleInterfacePortNumber = TManagerVariable::Instance().GetInt(DBTransaction, vmOracleInterfacePortNumber, 0);
+        TGlobalSettings::Instance().OracleInterfaceIPAddress = TManagerVariable::Instance().GetStr(DBTransaction, vmOracleInterfaceIPAddress, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

@@ -7,6 +7,7 @@
 #include "OracleManagerDB.h"
 #include "ManagerPMSCodes.h"
 #include "DBThirdPartyCodes.h"
+#include "ManagerOraclePMS.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -978,34 +979,105 @@ bool TOracleDataBuilder::DeserializeGetLinkStatus(AnsiString inData)
 {
     bool retValue = inData.Pos("LinkAlive") != 0;
 
-    if(inData.Length() == 0)
-        MessageBox("Oracle PMS was not enabled because no response was received.","Error", MB_OK+MB_ICONERROR);
-    else if(!retValue)
+    if(inData.Trim().Length() == 0)
+        MessageBox("Oracle PMS was not enabled because no response was received.\nPlease check Oracle is up and working.","Error", MB_OK+MB_ICONERROR);
+    if((inData.Trim().Length() != 0) && !retValue)
         MessageBox(inData,"Error", MB_OK+MB_ICONERROR);
-
     return (inData.Pos("LinkAlive") != 0);
 }
 //----------------------------------------------------------------------------
 bool TOracleDataBuilder::DeserializeInquiryData(AnsiString inData, TRoomInquiryResult &_roomResult)
 {
-    TiXmlDocument* result = new TiXmlDocument();
-    result->Parse(inData.c_str());
-    ReadXML(result,_roomResult);
-    return true;
+    bool retValue = false;
+    try
+    {
+        TiXmlDocument* result = new TiXmlDocument();
+        if(inData.Trim().Length() != 0)
+        {
+            result->Parse(inData.c_str());
+            ReadXML(result,_roomResult);
+            retValue = true;
+        }
+        else
+        {
+            retValue= false;
+            _roomResult.IsSuccessful = false;
+            if(TGlobalSettings::Instance().IsOraclePOSServer)
+            {
+                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and working.\n";
+            }
+            else
+            {
+                _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and working.";
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+        retValue= false;
+        _roomResult.IsSuccessful = false;
+        if(TGlobalSettings::Instance().IsOraclePOSServer)
+        {
+            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.";
+        }
+        else
+        {
+            _roomResult.resultText = "No Response Received from Oracle.\nPlease ensure Oracle is up and running.";
+        }
+    }
+    return retValue;
 }
 //----------------------------------------------------------------------------
 bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &_postResult)
 {
-    TiXmlDocument* result = new TiXmlDocument();
-    result->Parse(inData.c_str());
-    ReadXML(result,_postResult);
-    if(_postResult.AnswerStatus.Pos("OK") != 0)
-        return true;
-    else
+    bool retValue = false;
+    try
     {
-        MessageBox(_postResult.resultText,"Error",MB_OK + MB_ICONERROR);
-        return false;
+        TiXmlDocument* result = new TiXmlDocument();
+        if(inData.Trim().Length() != 0)
+        {
+            result->Parse(inData.c_str());
+            ReadXML(result,_postResult);
+            if(_postResult.AnswerStatus.Pos("OK") != 0)
+                retValue = true;
+            else
+            {
+                MessageBox(_postResult.resultText,"Error",MB_OK + MB_ICONERROR);
+                retValue = false;
+            }
+        }
+        else
+        {
+            retValue= false;
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+            if(TGlobalSettings::Instance().IsOraclePOSServer)
+            {
+                MessageBox("No Response Received from Oracle.\nPMS is disabled now.\nPlease ensure Oracle is up and working","Error",MB_OK + MB_ICONERROR);
+                std::auto_ptr<TManagerOraclePMS> oraclePMS(new TManagerOraclePMS());
+                oraclePMS->FindAndTerminateProcess();
+            }
+            else
+            {
+                MessageBox("No Response Received from Oracle.\nPMS is disabled now.\nPlease ensure POS Server and Oracle are up and working","Error",MB_OK + MB_ICONERROR);
+            }
+        }
     }
+    catch(Exception &ex)
+    {
+        retValue= false;
+        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+        if(TGlobalSettings::Instance().IsOraclePOSServer)
+        {
+            MessageBox("No Response Received from Oracle.\nPMS is disabled now\nPlease ensure Oracle is up and running","Error",MB_OK + MB_ICONERROR);
+            std::auto_ptr<TManagerOraclePMS> oraclePMS(new TManagerOraclePMS());
+            oraclePMS->FindAndTerminateProcess();
+        }
+        else
+        {
+            MessageBox("No Response Received from Oracle.\nPMS is disabled now.\nPlease ensure POS Server and Oracle are up and working","Error",MB_OK + MB_ICONERROR);
+        }
+    }
+    return retValue;
 }
 //----------------------------------------------------------------------------
 
