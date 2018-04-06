@@ -403,9 +403,13 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 AnsiString data = oracledata->SerializeOut(doc);
                 resultData = TOracleTCPIP::Instance().SendAndFetch(data);
                 if(resultData.Pos("Connection Failed") == 0)
+                {
                     retValue = oracledata->DeserializeData(resultData, _postResult);
+                }
                 else
+                {
                     retValue = false;
+                }
             }
          }
          bool isNotCompleteCancel = false;

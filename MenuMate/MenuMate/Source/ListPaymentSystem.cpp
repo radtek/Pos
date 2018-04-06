@@ -3644,7 +3644,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             bool isOracleEnabled = TryToEnableOracle();
             if(isOracleEnabled)
                 PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-            if(!PhoenixHSOk)
+            if(!PhoenixHSOk || !isOracleEnabled)
             {
                 if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
                       PhoenixHSOk = true;

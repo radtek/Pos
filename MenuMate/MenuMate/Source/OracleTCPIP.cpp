@@ -66,7 +66,10 @@ bool TOracleTCPIP::Connect()
        if(!tcpClient->Connected())
        {
            tcpClient->Connect();
-           retValue = true;
+           if(tcpClient->Connected())
+               retValue = true;
+           else
+               retValue = false;
        }
 	}
 	catch( Exception& E)
