@@ -54,7 +54,7 @@ public:
 			fMenu(dmMMData->dbMenuMate),
 			fStockControl(dmStockData->dbStock)
 	{}
-//	~TSelectTransferLocations();
+	~TSelectTransferLocations();
 
 	bool Execute();
 	TTransferLocations	Locations();
