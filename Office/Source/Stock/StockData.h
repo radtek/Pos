@@ -58,6 +58,7 @@ __published:	// IDE-managed Components
 	TIBBackupService *IBBackupService1;
 	TIBDatabaseInfo *dbinfStock;
 	TIBSQL *Query;
+
 	TIBSQL *sqlNow;
 	TIBTransaction *trTime;
 	TIBValidationService *ValidationService;
@@ -66,7 +67,7 @@ private:	// User declarations
 	bool HasDBVersion(AnsiString Version);
 	bool RequiresUpdateTo(DBVersion::DBVersions version);
 	void GetTableNames(TStrings *Fields);
-    void UpdateAverageCost(TStrings *Fields);
+ 
 	void GetFieldNames(AnsiString TableName, TStrings *Fields);
 	bool WaitForSingleUser();
 	bool BackupDB(AnsiString FileName, TLabel *Label);
@@ -87,7 +88,7 @@ private:	// User declarations
     bool Update6_2_2();
     bool Update6_2_3();
     bool Update6_18_0();
-
+     void IndexingForStocktakehistoryTable();
     void createGenerators5_7(TIBQuery* query);
     void createTables5_7(TIBQuery* query);
 

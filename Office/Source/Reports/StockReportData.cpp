@@ -1687,7 +1687,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			"Sum(Cast((StocktakeHistory.Opening + StocktakeHistory.Inwards + StocktakeHistory.Transfer - StocktakeHistory.Closing) "
 			"	 * StockLocation.Assessed_Value As Numeric(15, 4))) Assessed_Total, "
             " coalesce(STK.QTY,0)  QTY, "
-            "sum(cast((coalesce(STOCKTAKEHISTORY.AVERAGE_UNIT_COST,0 )* coalesce(STOCKTAKEHISTORY.OPENING, 0))as numeric(17,4))) opening_New  "
+            "sum(cast((coalesce(STOCKTAKEHISTORY.PREV_AVERAGE_UNIT_COST,0 )* coalesce(STOCKTAKEHISTORY.OPENING, 0))as numeric(17,4))) opening_New  "
 		"From "
 			"StocktakeHistory Left Join Stock On  "
 			 "StocktakeHistory.Code = Stock.Code left join (select sum(abs(stocktrans.QTY))QTY,STOCKTRANS.LOCATION,STOCKTRANS.STOCK_GROUP from STOCKTRANS where stocktrans.TRANSACTION_TYPE='Manufacture'  and STOCKTRANS.CREATED>= "

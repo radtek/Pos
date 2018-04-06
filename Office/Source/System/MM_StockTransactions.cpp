@@ -225,16 +225,19 @@ TStockTransaction::TStockTransaction(TIBDatabase *IBDatabase) : TStockControl(IB
 			"Upper(Location) = :UpperLocation";
 
       sqlStockDetailsforclosing->SQL->Text =
-           "select  FIRST 1 MAX  (StocktakeHistory.STOCKTAKEHISTORY_KEY), STOCKTAKEHISTORY.AVERAGE_UNIT_COST  "
-              "from "
-              "StocktakeHistory "
-             " where "
-              "Upper(Location) = :UpperLocation and "
+          "select "
+          "AVERAGE_UNIT_COST "
+            "from "
+             "STOCKTAKEHISTORY  "
+             "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY=(select  Max(StocktakeHistory.STOCKTAKEHISTORY_KEY) "
+             "from  "
+             "StocktakeHistory "
+             "where "
+             "STOCKTAKEHISTORY.LOCATION = :LOCATION and "
             "STOCKTAKEHISTORY.STOCK_GROUP= :STOCK_GROUP and "
-            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY  and "
-             "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and  "
-            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY "
-            "GROUP BY StocktakeHistory.AVERAGE_UNIT_COST  ORDER BY 1 DESC  "  ;      
+            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY and "
+            "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and "
+            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) "  ;      
 }
 //---------------------------------------------------------------------------
 bool TStockTransaction::fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails)
@@ -1765,10 +1768,6 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 		sqlStocktakeHistory->ParamByName("Writeoffs_Pending")->AsDouble	  	= StockDetails.Writeoffs_Pending;
 
 		sqlStocktakeHistory->ParamByName("Closing")->AsDouble						= StocktakeItemInfo->Counted;
-        // double previouskey;
-        //if()
-      //  {
-       // ,StockDetails.Description
         sqlStocktakeHistory->ParamByName("Prev_Average_Unit_Cost")->AsDouble  = fbstockdetailsusingstocktakekey(sqlStocktakeHistory->ParamByName("StocktakeHistory_Key")->AsInteger,StocktakeItemInfo->Location,StockDetails.Stock_Group,StockDetails.Stock_Category,StockDetails.Description, StockDetails);//StockDetails.Pev_Average_Unit_Cost;
       //  }
   		sqlStocktakeHistory->ExecQuery();
@@ -1790,8 +1789,8 @@ double TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistor
 {
 //,AnsiString Description
 	sqlStockDetailsforclosing->Close();
-
-	sqlStockDetailsforclosing->ParamByName("UpperLocation")->AsString	= Location.UpperCase();
+     
+	sqlStockDetailsforclosing->ParamByName("LOCATION")->AsString	= Location;
     sqlStockDetailsforclosing->ParamByName("Stock_Group")->AsString =  Stock_Group;
     sqlStockDetailsforclosing->ParamByName("Stock_Category")->AsString = Stock_Category;
     sqlStockDetailsforclosing->ParamByName("Description")->AsString =  Description;
@@ -1807,33 +1806,24 @@ double TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistor
 	}
    	else
 	{
-	   //fReadStockDetailsAA(StockLocationDetails);
 
-	   	//for(; !sqlStockDetailsforclosing->Eof; sqlStockDetailsforclosing->Next())
-	   //	{
 			if(sqlStockDetailsforclosing->RecordCount)
 			{
-         //   && sqlStockDetailsforclosing->ParamByName("Description")->AsString ==Stock_Category
-				StockLocationDetails.Pev_Average_Unit_Cost	= sqlStockDetailsforclosing->FieldByName("Average_Unit_Cost")->AsDouble;//fReadStockDetailsAA(StockLocationDetails);
+
+				StockLocationDetails.Pev_Average_Unit_Cost	= sqlStockDetailsforclosing->FieldByName("Average_Unit_Cost")->AsDouble; //fReadStockDetailsAA(StockLocationDetails);
                 return sqlStockDetailsforclosing->FieldByName("Average_Unit_Cost")->AsDouble;
 			}
             else
             {
                 StockLocationDetails.Pev_Average_Unit_Cost	= 0;
             }
-	   //	}
-	   //	sqlStockDetails->Close();
+	 
 		return 0;
  	}
 }
-//---------------------------------------------------------------------------
 
-void TStockTransaction::fReadStockDetailsAA(TStockLocationDetails& StockLocationDetails)
-{
 
-    StockLocationDetails.Pev_Average_Unit_Cost	= sqlStockDetailsforclosing->FieldByName("Average_Unit_Cost")->AsDouble;
 
-}
 //---------------------------------------------------------------------------
 TStockSale::TStockSale(TIBDatabase *IBDatabase) : TStockTransaction(IBDatabase),
 			sqlSelectStock(			new TIBSQL(NULL)),
@@ -2261,3 +2251,4 @@ void TManufactureStock::UpdateStock(AnsiString temp[], double Qty, double Cost, 
     fDBTransaction.CommitTransaction();
                                          
 }
+

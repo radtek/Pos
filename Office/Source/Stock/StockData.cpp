@@ -474,7 +474,7 @@ bool TdmStockData::UpdateDB(TLabel *Label)
 				}
 				else
 				{
-					Application->MessageBox(AnsiString("Could not create backup file (" + BackupFileName + ").\r Aborting upgrade.").c_str(), "Error", MB_ICONERROR + MB_OK);
+				  Application->MessageBox(AnsiString("Could not create backup file (" + BackupFileName + ").\r Aborting upgrade.").c_str(), "Error", MB_ICONERROR + MB_OK);
 					return false;
 				}
 			}
@@ -2255,7 +2255,7 @@ bool TdmStockData::Update4_0()
 			{
 				// set barcode to null for each duplicate entry
 				RunSQL("Update Stock set Barcode = NULL where barcode = '" + IBQuery1->FieldByName("BARCODE")->AsString + "'");
-			}
+			}	
 		}
 		// Insert into Barcode
 		RunSQL("Insert into Barcode select Stock_Key,-1,Barcode from Stock where Barcode is not null");
@@ -3040,20 +3040,41 @@ void TdmStockData::UpdateTables6_24_0()
 
     if(!HasDBVersionExist("6.24.0"))
     {
+        IndexingForStocktakehistoryTable();
       RunSQL("Alter Table StocktakeHistory Add Prev_Average_Unit_Cost Numeric(15, 4) Default 0");
-  //   RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6240 + "', Current_TimeStamp) ");
-             
-	  //	TStringList *TablesList = new TStringList();
-      //  UpdateAverageCost(TablesList);
-     Query->Close();
-     Query->SQL->Text = "Select * from StocktakeHistory ";
+     //RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6240 + "', Current_TimeStamp) ");
+    
+
+    }
+
+}
 
 
-    for (Query->ExecQuery(); !Query->Eof; Query->Next())
+//-------------------------------------------------------------------------------------------------------------------------
+bool TdmStockData::Update6_24_0()
+{
+  const AnsiString THIS_VER = "6.24.0";
+  if (RequiresUpdateTo(DBVersion::V6_24_0))
+  {
+    try
+      {
+         if (!Query->Transaction->InTransaction)
+             Query->Transaction->StartTransaction();
+            UpdateTables6_24_0();
+            RunSQL("Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER + "', Current_TimeStamp)");
+            if (Query->Transaction->InTransaction)
+                Query->Transaction->Commit();
+              // IndexingForStocktakehistoryTable();
+
+      IBQuery1->Close();
+      IBQuery1->SQL->Text = "Select * from StocktakeHistory ";
+   
+
+    for (IBQuery1->Open(); !IBQuery1->Eof; IBQuery1->Next())
    {
 
-     IBQuery1->Close();
-     IBQuery1->SQL->Text = "select "
+     Query->Close();
+     Query->SQL->Text = "select "
           "AVERAGE_UNIT_COST "
             "from "
              "STOCKTAKEHISTORY  "
@@ -3065,66 +3086,31 @@ void TdmStockData::UpdateTables6_24_0()
             "STOCKTAKEHISTORY.STOCK_GROUP= :STOCK_GROUP and "
             "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY and "
             "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and "
-            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) ";
-        IBQuery1->Close();
-      IBQuery1->Open();
-      IBQuery1->ParamByName("LOCATION")->AsString	=     Query->FieldByName("LOCATION")->AsString;
-	 IBQuery1->ParamByName("STOCK_GROUP")->AsString =     Query->FieldByName("STOCK_GROUP")->AsString;
-     IBQuery1->ParamByName("STOCK_CATEGORY")->AsString =  Query->FieldByName("STOCK_CATEGORY")->AsString;
-     IBQuery1->ParamByName("DESCRIPTION")->AsString =     Query->FieldByName("DESCRIPTION")->AsString;
-     IBQuery1->ParamByName("STOCKTAKEHISTORY_KEY")->AsString = Query->FieldByName("STOCKTAKEHISTORY_KEY")->AsString;
-
-           //	IBQuery1->Open();
-      //BQuery1->Open();
-	 IBQuery1->ExecSQL();
-      IBQuery1->Close();
-      Query->Close();
-     Query->SQL->Text = "Update  StocktakeHistory  set PREV_AVERAGE_UNIT_COST = :AVERAGE_UNIT_COST"
-      "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY = :STOCKTAKEHISTORY_KEY " ;
+            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) " ;
 
 
-              
-             }
+     Query->ParamByName("LOCATION")->AsString	=      IBQuery1->FieldByName("LOCATION")->AsString;
+	 Query->ParamByName("STOCK_GROUP")->AsString =     IBQuery1->FieldByName("STOCK_GROUP")->AsString;
+     Query->ParamByName("STOCK_CATEGORY")->AsString =  IBQuery1->FieldByName("STOCK_CATEGORY")->AsString;
+     Query->ParamByName("DESCRIPTION")->AsString =     IBQuery1->FieldByName("DESCRIPTION")->AsString;
+     Query->ParamByName("STOCKTAKEHISTORY_KEY")->AsInteger = IBQuery1->FieldByName("STOCKTAKEHISTORY_KEY")->AsInteger;
 
-         }
+     Query->ExecQuery();
+     float AverageUnitCost = Query->FieldByName("AVERAGE_UNIT_COST")->AsFloat;
+     Query->Close();
+      Query->SQL->Text = "Update  STOCKTAKEHISTORY  set PREV_AVERAGE_UNIT_COST = :AVERAGE_UNIT_COST "
+     "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY = :STOCKTAKEHISTORY_KEY " ;
+      Query->ParamByName("STOCKTAKEHISTORY_KEY")->AsInteger = IBQuery1->FieldByName("STOCKTAKEHISTORY_KEY")->AsInteger;
+      Query->ParamByName("AVERAGE_UNIT_COST")->AsFloat    =  AverageUnitCost;
+      Query->ExecQuery();
 
-    }
-
-
- //=============================================================================================================================
-void TdmStockData::UpdateAverageCost(TStrings *Fields)
-{
-	Fields->Clear();
-	if (!Query->Transaction->InTransaction) Query->Transaction->StartTransaction();
-
-	Query->Close();
-	Query->SQL->Text =
-		"Select * "
-                "From "
-			"StocktakeHistory ";
-
-	for (Query->ExecQuery(); !Query->Eof; Query->Next())
-	{
-		Fields->Add(Query->FieldByName("Location")->AsString.Trim());
-	}
-	if (Query->Transaction->InTransaction) Query->Transaction->Commit();
 }
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-bool TdmStockData::Update6_24_0()
-{
-  const AnsiString THIS_VER = "6.24.0";
- if (RequiresUpdateTo(DBVersion::V6_24_0))
-     {
-    try
-      {
-         if (!Query->Transaction->InTransaction)
-             Query->Transaction->StartTransaction();
-            UpdateTables6_24_0();
-            RunSQL("Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER + "', Current_TimeStamp)");
-            if (Query->Transaction->InTransaction)
-                Query->Transaction->Commit();
-    }
+  }
+           
+
+
+  //  }
     catch (Exception &E)
      {
        if (Query->Transaction->InTransaction)
@@ -3134,8 +3120,16 @@ bool TdmStockData::Update6_24_0()
      }
       }
   return true;
+}      
+  //--------------------------------------------------------------------------------------------------------------------
+
+void TdmStockData::IndexingForStocktakehistoryTable()
+{
+ Query->Close();
+ Query->SQL->Text = "CREATE INDEX IDX_STOCKTAKEHISTORY1 ON STOCKTAKEHISTORY (DESCRIPTION,STOCK_CATEGORY,STOCK_GROUP,LOCATION) ";
+Query->ExecQuery();
+
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------------------------
-
+//---------------------------------------------------------------------------------------------------------------------------------
 
