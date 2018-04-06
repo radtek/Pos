@@ -3074,19 +3074,16 @@ bool TdmStockData::Update6_24_0()
    {
 
      Query->Close();
-     Query->SQL->Text = "select "
-          "AVERAGE_UNIT_COST "
-            "from "
-             "STOCKTAKEHISTORY  "
-             "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY=(select  Max(StocktakeHistory.STOCKTAKEHISTORY_KEY) "
-             "from  "
-             "StocktakeHistory "
-             "where "
-             "STOCKTAKEHISTORY.LOCATION = :LOCATION and "
+     Query->SQL->Text =  "select  FIRST 1 MAX  (StocktakeHistory.STOCKTAKEHISTORY_KEY), STOCKTAKEHISTORY.AVERAGE_UNIT_COST  "
+              "from "
+              "StocktakeHistory "
+             " where "
+              "LOCATION = :LOCATION and "
             "STOCKTAKEHISTORY.STOCK_GROUP= :STOCK_GROUP and "
-            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY and "
-            "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and "
-            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY ) " ;
+            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY  and "
+             "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and  "
+            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY "
+            "GROUP BY StocktakeHistory.AVERAGE_UNIT_COST  ORDER BY 1 DESC  "  ;
 
 
      Query->ParamByName("LOCATION")->AsString	=      IBQuery1->FieldByName("LOCATION")->AsString;
