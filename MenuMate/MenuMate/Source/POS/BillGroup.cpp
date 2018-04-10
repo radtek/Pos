@@ -48,7 +48,7 @@
 #include "ManagerClippIntegration.h"
 #include "MallExportOtherDetailsUpdate.h"
 #include "ManagerLoyaltyVoucher.h"
-#include "OracleManagerDB.h"
+#include "PMSHelper.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -4412,10 +4412,10 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		PaymentTransaction.ApplyMembership(Membership);
 
         TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, ItemsToBill);
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Oracle)
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot))
         {
-            std::auto_ptr<TOracleManagerDB> oracleDB(new TOracleManagerDB());
-            oracleDB->GetRevenueCode(PaymentTransaction.Orders);
+            std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+            pmsHelper->GetRevenueCode(PaymentTransaction.Orders);
         }
         TMMContactInfo Member;
         if(SelectedDiscount.IsComplimentaryDiscount())

@@ -897,6 +897,10 @@
 				<DependentOn>POS\ShowPrintout.h</DependentOn>
 				<BuildOrder>413</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\Components BCB6\Eftpos\CSDEFTLib_OCX.cpp">
+				<DependentOn>..\..\Components BCB6\Eftpos\CSDEFTLib_OCX.h</DependentOn>
+				<BuildOrder>390</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="POS\InitializeDCSession.cpp">
 				<DependentOn>POS\InitializeDCSession.h</DependentOn>
 				<BuildOrder>700</BuildOrder>
@@ -3439,25 +3443,9 @@
 				<DependentOn>FiscalPrinter\FiscalPrinterAdapter.h</DependentOn>
 				<BuildOrder>784</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.h</DependentOn>
+			<CppCompile Include="PMSHelper.cpp">
+				<DependentOn>PMSHelper.h</DependentOn>
 				<BuildOrder>785</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\ENZEFTLib_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\ENZEFTLib_OCX.h</DependentOn>
-				<BuildOrder>785</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\EFT2000_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\EFT2000_OCX.h</DependentOn>
-				<BuildOrder>786</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\CSDEFTLib_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\CSDEFTLib_OCX.h</DependentOn>
-				<BuildOrder>787</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\CadmusEftposLib_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\CadmusEftposLib_OCX.h</DependentOn>
-				<BuildOrder>788</BuildOrder>
 			</CppCompile>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>

@@ -153,7 +153,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
-        tbRevenueCodes->Enabled = false;
+        tbItemDefCat->Enabled = false;
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;

@@ -9,6 +9,7 @@
 #include "DeviceRealterminal.h"
 #include "SiHotInterface.h"
 #include "Processing.h"
+#include "PMSHelper.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -91,9 +92,19 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = true;
         Enabled = GetRoundingandDefaultAccount();
+
         if(Enabled)
         {
-           DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+            std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+           if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
+           {
+                DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+           }
+           else
+           {
+                MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
+                Enabled = false;
+           }
         }
 	}
 	else

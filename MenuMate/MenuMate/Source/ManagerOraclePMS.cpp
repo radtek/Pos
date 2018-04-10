@@ -12,6 +12,7 @@
 #include <process.h>
 #include <Tlhelp32.h>
 #include <winbase.h>
+#include "PMSHelper.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -62,7 +63,8 @@ void TManagerOraclePMS::Initialise()
         TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
         {
-            if(LoadRevenueCodes(DBTransaction))
+            std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+            if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
             {
                 if(Slots.size() > 0)
                 {
@@ -144,6 +146,7 @@ void TManagerOraclePMS::Initialise()
         DBTransaction.Rollback();
     }
 }
+
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::TriggerApplication()
 {
@@ -213,25 +216,6 @@ bool TManagerOraclePMS::FindAndTerminateProcess()
     }
 
     CloseHandle(snapshot);
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
-{
-    bool retValue = false;
-    RevenueCodesMap.clear();
-    std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
-    TIBSQL* queryRevenue = managerDB->LoadRevenueCodes(DBTransaction);
-    for(;!queryRevenue->Eof;queryRevenue->Next())
-    {
-        TRevenueCodeDetails codeDetails;
-        codeDetails.IsDefault = queryRevenue->FieldByName("ISDEFAULT_REVENUECODE")->AsString == "T" ?
-                                true : false;
-        codeDetails.RevenueCodeDescription = queryRevenue->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
-        RevenueCodesMap[queryRevenue->FieldByName("REVENUECODE")->AsInteger] =
-            codeDetails;
-        retValue = true;
-    }
     return retValue;
 }
 //---------------------------------------------------------------------------
