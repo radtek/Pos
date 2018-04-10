@@ -131,6 +131,7 @@
 #include "PaySubsUtility.h"
 #include "ManagerReportExport.h"
 #include "GuestList.h"
+#include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -3799,7 +3800,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                    PaymentTransaction.CalculatePatronCountFromMenu();
                 else
                    PaymentTransaction.Patrons = patronsStore;
-
 				std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(this));
 				frmProcessing->Message = "Posting Orders";
 				frmProcessing->Show();
@@ -5589,7 +5589,7 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 		TDBOrder::GetOrdersFromTabKeys(DBTransaction, OldOrdersList.get(), InvoiceTabs);
 		PrintTransaction.Orders->Assign(NewOrdersList.get(), laOr);
 		PrintTransaction.Orders->Assign(OldOrdersList.get(), laOr);
-
+        RestructureBillForPatrons(PrintTransaction);
 		std::set<__int64>SelectedTabs;
 		TDBOrder::GetTabKeysFromOrders(PrintTransaction.Orders, SelectedTabs);
 		PrintTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
@@ -6194,6 +6194,7 @@ void __fastcall TfrmSelectDish::btnRemoveMouseClick(TObject *Sender)
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
         sec_ref = 0;
+        patronsStore.clear();
     }
    DBTransaction.Commit();
    UpdateTableButton();
@@ -15734,6 +15735,19 @@ void TfrmSelectDish::ExtractPatronInformation(TPaymentTransaction &PaymentTransa
            patronsStore[indexPatrons].Count -= storedPatronCountFromMenu;
            break;
         }
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::RestructureBillForPatrons(TPaymentTransaction &_paymentTransaction)
+{
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+    scdpatronUtility->RestructureBill(_paymentTransaction);
+    _paymentTransaction.Money.Recalc(_paymentTransaction);
+    MessageBox("Order Count after redistribution",_paymentTransaction.Orders->Count,MB_OK);
+    for(int i = 0; i < _paymentTransaction.Orders->Count; i++)
+    {
+        TItemComplete* ic = (TItemComplete*)_paymentTransaction.Orders->Items[i];
+        MessageBox(ic->Item, ic->Discounts.size(),MB_OK);
     }
 }
 //----------------------------------------------------------------------------

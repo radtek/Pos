@@ -25,5 +25,6 @@ class TSCDPatronUtility
     void AddIfPossible(TItemComplete *oldOrder,TPaymentTransaction &paymentTransaction,std::vector<int> &indexToBeExcluded,int oldIndex);
     bool isSameItemFromInitial(TItemComplete *oldOrder,TItemComplete *newOrder);
     void ApplyDiscountsOnWholeBill(TPaymentTransaction &paymentTransaction);
+    bool IsCurrentDiscountOpenType(TDiscount CurrentDiscount);
 };
 #endif

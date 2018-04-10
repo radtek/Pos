@@ -28,5 +28,8 @@ private:
     bool checkItemsHaveDiscount(Database::TDBTransaction &DBTransaction, std::set<__int64> SelectedOrderItems);
     UnicodeString getOrderKeysList(std::set<__int64> SelectedOrderItems);
     bool checkItemsHaveNormaliscount(Database::TDBTransaction &DBTransaction, std::set<__int64> OrderKeys);
+    bool SidesWithoutCounterDiscount(TItemMinorComplete *SelectedItem,bool discIsSeniorCitizenDisc);
+    bool SidesWithoutCounterPWDDiscount(TItemMinorComplete *SelectedItem,bool discIsPWDDisc);
+    bool SidesWithoutCounterSCD(TList *Orders,bool discIsSeniorCitizenDisc);
 };
 #endif

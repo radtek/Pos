@@ -18,8 +18,7 @@ bool TSCDPWDChecker::SeniorCitizensCheck(TDiscount inDiscount, TList* Orders, bo
 {
     bool discIsSeniorCitizenDisc = inDiscount.IsSeniorCitizensDiscount();
     bool SeniorCitizenDiscCanBeApplied = !TOrderUtils::AnyDiscountsApplied(Orders) ||
-                                         (TOrderUtils::SeniorCitizensDiscountApplied(Orders) && !TOrderUtils::NonSCDApplied(Orders));
-
+                                         (TOrderUtils::SeniorCitizensDiscountApplied(Orders));
     bool discountValid = discIsSeniorCitizenDisc ? SeniorCitizenDiscCanBeApplied : !TOrderUtils::SeniorCitizensDiscountApplied(Orders);
     if(isClippSale && discIsSeniorCitizenDisc)
     {
@@ -231,8 +230,10 @@ UnicodeString TSCDPWDChecker::getOrderKeysList(std::set<__int64> OrderKeys)
 bool TSCDPWDChecker::SeniorCitizensCheckForItem(TDiscount inDiscount, TItemMinorComplete *SelectedItem)
 {
     bool discIsSeniorCitizenDisc = inDiscount.IsSeniorCitizensDiscount();
-    bool SeniorCitizenDiscCanBeApplied = SelectedItem->HasSeniorCitizensDiscountApplied() ||(SelectedItem->Discounts.size() == 0);
-    bool NonSCDCanBeApplied = !SelectedItem->HasSeniorCitizensDiscountApplied() ;
+    bool SeniorCitizenDiscCanBeApplied = (SelectedItem->HasSeniorCitizensDiscountApplied() ||(SelectedItem->Discounts.size() == 0))
+                                      && ( SidesWithoutCounterDiscount(SelectedItem,discIsSeniorCitizenDisc));
+    bool NonSCDCanBeApplied = (!SelectedItem->HasSeniorCitizensDiscountApplied() &&
+                               ( SidesWithoutCounterDiscount(SelectedItem,discIsSeniorCitizenDisc))) ;
     bool discountValid = discIsSeniorCitizenDisc ? SeniorCitizenDiscCanBeApplied : NonSCDCanBeApplied;
     if(!discountValid)
     {
@@ -245,11 +246,100 @@ bool TSCDPWDChecker::SeniorCitizensCheckForItem(TDiscount inDiscount, TItemMinor
     }
     return discountValid;
 }
+//-----------------------------------------------------------------------------
+bool TSCDPWDChecker::SidesWithoutCounterDiscount(TItemMinorComplete *SelectedItem,bool discIsSeniorCitizenDisc)
+{
+    bool retValue = true;
+    if(discIsSeniorCitizenDisc)
+    {
+        for(int i = 0; i < SelectedItem->SubOrders->Count; i++)
+        {
+            TItemComplete *subItem = (TItemComplete*)SelectedItem->SubOrders->Items[i];
+            if(subItem->Discounts.size() != 0)
+            {
+                if(!subItem->HasSeniorCitizensDiscountApplied())
+                {
+                    retValue = false;
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < SelectedItem->SubOrders->Count; i++)
+        {
+            TItemComplete *subItem = (TItemComplete*)SelectedItem->SubOrders->Items[i];
+            if(subItem->Discounts.size() != 0)
+            {
+                if(subItem->HasSeniorCitizensDiscountApplied())
+                {
+                    retValue = false;
+                    break;
+                }
+            }
+        }
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TSCDPWDChecker::SidesWithoutCounterSCD(TList *Orders,bool discIsSeniorCitizenDisc)
+{
+    bool retValue = true;
+    for(int orderIndex = 0; orderIndex < Orders->Count; orderIndex++)
+    {
+        TItemMinorComplete *SelectedItem = (TItemMinorComplete*)Orders->Items[orderIndex];
+        if(!SidesWithoutCounterDiscount(SelectedItem,discIsSeniorCitizenDisc))
+        {
+            retValue = false;
+            break;
+        }
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TSCDPWDChecker::SidesWithoutCounterPWDDiscount(TItemMinorComplete *SelectedItem,bool discIsPWDDisc)
+{
+    bool retValue = true;
+    if(discIsPWDDisc)
+    {
+        for(int i = 0; i < SelectedItem->SubOrders->Count; i++)
+        {
+            TItemComplete *subItem = (TItemComplete*)SelectedItem->SubOrders->Items[i];
+            if(subItem->Discounts.size() != 0)
+            {
+                if(!subItem->HasPWDApplied())
+                {
+                    retValue = false;
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        for(int i = 0; i < SelectedItem->SubOrders->Count; i++)
+        {
+            TItemComplete *subItem = (TItemComplete*)SelectedItem->SubOrders->Items[i];
+            if(subItem->Discounts.size() != 0)
+            {
+                if(subItem->HasPWDApplied())
+                {
+                    retValue = false;
+                    break;
+                }
+            }
+        }
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
 bool TSCDPWDChecker::PWDCheckForItem(TDiscount inDiscount, TItemMinorComplete *SelectedItem)
 {
     bool discIsPWDDisc = inDiscount.IsPersonWithDisabilityDiscount();
-    bool PWDDiscCanBeApplied = SelectedItem->HasPWDApplied() ||(SelectedItem->Discounts.size() == 0);
-    bool NonPWDCanBeApplied = !SelectedItem->HasPWDApplied();
+    bool PWDDiscCanBeApplied = ((SelectedItem->HasPWDApplied() ||(SelectedItem->Discounts.size() == 0)) &&
+                                SidesWithoutCounterPWDDiscount(SelectedItem,discIsPWDDisc)) ;
+    bool NonPWDCanBeApplied = !SelectedItem->HasPWDApplied() && SidesWithoutCounterPWDDiscount(SelectedItem,discIsPWDDisc);
     bool discountValid = discIsPWDDisc ? PWDDiscCanBeApplied : NonPWDCanBeApplied;
 
     if(!discountValid)

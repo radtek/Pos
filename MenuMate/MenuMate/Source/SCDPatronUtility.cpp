@@ -7,6 +7,7 @@
 #include "MMMessageBox.h"
 #include "MMLogging.h"
 #include "ManagerDiscount.h"
+#include "DeviceRealTerminal.h"
 
 //---------------------------------------------------------------------------
 
@@ -104,6 +105,7 @@ void TSCDPatronUtility::DivideBill(TPaymentTransaction &paymentTransaction,
         managerDiscount->Initialise();
         std::map<int,TDiscount> discountMap;
         discountMap.clear();
+//        MessageBox("Inside Divide Bill","",MB_OK);
         for(int indexOrders = 0; indexOrders < paymentTransaction.Orders->Count; indexOrders++)
         {
             TItemComplete *ic = (TItemComplete*)paymentTransaction.Orders->Items[indexOrders];
@@ -111,9 +113,20 @@ void TSCDPatronUtility::DivideBill(TPaymentTransaction &paymentTransaction,
             {
                 discountMap.insert(std::pair<int,TDiscount>(ic->Discounts[itemDiscIndex].DiscountKey,ic->Discounts[itemDiscIndex]));
             }
+            for(int indexSides = 0; indexSides < ic->SubOrders->Count; indexSides++)
+            {
+                TItemComplete *side = (TItemComplete*)ic->SubOrders->Items[indexSides];
+                for(int sideDiscIndex = 0; sideDiscIndex < side->Discounts.size(); sideDiscIndex++)
+                {
+                    discountMap.insert(std::pair<int,TDiscount>(side->Discounts[sideDiscIndex].DiscountKey,side->Discounts[sideDiscIndex]));
+                }
+                side->ClearAllDiscounts();
+                side->SplitMessage = "";
+            }
             ic->ClearAllDiscounts();
             ic->SplitMessage = "";
         }
+
         managerDiscount->ClearDiscounts(paymentTransaction.Orders);
         // Merge Again
         MergeItems(paymentTransaction);
@@ -170,9 +183,15 @@ void TSCDPatronUtility::DivideBill(TPaymentTransaction &paymentTransaction,
         for(;itdiscMapNow != discountMap.end();advance(itdiscMapNow,1))
         {
             TDiscount CurrentDiscount = itdiscMapNow->second;
+            bool skipGetDiscount = IsCurrentDiscountOpenType(CurrentDiscount);
+            if(skipGetDiscount)
+            {
+                CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
+            }
             managerDiscount->ClearDiscount(SCDOrders.get(), CurrentDiscount);
             managerDiscount->ClearDiscount(NormalOrders.get(), CurrentDiscount);
-            managerDiscount->GetDiscount(paymentTransaction.DBTransaction,CurrentDiscount.DiscountKey, CurrentDiscount);
+            if(!skipGetDiscount)
+                managerDiscount->GetDiscount(paymentTransaction.DBTransaction,CurrentDiscount.DiscountKey, CurrentDiscount);
             if(CurrentDiscount.IsSeniorCitizensDiscount())
             {
                 managerDiscount->AddDiscount(SCDOrders.get(),CurrentDiscount);
@@ -189,6 +208,40 @@ void TSCDPatronUtility::DivideBill(TPaymentTransaction &paymentTransaction,
         MessageBox(Ex.Message,"Error",MB_OK + MB_ICONERROR);
 		throw;
     }
+}
+//---------------------------------------------------------------------------
+bool TSCDPatronUtility::IsCurrentDiscountOpenType(TDiscount CurrentDiscount)
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+            "SELECT a.DISCOUNT_TYPE FROM DISCOUNTS a WHERE a.DISCOUNT_KEY = :DISCOUNT_KEY ";
+
+        IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = CurrentDiscount.DiscountKey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+            if(IBInternalQuery->FieldByName("DISCOUNT_TYPE")->AsInteger != 0)
+                retValue = true;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        retValue = false;
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+        MessageBox(ex.Message,"Error",MB_OK + MB_ICONERROR);
+		throw;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 bool TSCDPatronUtility::CanByPassSCDValidity(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount)
@@ -289,6 +342,21 @@ bool TSCDPatronUtility::RestructureBill(TPaymentTransaction &paymentTransaction)
                            isNormalApplied = true;
 
                         discountMap.insert(std::pair<int,TDiscount>(ic->Discounts[itemDiscIndex].DiscountKey,ic->Discounts[itemDiscIndex]));
+                    }
+                    for(int indexSides = 0; indexSides < ic->SubOrders->Count; indexSides++)
+                    {
+                        TItemComplete *side = (TItemComplete*)ic->SubOrders->Items[indexSides];
+                        for(int sideDiscIndex = 0; sideDiscIndex < side->Discounts.size(); sideDiscIndex++)
+                        {
+                            if(side->Discounts[sideDiscIndex].IsSeniorCitizensDiscount() && !isSCDApplied)
+                               isSCDApplied = true;
+                            if(!side->Discounts[sideDiscIndex].IsSeniorCitizensDiscount() && !isNormalApplied)
+                               isNormalApplied = true;
+
+                            discountMap.insert(std::pair<int,TDiscount>(side->Discounts[sideDiscIndex].DiscountKey,side->Discounts[sideDiscIndex]));
+                        }
+                        side->ClearAllDiscounts();
+                        side->SplitMessage = "";
                     }
                     ic->ClearAllDiscounts();
                 }

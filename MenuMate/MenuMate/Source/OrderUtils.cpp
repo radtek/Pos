@@ -6,6 +6,7 @@
 #include "OrderUtils.h"
 #include "ItemComplete.h"
 #include "ItemMinorComplete.h"
+#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -153,6 +154,11 @@ bool TOrderUtils::SeniorCitizensDiscountApplied(TList *Orders)
 	{
         TItemComplete *Order = (TItemComplete *)Orders->Items[i];
         retVal = Order->HasSeniorCitizensDiscountApplied();
+        for(int j = 0; j < Order->SubOrders->Count && !retVal; j++)
+        {
+            TItemComplete *SubOrder = (TItemComplete *)Order->SubOrders->Items[j];
+            retVal = SubOrder->HasSeniorCitizensDiscountApplied();
+        }
 	}
     return retVal;
 }
@@ -163,6 +169,11 @@ bool TOrderUtils::PWDDiscountApplied(TList *Orders)
 	{
         TItemComplete *Order = (TItemComplete *)Orders->Items[i];
         retVal = Order->HasPWDApplied();
+        for(int j = 0; j < Order->SubOrders->Count && !retVal; j++)
+        {
+            TItemComplete *SubOrder = (TItemComplete *)Order->SubOrders->Items[j];
+            retVal = SubOrder->HasPWDApplied();
+        }
 	}
     return retVal;
 }
@@ -174,6 +185,11 @@ bool TOrderUtils::AnyDiscountsApplied(TList *Orders)
 	{
         TItemComplete *Order = (TItemComplete *)Orders->Items[i];
         retVal = Order->Discounts.size() > 0;
+        for(int j = 0; j < Order->SubOrders->Count && !retVal; j++)
+        {
+            TItemComplete *SubOrder = (TItemComplete*)Order->SubOrders->Items[j];
+            retVal = SubOrder->Discounts.size() > 0;
+        }
 	}
     return retVal;
 }
