@@ -66,65 +66,73 @@ void TManagerOraclePMS::Initialise()
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
             if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
             {
-                if(Slots.size() > 0)
+                if(RevenueCodesMap.size() < 17)
                 {
-                    if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory != NULL)
+                    if(Slots.size() > 0)
                     {
-                        if(PointsCategory.Trim() != "" && PointsCategory != NULL)
+                        if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory != NULL)
                         {
-                            if(CreditCategory.Trim() != "" && CreditCategory != NULL)
+                            if(PointsCategory.Trim() != "" && PointsCategory != NULL)
                             {
-                                if(TGlobalSettings::Instance().IsOraclePOSServer)
+                                if(CreditCategory.Trim() != "" && CreditCategory != NULL)
                                 {
-                                   if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
-                                   {
-                                        if(TriggerApplication())
-                                        {
-                                            Enabled = GetLinkStatus();
-                                        }
-                                   }
-                                   else
-                                   {
-                                        MessageBox("Oracle Interface IP Address and Oracle Port Number are must","Information",MB_OK);
-                                        Enabled = false;
-                                   }
-                                }
-                                else
-                                {
-                                    FindAndTerminateProcess();
-                                    Sleep(1000);
-                                    if(InitializeoracleTCP())
+                                    if(TGlobalSettings::Instance().IsOraclePOSServer)
                                     {
-                                       Enabled = true;
-                                       TOracleTCPIP::Instance().Disconnect();
+                                       if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
+                                       {
+                                            if(TriggerApplication())
+                                            {
+                                                Enabled = GetLinkStatus();
+                                            }
+                                       }
+                                       else
+                                       {
+                                            MessageBox("Oracle Interface IP Address and Oracle Port Number are must","Information",MB_OK);
+                                            Enabled = false;
+                                       }
                                     }
                                     else
                                     {
-                                        Enabled = false;
+                                        FindAndTerminateProcess();
+                                        Sleep(1000);
+                                        if(InitializeoracleTCP())
+                                        {
+                                           Enabled = true;
+                                           TOracleTCPIP::Instance().Disconnect();
+                                        }
+                                        else
+                                        {
+                                            Enabled = false;
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    MessageBox("Credit Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                                    Enabled = false;
                                 }
                             }
                             else
                             {
-                                MessageBox("Credit Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                                MessageBox("Points Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
                                 Enabled = false;
                             }
                         }
                         else
                         {
-                            MessageBox("Points Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                            MessageBox("Default Payment Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
                             Enabled = false;
                         }
                     }
                     else
                     {
-                        MessageBox("Default Payment Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                        MessageBox("Serving Times are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
                         Enabled = false;
                     }
                 }
                 else
                 {
-                    MessageBox("Serving Times are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
+                    MessageBox("Number of Revenue codes can be 1 to 16 only.","WARNING",MB_ICONWARNING + MB_OK);
                     Enabled = false;
                 }
             }

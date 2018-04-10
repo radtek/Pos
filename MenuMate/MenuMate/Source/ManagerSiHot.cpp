@@ -88,23 +88,23 @@ void TManagerSiHot::Initialise()
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
     RevenueCodesMap.clear();
     UnsetPostingFlag();
-	if(Registered && TCPIPAddress != "")
+
+    if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
-        Enabled = GetRoundingandDefaultAccount();
-
+        std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+        if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
+        {
+            Enabled = GetRoundingandDefaultAccount();
+        }
+        else
+        {
+            MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
+            Enabled = false;
+        }
         if(Enabled)
         {
-            std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
-           if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
-           {
-                DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
-           }
-           else
-           {
-                MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
-                Enabled = false;
-           }
+            DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
         }
 	}
 	else
