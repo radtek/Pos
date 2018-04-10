@@ -2061,6 +2061,27 @@ namespace MenumateServices.WebMate.InternalClasses
             return Convert.ToInt32(commandResult);
 
         }
+
+        public int IfExistWebOrderCmd(string GUID)
+        {
+            object commandResult = null;
+            try
+            {
+                string sql = "SELECT  count(WEBORDERS.GUID)  guidcount FROM WEBORDERS where WEBORDERS.GUID = '" + GUID+"'";
+
+                FbCommand command = new FbCommand(sql, connection_, transaction_);
+                commandResult = command.ExecuteScalar();
+
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GUID " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 134, short.MaxValue);
+            }
+            return Convert.ToInt32(commandResult);
+
+        }
         /// <summary>
         /// 
         /// </summary>

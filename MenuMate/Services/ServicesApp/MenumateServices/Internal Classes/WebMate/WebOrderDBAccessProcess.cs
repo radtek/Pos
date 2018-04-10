@@ -226,8 +226,11 @@ namespace MenumateServices.WebMate.InternalClasses
                         }
                         else
                             SetWebmateForMessage(webOrderDB);
-
+                        if(webOrderDB.IfExistWebOrderCmd(inOrder.Handle)<=1)
+                        { 
                         webOrderDB.transaction_.Commit();
+                        }
+                        else { webOrderDB.RollbackTransaction(); }
                         ServiceLogger.Log(@"after commit in dbSaveOrder(WebOrder inOrder) with order "+inOrder.Handle);
                     }
                 }
