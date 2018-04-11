@@ -3034,7 +3034,7 @@ bool TdmStockData::Update6_23_0()
   return true;
 }
 //-------------------------------------------------------------------------------------------------------------------------
-void TdmStockData::UpdateTables6_24_0()
+ void TdmStockData::UpdateTables6_24_0()
 {
     const AnsiString THIS_VER_6240 = "6.24.0";
 
@@ -3066,48 +3066,8 @@ bool TdmStockData::Update6_24_0()
                 Query->Transaction->Commit();
               // IndexingForStocktakehistoryTable();
 
-      IBQuery1->Close();
-      IBQuery1->SQL->Text = "Select * from StocktakeHistory ";
-   
+            }
 
-    for (IBQuery1->Open(); !IBQuery1->Eof; IBQuery1->Next())
-   {
-
-     Query->Close();
-     Query->SQL->Text =  "select  FIRST 1 MAX  (StocktakeHistory.STOCKTAKEHISTORY_KEY), STOCKTAKEHISTORY.AVERAGE_UNIT_COST  "
-              "from "
-              "StocktakeHistory "
-             " where "
-              "LOCATION = :LOCATION and "
-            "STOCKTAKEHISTORY.STOCK_GROUP= :STOCK_GROUP and "
-            "STOCKTAKEHISTORY.STOCK_CATEGORY= :STOCK_CATEGORY  and "
-             "STOCKTAKEHISTORY.DESCRIPTION= :DESCRIPTION and  "
-            "STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY < :STOCKTAKEHISTORY_KEY "
-            "GROUP BY StocktakeHistory.AVERAGE_UNIT_COST  ORDER BY 1 DESC  "  ;
-
-
-     Query->ParamByName("LOCATION")->AsString	=      IBQuery1->FieldByName("LOCATION")->AsString;
-	 Query->ParamByName("STOCK_GROUP")->AsString =     IBQuery1->FieldByName("STOCK_GROUP")->AsString;
-     Query->ParamByName("STOCK_CATEGORY")->AsString =  IBQuery1->FieldByName("STOCK_CATEGORY")->AsString;
-     Query->ParamByName("DESCRIPTION")->AsString =     IBQuery1->FieldByName("DESCRIPTION")->AsString;
-     Query->ParamByName("STOCKTAKEHISTORY_KEY")->AsInteger = IBQuery1->FieldByName("STOCKTAKEHISTORY_KEY")->AsInteger;
-
-     Query->ExecQuery();
-     float AverageUnitCost = Query->FieldByName("AVERAGE_UNIT_COST")->AsFloat;
-     Query->Close();
-      Query->SQL->Text = "Update  STOCKTAKEHISTORY  set PREV_AVERAGE_UNIT_COST = :AVERAGE_UNIT_COST "
-     "where STOCKTAKEHISTORY.STOCKTAKEHISTORY_KEY = :STOCKTAKEHISTORY_KEY " ;
-      Query->ParamByName("STOCKTAKEHISTORY_KEY")->AsInteger = IBQuery1->FieldByName("STOCKTAKEHISTORY_KEY")->AsInteger;
-      Query->ParamByName("AVERAGE_UNIT_COST")->AsFloat    =  AverageUnitCost;
-      Query->ExecQuery();
-
-}
-
-  }
-           
-
-
-  //  }
     catch (Exception &E)
      {
        if (Query->Transaction->InTransaction)
@@ -3124,7 +3084,7 @@ void TdmStockData::IndexingForStocktakehistoryTable()
 {
  Query->Close();
  Query->SQL->Text = "CREATE INDEX IDX_STOCKTAKEHISTORY1 ON STOCKTAKEHISTORY (DESCRIPTION,STOCK_CATEGORY,STOCK_GROUP,LOCATION) ";
-Query->ExecQuery();
+ Query->ExecQuery();
 
 }
 

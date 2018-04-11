@@ -1111,4 +1111,17 @@ object dmStockReportData: TdmStockReportData
     Left = 928
     Top = 432
   end
+  object qrStockVarianceDateTime: TIBQuery
+    Database = dmStockData.dbStock
+    Transaction = StockTrans
+    SQL.Strings = (
+      ' select '
+      '    TIME_STAMP '
+      '     from '
+      '     DBVERSION '
+      '     where '
+      '     VERSION_NUMBER='#39'6.24.0'#39)
+    Left = 360
+    Top = 488
+  end
 end
