@@ -53,6 +53,7 @@ struct TGuestDetails
     UnicodeString Pciid;
     UnicodeString RoomNumber;
     UnicodeString Mandator;
+    UnicodeString RoomBedNumber;
 };
 struct TRoomResponse
 {
@@ -121,6 +122,7 @@ struct TAccountDetails
     UnicodeString RoomNumber;
     UnicodeString FirstName;
     UnicodeString LastName;
+    UnicodeString RoomBedNumber;
 };
 struct TSiHotAccounts
 {

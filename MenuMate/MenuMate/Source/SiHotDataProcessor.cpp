@@ -449,6 +449,7 @@ void TSiHotDataProcessor::PrepareRoomStatus(std::vector<TSiHotAccounts> &siHotAc
             siHotAccountDetail.CreditLimit  = i->Limit;
             siHotAccountDetail.FirstName    = i->FirstName;
             siHotAccountDetail.LastName     = i->LastName;
+            siHotAccountDetail.RoomBedNumber    = i->RoomBedNumber;
             siHotAccount.AccountDetails.push_back(siHotAccountDetail);
             siHotAccounts.push_back(siHotAccount);
         }

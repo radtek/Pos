@@ -45,6 +45,13 @@ namespace SiHotIntegration.Utility
                             guestDetails.Limit = guestInfo.FirstOrDefault(s => s.Contains("limit:")).Replace("limit:", "").Replace(",", ".");
                             guestDetails.AccountActive = guestInfo.FirstOrDefault(s => s.Contains("accountactive:")).Replace("accountactive:", "");
                             guestDetails.AccountNo = guestInfo.FirstOrDefault(s => s.Contains("accountno:")).Replace("accountno:", "");
+                            string bedNo = guestInfo.FirstOrDefault(s => s.Contains("roomno:")).Replace("roomno:", "").Replace("\r\n", "");
+                           
+                            if(bedNo.Contains(groupSeparator))
+                                bedNo = bedNo.Replace(groupSeparator,"");
+                            if (bedNo.Contains(fieldSeparator))
+                                bedNo = bedNo.Replace(fieldSeparator, "");
+                            guestDetails.RoomBedNo = bedNo;
                         }
                         roomDetails.GuestDetailsList.Add(guestDetails);
                     }

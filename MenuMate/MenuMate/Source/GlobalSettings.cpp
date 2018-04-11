@@ -413,5 +413,11 @@ TGlobalSettings::TGlobalSettings()
     UseItalyFiscalPrinter = false;
     PrinterType = "";
     PrinterlogicalName = "";
+    IsOraclePOSServer = false;
+	ZeroMemory( &siOracleApp, sizeof(siOracleApp) );
+    siOracleApp.cb = sizeof(siOracleApp);
+    ZeroMemory( &piOracleApp, sizeof(piOracleApp) );
+    OracleInterfacePortNumber = 0;
+    OracleInterfaceIPAddress = "";
 }
 
