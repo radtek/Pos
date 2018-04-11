@@ -690,7 +690,6 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Visible = true;
     frmTouchNumpad->SetMaxLengthValue(2);
     frmTouchNumpad->INTInitial = 0;
-
     std::map<int, TRevenueCodeDetails>::iterator iter;
     if ((frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0) &&
         ((frmTouchNumpad->INTResult < 17 && TGlobalSettings::Instance().PMSType == Oracle) ||

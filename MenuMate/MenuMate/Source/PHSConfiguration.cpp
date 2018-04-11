@@ -127,6 +127,7 @@ void TfrmPHSConfiguration::InitializePMS()
 {
    std::auto_ptr<TManagerPMS> managerPMS (new TManagerPMS());
    managerPMS->Initialize(TDeviceRealTerminal::Instance().DBControl,PMSType);
+   TGlobalSettings::Instance().PMSType = PMSType;
    TDeviceRealTerminal::Instance().BasePMS->Initialise();
    TDeviceRealTerminal::Instance().BasePMS->Registered = true;
 }
