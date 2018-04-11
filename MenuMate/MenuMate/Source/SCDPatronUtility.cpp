@@ -244,14 +244,16 @@ bool TSCDPatronUtility::IsCurrentDiscountOpenType(TDiscount CurrentDiscount)
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TSCDPatronUtility::CanByPassSCDValidity(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount)
+//bool TSCDPatronUtility::CanByPassSCDValidity(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount)
+bool TSCDPatronUtility::CanByPassSCDValidity(TList *Orders, std::vector<TPatronType> patrons, TDiscount CurrentDiscount)
 {
     bool retValue = false;
     double SCD = 0;
     double nonSCD = 0;
-    if(IsCounterDiscountAvailable(paymentTransaction, CurrentDiscount))
+    //if(IsCounterDiscountAvailable(paymentTransaction, CurrentDiscount))
+    if(IsCounterDiscountAvailable(Orders,CurrentDiscount))
     {
-        GetPatronDistribution(paymentTransaction.Patrons,SCD,nonSCD);
+        GetPatronDistribution(patrons,SCD,nonSCD);
         if(SCD != 0 && nonSCD != 0)
         {
             retValue = true;
@@ -260,16 +262,17 @@ bool TSCDPatronUtility::CanByPassSCDValidity(TPaymentTransaction paymentTransact
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TSCDPatronUtility::IsCounterDiscountAvailable(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount)
+//bool TSCDPatronUtility::IsCounterDiscountAvailable(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount)
+bool TSCDPatronUtility::IsCounterDiscountAvailable(TList *Orders, TDiscount CurrentDiscount)
 {
     bool retValue = false;
     bool isCurrentDiscountSCD = CurrentDiscount.IsSeniorCitizensDiscount();
     bool isSCDAppliedAlready = false;
     bool isNonSCDAppliedAlready = false;
 
-    for(int indexOrders = 0; indexOrders < paymentTransaction.Orders->Count; indexOrders++)
+    for(int indexOrders = 0; indexOrders < Orders->Count; indexOrders++)
     {
-        TItemComplete *ic = (TItemComplete*)paymentTransaction.Orders->Items[indexOrders];
+        TItemComplete *ic = (TItemComplete*)Orders->Items[indexOrders];
         for(int itemDiscIndex = 0; itemDiscIndex < ic->Discounts.size(); itemDiscIndex++)
         {
             if(ic->Discounts[itemDiscIndex].IsSeniorCitizensDiscount())

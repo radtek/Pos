@@ -154,6 +154,9 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
         tbRevenueCodes->Enabled = false;
+        tbOracleInterfaceIP->Enabled = false;
+        tbOracleInterfacePort->Enabled = false;
+        cbMakeOracleServer->Enabled = false;
     }
     else if(PMSType == oracle)
     {
@@ -169,6 +172,34 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbSurchargeCat->Enabled = false;
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
+        if(CanEnablePOSServer())
+        {
+            cbMakeOracleServer->Enabled = true;
+            cbMakeOracleServer->OnClick = NULL;
+            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+            cbMakeOracleServer->OnClick = cbMakePOSServer;
+        }
+        else
+        {
+            cbMakeOracleServer->Enabled = false;
+            cbMakeOracleServer->OnClick = NULL;
+            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+            cbMakeOracleServer->OnClick = cbMakePOSServer;
+        }
+        if(TGlobalSettings::Instance().IsOraclePOSServer)
+        {
+            tbOracleInterfaceIP->Enabled = true;
+            tbOracleInterfacePort->Enabled = true;
+            tbOracleInterfaceIP->Caption = "Oracle Interface IP\r" + TGlobalSettings::Instance().OracleInterfaceIPAddress;
+            tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
+        }
+        else
+        {
+            tbOracleInterfaceIP->Enabled = false;
+            tbOracleInterfacePort->Enabled = false;
+            tbOracleInterfaceIP->Caption = "Oracle Interface IP";
+            tbOracleInterfaceIP->Caption = "Oracle Interface Port";
+        }
     }
     else
     {
@@ -181,6 +212,9 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRevenueCodes->Enabled = false;
         tbRevenueCentre->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
+        tbOracleInterfaceIP->Enabled = false;
+        tbOracleInterfacePort->Enabled = false;
+        cbMakeOracleServer->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -193,7 +227,10 @@ void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 {
     if(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "")
         TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eUI);
+    TMMProcessingState State(Screen->ActiveForm, "Setting up PMS. Please Wait...", "PMS Set Up");
+    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
     TDeviceRealTerminal::Instance().BasePMS->Initialise();
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
        MessageBox("Do not forget to create PMS payment type","Info",MB_OK);
@@ -582,6 +619,125 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
             DBTransaction1.Commit();
 		}
 	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbMakePOSServer(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        if(CanEnablePOSServer())
+        {
+            if(cbMakeOracleServer->Checked)
+                MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
+            else
+                MessageBox("Please make sure, this option should be enabled on atleast 1 POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+            TGlobalSettings::Instance().IsOraclePOSServer = cbMakeOracleServer->Checked;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+            DBTransaction.Commit();
+        }
+        else
+        {
+            cbMakeOracleServer->Checked = false;
+            TGlobalSettings::Instance().IsOraclePOSServer = false;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+            DBTransaction.Commit();
+            MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+        }
+        UpdateGUI();
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbOracleInterfacePortMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+		frmTouchNumpad->Caption = "Enter Oracle Interface Port Number.";
+		frmTouchNumpad->btnSurcharge->Caption = "Ok";
+		frmTouchNumpad->btnSurcharge->Visible = true;
+		frmTouchNumpad->btnDiscount->Visible = false;
+		frmTouchNumpad->Mode = pmNumber;
+		frmTouchNumpad->INTInitial = TGlobalSettings::Instance().OracleInterfacePortNumber;
+		if (frmTouchNumpad->ShowModal() == mrOk)
+		{
+			TGlobalSettings::Instance().OracleInterfacePortNumber = frmTouchNumpad->INTResult;
+			tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmOracleInterfacePortNumber,TGlobalSettings::Instance().OracleInterfacePortNumber);
+            DBTransaction1.Commit();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::tbOracleInterfaceIPMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+		frmTouchKeyboard->MaxLength = 255;
+		frmTouchKeyboard->AllowCarriageReturn = false;
+		frmTouchKeyboard->StartWithShiftDown = false;
+		frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().OracleInterfaceIPAddress;
+		frmTouchKeyboard->Caption = "Enter Oracle Interface IP Address";
+		if (frmTouchKeyboard->ShowModal() == mrOk)
+		{
+			TGlobalSettings::Instance().OracleInterfaceIPAddress = frmTouchKeyboard->KeyboardText;
+			tbOracleInterfaceIP->Caption = "Oracle Interface IP\r" + TGlobalSettings::Instance().OracleInterfaceIPAddress;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmOracleInterfaceIPAddress,TGlobalSettings::Instance().OracleInterfaceIPAddress);
+            DBTransaction1.Commit();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+bool TfrmPHSConfiguration::CanEnablePOSServer()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = 9622 AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY"; // vmIsOraclePOSServer
+        SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount == 0)
+        {
+            retValue = true;
+        }
+        else
+        {
+            TGlobalSettings::Instance().IsOraclePOSServer = false;
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsOraclePOSServer, TGlobalSettings::Instance().IsOraclePOSServer);
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 

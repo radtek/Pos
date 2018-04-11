@@ -131,6 +131,7 @@
 #include "PaySubsUtility.h"
 #include "ManagerReportExport.h"
 #include "GuestList.h"
+#include "FiscalPrinterAdapter.h"
 #include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 
@@ -4163,8 +4164,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
                             }
 
-                            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
-
                             if (OrdersLoadedFromTabs)
                             {
                                 while (InvoiceTransaction.Orders->Count != 0)
@@ -5589,7 +5588,6 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 		TDBOrder::GetOrdersFromTabKeys(DBTransaction, OldOrdersList.get(), InvoiceTabs);
 		PrintTransaction.Orders->Assign(NewOrdersList.get(), laOr);
 		PrintTransaction.Orders->Assign(OldOrdersList.get(), laOr);
-        RestructureBillForPatrons(PrintTransaction);
 		std::set<__int64>SelectedTabs;
 		TDBOrder::GetTabKeysFromOrders(PrintTransaction.Orders, SelectedTabs);
 		PrintTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
@@ -8185,7 +8183,8 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
         }
         if(!openCashDrawer)
         {
-            TComms::Instance().KickLocalDraw(DBTransaction);
+            std::auto_ptr <TManagerFloat> (FloatManager)(new TManagerFloat((TForm*)this));
+            FloatManager->OpenCashDrawerAccordingToPrinter(DBTransaction);
             TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
             TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, quickMessage);
         }
@@ -14155,11 +14154,29 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                }
 
 //              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
-              {
-                 ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
-              }
+//              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
+//              {
+//                 ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+//              }
+                std::vector<TPatronType> patrons;
+                patrons.clear();
+                if(SelectedTable != 0)
+                    patrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
+                std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+                if(patronUtility->CanByPassSCDValidity(allOrders.get(),patrons,CurrentDiscount))
+                {
+                    bool ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, allOrders.get());
+                    if(ProcessDiscount)
+                        ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+                }
+                else
+                {
+                    bool ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()) &&
+                                           SCDChecker.PWDCheck(CurrentDiscount, allOrders.get());
+                    if(ProcessDiscount)
+                        ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+                }
               RedrawSeatOrders();
               TotalCosts();
               UpdateExternalDevices();
@@ -14516,7 +14533,11 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
                  }
             }
         }
-        ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
+        ///////////////////////////////////////////////////////////////////////
+//        RestructureBillForSplit();
+        ApplyDiscountWithRestructure(Orders, CurrentDiscount);
+        ///////////////////////////////////////////////////////////////////////
+        //ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
 
         CheckDeals(DBTransaction);
 
@@ -15553,10 +15574,12 @@ void TfrmSelectDish::GetRoomDetails()
                     for(std::vector<TAccountDetails>::iterator accIt = it->AccountDetails.begin(); accIt != it->AccountDetails.end(); ++accIt)
                     {
                         TAccountDetails accountDetails;
-                        accountDetails.RoomNumber = selectedRoomNumberStr;
+                        accountDetails.RoomNumber = accIt->RoomBedNumber;//selectedRoomNumberStr;
                         accountDetails.LastName = accIt->LastName;
                         accountDetails.FirstName = accIt->FirstName;
                         accountDetails.CreditLimit = accIt->CreditLimit;
+                        accountDetails.RoomBedNumber = accIt->RoomBedNumber;
+                        selectedRoomNumberStr = accountDetails.RoomBedNumber;
                         SiHotAccount.AccountDetails.push_back(accountDetails);
                     }
                 }
@@ -15738,16 +15761,79 @@ void TfrmSelectDish::ExtractPatronInformation(TPaymentTransaction &PaymentTransa
     }
 }
 //----------------------------------------------------------------------------
-void TfrmSelectDish::RestructureBillForPatrons(TPaymentTransaction &_paymentTransaction)
+void TfrmSelectDish::ApplyDiscountWithRestructure(TList *Orders, TDiscount discount)
 {
-    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
-    scdpatronUtility->RestructureBill(_paymentTransaction);
-    _paymentTransaction.Money.Recalc(_paymentTransaction);
-    MessageBox("Order Count after redistribution",_paymentTransaction.Orders->Count,MB_OK);
-    for(int i = 0; i < _paymentTransaction.Orders->Count; i++)
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
     {
-        TItemComplete* ic = (TItemComplete*)_paymentTransaction.Orders->Items[i];
-        MessageBox(ic->Item, ic->Discounts.size(),MB_OK);
+        TPaymentTransaction paymentTransaction(DBTransaction);
+        MakeDummyPaymentTransaction(Orders,paymentTransaction);
+        std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+        if(patronUtility->CheckPatronsAvailable(paymentTransaction))
+        {
+            std::auto_ptr <TList> SCDOrders(new TList);
+            SCDOrders->Clear();
+            std::auto_ptr <TList> NormalOrders(new TList);
+            NormalOrders->Clear();
+
+            patronUtility->DivideBill(paymentTransaction,SCDOrders,NormalOrders);
+            if(discount.IsSeniorCitizensDiscount())
+               ManagerDiscount->AddDiscount(SCDOrders.get(), discount);
+            else
+               ManagerDiscount->AddDiscount(NormalOrders.get(), discount);
+
+            paymentTransaction.Orders->Clear();
+            for(int indexSCD = 0; indexSCD < SCDOrders->Count; indexSCD++)
+            {
+                TItemComplete *Order = (TItemComplete *)SCDOrders->Items[indexSCD];
+                paymentTransaction.Orders->Add(Order);
+            }
+            for(int indexNormal = 0; indexNormal < NormalOrders->Count; indexNormal++)
+            {
+                TItemComplete *Order = (TItemComplete *)NormalOrders->Items[indexNormal];
+                paymentTransaction.Orders->Add(Order);
+            }
+            paymentTransaction.Money.Recalc(paymentTransaction);
+        }
+        else
+        {
+            ManagerDiscount->AddDiscount(paymentTransaction.Orders, discount);
+        }
+        ExtractFromDummyPaymentTransaction(paymentTransaction, Orders);
+        DBTransaction.Commit();
     }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::MakeDummyPaymentTransaction(TList* Orders,TPaymentTransaction &paymentTransaction)
+{
+    for (int index = 0; index < Orders->Count; index++)
+    {
+        TItemComplete *ic = (TItemComplete*)Orders->Items[index];
+        paymentTransaction.Orders->Add(ic);
+    }
+    paymentTransaction.Membership.Assign(Membership);
+    paymentTransaction.Money.Recalc(paymentTransaction);
+    std::vector<TPatronType> patrons;
+    patrons.clear();
+    if(SelectedTable != 0)
+        patrons = TDBTables::GetPatronCount(paymentTransaction.DBTransaction, SelectedTable);
+    paymentTransaction.Patrons = patrons;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction,TList *Orders)
+{
+   Orders->Clear();
+   for(int index = 0; index < paymentTransaction.Orders->Count; index++)
+   {
+       TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[index];
+       if(itemComplete->GetQty() != 0)
+           Orders->Add(itemComplete);
+   }
 }
 //----------------------------------------------------------------------------

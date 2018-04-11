@@ -14,5 +14,6 @@ class TOracleManagerDB
         AnsiString GetVersionNumber(Database::TDBTransaction &DBTransaction);
         TIBSQL* LoadMeals(Database::TDBTransaction &DBTransaction);
         TIBSQL* LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
+        void GetRevenueCode(TList *Orders);
 };
 #endif

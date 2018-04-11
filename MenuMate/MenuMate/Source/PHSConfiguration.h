@@ -35,11 +35,15 @@ __published:	// IDE-managed Components
    TTouchBtn *tbTipAccount;
    TTouchBtn *tbExpensesAccount;
    TTouchBtn *tbServiceCharge;
-   TCheckBox *cbEnableCustomerJourney;
     TLabel *Label1;
     TTouchBtn *tbRevenueCodes;
     TTouchBtn *tbServingTime;
     TTouchBtn *tbRevenueCentre;
+    TCheckBox *cbEnableCustomerJourney;
+    TCheckBox *cbMakeOracleServer;
+    TLabel *Label2;
+    TTouchBtn *tbOracleInterfaceIP;
+    TTouchBtn *tbOracleInterfacePort;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -60,11 +64,15 @@ __published:	// IDE-managed Components
     void __fastcall tbRevenueCodesClick(TObject *Sender);
     void __fastcall tbServingTimeMouseClick(TObject *Sender);
     void __fastcall tbRevenueCentreMouseClick(TObject *Sender);
+    void __fastcall cbMakePOSServer(TObject *Sender);
+    void __fastcall tbOracleInterfacePortMouseClick(TObject *Sender);
+    void __fastcall tbOracleInterfaceIPMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
    void InitializePMS();
    void LogPMSEnabling();
+   bool CanEnablePOSServer();
 public:		// User declarations
    ePMS PMSType;
 

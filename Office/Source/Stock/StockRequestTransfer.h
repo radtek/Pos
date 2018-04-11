@@ -83,7 +83,7 @@ class TfrmStockRequestTransfer : public TForm
 };
 
 //---------------------------------------------------------------------------
-extern PACKAGE TfrmStockRequestTransfer *frmStockRequestTransfer;
+//extern PACKAGE TfrmStockRequestTransfer *frmStockRequestTransfer;
 //---------------------------------------------------------------------------
 
 #endif

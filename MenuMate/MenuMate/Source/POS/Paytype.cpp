@@ -4406,7 +4406,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 	CurrentDiscount.DiscountKey = DiscountKey;
 	ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
     std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
-    if(patronUtility->CanByPassSCDValidity(CurrentTransaction,CurrentDiscount))
+    if(patronUtility->CanByPassSCDValidity(CurrentTransaction.Orders,CurrentTransaction.Patrons,CurrentDiscount))
     {
         ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
     }

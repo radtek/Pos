@@ -486,7 +486,12 @@ private: // User declarations
     void StorePatronsInformation(TPaymentTransaction &PaymentTransaction);
     void InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction);
     void ExtractPatronInformation(TPaymentTransaction &PaymentTransaction);
-    void RestructureBillForPatrons(TPaymentTransaction &PaymentTransaction);
+    //void RestructureBillForPatrons(TPaymentTransaction &PaymentTransaction);
+    void RestructureBillForSplit();
+    void ApplyDiscountWithRestructure(TList *Orders, TDiscount CurrentDiscount);
+    void MakeDummyPaymentTransaction(TList *Orders, TPaymentTransaction &paymentTransaction);
+    void ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction, TList *Orders);
+
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

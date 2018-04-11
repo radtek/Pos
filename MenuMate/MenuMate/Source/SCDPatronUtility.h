@@ -15,8 +15,10 @@ class TSCDPatronUtility
     bool CheckPatronsAvailable(TPaymentTransaction paymentTransaction);
     void DivideBill(TPaymentTransaction &paymentTransaction,std::auto_ptr <TList> &SCDOrders,std::auto_ptr <TList> &NormalOrders);
     bool CanByPassSCDValidity(TPaymentTransaction paymentTransaction);
-    bool CanByPassSCDValidity(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount);
-    bool IsCounterDiscountAvailable(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount);
+//    bool CanByPassSCDValidity(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount);
+    bool CanByPassSCDValidity(TList *Orders, std::vector<TPatronType> patrons, TDiscount CurrentDiscount);
+//    bool IsCounterDiscountAvailable(TPaymentTransaction paymentTransaction, TDiscount CurrentDiscount);
+    bool IsCounterDiscountAvailable(TList *Orders, TDiscount CurrentDiscount);
 
     private:
     bool CheckBillRestructureRequiredAfterPatron(TPaymentTransaction paymentTransaction);

@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_47Tables()
 {
     update6_47Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_48Tables()
+{
+    update6_48Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -113,6 +118,17 @@ void TApplyParser::update6_46Tables()
     Updatetable_PaymentTypes6_46(_dbControl);
 }
 //----------------------------------------------------
+void TApplyParser::update6_47Tables()
+{
+    AlterTableDiscount6_47(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_48Tables()
+{
+    Create6_48Generator(_dbControl);
+    CreateTabPatronCount6_48Table(_dbControl);
+}
+//--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
     int invoiceInterface = 25;
@@ -684,142 +700,6 @@ void TApplyParser::UpdateItemSize(TDBControl* const inDBControl)
         "ALTER TABLE ITEMSIZE ADD REVENUECODE INT;",
         inDBControl );
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 //------------------------------------------------------------------------------
 
@@ -1717,13 +1597,32 @@ void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::update6_47Tables()
+void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
 {
-   Create6_47Generator(_dbControl);
-   CreateTabPatronCount6_47Table(_dbControl);
+    if (fieldExists( "DAYARCORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+    if (fieldExists( "ARCORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+    if (fieldExists( "ORDERDISCOUNTS", "DESCRIPTION", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERDISCOUNTS  "
+        "ALTER DESCRIPTION TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_47Generator(TDBControl* const inDBControl)
+void TApplyParser::Create6_48Generator(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_TABPATRONCOUNT", _dbControl))
 	{
@@ -1732,7 +1631,7 @@ void TApplyParser::Create6_47Generator(TDBControl* const inDBControl)
 	}
 }
 //------------------------------------------------------------------------------
-void TApplyParser::CreateTabPatronCount6_47Table(TDBControl* const inDBControl)
+void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
 {
 
     if ( !tableExists( "TABPATRONCOUNT", _dbControl ) )

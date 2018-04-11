@@ -10,7 +10,7 @@
 // ************************************************************************ //
 
 // $Rev: 18756 $
-// File generated on 23/03/2018 12:51:36 p.m. from Type Library described below.
+// File generated on 29/03/2018 12:42:57 a.m. from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb (1)
@@ -439,6 +439,30 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
+  BSTR __fastcall OpenCashDrawer()
+  {
+    _TDispID _dispid(/* OpenCashDrawer */ DISPID(26));
+    TAutoArgs<0> _args;
+    OleFunction(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  VARIANT_BOOL __fastcall get_OpenCD()
+  {
+    _TDispID _dispid(/* OpenCD */ DISPID(27));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OpenCD(VARIANT_BOOL Param1/*[in]*/)
+  {
+    _TDispID _dispid(/* OpenCD */ DISPID(27));
+    TAutoArgs<1> _args;
+    _args[1] = Param1 /*[VT_BOOL:0]*/;
+    OlePropertyPut(_dispid, _args);
+  }
+
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -453,6 +477,7 @@ interface IFiscalLibrary : public TDispWrapper<IDispatch>
   __property   BSTR            PrinterType = {read = get_PrinterType, write = set_PrinterType};
   __property   BSTR            PrinterLogicalName = {read = get_PrinterLogicalName, write = set_PrinterLogicalName};
   __property   BSTR            Saletype = {read = get_Saletype, write = set_Saletype};
+  __property   VARIANT_BOOL    OpenCD = {read = get_OpenCD, write = set_OpenCD};
 };
 // *********************************************************************//
 // Interface: _DiscountDetails
@@ -623,6 +648,9 @@ public:
   BSTR            __fastcall get_Saletype();
   void            __fastcall set_Saletype(BSTR Param1/*[in]*/);
   BSTR            __fastcall CheckPrinterAvailable();
+  BSTR            __fastcall OpenCashDrawer();
+  VARIANT_BOOL    __fastcall get_OpenCD();
+  void            __fastcall set_OpenCD(VARIANT_BOOL Param1/*[in]*/);
 
   __property   BSTR            InvoiceNumber = {read = get_InvoiceNumber, write = set_InvoiceNumber};
   __property   BSTR            Date = {read = get_Date, write = set_Date};
@@ -637,6 +665,7 @@ public:
   __property   BSTR            PrinterType = {read = get_PrinterType, write = set_PrinterType};
   __property   BSTR            PrinterLogicalName = {read = get_PrinterLogicalName, write = set_PrinterLogicalName};
   __property   BSTR            Saletype = {read = get_Saletype, write = set_Saletype};
+  __property   VARIANT_BOOL    OpenCD = {read = get_OpenCD, write = set_OpenCD};
 };
 typedef IFiscalLibraryDispT<IFiscalLibrary> IFiscalLibraryDisp;
 
@@ -1296,6 +1325,33 @@ IFiscalLibraryDispT<T>::CheckPrinterAvailable()
   TAutoArgs<0> _args;
   OleFunction(_dispid, _args);
   return _args.GetRetVariant();
+}
+
+template <class T> BSTR __fastcall
+IFiscalLibraryDispT<T>::OpenCashDrawer()
+{
+  _TDispID _dispid(*this, OLETEXT("OpenCashDrawer"), DISPID(26));
+  TAutoArgs<0> _args;
+  OleFunction(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> VARIANT_BOOL __fastcall
+IFiscalLibraryDispT<T>::get_OpenCD()
+{
+  _TDispID _dispid(*this, OLETEXT("OpenCD"), DISPID(27));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+IFiscalLibraryDispT<T>::set_OpenCD(VARIANT_BOOL Param1/*[in]*/)
+{
+  _TDispID _dispid(*this, OLETEXT("OpenCD"), DISPID(27));
+  TAutoArgs<1> _args;
+  _args[1] = Param1 /*[VT_BOOL:0]*/;
+  OlePropertyPut(_dispid, _args);
 }
 
 // *********************************************************************//
