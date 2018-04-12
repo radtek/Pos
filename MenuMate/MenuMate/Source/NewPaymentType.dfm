@@ -1287,7 +1287,6 @@ object frmNewPaymentType: TfrmNewPaymentType
           ParentBackground = False
           ParentFont = False
           TabOrder = 9
-          Visible = False
           object cbWalletPayments: TCheckBox
             Left = 10
             Top = 24

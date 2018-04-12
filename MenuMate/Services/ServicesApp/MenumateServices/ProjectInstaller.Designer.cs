@@ -102,7 +102,7 @@ namespace MenumateServices
             this.serviceInstallerWalletPayments.Description = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
-            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Disabled;
+            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
