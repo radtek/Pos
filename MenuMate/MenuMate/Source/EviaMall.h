@@ -3,17 +3,18 @@
 #ifndef EviamallH
 #define EviamallH
 #include "MallExport.h"
-
+#include "MallExportEviaSalFile.h"
 #include "MallExportTextFile.h"
 //---------------------------------------------------------------------------
-#endif
+
 
 class TEviaMallField;
 class TEviaMall : public TMallExport
 {
    private:
 
-       AnsiString terminalCondition;
+
+        AnsiString terminalCondition;
        bool isMasterTerminal;
        int deviceKey;
        void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData);
@@ -26,6 +27,7 @@ class TEviaMall : public TMallExport
        UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
        UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey );
        int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
+       bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
        UnicodeString GetMaxTimeDateCreated(Database::TDBTransaction &dbTransaction, int zKey = 0);
        void LoadCommonFields(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForHSF, std::list<TMallExportSettings> &mallSettings, std::set<int> keysToSelect,
                                         int index, int zKey = 0);
@@ -42,10 +44,17 @@ class TEviaMall : public TMallExport
 
    public:
      TEviaMall();
-     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,int zIndex,
+     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
                                         TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
+     void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,
+                                        TMallExportPrepareData &prepareDataForDSFPD, int index, int zKey = 0);
+
+    void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,int index1,
+                                        TMallExportPrepareData &prepareDataForDGT, int index, int zKey = 0);
 
      std::set<int> InsertInToSet(int arr[], int size);
+     std::vector<int> vec1;
+     GetPosCount(Database::TDBTransaction &dbTransaction, int zKey);
 
 } ;
 
@@ -56,7 +65,7 @@ private:
     UnicodeString _recordId;
     UnicodeString _stallCode;
     TDateTime _salesDate;
-    TTime _salesTime;
+    UnicodeString _salesTime;
     double _grossSales;
     double _totalvat;
     double _totaldiscount;
@@ -75,11 +84,12 @@ private:
     double _dailysalestotalperDept;
     double _totaltaxwithoutvat  ;
     UnicodeString _invoiceNumber;
+    int _hourCode;
 
     void SetRecordID(UnicodeString recordId) ;
     void SetStallCode(UnicodeString stallCode) ;
     void SetSalesDate(TDateTime salesDate) ;
-    void SetSalesTime(TDateTime salesTime) ;
+    void SetSalesTime(UnicodeString salesTime) ;
     void SetGrossSales(double grossSales) ;
     void SetTotalVat(double totalvat) ;
     void SetTotalDiscount(double totaldiscount) ;
@@ -97,6 +107,7 @@ private:
     void SetZKey(int zKey);
     void SetDailySalesTotalPerDept(double dailysalestotalperDept) ;
     void SetTotaltaxWithoutVat(double totaltaxwithoutvat) ;
+    //void SetHourCode(int hourCode);
 
 
 
@@ -107,7 +118,7 @@ public:
     __property UnicodeString RecordId = {read = _recordId, write = SetRecordID};
     __property UnicodeString StallCode = {read = _stallCode, write = SetStallCode};
     __property TDateTime SalesDate = {read = _salesDate, write = SetSalesDate};
-    __property TTime SalesTime = {read = _salesTime, write = SetSalesTime};
+    __property UnicodeString SalesTime = {read = _salesTime, write = SetSalesTime};
     __property double GrossSales = {read = _grossSales, write = SetGrossSales};
     __property double TotalVat = {read = _totalvat, write = SetTotalVat};
     __property double TotalDiscount = {read = _totaldiscount, write = SetTotalDiscount};
@@ -125,6 +136,7 @@ public:
     __property int ZKey = {read = _zkey, write = SetZKey};
     __property double DailySalesTotalPerDept = {read = _dailysalestotalperDept, write = SetDailySalesTotalPerDept};
     __property double TotaltaxWithoutVat = {read = _totaltaxwithoutvat, write = SetTotaltaxWithoutVat};
+ //   __property int HourCode = {read = _hourCode, write = SetHourCode};
     std::map<int, double> SalesBySalesType;
 
 
@@ -132,6 +144,7 @@ public:
 
 
 };
+#endif
 
 
 
