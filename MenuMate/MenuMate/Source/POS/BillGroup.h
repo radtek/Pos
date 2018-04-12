@@ -233,6 +233,7 @@ private:
     int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
     void UpdateContainerList();
     void ClearLoyaltyVoucher();
+    void ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount);
 
 };
 #endif

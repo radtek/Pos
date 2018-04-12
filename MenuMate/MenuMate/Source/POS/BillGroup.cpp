@@ -49,6 +49,7 @@
 #include "MallExportOtherDetailsUpdate.h"
 #include "ManagerLoyaltyVoucher.h"
 #include "OracleManagerDB.h"
+#include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -432,6 +433,8 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 			{
 				ReceiptTransaction.CalculatePatronCountFromMenu();
 			}
+            else
+                TempReceipt->Transaction->Patrons = PatronTypes;
 
 			ReceiptTransaction.Money.CreditAvailable = TDBOrder::LoadCreditFromOrders(DBTransaction, ReceiptTransaction.Orders);
 			ReceiptTransaction.Money.Recalc(ReceiptTransaction);
@@ -473,6 +476,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                     bool allowed = Staff->TestAccessLevel(TempUserInfo,CheckPaymentAccess);
                     if(allowed && TGlobalSettings::Instance().TransferTableOnPrintPrelim)
                     {
+                        int delayedTabKey = 0;
                         std::auto_ptr<TList>FoodOrders(new TList);
                         std::auto_ptr<TList>BevOrders(new TList);
                         if(TGlobalSettings::Instance().IsBillSplittedByMenuType)
@@ -482,13 +486,16 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
 
                        if(TGlobalSettings::Instance().IsBillSplittedByMenuType && BevOrders->Count )
                        {
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, false);
+                            delayedTabKey = TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, false);
                        }
                        else
                        {
-                            TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
+                            delayedTabKey = TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true);
                        }
-
+                        if(delayedTabKey != 0)
+                        {
+                            TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,ReceiptTransaction.Patrons);
+                        }
                        if(TDBTables::IsEmpty(DBTransaction,CurrentTable))
                         {
                           TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
@@ -577,7 +584,7 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                                 std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
                                 TPaymentTransaction ReceiptTransaction(DBTransaction);
                                 ReceiptTransaction.ApplyMembership(Membership);
-
+                                ReceiptTransaction.Patrons = PatronTypes;
                                 if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Size == 2)
                                 {
                                     if(index )
@@ -609,7 +616,12 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                                         isMixedMenuOrder = Order->ItemType == 1 ? false : true;
                                     }
 
-                                    TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, isMixedMenuOrder);
+                                    int delayedTabKey = TManagerDelayedPayment::Instance().MoveOrderToTab(ReceiptTransaction,true, isMixedMenuOrder);
+                                    if(delayedTabKey != 0)
+                                    {
+                                        TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,ReceiptTransaction.Patrons);
+                                        TempReceipt->Transaction->Patrons = PatronTypes;
+                                    }
                                     OrderMoved = true;
                                     TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
                                     TempReceipt->JobType = pjReceiptReceipt;
@@ -2311,8 +2323,19 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                         TSCDPWDChecker SCDChecker;
 						CurrentDiscount.DiscountKey = SelectDiscount->Key;
 						ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders)  &&
-                                        SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+
+//                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders)  &&
+//                                        SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+                        std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+                        if(patronUtility->CanByPassSCDValidity(PaymentTransaction.Orders,PatronTypes,CurrentDiscount))
+                        {
+                            applyDiscount = SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+                        }
+                        else
+                        {
+                            applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders) &&
+                                                   SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+                        }
                         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
                           && applyDiscount && CurrentTabType == TabClipp)
                         {
@@ -2639,7 +2662,8 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
       TPaymentTransaction PaymentTransaction(DBTransaction);
       TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, SelectedItemKeys);
       ManagerDiscount->ClearDiscount(PaymentTransaction.Orders, CurrentDiscount); // clear already applied discount from saved sales...
-      ManagerDiscount->AddDiscount(PaymentTransaction.Orders, CurrentDiscount);
+      //ManagerDiscount->AddDiscount(PaymentTransaction.Orders, CurrentDiscount);
+      ApplyDiscountWithRestructure(PaymentTransaction, CurrentDiscount);
    	  PaymentTransaction.ApplyMembership(Membership);
       ManagerDiscount->SetDiscountAmountDB(DBTransaction, PaymentTransaction.Orders);
       PaymentTransaction.DeleteOrders();
@@ -5593,6 +5617,96 @@ void TfrmBillGroup::ClearLoyaltyVoucher()
         TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount = "";
         TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
     }
+}
+//-----------------------------------------------------------------------------
+void TfrmBillGroup::ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount)
+{
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    try
+    {
+        paymentTransaction.Patrons = PatronTypes;
+        std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+        if(patronUtility->CheckPatronsAvailable(paymentTransaction) && !discount.IsPersonWithDisabilityDiscount())
+        {
+            std::auto_ptr <TList> SCDOrders(new TList);
+            SCDOrders->Clear();
+            std::auto_ptr <TList> NormalOrders(new TList);
+            NormalOrders->Clear();
+
+            patronUtility->DivideBill(paymentTransaction,SCDOrders,NormalOrders);
+            for(int index = 0; index < SCDOrders->Count; index++)
+            {
+                TItemComplete *ic = (TItemComplete*)SCDOrders->Items[index];
+            }
+            for(int index = 0; index < NormalOrders->Count; index++)
+            {
+                TItemComplete *ic = (TItemComplete*)NormalOrders->Items[index];
+            }
+            if(discount.IsSeniorCitizensDiscount())
+            {
+               ManagerDiscount->AddDiscount(SCDOrders.get(), discount);
+            }
+            else
+            {
+               ManagerDiscount->AddDiscount(NormalOrders.get(), discount);
+            }
+            paymentTransaction.Orders->Clear();
+            for(int indexSCD = 0; indexSCD < SCDOrders->Count; indexSCD++)
+            {
+                TItemComplete *Order = (TItemComplete *)SCDOrders->Items[indexSCD];
+                paymentTransaction.Orders->Add(Order);
+            }
+            for(int indexNormal = 0; indexNormal < NormalOrders->Count; indexNormal++)
+            {
+                TItemComplete *Order = (TItemComplete *)NormalOrders->Items[indexNormal];
+                paymentTransaction.Orders->Add(Order);
+            }
+            paymentTransaction.Money.Recalc(paymentTransaction);
+        }
+        else
+        {
+            ManagerDiscount->AddDiscount(paymentTransaction.Orders, discount);
+        }
+        TDBOrder::DeleteOrdersForreatructure(paymentTransaction.Orders);
+        std::vector<int> newOrderKeys;
+        newOrderKeys.clear();
+        for(int index = 0; index < paymentTransaction.Orders->Count; index++)
+        {
+            TItemComplete *ic = (TItemComplete*)paymentTransaction.Orders->Items[index];
+            TDBOrder::ProcessOrder(DBTransaction1,ic);
+            newOrderKeys.push_back(ic->OrderKey);
+        }
+        DBTransaction1.Commit();
+        DBTransaction1.StartTransaction();
+        SelectedItems.clear();
+        VisibleItems.clear();
+        for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
+        {
+            TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction1, *itTabs, VisibleItems);
+        }
+
+        DBTransaction1.Commit();
+        DBTransaction1.StartTransaction();
+        std::map<__int64,TPnMOrder>::iterator itVisible = VisibleItems.begin();
+        for(;itVisible !=  VisibleItems.end(); advance(itVisible,1))
+        {
+            if(std::find(newOrderKeys.begin(), newOrderKeys.end(), itVisible->first) != newOrderKeys.end())
+            {
+               SelectedItems[itVisible->first] = itVisible->second;
+            }
+        }
+        std::map<__int64,TPnMOrder>::iterator itSelected = SelectedItems.begin();
+        UpdateItemListDisplay(DBTransaction1);
+        DBTransaction1.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction1.Rollback();
+        MessageBox(Ex.Message,"Exception",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    paymentTransaction.Patrons.clear();
 }
 
 

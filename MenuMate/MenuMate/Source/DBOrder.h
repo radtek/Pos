@@ -146,6 +146,8 @@ public:
     static void UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long SourceKey, UnicodeString clipTabName,bool isTabSelected);
     static int CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName);
     static void SortOrders(TList * Orders);
+    static void DeleteOrdersForreatructure(TList * Orders);
+    static UnicodeString getOrderKeysList(TList *Orders);
 };
 //---------------------------------------------------------------------------
 #endif

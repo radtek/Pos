@@ -5012,3 +5012,41 @@ void TDBOrder::SortOrders(TList * Orders)
     Orders->Sort(&SortByFinalPrice);
 }
 //-----------------------------------------------------------------------------
+void TDBOrder::DeleteOrdersForreatructure(TList *Orders)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    UnicodeString orderKeysList = getOrderKeysList(Orders);
+    try
+    {
+        TIBSQL *deleteQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        deleteQuery->Close();
+        deleteQuery->SQL->Clear();
+        deleteQuery->SQL->Text =
+                                    "DELETE FROM ORDERS a WHERE "
+                                    "a.ORDER_KEY in (" + orderKeysList + ") ";
+        deleteQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+       MessageBox(Ex.Message,"Exception",MB_OK);
+       DBTransaction.Rollback();
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+UnicodeString TDBOrder::getOrderKeysList(TList *Orders)
+{
+    UnicodeString orderKeyList = "";
+    for(int index = 0; index < Orders->Count; index++)
+    {
+        TItemComplete* ic = (TItemComplete*)Orders->Items[index];
+        if(orderKeyList == "")
+            orderKeyList = ic->OrderKey;
+        else
+            orderKeyList += ", " + IntToStr(ic->OrderKey);
+    }
+    return orderKeyList;
+}
+//-----------------------------------------------------------------------------

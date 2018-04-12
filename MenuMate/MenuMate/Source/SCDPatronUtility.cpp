@@ -156,6 +156,7 @@ void TSCDPatronUtility::DivideBill(TPaymentTransaction &paymentTransaction,
                     double OrderPrice_double = double(OrderPrice.Val);
                     double SplitPercentage = amountSCD_double/OrderPrice_double;
                     Order->Assign(SplittedItem);
+                    Order->TransNo = TDBOrder::GetNextTransNumber(paymentTransaction.DBTransaction);
                     TDBOrder::AssignNewSecurityRef(paymentTransaction.DBTransaction,SplittedItem);
                     double newQuantity = SplittedItem->GetQty() * (1 - SplitPercentage);
                     SplittedItem->SetQty(newQuantity,false);

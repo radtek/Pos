@@ -854,6 +854,7 @@ void __fastcall TfrmPaymentType::WMDisplayChange(TWMDisplayChange& Message)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
 {
+    int delayedTabKey = 0;
 	if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
 	{
 		MessageBox("Please select a receipt printer from Setup first.", "Print error", MB_OK + MB_ICONERROR);
@@ -891,7 +892,11 @@ void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
                      if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Order->ItemType)
                           isMixedMenuOrder = false;
 
-                     TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable, isMixedMenuOrder);
+                     delayedTabKey = TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable, isMixedMenuOrder);
+                    if(delayedTabKey != 0)
+                    {
+                        TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,CurrentTransaction.Patrons);
+                    }
                      DBTransaction.Commit();
                      ShowReceipt();
                  }
