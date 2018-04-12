@@ -9206,6 +9206,11 @@ void TfrmSelectDish::InitializeTablePatrons()
                 std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
 
                 //Set to table patron count table...
+                if(ArePatronsChanged(selectedTablePatrons,patrons))
+                {
+                    //call for restructure
+                    RestructureBillForPatrons(patrons);
+                }
                 TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
 
                 if(!patrons.empty())
@@ -15769,6 +15774,13 @@ void TfrmSelectDish::ApplyDiscountWithRestructure(TList *Orders, TDiscount disco
     {
         TPaymentTransaction paymentTransaction(DBTransaction);
         MakeDummyPaymentTransaction(Orders,paymentTransaction);
+
+        std::vector<TPatronType> patrons;
+        patrons.clear();
+        if(SelectedTable != 0)
+            patrons = TDBTables::GetPatronCount(paymentTransaction.DBTransaction, SelectedTable);
+        paymentTransaction.Patrons = patrons;
+
         std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
         if(patronUtility->CheckPatronsAvailable(paymentTransaction))
         {
@@ -15819,11 +15831,6 @@ void TfrmSelectDish::MakeDummyPaymentTransaction(TList* Orders,TPaymentTransacti
     }
     paymentTransaction.Membership.Assign(Membership);
     paymentTransaction.Money.Recalc(paymentTransaction);
-    std::vector<TPatronType> patrons;
-    patrons.clear();
-    if(SelectedTable != 0)
-        patrons = TDBTables::GetPatronCount(paymentTransaction.DBTransaction, SelectedTable);
-    paymentTransaction.Patrons = patrons;
 }
 //----------------------------------------------------------------------------
 void TfrmSelectDish::ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction,TList *Orders)
@@ -15835,5 +15842,47 @@ void TfrmSelectDish::ExtractFromDummyPaymentTransaction(TPaymentTransaction &pay
        if(itemComplete->GetQty() != 0)
            Orders->Add(itemComplete);
    }
+}
+//----------------------------------------------------------------------------
+bool TfrmSelectDish::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
+{
+    double nonSCDOld = 0;
+    double SCDOld = 0;
+    double nonSCDNew = 0;
+    double SCDNew = 0;
+    bool retValue = false;
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+
+    scdpatronUtility->GetPatronDistribution(patronsOld, nonSCDOld, SCDOld);
+    scdpatronUtility->GetPatronDistribution(patronsNew, nonSCDNew, SCDNew);
+
+    if(nonSCDOld != nonSCDNew || SCDOld != SCDNew)
+        retValue = true;
+
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::RestructureBillForPatrons(std::vector<TPatronType> patrons)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TPaymentTransaction paymentTransaction(DBTransaction);
+        paymentTransaction.Patrons = patrons;
+        MakeDummyPaymentTransaction(SeatOrders[SelectedSeat]->Orders->List,paymentTransaction);
+        std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+        scdpatronUtility->RestructureBill(paymentTransaction);
+        ExtractFromDummyPaymentTransaction(paymentTransaction, SeatOrders[SelectedSeat]->Orders->List);
+        paymentTransaction.Money.Recalc(paymentTransaction);
+        RedrawSeatOrders();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(Ex.Message,"",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
 }
 //----------------------------------------------------------------------------

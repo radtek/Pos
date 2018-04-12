@@ -2986,8 +2986,25 @@ bool TfrmPaymentType::ArePatronsChanged(std::vector<TPatronType> patronsOld,std:
     scdpatronUtility->GetPatronDistribution(patronsOld, nonSCDOld, SCDOld);
     scdpatronUtility->GetPatronDistribution(patronsNew, nonSCDNew, SCDNew);
 
-    if(nonSCDOld != nonSCDNew || SCDOld != SCDNew)
-        retValue = true;
+//    if(((nonSCDOld != nonSCDNew) && (SCDOld != 0 && SCDNew != 0))|| ((SCDOld != SCDNew)&& (SCDOld != 0 && SCDNew != 0)))
+//        retValue = true;
+
+//    if(nonSCDOld != nonSCDNew || SCDOld != SCDNew)
+//        retValue = true;
+    if(nonSCDOld != nonSCDNew)
+    {
+        if(SCDOld == 0 && SCDNew == 0)
+            retValue = false;
+        else
+            retValue = true;
+    }
+    else if(SCDOld != SCDNew)
+    {
+        if(nonSCDOld == 0 && nonSCDOld == 0)
+            retValue = false;
+        else
+            retValue = true;
+    }
 
     return retValue;
 }

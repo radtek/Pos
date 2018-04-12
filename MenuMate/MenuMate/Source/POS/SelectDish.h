@@ -491,6 +491,8 @@ private: // User declarations
     void ApplyDiscountWithRestructure(TList *Orders, TDiscount CurrentDiscount);
     void MakeDummyPaymentTransaction(TList *Orders, TPaymentTransaction &paymentTransaction);
     void ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction, TList *Orders);
+    bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
+    void RestructureBillForPatrons(std::vector<TPatronType> patrons);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
