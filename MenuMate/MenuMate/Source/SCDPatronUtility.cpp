@@ -464,3 +464,32 @@ Currency TSCDPatronUtility::GetAmountForSCD(TPaymentTransaction paymentTransacti
     return total;
 }
 //---------------------------------------------------------------------------
+bool TSCDPatronUtility::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
+{
+    double nonSCDOld = 0;
+    double SCDOld = 0;
+    double nonSCDNew = 0;
+    double SCDNew = 0;
+    bool retValue = false;
+
+    GetPatronDistribution(patronsOld, nonSCDOld, SCDOld);
+    GetPatronDistribution(patronsNew, nonSCDNew, SCDNew);
+
+    if(nonSCDOld != nonSCDNew)
+    {
+        if(SCDOld == 0 && SCDNew == 0)
+            retValue = false;
+        else
+            retValue = true;
+    }
+    else if(SCDOld != SCDNew)
+    {
+        if(nonSCDOld == 0 && nonSCDOld == 0)
+            retValue = false;
+        else
+            retValue = true;
+    }
+
+    return retValue;
+}
+//---------------------------------------------------------------------------

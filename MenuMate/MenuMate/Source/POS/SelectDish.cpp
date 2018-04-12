@@ -15846,19 +15846,9 @@ void TfrmSelectDish::ExtractFromDummyPaymentTransaction(TPaymentTransaction &pay
 //----------------------------------------------------------------------------
 bool TfrmSelectDish::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
 {
-    double nonSCDOld = 0;
-    double SCDOld = 0;
-    double nonSCDNew = 0;
-    double SCDNew = 0;
     bool retValue = false;
     std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
-
-    scdpatronUtility->GetPatronDistribution(patronsOld, nonSCDOld, SCDOld);
-    scdpatronUtility->GetPatronDistribution(patronsNew, nonSCDNew, SCDNew);
-
-    if(nonSCDOld != nonSCDNew || SCDOld != SCDNew)
-        retValue = true;
-
+    retValue = scdpatronUtility->ArePatronsChanged(patronsOld,patronsNew);
     return retValue;
 }
 //----------------------------------------------------------------------------
