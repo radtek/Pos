@@ -210,8 +210,7 @@ private:
 		double		Inwards;
         double	 Pev_Average_Unit_Cost;
         double      Last_latest_cost;
-         double previouskey;
-        int stocktestprev;
+
 
         
 
@@ -232,7 +231,7 @@ protected:
 	bool				fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails);
     double                  fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location,AnsiString Stock_Group ,AnsiString Stock_Category,AnsiString Description, TStockLocationDetails& StockLocationDetailsA) ;
 	void				fReadStockDetails(TStockLocationDetails& StockLocationDetails);
-    void                fReadStockDetailsAA(TStockLocationDetails& StockLocationDetails);
+  
 
 public:
 						TStockTransaction(TIBDatabase *IBDatabase);

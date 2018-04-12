@@ -1722,11 +1722,11 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 			int StocktakeKey, TiStocktakeItemInfo const &StocktakeItemInfo)
 {
 	TStockLocationDetails StockDetails;
-       //	Application->MessageBox(StockDetails.Opening, "Erroraa", MB_ICONERROR + MB_OK);
+
 	if (fGetStockDetails(StocktakeItemInfo->StockKey, StocktakeItemInfo->Location, StockDetails))
 	{
 
-    	//Application->MessageBox(StockDetails.Opening, "Error", MB_ICONERROR + MB_OK);
+
 		if (StocktakeItemInfo->Variance != 0)
 		{
 			TTransactionInfo TransactionInfo(ttStocktake, BatchInfo);
@@ -1769,7 +1769,7 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 
 		sqlStocktakeHistory->ParamByName("Closing")->AsDouble						= StocktakeItemInfo->Counted;
         sqlStocktakeHistory->ParamByName("Prev_Average_Unit_Cost")->AsDouble  = fbstockdetailsusingstocktakekey(sqlStocktakeHistory->ParamByName("StocktakeHistory_Key")->AsInteger,StocktakeItemInfo->Location,StockDetails.Stock_Group,StockDetails.Stock_Category,StockDetails.Description, StockDetails);//StockDetails.Pev_Average_Unit_Cost;
-      //  }
+
   		sqlStocktakeHistory->ExecQuery();
 
 		//Update Stock Levels. Also moves pending sales and writeoffs.
