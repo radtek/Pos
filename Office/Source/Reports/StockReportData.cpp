@@ -1588,8 +1588,6 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
 //---------------------------------------------------------------------------
 void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 {
-
-    TDateTime datetime =  DBVERSION();
   	qrStockVariance->Close();
 	qrStockVariance->SQL->Text =
 		"Select "
@@ -1689,7 +1687,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			"	 * StockLocation.Assessed_Value As Numeric(15, 4))) Assessed_Total, "
             "coalesce(STK.QTY,0)  QTY, "
             " case "
-            " when  (StocktakeHistory.Last_Stocktake < :datetime or  (StocktakeHistory.Last_Stocktake = '30.12.1899, 00:00:00.000' and StocktakeHistory.PREV_AVERAGE_UNIT_COST = null)) "
+            " when  (StocktakeHistory.PREV_AVERAGE_UNIT_COST <> null) "
             " then Sum(Cast(COALESCE(StocktakeHistory.Average_Unit_Cost,0) * COALESCE(StocktakeHistory.opening ,0) As Numeric(15, 4))) "
             "else "
             "Sum(Cast(COALESCE(StocktakeHistory.PREV_AVERAGE_UNIT_COST,0) * COALESCE(StocktakeHistory.opening ,0) As Numeric(15, 4))) end opening_New "
@@ -1727,7 +1725,7 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 		  "group by STOCKTRANS.STOCK_CATEGORY, stocktrans.STOCK_GROUP)K on R.Stock_Category=K.Stock_Category and R.STOCK_GROUP=K.STOCK_GROUP " ;
 
 
-   qrStockGroupVariance->ParamByName("datetime")->AsDateTime =  datetime;
+   //qrStockGroupVariance->ParamByName("datetime")->AsDateTime =  datetime;
    qrStockGroupVariance->ParamByName("Stocktake_Key")->AsInteger = StocktakeKey;
   
   }
@@ -2200,19 +2198,4 @@ void TdmStockReportData::SetupStockReconcialation(TDateTime StartTime, TDateTime
     qrStockReconcialation->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
 //-----------------------------------------------------------------------------
- TDateTime TdmStockReportData::DBVERSION()
-{
- 	qrStockVarianceDateTime->Close();
-    qrStockVarianceDateTime->SQL->Text =
-    "select "
-    "TIME_STAMP "
-    " from "
-    " DBVERSION "
-    " where "
-    " VERSION_NUMBER='6.24.0' " ;
-     qrStockVarianceDateTime->Open();
-     TDateTime datetime = qrStockVarianceDateTime->FieldByName("TIME_STAMP")->AsDateTime;
-
-   return datetime;
-}
 

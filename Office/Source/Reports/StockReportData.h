@@ -98,7 +98,6 @@ public:		// User declarations
     void SetupWriteOffLocation(TDateTime StartTime, TDateTime EndTime, TStrings *Locations);
     void SetupManufactureRecipe(TDateTime StartTime, TDateTime EndTime);
     void SetupSupplierInvoice(TDateTime StartTime, TDateTime EndTime);
-    TDateTime DBVERSION();
 	void SetupStockVariance(int StocktakeKey);
 
 	void SetupStockVariance(int StocktakeKey,int RadioButtonValue,AnsiString VarianceAmount);
