@@ -21,6 +21,7 @@ class TContactPoints
 
     Currency GetPointsValue(TPointsType type);
     Currency GetPointsValue(TPointsTypePair type);
+    Currency GetPointsValueWithoutSale(TPointsTypePair type);
     Currency GetPointsValue(TPointsAssignedSource inSource);
     Currency GetCurrentPointsValue(TPointsTypePair type);
 
@@ -61,6 +62,7 @@ class TContactPoints
     Currency getPointsPurchased(TPointsAssignedSource Source);
     Currency getPointsRefunded(TPointsAssignedSource Source);
 
+
     /* Use this to get the Points by Account type,
     	i.e Loyalty points, those normally earned on food etc.
         Account Points, the Extra account for Aussie loyalty.
@@ -70,6 +72,7 @@ class TContactPoints
     Currency getPointsRedeemed(TPointsTransactionAccountType Account);
     Currency getPointsPurchased(TPointsTransactionAccountType Account);
     Currency getPointsRefunded(TPointsTransactionAccountType Account);
+    Currency getPointsBalanceFromDBWithLoyaltymate(TPointsTransactionAccountType Account);
 
 	/* A very specialised Balance function that return the balance by Source
      and account type, Used for retriving the pasDatabase balance of the
@@ -153,3 +156,4 @@ class TContactPoints
 };
 
 #endif
+
