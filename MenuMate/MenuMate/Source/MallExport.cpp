@@ -6,6 +6,7 @@
 #include "MallExport.h"
 #include "MMLogging.h"
 #include "MallExportTextFile.h"
+#include "MallExportEviaSalFile.h"
 #include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 
@@ -48,8 +49,18 @@ bool TMallExport::Export()
         if(transactionDoneBeforeZed)
         {
             //Create Export Medium
-            TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-            exporter->WriteToFile(preparedData);
+        //    TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+            if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+            {
+                TMallExportSalFile* exporter = (TMallExportSalFile*)CreateExportMedium();
+                 exporter->WriteToFile(preparedData);
+            }
+            else
+            {
+               TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+                exporter->WriteToFile(preparedData);
+            }
+
         }
     }
     catch(Exception &E)
