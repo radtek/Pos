@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "SiHotInterface.h"
-
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -72,10 +71,10 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
         {
             guestDetails.FirstName = _roomDetails->GuestDetailsList[i]->FirstName;
             guestDetails.LastName  = _roomDetails->GuestDetailsList[i]->LastName;
-            guestDetails.LastName  = _roomDetails->GuestDetailsList[i]->LastName;
             guestDetails.Limit  = _roomDetails->GuestDetailsList[i]->Limit;
             guestDetails.AccountActive  = _roomDetails->GuestDetailsList[i]->AccountActive;
             guestDetails.AccountNumber  = _roomDetails->GuestDetailsList[i]->AccountNo;
+            guestDetails.RoomBedNumber = _roomDetails->GuestDetailsList[i]->RoomBedNo;
             roomResponse.GuestsInformation.push_back(guestDetails);
         }
     }

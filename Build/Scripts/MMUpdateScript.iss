@@ -91,6 +91,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: i
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.tlb; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.pdb; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\FirebirdSql.Data.FirebirdClient.dll; DestDir: {app}; Flags: ignoreversion 
 Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
@@ -110,6 +111,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\DocketVisit.txt; DestDir: {app}\
 Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\printer.gif; DestDir: {app}\kiosk; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\indexFinancial.html; DestDir: {app}\kiosk; Flags: ignoreversion 
 Source: {#GetEnv('BASEDIR')}\Static Files\OrderLogo.bmp; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
+Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
 
 ;OpenSSL for Email - MM POS
 Source: {#GetEnv('BASEDIR')}\Static Files\email\openssl-0.9.8h-1-setup.exe; DestDir: {app}\email; Flags: ignoreversion onlyifdoesntexist

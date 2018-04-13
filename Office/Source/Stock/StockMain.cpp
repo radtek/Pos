@@ -328,12 +328,11 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
 		if (SelectTransferLocations.Execute())
 		{
 			TTransferLocations TransferLocations	= SelectTransferLocations.Locations();
-
+            //SelectTransferLocations.~TSelectTransferLocations();
             std::auto_ptr<TfrmStockRequestTransfer>frmStockRequestTransfer(new TfrmStockRequestTransfer(NULL));
             frmStockRequestTransfer->Source = TransferLocations.Source;
             frmStockRequestTransfer->Destination = TransferLocations.Destination;
             frmStockRequestTransfer->ShowModal();
-
             if(frmStockRequestTransfer->ModalResult == mrOk)
             {
                 TStringList* selectedStockRequestKeys = frmStockRequestTransfer->GetSelectedRequestKeys();
@@ -341,17 +340,36 @@ void __fastcall TfrmStockMain::btnTransferMultiClick(TObject *Sender)
                 std::auto_ptr<TfrmTransferMulti>frmTransferMulti(new TfrmTransferMulti(NULL));
                 frmTransferMulti->Source					= TransferLocations.Source;
                 frmTransferMulti->Destination				= TransferLocations.Destination;
+
                 frmTransferMulti->SelectedStockRequestKeys = selectedStockRequestKeys;
-                frmTransferMulti->ShowModal();
+
+
+                 frmTransferMulti->ShowModal();
+                 frmTransferMulti->ReleaseAllocations();
+                 frmTransferMulti->Release();
+                 frmTransferMulti->Refresh();
+                 frmTransferMulti->tvTransfers->Items->Clear();
+               // SelectTransferLocations.~TSelectTransferLocations();
+                 
+                
+
             }
+              frmStockRequestTransfer->vtvStockRequest->Clear();
+              frmStockRequestTransfer->Release();
+              frmStockRequestTransfer->Refresh();
+           
+
 		}
 	}
 	else
 	{
 		Application->MessageBox("A connection to the MenuMate database is required for this.", "Error", MB_ICONERROR + MB_OK);
 	}
-}
-//---------------------------------------------------------------------------
+
+    }
+
+
+//-------------------------------------------------------------------------------
 void __fastcall TfrmStockMain::CMDialogKey(TCMDialogKey &Msg)
 {
 /*	if (Msg.CharCode == VK_LEFT)

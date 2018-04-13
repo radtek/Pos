@@ -221,7 +221,8 @@ enum vmVariables
     vmFiscalRTSFlowControl,vmFiscalOutCTSFlow,vmFiscalXonXoffOut,vmFiscalXonXoffIn,vmFiscalAsync ,
     vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
     vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
-    vmIsSiHotPostInProgress,vmIsOraclePostInProgress
+    vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
+    vmOracleInterfacePortNumber
 };
 
 // ---------------------------------------------------------------------------

@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (22/03/2018 6:00:11 p.m. - - $Rev: 25127 $)
+// (27/03/2018 9:25:16 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -211,6 +211,8 @@ private:
   bool            FResNo_Specified;
   UnicodeString   FResSubNo;
   bool            FResSubNo_Specified;
+  UnicodeString   FRoomBedNo;
+  bool            FRoomBedNo_Specified;
   UnicodeString   FRoomNo;
   bool            FRoomNo_Specified;
   UnicodeString   FSalesCategory;
@@ -339,6 +341,10 @@ private:
   {  FResSubNo = _prop_val; FResSubNo_Specified = true;  }
   bool __fastcall ResSubNo_Specified(int Index)
   {  return FResSubNo_Specified;  } 
+  void __fastcall SetRoomBedNo(int Index, UnicodeString _prop_val)
+  {  FRoomBedNo = _prop_val; FRoomBedNo_Specified = true;  }
+  bool __fastcall RoomBedNo_Specified(int Index)
+  {  return FRoomBedNo_Specified;  } 
   void __fastcall SetRoomNo(int Index, UnicodeString _prop_val)
   {  FRoomNo = _prop_val; FRoomNo_Specified = true;  }
   bool __fastcall RoomNo_Specified(int Index)
@@ -407,6 +413,7 @@ __published:
   __property UnicodeString PersonType = { index=(IS_OPTN|IS_NLBL), read=FPersonType, write=SetPersonType, stored = PersonType_Specified };
   __property UnicodeString      ResNo = { index=(IS_OPTN|IS_NLBL), read=FResNo, write=SetResNo, stored = ResNo_Specified };
   __property UnicodeString   ResSubNo = { index=(IS_OPTN|IS_NLBL), read=FResSubNo, write=SetResSubNo, stored = ResSubNo_Specified };
+  __property UnicodeString  RoomBedNo = { index=(IS_OPTN|IS_NLBL), read=FRoomBedNo, write=SetRoomBedNo, stored = RoomBedNo_Specified };
   __property UnicodeString     RoomNo = { index=(IS_OPTN|IS_NLBL), read=FRoomNo, write=SetRoomNo, stored = RoomNo_Specified };
   __property UnicodeString SalesCategory = { index=(IS_OPTN|IS_NLBL), read=FSalesCategory, write=SetSalesCategory, stored = SalesCategory_Specified };
   __property UnicodeString SalesCategoryCode = { index=(IS_OPTN|IS_NLBL), read=FSalesCategoryCode, write=SetSalesCategoryCode, stored = SalesCategoryCode_Specified };

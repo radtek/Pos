@@ -125,6 +125,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_45( TDBControl* const inDBControl );
         PARSER_ERROR apply6_46( TDBControl* const inDBControl );
         PARSER_ERROR apply6_47( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_48( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -885,7 +886,8 @@ namespace MenumateVersionParser
         void AlterArcBillTable6_45(TDBControl* const inDBControl);
 
         void upgrade6_46Tables();
-        void update6_46Tables();        void CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
+        void update6_46Tables();
+        void CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
         void POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
         void CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
         void POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
@@ -897,6 +899,9 @@ namespace MenumateVersionParser
         void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
         void upgrade6_47Tables();
         void update6_47Tables();
+        void AlterTableDiscount6_47(TDBControl* const _dbControl);
+        void upgrade6_48Tables();
+        void update6_48Tables();
     };// class
 } // namespace
 
