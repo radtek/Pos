@@ -3041,15 +3041,10 @@ bool TdmStockData::Update6_23_0()
     if(!HasDBVersionExist("6.24.0"))
     {
         IndexingForStocktakehistoryTable();
-      RunSQL("Alter Table StocktakeHistory Add Prev_Average_Unit_Cost Numeric(15, 4) Default 0");
-     //RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6240 + "', Current_TimeStamp) ");
-    
-
+        RunSQL("Alter Table StocktakeHistory Add Prev_Average_Unit_Cost Numeric(15, 4) Default 0");
     }
 
 }
-
-
 //-------------------------------------------------------------------------------------------------------------------------
 bool TdmStockData::Update6_24_0()
 {
@@ -3082,10 +3077,13 @@ bool TdmStockData::Update6_24_0()
 
 void TdmStockData::IndexingForStocktakehistoryTable()
 {
- Query->Close();
- Query->SQL->Text = "CREATE INDEX IDX_STOCKTAKEHISTORY1 ON STOCKTAKEHISTORY (DESCRIPTION,STOCK_CATEGORY,STOCK_GROUP,LOCATION) ";
- Query->ExecQuery();
+     Query->Close();
+     Query->SQL->Text = "CREATE INDEX IDX_STOCKTAKEHISTORY1 ON STOCKTAKEHISTORY (DESCRIPTION,STOCK_CATEGORY,STOCK_GROUP,LOCATION) ";
+     Query->ExecQuery();
 
+     Query->Close();
+     Query->SQL->Text = "CREATE INDEX IDX_STOCKTAKEHISTORY2 ON STOCKTAKEHISTORY (STOCKTAKEHISTORY_KEY) ";
+     Query->ExecQuery();
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------

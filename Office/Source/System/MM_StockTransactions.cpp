@@ -1785,7 +1785,7 @@ void TStocktakeControl::fUpdateStocktakeItem(TTransactionBatchInfo const& BatchI
 }
 //---------------------------------------------------------------------------
 
-double TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location, AnsiString Stock_Group, AnsiString Stock_Category ,AnsiString Description , TStockLocationDetails& StockLocationDetails)
+double TStockTransaction::fbstockdetailsusingstocktakekey(int StocktakeHistoryKey, AnsiString Location, AnsiString Stock_Group, AnsiString Stock_Category ,AnsiString Description , TStockLocationDetails& StockLocationDetails)
 {
 //,AnsiString Description
 	sqlStockDetailsforclosing->Close();
@@ -1794,7 +1794,7 @@ double TStockTransaction::fbstockdetailsusingstocktakekey(int Stocktakekeyhistor
     sqlStockDetailsforclosing->ParamByName("Stock_Group")->AsString =  Stock_Group;
     sqlStockDetailsforclosing->ParamByName("Stock_Category")->AsString = Stock_Category;
     sqlStockDetailsforclosing->ParamByName("Description")->AsString =  Description;
-    sqlStockDetailsforclosing->ParamByName("StocktakeHistory_Key")->AsInteger = Stocktakekeyhistory;
+    sqlStockDetailsforclosing->ParamByName("StocktakeHistory_Key")->AsInteger = StocktakeHistoryKey;
 	sqlStockDetailsforclosing->ExecQuery();
 
    	if (sqlStockDetailsforclosing->Eof)
