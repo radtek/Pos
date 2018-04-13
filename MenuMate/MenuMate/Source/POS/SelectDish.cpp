@@ -14169,16 +14169,17 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                 if(SelectedTable != 0)
                     patrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
                 std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
-                if(patronUtility->CanByPassSCDValidity(allOrders.get(),patrons,CurrentDiscount))
+//                if(patronUtility->CanByPassSCDValidity(allOrders.get(),patrons,CurrentDiscount))
+                if(patronUtility->CanByPassSCDValidity(SeatOrders[SelectedSeat]->Orders->List,patrons,CurrentDiscount))
                 {
-                    bool ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, allOrders.get());
+                    bool ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List);
                     if(ProcessDiscount)
                         ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
                 }
                 else
                 {
-                    bool ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()) &&
-                                           SCDChecker.PWDCheck(CurrentDiscount, allOrders.get());
+                    bool ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List) &&
+                                           SCDChecker.PWDCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List);
                     if(ProcessDiscount)
                         ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
                 }

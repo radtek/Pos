@@ -2336,13 +2336,13 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                             applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders) &&
                                                    SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
                         }
-                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
-                          && applyDiscount && CurrentTabType == TabClipp)
+                        if(CurrentTabType == TabClipp && SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount)
                         {
                            isSCDAppliedOnClipp = true;
                         }
-                        if(SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
-                          && applyDiscount && CurrentTabType == TabClipp)
+                        if(CurrentTabType == TabClipp && SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount)
                         {
                            isPWDAppliedOnClipp = true;
                         }
