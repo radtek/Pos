@@ -1009,17 +1009,18 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					    accountNumber = itItem->second.AccNumber;
                         break;
 					}
-                    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-						advance(itItem, 1))
-					{
-					    if(accountNumber != itItem->second.AccNumber)
-                        {
-                            canProceed = false;
-                            MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
-                        }
-					}
-                    if(!canProceed)
-                        return;
+//                    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+//						advance(itItem, 1))
+//					{
+//					    if(accountNumber != itItem->second.AccNumber)
+//                        {
+//                            canProceed = false;
+//                            MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
+//                            break;
+//                        }
+//					}
+//                    if(!canProceed)
+//                        return;
                 }
 				DBTransaction.StartTransaction();
 				Proceed = TabStaffAccessOk(DBTransaction);
@@ -1074,17 +1075,18 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                     accountNumber = itItem->second.AccNumber;
                     break;
                 }
-                for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-                    advance(itItem, 1))
-                {
-                    if(accountNumber != itItem->second.AccNumber)
-                    {
-                        canProceed = false;
-                        MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
-                    }
-                }
-                if(!canProceed)
-                    return;
+//                for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+//                    advance(itItem, 1))
+//                {
+//                    if(accountNumber != itItem->second.AccNumber)
+//                    {
+//                        canProceed = false;
+//                        MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
+//                        break;
+//                    }
+//                }
+//                if(!canProceed)
+//                    return;
             }
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);

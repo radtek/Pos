@@ -10296,16 +10296,16 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 
 				if (Retval == mrOk)
 				{
-                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-                            TGlobalSettings::Instance().EnableCustomerJourney )
-                    {
-                        UnicodeString AccountNumber = TDBTab::GetAccountNumber(DBTransaction, OrderContainer.Location["TabKey"]);
-                        if(AccountNumber != "" && AccountNumber.Compare(OrderContainer.Location["AccNo"]) )
-                        {
-                            MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
-                            return mrAbort;
-                        }
-                    }
+//                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+//                            TGlobalSettings::Instance().EnableCustomerJourney )
+//                    {
+//                        UnicodeString AccountNumber = TDBTab::GetAccountNumber(DBTransaction, OrderContainer.Location["TabKey"]);
+//                        if(AccountNumber != "" && AccountNumber.Compare(OrderContainer.Location["AccNo"]) )
+//                        {
+//                            MessageBox("Order with different room no can't be saved..", "Error", MB_OK + MB_ICONERROR);
+//                            return mrAbort;
+//                        }
+//                    }
 
 					if (!TGlobalSettings::Instance().DisableConfirmationOnSave)
 					{
