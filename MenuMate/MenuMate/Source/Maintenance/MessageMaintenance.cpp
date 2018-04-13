@@ -16,6 +16,7 @@
 #include "MMTouchNumpad.h"
 #include "DBDenominations.h"
 #include "ServingTime.h"
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -687,11 +688,16 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->SetMaxLengthValue(2);
-    frmTouchNumpad->INTInitial = 0;
+    if(TGlobalSettings::Instance().PMSType == Oracle)
+       frmTouchNumpad->SetMaxLengthValue(2);
+    else if(TGlobalSettings::Instance().PMSType == SiHot)
+        frmTouchNumpad->SetMaxLengthValue(3);
 
+    frmTouchNumpad->INTInitial = 0;
     std::map<int, TRevenueCodeDetails>::iterator iter;
-    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult < 17)
+    if ((frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0) &&
+        ((frmTouchNumpad->INTResult < 17 && TGlobalSettings::Instance().PMSType == Oracle) ||
+            (frmTouchNumpad->INTResult < 101 && TGlobalSettings::Instance().PMSType == SiHot)))
     {
         iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
         if(iter == managerPMSCodes->RevenueCodesMap.end())
@@ -734,9 +740,13 @@ void TfrmMessageMaintenance::AddRevenueCode(TObject *Sender)
             MessageBox("Please Select a different Revenue Code","WARNING",MB_ICONWARNING + MB_OK);
         }
     }
-    else if(frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 16)
+    else if(TGlobalSettings::Instance().PMSType == Oracle && (frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 16))
     {
         MessageBox("Revenue code value can be 1 to 16 only.","WARNING",MB_ICONWARNING + MB_OK);
+    }
+    else if(TGlobalSettings::Instance().PMSType == SiHot && (frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 100))
+    {
+        MessageBox("Revenue code value can be 1 to 100 only.","WARNING",MB_ICONWARNING + MB_OK);
     }
 }
 //---------------------------------------------------------------------------
@@ -757,11 +767,18 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->SetMaxLengthValue(2);
+    frmTouchNumpad->MaxLength = 3;
+    if(TGlobalSettings::Instance().PMSType == Oracle)
+       frmTouchNumpad->SetMaxLengthValue(2);
+    else if(TGlobalSettings::Instance().PMSType == SiHot)
+        frmTouchNumpad->SetMaxLengthValue(3);
+
     frmTouchNumpad->INTInitial = key;
 
     std::map<int, TRevenueCodeDetails>::iterator iter;
-    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult < 17)
+    if ((frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0) &&
+        ((frmTouchNumpad->INTResult < 17 && TGlobalSettings::Instance().PMSType == Oracle) ||
+            (frmTouchNumpad->INTResult < 101 && TGlobalSettings::Instance().PMSType == SiHot)))
     {
         iter = managerPMSCodes->RevenueCodesMap.find(frmTouchNumpad->INTResult);
         if(iter == managerPMSCodes->RevenueCodesMap.end() || (frmTouchNumpad->INTResult == key))
@@ -795,9 +812,13 @@ void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTrans
                         "WARNING",MB_ICONWARNING + MB_OK);
         }
     }
-    else if(frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 16)
+    else if(TGlobalSettings::Instance().PMSType == Oracle && (frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 16))
     {
         MessageBox("Revenue code value can be 1 to 16 only.","WARNING",MB_ICONWARNING + MB_OK);
+    }
+    else if(TGlobalSettings::Instance().PMSType == SiHot && (frmTouchNumpad->INTResult == 0 || frmTouchNumpad->INTResult > 100))
+    {
+        MessageBox("Revenue code value can be 1 to 100 only.","WARNING",MB_ICONWARNING + MB_OK);
     }
 }
 //---------------------------------------------------------------------------

@@ -127,6 +127,7 @@ void TfrmPHSConfiguration::InitializePMS()
 {
    std::auto_ptr<TManagerPMS> managerPMS (new TManagerPMS());
    managerPMS->Initialize(TDeviceRealTerminal::Instance().DBControl,PMSType);
+   TGlobalSettings::Instance().PMSType = PMSType;
    TDeviceRealTerminal::Instance().BasePMS->Initialise();
    TDeviceRealTerminal::Instance().BasePMS->Registered = true;
 }
@@ -153,7 +154,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
-        tbRevenueCodes->Enabled = false;
+        tbItemDefCat->Enabled = false;
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;

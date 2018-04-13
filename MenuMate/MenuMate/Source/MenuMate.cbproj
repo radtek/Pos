@@ -3463,6 +3463,10 @@
 				<DependentOn>SCDPatronUtility.h</DependentOn>
 				<BuildOrder>789</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="PMSHelper.cpp">
+				<DependentOn>PMSHelper.h</DependentOn>
+				<BuildOrder>790</BuildOrder>
+			</CppCompile>
 			<FormResources Include="TierLevels.dfm"/>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="Maintenance\PaymentMaintenance.dfm"/>
