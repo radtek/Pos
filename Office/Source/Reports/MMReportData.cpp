@@ -773,7 +773,8 @@ void TdmMMReportData::SetupMenu3rdPartyCodes(TStrings *Menus)
 			"ItemSize.Special_Price,"
 			"ItemSize.Barcode,"
 			"ThirdPartyCodes.Code, "
-			"CAST( CASE WHEN ITEMSIZE.REVENUECODE = 0 THEN '' ELSE ITEMSIZE.REVENUECODE END AS VARCHAR(10)) REVENUECODE "
+			"CAST( CASE WHEN ITEMSIZE.REVENUECODE = 0 THEN '' ELSE ITEMSIZE.REVENUECODE || '(' ||  REVENUECODEDETAILS.REVENUECODE_DESCRIPTION || ')' || ' '  END AS VARCHAR(50)) REVENUECODE "
+           // "REVENUECODEDETAILS.REVENUECODE_DESCRIPTION "
 	 	"From "
 	 		"Menu Left Join Course On "
 	 			"Menu.Menu_Key = Course.Menu_Key "
@@ -782,7 +783,9 @@ void TdmMMReportData::SetupMenu3rdPartyCodes(TStrings *Menus)
 	 		"Left Join ItemSize On "
 				"Item.Item_Key = ItemSize.Item_Key "
 			"Left Join ThirdPartyCodes On "
-				"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key ";
+				"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
+            "Left Join REVENUECODEDETAILS On "
+                "ITEMSIZE.REVENUECODE = REVENUECODEDETAILS.REVENUECODE ";
 	 if (Menus->Count > 0)
 	 {
 		qrMenu3rdParty->SQL->Text	=	qrMenu3rdParty->SQL->Text + "Where (" +
