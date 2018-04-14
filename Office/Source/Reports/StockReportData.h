@@ -70,6 +70,8 @@ __published:	// IDE-managed Components
     TRvDataSetConnection *ravTransferAudit;
     TIBQuery *qrStockReconcialation;
     TRvDataSetConnection *ravStockReconcialation;
+    TIBQuery *qrStockVarianceDateTime;
+   
     
 
 private:	// User declarations
@@ -96,8 +98,8 @@ public:		// User declarations
     void SetupWriteOffLocation(TDateTime StartTime, TDateTime EndTime, TStrings *Locations);
     void SetupManufactureRecipe(TDateTime StartTime, TDateTime EndTime);
     void SetupSupplierInvoice(TDateTime StartTime, TDateTime EndTime);
-
 	void SetupStockVariance(int StocktakeKey);
+
 	void SetupStockVariance(int StocktakeKey,int RadioButtonValue,AnsiString VarianceAmount);
 	void SetupStocktake(int StocktakeKey, bool HideOnHand, bool HideBarcodes);
 	void SetupStocktakeStockValuation(TStrings *Stocktakes);
