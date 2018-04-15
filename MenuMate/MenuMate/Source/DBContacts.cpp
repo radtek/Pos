@@ -743,9 +743,21 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
      // sync the earned points
-      if(Info.Points.getPointsBalance(ptstLoyalty) != dbPoints.getPointsBalance(ptstLoyalty))
+      Currency syncPoints = 0;
+
+//      if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+//      {
+////        syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalanceFromDBWithLoyaltymate(ptstLoyalty);
+//        syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalanceFromDBWithLoyaltymate(ptstLoyalty);
+//      }
+//      else
+//      {
+//        syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalance(ptstLoyalty);
+//      }
+      syncPoints = Info.Points.getPointsBalanceFromDBWithLoyaltymate(ptstLoyalty) - dbPoints.getPointsBalanceFromDBWithLoyaltymate(ptstLoyalty);
+
+      if(syncPoints != 0)
       {
-            Currency syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalance(ptstLoyalty);
             TDBContacts::setPointsTransactionEntry(
                                 DBTransaction,
                                 Info.ContactKey,
@@ -756,11 +768,35 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
                                 pesExported,
                                 Now());
       }
+      //if(Info.Points.getPointsBalance(ptstLoyalty) != dbPoints.getPointsBalance(ptstLoyalty))
+//      {
+//            Currency cloud = Info.Points.getPointsBalance(ptstLoyalty);
+//            Currency local = dbPoints.getPointsBalance(ptstLoyalty);
+//            Currency syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalance(ptstLoyalty);
+//            TDBContacts::setPointsTransactionEntry(
+//                                DBTransaction,
+//                                Info.ContactKey,
+//                                Now(),
+//                                pttSync,
+//                                ptstLoyalty,
+//                                syncPoints,
+//                                pesExported,
+//                                Now());
+//      }
 
+      syncPoints = 0;
+//      if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+//      {
+//        syncPoints = Info.Points.getPointsBalance(ptstAccount) - dbPoints.getPointsBalanceFromDBWithLoyaltymate(ptstAccount);
+//      }
+//      else
+//      {
+//        syncPoints = Info.Points.getPointsBalance(ptstAccount) - dbPoints.getPointsBalance(ptstAccount);
+//      }
+       syncPoints = Info.Points.getPointsBalanceFromDBWithLoyaltymate(ptstAccount) - dbPoints.getPointsBalanceFromDBWithLoyaltymate(ptstAccount);
       // sync the loaded points
-      if(Info.Points.getPointsBalance(ptstAccount) != dbPoints.getPointsBalance(ptstAccount))
+      if(syncPoints != 0)
       {
-            Currency syncPoints = Info.Points.getPointsBalance(ptstAccount) - dbPoints.getPointsBalance(ptstAccount);
             TDBContacts::setPointsTransactionEntry(
                                 DBTransaction,
                                 Info.ContactKey,
@@ -771,6 +807,21 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
                                 pesExported,
                                 Now());
       }
+//      if(Info.Points.getPointsBalance(ptstAccount) != dbPoints.getPointsBalance(ptstAccount))
+//      {
+//            Currency cloud = Info.Points.getPointsBalance(ptstAccount);
+//            Currency local = dbPoints.getPointsBalance(ptstAccount);
+//            Currency syncPoints = Info.Points.getPointsBalance(ptstAccount) - dbPoints.getPointsBalance(ptstAccount);
+//            TDBContacts::setPointsTransactionEntry(
+//                                DBTransaction,
+//                                Info.ContactKey,
+//                                Now(),
+//                                pttSync,
+//                                ptstAccount,
+//                                syncPoints,
+//                                pesExported,
+//                                Now());
+//      }
 
 	  if (static_cast <int> (Info.LastModified) != 0)
 	  {
@@ -1777,3 +1828,4 @@ UnicodeString TDBContacts::GetLastNameForLocalCard(Database::TDBTransaction &DBT
    else
        return "";
 }
+

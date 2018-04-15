@@ -3036,7 +3036,8 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         transaction.ContactKey = contactkey;
         transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
         transaction.OccurredDate = syncTime;
-        transaction.PointsDelta = Points.getPointsBalance(ptstLoyalty);
+        transaction.PointsDelta = Points.getPointsBalanceFromDBWithLoyaltymate(ptstLoyalty);
+//        transaction.PointsDelta = Points.getPointsBalance(ptstLoyalty);
         transaction.PointsType = 1;
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
@@ -3047,7 +3048,8 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         transaction.ContactKey = contactkey;
         transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
         transaction.OccurredDate = syncTime;
-        transaction.PointsDelta = Points.getPointsBalance(ptstAccount);
+        transaction.PointsDelta = Points.getPointsBalanceFromDBWithLoyaltymate(ptstAccount);
+//        transaction.PointsDelta = Points.getPointsBalance(ptstAccount);
         transaction.PointsType = 8;
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }

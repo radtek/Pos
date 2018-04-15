@@ -76,6 +76,44 @@
 			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
 		</PropertyGroup>
 		<ItemGroup>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>9</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxml.cpp">
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Registration\Source\Registration.cpp">
+				<DependentOn>..\..\MenuMate\Registration\Source\Registration.h</DependentOn>
+				<BuildOrder>7</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
+				<BuildOrder>8</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\MenuMate\Version\VersionRes.h">
+				<BuildOrder>14</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\MenuMate\MenuMate\Source\Version.cpp">
+				<DependentOn>..\..\MenuMate\MenuMate\Source\Version.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinystr.cpp">
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<ResourceCompile Include="..\..\MenuMate\MenuMate\Source\Palm\VersionRes.rc">
+				<Form>VersionRes.res</Form>
+				<BuildOrder>13</BuildOrder>
+			</ResourceCompile>
+			<ResFiles Include="IBTools.res">
+				<BuildOrder>2</BuildOrder>
+			</ResFiles>
+			<LibFiles Include="..\..\libs\TouchButtonsR.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>12</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="..\..\Shared-Source\TZForm\ZForm.cpp">
+				<DependentOn>..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="Main.cpp">
 				<BuildOrder>8</BuildOrder>
 				<Form>IBTools</Form>
@@ -86,20 +124,6 @@
 				<BuildOrder>5</BuildOrder>
 				<BuildOrder>3</BuildOrder>
 			</CppCompile>
-			<LibFiles Include="..\..\libs\TouchButtonsR.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>12</BuildOrder>
-			</LibFiles>
-			<CppCompile Include="..\..\Shared-Source\TZForm\ZForm.cpp">
-				<DependentOn>..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
-				<BuildOrder>5</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
-				<Form>frmMessageBox</Form>
-				<DependentOn>..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
-				<BuildOrder>4</BuildOrder>
-			</CppCompile>
-			<None Include="ModelSupport_IBTools\default.txaPackage"/>
 			<CppCompile Include="..\..\MenuMate\MenuMate\Source\Modules.cpp">
 				<DependentOn>..\..\MenuMate\MenuMate\Source\Modules.h</DependentOn>
 				<BuildOrder>6</BuildOrder>
@@ -108,36 +132,12 @@
 				<DependentOn>..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
 				<BuildOrder>3</BuildOrder>
 			</CppCompile>
-			<ResFiles Include="IBTools.res">
-				<BuildOrder>2</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="..\..\MenuMate\Registration\Source\Registration.cpp">
-				<DependentOn>..\..\MenuMate\Registration\Source\Registration.h</DependentOn>
-				<BuildOrder>7</BuildOrder>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
+				<Form>frmMessageBox</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
+				<BuildOrder>4</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
-				<BuildOrder>8</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
-				<BuildOrder>9</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxml.cpp">
-				<BuildOrder>10</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinystr.cpp">
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<ResourceCompile Include="..\..\MenuMate\MenuMate\Source\Palm\VersionRes.rc">
-				<Form>VersionRes.res</Form>
-				<BuildOrder>13</BuildOrder>
-			</ResourceCompile>
-			<None Include="..\..\MenuMate\Version\VersionRes.h">
-				<BuildOrder>14</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\MenuMate\MenuMate\Source\Version.cpp">
-				<DependentOn>..\..\MenuMate\MenuMate\Source\Version.h</DependentOn>
-				<BuildOrder>15</BuildOrder>
-			</CppCompile>
+			<None Include="ModelSupport_IBTools\default.txaPackage"/>
 			<FormResources Include="Main.dfm"/>
 			<FormResources Include="..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
 			<BuildConfiguration Include="Base">

@@ -189,7 +189,8 @@ AnsiString CreateSQL[] = {
 		"SALES						NUMERIC(15, 4) DEFAULT 0,"
 		"CLOSING						NUMERIC(15, 4) DEFAULT 0,"
 		"SALES_PENDING	         NUMERIC(15, 4) Default 0,"
-		"WRITEOFFS_PENDING      NUMERIC(15, 4) Default 0 "
+		"WRITEOFFS_PENDING      NUMERIC(15, 4) Default 0, "
+        "PREV_AVERAGE_UNIT_COST NUMERIC(15,4) Default 0 "
 	")",
 
 	"CREATE TABLE TransactionBatch"

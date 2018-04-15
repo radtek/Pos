@@ -131,6 +131,7 @@
 #include "PaySubsUtility.h"
 #include "ManagerReportExport.h"
 #include "GuestList.h"
+#include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -171,7 +172,7 @@ __fastcall TfrmSelectDish::TfrmSelectDish(TComponent* Owner) : TZForm(Owner), Pa
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.RegisterForEvent(OnSmartCardRemoved);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardUpdated.RegisterForEvent(OnSmartCardInserted);
     isExtendedDisplayActive = false;
-
+    patronsStore.clear();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::CalculateAndDisplayTotalServiceCharge() const
@@ -1790,6 +1791,7 @@ void TfrmSelectDish::purge_unsent_orders()
                 orders.AppliedMembership.Clear();
              }
          }
+    patronsStore.clear();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
@@ -2732,7 +2734,7 @@ bool TfrmSelectDish::DeleteUnsentAndProceed(Database::TDBTransaction &DBTransact
 		if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 		{
            chcekitems = CheckItemsPrintCancel();
-
+           patronsStore.clear();
            if(!chcekitems)
            {
               TMMContactInfo TempUserInfo;
@@ -3682,11 +3684,19 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 			if (Sender == tbtnCashSale || Sender == tbtnTender)
 			{
-				TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, PaymentTransaction.Patrons, 1);
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                    if(patronsStore[indexStore].Count != 0)
+                    {
+                         PaymentTransaction.Patrons = patronsStore;
+                         break;
+                    }
+                }
 
 				if((Sender == tbtnCashSale || ((Sender == tbtnTender)&& CurrentTender != 0) || isProcessedQuickPayment) && TGlobalSettings::Instance().EnableMenuPatronCount)
 				{
                    PaymentTransaction.CalculatePatronCountFromMenu();
+                   StorePatronsInformation(PaymentTransaction);
                 }
 
 				// ask for patron count if this is a quick sale
@@ -3694,14 +3704,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				{
 					if (TManagerPatron::Instance().GetCount(PaymentTransaction.DBTransaction) > 0)
 					{
-						PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
+                        InitializePatronForQuickSale(PaymentTransaction);
 					}
 					else
 					{
                         MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                     }
                 }
-
                 bool isGuestExist = true;
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
                 {
@@ -3763,6 +3772,16 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 							SubOrder->Security->SecurityDelete(SubOrder->Security->SecurityGetType(secOrderedBy));
 						}
 					}
+                    if(PaymentTransaction.Orders->Count != SeatOrders[SelectedSeat]->Orders->Count)
+                    {
+                       SeatOrders[SelectedSeat]->Orders->Clear();
+                       for(int index = 0; index < PaymentTransaction.Orders->Count; index++)
+                       {
+                           TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[index];
+                           if(itemComplete->GetQty() != 0)
+                               SeatOrders[SelectedSeat]->Orders->Add(itemComplete,itemComplete->ItemOrderedFrom);
+                       }
+                    }
 
                     if (Membership.Member.ContactKey != PaymentTransaction.Membership.Member.ContactKey)
                         ApplyMembership(OrdersTransaction, PaymentTransaction.Membership.Member);
@@ -3778,10 +3797,9 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 			else
 			{
                 if(TGlobalSettings::Instance().EnableMenuPatronCount)
-				{
                    PaymentTransaction.CalculatePatronCountFromMenu();
-				}
-
+                else
+                   PaymentTransaction.Patrons = patronsStore;
 				std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(this));
 				frmProcessing->Message = "Posting Orders";
 				frmProcessing->Show();
@@ -3794,14 +3812,12 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 }
                 //Set order Identification Number
                 int identificationNumber = 0;
+
                 if(TableNo !=0)
-                {
                    identificationNumber = TDBOrder::GetOrderIdentificationNumberForTable(DBTransaction,TableNo);
-                }
                 else
-                {
                    identificationNumber = TDBOrder::GetOrderIdentificationNumberForTab(DBTransaction,TabName);
-                }
+
                 std::set<int>SeatCounter;
 				for (int o = 0; o < OrdersList->Count; o++)
 				{
@@ -4095,6 +4111,11 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             {
                                 InvoiceTransaction.CalculatePatronCountFromMenu();
                             }
+                            else
+                                InvoiceTransaction.Patrons = patronsStore;
+
+                            if(TabType == TabDelayedPayment && (!TGlobalSettings::Instance().EnableMenuPatronCount))
+                                InvoiceTransaction.Patrons = TDBTab::GetDelayedPatronCount(InvoiceTransaction.DBTransaction, SelectedTab);
 
                             if (InvoiceTransaction.Money.TotalAdjustment != 0)
                             {
@@ -4136,6 +4157,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
                             Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
                             TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+
                             if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
                             {
                                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
@@ -4189,7 +4211,14 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 OrdersList->Clear();
                 memNote->Lines->Clear();
                 memOverview->Lines->Clear();
+                patronsStore.clear();
+                storedPatronCountFromMenu = 0;
+                PaymentTransaction.PatronCountFromMenu = 0;
 			}
+            else
+            {
+                ExtractPatronInformation(PaymentTransaction);
+            }
 		}
 		else
 		{
@@ -5514,7 +5543,7 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
             PrintTransaction.Patrons = selectedTablePatrons;
         }
     }
-
+    patronsStore = PrintTransaction.Patrons;
 	if(TGlobalSettings::Instance().CaptureCustomerName)
 	{
 		PrintTransaction.CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
@@ -5560,7 +5589,6 @@ void TfrmSelectDish::SetReceiptPreview(Database::TDBTransaction &DBTransaction, 
 		TDBOrder::GetOrdersFromTabKeys(DBTransaction, OldOrdersList.get(), InvoiceTabs);
 		PrintTransaction.Orders->Assign(NewOrdersList.get(), laOr);
 		PrintTransaction.Orders->Assign(OldOrdersList.get(), laOr);
-
 		std::set<__int64>SelectedTabs;
 		TDBOrder::GetTabKeysFromOrders(PrintTransaction.Orders, SelectedTabs);
 		PrintTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(DBTransaction, SelectedTabs);
@@ -6165,6 +6193,7 @@ void __fastcall TfrmSelectDish::btnRemoveMouseClick(TObject *Sender)
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
         sec_ref = 0;
+        patronsStore.clear();
     }
    DBTransaction.Commit();
    UpdateTableButton();
@@ -8626,6 +8655,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 				if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 				{
 					lbDisplay->Clear();
+                    patronsStore.clear();
 					for (UINT f = 0; f < SeatOrders.size(); f++)
 					{
 						try
@@ -8739,6 +8769,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 {
   try
   {
+    int delayedTabKey = 0;
 	if (SelectedTable == 0)
 	{
 		if (CurrentTender != 0)
@@ -8752,7 +8783,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 	{
         bool OrderConfimOk = true;
 		if (!OrdersPending())
-		{   
+		{
+
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
@@ -8891,7 +8923,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                           TItemComplete* item = (TItemComplete*)ItemRedirector->ParentRedirector->ItemObject;
                             tabNumber = item->TabKey;
                             if(tabNumber)
-                            {         
+                            {
                                 OldAccNumber = item->AccNo;
                                 break;
                             }
@@ -8946,6 +8978,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                             {
                                 TManagerDelayedPayment::Instance().MoveOrderToTab(DBTransaction,OrderContainer);
                             }
+                            delayedTabKey = OrderContainer.Location["TabKey"];
                         }
                         else
                         {
@@ -8963,6 +8996,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
             int TabKey = TDBTab::GetOrCreateTab(DBTransaction,TDBTables::GetTabKey(DBTransaction,SeatKey));
+            if(delayedTabKey != 0)
+            {
+                TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,patronsStore);
+            }
              // check whether table's guest is linked to clipp tab
             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, TabKey );
 
@@ -9169,6 +9206,11 @@ void TfrmSelectDish::InitializeTablePatrons()
                 std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
 
                 //Set to table patron count table...
+                if(ArePatronsChanged(selectedTablePatrons,patrons))
+                {
+                    //call for restructure
+                    RestructureBillForPatrons(patrons);
+                }
                 TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
 
                 if(!patrons.empty())
@@ -12339,6 +12381,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 			if (MessageBox("Delete unsent orders?", "Warning", MB_YESNO + MB_ICONQUESTION) == IDYES)
 			{
 				lbDisplay->Clear();
+                patronsStore.clear();
 				for (UINT f = 0; f < SeatOrders.size(); f++)
 				{
 					try
@@ -13201,7 +13244,6 @@ bool  TfrmSelectDish::ShowTabCreditLimitExceedsMessage(Database::TDBTransaction 
 void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TItem* inItem,	bool  inSetMenuItem,
 								   TItemSize* inItemSize,Currency  inPrice , bool IsItemSearchedOrScan)
 {
-
     CheckLastAddedItem(); // check any added item in list;
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
 
@@ -14117,11 +14159,30 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                }
 
 //              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
-              {
-                 ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
-              }
+//              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
+//              {
+//                 ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+//              }
+                std::vector<TPatronType> patrons;
+                patrons.clear();
+                if(SelectedTable != 0)
+                    patrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
+                std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+//                if(patronUtility->CanByPassSCDValidity(allOrders.get(),patrons,CurrentDiscount))
+                if(patronUtility->CanByPassSCDValidity(SeatOrders[SelectedSeat]->Orders->List,patrons,CurrentDiscount))
+                {
+                    bool ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List);
+                    if(ProcessDiscount)
+                        ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+                }
+                else
+                {
+                    bool ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List) &&
+                                           SCDChecker.PWDCheck(CurrentDiscount, SeatOrders[SelectedSeat]->Orders->List);
+                    if(ProcessDiscount)
+                        ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
+                }
               RedrawSeatOrders();
               TotalCosts();
               UpdateExternalDevices();
@@ -14478,7 +14539,11 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
                  }
             }
         }
-        ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
+        ///////////////////////////////////////////////////////////////////////
+//        RestructureBillForSplit();
+        ApplyDiscountWithRestructure(Orders, CurrentDiscount);
+        ///////////////////////////////////////////////////////////////////////
+        //ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
 
         CheckDeals(DBTransaction);
 
@@ -15651,3 +15716,164 @@ bool TfrmSelectDish::CloseActiveForm()
         Screen->ActiveForm->Close();
     }
 }
+//----------------------------------------------------------------------------
+void TfrmSelectDish::StorePatronsInformation(TPaymentTransaction &PaymentTransaction)
+{
+    for(int indexPatron = 0; indexPatron < PaymentTransaction.Patrons.size(); indexPatron++)
+    {
+        if(PaymentTransaction.Patrons[indexPatron].Default)
+        {
+            storedPatronCountFromMenu = PaymentTransaction.Patrons[indexPatron].Count;
+            PaymentTransaction.PatronCountFromMenu = PaymentTransaction.Patrons[indexPatron].Count;
+            break;
+        }
+    }
+//    patronsStore = PaymentTransaction.Patrons;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction)
+{
+    int totalPatronCount = 0;
+    for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
+    {
+        if(patronsStore[indexPatrons].Default)
+        {
+            int backStore = patronsStore[indexPatrons].Count - storedPatronCountFromMenu;
+            PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
+            //backStore;
+        }
+        else
+            PaymentTransaction.Patrons[indexPatrons].Count += patronsStore[indexPatrons].Count;
+        totalPatronCount += patronsStore[indexPatrons].Count;
+    }
+    if(totalPatronCount == 0)
+          TManagerPatron::Instance().SetDefaultPatrons(PaymentTransaction.DBTransaction, PaymentTransaction.Patrons, 1);
+
+    PaymentTransaction.Patrons = QueryForPatronCount(PaymentTransaction);
+    patronsStore = PaymentTransaction.Patrons;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::ExtractPatronInformation(TPaymentTransaction &PaymentTransaction)
+{
+    patronsStore = PaymentTransaction.Patrons;
+    storedPatronCountFromMenu = PaymentTransaction.PatronCountFromMenu;
+    for(int indexPatrons = 0; indexPatrons < patronsStore.size(); indexPatrons++)
+    {
+        if(patronsStore[indexPatrons].Default)
+        {
+           patronsStore[indexPatrons].Count -= storedPatronCountFromMenu;
+           break;
+        }
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::ApplyDiscountWithRestructure(TList *Orders, TDiscount discount)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TPaymentTransaction paymentTransaction(DBTransaction);
+        MakeDummyPaymentTransaction(Orders,paymentTransaction);
+
+        std::vector<TPatronType> patrons;
+        patrons.clear();
+        if(SelectedTable != 0)
+            patrons = TDBTables::GetPatronCount(paymentTransaction.DBTransaction, SelectedTable);
+        paymentTransaction.Patrons = patrons;
+
+        std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+        if(patronUtility->CheckPatronsAvailable(paymentTransaction))
+        {
+            std::auto_ptr <TList> SCDOrders(new TList);
+            SCDOrders->Clear();
+            std::auto_ptr <TList> NormalOrders(new TList);
+            NormalOrders->Clear();
+
+            patronUtility->DivideBill(paymentTransaction,SCDOrders,NormalOrders);
+            if(discount.IsSeniorCitizensDiscount())
+               ManagerDiscount->AddDiscount(SCDOrders.get(), discount);
+            else
+               ManagerDiscount->AddDiscount(NormalOrders.get(), discount);
+
+            paymentTransaction.Orders->Clear();
+            for(int indexSCD = 0; indexSCD < SCDOrders->Count; indexSCD++)
+            {
+                TItemComplete *Order = (TItemComplete *)SCDOrders->Items[indexSCD];
+                paymentTransaction.Orders->Add(Order);
+            }
+            for(int indexNormal = 0; indexNormal < NormalOrders->Count; indexNormal++)
+            {
+                TItemComplete *Order = (TItemComplete *)NormalOrders->Items[indexNormal];
+                paymentTransaction.Orders->Add(Order);
+            }
+            paymentTransaction.Money.Recalc(paymentTransaction);
+        }
+        else
+        {
+            ManagerDiscount->AddDiscount(paymentTransaction.Orders, discount);
+        }
+        ExtractFromDummyPaymentTransaction(paymentTransaction, Orders);
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::MakeDummyPaymentTransaction(TList* Orders,TPaymentTransaction &paymentTransaction)
+{
+    for (int index = 0; index < Orders->Count; index++)
+    {
+        TItemComplete *ic = (TItemComplete*)Orders->Items[index];
+        paymentTransaction.Orders->Add(ic);
+    }
+    paymentTransaction.Membership.Assign(Membership);
+    paymentTransaction.Money.Recalc(paymentTransaction);
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction,TList *Orders)
+{
+   Orders->Clear();
+   for(int index = 0; index < paymentTransaction.Orders->Count; index++)
+   {
+       TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[index];
+       if(itemComplete->GetQty() != 0)
+           Orders->Add(itemComplete);
+   }
+}
+//----------------------------------------------------------------------------
+bool TfrmSelectDish::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
+{
+    bool retValue = false;
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+    retValue = scdpatronUtility->ArePatronsChanged(patronsOld,patronsNew);
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TfrmSelectDish::RestructureBillForPatrons(std::vector<TPatronType> patrons)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TPaymentTransaction paymentTransaction(DBTransaction);
+        paymentTransaction.Patrons = patrons;
+        MakeDummyPaymentTransaction(SeatOrders[SelectedSeat]->Orders->List,paymentTransaction);
+        std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+        scdpatronUtility->RestructureBill(paymentTransaction);
+        ExtractFromDummyPaymentTransaction(paymentTransaction, SeatOrders[SelectedSeat]->Orders->List);
+        paymentTransaction.Money.Recalc(paymentTransaction);
+        RedrawSeatOrders();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(Ex.Message,"",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
