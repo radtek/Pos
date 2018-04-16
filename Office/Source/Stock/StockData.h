@@ -43,6 +43,7 @@ namespace DBVersion
         V6_18_0,
         V6_22_0,
         V6_23_0,
+        V6_24_0,
 	};
 };
 //---------------------------------------------------------------------------
@@ -57,6 +58,7 @@ __published:	// IDE-managed Components
 	TIBBackupService *IBBackupService1;
 	TIBDatabaseInfo *dbinfStock;
 	TIBSQL *Query;
+
 	TIBSQL *sqlNow;
 	TIBTransaction *trTime;
 	TIBValidationService *ValidationService;
@@ -65,6 +67,7 @@ private:	// User declarations
 	bool HasDBVersion(AnsiString Version);
 	bool RequiresUpdateTo(DBVersion::DBVersions version);
 	void GetTableNames(TStrings *Fields);
+ 
 	void GetFieldNames(AnsiString TableName, TStrings *Fields);
 	bool WaitForSingleUser();
 	bool BackupDB(AnsiString FileName, TLabel *Label);
@@ -85,7 +88,7 @@ private:	// User declarations
     bool Update6_2_2();
     bool Update6_2_3();
     bool Update6_18_0();
-
+     void IndexingForStocktakehistoryTable();
     void createGenerators5_7(TIBQuery* query);
     void createTables5_7(TIBQuery* query);
 
@@ -120,6 +123,9 @@ private:	// User declarations
     bool Update6_22_0();
     void UpdateTables6_23_0();
     bool Update6_23_0();
+    void  UpdateTables6_24_0();
+    bool Update6_24_0();
+
 //	bool TransferStock(TIBTransaction *Transaction, int Key, double Quantity,
 //				AnsiString Source, AnsiString Destination, AnsiString UserName, AnsiString UserID);
 //	bool CreateStockLocation(TIBTransaction *Transaction, int Key, AnsiString Location);

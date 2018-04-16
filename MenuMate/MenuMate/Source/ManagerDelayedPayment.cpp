@@ -52,7 +52,7 @@ void TManagerDelayedPayment::MoveOrderToTab(Database::TDBTransaction &DBTransact
 
 // ---------------------------------------------------------------------------
 
-void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder)
+int TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder)
 {
 	AnsiString InvoiceNumber = GetInvoiceNumber(PaymentTransaction.DBTransaction, isMixedMenuOrder);
 
@@ -93,6 +93,7 @@ void TManagerDelayedPayment::MoveOrderToTab(TPaymentTransaction &PaymentTransact
             }
             TDBOrder::UpdateOrderForDelayedPayment(PaymentTransaction.DBTransaction,Order,SourceName,TabKey,TabName,InvoiceNumber,userKey,transferTime);
 	}
+    return TabKey;
 }
 
 bool TManagerDelayedPayment::IsDelayedPayment(TPaymentTransaction &PaymentTransaction)

@@ -233,6 +233,29 @@ Currency TContactPoints::GetPointsValue(TPointsTypePair type)
    }
    return TypeTotalValue;
 }
+Currency TContactPoints::GetPointsValueWithoutSale(TPointsTypePair type)
+{
+    Currency TypeTotalValue = 0;
+    for (TPointsStore::iterator ptrPointsTransaction = PointsStore.begin();
+		  ptrPointsTransaction != PointsStore.end(); ptrPointsTransaction++)
+	{
+		if(ptrPointsTransaction->first.AccType == type)
+		{
+                    if((ptrPointsTransaction->first.AccType.first == pttRedeemed ||
+                        ptrPointsTransaction->first.AccType.first == pttRedeemedBD ||
+                        ptrPointsTransaction->first.AccType.first == pttRedeemedFV )
+                        && (ptrPointsTransaction->second > 0))
+                    {
+                            TypeTotalValue -= ptrPointsTransaction->second;
+                    }
+                    else
+                    {
+                            TypeTotalValue += ptrPointsTransaction->second;
+                    }
+      	}
+   }
+   return TypeTotalValue;
+}
 
 Currency TContactPoints::GetPointsValue(TPointsAssignedSource inSource)
 {
@@ -299,7 +322,18 @@ Currency TContactPoints::getPointsBalance(TPointsTransactionAccountType Account)
             GetPointsValue(TPointsTypePair(pttRedeemedBD, Account))+
             GetPointsValue(TPointsTypePair(pttRedeemedFV, Account));
 }
-
+Currency TContactPoints::getPointsBalanceFromDBWithLoyaltymate(TPointsTransactionAccountType Account)
+{
+    return  GetPointsValueWithoutSale(TPointsTypePair(pttEarned, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttFirstVisit, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttBirthdayBonus, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttPurchased, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttRedeemed, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttRefund, Account)) +
+            GetPointsValueWithoutSale(TPointsTypePair(pttSync, Account))+
+            GetPointsValueWithoutSale(TPointsTypePair(pttRedeemedBD, Account))+
+            GetPointsValueWithoutSale(TPointsTypePair(pttRedeemedFV, Account));
+}
 Currency TContactPoints::getPointsEarned(TPointsTransactionAccountType Account)
 {
 	return GetPointsValue(TPointsTypePair(pttEarned,Account)) +
@@ -341,7 +375,7 @@ Currency TContactPoints::getPointsBalance(TPointsAssignedSource Source, TPointsT
         	     ptrPointsTransaction->first.AccType.second == Account)
 		{
 			SourceTotalValue += ptrPointsTransaction->second;
-      	        }
+        }
    }
    return SourceTotalValue;
 }
@@ -1278,3 +1312,4 @@ void TContactPoints::PadOutEmptyStoreTPointsType(TPointsStore &Store)
         }
     }
 }
+
