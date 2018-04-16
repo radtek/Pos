@@ -31,6 +31,7 @@ class TEviaMall : public TMallExport
        UnicodeString GetMaxTimeDateCreated(Database::TDBTransaction &dbTransaction, int zKey = 0);
        void LoadCommonFields(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForHSF, std::list<TMallExportSettings> &mallSettings, std::set<int> keysToSelect,
                                         int index, int zKey = 0);
+       int Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
 
 
 
@@ -44,13 +45,15 @@ class TEviaMall : public TMallExport
 
    public:
      TEviaMall();
+   //  void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
+                                      //  TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
      void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
-                                        TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
+                                        TMallExportPrepareData &prepareDataForHSF,std::list<TMallExportSalesData> &prepareListForPreparedata, int index,int poskey,int zKey = 0);
      void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,
-                                        TMallExportPrepareData &prepareDataForDSFPD, int index, int zKey = 0);
+                                        TMallExportPrepareData &prepareDataForDSFPD,std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey, int zKey = 0);
 
     void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,int index1,
-                                        TMallExportPrepareData &prepareDataForDGT, int index, int zKey = 0);
+                                        TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForGrand, int index,int terminalkey, int zKey = 0);
 
      std::set<int> InsertInToSet(int arr[], int size);
      std::vector<int> vec1;
@@ -105,9 +108,7 @@ private:
     void SetOldGrandTotal(double oldGrandTotal) ;
     void SetNewGrandTotal(double newGrandTotal) ;
     void SetZKey(int zKey);
-    void SetDailySalesTotalPerDept(double dailysalestotalperDept) ;
     void SetTotaltaxWithoutVat(double totaltaxwithoutvat) ;
-    //void SetHourCode(int hourCode);
 
 
 
@@ -134,9 +135,7 @@ public:
     __property double OldGrandTotal = {read = _oldGrandTotal, write = SetOldGrandTotal};
     __property double NewGrandTotal = {read = _newGrandTotal, write = SetNewGrandTotal};
     __property int ZKey = {read = _zkey, write = SetZKey};
-    __property double DailySalesTotalPerDept = {read = _dailysalestotalperDept, write = SetDailySalesTotalPerDept};
     __property double TotaltaxWithoutVat = {read = _totaltaxwithoutvat, write = SetTotaltaxWithoutVat};
- //   __property int HourCode = {read = _hourCode, write = SetHourCode};
     std::map<int, double> SalesBySalesType;
 
 

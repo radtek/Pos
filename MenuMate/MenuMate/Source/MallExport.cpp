@@ -241,7 +241,21 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ExecQuery();
 
         //Create Export Medium
-        TMallExportTextFile* exporter =  new TMallExportTextFile();
+        /* if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+         {
+              MessageBox("50","",MB_OK) ;
+              TMallExportSalFile* exporter =  new TMallExportSalFile();
+         }
+         else
+         {
+              MessageBox("51","",MB_OK) ;
+              TMallExportTextFile* exporter =  new TMallExportTextFile();
+         }  */
+
+
+        TMallExportSalFile* exporter =  new TMallExportSalFile();
+
+
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
        {

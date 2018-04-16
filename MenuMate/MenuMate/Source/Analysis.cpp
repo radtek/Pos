@@ -3187,7 +3187,7 @@ Zed:
 
                 //Method for mall Design According to newly pattern
 
-                 if(TGlobalSettings::Instance().mallInfo.MallId)
+                if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
@@ -3199,10 +3199,10 @@ Zed:
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
-                     else if(TGlobalSettings::Instance().mallInfo.MallId == 3)
-                     {
-                         UpdateZKeyForMallExportSales(isMasterterminal, 20);
-                     }
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+                    {
+                         UpdateZKeyForMallExportEviaSales(isMasterterminal, 19);
+                    }
 
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
@@ -8974,6 +8974,55 @@ double TfrmAnalysis::GetOldAccumulatedSales(Database::TDBTransaction &dbTransact
     return oldAccumulatedSales;
 }
 //-------------------------------------------------------------------------------------------------
+double TfrmAnalysis::GetOldAccumulatedSalesForEvia(Database::TDBTransaction &dbTransaction, int fieldIndex)
+{
+//    //Register the database transaction..
+//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+//    dbTransaction.StartTransaction();
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    int zKey = 0;
+    MessageBox("GetOldAccumulatedSalesForEvia","",MB_OK) ;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY  ";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount )
+           zKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        if(zKey)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, CAST(A.FIELD_VALUE AS NUMERIC(17,4))FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
+                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX "
+                                                " AND a.Z_KEY = :Z_KEY ) ";
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger =  zKey;
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        //dbTransaction.Commit();
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    MessageBox(oldAccumulatedSales,"value----oldAccumulatedSales",MB_OK) ;
+    return oldAccumulatedSales;
+}
+
 void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransaction)
 {
     try
@@ -9056,4 +9105,104 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
     {
        zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
+}
+//-------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateZKeyForMallExportEviaSales(bool isMasterTerminal, int fieldIndex)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    try
+    {
+        if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+        {
+            UpdateAccumulatedSalesForEvia(DBTransaction);
+        }
+
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+        IBInternalQuery->ExecQuery();
+        int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+
+
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.Z_KEY = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :Z_KEY "
+                                        "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = fieldIndex;
+
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+
+//-------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateAccumulatedSalesForEvia(Database::TDBTransaction &dbTransaction)
+{
+    try
+    {
+        MessageBox("in-----UpdateAccumulatedSalesForEvia","UpdateAccumulatedSalesForEvia",MB_OK) ;
+        double oldAccumulatedSales = GetOldAccumulatedSalesForEvia(dbTransaction, 18);
+        MessageBox("return-----fromgetaccu","UpdateAccumulatedSalesForEvia",MB_OK) ;
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
+
+        Database::TcpIBSQL UpdateQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(UpdateQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT A.MALLEXPORT_SALE_KEY, A.FIELD_INDEX, CAST(A.FIELD_VALUE AS NUMERIC(17,2))FIELD_VALUE "
+                                     " FROM MALLEXPORT_SALES A "
+                                     " WHERE (A.FIELD_INDEX = :FIELD_INDEX1 OR  A.FIELD_INDEX = :FIELD_INDEX2) AND A.Z_KEY = :Z_KEY "
+                                     "ORDER BY 1 ASC ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX1")->AsInteger = 17;
+        IBInternalQuery->ParamByName("FIELD_INDEX2")->AsInteger = 18;
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger =  0;
+        IBInternalQuery->ExecQuery();
+
+        UpdateQuery->Close();
+        UpdateQuery->SQL->Text = "UPDATE MALLEXPORT_SALES A SET A.FIELD_VALUE = :FIELD_VALUE "
+                                     "WHERE (A.FIELD_INDEX = :FIELD_INDEX ) AND A.Z_KEY = :Z_KEY AND A.MALLEXPORT_SALE_KEY = :MALLEXPORT_SALE_KEY ";
+
+        for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            int index = IBInternalQuery->FieldByName("FIELD_INDEX")->AsInteger;
+            if(index == 18)
+            {
+                oldAccumulatedSales += IBInternalQuery->Fields[2]->AsDouble;
+            }
+            UpdateQuery->ParamByName("FIELD_INDEX")->AsInteger = index;
+            UpdateQuery->ParamByName("FIELD_VALUE")->AsString =  oldAccumulatedSales;
+            UpdateQuery->ParamByName("Z_KEY")->AsInteger =  0;
+            UpdateQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger =  IBInternalQuery->Fields[0]->AsInteger;
+            UpdateQuery->ExecQuery();
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }

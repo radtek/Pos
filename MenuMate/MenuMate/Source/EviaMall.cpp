@@ -9,6 +9,7 @@
 #include "IBillCalculator.h"
 #include "Comms.h"
 #include "DeviceRealTerminal.h"
+#include "MMMessageBox.h"
 #include <Math.h>
 
 //---------------------------------------------------------------------------
@@ -41,7 +42,6 @@ TEviaMallField::TEviaMallField()
     OldGrandTotal = 0.00;
     NewGrandTotal = 0.00;
     ZKey =0;
-    DailySalesTotalPerDept = 0.00;
 
 }
 
@@ -147,10 +147,7 @@ void TEviaMallField::SetZKey(int zKey)
 //----------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-void TEviaMallField::SetDailySalesTotalPerDept(double dailysalestotalperDept)
-{
-    _dailysalestotalperDept = dailysalestotalperDept;
-}
+
 
 void TEviaMallField::SetTotaltaxWithoutVat(double totaltaxwithoutvat)
 {
@@ -288,39 +285,63 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
 
     try
     {
-
-        std::set<int> keyToCheck1;
-        std::set<int> keyToCheck2;
-        std::set<int> keyToCheck3;
-
-      //  int hourSalekeys[7] = {1,2,3,17,18,19,20};
-        int hourSalekeys1[3] = {9,11,13};
-        int hourSalekeys2[7] = {5,6,7,8,12,14,15};
-        int hourSalekeys3[5]  ={1,2,3,4,10} ;
-        keyToCheck1 = InsertInToSet(hourSalekeys1, 3);
-        keyToCheck2 = InsertInToSet(hourSalekeys2, 7);
-        keyToCheck3 = InsertInToSet(hourSalekeys3, 5);
-
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck1, keyToCheck2,keyToCheck3, preparedData, 1, zKey);
-        keyToCheck1.clear();
-        keyToCheck2.clear();
-        keyToCheck3.clear();
-
-        int dailySalesKeys1[10] = {1,2,3,4,10,16,17,18,19,20} ;
-        int dailySalesKeys2[2] = {2,3} ;
-        keyToCheck1 = InsertInToSet(dailySalesKeys1, 10);
-        keyToCheck2 = InsertInToSet(dailySalesKeys2, 2);
+        int index = 1;
+        std::vector<int> devicekey;
+        int returnvalue = Getdevicekey(dbTransaction,zKey,devicekey);
+        int devicekeyvalue  = 0;
+        std::list<TMallExportSalesData> preparelist;
+        std::list<TMallExportSalesData>::iterator iter;
 
 
 
-        PrepareDataForDailySalesPerDeptFile(dbTransaction,keyToCheck1,keyToCheck2,10,1,preparedData,2,zKey) ;
 
-          keyToCheck1.clear();
-        keyToCheck2.clear();
+        for(int i=0;i<devicekey.size();i++)
+        {
 
-        int grandtotalkeys[4] ={1,2,3,20};
-        keyToCheck1 = InsertInToSet(grandtotalkeys, 4);
-        PrepareDataForGrandTotalsFile(dbTransaction,keyToCheck1,18,preparedData,3,zKey);
+            devicekeyvalue = devicekey[i];
+
+
+
+            std::set<int> keyToCheck1;
+            std::set<int> keyToCheck2;
+            std::set<int> keyToCheck3;
+
+            int hourSalekeys1[3] = {9,11,13};
+            int hourSalekeys2[7] = {5,6,7,8,12,14,15};
+            int hourSalekeys3[5]  ={1,2,3,4,10} ;
+            keyToCheck1 = InsertInToSet(hourSalekeys1, 3);
+            keyToCheck2 = InsertInToSet(hourSalekeys2, 7);
+            keyToCheck3 = InsertInToSet(hourSalekeys3, 5);
+
+
+            PrepareDataForHourlySalesFile(dbTransaction, keyToCheck1, keyToCheck2,keyToCheck3, preparedData,preparelist, 1,devicekeyvalue, zKey);
+            keyToCheck1.clear();
+            keyToCheck2.clear();
+            keyToCheck3.clear();
+
+            int dailySalesKeys1[9] = {1,2,3,4,10,16,17,18,19} ;
+            int dailySalesKeys2[2] = {2,3} ;
+            keyToCheck1 = InsertInToSet(dailySalesKeys1, 9);
+            keyToCheck2 = InsertInToSet(dailySalesKeys2, 2);
+
+
+
+            PrepareDataForDailySalesPerDeptFile(dbTransaction,keyToCheck1,keyToCheck2,10,1,preparedData,preparelist,1,devicekeyvalue,zKey) ;
+
+            keyToCheck1.clear();
+            keyToCheck2.clear();
+
+            int grandtotalkeys[4] ={1,2,3,19};
+            keyToCheck1 = InsertInToSet(grandtotalkeys, 4);
+            PrepareDataForGrandTotalsFile(dbTransaction,keyToCheck1,18,preparedData,preparelist,1,devicekeyvalue,zKey);
+
+
+        }
+         preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(1, preparelist ));
+
+
+
+        preparedData.SalesData.size();
 
 
 
@@ -343,6 +364,7 @@ IExporterInterface* TEviaMall::CreateExportMedium()
     UnicodeString exportType = GetExportType();
     if(exportType == ".sal")
     {
+
         return new TMallExportSalFile;
     }
     else
@@ -412,8 +434,7 @@ void TEviaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Terminal Number", "int", fieldData.PosNumber, 16, arcBillKey);
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Grand Total", "double", fabs(fieldData.OldGrandTotal), 17, arcBillKey);
           PushFieldsInToList(dbTransaction, mallExportSalesData, "New Grand Total", "double", fabs(fieldData.NewGrandTotal), 18, arcBillKey);
-          PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Sales per Department", "double", fieldData.DailySalesTotalPerDept, 19, arcBillKey);
-          PushFieldsInToList(dbTransaction, mallExportSalesData, "Reset Counter", "int", fieldData.ZKey, 20, arcBillKey);
+          PushFieldsInToList(dbTransaction, mallExportSalesData, "Reset Counter", "int", fieldData.ZKey, 19, arcBillKey);
 
 }
 //---------------------------------------------------------------------------
@@ -482,9 +503,8 @@ UnicodeString TEviaMall::GetSaleDeptName(Database::TDBTransaction &dbTransaction
 
 
 void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, int index1,
-                                        TMallExportPrepareData &prepareDataForDGT, int index, int zKey )
+                                        TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForDGT, int index,int terminalkey, int zKey )
 {
-    std::list<TMallExportSalesData> prepareListForDGT;
     try
     {
 
@@ -492,6 +512,8 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
         dBTransaction.RegisterQuery(IBInternalQuery);
         UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
         int maxZedKey;
+        bool Ismultipledevicekey = false;
+        Ismultipledevicekey =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
         int IndexForinitialOldGrand =17;
         if(!zKey)
             maxZedKey = GetMaxZedKey(dBTransaction);
@@ -501,14 +523,14 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
         int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
 
 
-         std::set<int>keysToSelect;
+       /*  std::set<int>keysToSelect;
 
          int  fileNameKeys[1] = {3};
          UnicodeString fileName;
           keysToSelect = InsertInToSet(fileNameKeys, 1);
           fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
           keysToSelect.clear();
-          prepareDataForDGT.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+          prepareDataForDGT.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));  */
 
 
 
@@ -530,8 +552,18 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
             " end)FIELD_INDEX,"
         " CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY,a.DEVICE_KEY"
         " FROM MALLEXPORT_SALES a"
-        " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Max_Z_KEY"
-        " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
+        " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY";
+        if(zKey)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+        }
+
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
         " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
         " GROUP BY 1,2,4,5,6"
 
@@ -549,7 +581,7 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
                 " end)FIELD_INDEX,"
             " CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Min_Z_KEY"
+            " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Min_Z_KEY AND a.DEVICE_KEY = :DEVICE_KEY"
             " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
             " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
             " GROUP BY 1,2,4,5,6";
@@ -564,9 +596,19 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
                                     " (SELECT a.ARCBILL_KEY,MALLEXPORT_SALE_KEY,a.FIELD,case when (a.FIELD_INDEX = 17) then 4 end FIELD_INDEX, CAST(0.00  AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
                                      " FROM MALLEXPORT_SALES a"
                                      " WHERE a.FIELD_INDEX  = 17"
-                                     " AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Max_Z_KEY"
-                                      " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
-                                      " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA";
+                                     " AND a.MALL_KEY = :MALL_KEY  AND a.DEVICE_KEY = :DEVICE_KEY";
+                                        if(zKey)
+                                        {
+                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+                                        }
+                                        else
+                                        {
+                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+                                        }
+
+      IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
+                                      " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
+                                      " GROUP BY 1,2,4,3,5,6";
 
 
 
@@ -579,22 +621,63 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
        " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE , DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
        " FROM"
 
-       " (SELECT a.ARCBILL_KEY, a.FIELD, case when (a.FIELD_INDEX= 20) then 6 else a.FIELD_INDEX end FIELD_INDEX, case when (a.FIELD_INDEX =1 ) then cast('95' as varchar(2)) else (a.FIELD_VALUE) end FIELD_VALUE,"
+       " (SELECT a.ARCBILL_KEY, a.FIELD, case when (a.FIELD_INDEX= 19) then 6 else a.FIELD_INDEX end FIELD_INDEX, case when (a.FIELD_INDEX =1 ) then cast('95' as varchar(2)) else (a.FIELD_VALUE) end FIELD_VALUE,"
        " a.VALUE_TYPE ,a.Z_KEY,a.DEVICE_KEY"
        " FROM MALLEXPORT_SALES a"
-       " WHERE a.FIELD_INDEX  IN( " + indexKeysList1 + "   ) AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Max_Z_KEY"
-       " ORDER BY A.MALLEXPORT_SALE_KEY ASC )DAILYDATA"
-       " GROUP BY 1,2,4,3,5,6 )DAILYDATA"
-       " order by 6 asc ,1 asc" ;
+       " WHERE a.FIELD_INDEX  IN( " + indexKeysList1 + "   ) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY";
+       if(zKey)
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+       }
+       else
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+       }
+       IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ORDER BY A.MALLEXPORT_SALE_KEY ASC )DAILYDATA"
+       " GROUP BY 1,2,4,3,5,6";
+      //
+
+      if(Ismultipledevicekey)
+      {
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+
+                                 " UNION ALL"
+            " SELECT (case when (a.FIELD_INDEX=16) then 7 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS Numeric) FIELD_VALUE,a.VALUE_TYPE,"
+            " a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
+               }
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX, a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY" ;
+
+        }
+
+
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DAILYDATA"
+             " order by 6 asc ,1 asc" ;
 
 
 
        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
 
        IBInternalQuery->ParamByName("Max_Z_KEY")->AsInteger = maxZedKey;
+       IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
 
         if(maxZedKey2)
+        {
             IBInternalQuery->ParamByName("Min_Z_KEY")->AsInteger = maxZedKey2;
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
+
+        }
 
        IBInternalQuery->ParamByName("index1")->AsInteger = index1;
 
@@ -611,19 +694,17 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
                 {
                     if(prepareListForDGT.size()>0)
                     {
-                        salesData.DataValue ="\n" +  salesData.DataValue;
+                        salesData.DataValue ="\r\n" +  salesData.DataValue;
 
                     }
 
                 }
 
 
-               salesData.DataValue = salesData.DataValue + " ";
+            salesData.DataValue = salesData.DataValue + " ";
             prepareListForDGT.push_back(salesData);
 
        }
-            prepareDataForDGT.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDGT ));
-
 
     }
 
@@ -902,11 +983,11 @@ bool TEviaMall:: CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransactio
 }
 
 void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, std::set<int> indexKeys3,
-                                                   TMallExportPrepareData &prepareDataForHSF, int index, int zKey)
+                                                   TMallExportPrepareData &prepareDataForHSF, std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey , int zKey)
 {
 
+
    UnicodeString fileName;
-   std::list<TMallExportSalesData> prepareListForHSF;
    std::list<TMallExportSettings> mallSettings;
    bool Ismultipledevicekey = false;
    try
@@ -930,7 +1011,6 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
 
       keysToSelect = InsertInToSet(fileNameKeys, 1);
       fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
-      keysToSelect.clear();
       prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
       keysToSelect.clear();
@@ -955,7 +1035,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
                                     "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS INT) FIELD_VALUE, a.VALUE_TYPE,  "
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
-                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList1 + ") AND a.MALL_KEY = :MALL_KEY ";
+                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList1 + ") AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
 
         if(zKey)
@@ -982,7 +1062,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
                                     "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE,  "
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
-                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ") AND a.MALL_KEY = :MALL_KEY ";
+                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ") AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
         if(zKey)
         {
@@ -1008,7 +1088,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
                                     "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, case when (a.FIELD_INDEX =1 ) then cast('01' as varchar(2)) else (a.FIELD_VALUE) end FIELD_VALUE, a.VALUE_TYPE,  "
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
-                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList3 + ") AND a.MALL_KEY = :MALL_KEY ";
+                                    " WHERE a.FIELD_INDEX IN(" + indexKeysList3 + ") AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
         if(zKey)
         {
@@ -1040,7 +1120,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
                                         "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, case when (a.FIELD_INDEX =16 ) then CAST((a.FIELD_VALUE) AS int) end FIELD_VALUE, a.VALUE_TYPE, "
                                         "Extract (Hour From a.DATE_CREATED) Hour_code "
                                         "FROM MALLEXPORT_SALES a "
-                                        "WHERE a.FIELD_INDEX  = 16 AND a.MALL_KEY = :MALL_KEY ";
+                                        "WHERE a.FIELD_INDEX  = 16 AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
                if(zKey)
                {
@@ -1071,6 +1151,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3 ;
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+        IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
 
 
 
@@ -1086,21 +1167,24 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
             salesData.DataValue = IBInternalQuery->Fields[2]->AsString;
             salesData.FieldIndex = IBInternalQuery->Fields[0]->AsInteger;
 
-             if(salesData.FieldIndex == 1)
-             {
+            if(salesData.FieldIndex == 1)
+            {
+
                  if(prepareListForHSF.size()>0)
                  {
-                     salesData.DataValue ="\n" +  salesData.DataValue;
+
+                     salesData.DataValue ="\r\n" +  salesData.DataValue;
+
 
                  }
 
-             }
+            }
 
            salesData.DataValue = salesData.DataValue + " ";
+
            prepareListForHSF.push_back(salesData);
 
         }
-        prepareDataForHSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForHSF ));
 
 
     }
@@ -1114,10 +1198,8 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
 }
 
 void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, int index1,int index2,
-                                                   TMallExportPrepareData &prepareDataForDSFPD, int index, int zKey)
+                                                   TMallExportPrepareData &prepareDataForDSFPD, std::list<TMallExportSalesData> &prepareListForDSF, int index,int terminalkeys, int zKey)
 {
-    std::list<TMallExportSalesData> prepareListForDSF;
-
     bool Ismultipledevicekey = false;
     try
     {
@@ -1138,14 +1220,14 @@ void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dB
       Ismultipledevicekey =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
      
 
-      int  fileNameKeys[1] = {3};
+    /*  int  fileNameKeys[1] = {3};
 
       keysToSelect = InsertInToSet(fileNameKeys, 1);
       fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
       keysToSelect.clear();
-      prepareDataForDSFPD.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+      prepareDataForDSFPD.FileName.insert( std::pair<int,UnicodeString >(index, fileName )); */
 
-      keysToSelect.clear();
+     // keysToSelect.clear();
       UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
       UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
 
@@ -1172,7 +1254,7 @@ IBInternalQuery->SQL->Text =
             " end)FIELD_INDEX,"
             " CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a "
-            " WHERE a.FIELD_INDEX NOT IN(" + indexKeysList1 + ") AND a.MALL_KEY = :MALL_KEY ";
+            " WHERE a.FIELD_INDEX NOT IN(" + indexKeysList1 + ") AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
                if(zKey)
                {
@@ -1194,7 +1276,7 @@ IBInternalQuery->SQL->Text =
             " SELECT (case when (a.FIELD_INDEX=10) then 9 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS varchar(20)) FIELD_VALUE,a.VALUE_TYPE,"
             " a.Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = :INDEX_KEY1  AND a.MALL_KEY = :MALL_KEY ";
+            " WHERE a.FIELD_INDEX = :INDEX_KEY1  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
                if(zKey)
                {
                     IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
@@ -1210,7 +1292,7 @@ IBInternalQuery->SQL->Text =
                                  " UNION ALL"
             " SELECT  a.FIELD_INDEX, a.FIELD ,CAST((a.FIELD_VALUE) AS varchar(20)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX  IN ( " + indexKeysList2 + " ) AND a.MALL_KEY = :MALL_KEY ";
+            " WHERE a.FIELD_INDEX  IN ( " + indexKeysList2 + " ) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
                if(zKey)
                {
                     IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
@@ -1225,7 +1307,7 @@ IBInternalQuery->SQL->Text =
                                 " UNION ALL"
             " SELECT  a.FIELD_INDEX, a.FIELD, cast('99' as varchar(10))  FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = :INDEX_KEY2 AND a.MALL_KEY = :MALL_KEY ";
+            " WHERE a.FIELD_INDEX = :INDEX_KEY2 AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
 
                if(zKey)
                {
@@ -1249,7 +1331,7 @@ IBInternalQuery->SQL->Text =
             " SELECT (case when (a.FIELD_INDEX=16) then 15 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS Numeric) FIELD_VALUE,a.VALUE_TYPE,"
             " a.Z_KEY,a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY ";
+            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
                if(zKey)
                {
                     IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
@@ -1278,6 +1360,7 @@ IBInternalQuery->SQL->Text =
             IBInternalQuery->ParamByName("INDEX_KEY1")->AsInteger = index1;
 
             IBInternalQuery->ParamByName("INDEX_KEY2")->AsInteger = index2;
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkeys;
 
             IBInternalQuery->ExecQuery();
 
@@ -1292,7 +1375,7 @@ IBInternalQuery->SQL->Text =
                 {
                     if(prepareListForDSF.size()>0)
                     {
-                        salesData.DataValue ="\n" +  salesData.DataValue;
+                        salesData.DataValue ="\r\n" +  salesData.DataValue;
 
                     }
 
@@ -1303,7 +1386,6 @@ IBInternalQuery->SQL->Text =
                 prepareListForDSF.push_back(salesData);
 
             }
-            prepareDataForDSFPD.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
 
 
     }
@@ -1313,6 +1395,41 @@ IBInternalQuery->SQL->Text =
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
    }
+
+}
+
+int TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , std::vector <int> &devicekeys)
+{
+
+    try
+    {
+        Database::TcpIBSQL ibInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(ibInternalQuery);
+
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =
+
+        " SELECT a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY"
+            " GROUP BY 1";
+
+        ibInternalQuery->ExecQuery();
+        for ( ; !ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+           int key = ibInternalQuery->Fields[0]->AsInteger;
+           devicekeys.push_back(key) ;
+        }
+
+
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+
+
 
 }
 
