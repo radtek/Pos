@@ -4165,13 +4165,15 @@ void TListPaymentSystem::ProcessSecurity(TPaymentTransaction &PaymentTransaction
 		{
 			TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
             UnicodeString name = Order->Item;
-			TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+		   	TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+            SavePMSGuestDetails(PaymentTransaction.DBTransaction, Order->Security);
 			for (int i = 0; i < Order->SubOrders->Count; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
 				if (SubOrder)
 				{
-					TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+			 		TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+					SavePMSGuestDetails(PaymentTransaction.DBTransaction, Order->Security);
 				}
 			}
 		}
@@ -6603,7 +6605,6 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
 {
     bool retVal = false;
@@ -6624,3 +6625,57 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
     return retVal;
 }
 //--------------------------------------------------------------------------------------
+void TListPaymentSystem::SavePMSGuestDetails(TPaymentTransaction paymentTransaction, TListSecurityRefContainer *Security)
+{
+    try
+    {   MessageBox(paymentTransaction.Phoenix.AccountNumber,"paymentTransaction.Phoenix.AccountNumber",MB_OK);
+         for (int i = 0; i < Security->Count; i++)
+         {
+            TSecurityReference *SecRef = Security->SecurityGet(i);
+            if (SecRef && SecRef->UserKey && SecRef->Event.SubString(1, 50).Pos("Ordered By"))
+            {   MessageBox("Inside loop ","",MB_OK);
+                TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSGUESTDETAIL, 1) FROM RDB$DATABASE";
+                IBInternalQuery->ExecQuery();
+                int guestDetailsKey = IBInternalQuery->Fields[0]->AsInteger;
+
+                IBInternalQuery->Close();
+                IBInternalQuery->ParamCheck = true;
+                IBInternalQuery->SQL->Clear();
+                IBInternalQuery->SQL->Text =
+
+                "INSERT INTO PMSGUESTDETAILS ("
+                "GUESTDETAILKEY,"
+                "SECURITYREF,"
+                "ACCOUNTNUBER,"
+                "ROOMNUMBER,"
+                "FIRSTNAME, "
+                "LASTNAME "
+                ")"
+                " VALUES "
+                "("
+                ":GUESTDETAILKEY, "
+                ":SECURITYREF,"
+                ":ACCOUNTNUBER,"
+                ":ROOMNUMBER,"
+                ":FIRSTNAME, "
+                ":LASTNAME "
+                ");";
+
+                IBInternalQuery->ParamByName("GUESTDETAILKEY")->AsInteger = guestDetailsKey;
+                IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = Security->GetSecurityRefNumber();
+
+                IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = paymentTransaction.Phoenix.AccountNumber.SubString(1, 20);
+                IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = paymentTransaction.Phoenix.RoomNumber.SubString(1, 20);
+                IBInternalQuery->ParamByName("FIRSTNAME")->AsString = paymentTransaction.Phoenix.FirstName.SubString(1, 50);
+                IBInternalQuery->ParamByName("LASTNAME")->AsString = paymentTransaction.Phoenix.LastName.SubString(1, 50);
+                IBInternalQuery->ExecQuery();
+            }
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}

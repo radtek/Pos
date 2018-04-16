@@ -907,6 +907,7 @@ namespace MenumateVersionParser
         void CreateTabPatronCount6_48Table(TDBControl* const inDBControl);
         void upgrade6_49Tables();
         void update6_49Tables();
+        void Create6_49Generator(TDBControl* const inDBControl);
         void Create6_49Tables(TDBControl* const inDBControl);
     };// class
 } // namespace

@@ -136,6 +136,7 @@ void TApplyParser::update6_48Tables()
 //--------------------------------------------
 void TApplyParser::update6_49Tables()
 {
+    Create6_49Generator(_dbControl);
     Create6_49Tables(_dbControl);
 }
 //--------------------------------------------
@@ -1678,6 +1679,15 @@ void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
         ");",
 		inDBControl );
     }
+}
+//-----------------------------------------------------------------------------------------------
+void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSGUESTDETAIL", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSGUESTDETAIL;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSGUESTDETAIL TO 0;", inDBControl);
+	}
 }
 }
 //------------------------------------------------------------------------------
