@@ -7174,8 +7174,8 @@ void TdmMMReportData::SetupDiscountsAndSurchargesTotals(TDateTime StartTime, TDa
 
       " COALESCE(ARCOD.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
       " COALESCE(ARCOD.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "
-		"	ARC.Time_Stamp >= :StartTime and "
-		"	ARC.Time_Stamp < :EndTime and "
+		"	ARC.Time_Stamp_Billed >= :StartTime and "
+		"	ARC.Time_Stamp_Billed < :EndTime and "
 		"	SEC.Security_Event = 'Discounted By' and "
         " ARCOD.DISCOUNTED_VALUE <>0 and "
 		"	ARCB.Invoice_Number Is Not Null and "
@@ -7217,11 +7217,11 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
 	qrDiscounts->Close();
 	qrDiscounts->SQL->Text =
 	 	"Select "
-			"Archive.Time_Stamp, "
+			"Archive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
-			"Extract(Day From Archive.Time_Stamp) Bill_Day, "
-            "Extract(Month From ARCHIVE.Time_Stamp) Bill_Month, "
-			"Extract(Year From ARCHIVE.Time_Stamp) Bill_Year, "
+			"Extract(Day From Archive.Time_Stamp_Billed) Bill_Day, "
+            "Extract(Month From ARCHIVE.Time_Stamp_Billed) Bill_Month, "
+			"Extract(Year From ARCHIVE.Time_Stamp_Billed) Bill_Year, "
 			"Security.Note, "
 			"Cast(ARCORDERDISCOUNTS.NAME As Varchar(50)) Discount_Name, "
 			"Contacts.Name, "
@@ -7280,8 +7280,8 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
                "Archive.DISCOUNT_WITHOUT_TAX<>0 and "
 
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime and "
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime and "
 			"Security.Security_Event = 'Discounted By' And "
 			"ArcBill.Invoice_Number Is Not Null and "
 			"Archive.Archive_Key Is Not Null ";
@@ -7295,7 +7295,7 @@ if (Locations->Count)
 
 
       " group by "
-            "Archive.Time_Stamp, "
+            "Archive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
 			"Security.Note,  "
 			"ARCORDERDISCOUNTS.NAME ,  "
@@ -7310,11 +7310,11 @@ if (Locations->Count)
 		"Union All "
 
 		"Select "
-			"Dayarchive.Time_Stamp, "
+			"Dayarchive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
-			"Extract(Day From Dayarchive.Time_Stamp) Bill_Day, "
-            "Extract(Month From DAYARCHIVE.Time_Stamp) Bill_Month, "
-			"Extract(Year From DAYARCHIVE.Time_Stamp) Bill_Year, "
+			"Extract(Day From Dayarchive.Time_Stamp_Billed) Bill_Day, "
+            "Extract(Month From DAYARCHIVE.Time_Stamp_Billed) Bill_Month, "
+			"Extract(Year From DAYARCHIVE.Time_Stamp_Billed) Bill_Year, "
 			"Security.Note, "
 			"Cast(DAYARCORDERDISCOUNTS.NAME As Varchar(50)) Discount_Name, "
 			"Contacts.Name, "
@@ -7375,8 +7375,8 @@ if (Locations->Count)
          " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
          " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
              "Dayarchive.DISCOUNT_WITHOUT_TAX<>0 and "
-			"Dayarchive.Time_Stamp >= :StartTime and "
-			"Dayarchive.Time_Stamp < :EndTime and "
+			"Dayarchive.Time_Stamp_Billed >= :StartTime and "
+			"Dayarchive.Time_Stamp_Billed < :EndTime and "
 			"Security.Security_Event = 'Discounted By' and "
 			"DAYARCBILL.Invoice_Number Is Not Null And "
             "DayArchive.Archive_Key Is Not Null ";
@@ -7389,7 +7389,7 @@ if (Locations->Count)
 	qrDiscounts->SQL->Text        = qrDiscounts->SQL->Text +
 
        " group by "
-            "Dayarchive.Time_Stamp, "
+            "Dayarchive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
 			"Security.Note,  "
 			"DAYARCORDERDISCOUNTS.NAME ,  "
@@ -7451,8 +7451,8 @@ for (int i=0; i<Locations->Count; i++)
            "   ARCHIVE.ARCHIVE_KEY not in (Select ARCORDERDISCOUNTS.ARCHIVE_KEY from ARCORDERDISCOUNTS  where "
             "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or "
            "   COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and  ARCHIVE.DISCOUNT_WITHOUT_TAX<>0 AND "
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime  " ;
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime  " ;
 	if (Locations->Count)
 	{
 		qrDiscountGrandTotal->SQL->Text 	= 	qrDiscountGrandTotal->SQL->Text + "And (" +
@@ -7495,8 +7495,8 @@ for (int i=0; i<Locations->Count; i++)
               "DayArchive.ARCHIVE_KEY not in (Select DAYARCORDERDISCOUNTS.ARCHIVE_KEY from DAYARCORDERDISCOUNTS  where    "
               "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary')  AND  DAYARCHIVE.DISCOUNT_WITHOUT_TAX<>0 AND "
-		"	Dayarchive.Time_Stamp >= :StartTime and "
-		"	Dayarchive.Time_Stamp < :EndTime  ";
+		"	Dayarchive.Time_Stamp_Billed >= :StartTime and "
+		"	Dayarchive.Time_Stamp_Billed < :EndTime  ";
 
     qrDiscountGrandTotal->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrDiscountGrandTotal->ParamByName("EndTime")->AsDateTime		= EndTime;
@@ -7558,8 +7558,8 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
            "Archive.ARCHIVE_KEY not in (Select ARCORDERDISCOUNTS.ARCHIVE_KEY from ARCORDERDISCOUNTS  where "
               "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or  "
               "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and    "
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime and "
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime and "
 	   //		"Security.Security_Event = 'Discounted By' And "
 			"ArcBill.Invoice_Number Is Not Null and "
 			"Archive.Archive_Key Is Not Null and "
@@ -7628,8 +7628,8 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
               "DayArchive.ARCHIVE_KEY not in (Select DAYARCORDERDISCOUNTS.ARCHIVE_KEY from DAYARCORDERDISCOUNTS  where  "
               "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or  "
               "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and  "
-			"DayArchive.Time_Stamp >= :StartTime and "
-			"DayArchive.Time_Stamp < :EndTime and "
+			"DayArchive.Time_Stamp_Billed >= :StartTime and "
+			"DayArchive.Time_Stamp_Billed < :EndTime and "
 		  //	"Security.Security_Event = 'Discounted By' And "
 			"DayArcBill.Invoice_Number Is Not Null and "
 			"DayArchive.Archive_Key Is Not Null and "
