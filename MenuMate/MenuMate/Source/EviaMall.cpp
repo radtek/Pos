@@ -507,7 +507,6 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 {
     try
     {
-
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
         UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
@@ -535,12 +534,11 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 
 
         IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text =
-
+    //
 
 
-          "Select DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE, DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+
+      /*    "Select DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE, DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
           " FROM"
           "(SELECT DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,"
           " CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)  else SUM(DAILYDATA.FIELD_VALUE)  end AS NUMERIC(17,2)) FIELD_VALUE,"
@@ -565,7 +563,36 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
         " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
-        " GROUP BY 1,2,4,5,6"
+        " GROUP BY 1,2,4,5,6"     */
+
+
+          IBInternalQuery->SQL->Text =
+
+         "Select DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE, DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+          " FROM"
+
+           " (SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,"
+                      " CAST( case when (DAILYDATA.FIELD_INDEX =5 )  then SUM(DAILYDATA.FIELD_VALUE) end AS BIGINT) FIELD_VALUE,"
+                     " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+            " FROM"
+                    " (SELECT a.ARCBILL_KEY, a.FIELD, (case when (a.FIELD_INDEX = 17) then 4 when (a.FIELD_INDEX = 18) then 5 end)FIELD_INDEX,CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE,"
+                                    " a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
+                     " FROM MALLEXPORT_SALES a"
+                     " WHERE a.FIELD_INDEX  = 18"
+                     " AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY  AND a.MALLEXPORT_SALE_KEY ="
+                            " (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A"
+                                 " WHERE a.FIELD_INDEX  = 18 and a.Z_KEY = :Max_Z_KEY )";
+        if(zKey)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+        }
+
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +  " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY,a.DEVICE_KEY"
+                                                                    " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
+            " GROUP BY DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE,DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+
+
 
         " UNION all";
          if(maxZedKey2)
@@ -669,17 +696,25 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 
        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
 
+       if(!zKey)
+       {
        IBInternalQuery->ParamByName("Max_Z_KEY")->AsInteger = maxZedKey;
+       }
+       if(zKey)
+       {
+         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+       }
        IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
 
         if(maxZedKey2)
         {
             IBInternalQuery->ParamByName("Min_Z_KEY")->AsInteger = maxZedKey2;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
+            IBInternalQuery->ParamByName("index1")->AsInteger = index1;
 
         }
 
-       IBInternalQuery->ParamByName("index1")->AsInteger = index1;
+
 
 
        IBInternalQuery->ExecQuery();
@@ -840,10 +875,11 @@ UnicodeString TEviaMall::GetExportType()
                                      "FROM MALLEXPORT_SETTINGS MES "
                                      "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
                                      "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
-                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
+                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID AND MSV.FIELD_VALUE =:Extension";
 
         IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
         IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 3;
+        IBInternalQuery->ParamByName("Extension")->AsString = ".sal";
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
@@ -1003,7 +1039,6 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
       {
         maxZedKey = zKey;
       }
-
       std::set<int>keysToSelect;
       Ismultipledevicekey =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
      

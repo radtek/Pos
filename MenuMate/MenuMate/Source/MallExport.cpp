@@ -241,33 +241,34 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ExecQuery();
 
         //Create Export Medium
-        /* if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
          {
-              MessageBox("50","",MB_OK) ;
               TMallExportSalFile* exporter =  new TMallExportSalFile();
+              for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+              {
+                //Fetch z-key
+                zKey = IBInternalQuery->Fields[0]->AsInteger;
+                //Prepare Data For Exporting into File
+                preparedData = PrepareDataForExport(zKey);
+                exporter->WriteToFile(preparedData);
+             }
+               delete exporter;
+
          }
          else
          {
-              MessageBox("51","",MB_OK) ;
               TMallExportTextFile* exporter =  new TMallExportTextFile();
-         }  */
+              for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+              {
+                //Fetch z-key
+                zKey = IBInternalQuery->Fields[0]->AsInteger;
+                //Prepare Data For Exporting into File
+                preparedData = PrepareDataForExport(zKey);
+                exporter->WriteToFile(preparedData);
 
-
-        TMallExportSalFile* exporter =  new TMallExportSalFile();
-
-
-
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-       {
-            //Fetch z-key
-            zKey = IBInternalQuery->Fields[0]->AsInteger;
-            
-            //Prepare Data For Exporting into File
-            preparedData = PrepareDataForExport(zKey);
-
-           exporter->WriteToFile(preparedData);
-       }
-       delete exporter;
+               }
+               delete exporter;
+         }
 
        //Display message showing status of file
        if(IBInternalQuery->RecordCount)

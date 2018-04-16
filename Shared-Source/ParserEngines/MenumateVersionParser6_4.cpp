@@ -57,6 +57,10 @@ void TApplyParser::upgrade6_48Tables()
 {
     update6_48Tables();
 }
+void TApplyParser::upgrade6_49Tables()
+{
+    update6_49Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -127,6 +131,12 @@ void TApplyParser::update6_48Tables()
 {
     Create6_48Generator(_dbControl);
     CreateTabPatronCount6_48Table(_dbControl);
+}
+void TApplyParser::update6_49Tables()
+{
+    Insert6_39Malls(_dbControl, 3, "Evia ", "F");
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 15, 3);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)

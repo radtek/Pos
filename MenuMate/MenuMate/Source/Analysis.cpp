@@ -9114,10 +9114,8 @@ void TfrmAnalysis::UpdateZKeyForMallExportEviaSales(bool isMasterTerminal, int f
 
     try
     {
-        if(TGlobalSettings::Instance().mallInfo.MallId == 3)
-        {
-            UpdateAccumulatedSalesForEvia(DBTransaction);
-        }
+
+        UpdateAccumulatedSalesForEvia(DBTransaction);
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
