@@ -57,6 +57,11 @@ void TApplyParser::upgrade6_48Tables()
 {
     update6_48Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_49Tables()
+{
+    update6_49Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -127,6 +132,11 @@ void TApplyParser::update6_48Tables()
 {
     Create6_48Generator(_dbControl);
     CreateTabPatronCount6_48Table(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_49Tables()
+{
+    Create6_49Tables(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1652,5 +1662,22 @@ void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSGUESTDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSGUESTDETAILS "
+        "( "
+        "  GUESTDETAILKEY INTEGER NOT NULL PRIMARY KEY, "
+        "  SECURITYREF INTEGER,                "
+        "  ACCOUNTNUBER VARCHAR(20),          "
+        "  ROOMNUMBER VARCHAR(20),             "
+        "  FIRSTNAME VARCHAR(50),     "
+        "  LASTNAME VARCHAR(50) "
+        ");",
+		inDBControl );
+    }
+}
 }
 //------------------------------------------------------------------------------
