@@ -4166,14 +4166,14 @@ void TListPaymentSystem::ProcessSecurity(TPaymentTransaction &PaymentTransaction
 			TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
             UnicodeString name = Order->Item;
 		   	TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
-            SavePMSGuestDetails(PaymentTransaction.DBTransaction, Order->Security);
+            SavePMSGuestDetails(PaymentTransaction, Order->Security);
 			for (int i = 0; i < Order->SubOrders->Count; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
 				if (SubOrder)
 				{
 			 		TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
-					SavePMSGuestDetails(PaymentTransaction.DBTransaction, Order->Security);
+					SavePMSGuestDetails(PaymentTransaction, Order->Security);
 				}
 			}
 		}
@@ -6625,11 +6625,11 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
     return retVal;
 }
 //--------------------------------------------------------------------------------------
-void TListPaymentSystem::SavePMSGuestDetails(TPaymentTransaction paymentTransaction, TListSecurityRefContainer *Security)
+void TListPaymentSystem::SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, TListSecurityRefContainer *Security)
 {
     try
-    {   MessageBox(paymentTransaction.Phoenix.AccountNumber,"paymentTransaction.Phoenix.AccountNumber",MB_OK);
-         for (int i = 0; i < Security->Count; i++)
+    {  
+		 for (int i = 0; i < Security->Count; i++)
          {
             TSecurityReference *SecRef = Security->SecurityGet(i);
             if (SecRef && SecRef->UserKey && SecRef->Event.SubString(1, 50).Pos("Ordered By"))

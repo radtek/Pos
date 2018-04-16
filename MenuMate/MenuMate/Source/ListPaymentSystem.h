@@ -232,7 +232,7 @@ protected:
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
-     void SavePMSGuestDetails(TPaymentTransaction paymentTransaction, TListSecurityRefContainer *Security);
+     void SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, TListSecurityRefContainer *Security);
 };
 
 #endif
