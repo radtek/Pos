@@ -6633,7 +6633,7 @@ void TListPaymentSystem::SavePMSGuestDetails(TPaymentTransaction &paymentTransac
          {
             TSecurityReference *SecRef = Security->SecurityGet(i);
             if (SecRef && SecRef->UserKey && SecRef->Event.SubString(1, 50).Pos("Ordered By"))
-            {   MessageBox("Inside loop ","",MB_OK);
+            {
                 TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
                 IBInternalQuery->Close();
                 IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSGUESTDETAIL, 1) FROM RDB$DATABASE";
@@ -6667,7 +6667,7 @@ void TListPaymentSystem::SavePMSGuestDetails(TPaymentTransaction &paymentTransac
                 IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = Security->GetSecurityRefNumber();
 
                 IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = paymentTransaction.Phoenix.AccountNumber.SubString(1, 20);
-                IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = paymentTransaction.Phoenix.RoomNumber.SubString(1, 20);
+                IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = paymentTransaction.Phoenix.RoomNumber;
                 IBInternalQuery->ParamByName("FIRSTNAME")->AsString = paymentTransaction.Phoenix.FirstName.SubString(1, 50);
                 IBInternalQuery->ParamByName("LASTNAME")->AsString = paymentTransaction.Phoenix.LastName.SubString(1, 50);
                 IBInternalQuery->ExecQuery();
