@@ -168,6 +168,10 @@ private:	// User declarations
     AnsiString GetVoucherNumber(AnsiString inPaymentName,AnsiString inReferenceNumber,bool isLoyaltyVoucher);
     bool IsGiftCardNumberValid(AnsiString inGiftCardNumber);
     bool IsSavedSavesWithSiHot(TPaymentTransaction &CurrentTransaction);
+    void CalculatePatrons(TPaymentTransaction &CurrentTransaction);
+    void RestructureBillForPatrons();
+    bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
+    void ApplyDiscount(TDiscount Discount);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

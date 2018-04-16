@@ -810,7 +810,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -4613,7 +4612,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 	//MM-1649, If the sale type is of table then the patron count has already been asked for while selecting the table.
 	//Adding the condition for allowing this only if sale type is not table seat.
 
-   	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && TGlobalSettings::Instance().PromptForPatronCount;
+   	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && TGlobalSettings::Instance().PromptForPatronCount && (!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction));
 
     //In case of quich payment check only once
     int QuickTransactionCounter = 0;
