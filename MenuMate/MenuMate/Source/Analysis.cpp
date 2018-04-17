@@ -3201,7 +3201,8 @@ Zed:
                     }
                     else if(TGlobalSettings::Instance().mallInfo.MallId == 3)
                     {
-                         UpdateZKeyForMallExportEviaSales(isMasterterminal, 19);
+                        isMasterterminal = true;
+                        UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
 
                     //Instantiation is happenning in a factory based on the active mall in database
@@ -8974,55 +8975,6 @@ double TfrmAnalysis::GetOldAccumulatedSales(Database::TDBTransaction &dbTransact
     return oldAccumulatedSales;
 }
 //-------------------------------------------------------------------------------------------------
-double TfrmAnalysis::GetOldAccumulatedSalesForEvia(Database::TDBTransaction &dbTransaction, int fieldIndex)
-{
-//    //Register the database transaction..
-//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-//    dbTransaction.StartTransaction();
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    double oldAccumulatedSales = 0.00;
-    int zKey = 0;
-    MessageBox("GetOldAccumulatedSalesForEvia","",MB_OK) ;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY  ";
-        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
-
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount )
-           zKey = IBInternalQuery->Fields[0]->AsInteger;
-
-        if(zKey)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-                                        "SELECT a.FIELD_INDEX, A.FIELD, CAST(A.FIELD_VALUE AS NUMERIC(17,4))FIELD_VALUE "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
-                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX "
-                                                " AND a.Z_KEY = :Z_KEY ) ";
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger =  zKey;
-            IBInternalQuery->ExecQuery();
-
-            if(IBInternalQuery->RecordCount)
-                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
-        }
-        //dbTransaction.Commit();
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    MessageBox(oldAccumulatedSales,"value----oldAccumulatedSales",MB_OK) ;
-    return oldAccumulatedSales;
-}
-
 void TfrmAnalysis::UpdateAccumulatedSales(Database::TDBTransaction &dbTransaction)
 {
     try
@@ -9115,7 +9067,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportEviaSales(bool isMasterTerminal, int f
     try
     {
 
-        UpdateAccumulatedSalesForEvia(DBTransaction);
+       // UpdateAccumulatedSalesForEvia(DBTransaction);
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
@@ -9156,13 +9108,13 @@ void TfrmAnalysis::UpdateZKeyForMallExportEviaSales(bool isMasterTerminal, int f
 
 
 //-------------------------------------------------------------------------------
+
 void TfrmAnalysis::UpdateAccumulatedSalesForEvia(Database::TDBTransaction &dbTransaction)
 {
     try
     {
-        MessageBox("in-----UpdateAccumulatedSalesForEvia","UpdateAccumulatedSalesForEvia",MB_OK) ;
+
         double oldAccumulatedSales = GetOldAccumulatedSalesForEvia(dbTransaction, 18);
-        MessageBox("return-----fromgetaccu","UpdateAccumulatedSalesForEvia",MB_OK) ;
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dbTransaction.RegisterQuery(IBInternalQuery);
 

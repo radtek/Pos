@@ -21,7 +21,7 @@ class TEviaMall : public TMallExport
        void CalculateTaxesFields(TItemMinorComplete *order, TEviaMallField &fieldData);
        void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
      //  double grosssaleamount;
-
+       double GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex);
        int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
        UnicodeString GetFieldIndexList(std::set<int> indexKeys);
        UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);

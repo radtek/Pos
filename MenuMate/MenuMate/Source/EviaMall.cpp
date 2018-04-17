@@ -18,7 +18,9 @@
 
 TEviaMall::TEviaMall()
 {
-
+    terminalCondition = " AND a.DEVICE_KEY = :DEVICE_KEY ";
+    isMasterTerminal = TGlobalSettings::Instance().EnableDepositBagNum;
+    deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //---------------------------------------------------------------------------
 TEviaMallField::TEviaMallField()
@@ -218,10 +220,13 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
         if(fieldData->TotalRefund >0)
         {
           fieldData->NoOfRefund =  1;
+          fieldData->GrossSales = 0;
         }
 
         fieldData->OldGrandTotal = 0.00;
-        fieldData->NewGrandTotal = fieldData->GrossSales + fieldData->NonVatableGrossSales - fieldData->TotalRefund ;
+        fieldData->OldGrandTotal = GetOldGrandTotal(paymentTransaction.DBTransaction, 18);
+        fieldData->NewGrandTotal = (fieldData->GrossSales + fieldData->NonVatableGrossSales + fieldData->OldGrandTotal) - fieldData->TotalRefund ;
+
 
         fieldData->NoOfTransactions =  1;
 
@@ -432,8 +437,8 @@ void TEviaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Cancelled Amount", "double", fieldData.TotalcancelledAmount, 14, arcBillKey);
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Total NonVatableGrossSales", "double", fieldData.NonVatableGrossSales, 15, arcBillKey);
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Terminal Number", "int", fieldData.PosNumber, 16, arcBillKey);
-          PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Grand Total", "double", fabs(fieldData.OldGrandTotal), 17, arcBillKey);
-          PushFieldsInToList(dbTransaction, mallExportSalesData, "New Grand Total", "double", fabs(fieldData.NewGrandTotal), 18, arcBillKey);
+          PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Grand Total", "double", fieldData.OldGrandTotal, 17, arcBillKey);
+          PushFieldsInToList(dbTransaction, mallExportSalesData, "New Grand Total", "double", fieldData.NewGrandTotal, 18, arcBillKey);
           PushFieldsInToList(dbTransaction, mallExportSalesData, "Reset Counter", "int", fieldData.ZKey, 19, arcBillKey);
 
 }
@@ -499,259 +504,6 @@ UnicodeString TEviaMall::GetSaleDeptName(Database::TDBTransaction &dbTransaction
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
     return salesDeptname;
-}
-
-
-void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, int index1,
-                                        TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForDGT, int index,int terminalkey, int zKey )
-{
-    try
-    {
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dBTransaction.RegisterQuery(IBInternalQuery);
-        UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
-        int maxZedKey;
-        bool Ismultipledevicekey = false;
-        Ismultipledevicekey =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
-        int IndexForinitialOldGrand =17;
-        if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction);
-        else
-            maxZedKey = zKey;
-
-        int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
-
-
-       /*  std::set<int>keysToSelect;
-
-         int  fileNameKeys[1] = {3};
-         UnicodeString fileName;
-          keysToSelect = InsertInToSet(fileNameKeys, 1);
-          fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
-          keysToSelect.clear();
-          prepareDataForDGT.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));  */
-
-
-
-        IBInternalQuery->Close();
-    //
-
-
-
-      /*    "Select DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE, DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-          " FROM"
-          "(SELECT DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,"
-          " CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)  else SUM(DAILYDATA.FIELD_VALUE)  end AS NUMERIC(17,2)) FIELD_VALUE,"
-          " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-          " FROM"
-
-        " (SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD,(case when (a.FIELD_INDEX = 17) then 4"
-            " when (a.FIELD_INDEX = 18) then 5"
-            " end)FIELD_INDEX,"
-        " CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY,a.DEVICE_KEY"
-        " FROM MALLEXPORT_SALES a"
-        " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY";
-        if(zKey)
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY ";
-        }
-        else
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
-        }
-
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
-        " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
-        " GROUP BY 1,2,4,5,6"     */
-
-
-          IBInternalQuery->SQL->Text =
-
-         "Select DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE, DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-          " FROM"
-
-           " (SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,"
-                      " CAST( case when (DAILYDATA.FIELD_INDEX =5 )  then SUM(DAILYDATA.FIELD_VALUE) end AS BIGINT) FIELD_VALUE,"
-                     " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-            " FROM"
-                    " (SELECT a.ARCBILL_KEY, a.FIELD, (case when (a.FIELD_INDEX = 17) then 4 when (a.FIELD_INDEX = 18) then 5 end)FIELD_INDEX,CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE,"
-                                    " a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
-                     " FROM MALLEXPORT_SALES a"
-                     " WHERE a.FIELD_INDEX  = 18"
-                     " AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY  AND a.MALLEXPORT_SALE_KEY ="
-                            " (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A"
-                                 " WHERE a.FIELD_INDEX  = 18 and a.Z_KEY = :Max_Z_KEY )";
-        if(zKey)
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
-        }
-
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +  " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY,a.DEVICE_KEY"
-                                                                    " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
-            " GROUP BY DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE,DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-
-
-
-        " UNION all";
-         if(maxZedKey2)
-         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-           " SELECT DAILYDATA.FIELD_INDEX,CAST('Old Grand Total' as varchar(25)) FIELD,"
-           " CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)  else SUM(DAILYDATA.FIELD_VALUE)  end AS NUMERIC(17,2)) FIELD_VALUE,"
-           " DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-           " FROM"
-
-           " (SELECT a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD,(case when (a.FIELD_INDEX = 17) then 4"
-                " when (a.FIELD_INDEX = 18) then 4"
-                " end)FIELD_INDEX,"
-            " CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY,a.DEVICE_KEY"
-            " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = :index1 AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :Min_Z_KEY AND a.DEVICE_KEY = :DEVICE_KEY"
-            " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE,a.DEVICE_KEY"
-            " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
-            " GROUP BY 1,2,4,5,6";
-
-        }
-        else
-        {
-             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                            " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, DAILYDATA.FIELD_VALUE,"
-                                    " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-                              " FROM"
-                                    " (SELECT a.ARCBILL_KEY,MALLEXPORT_SALE_KEY,a.FIELD,case when (a.FIELD_INDEX = 17) then 4 end FIELD_INDEX, CAST(0.00  AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
-                                     " FROM MALLEXPORT_SALES a"
-                                     " WHERE a.FIELD_INDEX  = 17"
-                                     " AND a.MALL_KEY = :MALL_KEY  AND a.DEVICE_KEY = :DEVICE_KEY";
-                                        if(zKey)
-                                        {
-                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
-                                        }
-                                        else
-                                        {
-                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
-                                        }
-
-      IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
-                                      " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
-                                      " GROUP BY 1,2,4,3,5,6";
-
-
-
-
-        }
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-
-       " UNION all"
-
-       " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE , DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
-       " FROM"
-
-       " (SELECT a.ARCBILL_KEY, a.FIELD, case when (a.FIELD_INDEX= 19) then 6 else a.FIELD_INDEX end FIELD_INDEX, case when (a.FIELD_INDEX =1 ) then cast('95' as varchar(2)) else (a.FIELD_VALUE) end FIELD_VALUE,"
-       " a.VALUE_TYPE ,a.Z_KEY,a.DEVICE_KEY"
-       " FROM MALLEXPORT_SALES a"
-       " WHERE a.FIELD_INDEX  IN( " + indexKeysList1 + "   ) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY";
-       if(zKey)
-       {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
-       }
-       else
-       {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
-       }
-       IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ORDER BY A.MALLEXPORT_SALE_KEY ASC )DAILYDATA"
-       " GROUP BY 1,2,4,3,5,6";
-      //
-
-      if(Ismultipledevicekey)
-      {
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-
-
-                                 " UNION ALL"
-            " SELECT (case when (a.FIELD_INDEX=16) then 7 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS Numeric) FIELD_VALUE,a.VALUE_TYPE,"
-            " a.Z_KEY,a.DEVICE_KEY"
-            " FROM MALLEXPORT_SALES a"
-            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
-               if(zKey)
-               {
-                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
-               }
-               else
-               {
-                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
-               }
-
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX, a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY" ;
-
-        }
-
-
-
-             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DAILYDATA"
-             " order by 6 asc ,1 asc" ;
-
-
-
-       IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
-
-       if(!zKey)
-       {
-       IBInternalQuery->ParamByName("Max_Z_KEY")->AsInteger = maxZedKey;
-       }
-       if(zKey)
-       {
-         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
-       }
-       IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
-
-        if(maxZedKey2)
-        {
-            IBInternalQuery->ParamByName("Min_Z_KEY")->AsInteger = maxZedKey2;
-            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
-            IBInternalQuery->ParamByName("index1")->AsInteger = index1;
-
-        }
-
-
-
-
-       IBInternalQuery->ExecQuery();
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-       {
-            TMallExportSalesData salesData;
-
-            salesData.DataValue = IBInternalQuery->Fields[2]->AsString;
-            salesData.FieldIndex = IBInternalQuery->Fields[0]->AsInteger;
-            UnicodeString fieldindex = IBInternalQuery->Fields[0]->AsString;
-            if(salesData.FieldIndex == 1)
-                {
-                    if(prepareListForDGT.size()>0)
-                    {
-                        salesData.DataValue ="\r\n" +  salesData.DataValue;
-
-                    }
-
-                }
-
-
-            salesData.DataValue = salesData.DataValue + " ";
-            prepareListForDGT.push_back(salesData);
-
-       }
-
-    }
-
-
-   catch(Exception &E)
-   {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-   }
-
-
-
 }
 
 
@@ -1463,6 +1215,296 @@ int TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , s
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
+
+
+
+}
+
+double TEviaMall::GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex)
+{
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
+
+        IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
+
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
+            if(!isMasterTerminal)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+            }
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            if(!isMasterTerminal)
+            {
+                IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            }
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        else
+        {
+            oldAccumulatedSales = 0;
+        }
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
+}
+
+
+void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, int index1,
+                                        TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForDGT, int index,int terminalkey, int zKey )
+{
+    try
+    {
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+        UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
+        int maxZedKey;
+        bool Ismultipledevicekey = false;
+        Ismultipledevicekey =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
+        int IndexForinitialOldGrand =17;
+        if(!zKey)
+            maxZedKey = GetMaxZedKey(dBTransaction);
+        else
+            maxZedKey = zKey;
+
+        int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
+
+
+
+
+        IBInternalQuery->Close();
+
+
+          IBInternalQuery->SQL->Text =
+
+           " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE,"
+           " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+           " From"
+
+
+         " (SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,CAST((DAILYDATA.FIELD_VALUE) AS NUMERIC(17,2))FIELD_VALUE,"
+         " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+
+         " FROM"
+         " (Select (case when (a.FIELD_INDEX = 18) then 5 end)FIELD_INDEX,a.FIELD,CAST((a.FIELD_VALUE) AS NUMERIC(17,2))FIELD_VALUE, a.VALUE_TYPE,a.Z_KEY,a.DEVICE_KEY"
+         " FROM MALLEXPORT_SALES A"
+         " where a.DEVICE_KEY = :DEVICE_KEY AND a.FIELD_INDEX = 18 AND a.MALL_KEY = :MALL_KEY AND a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A"
+         " where a.FIELD_INDEX = 18 AND a.DEVICE_KEY = :DEVICE_KEY)";
+            if(zKey)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+            }
+            else
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+            }
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DAILYDATA";
+
+
+
+           IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+
+
+        " UNION all";
+         if(maxZedKey2)
+         {
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+         " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,CAST((DAILYDATA.FIELD_VALUE) AS NUMERIC(17,2))FIELD_VALUE,"
+         " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+
+         " FROM"
+         " (Select (case when (a.FIELD_INDEX = 17) then 4 end)FIELD_INDEX,a.FIELD,CAST((a.FIELD_VALUE) AS NUMERIC(17,2))FIELD_VALUE, a.VALUE_TYPE,a.Z_KEY,a.DEVICE_KEY"
+         " FROM MALLEXPORT_SALES A"
+         " where a.DEVICE_KEY = :DEVICE_KEY AND a.FIELD_INDEX = 17 AND a.MALL_KEY = :MALL_KEY AND a.MALLEXPORT_SALE_KEY = (SELECT MAX(MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES A"
+         " where a.FIELD_INDEX = 17 AND a.DEVICE_KEY = :DEVICE_KEY)";
+            if(zKey)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+            }
+            else
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+            }
+
+
+         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DAILYDATA";
+
+
+        }
+        else
+        {
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                            " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, DAILYDATA.FIELD_VALUE,"
+                                    " DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+                              " FROM"
+                                    " (SELECT a.ARCBILL_KEY,MALLEXPORT_SALE_KEY,a.FIELD,case when (a.FIELD_INDEX = 17) then 4 end FIELD_INDEX, CAST(0.00  AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
+                                     " FROM MALLEXPORT_SALES a"
+                                     " WHERE a.FIELD_INDEX  = 17"
+                                     " AND a.MALL_KEY = :MALL_KEY  AND a.DEVICE_KEY = :DEVICE_KEY";
+                                        if(zKey)
+                                        {
+                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+                                        }
+                                        else
+                                        {
+                                            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+                                        }
+
+      IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY,a.MALLEXPORT_SALE_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, A.Z_KEY,a.DEVICE_KEY"
+                                      " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA"
+                                      " GROUP BY 1,2,4,3,5,6";
+
+
+
+
+        }
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+       " UNION all"
+
+       " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,DAILYDATA.FIELD_VALUE , DAILYDATA.VALUE_TYPE,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+       " FROM"
+
+       " (SELECT a.ARCBILL_KEY, a.FIELD, case when (a.FIELD_INDEX= 19) then 6 else a.FIELD_INDEX end FIELD_INDEX, case when (a.FIELD_INDEX =1 ) then cast('95' as varchar(2)) else (a.FIELD_VALUE) end FIELD_VALUE,"
+       " a.VALUE_TYPE ,a.Z_KEY,a.DEVICE_KEY"
+       " FROM MALLEXPORT_SALES a"
+       " WHERE a.FIELD_INDEX  IN( " + indexKeysList1 + "   ) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY";
+       if(zKey)
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.Z_KEY = :Z_KEY";
+       }
+       else
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND (a.Z_KEY = :Max_Z_KEY OR a.Z_KEY = :Z_KEY)";
+       }
+       IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ORDER BY A.MALLEXPORT_SALE_KEY ASC )DAILYDATA"
+       " GROUP BY 1,2,4,3,5,6";
+
+
+      if(Ismultipledevicekey)
+      {
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+
+                                 " UNION ALL"
+            " SELECT (case when (a.FIELD_INDEX=16) then 7 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS Numeric) FIELD_VALUE,a.VALUE_TYPE,"
+            " a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
+               }
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX, a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY" ;
+
+        }
+
+
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DAILYDATA"
+             " order by 1 asc " ;
+
+
+
+       IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+
+       if(!zKey)
+       {
+       IBInternalQuery->ParamByName("Max_Z_KEY")->AsInteger = maxZedKey;
+       }
+       if(zKey)
+       {
+         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+       }
+       IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
+
+        if(maxZedKey2)
+        {
+           // IBInternalQuery->ParamByName("Min_Z_KEY")->AsInteger = maxZedKey2;
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
+          //  IBInternalQuery->ParamByName("index1")->AsInteger = index1;
+
+        }
+
+
+
+
+       IBInternalQuery->ExecQuery();
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+       {
+            TMallExportSalesData salesData;
+
+            salesData.DataValue = IBInternalQuery->Fields[2]->AsString;
+            salesData.FieldIndex = IBInternalQuery->Fields[0]->AsInteger;
+            UnicodeString fieldindex = IBInternalQuery->Fields[0]->AsString;
+            if(salesData.FieldIndex == 1)
+                {
+                    if(prepareListForDGT.size()>0)
+                    {
+                        salesData.DataValue ="\r\n" +  salesData.DataValue;
+
+                    }
+
+                }
+
+
+            salesData.DataValue = salesData.DataValue + " ";
+            prepareListForDGT.push_back(salesData);
+
+       }
+
+    }
+
+
+   catch(Exception &E)
+   {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+   }
 
 
 

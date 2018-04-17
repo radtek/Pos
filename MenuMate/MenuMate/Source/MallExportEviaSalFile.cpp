@@ -58,7 +58,6 @@ void TMallExportSalFile::WriteFileAccordingToIndex(TMallExportPrepareData prepar
         }
 
         filePath = filePath + itFileName->second  + format;
-        MessageBox(filePath,"filePath in writetofile",MB_OK) ;
 
 
         std::auto_ptr<TStringList> List(new TStringList);
