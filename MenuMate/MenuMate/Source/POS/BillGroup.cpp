@@ -957,7 +957,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 //----------------------------------------------------------------------------
 bool TfrmBillGroup::CheckBillEntireWithCustomerJourney()
 {
-
     bool retValue = true;
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
     {
@@ -1015,29 +1014,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 
 			if (Proceed)
 			{
-                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
-                {
-                    UnicodeString accountNumber = "";
-                    bool canProceed = true;
-                    for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-						advance(itItem, 1))
-					{
-					    accountNumber = itItem->second.AccNumber;
-                        break;
-					}
-//                    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-//						advance(itItem, 1))
-//					{
-//					    if(accountNumber != itItem->second.AccNumber)
-//                        {
-//                            canProceed = false;
-//                            MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
-//                            break;
-//                        }
-//					}
-//                    if(!canProceed)
-//                        return;
-                }
 				DBTransaction.StartTransaction();
 				Proceed = TabStaffAccessOk(DBTransaction);
 				if (Proceed)
@@ -1081,29 +1057,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 		}
 		else
 		{
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
-            {
-                UnicodeString accountNumber = 0;
-                bool canProceed = true;
-                for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-                    advance(itItem, 1))
-                {
-                    accountNumber = itItem->second.AccNumber;
-                    break;
-                }
-//                for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-//                    advance(itItem, 1))
-//                {
-//                    if(accountNumber != itItem->second.AccNumber)
-//                    {
-//                        canProceed = false;
-//                        MessageBox("Items for different SiHot accounts can not be billed at same time.","Error", MB_OK + MB_ICONERROR);
-//                        break;
-//                    }
-//                }
-//                if(!canProceed)
-//                    return;
-            }
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -4587,21 +4540,28 @@ void TfrmBillGroup::CustomizeForSiHot(TPaymentTransaction &PaymentTransaction)
 {
     PaymentTransaction.WasSavedSales = true;
     PaymentTransaction.SalesType = eRoomSale;
-    for(int orderIndex = 0; orderIndex <  PaymentTransaction.Orders->Count; orderIndex++)
+
+    if(CurrentDisplayMode == eTabs)
     {
-        if(((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr != "")
+        CustomizeDefaultCustomerInfo(PaymentTransaction);
+    }
+    else
+    {
+        for(int orderIndex = 0; orderIndex <  PaymentTransaction.Orders->Count; orderIndex++)
         {
-            PaymentTransaction.Customer.RoomNumberStr = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
-            PaymentTransaction.Phoenix.FirstName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->FirstName;
-            PaymentTransaction.Phoenix.LastName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->LastName;
-            PaymentTransaction.Phoenix.AccountNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->AccNo;
-            PaymentTransaction.Phoenix.AccountName = PaymentTransaction.Phoenix.FirstName + " " +
-                                                     PaymentTransaction.Phoenix.LastName;
-            PaymentTransaction.Phoenix.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
-            break;
+            if(((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr != "")
+            {
+                PaymentTransaction.Customer.RoomNumberStr = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
+                PaymentTransaction.Phoenix.FirstName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->FirstName;
+                PaymentTransaction.Phoenix.LastName =  ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->LastName;
+                PaymentTransaction.Phoenix.AccountNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->AccNo;
+                PaymentTransaction.Phoenix.AccountName = PaymentTransaction.Phoenix.FirstName + " " +
+                                                         PaymentTransaction.Phoenix.LastName;
+                PaymentTransaction.Phoenix.RoomNumber = ((TItemComplete*)PaymentTransaction.Orders->Items[orderIndex])->RoomNoStr;
+                break;
+            }
         }
     }
-
 }
 // ---------------------------------------------------------------------------
 std::pair<int, int> TfrmBillGroup::CalculatePatronCount()
@@ -5710,7 +5670,39 @@ void TfrmBillGroup::ApplyDiscountWithRestructure(TPaymentTransaction &paymentTra
     }
     paymentTransaction.Patrons.clear();
 }
-
+//----------------------------------------------------------------------------
+//bool TfrmBillGroup::IsMultipleRoomNumberDataSavedOnTab()
+//{
+//    bool retval = false;
+//    UnicodeString accountNumber = "";
+//
+//    if(SelectedItems.size())
+//        accountNumber = SelectedItems.begin()->second.AccNumber;
+//
+//    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+//        advance(itItem, 1))
+//    {
+//        if(accountNumber != itItem->second.AccNumber)
+//        {
+//            retval = true;
+//            break;
+//        }
+//    }
+//    return retval;
+//}
+//----------------------------------------------------------------------------
+void TfrmBillGroup::CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction)
+{
+    PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
+    PaymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+    PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+    PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+    PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
+    if(PaymentTransaction.Orders->Count > 0)
+    {
+        ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr = PaymentTransaction.Phoenix.RoomNumber;
+    }
+}
 
 /* In reference to case #90727(Salesforce)
 In case of Loyaltymate membership can not get saved to table.
