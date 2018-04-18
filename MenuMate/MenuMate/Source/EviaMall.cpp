@@ -144,6 +144,10 @@ void TEviaMallField::SetZKey(int zKey)
 {
     _zkey = zKey;
 }
+void TEviaMallField::SetSalesBySalesType(std::map<int, double> salesBySalestype)
+{
+    _salesBysalesType = salesBySalestype;
+}
 
 
 //----------------------------------------------------------------------------
@@ -234,6 +238,7 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, *fieldData, arcBillKey);
 
         salesWrapper.SalesData = mallExportSalesData;
+        salesWrapper.SaleBySalsType = fieldData->SalesBySalesType;
 
 
 		delete fieldData;
@@ -266,15 +271,23 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
                                                                                     (order->GetQty()*order->PriceLevel0) : 0);
      if(fieldData.TotalcancelledAmount >0)
      fieldData.NoOfcancelledTransaction =  1;
-
+     salesBySalesType =  (double)(order->PriceEach_BillCalc()*order->GetQty());
     int salesTypeId = GetItemSalesId(dbTransaction, order->ItemKey);
 
     if(salesTypeId)
     {
 
-         UnicodeString salesdeptformat = GetSaleDeptName(dbTransaction, order->ItemKey) ;
-         fieldData.SalesDept =  "\"" + salesdeptformat + "\"";
-        salesBySalesType = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
+        UnicodeString salesdeptformat = GetSaleDeptName(dbTransaction, order->ItemKey) ;
+        fieldData.SalesDept =  "\"" + salesdeptformat + "\"";
+        std::map <int, double> ::iterator isSumBySalesType = fieldData.SalesBySalesType.find(salesTypeId);
+        if(isSumBySalesType != fieldData.SalesBySalesType.end())
+        {
+            isSumBySalesType->second += salesBySalesType;
+        }
+        else
+        {
+            fieldData.SalesBySalesType.insert(std::pair<int, double >(salesTypeId, salesBySalesType));
+        }
 
     }
 

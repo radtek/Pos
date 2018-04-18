@@ -87,7 +87,7 @@ private:
     double _dailysalestotalperDept;
     double _totaltaxwithoutvat  ;
     UnicodeString _invoiceNumber;
-    int _hourCode;
+    std::map<int, double> _salesBysalesType;
 
     void SetRecordID(UnicodeString recordId) ;
     void SetStallCode(UnicodeString stallCode) ;
@@ -109,6 +109,7 @@ private:
     void SetNewGrandTotal(double newGrandTotal) ;
     void SetZKey(int zKey);
     void SetTotaltaxWithoutVat(double totaltaxwithoutvat) ;
+    void SetSalesBySalesType(std::map<int, double> salesBySalestype);
 
 
 
@@ -136,7 +137,7 @@ public:
     __property double NewGrandTotal = {read = _newGrandTotal, write = SetNewGrandTotal};
     __property int ZKey = {read = _zkey, write = SetZKey};
     __property double TotaltaxWithoutVat = {read = _totaltaxwithoutvat, write = SetTotaltaxWithoutVat};
-    std::map<int, double> SalesBySalesType;
+    __property std::map<int, double> SalesBySalesType = {read = _salesBysalesType, write =  SetSalesBySalesType};
 
 
     TEviaMallField();
