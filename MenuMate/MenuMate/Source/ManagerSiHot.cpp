@@ -140,8 +140,10 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
     if(!roomResponse.IsSuccessful)
     {
         UnicodeString errorMessage = roomResponse.ResponseMessage;
-        if(errorMessage == "")
-           errorMessage = "Room Not Found";
+        if(errorMessage.Pos("roomnotfound") || errorMessage == "")
+            errorMessage = "Room Not Found";
+        else if(errorMessage.Pos("roomnotoccupied"))
+           errorMessage = "Room Not Occupied";
         MessageBox(errorMessage,"PMS Error",MB_OK + MB_ICONERROR);
     }
     siHotDataProcessor->PrepareRoomStatus(siHotAccounts,roomResponse);
