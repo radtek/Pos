@@ -6879,8 +6879,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 
 			"Menu.Menu_Type,"
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location, "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(Archive.DISCOUNT/AOD.key),2) END) as numeric(17, 2)),0) AS Food_Menu_Total,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT/AOD.key),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total, "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Food_Menu_Total,  "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total, "
 
               "cast ('' as varchar(25) )CategoryGroup, "
               "cast ('' as varchar(25) ) Category, "
@@ -6980,8 +6980,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
             "Cast((sum(round(coalesce ( DAYARCHIVE.QTY  * DAYARCHIVE.PRICE_INCL,0),2) )) as Numeric(17,4)) Price, "
 			"MENU.MENU_TYPE,  "
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DayArchive.DISCOUNT/DAOD.key),2) END) as numeric(17, 2)),0) AS Food_Menu_Total , "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT/DAOD.key),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total,  "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Food_Menu_Total , "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total,  "
 
             "cast ('' as varchar(25) )CategoryGroup, "
             "cast ('' as varchar(25) ) Category, "
