@@ -18,7 +18,7 @@
 
 TEviaMall::TEviaMall()
 {
-    terminalCondition = " AND a.DEVICE_KEY = :DEVICE_KEY ";
+    terminalCondition = "AND a.DEVICE_KEY = :DEVICE_KEY ";
     isMasterTerminal = TGlobalSettings::Instance().EnableDepositBagNum;
     deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
@@ -229,6 +229,7 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
 
 
         fieldData->NoOfTransactions =  1;
+        fieldData->RecordId = "01";
 
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, *fieldData, arcBillKey);
 
@@ -296,7 +297,6 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
         int devicekeyvalue  = 0;
         std::list<TMallExportSalesData> preparelist;
         std::list<TMallExportSalesData>::iterator iter;
-
 
 
 
@@ -626,12 +626,11 @@ UnicodeString TEviaMall::GetExportType()
         IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
                                      "FROM MALLEXPORT_SETTINGS MES "
                                      "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
-                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
-                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID AND MSV.FIELD_VALUE =:Extension";
+                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MSP.MALLEXPORT_SETTING_ID = MSV.MALLEXPORTSETTING_ID AND MSP.MALL_ID = MSV.MALL_KEY "
+                                      "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
 
         IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
         IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 3;
-        IBInternalQuery->ParamByName("Extension")->AsString = ".sal";
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
@@ -1198,8 +1197,20 @@ int TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , s
 
         " SELECT a.DEVICE_KEY"
             " FROM MALLEXPORT_SALES a"
-            " WHERE a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY"
-            " GROUP BY 1";
+            " WHERE a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+
+
+        if(!isMasterTerminal)
+        {
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + terminalCondition;
+        }
+
+        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "GROUP BY 1";
+
+        if(!isMasterTerminal)
+        {
+            ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
 
         ibInternalQuery->ExecQuery();
         for ( ; !ibInternalQuery->Eof; ibInternalQuery->Next())
@@ -1255,18 +1266,21 @@ double TEviaMall::GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int 
             IBInternalQuery->SQL->Text =
                                         "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
                                         "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX  AND A.DEVICE_KEY = :POS_KEY";
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ") ";
             if(!isMasterTerminal)
             {
                 IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
             }
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
 
             IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
             if(!isMasterTerminal)
             {
                 IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
             }
+
+            IBInternalQuery->ParamByName("POS_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
             IBInternalQuery->ExecQuery();
 
             if(IBInternalQuery->RecordCount)
