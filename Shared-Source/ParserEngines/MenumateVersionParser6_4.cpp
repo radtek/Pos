@@ -1698,7 +1698,7 @@ void TApplyParser::Create6_49_DomainNotNull(TDBControl* const inDBControl)
 {
     if(!DomainExists("INT_NN", _dbControl))
     {
-        executeQuery("CREATE DOMAIN INT_NN AS INT NOT NULL CHECK((VALUE IS NULL));", inDBControl);
+        executeQuery("CREATE DOMAIN INT_NN AS INT NOT NULL CHECK((VALUE IS NOT NULL));", inDBControl);
     }
 }
 //--------------------------------------------------------------------------------
