@@ -160,6 +160,7 @@ namespace MenumateVersionParser
 
         std::string readContactsQuery();
         std::string getForeignKeysListForTableQuery( std::string inTableName );
+        std::string checkWhetherADomainExistsQuery();
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
         // Tool Functions
@@ -202,6 +203,8 @@ namespace MenumateVersionParser
                                 std::string inNameTwo,
                                 std::string inSQL,
                                 TDBControl* inDBControl );
+
+        bool DomainExists(std::string inDomainName, TDBControl* inDBControl );
 
         //.....................................................
 
@@ -909,6 +912,8 @@ namespace MenumateVersionParser
         void update6_49Tables();
         void Create6_49Generator(TDBControl* const inDBControl);
         void Create6_49Tables(TDBControl* const inDBControl);
+        void Create6_49_DomainNotNull(TDBControl* const inDBControl);
+        void Alter6_49_Tables(TDBControl* const inDBControl);
     };// class
 } // namespace
 

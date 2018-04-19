@@ -138,6 +138,8 @@ void TApplyParser::update6_49Tables()
 {
     Create6_49Generator(_dbControl);
     Create6_49Tables(_dbControl);
+    Create6_49_DomainNotNull(_dbControl);
+    Alter6_49_Tables(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1675,7 +1677,9 @@ void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
         "  ACCOUNTNUBER VARCHAR(20),          "
         "  ROOMNUMBER VARCHAR(20),             "
         "  FIRSTNAME VARCHAR(50),     "
-        "  LASTNAME VARCHAR(50) "
+        "  LASTNAME VARCHAR(50), "
+        "  TABLENUMBER INTEGER NOT NULL, "
+        "  SEATNUMBER INTEGER NOT NULL "
         ");",
 		inDBControl );
     }
@@ -1687,6 +1691,36 @@ void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
 	{
 		executeQuery("CREATE GENERATOR GEN_PMSGUESTDETAIL;", inDBControl);
 		executeQuery("SET GENERATOR GEN_PMSGUESTDETAIL TO 0;", inDBControl);
+	}
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Create6_49_DomainNotNull(TDBControl* const inDBControl)
+{
+    if(!DomainExists("INT_NN", _dbControl))
+    {
+        executeQuery("CREATE DOMAIN INT_NN AS INT NOT NULL CHECK((VALUE IS NULL));", inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Alter6_49_Tables(TDBControl* const inDBControl)
+{
+    if (fieldExists( "ORDERS", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
 	}
 }
 }
