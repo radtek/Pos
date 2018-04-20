@@ -18,7 +18,6 @@ class TEviaMall : public TMallExport
    int deviceKey;
    void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData,TPaymentTransaction &paymentTransaction);
    void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
-   double GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex);
    int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);

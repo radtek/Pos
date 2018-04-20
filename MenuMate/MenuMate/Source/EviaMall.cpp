@@ -215,7 +215,10 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
         }
 
         fieldData->OldGrandTotal = 0.00;
-        fieldData->OldGrandTotal = GetOldGrandTotal(paymentTransaction.DBTransaction, 18);
+        int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+        std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
+        fieldData->OldGrandTotal = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 18,mallid);
+
         fieldData->NewGrandTotal = (fieldData->GrossSales + fieldData->NonVatableGrossSales + fieldData->OldGrandTotal) - fieldData->TotalRefund ;
 
 
@@ -1034,75 +1037,6 @@ void TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , 
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
 }
-
-double TEviaMall::GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    double oldAccumulatedSales = 0.00;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
-        }
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
-        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        }
-
-        IBInternalQuery->ExecQuery();
-        bool  recordPresent = false;
-
-        if(IBInternalQuery->RecordCount )
-           recordPresent = true;
-
-        if(recordPresent)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX  AND A.DEVICE_KEY = :POS_KEY";
-
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ") ";
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
-            }
-
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
-            }
-
-            IBInternalQuery->ParamByName("POS_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
-            IBInternalQuery->ExecQuery();
-
-            if(IBInternalQuery->RecordCount)
-                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
-        }
-        else
-        {
-            oldAccumulatedSales = 0;
-        }
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return oldAccumulatedSales;
-}
-
 
 void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, int index1,
                                         TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForDGT, int index,int terminalkey, int zKey )

@@ -49,3 +49,69 @@ UnicodeString TMallHelper::GetExportType(int mallid)
 	}
     return typeOfFile;
 }
+
+
+double TMallHelper::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex,int mallid)
+{
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = mallid ;
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
+
+        IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
+
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
+            }
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+                IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            }
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        else
+        {
+            oldAccumulatedSales = 0;
+        }
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
+}

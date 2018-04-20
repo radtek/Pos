@@ -245,10 +245,6 @@ private:
 
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
-
-    //Get OldAccumulated Sale
-    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
-
     //Fetch Mall Setting for file writing
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
                                 int index, int zKey = 0);

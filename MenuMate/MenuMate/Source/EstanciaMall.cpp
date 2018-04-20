@@ -388,11 +388,13 @@ TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransactio
                 }
         }
 
-        fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+        std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
+        fieldData.OldAccumulatedSalesVatable = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5,mallid);
         fieldData.ControlNumber = 0;
         fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 0 : 1);
         fieldData.SalesType = 1;
-        fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
+        fieldData.OldAccumulatedSalesNonVatable = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38,mallid);
 
         fieldData.DeductionVatable = (double)(fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
@@ -646,70 +648,6 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount;
 }
 //---------------------------------------------------------------------------------
-double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    double oldAccumulatedSales = 0.00;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
-        }
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
-        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        }
-
-        IBInternalQuery->ExecQuery();
-        bool  recordPresent = false;
-
-        if(IBInternalQuery->RecordCount )
-           recordPresent = true;
-
-        if(recordPresent)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
-            }
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
-
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
-            }
-            IBInternalQuery->ExecQuery();
-
-            if(IBInternalQuery->RecordCount)
-                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
-        }
-        else
-        {
-            oldAccumulatedSales = 0;
-        }
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return oldAccumulatedSales;
-}
 //--------------------------------------------------------------------------------------------------------
 void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
                                         TEstanciaMallField fieldData, int arcBillKey)
