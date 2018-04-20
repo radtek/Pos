@@ -493,6 +493,7 @@ private: // User declarations
     void ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction, TList *Orders);
     bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
     void RestructureBillForPatrons(std::vector<TPatronType> patrons);
+    bool LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);

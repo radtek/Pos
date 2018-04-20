@@ -7,6 +7,7 @@
 #include "ItemsCompleteCompressed.h"
 #include "ItemRedirector.h"
 #include "MMContactInfo.h"
+#include "SiHotDataObjects.h"
 
 //---------------------------------------------------------------------------
 class TContainerOrders : public TObject
@@ -70,6 +71,7 @@ public:
     TMMContactInfo AppliedMembership;
     bool HasServingCourseHeader(TItemComplete *CurrentItem);
     bool HideServingCourseLabels;
+    TAccountDetails pmsAccountDetails;
 };
 
 //bool match(TItemComplete *PrevItem,TItemComplete *CurrentItem );

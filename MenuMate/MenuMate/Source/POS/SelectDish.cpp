@@ -2324,7 +2324,15 @@ void __fastcall TfrmSelectDish::lbDisplayDrawItem(TWinControl *Control, int Inde
 		}
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
-			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance(pasDatabase));
+            if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey)
+            {
+                DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance(pasDatabase));
+            }
+            else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                TGlobalSettings::Instance().EnableCustomerJourney )
+            {
+		 	    DollarAmount = "";
+            }
 			pCanvas->Font->Style = TFontStyles() << fsBold;
 			pCanvas->Font->Color = (TColor)CL_STANDARD_MEMBER_INFO;
 			pCanvas->Brush->Color = clGreen;
@@ -3712,22 +3720,9 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                         MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                     }
                 }
+
                 bool isGuestExist = true;
-                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
-                {
-                    isRoomNoUiCalled = false;
-                    IsAutoLogOutInSelectDish = false;
-                    if(isWalkInUser)
-                    {
-                        PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
-                        PaymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                        PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-                        PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
-                        PaymentTransaction.SalesType = eRoomSale;
-                        PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
-                    }
-                    isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
-                }
+                isGuestExist = LoadPMSGuestDetails(PaymentTransaction);
 
                 if(isGuestExist)
 				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
@@ -3866,21 +3861,38 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 }
 
                if(DelayedInvoiceNumber!="")
-                 {
-                   AddSecurityOnMoveOrderToTab(DBTransaction,OrdersList.get());
-                 }
+                {
+                    AddSecurityOnMoveOrderToTab(DBTransaction,OrdersList.get());
+                }
+
+                LoadPMSGuestDetails(PaymentTransaction);
 
 				for (int i = 0; i < OrdersList->Count; i++)
 				{
-					TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
+					TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];                    
+				  	TDBSecurity::ProcessSecurity(DBTransaction, Order->Security);
+                    int PmsTableNumber = 0;
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                    {
+                        if(Order->TabType == TabRoom)
+                            PmsTableNumber = Order->RoomNo;
+                        else
+                            PmsTableNumber = Order->TableNo;
 
-					TDBSecurity::ProcessSecurity(DBTransaction, Order->Security);
+                        TDBSecurity::SavePMSGuestDetails(PaymentTransaction, Order, PmsTableNumber, Order->SeatNo);
+                    }
+
 					for (int j = 0; j < Order->SubOrders->Count; j++)
 					{
 						TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
 						if (SubOrder)
 						{
                            TDBSecurity::ProcessSecurity(DBTransaction, SubOrder->Security);
+
+                           if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                                TDBSecurity::SavePMSGuestDetails(PaymentTransaction, SubOrder, PmsTableNumber, Order->SeatNo);
 						}
 					}
 				}
@@ -3889,7 +3901,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				frmProcessing->Close();
 				PaymentComplete = true;
 			}
-
 			if (PaymentComplete)
 			{
 				TDBSaleTimes::CloseSaleStartTime(DBTransaction, CurrentTimeKey); // Close the Sale Key for Chefmate.
@@ -7981,7 +7992,6 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 						}
 						delete Sale;
                         Sale = NULL;
-                        DisplayRoomNoUI();
 					}
 					else
 					{
@@ -8095,8 +8105,8 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		TDBSaleTimes::VoidSaleTime(DBTransaction, CurrentTimeKey);
 		DBTransaction.Commit();
 		CurrentTimeKey = 0;
-        DisplayRoomNoUI();
 		ResetPOS();
+        DisplayRoomNoUI();
 	}
       AutoLogOut();
     //MM-1647: Ask for chit if it is enabled for every order.
@@ -10913,7 +10923,6 @@ void TfrmSelectDish::showTablePicker()
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
-
         //MM-1649: Ask for patron count if it is enabled..
         InitializeTablePatrons();
     }
@@ -11035,11 +11044,13 @@ void __fastcall TfrmSelectDish::refreshSelectedSeat()
 
 		SeatOrders[i]->Orders->ClearPrev();
 		SeatOrders[i]->SeatName = "";
+        SeatOrders[i]->RoomNumber = "";
 	}
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
 	TDBOrder::GetPrevOrders(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, SelectedTable, 0, SeatOrders);
+
     if(TGlobalSettings::Instance().IsThorlinkSelected)
     {
        RemoveMembership(DBTransaction);
@@ -12869,8 +12880,19 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, boo
             isTabLocked = false;
         }
 
-        if(((!NewTabKey || isTabLocked) && !SeatOrders[SelectedSeat]->Orders->Count) && isCalledFromGuestSeat)
+        if(((!NewTabKey || isTabLocked) && SeatOrders[SelectedSeat]->RoomNumber == "" && SeatOrders[SelectedSeat]->SeatNumber != 1) && isCalledFromGuestSeat)
             DisplayRoomNoUI();
+       
+        if(TGlobalSettings::Instance().PMSType == SiHot && SeatOrders[SelectedSeat]->RoomNumber == "" && selectedRoomNumberStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
+        {
+            GridButton->Caption = selectedRoomNumberStr;
+            SeatOrders[SelectedSeat]->RoomNumber = selectedRoomNumberStr;
+            SeatOrders[SelectedSeat]->SeatName = selectedRoomNumberStr;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TDBTables::SetSeatName(DBTransaction, selectedRoomNumberStr, SelectedTable, SelectedSeat);
+            DBTransaction.Commit();
+        }
     }
     catch(Exception & E)
     {
@@ -13260,8 +13282,20 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
             Order->AccNo = GuestDetails.at(0);
             Order->RoomNoStr = GuestDetails.at(1);
             Order->FirstName = GuestDetails.at(2);
+            Order->LastName = "";
             if(GuestDetails.size() > 3)
                 Order->LastName = GuestDetails.at(3);
+
+            for (int i = 0; i < Order->SubOrders->Count; i++)
+            {
+                TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
+                CurrentSubOrder->RoomNoStr = GuestDetails.at(1);
+                CurrentSubOrder->FirstName = GuestDetails.at(2);
+                CurrentSubOrder->LastName = "";
+                if(GuestDetails.size() > 3)
+                    CurrentSubOrder->LastName = GuestDetails.at(3);
+                CurrentSubOrder->AccNo = GuestDetails.at(0);
+            }
         }
     }
 
@@ -15516,15 +15550,24 @@ void TfrmSelectDish::DisplayRoomNoUI()
 		SiHotAccount.AccountDetails.clear();
         if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->BtnExit == 1 && frmTouchNumpad->NUMSTRResult != "")
         {
-//            MessageBox(frmTouchNumpad->NUMSTRResult,"frmTouchNumpad->NUMSTRResult",MB_OK);
             selectedRoomNumberStr = frmTouchNumpad->NUMSTRResult;
             isWalkInUser = false;
             GetRoomDetails();
+            RedrawSeatOrders();
         }
         else if(atoi(frmTouchNumpad->NUMSTRResult.t_str()) == 0 && frmTouchNumpad->BtnExit == 2)
         {
-//            MessageBox(atoi(frmTouchNumpad->NUMSTRResult.t_str()),"atoi(frmTouchNumpad->NUMSTRResult.t_str()",MB_OK);
+            selectedRoomNumberStr = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
             isWalkInUser = true;
+            //For displaying room details like member.
+            Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+            dbTransaction.StartTransaction();
+            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = TManagerVariable::Instance().GetStr(dbTransaction,vmSiHotDefaultTransactionName);
+            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomBedNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            dbTransaction.Commit();
+            RedrawSeatOrders();
         }
         else if(frmTouchNumpad->BtnExit == 2 && abs(atoi(frmTouchNumpad->NUMSTRResult.t_str())) > 0)
         {
@@ -15587,13 +15630,18 @@ void TfrmSelectDish::GetRoomDetails()
                         accountDetails.RoomBedNumber = accIt->RoomBedNumber;
                         selectedRoomNumberStr = accountDetails.RoomBedNumber;
                         SiHotAccount.AccountDetails.push_back(accountDetails);
+
+                        //For displaying room details like member.
+                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = accIt->RoomBedNumber;
+                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = accIt->FirstName;
+                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.LastName = accIt->LastName;
+                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomBedNumber = accIt->RoomBedNumber;
                     }
                 }
             }
         }
         else if(SiHotAccounts.size() == 0)
         {
-            MessageBox("Room not found.", "Error", MB_ICONWARNING + MB_OK);
             DisplayRoomNoUI();
         }
     }
@@ -15630,14 +15678,29 @@ bool TfrmSelectDish::LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &in
                 TItemComplete *Order = (TItemComplete*)inTransaction.Orders->Items[i];
                 if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                     break;
-                Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
-                Order->TabName = inTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
+                if(Order->TabType != TabCashAccount)
+                {
+                    Order->TabType          = TabRoom;
+                    Order->TabContainerName = inTransaction.Phoenix.RoomNumber;
+                    Order->TabName = inTransaction.Phoenix.RoomNumber;
+                }
                 Order->RoomNoStr = inTransaction.Phoenix.RoomNumber;
                 Order->FirstName = inTransaction.Phoenix.FirstName;
                 Order->LastName = inTransaction.Phoenix.LastName;
                 Order->AccNo = inTransaction.Phoenix.AccountNumber;
                 Order->RoomNo = inTransaction.Phoenix.RoomNumber != "" ? StrToInt(inTransaction.Phoenix.RoomNumber) : 0;
+
+                for (int i = 0; i < Order->SubOrders->Count; i++)
+                {
+                    TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
+                    if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
+                        break;
+                    CurrentSubOrder->RoomNoStr = inTransaction.Phoenix.RoomNumber;
+                    CurrentSubOrder->FirstName = inTransaction.Phoenix.FirstName;
+                    CurrentSubOrder->LastName = inTransaction.Phoenix.LastName;
+                    CurrentSubOrder->AccNo = inTransaction.Phoenix.AccountNumber;
+                    CurrentSubOrder->RoomNo = inTransaction.Phoenix.RoomNumber != "" ? StrToInt(inTransaction.Phoenix.RoomNumber) : 0;
+                }
             }
         }
     }
@@ -15877,3 +15940,24 @@ void TfrmSelectDish::RestructureBillForPatrons(std::vector<TPatronType> patrons)
     }
 }
 //----------------------------------------------------------------------------
+bool TfrmSelectDish::LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction)
+{
+    bool isGuestExist = true;
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+    {
+        isRoomNoUiCalled = false;
+        IsAutoLogOutInSelectDish = false;
+        if(isWalkInUser)
+        {    
+            PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
+            PaymentTransaction.Phoenix.AccountName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+            PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
+            PaymentTransaction.SalesType = eRoomSale;
+            PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
+        }
+        isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
+    }
+    return isGuestExist;
+}
+

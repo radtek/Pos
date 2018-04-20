@@ -46,10 +46,13 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
             TItemComplete *Order    = (TItemComplete*)_paymentTransaction.Orders->Items[i];
             if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                 break;
-            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabName          = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabType          = TabRoom;
-            Order->RoomNoStr        = _paymentTransaction.Phoenix.AccountNumber;
+            if(Order->TabType != TabCashAccount)
+            {
+                Order->TabType          = TabRoom;
+                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->RoomNoStr        = _paymentTransaction.Phoenix.AccountNumber;
+            }
         }
     }
 

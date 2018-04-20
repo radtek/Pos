@@ -23,6 +23,7 @@ public:
 	UnicodeString SeatName;
 	int SeatNumber;
 	TContainerOrders *Orders;
+    UnicodeString RoomNumber;
 };
 
 #endif

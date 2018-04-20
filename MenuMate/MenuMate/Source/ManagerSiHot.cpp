@@ -221,9 +221,12 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
                 if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                     break;
-                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
+                if(Order->TabType != TabCashAccount)
+                {
+                    Order->TabType          = TabRoom;
+                    Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                    Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
             roomResponse = siHotInterface->SendRoomChargePost(roomCharge);

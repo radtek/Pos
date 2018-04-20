@@ -62,6 +62,10 @@ void TParkedSale::AssignParkedSale(std::vector<TSeatOrders *> &SeatOrders)
          Orders[i]->Orders->Items[0]->ThirdPartyCode = GetThirdPartyCode(Orders[i]->Orders->Items[0]->ThirdPartyKey);
          Orders[i]->Orders->Items[0]->RevenueCode = GetRevenueCode(Orders[i]->Orders->Items[0]->ItemKey,Orders[i]->Orders->Items[0]->Size);
          SeatOrders[i]->Orders->Add(Orders[i]->Orders->Items[0],Orders[i]->Orders->Items[0]->ItemOrderedFrom);
+         SeatOrders[i]->Orders->pmsAccountDetails.RoomNumber = Orders[i]->Orders->Items[0]->RoomNoStr;
+         SeatOrders[i]->Orders->pmsAccountDetails.FirstName = Orders[i]->Orders->Items[0]->FirstName;
+         SeatOrders[i]->Orders->pmsAccountDetails.LastName = Orders[i]->Orders->Items[0]->LastName;
+         SeatOrders[i]->Orders->pmsAccountDetails.RoomBedNumber = Orders[i]->Orders->Items[0]->RoomNoStr;
          Orders[i]->Orders->Delete(0);
       }
 
