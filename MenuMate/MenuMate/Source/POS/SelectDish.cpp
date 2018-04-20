@@ -1683,6 +1683,8 @@ void __fastcall TfrmSelectDish::CurrentItemChange(TItemRedirector *ItemRedirecto
 		}
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
+            if(!(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                TGlobalSettings::Instance().EnableCustomerJourney))
 			btnRemove->Enabled = true;
 		}
 		else if (ItemRedirector->ItemType.Contains(itServingCourseDisplay))
