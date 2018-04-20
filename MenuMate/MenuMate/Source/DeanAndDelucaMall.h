@@ -4,7 +4,6 @@
 #define DeanAndDelucaMallH
 #include "MallExport.h"
 #include "MallExportTextFile.h"
-#include "MallHelper.h"
 //---------------------------------------------------------------------------
 class TDeanAndDelucaMallField;
 

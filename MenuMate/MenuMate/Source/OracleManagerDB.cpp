@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "OracleManagerDB.h"
+#include "DeviceRealTerminal.h"
 
 //---------------------------------------------------------------------------
 
@@ -50,15 +51,6 @@ TIBSQL* TOracleManagerDB::LoadMeals(Database::TDBTransaction &DBTransaction)
     TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
     SelectQuery->Close();
     SelectQuery->SQL->Text = "SELECT MEALIDENTIFIER,STARTTIME,ENDTIME,ISDEFAULT_SERVINGTIME FROM SERVINGTIMESDETAILS";
-    SelectQuery->ExecQuery();
-    return SelectQuery;
-}
-//----------------------------------------------------------------------------
-TIBSQL* TOracleManagerDB::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
-{
-    TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
-    SelectQuery->Close();
-    SelectQuery->SQL->Text = "SELECT * FROM REVENUECODEDETAILS";
     SelectQuery->ExecQuery();
     return SelectQuery;
 }

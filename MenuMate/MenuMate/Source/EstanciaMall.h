@@ -5,7 +5,6 @@
 #include "MallExport.h"
 #include "MallExportTextFile.h"
 #include <DateUtils.hpp>
-#include "MallHelper.h"
 //---------------------------------------------------------------------------
 struct TEstanciaTaxes
 {

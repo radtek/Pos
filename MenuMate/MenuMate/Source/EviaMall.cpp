@@ -216,8 +216,7 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
 
         fieldData->OldGrandTotal = 0.00;
         int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-        std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
-        fieldData->OldGrandTotal = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 18,mallid);
+        fieldData->OldGrandTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 18,mallid);
 
         fieldData->NewGrandTotal = (fieldData->GrossSales + fieldData->NonVatableGrossSales + fieldData->OldGrandTotal) - fieldData->TotalRefund ;
 
@@ -372,8 +371,7 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
 IExporterInterface* TEviaMall::CreateExportMedium()
 {
     int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-   std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
-   UnicodeString exportType = mallhelper->GetExportType(mallid)  ;
+    UnicodeString exportType = GetExportType(mallid)  ;
     if(exportType == ".sal")
     {
 

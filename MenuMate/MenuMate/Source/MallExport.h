@@ -44,6 +44,12 @@ protected:
     virtual void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
                     UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey);
 
+    //will return type of file which will be exported.
+    virtual UnicodeString GetExportType(int mallid);
+
+    //Getting old accumulated total.
+    virtual double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex,int mallid);
+
 public:
 
     //Overriden functions from TMallExportInterface all overrided.

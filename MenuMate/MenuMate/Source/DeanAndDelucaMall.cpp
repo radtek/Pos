@@ -1105,8 +1105,7 @@ IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
 {
 
     int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-    std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
-    UnicodeString exportType = mallhelper->GetExportType(mallid)  ;
+    UnicodeString exportType = GetExportType(mallid)  ;
     if(exportType == ".txt")
     {
         return new TMallExportTextFile;

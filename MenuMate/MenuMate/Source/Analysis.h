@@ -224,7 +224,6 @@ private:	// User declarations
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
     void UpdateZKeyForMallExportSales(bool isMasterTerminal, int fieldIndex);
-    void UpdateZKeyForMallExportEviaSales(bool isMasterTerminal, int fieldIndex);
     double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
     double GetCashBlindBalance(TBlindBalances Balances);
     TDateTime GetMaxDayArchiveTime(Database::TDBTransaction &DBTransaction);
@@ -232,8 +231,6 @@ private:	// User declarations
     double GetOldAccumulatedSales(Database::TDBTransaction &DBTransaction, int fieldIndex);
     void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
     void MakeZEDLogFile(TStringList *List);
-    double GetOldAccumulatedSalesForEvia(Database::TDBTransaction &DBTransaction, int fieldIndex);
-    void UpdateAccumulatedSalesForEvia(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

@@ -389,12 +389,11 @@ TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransactio
         }
 
         int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-        std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
-        fieldData.OldAccumulatedSalesVatable = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5,mallid);
+        fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5,mallid);
         fieldData.ControlNumber = 0;
         fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 0 : 1);
         fieldData.SalesType = 1;
-        fieldData.OldAccumulatedSalesNonVatable = mallhelper->GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38,mallid);
+        fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38,mallid);
 
         fieldData.DeductionVatable = (double)(fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
@@ -1467,8 +1466,7 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
     int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-    std::auto_ptr<TMallHelper> mallhelper(new TMallHelper());
-    UnicodeString exportType = mallhelper->GetExportType(mallid)  ;
+    UnicodeString exportType = GetExportType(mallid)  ;
     if(exportType == ".txt")
     {
         return new TMallExportTextFile;

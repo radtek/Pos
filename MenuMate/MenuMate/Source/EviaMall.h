@@ -4,7 +4,6 @@
 #define EviamallH
 #include "MallExport.h"
 #include "MallExportTextFile.h"
-#include "MallHelper.h"
 
 //---------------------------------------------------------------------------
 
