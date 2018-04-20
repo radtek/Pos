@@ -3,8 +3,9 @@
 #ifndef EviamallH
 #define EviamallH
 #include "MallExport.h"
-#include "MallExportEviaSalFile.h"
 #include "MallExportTextFile.h"
+#include "MallHelper.h"
+
 //---------------------------------------------------------------------------
 
 
@@ -12,52 +13,37 @@ class TEviaMallField;
 class TEviaMall : public TMallExport
 {
    private:
+   AnsiString terminalCondition;
+   bool isMasterTerminal;
+   int deviceKey;
+   void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData,TPaymentTransaction &paymentTransaction);
+   void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
+   double GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex);
+   int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
+   UnicodeString GetFieldIndexList(std::set<int> indexKeys);
+   UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
+   UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey, int saletypeid );
+   int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
+   bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
+   void Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
+   bool IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData);
+   void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
+                                                TMallExportPrepareData &prepareDataForHSF,std::list<TMallExportSalesData> &prepareListForPreparedata, int index,int poskey,int zKey = 0);
+   void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,
+                                                TMallExportPrepareData &prepareDataForDSFPD,std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey, int zKey = 0);
 
+   void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,int index1,
+                                                TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForGrand, int index,int terminalkey, int zKey = 0);
 
-        AnsiString terminalCondition;
-       bool isMasterTerminal;
-       int deviceKey;
-       void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData);
-       void CalculateTaxesFields(TItemMinorComplete *order, TEviaMallField &fieldData);
-       void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
-     //  double grosssaleamount;
-       double GetOldGrandTotal(Database::TDBTransaction &dbTransaction, int fieldIndex);
-       int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
-       UnicodeString GetFieldIndexList(std::set<int> indexKeys);
-       UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
-       UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey );
-       int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
-       bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
-       UnicodeString GetMaxTimeDateCreated(Database::TDBTransaction &dbTransaction, int zKey = 0);
-       void LoadCommonFields(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForHSF, std::list<TMallExportSettings> &mallSettings, std::set<int> keysToSelect,
-                                        int index, int zKey = 0);
-       int Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
-
-
+   std::set<int> InsertInToSet(int arr[], int size);
 
    protected:
 
     TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
     TMallExportPrepareData PrepareDataForExport(int zKey = 0) ;
     IExporterInterface* CreateExportMedium();
-    UnicodeString GetExportType();
-
-
    public:
      TEviaMall();
-   //  void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
-                                      //  TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
-     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
-                                        TMallExportPrepareData &prepareDataForHSF,std::list<TMallExportSalesData> &prepareListForPreparedata, int index,int poskey,int zKey = 0);
-     void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,
-                                        TMallExportPrepareData &prepareDataForDSFPD,std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey, int zKey = 0);
-
-    void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,int index1,
-                                        TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForGrand, int index,int terminalkey, int zKey = 0);
-
-     std::set<int> InsertInToSet(int arr[], int size);
-     std::vector<int> vec1;
-     GetPosCount(Database::TDBTransaction &dbTransaction, int zKey);
 
 } ;
 
@@ -111,12 +97,7 @@ private:
     void SetTotaltaxWithoutVat(double totaltaxwithoutvat) ;
     void SetSalesBySalesType(std::map<int, double> salesBySalestype);
 
-
-
-
-
 public:
-
     __property UnicodeString RecordId = {read = _recordId, write = SetRecordID};
     __property UnicodeString StallCode = {read = _stallCode, write = SetStallCode};
     __property TDateTime SalesDate = {read = _salesDate, write = SetSalesDate};
@@ -139,10 +120,7 @@ public:
     __property double TotaltaxWithoutVat = {read = _totaltaxwithoutvat, write = SetTotaltaxWithoutVat};
     __property std::map<int, double> SalesBySalesType = {read = _salesBysalesType, write =  SetSalesBySalesType};
 
-
     TEviaMallField();
-
-
 };
 #endif
 

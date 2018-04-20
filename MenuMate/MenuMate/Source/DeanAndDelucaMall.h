@@ -4,6 +4,7 @@
 #define DeanAndDelucaMallH
 #include "MallExport.h"
 #include "MallExportTextFile.h"
+#include "MallHelper.h"
 //---------------------------------------------------------------------------
 class TDeanAndDelucaMallField;
 
@@ -67,28 +68,6 @@ private:
     //Get Max Zed Key Present in mall Table..
     int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
 
-protected:
-
-    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
-    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
-
-    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
-    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
-
-    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
-    IExporterInterface* CreateExportMedium();
-
-    //get which type of file will be exported
-    UnicodeString GetExportType();
-
-    //Get month code in hex
-    UnicodeString GetMonthCode(int month);
-
-public:
-
-    //Constructor
-    TDeanAndDelucaMall();
-
      //Prepare data for Invoice Sales File
     void PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareDataForDiscount, int index, int zKey = 0);
 
@@ -100,11 +79,29 @@ public:
     void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int zIndex,
                                         TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
 
+    //Get month code in hex
+    UnicodeString GetMonthCode(int month);
+
     //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);
 
      //Check Whether Item is vatable
     bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &delucaTaxes);
+
+protected:
+
+    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
+    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
+
+    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
+    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
+
+    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
+    IExporterInterface* CreateExportMedium();
+
+public:
+    //Constructor
+    TDeanAndDelucaMall();
 
     //Prepare DataBy Item initilize mall field by item
     void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);

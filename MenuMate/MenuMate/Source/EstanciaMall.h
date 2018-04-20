@@ -5,6 +5,7 @@
 #include "MallExport.h"
 #include "MallExportTextFile.h"
 #include <DateUtils.hpp>
+#include "MallHelper.h"
 //---------------------------------------------------------------------------
 struct TEstanciaTaxes
 {
@@ -278,25 +279,6 @@ private:
     //insert field into list
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEstanciaMallField fieldData, int arcBillKey);
 
-protected:
-
-    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
-    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
-
-    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
-    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
-
-    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
-    IExporterInterface* CreateExportMedium();
-
-    //get which type of file will be exported
-    UnicodeString GetExportType();
-
-public:
-
-    //Constructor
-    TEstanciaMall();
-
      //Prepare data for Invoice Sales File
     void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
                                             int index, int zKey = 0);
@@ -311,6 +293,21 @@ public:
 
     //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);
+
+protected:
+
+    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
+    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
+
+    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
+    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
+
+    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
+    IExporterInterface* CreateExportMedium();
+public:
+
+    //Constructor
+    TEstanciaMall();
 };
 
 #endif

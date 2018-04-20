@@ -6,7 +6,6 @@
 #include "MallExport.h"
 #include "MMLogging.h"
 #include "MallExportTextFile.h"
-#include "MallExportEviaSalFile.h"
 #include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 
@@ -49,17 +48,8 @@ bool TMallExport::Export()
         if(transactionDoneBeforeZed)
         {
             //Create Export Medium
-        //    TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-            if(TGlobalSettings::Instance().mallInfo.MallId == 3)
-            {
-                TMallExportSalFile* exporter = (TMallExportSalFile*)CreateExportMedium();
-                 exporter->WriteToFile(preparedData);
-            }
-            else
-            {
-               TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-                exporter->WriteToFile(preparedData);
-            }
+           TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+           exporter->WriteToFile(preparedData);
 
         }
     }
@@ -241,35 +231,17 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ExecQuery();
 
         //Create Export Medium
-         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
-         {
-              TMallExportSalFile* exporter =  new TMallExportSalFile();
-              for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-              {
-                //Fetch z-key
-                zKey = IBInternalQuery->Fields[0]->AsInteger;
-                //Prepare Data For Exporting into File
-                preparedData = PrepareDataForExport(zKey);
-                exporter->WriteToFile(preparedData);
-             }
-               delete exporter;
+        TMallExportTextFile* exporter =  new TMallExportTextFile();
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            //Fetch z-key
+            zKey = IBInternalQuery->Fields[0]->AsInteger;
+            //Prepare Data For Exporting into File
+            preparedData = PrepareDataForExport(zKey);
+            exporter->WriteToFile(preparedData);
 
-         }
-         else
-         {
-              TMallExportTextFile* exporter =  new TMallExportTextFile();
-              for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-              {
-                //Fetch z-key
-                zKey = IBInternalQuery->Fields[0]->AsInteger;
-                //Prepare Data For Exporting into File
-                preparedData = PrepareDataForExport(zKey);
-                exporter->WriteToFile(preparedData);
-
-               }
-               delete exporter;
-         }
-
+        }
+        delete exporter;
        //Display message showing status of file
        if(IBInternalQuery->RecordCount)
             MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );

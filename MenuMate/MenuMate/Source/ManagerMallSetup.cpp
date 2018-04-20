@@ -427,7 +427,7 @@ void TManagerMallSetup::InsertSettingValuesForEvia(Database::TDBTransaction &dbT
 
              UnicodeString fieldValues[numberOfFields] =
              {
-                "", "", "", "true", "", "", "", "", ".sal", "Z", "false", "false", "true", "true"
+                "", "", "", "true", "", "", "", "", ".sal", "Z", "false", "false", "true", "false"
              };
 
              int settingID[numberOfFields] =

@@ -49,9 +49,15 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
 
         //filePath where the file will be written
         UnicodeString filePath = "";
-
-        //Format of the file
-        UnicodeString format = ".txt";
+        UnicodeString format;
+        if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+        {
+            format = ".sal";
+        }
+        else
+        {
+         format = ".txt";
+        }
 
         //Iterate the file Settings
         std::list<TMallExportSettings>::iterator itFileSettings;
