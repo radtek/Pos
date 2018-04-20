@@ -1234,6 +1234,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 				break;
+            case default:
+                 IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
+                 IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
+                 break;
 			}
 			IBInternalQuery->ParamByName("SEATNO")->AsInteger = Order->SeatNo;
 			IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach();

@@ -914,6 +914,9 @@ namespace MenumateVersionParser
         void Create6_49Tables(TDBControl* const inDBControl);
         void Create6_49_DomainNotNull(TDBControl* const inDBControl);
         void Alter6_49_Tables(TDBControl* const inDBControl);
+        void UpdateTable6_49Orders(TDBControl* const inDBControl);
+        void UpdateTable6_49DayArchive(TDBControl* const inDBControl);
+        void UpdateTable6_49Archive(TDBControl* const inDBControl);
     };// class
 } // namespace
 

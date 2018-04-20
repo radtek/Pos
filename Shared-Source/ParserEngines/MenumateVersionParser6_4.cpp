@@ -100,7 +100,6 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
-
 }
 //----------------------------------------------------
 void TApplyParser::update6_45Tables()
@@ -136,6 +135,9 @@ void TApplyParser::update6_48Tables()
 //--------------------------------------------
 void TApplyParser::update6_49Tables()
 {
+    UpdateTable6_49Orders(_dbControl);
+    UpdateTable6_49DayArchive(_dbControl);
+    UpdateTable6_49Archive(_dbControl);
     Create6_49Generator(_dbControl);
     Create6_49Tables(_dbControl);
     Create6_49_DomainNotNull(_dbControl);
@@ -1710,10 +1712,22 @@ void TApplyParser::Alter6_49_Tables(TDBControl* const inDBControl)
         "ALTER TABLE ORDERS ALTER TABLE_NUMBER TYPE INT_NN ;",
 		inDBControl);
 	}
+    if (fieldExists( "ORDERS", "SEATNO", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER SEATNO TYPE INT_NN ;",
+		inDBControl);
+	}
     if (fieldExists( "DAYARCHIVE", "TABLE_NUMBER", _dbControl ) )
 	{
         executeQuery (
         "ALTER TABLE DAYARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
 		inDBControl);
 	}
     if (fieldExists( "ARCHIVE", "TABLE_NUMBER", _dbControl ) )
@@ -1722,6 +1736,103 @@ void TApplyParser::Alter6_49_Tables(TDBControl* const inDBControl)
         "ALTER TABLE ARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
 		inDBControl);
 	}
+    if (fieldExists( "ARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
 }
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Orders(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "ORDERS ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ORDERS ", "SEATNO ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEATNO = 0 WHERE a.SEATNO IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49DayArchive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "DAYARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "DAYARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Archive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "ARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

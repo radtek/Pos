@@ -7977,6 +7977,7 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 						SelectedTable = Sale->SelectedTable;
 						SelectedTabContainerName = Sale->SelectedTabContainerName;
 						SelectedParty = Sale->SelectedParty;
+                        selectedRoomNumberStr = SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber;
 
                         //MM-1649: Ask for patron count if it is enabled..
                         if(SelectedTable > 0)
