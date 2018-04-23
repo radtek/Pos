@@ -108,7 +108,22 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
-    UnicodeString categoryCode        = itemComplete->ThirdPartyCode;
+
+    if(itemComplete->RevenueCode == 0)
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               itemComplete->RevenueCode = itRev->first;
+               break;
+            }
+        }
+    }
+
+    UnicodeString categoryCode        = itemComplete->RevenueCode;
+   
     if(categoryCode == "")
         categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;

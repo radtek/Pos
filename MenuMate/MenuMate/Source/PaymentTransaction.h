@@ -214,6 +214,7 @@ class TPaymentTransaction
         bool WasSavedSales;
 		TPMSClientDetails PMSClientDetails;
         bool IsCashDrawerOpened;
+        int PatronCountFromMenu;
 };
 
 #endif

@@ -4000,6 +4000,9 @@ void __fastcall TfrmPrinterMaintenance::tbReceiptInsertMouseDown(TObject *Sender
 		 TPSectionInstruction *Instruction = new TPSectionInstruction();
 		 *Instruction = *((TPSectionInstruction*)lbReceiptPrintOpt->Items->Objects[lbReceiptPrintOpt->ItemIndex]);
 
+         if(lbReceiptPrintOpt->ItemIndex == 82)// patrons section
+            Instruction->DrawLineAbove = true;
+
 		 if (lbReceiptPrintConfig->ItemIndex < 0)
 		 {
 			lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);

@@ -38,5 +38,7 @@ class TOrderUtils
    static bool SoloItem(TItemMinorComplete *CurrentItem);
    static bool Match(TItemComplete *PrevItem,TItemComplete *CurrentItem );
    static bool Match(TItemMinorComplete *PrevItem,TItemMinorComplete *CurrentItem );
+   static bool NonPWDApplied(TList *Orders);
+   static bool NonSCDApplied(TList *Orders);
 };
 #endif

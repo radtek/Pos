@@ -70,6 +70,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     IgnoreLoyaltyKey = false;
     WasSavedSales = false;
     IsCashDrawerOpened = false;
+    PatronCountFromMenu = 0;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -131,6 +132,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
+    PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -182,6 +184,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
     WasSavedSales = OtherTransaction.WasSavedSales;
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
+    PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
 }
 //-----------------------------------------------------------------------------
 bool __fastcall UseDifferentPattern(void *Item1,void *Item2)

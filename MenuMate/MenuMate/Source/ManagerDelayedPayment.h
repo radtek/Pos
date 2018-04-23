@@ -18,7 +18,7 @@ public :
 
     TManagerDelayedPayment();
     void MoveOrderToTab(Database::TDBTransaction &DBTransaction,TSaveOrdersTo &inOrderContainer, bool isMixedMenuOrder = true);
-    void MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder = true);
+    int MoveOrderToTab(TPaymentTransaction &PaymentTransaction,bool IsTransferFromTable, bool isMixedMenuOrder = true);
     bool IsDelayedPayment(TPaymentTransaction &PaymentTransaction );
     void SplitDelayedPaymentOrderByMenuType(TList *orderList, TList *foodOrdersList, TList *bevOrdersList);
 private:

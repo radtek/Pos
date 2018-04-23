@@ -183,6 +183,8 @@ void TLoyaltyMateUtilities::SetLoyaltymateTransactions(Database::TDBTransaction 
         transaction.ContactKey = contactKey;
         transaction.SyndicateCode = syndicateCode;
         transaction.OccurredDate = Now();
+        if(!TGlobalSettings::Instance().RefundingItems && (Detials.first.AccType.first == pttRefund))
+           Detials.second = Detials.second * (-1);
         transaction.PointsDelta = Detials.second;
         transaction.PointsType = TLoyaltyMateUtilities::GetPointsType(Detials.first.AccType.first);
         transaction.InvoiceNumber = inInvoiceNumber;
@@ -364,5 +366,6 @@ bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBT
     result = !query->Eof;
     return result;
 }
+
 
 

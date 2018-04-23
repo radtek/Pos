@@ -12,19 +12,18 @@ namespace MenumateServices.WCFServices
 {
     public class PocketVoucherWebService : IPocketVoucherWebService
     {
-        private readonly SalesForceInterface _salesForceInterface;
-        private readonly SalesForceCredentialFactory _salesForceCredentialFactory;
 
         public PocketVoucherWebService()
         {
-            _salesForceInterface = new SalesForceInterface();
-            _salesForceCredentialFactory = new SalesForceCredentialFactory();
+
         }
         
         public bool EnablePocketVouchers(string accountName)
         {
             try
             {
+                SalesForceInterface _salesForceInterface = new SalesForceInterface();
+                SalesForceCredentialFactory _salesForceCredentialFactory = new SalesForceCredentialFactory();
                 //We need to login to sales force to initiate the process..
                 //Get the credentials for logging into sales force..
                 var credentials = _salesForceCredentialFactory.Create();
@@ -54,6 +53,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
+                SalesForceInterface _salesForceInterface = new SalesForceInterface();
+                SalesForceCredentialFactory _salesForceCredentialFactory = new SalesForceCredentialFactory();
                 //We need to login to sales force to initiate the process..
                 //Get the credentials for logging into sales force..
                 var credentials = _salesForceCredentialFactory.Create();
@@ -84,6 +85,7 @@ namespace MenumateServices.WCFServices
             {
                 PocketVoucherCommunication pvCommunication = new PocketVoucherCommunication();
                 RedemptionResponseDetails responseDetails = new RedemptionResponseDetails();
+
                 responseDetails = pvCommunication.RedemptionRequest(redemptionDetails);
                 return responseDetails;
             }
@@ -98,6 +100,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
+                SalesForceInterface _salesForceInterface = new SalesForceInterface();
+                SalesForceCredentialFactory _salesForceCredentialFactory = new SalesForceCredentialFactory();
                 //We need to login to sales force to initiate the process..
                 //Get the credentials for logging into sales force..
 
