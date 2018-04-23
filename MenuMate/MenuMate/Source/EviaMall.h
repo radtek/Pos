@@ -9,6 +9,13 @@
 
 
 class TEviaMallField;
+struct TEviaMallDiscount
+{
+    double scdDiscount;
+    double pwdDiscount;
+    double otherDiscount;
+};
+
 class TEviaMall : public TMallExport
 {
    private:
@@ -25,6 +32,7 @@ class TEviaMall : public TMallExport
    bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
    void Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
    bool IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData);
+   TEviaMallDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
                                                 TMallExportPrepareData &prepareDataForHSF,std::list<TMallExportSalesData> &prepareListForPreparedata, int index,int poskey,int zKey = 0);
    void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,

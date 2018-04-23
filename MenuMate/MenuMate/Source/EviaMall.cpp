@@ -207,11 +207,29 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
                 }
         }
 
+
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
+			if (SubPayment->GetPay() != 0)
+			{
+                double surcharge = SubPayment->GetSurcharge() ;
+                fieldData->TotalDiscount += surcharge;
+                fieldData->GrossSales +=surcharge;
+
+            }
+        }
+
+
+
+
         fieldData->TotalRefund = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
         if(fieldData->TotalRefund >0)
         {
           fieldData->NoOfRefund =  1;
           fieldData->GrossSales = 0;
+          fieldData->NonVatableGrossSales = 0;
+
         }
 
         fieldData->OldGrandTotal = 0.00;
@@ -250,6 +268,10 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
     double grosssaleamountwithvat = 0;
     double grosssaleamountwithoutvat = 0;
     double salesBySalesType = 0;
+
+    TEviaMallDiscount discounts = PrepareDiscounts(dbTransaction, order);
+
+
     bool isVatable = IsItemVatable(order, fieldData);
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = order->Discounts.begin(); ptrDiscounts != order->Discounts.end();std::advance(ptrDiscounts, 1))
     {
@@ -260,6 +282,7 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
     {
            grosssaleamountwithvat = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
            fieldData.GrossSales +=grosssaleamountwithvat;
+
     }
     else
     {
@@ -273,13 +296,14 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
                                                                                     (order->GetQty()*order->PriceLevel0) : 0);
      if(fieldData.TotalcancelledAmount >0)
      fieldData.NoOfcancelledTransaction =  1;
+
+     UnicodeString salesdeptformat = "GS";
+     fieldData.SalesDept =  "\"" + salesdeptformat + "\"";
+
      salesBySalesType =  (double)(order->PriceEach_BillCalc()*order->GetQty());
      int salesTypeId = GetItemSalesId(dbTransaction, order->ItemKey);
     if(salesTypeId)
     {
-
-       UnicodeString salesdeptformat = GetSaleDeptName(dbTransaction, order->ItemKey,salesTypeId ) ;
-        fieldData.SalesDept =  "\"" + salesdeptformat + "\"";
         std::map <int, double> ::iterator isSumBySalesType = fieldData.SalesBySalesType.find(salesTypeId);
         if(isSumBySalesType != fieldData.SalesBySalesType.end())
         {
@@ -299,9 +323,20 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
 {
 
     TMallExportPrepareData preparedData;
+    UnicodeString fileName;
+    std::set<int>keysToSelect;
+    int  fileNameKeys[1] = {3};
+
+
+
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+
+    keysToSelect = InsertInToSet(fileNameKeys, 1);
+    fileName = GetFileName(dbTransaction, keysToSelect, zKey)  ;
+    preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
+//    keysToSelect.clear();
 
     try
     {
@@ -637,7 +672,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
 {
 
 
-   UnicodeString fileName;
+
    std::list<TMallExportSettings> mallSettings;
    bool IsmultipledevicekeyExist = false;
    try
@@ -647,11 +682,11 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
       std::set<int>keysToSelect;
       IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
      
-      int  fileNameKeys[1] = {3};
-
-      keysToSelect = InsertInToSet(fileNameKeys, 1);
-      fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
-      prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+//      int  fileNameKeys[1] = {3};
+//
+//      keysToSelect = InsertInToSet(fileNameKeys, 1);
+//      fileName = GetFileName(dBTransaction, keysToSelect, zKey)  ;
+//      prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
       keysToSelect.clear();
 
@@ -824,6 +859,225 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
    }
 
 }
+/*
+void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, int index1,int index2,
+                                                   TMallExportPrepareData &prepareDataForDSFPD, std::list<TMallExportSalesData> &prepareListForDSF, int index,int terminalkeys, int zKey)
+{
+    bool IsmultipledevicekeyExist = false;
+    try
+    {
+      Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+      dBTransaction.RegisterQuery(IBInternalQuery);
+
+      std::set<int>keysToSelect;
+      IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
+
+      UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
+      UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
+
+
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =
+
+          " Select DailySales.FIELD_INDEX,DailySales.FIELD,DailySales.FIELD_VALUE,DailySales.VALUE_TYPE,DailySales.Z_KEY,DailySales.DEVICE_KEY"
+          " FROM"
+          "(SELECT  (DAILYDATA.FIELD_INDEX -1)  FIELD_INDEX,DAILYDATA.FIELD,"
+          " case when (DAILYDATA.FIELD_INDEX = 21) then LPAD(DAILYDATA.FIELD_VALUE,2,0) else SUM(DAILYDATA.FIELD_VALUE) end FIELD_VALUE,"
+          " DAILYDATA.VALUE_TYPE ,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+          " FROM"
+          " (SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE,a.Z_KEY,a.DEVICE_KEY"
+          " FROM MALLEXPORT_SALES a"
+          " WHERE a.FIELD_INDEX IN(9,11,13) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY 1 ASC )DAILYDATA"
+
+            " GROUP BY DAILYDATA.FIELD_INDEX,DAILYDATA.FIELD,DAILYDATA.VALUE_TYPE , DAILYDATA.FIELD_VALUE ,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+
+                               " UNION ALL"
+          " SELECT  (DAILYDATA.FIELD_INDEX -1)  FIELD_INDEX,DAILYDATA.FIELD,"
+          " CAST(SUM(DAILYDATA.FIELD_VALUE)*100 AS INT ) FIELD_VALUE,"
+          " DAILYDATA.VALUE_TYPE ,DAILYDATA.Z_KEY,DAILYDATA.DEVICE_KEY"
+          " FROM"
+          " (SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE,a.Z_KEY,a.DEVICE_KEY"
+          " FROM MALLEXPORT_SALES a"
+          " WHERE a.FIELD_INDEX IN(5,6,7,8,12,14,15) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )DAILYDATA "
+
+            " GROUP BY 1,2,4,5,6"
+
+
+
+
+
+                                 " UNION ALL"
+            " SELECT (case when (a.FIELD_INDEX=10) then 9 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS varchar(20)) FIELD_VALUE,a.VALUE_TYPE,"
+            " a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX = :INDEX_KEY1  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX, a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY"
+
+
+                                 " UNION ALL"
+            " SELECT  a.FIELD_INDEX, a.FIELD ,CAST((a.FIELD_VALUE) AS varchar(20)) FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX  IN ( " + indexKeysList2 + " ) AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +"GROUP BY a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, a.Z_KEY,a.DEVICE_KEY"
+
+                                " UNION ALL"
+            " SELECT  a.FIELD_INDEX, a.FIELD, cast('99' as varchar(10))  FIELD_VALUE, a.VALUE_TYPE, a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX = :INDEX_KEY2 AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY";
+
+
+            if(IsmultipledevicekeyExist)
+            {
+              IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+
+                                 " UNION ALL"
+            " SELECT (case when (a.FIELD_INDEX=16) then 15 end) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS Numeric) FIELD_VALUE,a.VALUE_TYPE,"
+            " a.Z_KEY,a.DEVICE_KEY"
+            " FROM MALLEXPORT_SALES a"
+            " WHERE a.FIELD_INDEX = 16  AND a.MALL_KEY = :MALL_KEY AND a.DEVICE_KEY = :DEVICE_KEY ";
+               if(zKey)
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+               }
+               else
+               {
+                    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)) ";
+               }
+
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.FIELD, a.FIELD_INDEX, a.VALUE_TYPE, a.FIELD_VALUE ,a.Z_KEY,a.DEVICE_KEY" ;
+
+
+
+            }
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " )DailySales "
+              "ORDER BY DailySales.DEVICE_KEY,DailySales.FIELD_INDEX";
+
+
+            IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 3;
+            if(zKey)
+            {
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+            }
+
+            IBInternalQuery->ParamByName("INDEX_KEY1")->AsInteger = index1;
+
+            IBInternalQuery->ParamByName("INDEX_KEY2")->AsInteger = index2;
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkeys;
+
+            IBInternalQuery->ExecQuery();
+
+            for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                TMallExportSalesData salesData;
+
+
+
+
+                salesData.FieldIndex = IBInternalQuery->Fields[0]->AsInteger;
+                MessageBox( salesData.FieldIndex," salesData.FieldIndex",MB_OK) ;
+
+                if( salesData.FieldIndex == 4 || salesData.FieldIndex == 5 || salesData.FieldIndex == 6 || salesData.FieldIndex == 7 || salesData.FieldIndex == 11 || salesData.FieldIndex == 13 || salesData.FieldIndex == 14 )
+                {
+                  MessageBox("inside if","",MB_OK) ;
+                    salesData.DataValue  = (IBInternalQuery->Fields[2]->AsString);
+                    MessageBox(salesData.DataValue," var.",MB_OK) ;
+
+
+                // double variable = (IBInternalQuery->Fields[2]->AsCurrency)/100  ;
+                // salesData.DataValue =  var;
+                  MessageBox(salesData.DataValue,"salesData.DataValue after divide in if",MB_OK) ;
+
+
+                }
+                else
+                {
+                     MessageBox("inside else","",MB_OK) ;
+                    salesData.DataValue = IBInternalQuery->Fields[2]->AsString;
+                     MessageBox(salesData.DataValue,"salesData.DataValue without divide in else ",MB_OK) ;
+                }
+
+                if(salesData.FieldIndex == 1)
+                {
+                    if(prepareListForDSF.size())
+                    {
+                        salesData.DataValue ="\r\n" +  salesData.DataValue;
+
+                    }
+
+                }
+
+               salesData.DataValue = salesData.DataValue + " ";
+                prepareListForDSF.push_back(salesData);
+
+            }
+
+    }
+
+    catch(Exception &E)
+   {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+   }
+
+}  */
+//////////////////////// /
 
 void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, int index1,int index2,
                                                    TMallExportPrepareData &prepareDataForDSFPD, std::list<TMallExportSalesData> &prepareListForDSF, int index,int terminalkeys, int zKey)
@@ -996,6 +1250,10 @@ void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dB
 
 }
 
+
+
+
+/////////////////////////
 void TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , std::vector <int> &devicekeys)
 {
 
@@ -1241,11 +1499,46 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 
 
 }
+TEviaMallDiscount TEviaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
+{
+    TEviaMallDiscount discounts;
+    discounts.scdDiscount = 0;
+    discounts.pwdDiscount = 0;
+    discounts.otherDiscount = 0;
+
+    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
+    {
+        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+            continue;
+
+        if(ptrDiscounts->DiscountGroupList.size())
+        {
+            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
+            {
+                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
+            {
+                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+        }
+        else
+        {
+
+            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+        }
+    }
+    return discounts;
+}
+
+
+
 bool TEviaMall::IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData)
 {
     std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
     bool isVatable = false;
     bool isVatAppliedOnServiceCharge = false;
+    double servicechargetax=0.00;
 
     for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
     {
@@ -1265,6 +1558,8 @@ bool TEviaMall::IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldDa
         fieldData.TotalServiceCharge += (double)order->BillCalcResult.ServiceCharge.Value;
         if (order->BillCalcResult.ServiceCharge.TaxPercentage != 0)
         {
+           servicechargetax += (double)order->BillCalcResult.ServiceCharge.TaxValue;
+           fieldData.TotalVat += servicechargetax;
            isVatable = true;
            isVatAppliedOnServiceCharge = true;
         }
