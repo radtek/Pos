@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_47Tables()
 {
     update6_47Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_48Tables()
+{
+    update6_48Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -108,14 +113,20 @@ void TApplyParser::update6_46Tables()
     CREATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_46( _dbControl ) ;
-	POPULATEDSRPIVOTProcedure6_46( _dbControl ) ;
-    AlterTablePaymentType6_46(_dbControl);
-    Updatetable_PaymentTypes6_46(_dbControl);
+	POPULATEDSRPIVOTProcedure6_46( _dbControl ) ;    
 }
 //----------------------------------------------------
 void TApplyParser::update6_47Tables()
 {
     AlterTableDiscount6_47(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_48Tables()
+{
+    Create6_48Generator(_dbControl);
+    CreateTabPatronCount6_48Table(_dbControl);
+    AlterTablePaymentType6_46(_dbControl);
+    Updatetable_PaymentTypes6_46(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1610,5 +1621,36 @@ void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_48Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_TABPATRONCOUNT", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_TABPATRONCOUNT;", inDBControl);
+		executeQuery("SET GENERATOR GEN_TABPATRONCOUNT TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
+{
+
+    if ( !tableExists( "TABPATRONCOUNT", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE TABPATRONCOUNT "
+        "( "
+        "  TABPATRONCOUNT_KEY Integer NOT NULL, "
+        "  TAB_KEY Integer,                "
+        "  PATRON_TYPE Varchar(40),          "
+        "  PATRON_COUNT Integer,             "
+        "  PRIMARY KEY (TABPATRONCOUNT_KEY)     "
+        ");",
+		inDBControl );
+        executeQuery(
+		"ALTER TABLE TABPATRONCOUNT ADD CONSTRAINT TABPATRONCOUNT_TABLE_KEY "
+		"FOREIGN KEY (TAB_KEY) REFERENCES TAB (TAB_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

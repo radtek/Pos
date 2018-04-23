@@ -3363,6 +3363,17 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction, vmUseItalyFiscalPrinter,"Use Italy Fiscal Printer", "This setting will print receipt to fiscal printer", vmgTax, false);
         SetVarStr(DBTransaction, vmFPPrinterType, "Fiscal Printer Type",  "Fiscal Printer Name", vmgTax, "FiscalPrinter");
         SetVarStr(DBTransaction, vmFPPrinterLogicalName,  "Logical Name", "Fiscal Printer Logical Name", vmgTax, "EpsonFP1");
+        SetVarBool(DBTransaction,vmIsOraclePOSServer, "POS Oracle Server",
+		"Enables POS Oracle Server.\r"
+		"Default is False",
+		vmgPOS, false);
+        SetVarInt(DBTransaction,
+		vmOracleInterfacePortNumber,
+		"Oracle Interface Port Number",
+		"Oracle Interface Port Number",
+		vmgPOS,
+		0);
+        SetVarStr(DBTransaction, vmOracleInterfaceIPAddress, "Oracle Interface IP Address",  "Oracle Interface IP Address", vmgPOS, "");
 	}
 	catch(Exception &E)
 	{

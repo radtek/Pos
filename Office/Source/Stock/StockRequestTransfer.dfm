@@ -1,6 +1,6 @@
 object frmStockRequestTransfer: TfrmStockRequestTransfer
-  Left = 443
-  Top = 126
+  Left = 215
+  Top = 198
   Width = 769
   Height = 478
   Caption = 'Select Stock Request for Transfers'

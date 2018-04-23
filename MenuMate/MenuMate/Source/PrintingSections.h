@@ -342,7 +342,8 @@ private:
     void PrintSignatureBySetting(UnicodeString customerDetails[], UnicodeString customerData[], int size);
     bool IsRoomPayment(TReqPrintJob *PrintJob);
     bool IsRMSPaymentType(TReqPrintJob *PrintJob);
-    void PrintEFTPOSReceipt(TReqPrintJob* PrintJob);
+    void PrintPatronSection(TReqPrintJob *PrintJob);
+    bool CheckToPrintPatronSection(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------

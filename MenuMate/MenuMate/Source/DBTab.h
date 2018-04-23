@@ -12,6 +12,7 @@
 #include "MM_DBCore.h"
 #include "enumTab.h"
 #include "MMContactInfo.h"
+#include "PatronType.h"
 
 //---------------------------------------------------------------------------
 
@@ -121,6 +122,9 @@ public:
     static int GetInvoiceNo(Database::TDBTransaction &dbTransaction, int invoiceKey);
     static AnsiString GetInvoiceNoFromTabKey(Database::TDBTransaction &dbTransaction, int tabKey);
     static UnicodeString GetAccountNumber(Database::TDBTransaction &dbTransaction, int tabKey);
+    static void SetDelayedPatronCount(Database::TDBTransaction &dbTransaction, int _tabKey, std::vector<TPatronType> _patrons);
+    static void DeleteDelayedPatronCount(Database::TDBTransaction &dbTransaction, int _tabKey);
+    static std::vector<TPatronType> GetDelayedPatronCount(Database::TDBTransaction &dbTransaction, int _tabKey);
 };
 
 #endif

@@ -1573,7 +1573,7 @@ void TDBTables::SaveMezzanineAreaTables(std::map<int, std::vector<TMezzanineTabl
 void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
-    { //   MessageBox( "Inserting DB.", "", MB_OK );
+    {
         TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
         incrementGenerator->Close();
         incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MEZZANINE_TABLE_ID, 1) FROM RDB$DATABASE";
@@ -1599,7 +1599,7 @@ void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransact
 void TDBTables::DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
-    { //   MessageBox( "Deleting DB.", "", MB_OK );
+    {
         TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
         deleteQuery->Close();
         deleteQuery->SQL->Text =  "DELETE FROM MEZZANINE_AREA_TABLES a "

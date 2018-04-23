@@ -60,6 +60,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ign
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Printers.dat; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\LOYALTY - 6 Steps to Menumate Loyalty.pdf; DestDir: {app}\Documentation
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\MYOB - Premier Integration (Australian Version).pdf; DestDir: {app}\Documentation
@@ -77,6 +78,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir:
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.tlb; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.pdb; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\FirebirdSql.Data.FirebirdClient.dll; DestDir: {app}; Flags: ignoreversion 
 Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion

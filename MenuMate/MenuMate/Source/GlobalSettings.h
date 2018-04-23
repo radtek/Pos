@@ -509,6 +509,11 @@ public:
     bool UseItalyFiscalPrinter;
     UnicodeString PrinterType;
     UnicodeString PrinterlogicalName;
+    bool IsOraclePOSServer;
+    STARTUPINFO siOracleApp;
+    PROCESS_INFORMATION piOracleApp;
+    int OracleInterfacePortNumber;
+    UnicodeString OracleInterfaceIPAddress;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
 };

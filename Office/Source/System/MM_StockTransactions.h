@@ -177,6 +177,7 @@ private:
 	Database::TcpIBSQL	sqlCreateTransaction;
     Database::TcpIBSQL	sqlUpdateTransaction;
 	Database::TcpIBSQL	sqlStockDetails;
+ 	Database::TcpIBSQL   sqlStockDetailsforclosing;
 	Database::TcpIBSQL	sqlAdjustStock;
 
 	class TStockLocationDetails
@@ -207,7 +208,9 @@ private:
 		double		Stocktake;
 		double		Transfer;
 		double		Inwards;
+        double	 Pev_Average_Unit_Cost;
         double      Last_latest_cost;
+
 
         
 
@@ -226,7 +229,9 @@ protected:
     void fUpdateStockParams(int StockKey, AnsiString Location, TTransactionType TransactionType, Currency AverageCost, Currency LatestCost, double onhand, double inwardsQty);
 
 	bool				fGetStockDetails(int StockKey, AnsiString Location, TStockLocationDetails& StockLocationDetails);
+    double                  fbstockdetailsusingstocktakekey(int Stocktakekeyhistory, AnsiString Location,AnsiString Stock_Group ,AnsiString Stock_Category,AnsiString Description, TStockLocationDetails& StockLocationDetailsA) ;
 	void				fReadStockDetails(TStockLocationDetails& StockLocationDetails);
+  
 
 public:
 						TStockTransaction(TIBDatabase *IBDatabase);
@@ -373,4 +378,5 @@ public:
 
 //---------------------------------------------------------------------------
 #endif
+
 

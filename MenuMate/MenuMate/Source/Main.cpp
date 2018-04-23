@@ -557,6 +557,7 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	}
 	if(Continue)
 	{
+        TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
 		frmSecurity->LogOut();
 		frmMain->Close();
 	}

@@ -772,7 +772,9 @@ void TdmMMReportData::SetupMenu3rdPartyCodes(TStrings *Menus)
 			"ItemSize.Price,"
 			"ItemSize.Special_Price,"
 			"ItemSize.Barcode,"
-			"ThirdPartyCodes.Code "
+			"ThirdPartyCodes.Code, "
+			"CAST( CASE WHEN ITEMSIZE.REVENUECODE = 0 THEN '' ELSE ITEMSIZE.REVENUECODE || '(' ||  REVENUECODEDETAILS.REVENUECODE_DESCRIPTION || ')' || ' '  END AS VARCHAR(50)) REVENUECODE "
+           // "REVENUECODEDETAILS.REVENUECODE_DESCRIPTION "
 	 	"From "
 	 		"Menu Left Join Course On "
 	 			"Menu.Menu_Key = Course.Menu_Key "
@@ -781,7 +783,9 @@ void TdmMMReportData::SetupMenu3rdPartyCodes(TStrings *Menus)
 	 		"Left Join ItemSize On "
 				"Item.Item_Key = ItemSize.Item_Key "
 			"Left Join ThirdPartyCodes On "
-				"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key ";
+				"ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
+            "Left Join REVENUECODEDETAILS On "
+                "ITEMSIZE.REVENUECODE = REVENUECODEDETAILS.REVENUECODE ";
 	 if (Menus->Count > 0)
 	 {
 		qrMenu3rdParty->SQL->Text	=	qrMenu3rdParty->SQL->Text + "Where (" +
@@ -6862,12 +6866,13 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 			"Contacts.Name, "
 			"ArcBill.Invoice_Number, "
 
-             "Cast(((sum(round(abs(Archive.QTY) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) +  "
-             "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0),2)))) as Numeric(17,4)) Total,    "
+
+            "Cast(round(sum((abs(Archive.QTY ) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) +  "
+            "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))),2) as Numeric(17,4)) Total, "
 		    "cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT),2)))as numeric(17, 2))  Discount,  "
             " cast(sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)),2))as numeric(17, 2))  AS DiscountTax ,  "
 
-			"cast((sum(round(ARCORDERDISCOUNTS.DISCOUNTED_VALUE,2))) as numeric(17,4))DiscountAmount, "
+			"cast(round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) as numeric(17,4))DiscountAmount, "
 			"ARCBILL.ArcBill_Key,  "
 			"Cast(Archive.Size_Name As VarChar(30)) Size_Name, "
 			"Cast(Archive.ITEM_NAME As VarChar(50)) Item_Name,  "
@@ -6875,8 +6880,8 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 
 			"Menu.Menu_Type,"
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location, "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(Archive.DISCOUNT/AOD.key),2) END) as numeric(17, 2)),0) AS Food_Menu_Total,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT/AOD.key),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total, "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Food_Menu_Total,  "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total, "
 
               "cast ('' as varchar(25) )CategoryGroup, "
               "cast ('' as varchar(25) ) Category, "
@@ -6964,20 +6969,22 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 			"Contacts.Name, "
 			"DAYARCBILL.Invoice_Number, "
 
-            "Cast(((sum(abs(DAYARCHIVE.QTY) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0) "
-            "  ))) as Numeric(17,4)) Total, "
+
+
+             "Cast(round(sum((abs(DAYARCHIVE.QTY ) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0) "
+             ")),2) as Numeric(17,4)) Total,"
 		    "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))as numeric(17, 2))  Discount,  "
             "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 2))  AS DiscountTax ,  "
 
-			"cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE)) as numeric(17,4))DiscountAmount, "
+         	"cast(round(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE)) as numeric(17,4))DiscountAmount, "
 			"DAYARCBILL.ArcBill_Key,  "
 			"Cast(DAYARCHIVE.Size_Name As VarChar(30)) Size_Name, "
 			"Cast(DAYARCHIVE.ITEM_NAME As VarChar(50)) Item_Name,  "
             "Cast((sum(round(coalesce ( DAYARCHIVE.QTY  * DAYARCHIVE.PRICE_INCL,0),2) )) as Numeric(17,4)) Price, "
 			"MENU.MENU_TYPE,  "
 			"cast(DayArchive.Order_Location as Varchar(25)) Order_Location,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DayArchive.DISCOUNT/DAOD.key),2) END) as numeric(17, 2)),0) AS Food_Menu_Total , "
-            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DayArchive.DISCOUNT/DAOD.key),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total,  "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Food_Menu_Total , "
+            "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) END) as numeric(17, 2)),0) AS Beverages_Menu_Total,  "
 
             "cast ('' as varchar(25) )CategoryGroup, "
             "cast ('' as varchar(25) ) Category, "
@@ -7066,10 +7073,15 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 	qrDiscountGrandTotal->SQL->Text =
 
           "Select   "
-          "Cast(sum(round((abs(Archive.QTY ) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)),2)) as Numeric(17,4)) Total, "
+          
+              "Cast(round(sum((abs(Archive.QTY ) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) +  "
+            "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))),2) as Numeric(17,4)) Total, "
           "cast(sum(round(Archive.DISCOUNT_WITHOUT_TAX,2)) as numeric(17, 2)) Discount,  "
+
+          
           "cast(sum(round(Archive.TAX_ON_DISCOUNT,2)) as numeric(17, 2)) DiscountTax,  "
-          "	cast((sum(round(Archive.DISCOUNT,2))) as numeric(17,4))DiscountAmount,  "
+        "cast(round(sum(Archive.DISCOUNT),2) as numeric(17,4))DiscountAmount, "
+
          // "Cast(sum(round((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0) - coalesce(Archive.TAX_ON_DISCOUNT,0) ),2)) as Numeric(17,4)) Price "
           "Cast((sum(round(coalesce (Archive.QTY * Archive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price "
    " From "
@@ -7114,11 +7126,13 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
 		"Union All "
 
           	"Select "
-           " Cast(((sum(round((abs(DAYARCHIVE.QTY) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ "
-            " COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)),2)))) as Numeric(17,4)) Total,  "
+           
+
+             "Cast(round(sum((abs(DAYARCHIVE.QTY ) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ "
+             "COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0))),2) as Numeric(17,4)) Total, "
             " cast((sum(round(DayArchive.DISCOUNT_WITHOUT_TAX,2)))as numeric(17, 2))  Discount,  "
            " cast((sum(round(DayArchive.TAX_ON_DISCOUNT,2)))as numeric(17, 2))  AS DiscountTax ,  "
-		   "	cast((sum(round(DayArchive.DISCOUNT,2))) as numeric(17,4))DiscountAmount,  "
+		  "cast(round(sum(DayArchive.DISCOUNT),2) as numeric(17,4))DiscountAmount, "
 		 //  "Cast(((sum(round((DayArchive.QTY * DayArchive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)- coalesce(DayArchive.TAX_ON_DISCOUNT,0)),2)) )) as Numeric(17,4)) Price "
             "Cast((sum(round(coalesce (DayArchive.QTY * DayArchive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price "
 		"From "
@@ -7174,10 +7188,10 @@ void TdmMMReportData::SetupDiscountsAndSurchargesTotals(TDateTime StartTime, TDa
 
       " COALESCE(ARCOD.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
       " COALESCE(ARCOD.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "
-		"	ARC.Time_Stamp >= :StartTime and "
-		"	ARC.Time_Stamp < :EndTime and "
+		"	ARC.Time_Stamp_Billed >= :StartTime and "
+		"	ARC.Time_Stamp_Billed < :EndTime and "
 		"	SEC.Security_Event = 'Discounted By' and "
-        " ARCOD.DISCOUNTED_VALUE <>0 and "
+        "   ARCOD.DISCOUNTED_VALUE <>0 and "
 		"	ARCB.Invoice_Number Is Not Null and "
 		"	ARC.Archive_Key Is Not Null ";
 
@@ -7217,19 +7231,19 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
 	qrDiscounts->Close();
 	qrDiscounts->SQL->Text =
 	 	"Select "
-			"Archive.Time_Stamp, "
+			"Archive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
-			"Extract(Day From Archive.Time_Stamp) Bill_Day, "
-            "Extract(Month From ARCHIVE.Time_Stamp) Bill_Month, "
-			"Extract(Year From ARCHIVE.Time_Stamp) Bill_Year, "
+			"Extract(Day From Archive.Time_Stamp_Billed) Bill_Day, "
+            "Extract(Month From ARCHIVE.Time_Stamp_Billed) Bill_Month, "
+			"Extract(Year From ARCHIVE.Time_Stamp_Billed) Bill_Year, "
 			"Security.Note, "
 			"Cast(ARCORDERDISCOUNTS.NAME As Varchar(50)) Discount_Name, "
 			"Contacts.Name, "
 			"ArcBill.Invoice_Number, "
 
-             "Cast( ((sum(abs(Archive.QTY )* Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)  "
-            "  ))) as Numeric(17,4)) Total, "
-		    "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)))as numeric(17, 4))  Discount,  "
+             "Cast(round(sum((abs(Archive.QTY ) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) +  "
+            "COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))),2) as Numeric(17,4)) Total, "
+             "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)))as numeric(17, 4))  Discount,  "
             "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT))))as numeric(17, 4))  AS DiscountTax ,  "
             //" Archive.TAX_ON_DISCOUNT DiscountTax, "
 			"cast(round(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE),2) as numeric(17,4))DiscountAmount, "
@@ -7242,8 +7256,9 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
 			"Menu.Menu_Type,"
 			"cast(Archive.Order_Location as Varchar(25)) Order_Location, "
             "coalesce(cast((CASE WHEN MENU.MENU_TYPE = 0 THEN round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Food_Menu_Total ,  "
-            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total , "
+            " coalesce(cast((CASE WHEN MENU.MENU_TYPE = 1 THEN  round(sum(Archive.DISCOUNT),2) END) as numeric(17, 4)),0) AS Beverages_Menu_Total ,"
              "cast((sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT)))+(sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE-(ARCORDERDISCOUNTS.DISCOUNTED_VALUE*(Archive.DISCOUNT_WITHOUT_TAX/Archive.DISCOUNT))))as numeric(17, 4)) AS TotalDiscount "
+        
         //    "Cast(0 as Numeric(17,4)) PriceTotalByLocation,  "
          //   "Cast( 0 as Numeric(17,4)) TotalByLocation "
 
@@ -7280,8 +7295,8 @@ void TdmMMReportData::SetupDiscountedItemsDetails(TDateTime StartTime, TDateTime
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
                "Archive.DISCOUNT_WITHOUT_TAX<>0 and "
 
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime and "
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime and "
 			"Security.Security_Event = 'Discounted By' And "
 			"ArcBill.Invoice_Number Is Not Null and "
 			"Archive.Archive_Key Is Not Null ";
@@ -7295,7 +7310,7 @@ if (Locations->Count)
 
 
       " group by "
-            "Archive.Time_Stamp, "
+            "Archive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
 			"Security.Note,  "
 			"ARCORDERDISCOUNTS.NAME ,  "
@@ -7310,18 +7325,18 @@ if (Locations->Count)
 		"Union All "
 
 		"Select "
-			"Dayarchive.Time_Stamp, "
+			"Dayarchive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
-			"Extract(Day From Dayarchive.Time_Stamp) Bill_Day, "
-            "Extract(Month From DAYARCHIVE.Time_Stamp) Bill_Month, "
-			"Extract(Year From DAYARCHIVE.Time_Stamp) Bill_Year, "
+			"Extract(Day From Dayarchive.Time_Stamp_Billed) Bill_Day, "
+            "Extract(Month From DAYARCHIVE.Time_Stamp_Billed) Bill_Month, "
+			"Extract(Year From DAYARCHIVE.Time_Stamp_Billed) Bill_Year, "
 			"Security.Note, "
 			"Cast(DAYARCORDERDISCOUNTS.NAME As Varchar(50)) Discount_Name, "
 			"Contacts.Name, "
 			"DAYARCBILL.Invoice_Number, "
 
-            "Cast(((sum(abs(DAYARCHIVE.QTY) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0) "
-            "  ))) as Numeric(17,4)) Total, "
+            "Cast(round(sum((abs(DAYARCHIVE.QTY ) * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0) "
+             ")),2) as Numeric(17,4)) Total,"
         //     "DAYARCHIVE.Archive_Key, "
 		    "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT)))as numeric(17, 4))  Discount,  "
             "cast((sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE-(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE*(DAYARCHIVE.DISCOUNT_WITHOUT_TAX/DAYARCHIVE.DISCOUNT))))as numeric(17, 4))  AS DiscountTax ,  "
@@ -7375,8 +7390,8 @@ if (Locations->Count)
          " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
          " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
              "Dayarchive.DISCOUNT_WITHOUT_TAX<>0 and "
-			"Dayarchive.Time_Stamp >= :StartTime and "
-			"Dayarchive.Time_Stamp < :EndTime and "
+			"Dayarchive.Time_Stamp_Billed >= :StartTime and "
+			"Dayarchive.Time_Stamp_Billed < :EndTime and "
 			"Security.Security_Event = 'Discounted By' and "
 			"DAYARCBILL.Invoice_Number Is Not Null And "
             "DayArchive.Archive_Key Is Not Null ";
@@ -7389,7 +7404,7 @@ if (Locations->Count)
 	qrDiscounts->SQL->Text        = qrDiscounts->SQL->Text +
 
        " group by "
-            "Dayarchive.Time_Stamp, "
+            "Dayarchive.Time_Stamp_Billed, "
 			"Security.Terminal_Name, "
 			"Security.Note,  "
 			"DAYARCORDERDISCOUNTS.NAME ,  "
@@ -7420,10 +7435,11 @@ for (int i=0; i<Locations->Count; i++)
 	qrDiscountGrandTotal->SQL->Text =
 
          "Select   "
-          "Cast(sum((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0))) as Numeric(17,4)) Total, "
+          "Cast((round(sum(ARCHIVE.QTY * ARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ "
+            " COALESCE(ARCHIVE.DISCOUNT_WITHOUT_TAX,0)),2)) as Numeric(17,4)) Total,  "
           "cast(sum(Archive.DISCOUNT_WITHOUT_TAX) as numeric(17, 2)) Discount,  "
           "cast(sum(Archive.TAX_ON_DISCOUNT) as numeric(17, 2)) DiscountTax,  "
-          "	cast((sum(Archive.DISCOUNT)) as numeric(17,4))DiscountAmount,  "
+          "	cast(round(sum(Archive.DISCOUNT),2) as numeric(17,4))DiscountAmount, "
        //  "Cast(sum((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0) - coalesce(Archive.TAX_ON_DISCOUNT,0) )) as Numeric(17,4)) Price "
        "Cast((sum(round(coalesce (Archive.QTY * Archive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price  "
 
@@ -7451,8 +7467,8 @@ for (int i=0; i<Locations->Count; i++)
            "   ARCHIVE.ARCHIVE_KEY not in (Select ARCORDERDISCOUNTS.ARCHIVE_KEY from ARCORDERDISCOUNTS  where "
             "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or "
            "   COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and  ARCHIVE.DISCOUNT_WITHOUT_TAX<>0 AND "
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime  " ;
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime  " ;
 	if (Locations->Count)
 	{
 		qrDiscountGrandTotal->SQL->Text 	= 	qrDiscountGrandTotal->SQL->Text + "And (" +
@@ -7465,11 +7481,11 @@ for (int i=0; i<Locations->Count; i++)
 		"Union All "
 
           		"Select "
-           " Cast(((sum(DAYARCHIVE.QTY * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ "
-            " COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)))) as Numeric(17,4)) Total, "
+            " Cast((round(sum(DAYARCHIVE.QTY * DAYARCHIVE.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ "
+            " COALESCE(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)),2)) as Numeric(17,4)) Total, "
             " cast((sum(DayArchive.DISCOUNT_WITHOUT_TAX))as numeric(17, 2))  Discount,  "
-           " cast((sum(DayArchive.TAX_ON_DISCOUNT))as numeric(17, 2))  AS DiscountTax ,  "
-		   "	cast((sum(DayArchive.DISCOUNT)) as numeric(17,4))DiscountAmount,  "
+           "  cast((sum(DayArchive.TAX_ON_DISCOUNT))as numeric(17, 2))  AS DiscountTax ,  "
+		   "  cast(round(sum(DayArchive.DISCOUNT),2) as numeric(17,4))DiscountAmount, "
 	  	  // "Cast(((sum(DayArchive.QTY * DayArchive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)- coalesce(DayArchive.TAX_ON_DISCOUNT,0)) )) as Numeric(17,4)) Price "
             "Cast((sum(round(coalesce (DayArchive.QTY * DayArchive.PRICE_INCL,0),2) )) as Numeric(17,4)) Price  "
 		"From "
@@ -7495,8 +7511,8 @@ for (int i=0; i<Locations->Count; i++)
               "DayArchive.ARCHIVE_KEY not in (Select DAYARCORDERDISCOUNTS.ARCHIVE_KEY from DAYARCORDERDISCOUNTS  where    "
               "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary')  AND  DAYARCHIVE.DISCOUNT_WITHOUT_TAX<>0 AND "
-		"	Dayarchive.Time_Stamp >= :StartTime and "
-		"	Dayarchive.Time_Stamp < :EndTime  ";
+		"	Dayarchive.Time_Stamp_Billed >= :StartTime and "
+		"	Dayarchive.Time_Stamp_Billed < :EndTime  ";
 
     qrDiscountGrandTotal->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrDiscountGrandTotal->ParamByName("EndTime")->AsDateTime		= EndTime;
@@ -7557,9 +7573,9 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
           "Arcbill.ARCBILL_KEY  in (Select     Arcbill.ARCBILL_KEY from ARCBILL left join SECURITY on  SECURITY.SECURITY_REF=Arcbill.Security_Ref where  security.SECURITY_EVENT='Discounted By') and "
            "Archive.ARCHIVE_KEY not in (Select ARCORDERDISCOUNTS.ARCHIVE_KEY from ARCORDERDISCOUNTS  where "
               "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or  "
-              "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and    "
-			"Archive.Time_Stamp >= :StartTime and "
-			"Archive.Time_Stamp < :EndTime and "
+              "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and ARCHIVE.DISCOUNT_WITHOUT_TAX<>0  and " 
+			"Archive.Time_Stamp_Billed >= :StartTime and "
+			"Archive.Time_Stamp_Billed < :EndTime and "
 	   //		"Security.Security_Event = 'Discounted By' And "
 			"ArcBill.Invoice_Number Is Not Null and "
 			"Archive.Archive_Key Is Not Null and "
@@ -7627,9 +7643,9 @@ void TdmMMReportData::SetupDiscountedItemsSummary(TDateTime StartTime, TDateTime
          "DayArcbill.ARCBILL_KEY  in (Select     DayArcbill.ARCBILL_KEY from DAYARCBILL left join SECURITY on  SECURITY.SECURITY_REF= DayArcbill.Security_Ref where  security.SECURITY_EVENT='Discounted By') and "
               "DayArchive.ARCHIVE_KEY not in (Select DAYARCORDERDISCOUNTS.ARCHIVE_KEY from DAYARCORDERDISCOUNTS  where  "
               "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Non-Chargeable' or  "
-              "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and  "
-			"DayArchive.Time_Stamp >= :StartTime and "
-			"DayArchive.Time_Stamp < :EndTime and "
+              "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) = 'Complimentary') and DAYARCHIVE.DISCOUNT_WITHOUT_TAX <> 0  and "
+			"DayArchive.Time_Stamp_Billed >= :StartTime and "
+			"DayArchive.Time_Stamp_Billed < :EndTime and "
 		  //	"Security.Security_Event = 'Discounted By' And "
 			"DayArcBill.Invoice_Number Is Not Null and "
 			"DayArchive.Archive_Key Is Not Null and "

@@ -33,7 +33,7 @@ void __fastcall TfrmDiscountTimes::FormShow(TObject *Sender)
 
 void __fastcall TfrmDiscountTimes::FormResize(TObject *Sender)
 {
-	if (Tag != Screen->Width)
+   	if (Tag != Screen->Width)
 	{
 		int Temp = Tag;
 		Tag = Screen->Width;
@@ -42,10 +42,10 @@ void __fastcall TfrmDiscountTimes::FormResize(TObject *Sender)
 			ScaleBy(Screen->Width, Temp);
                 }
 	}
-        /*
+
         this->Height = Screen->Height;
         GUIScale::ParentHeight(Panel1, 1);
-        GUIScale::ParentHeight(Panel28, 0.15);
+        GUIScale::ParentHeight(Panel28, 0.32);
         GUIScale::ChildrenHeight(Panel28, 0.1);
         GUIScale::ParentHeight(Panel4, 0.4);
         GUIScale::ParentHeight(Panel5, 0.4);
@@ -53,7 +53,7 @@ void __fastcall TfrmDiscountTimes::FormResize(TObject *Sender)
         //GUIScale::ChildrenPercentageHeight(Panel5, 0.5);
 
         GUIScale::ParentWidth(Panel2, 0.2);
-        GUIScale::ParentWidth(Panel5, 0.3);   */
+        GUIScale::ParentWidth(Panel5, 0.3);
 	Top = 0;
 	Left = 0;
 	Panel3->Left = Panel1->Left + Panel1->Width;

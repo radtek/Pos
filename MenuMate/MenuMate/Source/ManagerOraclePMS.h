@@ -18,10 +18,13 @@ class TManagerOraclePMS : public TBasePMS
        void LogPMSEnabling(TriggerLocation triggerType);
        AnsiString GetFileName();
        bool EnableOraclePMSSilently();
+       bool FindAndTerminateProcess();
     private:
        bool GetLinkStatus();
        bool InitializeoracleTCP();
-       bool LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
        bool LoadMealTimings(Database::TDBTransaction &DBTransaction);
+       bool TriggerApplication();
+       void CloseExistingApplication();
+       void MakeOracleSeedFile();
 };
 #endif
