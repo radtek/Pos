@@ -7980,6 +7980,15 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 						SelectedTabContainerName = Sale->SelectedTabContainerName;
 						SelectedParty = Sale->SelectedParty;
                         selectedRoomNumberStr = SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber;
+                        if(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Pos(selectedRoomNumberStr))
+                        {
+                            isWalkInUser = true;
+                            SiHotAccount.AccountDetails.clear();
+                        }
+                        else if(!SiHotAccount.AccountDetails.size())
+                        {
+                             GetRoomDetails();
+                        }
 
                         //MM-1649: Ask for patron count if it is enabled..
                         if(SelectedTable > 0)
@@ -8726,16 +8735,15 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
     RedrawItems();
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
+void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton)   
 {
     try
-    {
+    {   
         for (int i = 0; i < tgridSeats->ColCount; i++)
-        {
+        {            
             tgridSeats->Buttons[0][i]->Latched = false;
         }
-        GridButton->Latched = true;
-
+         GridButton->Latched = true;
         int CurrentSeat = tgridSeats->Col(GridButton) + 1; // Zero Indexed.
         if (CurrentSeat == SelectedSeat)
         {
@@ -8874,6 +8882,11 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 			if (SeatOrders[0]->Orders->Count != 0)
 			{
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                                TGlobalSettings::Instance().EnableCustomerJourney)
+                {
+                    SeatOrders[1]->RoomNumber = selectedRoomNumberStr;
+                }
 				// Check for orders on Seat 0 and move them to selected seat.
 				tgridSeatsMouseClick(Sender, TMouseButton() << mbLeft, TShiftState(), tgridSeats->Buttons[0][0]);
 			}
@@ -9002,7 +9015,14 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                    {
                      TDBTables::SetTableBillingStatus(DBTransaction,OrderContainer.Location["SelectedTable"],eNoneStatus);
                    }
-                }
+
+                   /*if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                                TGlobalSettings::Instance().EnableCustomerJourney)
+                   {  MessageBox(OrderContainer.Location["RoomNumber"],"OrderContainer.Location",MB_OK);
+//                        TDBTables::SetSeatName(DBTransaction, OrderContainer.Location["PartyName"], OrderContainer.Location["SelectedTable"],
+//                                OrderContainer.Location["SelectedSeat"]);
+                   }
+                }*/
                 delete frmConfirmOrder;
                 frmConfirmOrder = NULL;
 			}
@@ -9150,6 +9170,11 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			else
 			{
 				SelectedSeat = 0;
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                                TGlobalSettings::Instance().EnableCustomerJourney)
+                {
+                    SeatOrders[1]->RoomNumber = selectedRoomNumberStr;
+                }
 				tgridSeatsMouseClick(Sender, TMouseButton() << mbLeft, TShiftState(), tgridSeats->Buttons[0][0]);
 			}
 
@@ -10536,6 +10561,12 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
                          TDBTables::SetTableBillingStatus(DBTransaction,OrderContainer.Location["SelectedTable"],eNoneStatus);
                        }
 
+                        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                                TGlobalSettings::Instance().EnableCustomerJourney)
+                        {
+                            TDBTables::SetSeatName(DBTransaction, selectedRoomNumberStr, OrderContainer.Location["SelectedTable"],
+                                    OrderContainer.Location["SelectedSeat"]);
+                        }
                     }
                     delete frmConfirmOrder;
                     frmConfirmOrder = NULL;
@@ -12882,19 +12913,36 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, boo
         { 
             isTabLocked = false;
         }
-
-        if(((!NewTabKey || isTabLocked) && SeatOrders[SelectedSeat]->RoomNumber == "" && SeatOrders[SelectedSeat]->SeatNumber != 1) && isCalledFromGuestSeat)
-            DisplayRoomNoUI();
        
-        if(TGlobalSettings::Instance().PMSType == SiHot && SeatOrders[SelectedSeat]->RoomNumber == "" && selectedRoomNumberStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
+        if(((!NewTabKey || isTabLocked) && SeatOrders[SelectedSeat]->RoomNumber == "" ) && isCalledFromGuestSeat )
+            DisplayRoomNoUI();
+
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && SeatOrders[SelectedSeat]->RoomNumber == ""
+                     && selectedRoomNumberStr != "" && TGlobalSettings::Instance().EnableCustomerJourney && !NewTabKey)
         {
             GridButton->Caption = selectedRoomNumberStr;
             SeatOrders[SelectedSeat]->RoomNumber = selectedRoomNumberStr;
             SeatOrders[SelectedSeat]->SeatName = selectedRoomNumberStr;
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();
-            TDBTables::SetSeatName(DBTransaction, selectedRoomNumberStr, SelectedTable, SelectedSeat);
+
+           // if(SeatOrders[SelectedSeat]->Orders->Count)
+                TDBTables::SetSeatName(DBTransaction, selectedRoomNumberStr, SelectedTable, SelectedSeat);
+
+            if(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Pos(selectedRoomNumberStr))
+            {
+                LoadDefaultGuestDetailsToSeatOrders(selectedRoomNumberStr,
+                        TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransactionName));
+            }
+            else if(SiHotAccount.AccountDetails.size())
+            {
+                for(std::vector<TAccountDetails>::iterator accIt = SiHotAccount.AccountDetails.begin(); accIt != SiHotAccount.AccountDetails.end(); ++accIt)
+                {   
+                    LoadDefaultGuestDetailsToSeatOrders(selectedRoomNumberStr, accIt->FirstName, accIt->LastName);
+                }
+            }
             DBTransaction.Commit();
+            RedrawSeatOrders();
         }
     }
     catch(Exception & E)
@@ -15566,9 +15614,8 @@ void TfrmSelectDish::DisplayRoomNoUI()
             Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
             TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
             dbTransaction.StartTransaction();
-            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = TManagerVariable::Instance().GetStr(dbTransaction,vmSiHotDefaultTransactionName);
-            SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomBedNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+            LoadDefaultGuestDetailsToSeatOrders(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,
+                                    TManagerVariable::Instance().GetStr(dbTransaction,vmSiHotDefaultTransactionName));
             dbTransaction.Commit();
             RedrawSeatOrders();
         }
@@ -15635,10 +15682,7 @@ void TfrmSelectDish::GetRoomDetails()
                         SiHotAccount.AccountDetails.push_back(accountDetails);
 
                         //For displaying room details like member.
-                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = accIt->RoomBedNumber;
-                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = accIt->FirstName;
-                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.LastName = accIt->LastName;
-                        SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomBedNumber = accIt->RoomBedNumber;
+                        LoadDefaultGuestDetailsToSeatOrders(accIt->RoomBedNumber, accIt->FirstName, accIt->LastName);
                     }
                 }
             }
@@ -15962,5 +16006,13 @@ bool TfrmSelectDish::LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction
         isGuestExist = LoadRoomDetailsToPaymentTransaction(PaymentTransaction);
     }
     return isGuestExist;
+}
+//-------------------------------------------------------------------------------------
+void TfrmSelectDish::LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString lastName)
+{
+    SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = roomNo;
+    SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = firstName;
+    SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.LastName = lastName;
+    SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomBedNumber = roomNo;
 }
 
