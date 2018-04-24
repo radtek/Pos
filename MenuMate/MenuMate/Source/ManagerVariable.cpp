@@ -2979,6 +2979,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Float GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+     SetVarStr( DBTransaction, vmSurchargeGLCode, "Surcharge GL Code",
+                    "Surcharge GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,
