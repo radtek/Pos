@@ -9021,8 +9021,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                    {  MessageBox(OrderContainer.Location["RoomNumber"],"OrderContainer.Location",MB_OK);
 //                        TDBTables::SetSeatName(DBTransaction, OrderContainer.Location["PartyName"], OrderContainer.Location["SelectedTable"],
 //                                OrderContainer.Location["SelectedSeat"]);
-                   }
-                }*/
+                   }  */
+                }
                 delete frmConfirmOrder;
                 frmConfirmOrder = NULL;
 			}
