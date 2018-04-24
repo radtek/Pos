@@ -15,13 +15,6 @@ struct TDeanAndDelucaTaxes
     double localTax;
 };
 
-struct TDeanAndDelucaDiscount
-{
-    double scdDiscount;
-    double pwdDiscount;
-    double otherDiscount;
-};
-
 class TDeanAndDelucaMall : public TMallExport
 {
 private:
@@ -58,14 +51,8 @@ private:
     //insert field into list
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TDeanAndDelucaMallField &fieldData, int arcBillKey);
 
-    //prepare SCD, PWD and others discount
-    TDeanAndDelucaDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
-
     //Check whether item is assigned to any sales type..
     int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
-
-    //Get Max Zed Key Present in mall Table..
-    int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
 
      //Prepare data for Invoice Sales File
     void PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareDataForDiscount, int index, int zKey = 0);

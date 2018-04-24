@@ -405,7 +405,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
          //Get Max Z key;
         int maxZedKey;
         if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction);
+            maxZedKey = GetMaxZedKey(dBTransaction,2);
         else
             maxZedKey = zKey;
 
@@ -719,12 +719,12 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         //Get Max Z key;
         int maxZedKey;
         if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction);
+            maxZedKey = GetMaxZedKey(dBTransaction,2);
         else
             maxZedKey = zKey;
 
         //Get Second maximum key;
-        int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
+        int maxZedKey2 = GetMaxZedKey(dBTransaction, 2,maxZedKey);
 
         //Query for fetching data for writing into daily sales file.
         IBInternalQuery->Close();
@@ -1129,7 +1129,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     //Get all Taxes stored them in TEstanciaTaxes type structure
     bool isVatable = IsItemVatable(order, taxes);
 
-    TDeanAndDelucaDiscount discounts = PrepareDiscounts(dbTransaction, order);
+    TMallExportDiscount discounts = PrepareDiscounts(dbTransaction, order);
 
     double grossAmount = 0;
     double salesBySalesType = 0;
@@ -1179,41 +1179,6 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
         }
     }
 
-}
-//------------------------------------------------------------------------------------------------------------------
-TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
-{
-    TDeanAndDelucaDiscount discounts;
-    discounts.scdDiscount = 0;
-    discounts.pwdDiscount = 0;
-    discounts.otherDiscount = 0;
-
-    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
-    {
-        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
-            continue;
-
-        if(ptrDiscounts->DiscountGroupList.size())
-        {
-            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
-            {
-                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
-            {
-                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-            else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
-            {
-                discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-        }
-        else
-        {
-            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-        }
-    }
-    return discounts;
 }
 //--------------------------------------------------------------------------------------------------------------------------
 bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &taxes)
@@ -1295,38 +1260,5 @@ UnicodeString TDeanAndDelucaMall::GetMonthCode(int month)
     return code;
 }
 //-----------------------------------------------------------------------------------------------------------
-int TDeanAndDelucaMall::GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey)
-{
-    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
-    dbTransaction.RegisterQuery(selectQuery);
-    int maxZedKey = 0;
-
-    try
-    {
-        selectQuery->Close();
-        selectQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a "
-                                 "WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(zKey)
-            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY < :Z_KEY ";
-
-        selectQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-
-        if(zKey)
-            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
-
-        selectQuery->ExecQuery();
-
-        if(selectQuery->RecordCount)
-                maxZedKey = selectQuery->Fields[0]->AsInteger;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-	}
-
-    return maxZedKey;
-}
 
 

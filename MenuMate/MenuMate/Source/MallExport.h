@@ -8,6 +8,15 @@
 #include "IExporterInterface.h"
 #include <DateUtils.hpp>
 //---------------------------------------------------------------------------
+
+struct TMallExportDiscount
+{
+    double scdDiscount;
+    double pwdDiscount;
+    double otherDiscount;
+};
+
+
 class TMallExport: public TMallExportInterface
 {
 private:
@@ -49,6 +58,12 @@ protected:
 
     //Getting old accumulated total.
     virtual double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex,int mallid);
+    
+	//prepare SCD, PWD and others discount
+	virtual TMallExportDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
+
+	//Get Max Zed Key Present in mall Table..
+    virtual int GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallkey, int zKey = 0);
 
 public:
 

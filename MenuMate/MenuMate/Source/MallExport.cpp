@@ -506,3 +506,72 @@ double TMallExport::GetOldAccumulatedSales(Database::TDBTransaction &dbTransacti
     return oldAccumulatedSales;
 }
 
+TMallExportDiscount TMallExport::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
+{
+    TMallExportDiscount discounts;
+    discounts.scdDiscount = 0;
+    discounts.pwdDiscount = 0;
+    discounts.otherDiscount = 0;
+
+    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
+    {
+        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+            continue;
+
+        if(ptrDiscounts->DiscountGroupList.size())
+        {
+            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
+            {
+                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
+            {
+                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
+            {
+                discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+        }
+        else
+        {
+            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+        }
+    }
+    return discounts;
+}
+
+int TMallExport::GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallid, int zKey)
+{
+    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
+    dbTransaction.RegisterQuery(selectQuery);
+    int maxZedKey = 0;
+
+    try
+    {
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a "
+                                 "WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(zKey)
+            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY < :Z_KEY ";
+
+        selectQuery->ParamByName("MALL_KEY")->AsInteger = mallid;
+
+        if(zKey)
+            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+                maxZedKey = selectQuery->Fields[0]->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+
+    return maxZedKey;
+}
+

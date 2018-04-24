@@ -270,7 +270,7 @@ void TEviaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItem
     double grosssaleamountwithoutvat = 0;
     double salesBySalesType = 0;
 
-    TEviaMallDiscount discounts = PrepareDiscounts(dbTransaction, order);
+    TMallExportDiscount discounts = PrepareDiscounts(dbTransaction, order);
 
 
     bool isVatable = IsItemVatable(order, fieldData);
@@ -337,7 +337,7 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
     keysToSelect = InsertInToSet(fileNameKeys, 1);
     fileName = GetFileName(dbTransaction, keysToSelect, zKey)  ;
     preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
-//    keysToSelect.clear();
+    keysToSelect.clear();
 
     try
     {
@@ -583,39 +583,6 @@ UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, st
 		throw;
 	}
     return fileName;
-}
-
-int TEviaMall::GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey)
-{
-    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
-    dbTransaction.RegisterQuery(selectQuery);
-    int maxZedKey = 0;
-
-    try
-    {
-        selectQuery->Close();
-        selectQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a "
-                                 "WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(zKey)
-            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY < :Z_KEY ";
-
-        selectQuery->ParamByName("MALL_KEY")->AsInteger = 3;
-
-        if(zKey)
-            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
-
-        selectQuery->ExecQuery();
-
-        if(selectQuery->RecordCount)
-                maxZedKey = selectQuery->Fields[0]->AsInteger;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-	}
-    return maxZedKey;
 }
 
 bool TEviaMall:: CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey)
@@ -1049,11 +1016,11 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
         IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
         int IndexForinitialOldGrand =17;
         if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction);
+            maxZedKey = GetMaxZedKey(dBTransaction,3);
         else
             maxZedKey = zKey;
 
-        int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
+        int maxZedKey2 = GetMaxZedKey(dBTransaction,3, maxZedKey);
 
 
 
@@ -1283,40 +1250,6 @@ void TEviaMall::Getdevicekey(Database::TDBTransaction &dbTransaction,int zkey , 
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
 }
-
-TEviaMallDiscount TEviaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
-{
-    TEviaMallDiscount discounts;
-    discounts.scdDiscount = 0;
-    discounts.pwdDiscount = 0;
-    discounts.otherDiscount = 0;
-
-    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
-    {
-        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
-            continue;
-
-        if(ptrDiscounts->DiscountGroupList.size())
-        {
-            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
-            {
-                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
-            {
-                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-        }
-        else
-        {
-
-            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-        }
-    }
-    return discounts;
-}
-
-
 
 bool TEviaMall::IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData)
 {
