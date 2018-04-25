@@ -32,7 +32,7 @@ namespace MenumateVersionParser
             pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
             pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
             pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,pv6_41, pv6_42, pv6_43,pv6_44,
-            pv6_45,pv6_46,pv6_47,pv6_48
+            pv6_45,pv6_46,pv6_47,pv6_48,pv6_49
     };
 
     class TApplyParser
@@ -126,6 +126,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_46( TDBControl* const inDBControl );
         PARSER_ERROR apply6_47( TDBControl* const inDBControl );
         PARSER_ERROR apply6_48( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_49( TDBControl* const inDBControl );
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -896,8 +897,6 @@ namespace MenumateVersionParser
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
         void UpdateServingTimes(TDBControl* const _dbControl);
-        void AlterTablePaymentType6_46(TDBControl* const _dbControl);
-        void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
 
         void upgrade6_47Tables();
         void update6_47Tables();
@@ -907,6 +906,11 @@ namespace MenumateVersionParser
         void update6_48Tables();
         void Create6_48Generator(TDBControl* const inDBControl);
         void CreateTabPatronCount6_48Table(TDBControl* const inDBControl);
+        void upgrade6_49Tables();
+        void update6_49Tables();
+        void AlterTablePaymentType6_49(TDBControl* const _dbControl);
+        void Updatetable_PaymentTypes6_49(TDBControl* const _dbControl);
+
     };// class
 } // namespace
 

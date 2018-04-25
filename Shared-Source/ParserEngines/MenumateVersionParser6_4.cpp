@@ -57,6 +57,11 @@ void TApplyParser::upgrade6_48Tables()
 {
     update6_48Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_49Tables()
+{
+    update6_49Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -125,8 +130,12 @@ void TApplyParser::update6_48Tables()
 {
     Create6_48Generator(_dbControl);
     CreateTabPatronCount6_48Table(_dbControl);
-    AlterTablePaymentType6_46(_dbControl);
-    Updatetable_PaymentTypes6_46(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_49Tables()
+{
+    AlterTablePaymentType6_49(_dbControl);
+    Updatetable_PaymentTypes6_49(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1564,38 +1573,7 @@ void TApplyParser::POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl 
 		throw;
 	}
 }
-//------------------------------------------------------------------------------
-void TApplyParser::AlterTablePaymentType6_46(TDBControl* const inDBControl)
-{
-   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
-    {
-        executeQuery(
-		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
-		inDBControl);
-    }
-}
-//--------------------------------------------------------------------------------------------------------
-void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
-{
-    TDBTransaction transaction( *_dbControl );
-    transaction.StartTransaction();
-    try
-    {
-        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
-        {
-            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
-            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
-            UpdateQuery->ExecQuery();
-        }
-
-        transaction.Commit();
-    }
-    catch( Exception &E )
-    {
-        transaction.Rollback();
-    }
-}
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
 {
@@ -1649,6 +1627,39 @@ void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
         executeQuery(
 		"ALTER TABLE TABPATRONCOUNT ADD CONSTRAINT TABPATRONCOUNT_TABLE_KEY "
 		"FOREIGN KEY (TAB_KEY) REFERENCES TAB (TAB_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+
+void TApplyParser::AlterTablePaymentType6_49(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
+		inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------------
+void TApplyParser::Updatetable_PaymentTypes6_49(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
     }
 }
 //------------------------------------------------------------------------------
