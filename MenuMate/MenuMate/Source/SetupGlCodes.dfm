@@ -265,7 +265,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Surcharge'
+      Caption = 'Payment Surcharge'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
