@@ -3379,7 +3379,8 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
          TIBSQL *IBInternalQuerySurcharge =  DBTransaction.Query(DBTransaction.AddQuery());
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
-            terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
+
+          terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
         }
         AnsiString paymentDetails = "";
         GetPaymentDetails(paymentDetails, terminalNamePredicate);
@@ -3413,11 +3414,13 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 
 
 
-        IBInternalQuerySurcharge->ParamByName("STARTTIME")->AsDateTime = preZTime;
-        IBInternalQuerySurcharge->ParamByName("ENDTIME")->AsDateTime   =  nextDay;
-        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
-        {
+       IBInternalQuerySurcharge->ParamByName("STARTTIME")->AsDateTime = preZTime;
+       IBInternalQuerySurcharge->ParamByName("ENDTIME")->AsDateTime   =  nextDay;
+       if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+       {
+
             IBInternalQuerySurcharge->ParamByName("TERMINAL_NAME")->AsString = TerminalName;  // add terminal param..
+
         }
 
         IBInternalQuerySurcharge->Close();
@@ -3626,15 +3629,16 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         else if(!addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment && cashAmount > 0.0)
              AddInvoicePayment(XeroInvoiceDetail,"Cash", ( cashAmount) , cashGlCode,0);
 
-              SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
+           //   SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
 
+
+        if(TGlobalSettings::Instance().SurchargeGLCode !=""  &&  TGlobalSettings::Instance().SurchargeGLCode !=NULL &&  TGlobalSettings::Instance().SurchargeGLCode !=0)
+            {
        if(IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat !=0)
         {
 
          SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
 
-        if(TGlobalSettings::Instance().SurchargeGLCode !=""  &&  TGlobalSettings::Instance().SurchargeGLCode !=NULL &&  TGlobalSettings::Instance().SurchargeGLCode !=0)
-            {
 
         AddInvoiceItem(XeroInvoiceDetail,"Surcharge",SurchargeAmount,TGlobalSettings::Instance().SurchargeGLCode,0);
 
