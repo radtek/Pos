@@ -3632,26 +3632,26 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
            //   SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
 
 
+        bool isSurchargeGLCodePresent = false;
         if(TGlobalSettings::Instance().SurchargeGLCode !=""  &&  TGlobalSettings::Instance().SurchargeGLCode !=NULL &&  TGlobalSettings::Instance().SurchargeGLCode !=0)
-            {
-       if(IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat !=0)
         {
-
-         SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
-
-
-        AddInvoiceItem(XeroInvoiceDetail,"Surcharge",SurchargeAmount,TGlobalSettings::Instance().SurchargeGLCode,0);
-
-             }
-           }
-        else
-        {
-        if(catTotal - payTotal)
+           isSurchargeGLCodePresent = true;
+           if(IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat !=0)
             {
-          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -4),TGlobalSettings::Instance().RoundingGLCode,0);
-
+                SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
+                AddInvoiceItem(XeroInvoiceDetail,"Surcharge",SurchargeAmount,TGlobalSettings::Instance().SurchargeGLCode,0);
             }
-         }
+        }
+        if(isSurchargeGLCodePresent)
+        {
+           catTotal += SurchargeAmount;
+        }
+
+        if(catTotal - payTotal)
+        {
+            AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -4),TGlobalSettings::Instance().RoundingGLCode,0);
+        }
+
         AnsiString daystr = Now().FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
         AnsiString refName = TGlobalSettings::Instance().EnableDepositBagNum ? CompanyName : TerminalName ;
         XeroInvoiceDetail.InvoiceReference = refName +" Sales";
