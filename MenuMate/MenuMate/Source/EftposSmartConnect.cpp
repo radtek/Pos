@@ -404,8 +404,6 @@ void TEftPosSmartConnect::SmartPayReceipt(SmartConnectResponse *wcfResponse)
     {
 
          LastEftPosReceipt->Clear();
-         LastEftPosReceipt->Add(wcfResponse->Data->Receipt);
-         LastEftPosReceipt->Clear();
          AnsiString EftReceipt = wcfResponse->Data->Receipt;
          int width =  25;
 
