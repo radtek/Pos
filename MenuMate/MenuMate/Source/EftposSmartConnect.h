@@ -25,7 +25,7 @@ class TEftPosSmartConnect : public TEftPos
         void GetTransResult();
         void GetStatus();
         void ReadCard();
-        void SmartPayReceipt(SmartConnectResponse *wcfResponse) ;
+        void LoadEftPosReceipt(SmartConnectResponse *wcfResponse) ;
 public:
         TEftPosSmartConnect();
         ~TEftPosSmartConnect();

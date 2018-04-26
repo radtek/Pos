@@ -104,7 +104,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
                           EftTrans->CardType = wcfResponse->Data->CardType;
-                          SmartPayReceipt(wcfResponse) ;
+                          LoadEftPosReceipt(wcfResponse) ;
                         }
                    }
                   else
@@ -398,14 +398,13 @@ bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
     }
 }
 //-----------------------------------------------------------------------
-void TEftPosSmartConnect::SmartPayReceipt(SmartConnectResponse *wcfResponse)
+void TEftPosSmartConnect::LoadEftPosReceipt(SmartConnectResponse *wcfResponse)
 {
     try
     {
 
          LastEftPosReceipt->Clear();
          AnsiString EftReceipt = wcfResponse->Data->Receipt;
-         int width =  25;
 
           for( int i = 1 ; i < EftReceipt.Length();)
           {
@@ -417,13 +416,10 @@ void TEftPosSmartConnect::SmartPayReceipt(SmartConnectResponse *wcfResponse)
                 LastEftPosReceipt->Add(Data);
                 i += width;
           }
-
     }
-
     catch( Exception& E )
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
-
 }
 
