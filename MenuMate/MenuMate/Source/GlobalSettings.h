@@ -514,6 +514,10 @@ public:
     PROCESS_INFORMATION piOracleApp;
     int OracleInterfacePortNumber;
     UnicodeString OracleInterfaceIPAddress;
+    bool EnableEftPosAdyen;
+    UnicodeString EFTPosAPIKey;
+    UnicodeString EFTPosDeviceID;
+    UnicodeString EFTPosURL;
 };
 
 #endif

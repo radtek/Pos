@@ -222,7 +222,7 @@ enum vmVariables
     vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
     vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
-    vmOracleInterfacePortNumber
+    vmOracleInterfacePortNumber, vmEnableEftPosAdyen = 9625,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL
 };
 
 // ---------------------------------------------------------------------------

@@ -192,7 +192,14 @@
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
+    <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateServiceAdyenIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceAdyenIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceAdyenIntegration.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -313,6 +320,8 @@
     <Compile Include="Tools\ServiceInfo.cs" />
     <Compile Include="Tools\ServiceLogger.cs" />
     <Compile Include="Tools\ServiceNameManager.cs" />
+    <Compile Include="WCFServices\AdyenIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IAdyenIntegrationWebService.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />

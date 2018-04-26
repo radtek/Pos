@@ -47,6 +47,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SalesForceIntegration: return "SalesForceIntegrationWebService";
                 case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
                 case MenumateServicesIdentifier.WalletPayments: return "MenumateServiceWalletPayments";
+                case MenumateServicesIdentifier.AdyenIntegration: return "AdyenIntegrationWebService";
                 default: return @"";
             }
         }

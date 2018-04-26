@@ -414,6 +414,11 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsOraclePOSServer = TManagerVariable::Instance().GetBool(DBTransaction, vmIsOraclePOSServer, false);
         TGlobalSettings::Instance().OracleInterfacePortNumber = TManagerVariable::Instance().GetInt(DBTransaction, vmOracleInterfacePortNumber, 0);
         TGlobalSettings::Instance().OracleInterfaceIPAddress = TManagerVariable::Instance().GetStr(DBTransaction, vmOracleInterfaceIPAddress, "");
+
+        TGlobalSettings::Instance().EnableEftPosAdyen = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosAdyen, false);
+        TGlobalSettings::Instance().EFTPosAPIKey = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosAPIKey, "");
+        TGlobalSettings::Instance().EFTPosDeviceID = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosDeviceID, "");
+        TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

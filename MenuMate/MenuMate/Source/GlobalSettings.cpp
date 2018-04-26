@@ -419,5 +419,9 @@ TGlobalSettings::TGlobalSettings()
     ZeroMemory( &piOracleApp, sizeof(piOracleApp) );
     OracleInterfacePortNumber = 0;
     OracleInterfaceIPAddress = "";
+    EnableEftPosAdyen = false;
+    EFTPosAPIKey = "";
+    EFTPosDeviceID = "";
+    EFTPosURL = "";
 }
 
