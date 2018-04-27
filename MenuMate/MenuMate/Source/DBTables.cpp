@@ -493,7 +493,7 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
 		IBInternalQuery->SQL->Text =
 			"SELECT DISTINCT "
 				"SEAT.SEATNO SEAT_NUMBER, TAB.TAB_NAME NAME, TAB.TAB_KEY TAB_KEY, "
-                    "ORDERS.FIRST_NAME, ORDERS.LAST_NAME "
+                    "ORDERS.FIRST_NAME, ORDERS.LAST_NAME, ORDERS.ROOM_NO "
 			"FROM "
 				"TABLES INNER JOIN SEAT ON TABLES.TABLE_KEY = SEAT.TABLE_KEY "
 				"INNER JOIN TAB ON SEAT.TAB_KEY = TAB.TAB_KEY "
@@ -519,7 +519,7 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
                 {
                     UnicodeString Name = IBInternalQuery->FieldByName("FIRST_NAME")->AsString.Trim() != "" ? IBInternalQuery->FieldByName("FIRST_NAME")->AsString
                                             : IBInternalQuery->FieldByName("LAST_NAME")->AsString;
-                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("NAME")->AsString
+                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("ROOM_NO")->AsString
                             + " " + Name);
                 }
                 else

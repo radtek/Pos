@@ -2232,6 +2232,7 @@ void TDBOrder::GetPrevOrders(Database::TDBTransaction &DBTransaction,UnicodeStri
 				TItemMinorComplete *PrevItem = new TItemMinorComplete;
 				GetPrevOrder(DBTransaction,*itOrder,PrevItem);
 				SeatOrders[SeatNo]->Orders->AddPrev(PrevItem);
+                SeatOrders[SeatNo]->RoomNumber = PrevItem->RoomNoStr;   //todo add condition
 			}
 		}
 	}
