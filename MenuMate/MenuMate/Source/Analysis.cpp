@@ -3444,14 +3444,15 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
           if(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat != 0)
            {
              double price = RoundTo(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat, -4) - RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4);
-             AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, price, AccountCode, RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4));
+              double price1 =RoundTo(price,-2);
+             AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, price1, AccountCode, RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -2));
            }
         }
 
         GetTabCreditReceivedRefunded(DBTransaction, TabCreditReceived, TabRefundReceived, preZTime, nextDay);
 
-        TabCreditReceived = RoundTo(TabCreditReceived, -4);
-        TabRefundReceived = RoundTo(TabRefundReceived, -4);
+        TabCreditReceived = RoundTo(TabCreditReceived, -2);
+        TabRefundReceived = RoundTo(TabRefundReceived, -2);
 
         if(TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != "")
         {
@@ -3491,8 +3492,8 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         AnsiString cashGlCode= GetCashGlCode(DBTransaction);
         floatGlCode = TGlobalSettings::Instance().FloatGLCode;
 
-        floatAmount = RoundTo(floatAmount, -4);
-        catTotal = RoundTo(catTotal, -4);
+        floatAmount = RoundTo(floatAmount, -2);
+        catTotal = RoundTo(catTotal, -2);
 
         if(floatGlCode != "" && floatGlCode != NULL && floatAmount != 0)
         {
@@ -3559,21 +3560,21 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                  if(addFloatAdjustmentToPayments && addEachPaymentNode)
                  {
                     if(IBInternalQuery->FieldByName("PROPERTIES")->AsString.Pos(payment.GetPropertyString()) != 0)
-                        cashAmount += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+                        cashAmount += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
                     else
                         AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4) ,AccountCode,0);
+                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2) ,AccountCode,0);
                  }
                  else if(!addFloatAdjustmentToPayments && addEachPaymentNode)
                  {
                         AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4) ,AccountCode,0);
+                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2) ,AccountCode,0);
                  }
 
               }
               else
               {
-                double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+                double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
                 if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash" && TGlobalSettings::Instance().FloatWithdrawFromCash &&
                    cashWithdrawal != 0)
                 {
@@ -3585,7 +3586,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
            }
 
            if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
-            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -4);
+            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -2);
         }
 
         //Add payment Tip for DPS EftPOS
@@ -3600,7 +3601,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         if(tip > 0.0)
         {
             catTotal += tip;
-            AddInvoiceItem(XeroInvoiceDetail,"TIP", RoundTo(tip, -4), tipGLCode,0);
+            AddInvoiceItem(XeroInvoiceDetail,"TIP", RoundTo(tip, -2), tipGLCode,0);
         }
         if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
              AddInvoicePayment(XeroInvoiceDetail,"Cash", ( cashAmount + floatAmount) , cashGlCode,0);
@@ -3610,7 +3611,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 
         if(catTotal - payTotal)
         {
-          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -4),TGlobalSettings::Instance().RoundingGLCode,0);
+          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -2),TGlobalSettings::Instance().RoundingGLCode,0);
         }
 
         AnsiString daystr = Now().FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
