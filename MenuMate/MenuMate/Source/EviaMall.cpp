@@ -506,7 +506,8 @@ UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, st
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT FIRST 1 a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, MIN(a.DATE_CREATED)   "
+        IBInternalQuery->SQL->Text = "SELECT FIRST 1 a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE ,"
+                                     " CASE WHEN (a.Z_KEY < 10) THEN LPAD(a.Z_KEY,2,0) ELSE a.Z_KEY END, MIN(a.DATE_CREATED)  "
                                     "FROM MALLEXPORT_SALES a "
                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey)
