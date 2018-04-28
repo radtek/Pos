@@ -3187,19 +3187,20 @@ Zed:
 
                 //Method for mall Design According to newly pattern
 
-                 if(TGlobalSettings::Instance().mallInfo.MallId)
+                if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
                     {
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
-                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3)
                     {
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+                            UpdateStallCodeForEviaMall(2);
                     }
-
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
@@ -8964,10 +8965,6 @@ double TfrmAnalysis::GetCashBlindBalance(TBlindBalances Balances)
 //-------------------------------------------------------------------------------------------------------
 double TfrmAnalysis::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
 {
-//    //Register the database transaction..
-//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-//    dbTransaction.StartTransaction();
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
     double oldAccumulatedSales = 0.00;
@@ -9092,4 +9089,43 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
     {
        zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
+}
+
+void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
+{
+    std::list<TMallExportSettings> ::iterator itUISettings;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    UnicodeString Stallcode = "";
+    try
+    {
+        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+        {
+
+                if(itUISettings->ControlName == "edMallTenantNo")
+                    Stallcode = itUISettings->Value;
+        }
+        UnicodeString StallCodeFormat =  "\"" + Stallcode + "\""   ;
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Stallcode WHERE MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX and MALLEXPORT_SALES.FIELD_VALUE = :FIELD_VALUE ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 2;
+        IBInternalQuery->ParamByName("Stallcode")->AsString = StallCodeFormat;
+        IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = "";
+
+        IBInternalQuery->ExecQuery();
+        IBInternalQuery->Close();
+
+        DBTransaction.Commit();
+    }
+
+    catch(Exception & E)
+    {
+    DBTransaction.Rollback();
+    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
 }

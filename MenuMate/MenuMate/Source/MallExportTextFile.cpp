@@ -50,8 +50,8 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
         //filePath where the file will be written
         UnicodeString filePath = "";
 
-        //Format of the file
-        UnicodeString format = ".txt";
+
+        UnicodeString format;
 
         //Iterate the file Settings
         std::list<TMallExportSettings>::iterator itFileSettings;
@@ -61,17 +61,20 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
 
         //Iterate FileNaming Convention
         std::map<int,UnicodeString>::iterator itName;
-
-        //Iterate UI Settings of FilPath
+         //Iterate UI Settings of FilPath
         std::list<TMallExportSettings> ::iterator itUISettings;
+
 
         //Get File Path
         for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
         {
+
             if(itUISettings->ControlName == "edNewMallPath")
                 filePath = itUISettings->Value;
             else if(itUISettings->ControlName == "New Line")
                 appendNewLine = itUISettings->Value;
+            else if(itUISettings->ControlName == "File Type")
+                format = itUISettings->Value;
         }
 
         //Check For Directory Existence ..Create if not created already
@@ -104,7 +107,7 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
             }
 
             //First Write Settings in the file ex:- Tenant Code, TerminalNumber etc
-            if(itSettings->second.size())
+            if(itSettings->second.size() && TGlobalSettings::Instance().mallInfo.MallId != 3)
             {
                 for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
                 {

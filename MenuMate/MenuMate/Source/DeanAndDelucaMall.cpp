@@ -309,53 +309,6 @@ void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransac
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Hour Code", "int", IntToStr(hourCode), 21, arcBillKey);
 }
 //-----------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
-{
-    try
-    {
-        TMallExportSalesData salesData;
-        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-        salesData.DataValue = fieldValue;
-        salesData.Field = field;
-        salesData.DataValueType = dataType;
-        salesData.FieldIndex = fieldIndex;
-        salesData.DateCreated = billedTime;
-        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-        salesData.ArcBillKey = arcBillKey;
-        salesData.ZKey = 0;
-        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        mallExportSalesData.push_back(salesData);
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//--------------------------------------------------------------------------------------------------------
-long TDeanAndDelucaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    long saleKey;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SALE_KEY, 1) FROM RDB$DATABASE";
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-            saleKey = IBInternalQuery->Fields[0]->AsInteger;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return saleKey;
-}
-//---------------------------------------------------------------------------------
 int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
 {
     int totalPatronCount = 0;
@@ -1123,42 +1076,7 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
     return fileName;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------
-UnicodeString TDeanAndDelucaMall::GetExportType()
-{
-    UnicodeString typeOfFile = "";
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
 
-    try
-    {
-        ///Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dbTransaction.RegisterQuery(IBInternalQuery);
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
-                                     "FROM MALLEXPORT_SETTINGS MES "
-                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
-                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
-                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
-
-        IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
-        IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 2;
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-            typeOfFile = IBInternalQuery->Fields[3]->AsString;
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-
-    return typeOfFile;
-}
 //-----------------------------------------------------------------------------------------------------------
 std::set<int> TDeanAndDelucaMall::InsertInToSet(int arr[], int size)
 {
@@ -1185,7 +1103,9 @@ UnicodeString TDeanAndDelucaMall::GetFieldIndexList(std::set<int> indexKeys)
 //----------------------------------------------------------------------------------------------------------------
 IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
 {
-    UnicodeString exportType = GetExportType();
+
+    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+    UnicodeString exportType = GetExportType(mallid)  ;
     if(exportType == ".txt")
     {
         return new TMallExportTextFile;
@@ -1209,7 +1129,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     //Get all Taxes stored them in TEstanciaTaxes type structure
     bool isVatable = IsItemVatable(order, taxes);
 
-    TDeanAndDelucaDiscount discounts = PrepareDiscounts(dbTransaction, order);
+    TMallExportDiscount discounts = PrepareDiscounts(dbTransaction, order);
 
     double grossAmount = 0;
     double salesBySalesType = 0;
@@ -1259,41 +1179,6 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
         }
     }
 
-}
-//------------------------------------------------------------------------------------------------------------------
-TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
-{
-    TDeanAndDelucaDiscount discounts;
-    discounts.scdDiscount = 0;
-    discounts.pwdDiscount = 0;
-    discounts.otherDiscount = 0;
-
-    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
-    {
-        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
-            continue;
-
-        if(ptrDiscounts->DiscountGroupList.size())
-        {
-            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
-            {
-                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
-            {
-                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-            else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
-            {
-                discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-            }
-        }
-        else
-        {
-            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
-        }
-    }
-    return discounts;
 }
 //--------------------------------------------------------------------------------------------------------------------------
 bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &taxes)

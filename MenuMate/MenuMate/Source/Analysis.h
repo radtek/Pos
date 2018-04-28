@@ -231,6 +231,7 @@ private:	// User declarations
     double GetOldAccumulatedSales(Database::TDBTransaction &DBTransaction, int fieldIndex);
     void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
     void MakeZEDLogFile(TStringList *List);
+    void UpdateStallCodeForEviaMall(int fieldindex);
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

@@ -16,6 +16,9 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
     bool retVal = false;
     try
     {
+        BilledTimeStamp = currentTime;
+        InvoiceNumber = paymentTransaction.InvoiceNumber;
+
         // Create TMallExportPrepareData object to store Preapared Data
         TMallExportSalesWrapper salesData;
 
@@ -46,8 +49,8 @@ bool TMallExport::Export()
         if(transactionDoneBeforeZed)
         {
             //Create Export Medium
-            TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-            exporter->WriteToFile(preparedData);
+           TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+           exporter->WriteToFile(preparedData);
         }
     }
     catch(Exception &E)
@@ -92,8 +95,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     "CREATED_BY, "
                     "Z_KEY, "
                     "ARCBILL_KEY, "
-                    "DEVICE_KEY "
-                    " ) "
+                    "DEVICE_KEY, "
+                    "INVOICE_NUMBER ) "
             "VALUES ("
                     ":MALLEXPORT_SALE_KEY, "
                     ":MALL_KEY, "
@@ -105,7 +108,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     ":CREATED_BY, "
                     ":Z_KEY,"
                     ":ARCBILL_KEY, "
-                    ":DEVICE_KEY "
+                    ":DEVICE_KEY, "
+                    ":INVOICE_NUMBER "
                     " );";
 
             IBInternalQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger = it->MallExportSalesId;
@@ -130,6 +134,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = it->ZKey;
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
+            IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = it->InvoiceNumber;
             arcBillKey = it->ArcBillKey;
             billedTime = it->DateCreated;
             IBInternalQuery->ExecQuery();
@@ -205,12 +210,13 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dbTransaction.RegisterQuery(IBInternalQuery);
 
+
         //Query for selecting data for invoice file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
                                         "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME ";
 
-        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId !=2)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId ==1 )
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.DEVICE_KEY = :DEVICE_KEY ";
         }
@@ -221,7 +227,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
         IBInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
         IBInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
-        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId != 2)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId == 1)
         {
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
         }
@@ -234,11 +240,13 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
        {
             //Fetch z-key
             zKey = IBInternalQuery->Fields[0]->AsInteger;
-            
+
             //Prepare Data For Exporting into File
             preparedData = PrepareDataForExport(zKey);
 
+
            exporter->WriteToFile(preparedData);
+
        }
        delete exporter;
 
@@ -282,7 +290,8 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     "SALES_TYPE_ID, "
                     "SUBTOTAL, "
                     "DEVICE_KEY, "
-                    "DATE_CREATED "
+                    "DATE_CREATED, "
+                    "INVOICE_NUMBER "
                      ") "
             "VALUES ( "
                     ":SALES_ID, "
@@ -290,7 +299,8 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     ":SALES_TYPE_ID, "
                     ":SUBTOTAL, "
                     ":DEVICE_KEY, "
-                    ":DATE_CREATED "
+                    ":DATE_CREATED, "
+                    ":INVOICE_NUMBER "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
@@ -299,6 +309,7 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
             ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
             ibInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = billedTime;
+            ibInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = InvoiceNumber;
             ibInternalQuery->ExecQuery();
         }
     }
@@ -354,4 +365,189 @@ double TMallExport::GetOldAccumulatedSales(int fieldIndex)
     return oldAccumulatedSales;
 }
 //----------------------------------------------------------------------------------------------------------------
+void TMallExport::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
+                    UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
+{
+    try
+    {
+        TMallExportSalesData salesData;
+        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+        salesData.DataValue = fieldValue;
+        salesData.Field = field;
+        salesData.DataValueType = dataType;
+        salesData.FieldIndex = fieldIndex;
+        salesData.DateCreated = BilledTimeStamp;
+        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+        salesData.ArcBillKey = arcBillKey;
+        salesData.ZKey = 0;
+        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        salesData.InvoiceNumber = InvoiceNumber;
+        mallExportSalesData.push_back(salesData);
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//-------------------------------------------------------------------------------------------------------------------
+long TMallExport::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
+{
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    long saleKey;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SALE_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            saleKey = IBInternalQuery->Fields[0]->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return saleKey;
+}
+//------------------------------------------------------------------------------------------------
+UnicodeString TMallExport::GetExportType(int mallid)
+{
+
+    UnicodeString typeOfFile = "";
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
+                                     "FROM MALLEXPORT_SETTINGS MES "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MSP.MALLEXPORT_SETTING_ID = MSV.MALLEXPORTSETTING_ID AND MSP.MALL_ID = MSV.MALL_KEY "
+                                      "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
+
+        IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
+        IBInternalQuery->ParamByName("MALL_ID")->AsInteger = mallid;
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            typeOfFile = IBInternalQuery->Fields[3]->AsString;
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return typeOfFile;
+}
+
+
+double TMallExport::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex,int mallid)
+{
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = mallid ;
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
+
+        IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
+
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
+            }
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+                IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            }
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        else
+        {
+            oldAccumulatedSales = 0;
+        }
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
+}
+
+TMallExportDiscount TMallExport::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
+{
+    TMallExportDiscount discounts;
+    discounts.scdDiscount = 0;
+    discounts.pwdDiscount = 0;
+    discounts.otherDiscount = 0;
+
+    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
+    {
+        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+            continue;
+
+        if(ptrDiscounts->DiscountGroupList.size())
+        {
+            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
+            {
+                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
+            {
+                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
+            {
+                discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+        }
+        else
+        {
+            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+        }
+    }
+    return discounts;
+}
+
 

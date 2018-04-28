@@ -2447,5 +2447,89 @@ void TfrmSetup::ShowMezzanineArea()
          TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
+//----------------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallServerIPClick(TObject *Sender)
+{
+    TTouchBtn *btn = reinterpret_cast<TTouchBtn*>(Sender);
+    EditServerDetils(btn->Tag);
+}
+//------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallServerPathClick(TObject *Sender)
+{
+    TTouchBtn *btn = reinterpret_cast<TTouchBtn*>(Sender);
+    EditServerDetils(btn->Tag);
+}
+//------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallUserNameClick(TObject *Sender)
+{
+    TTouchBtn *btn = reinterpret_cast<TTouchBtn*>(Sender);
+    EditServerDetils(btn->Tag);
+}
+//------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallPasswordClick(TObject *Sender)
+{
+    TTouchBtn *btn = reinterpret_cast<TTouchBtn*>(Sender);
+    EditServerDetils(btn->Tag);
+}
+//------------------------------------------------------------------------------------------
+void TfrmSetup::EditServerDetils(int tagKey)
+{
+    if(tagKey > 4)
+        return;
 
+    AnsiString Caption = "";
+    AnsiString KeyboardText = "";
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+
+    switch(tagKey)
+    {
+        case 1:
+            Caption = "Enter Server IP";
+            frmTouchKeyboard->KeyboardText = edMallFTPServer->Text;
+            frmTouchKeyboard->MaxLength = 50;
+            break;
+        case 2:
+            Caption = "Enter Server Path";
+            frmTouchKeyboard->KeyboardText = edMallFTPPath->Text;
+            break;
+        case 3:
+            Caption = "Enter User Name";
+            frmTouchKeyboard->KeyboardText = edMallFTPUserName->Text;
+            break;
+        case 4:
+            Caption = "Enter password";
+            frmTouchKeyboard->KeyboardText = edMallFTPPassword->Text;
+            break;
+        default:
+            break;
+    }
+    frmTouchKeyboard->Caption = Caption;
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+        DisplayServerInfo(tagKey, frmTouchKeyboard->KeyboardText);
+	}
+}
+//-------------------------------------------------------------------------------------------
+void TfrmSetup::DisplayServerInfo(int tagKey, AnsiString KeyboardText)
+{
+    switch(tagKey)
+    {
+        case 1:
+            edMallFTPServer->Text = KeyboardText;
+            break;
+        case 2:
+            edMallFTPPath->Text = KeyboardText;
+            break;
+        case 3:
+            edMallFTPUserName->Text = KeyboardText;
+            break;
+        case 4:
+            edMallFTPPassword->Text = KeyboardText;
+            break;
+        default:
+            break;
+    }
+}
 
