@@ -3040,40 +3040,48 @@ bool TfrmSelectDish::DeleteUnsentDCAndProceed(Database::TDBTransaction &DBTransa
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::SetSelectedSeat(bool selectGuest) //changes for 5900
-{
+{  
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+        TGlobalSettings::Instance().EnableCustomerJourney && selectGuest && !SeatOrders[0]->Orders->Count && !SeatOrders[0]->isChangeTablePressed)
+    {
+        GetItemsFromTable(0, tgridSeats->Buttons[0][0]);
+    }
 	for (int i = 0; i < tgridSeats->ColCount; i++)
 	{
 		if (SeatOrders[i + 1]->SeatName != "")
 		{
 			tgridSeats->Buttons[0][i]->Caption = SeatOrders[i + 1]->SeatName;
-			if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-            TGlobalSettings::Instance().EnableCustomerJourney && SeatOrders[i + 1]->RoomNumber != "" )
-             {
-                 tgridSeats->Buttons[0][i]->Caption = SeatOrders[i + 1]->RoomNumber;
-              }
 
 		}
 		else
 		{
 			tgridSeats->Buttons[0][i]->Caption = TGlobalSettings::Instance().SeatLabel + " " + IntToStr(i + 1);
-             if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-             TGlobalSettings::Instance().EnableCustomerJourney && SeatOrders[i + 1]->RoomNumber != "" )
-             {
-                 tgridSeats->Buttons[0][i]->Caption = SeatOrders[i + 1]->RoomNumber;
-			 }
 
 		}
+
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+            TGlobalSettings::Instance().EnableCustomerJourney && SeatOrders[i + 1]->RoomNumber != "" )
+        {
+             tgridSeats->Buttons[0][i]->Caption = SeatOrders[i + 1]->RoomNumber;
+        }
+
 		if (!tgridSeats->Buttons[0][i]->Latched && tgridSeats->Buttons[0][i]->Color != ButtonColors[BUTTONTYPE_LOCKED][ATTRIB_BUTTONCOLOR])
 		{
 			if (SeatOrders[i + 1]->Orders->Count == 0 && SeatOrders[i + 1]->Orders->PrevCount == 0)
 			{ // Seat is empty
 				tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
 				tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                 TGlobalSettings::Instance().EnableCustomerJourney && SelectedSeat == (i + 1))
+                    {  
+						tgridSeats->Buttons[0][i]->Latched = true;
+						selectGuest = false;
+                    }
 			}
 			else
 			{
                 if(selectGuest)
-                {
+                {   
                     selectGuest = false;
                     tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
                     tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
@@ -3082,38 +3090,39 @@ void TfrmSelectDish::SetSelectedSeat(bool selectGuest) //changes for 5900
 
                     GetItemsFromTable(i, tgridSeats->Buttons[0][i]); //changes for 5900..
                     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-                    TGlobalSettings::Instance().EnableCustomerJourney && (i + 1 )== SelectedSeat)
-                    {
+                    TGlobalSettings::Instance().EnableCustomerJourney && (i + 1 )!= SelectedSeat)
+                    {    
                         tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_FULL][ATTRIB_BUTTONCOLOR];
     				    tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_FULL][ATTRIB_FONTCOLOR];
                     }
                 }
                 else
                 {
-
                     tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_FULL][ATTRIB_BUTTONCOLOR];
     				tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_FULL][ATTRIB_FONTCOLOR];
 
 					if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
                     TGlobalSettings::Instance().EnableCustomerJourney && SeatOrders[i + 1]->RoomNumber != "" && SelectedSeat == (i + 1))
-                    {
+                    {    
                         tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
                         tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
                         tgridSeats->Buttons[0][i]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
                         tgridSeats->Buttons[0][i]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+                      
                     }
                 }
 
 			}
 		}
 		else if (tgridSeats->Buttons[0][i]->Latched && tgridSeats->Buttons[0][i]->Color != ButtonColors[BUTTONTYPE_LOCKED][ATTRIB_BUTTONCOLOR])
-		{
+		{    
 			tgridSeats->Buttons[0][i]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
 			tgridSeats->Buttons[0][i]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
 			tgridSeats->Buttons[0][i]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
 			tgridSeats->Buttons[0][i]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
 		}
 	}
+    SeatOrders[0]->isChangeTablePressed = false;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RefreshSeats()
@@ -4348,11 +4357,12 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
 
         DBTransaction.Commit();
     }
-
+	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+            TGlobalSettings::Instance().EnableCustomerJourney)
+    {
+    	SeatOrders[0]->isChangeTablePressed = true;
+     }
 	showTablePicker();
-
-    if(!(lbDisplay->ItemIndex == -1 && lbDisplay->Count >0))
-        DisplayRoomNoUI();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateTableButton()
@@ -8911,6 +8921,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				{
 					TItemComplete *Item = SeatOrders[i]->Orders->Items[0];
 					SeatOrders[i]->Orders->Remove(Item);
+                    SeatOrders[i]->RoomNumber = "";
 					delete Item;
                     Item = NULL;
 
@@ -11090,11 +11101,14 @@ void __fastcall TfrmSelectDish::refreshSelectedSeat()
 
 		SeatOrders[i]->Orders->ClearPrev();
 		SeatOrders[i]->SeatName = "";
-        SeatOrders[i]->RoomNumber = "";
-        SeatOrders[i]->Orders->pmsAccountDetails.RoomNumber = "";
-        SeatOrders[i]->Orders->pmsAccountDetails.FirstName = "";
-        SeatOrders[i]->Orders->pmsAccountDetails.LastName = "";
-        SeatOrders[i]->Orders->pmsAccountDetails.RoomBedNumber = "";
+        if(!SeatOrders[0]->isChangeTablePressed)
+        {
+            SeatOrders[i]->RoomNumber = "";
+            SeatOrders[i]->Orders->pmsAccountDetails.RoomNumber = "";
+            SeatOrders[i]->Orders->pmsAccountDetails.FirstName = "";
+            SeatOrders[i]->Orders->pmsAccountDetails.LastName = "";
+            SeatOrders[i]->Orders->pmsAccountDetails.RoomBedNumber = "";
+        }
 	}
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
@@ -12905,123 +12919,9 @@ void TfrmSelectDish::GetItemsFromTable(int seatkey, TGridButton *GridButton, boo
         }
         DBTransaction.Commit();
 
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-            TGlobalSettings::Instance().EnableCustomerJourney && !isCalledFromGuestSeat && SeatOrders[0]->Orders->Count && SelectedSeat != 0)
-        {
-            unsigned __int32 maxSeatCount = getMaxSeatCount();
-            TItemComplete *firstItem =  SeatOrders[0]->Orders->Items[0];
-
-            for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
-            {
-                SeatOrders[i]->Orders->RefreshDisplay();
-                bool isSeatSelected = false;
-
-                if(SeatOrders[i]->Orders->CompressedCount)
-                {
-                    for(int index = 0; index < SeatOrders[i]->Orders->CompressedCount; index++)
-                    {
-                        TItemsCompleteCompressed* CompressedItem = SeatOrders[i]->Orders->CompressedItems[index]; //selected seatchanged to i to do if bug come
-
-                        TItemRedirector *Redirector = (TItemRedirector *)CompressedItem->Display->Objects[0];
-
-                        if ((Redirector->ItemType.Contains(itNormalItem) ||Redirector->ItemType.Contains(itPrevItem)) )
-                        {
-                            TItemMinorComplete * CompressedOrder = (TItemMinorComplete*)Redirector->ItemObject;
-                            if (CompressedOrder)
-                            {
-                                if(!firstItem->RoomNoStr.Compare(CompressedOrder->RoomNoStr))
-                                {
-                                    isSeatSelected = true;
-                                }
-                                break;
-                            }
-                        }
-                        else if(Redirector->ItemType.Contains(itMembershipDisplay) && SeatOrders[i]->Orders->CompressedCount == 1)
-                        {
-                            isSeatSelected = true;
-                            break;
-                        }
-                    }
-                }
-                if(SeatOrders[i]->Orders->CompressedCount == 0 || isSeatSelected)
-                {
-                    while (SeatOrders[0]->Orders->Count != 0)
-                    {
-                        SeatOrders[i]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
-                        SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
-                    }
-                    SeatOrders[0]->Orders->Clear();
-                    SelectedSeat = i;
-                    SeatOrders[SelectedSeat]->RoomNumber = firstItem->RoomNoStr;
-                    LoadDefaultGuestDetailsToSeatOrders(firstItem->RoomNoStr, firstItem->FirstName, firstItem->LastName);
-                    break;
-                    GridButton->Latched = true;
-                }
-                
-            }
-        }
-        else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-            TGlobalSettings::Instance().EnableCustomerJourney && !isCalledFromGuestSeat && !SeatOrders[0]->Orders->Count && SelectedSeat != 0)
-        {
-            
-            unsigned __int32 maxSeatCount = getMaxSeatCount();
-
-            for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
-            {
-                SeatOrders[i]->Orders->RefreshDisplay();
-                bool isSeatSelected = false;
-                if(SeatOrders[i]->Orders->CompressedCount)
-                {
-                    for(int index = 0; index < SeatOrders[i]->Orders->CompressedCount; index++)
-                    {
-                        TItemsCompleteCompressed* CompressedItem = SeatOrders[i]->Orders->CompressedItems[index];
-
-                        TItemRedirector *Redirector = (TItemRedirector *)CompressedItem->Display->Objects[0];
-
-                        if ((Redirector->ItemType.Contains(itPrevItem)) )
-                        {
-                            TItemMinorComplete * CompressedOrder = (TItemMinorComplete*)Redirector->ItemObject;
-                            if (CompressedOrder)
-                            {
-                                if(!selectedRoomNumberStr.Trim().Compare(CompressedOrder->RoomNoStr.Trim()))
-                                {
-                                    isSeatSelected = true;
-                                }
-                                break;
-                            }
-                        }
-                        else if(Redirector->ItemType.Contains(itMembershipDisplay) && SeatOrders[i]->Orders->CompressedCount == 1)
-                        {
-                            SeatOrders[i]->RoomNumber = "";
-                            lbDisplay->Clear();
-                            isSeatSelected = true;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if(!(SeatOrders[i]->Orders->CompressedCount == 0 && i == 1))
-                        isSeatSelected = true;
-                }
-                if(isSeatSelected)
-                {
-                    while (SeatOrders[0]->Orders->Count != 0)
-                    {
-                        SeatOrders[i]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
-                        SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
-                    }
-                    SeatOrders[0]->Orders->Clear();
-                    SelectedSeat = i;
-                    SeatOrders[SelectedSeat]->RoomNumber = selectedRoomNumberStr;
-                    break;
-                    GridButton->Latched = true;
-                }
-
-            }
-        }
+        GetNextAvailableSeatAndLoadOrders(isCalledFromGuestSeat);
         // Check for orders on Seat 0 and move them to selected seat.
-        else if (SeatOrders[0]->Orders->Count != 0 && SelectedSeat != 0)
+         if (SeatOrders[0]->Orders->Count != 0 && SelectedSeat != 0)
         {
             while (SeatOrders[0]->Orders->Count != 0)
             {
@@ -16185,4 +16085,120 @@ void TfrmSelectDish::LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, U
     }
 }
 //-------------------------------------------------------------------------------------
+void TfrmSelectDish::GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat)
+{
+  if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+        TGlobalSettings::Instance().EnableCustomerJourney && !isCalledFromGuestSeat  && SelectedSeat != 0 && !SeatOrders[0]->isChangeTablePressed)
+    {
+        unsigned __int32 maxSeatCount = getMaxSeatCount();
+
+        if(SeatOrders[0]->Orders->Count)
+        {
+            TItemComplete *firstItem =  SeatOrders[0]->Orders->Items[0];
+
+            for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
+            {
+                SeatOrders[i]->Orders->RefreshDisplay();
+                bool isSeatSelected = false;
+
+                if(SeatOrders[i]->Orders->CompressedCount)
+                {
+                    for(int index = 0; index < SeatOrders[i]->Orders->CompressedCount; index++)
+                    {
+                        TItemsCompleteCompressed* CompressedItem = SeatOrders[i]->Orders->CompressedItems[index]; //selected seatchanged to i to do if bug come
+
+                        TItemRedirector *Redirector = (TItemRedirector *)CompressedItem->Display->Objects[0];
+
+                        if ((Redirector->ItemType.Contains(itNormalItem) ||Redirector->ItemType.Contains(itPrevItem)) )
+                        {
+                            TItemMinorComplete * CompressedOrder = (TItemMinorComplete*)Redirector->ItemObject;
+                            if (CompressedOrder)
+                            {
+                                if(!firstItem->RoomNoStr.Compare(CompressedOrder->RoomNoStr))
+                                {
+                                    isSeatSelected = true;
+                                }
+                                break;
+                            }
+                        }
+                        else if(Redirector->ItemType.Contains(itMembershipDisplay) && SeatOrders[i]->Orders->CompressedCount == 1)
+                        {
+                            isSeatSelected = true;
+                            break;
+                        }
+                    }
+                }
+                if(SeatOrders[i]->Orders->CompressedCount == 0 || isSeatSelected)
+                {
+                    while (SeatOrders[0]->Orders->Count != 0)
+                    {
+                        SeatOrders[i]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
+                        SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
+                    }
+                    SeatOrders[0]->Orders->Clear();
+                    SelectedSeat = i;
+                    SeatOrders[SelectedSeat]->RoomNumber = firstItem->RoomNoStr;
+                    LoadDefaultGuestDetailsToSeatOrders(firstItem->RoomNoStr, firstItem->FirstName, firstItem->LastName);
+                    break;
+                }
+
+            }
+        }
+        else
+        {
+            for( unsigned __int32 i = 1; i <= maxSeatCount; i++)
+            {
+                SeatOrders[i]->Orders->RefreshDisplay();
+                bool isSeatSelected = false;
+                if(SeatOrders[i]->Orders->CompressedCount)
+                {
+                    for(int index = 0; index < SeatOrders[i]->Orders->CompressedCount; index++)
+                    {
+                        TItemsCompleteCompressed* CompressedItem = SeatOrders[i]->Orders->CompressedItems[index];
+
+                        TItemRedirector *Redirector = (TItemRedirector *)CompressedItem->Display->Objects[0];
+
+                        if ((Redirector->ItemType.Contains(itPrevItem)) )
+                        {
+                            TItemMinorComplete * CompressedOrder = (TItemMinorComplete*)Redirector->ItemObject;
+                            if (CompressedOrder)
+                            {
+                                if(!selectedRoomNumberStr.Trim().Compare(CompressedOrder->RoomNoStr.Trim()))
+                                {
+                                    isSeatSelected = true;
+                                }
+                                break;
+                            }
+                        }
+                        else if(Redirector->ItemType.Contains(itMembershipDisplay) && SeatOrders[i]->Orders->CompressedCount == 1)
+                        {
+                            SeatOrders[i]->RoomNumber = "";
+                            lbDisplay->Clear();
+                            isSeatSelected = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    isSeatSelected = true;
+                }
+                if(isSeatSelected)
+                {
+                    while (SeatOrders[0]->Orders->Count != 0)
+                    {
+                        SeatOrders[i]->Orders->Add(SeatOrders[0]->Orders->Items[0], SeatOrders[0]->Orders->Items[0]->ItemOrderedFrom);
+                        SeatOrders[0]->Orders->Delete(SeatOrders[0]->Orders->Items[0]);
+                    }
+                    SeatOrders[0]->Orders->Clear();
+                    SelectedSeat = i;
+                    SeatOrders[SelectedSeat]->RoomNumber = selectedRoomNumberStr;
+                    break;
+                }
+
+            }
+        }
+    }
+}
+//--------------------------------------------------------------------------------
 

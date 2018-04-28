@@ -15,6 +15,7 @@ TSeatOrders::TSeatOrders(int inSeatNumber)
 	Orders = new TContainerOrders;
     isDefaultGuest = false;
     wasGuestSelected = false;
+    isChangeTablePressed = false;
 }
 
 TSeatOrders::~TSeatOrders()
