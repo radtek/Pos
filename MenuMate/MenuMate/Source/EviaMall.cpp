@@ -507,7 +507,7 @@ UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, st
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT FIRST 1 a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE ,"
-                                     " CASE WHEN (a.Z_KEY < 10) THEN LPAD(a.Z_KEY,2,0) ELSE a.Z_KEY END, MIN(a.DATE_CREATED)  "
+                                     " CASE WHEN (a.Z_KEY < 10) THEN LPAD(a.Z_KEY,2,0) ELSE a.Z_KEY END Z_KEY, MIN(a.DATE_CREATED)  "
                                     "FROM MALLEXPORT_SALES a "
                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey)
@@ -534,7 +534,7 @@ UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, st
                  TDateTime date = IBInternalQuery->Fields[5]->AsDate;
 
                  UnicodeString dateformat= date.FormatString("mmddyy");
-                 int resetcount = IBInternalQuery->Fields[4]->AsInteger;
+                 UnicodeString resetcount = IBInternalQuery->Fields[4]->AsString;
                  fileName =  fileName + dateformat + resetcount;
             }
         }
