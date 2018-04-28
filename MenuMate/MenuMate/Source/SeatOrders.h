@@ -26,6 +26,7 @@ public:
     UnicodeString RoomNumber;
     bool isDefaultGuest;
     bool wasGuestSelected;
+    bool isChangeTablePressed;
 };
 
 #endif
