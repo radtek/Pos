@@ -3199,7 +3199,7 @@ Zed:
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
-                            UpdateStallCodeForEvia(2);
+                            UpdateStallCodeForEviaMall(2);
                     }
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
@@ -9052,7 +9052,7 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
 	}
 }
 
-void TfrmAnalysis::UpdateStallCodeForEvia(int fieldindex)
+void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
 {
     std::list<TMallExportSettings> ::iterator itUISettings;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
