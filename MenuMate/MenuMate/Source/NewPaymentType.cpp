@@ -120,7 +120,9 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
+        
         Payment.SetPaymentAttribute(ePayTypeReservationMasterPay,cbreservationmaster->Checked);
+        Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
         if (Reason != "")
         {
             Payment.AdjustmentReason = Reason;
@@ -371,6 +373,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
    }
     cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
 
+   cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
@@ -806,7 +809,8 @@ void __fastcall TfrmNewPaymentType::tbRoundingMouseClick(TObject *Sender)
 //		 MessageBox("You must have the Membership Module in order to use Invoice Payments.", "Error", MB_OK);
 //	  }
 //   }
-//}
+//}
+
 // ---------------------------------------------------------------------------
 void TfrmNewPaymentType::RedrawButtons(TObject * Sender)
 {
@@ -1293,4 +1297,9 @@ void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
 }
 
 //---------------------------------------------------------------------------
-
+void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
+{
+//  btnWalletType->Enabled = cbWalletPayments->Checked;
+//  btnWalletConfig->Enabled = cbWalletPayments->Checked;
+}
+//---------------------------------------------------------------------------

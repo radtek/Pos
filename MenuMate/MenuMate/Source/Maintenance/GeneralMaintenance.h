@@ -332,6 +332,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbShowCashDrawerCount;
         TCheckBox *cbShowReprintDetails;
 
+        TCheckBox *cbIntegratedEftposSmartConnect;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -569,6 +570,7 @@ __published:	// IDE-managed Components
         void __fastcall cbSplitBillByMenuTypeClick(TObject *Sender);
         void __fastcall cbShowCashDrawerCountClick(TObject *Sender);
         void __fastcall cbShowReprintDetailsClick(TObject *Sender);
+        void __fastcall cbIntegratedEftposSmartConnectClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

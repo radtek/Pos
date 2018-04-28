@@ -514,6 +514,9 @@ public:
     PROCESS_INFORMATION piOracleApp;
     int OracleInterfacePortNumber;
     UnicodeString OracleInterfaceIPAddress;
+    UnicodeString SurchargeGLCode;
+    bool EnableEftPosSmartConnect;
+    UnicodeString SmartConnectPairingCode;
 };
 
 #endif

@@ -295,6 +295,11 @@ void TfrmPaymentType::Reset()
               tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
            }
+           else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+           {
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;//!CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+           }
            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
@@ -2132,8 +2137,12 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
 
         if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
-        {
+        {  
            ProcessWalletTransaction(Payment);
+        }
+        else if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+        {
+           Payment->SetPay(wrkPayAmount);
         }
 
         //apply changes here..
@@ -2183,7 +2192,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
        if(!CurrentTransaction.IsQuickPayTransaction)
             btnCancel->SetFocus();
     }
-}// ---------------------------------------------------------------------------
+}
 // ---------------------------------------------------------------------------
 void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {

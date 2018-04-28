@@ -127,7 +127,6 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_47( TDBControl* const inDBControl );
         PARSER_ERROR apply6_48( TDBControl* const inDBControl );
         PARSER_ERROR apply6_49( TDBControl* const inDBControl );
-       // Members
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -161,6 +160,7 @@ namespace MenumateVersionParser
 
         std::string readContactsQuery();
         std::string getForeignKeysListForTableQuery( std::string inTableName );
+        std::string checkWhetherADomainExistsQuery();
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
         // Tool Functions
@@ -203,6 +203,8 @@ namespace MenumateVersionParser
                                 std::string inNameTwo,
                                 std::string inSQL,
                                 TDBControl* inDBControl );
+
+        bool DomainExists(std::string inDomainName, TDBControl* inDBControl );
 
         //.....................................................
 
@@ -885,7 +887,6 @@ namespace MenumateVersionParser
         void update6_45Tables();
         void AlterDayArcBillTable6_45(TDBControl* const inDBControl);
         void AlterArcBillTable6_45(TDBControl* const inDBControl);
-
         void upgrade6_46Tables();
         void update6_46Tables();
         void CREATEDSR_PIVOT_BY_ITEMProcedure6_46( TDBControl* const inDBControl );
@@ -893,16 +894,14 @@ namespace MenumateVersionParser
         void CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
         void POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
 		void Create6_46Generators(TDBControl* const _dbControl);
+        void AlterTablePaymentType6_46(TDBControl* const _dbControl);
+        void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
         void UpdateServingTimes(TDBControl* const _dbControl);
-        void AlterTablePaymentType6_46(TDBControl* const _dbControl);
-        void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
-
         void upgrade6_47Tables();
         void update6_47Tables();
         void AlterTableDiscount6_47(TDBControl* const _dbControl);
-
         void upgrade6_48Tables();
         void update6_48Tables();
         void Create6_48Generator(TDBControl* const inDBControl);
@@ -910,7 +909,14 @@ namespace MenumateVersionParser
 
         void upgrade6_49Tables();
         void update6_49Tables();
-        void AlterTable6_49MallExportSales(TDBControl* const inDBControl);
+        void Create6_49Generator(TDBControl* const inDBControl);
+        void Create6_49Tables(TDBControl* const inDBControl);
+        void Create6_49_DomainNotNull(TDBControl* const inDBControl);
+        void Alter6_49_Tables(TDBControl* const inDBControl);
+        void UpdateTable6_49Orders(TDBControl* const inDBControl);
+        void UpdateTable6_49DayArchive(TDBControl* const inDBControl);
+        void UpdateTable6_49Archive(TDBControl* const inDBControl);
+		void AlterTable6_49MallExportSales(TDBControl* const inDBControl);
     };// class
 } // namespace
 

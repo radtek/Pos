@@ -1234,6 +1234,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 				break;
+            default :
+                 IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
+                 IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
+                 break;
 			}
 			IBInternalQuery->ParamByName("SEATNO")->AsInteger = Order->SeatNo;
 			IBInternalQuery->ParamByName("PRICE")->AsCurrency = Order->PriceEach();
@@ -2228,6 +2232,7 @@ void TDBOrder::GetPrevOrders(Database::TDBTransaction &DBTransaction,UnicodeStri
 				TItemMinorComplete *PrevItem = new TItemMinorComplete;
 				GetPrevOrder(DBTransaction,*itOrder,PrevItem);
 				SeatOrders[SeatNo]->Orders->AddPrev(PrevItem);
+                SeatOrders[SeatNo]->RoomNumber = PrevItem->RoomNoStr;   //todo add condition
 			}
 		}
 	}

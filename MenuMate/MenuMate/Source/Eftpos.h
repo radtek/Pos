@@ -113,6 +113,7 @@ class TEftPos
 	AnsiString ResultText;
 	AnsiString WaitingOnReferenceNumber;
     AnsiString AcquirerRefSmartPay;
+    AnsiString AcquirerRefSmartConnect;
 	int ChequeAccountMaxLength;
 	int ChequeBranchMaxLength;
 	int ChequeSerialMaxLength;
@@ -134,6 +135,7 @@ class TEftPos
 	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
+    virtual bool DoQRCodeTransaction(TPayment &Payment);
 };
 
 extern TEftPos *EftPos;
