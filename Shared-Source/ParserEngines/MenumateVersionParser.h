@@ -896,6 +896,8 @@ namespace MenumateVersionParser
         void CREATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
         void POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl );
 		void Create6_46Generators(TDBControl* const _dbControl);
+        void AlterTablePaymentType6_46(TDBControl* const _dbControl);
+        void Updatetable_PaymentTypes6_46(TDBControl* const _dbControl);
         void UpdateItemSize(TDBControl* const _dbControl);
         void UpdateRevenueCodes(TDBControl* const _dbControl);
         void UpdateServingTimes(TDBControl* const _dbControl);
@@ -906,10 +908,6 @@ namespace MenumateVersionParser
         void update6_48Tables();
         void Create6_48Generator(TDBControl* const inDBControl);
         void CreateTabPatronCount6_48Table(TDBControl* const inDBControl);
-        void upgrade6_49Tables();
-        void update6_49Tables();
-        void AlterTablePaymentType6_49(TDBControl* const _dbControl);
-        void Updatetable_PaymentTypes6_49(TDBControl* const _dbControl);
 
         void upgrade6_49Tables();
         void update6_49Tables();
