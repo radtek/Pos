@@ -360,6 +360,7 @@ TGlobalSettings::TGlobalSettings()
     ItemSearch = false;
     IsXeroEnabled = false;
     IsMYOBEnabled = false;
+    SurchargeGLCode= "";
 
     // MallExport Additional Settings
     ConsolidateReportPaths = "";

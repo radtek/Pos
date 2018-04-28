@@ -346,6 +346,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().TabDepositCreditReceivedGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmTabDepositCreditReceivedGLCode, "200");
         TGlobalSettings::Instance().TabDepositCreditRefundedGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmTabDepositCreditRefundedGLCode, "200");
         TGlobalSettings::Instance().FloatGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmFloatGLCode, "");
+        TGlobalSettings::Instance().SurchargeGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmSurchargeGLCode, "");
         TGlobalSettings::Instance().SetTextFontSizeOnCustomerDisplay = TManagerVariable::Instance().GetBool(DBTransaction, vmSetTextFontSize, false);
         TGlobalSettings::Instance().CustomerDisplayFontSize = TManagerVariable::Instance().GetStr(DBTransaction, vmSetCustomerDisplayFontSize, "");
         TGlobalSettings::Instance().WeightLimit = TManagerVariable::Instance().GetNum(DBTransaction, vmWeightLimit, 0.000);

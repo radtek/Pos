@@ -165,7 +165,7 @@ enum vmVariables
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
-   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance,
+   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
     vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,
