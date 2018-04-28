@@ -100,7 +100,6 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
-
 }
 //----------------------------------------------------
 void TApplyParser::update6_45Tables()
@@ -118,7 +117,9 @@ void TApplyParser::update6_46Tables()
     CREATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_46( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_46( _dbControl ) ;
-	POPULATEDSRPIVOTProcedure6_46( _dbControl ) ;    
+	POPULATEDSRPIVOTProcedure6_46( _dbControl ) ;
+    AlterTablePaymentType6_46(_dbControl);
+    Updatetable_PaymentTypes6_46(_dbControl);
 }
 //----------------------------------------------------
 void TApplyParser::update6_47Tables()
@@ -134,8 +135,13 @@ void TApplyParser::update6_48Tables()
 //--------------------------------------------
 void TApplyParser::update6_49Tables()
 {
-    AlterTablePaymentType6_49(_dbControl);
-    Updatetable_PaymentTypes6_49(_dbControl);
+    UpdateTable6_49Orders(_dbControl);
+    UpdateTable6_49DayArchive(_dbControl);
+    UpdateTable6_49Archive(_dbControl);
+    Create6_49Generator(_dbControl);
+    Create6_49Tables(_dbControl);
+    Create6_49_DomainNotNull(_dbControl);
+    Alter6_49_Tables(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1573,7 +1579,38 @@ void TApplyParser::POPULATEDSRPIVOTProcedure6_46( TDBControl* const inDBControl 
 		throw;
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTablePaymentType6_46(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
+		inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------------
+void TApplyParser::Updatetable_PaymentTypes6_46(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
 {
@@ -1630,28 +1667,102 @@ void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-
-void TApplyParser::AlterTablePaymentType6_49(TDBControl* const inDBControl)
+void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
 {
-   if ( !fieldExists( "PAYMENTTYPES", "IS_QR_CODE_ENABLED", _dbControl ) )
-    {
-        executeQuery(
-		"ALTER TABLE PAYMENTTYPES ADD IS_QR_CODE_ENABLED T_TRUEFALSE DEFAULT 'F';",
-		inDBControl);
+    if ( !tableExists( "PMSGUESTDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSGUESTDETAILS "
+        "( "
+        "  GUESTDETAILKEY INTEGER NOT NULL PRIMARY KEY, "
+        "  SECURITYREF INTEGER,                "
+        "  ACCOUNTNUBER VARCHAR(20),          "
+        "  ROOMNUMBER VARCHAR(20),             "
+        "  FIRSTNAME VARCHAR(50),     "
+        "  LASTNAME VARCHAR(50), "
+        "  TABLENUMBER INTEGER NOT NULL, "
+        "  SEATNUMBER INTEGER NOT NULL "
+        ");",
+		inDBControl );
     }
 }
-//--------------------------------------------------------------------------------------------------------
-void TApplyParser::Updatetable_PaymentTypes6_49(TDBControl* const inDBControl)
+//-----------------------------------------------------------------------------------------------
+void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSGUESTDETAIL", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSGUESTDETAIL;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSGUESTDETAIL TO 0;", inDBControl);
+	}
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Create6_49_DomainNotNull(TDBControl* const inDBControl)
+{
+    if(!DomainExists("INT_NN", _dbControl))
+    {
+        executeQuery("CREATE DOMAIN INT_NN AS INT NOT NULL CHECK((VALUE IS NOT NULL));", inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Alter6_49_Tables(TDBControl* const inDBControl)
+{
+    if (fieldExists( "ORDERS", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ORDERS", "SEATNO", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER SEATNO TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Orders(TDBControl* const inDBControl)
 {
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try
     {
-        if ( fieldExists( "PAYMENTTYPES ", "IS_QR_CODE_ENABLED ", _dbControl ) )
+        if ( fieldExists( "ORDERS ", "TABLE_NUMBER ", _dbControl ) )
         {
             TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
-            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES a SET a.IS_QR_CODE_ENABLED = 'F' ",
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ORDERS ", "SEATNO ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEATNO = 0 WHERE a.SEATNO IS NULL ",
             UpdateQuery->ExecQuery();
         }
 
@@ -1662,6 +1773,66 @@ void TApplyParser::Updatetable_PaymentTypes6_49(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49DayArchive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "DAYARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "DAYARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Archive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "ARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

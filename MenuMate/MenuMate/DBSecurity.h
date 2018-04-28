@@ -6,11 +6,12 @@
 #include "ProcessSecurityQueries.h"
 #include "ListSecurityRefContainer.h"
 #include "MM_DBCore.h"
+#include "PaymentTransaction.h"
 
 class TDBSecurity
 {
-	public:
-   static int GetNextSecurityRef(Database::TDBTransaction &inDBTransaction);
+public:
+    static int GetNextSecurityRef(Database::TDBTransaction &inDBTransaction);
 	static void __fastcall ProcessSecurity(Database::TDBTransaction &DBTransaction,TListSecurityRefContainer *Security, bool isTransactionCommit=false);
 	static void __fastcall ProcessSecurity( Database::TDBTransaction &DBTransaction,
 												int SecRef,int UserKey,
@@ -24,5 +25,10 @@ class TDBSecurity
 												UnicodeString TerminalName,UnicodeString Note );
 	static void __fastcall ProcessSecurity(TProcessSecurityQueries &Queries, TListSecurityRefContainer *Security);
 	static void __fastcall ClearSecurity(Database::TDBTransaction &DBTransaction, TListSecurityRefContainer *Security, TSecurityTypes Type);
+    static void  SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, TItemMinorComplete *Order, int tableNo = 0, int seatNo = 0);
+    
+private:
+    static bool CheckWhetherGuestRecordExists(Database::TDBTransaction &DBTransaction, int securityRef, UnicodeString roomNumber, int seatNo,
+                                                UnicodeString accNo);
 };
 #endif

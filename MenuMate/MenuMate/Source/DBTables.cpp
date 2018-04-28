@@ -492,7 +492,8 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
 			"SELECT DISTINCT "
-				"SEAT.SEATNO SEAT_NUMBER, TAB.TAB_NAME NAME, TAB.TAB_KEY TAB_KEY "
+				"SEAT.SEATNO SEAT_NUMBER, TAB.TAB_NAME NAME, TAB.TAB_KEY TAB_KEY, "
+                    "ORDERS.FIRST_NAME, ORDERS.LAST_NAME, ORDERS.ROOM_NO "
 			"FROM "
 				"TABLES INNER JOIN SEAT ON TABLES.TABLE_KEY = SEAT.TABLE_KEY "
 				"INNER JOIN TAB ON SEAT.TAB_KEY = TAB.TAB_KEY "
@@ -513,7 +514,18 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
 			}
 			else
 			{
-				Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("NAME")->AsString);
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                {
+                    UnicodeString Name = IBInternalQuery->FieldByName("FIRST_NAME")->AsString.Trim() != "" ? IBInternalQuery->FieldByName("FIRST_NAME")->AsString
+                                            : IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("ROOM_NO")->AsString
+                            + " " + Name);
+                }
+                else
+                {
+                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("NAME")->AsString);
+                }
 			}
          // Little bit of pointer abuse but we just want to store the int somewhere.
          TabList->Objects[Index] = (TObject *)IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;

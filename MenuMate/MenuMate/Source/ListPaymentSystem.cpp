@@ -4183,13 +4183,24 @@ void TListPaymentSystem::ProcessSecurity(TPaymentTransaction &PaymentTransaction
 		{
 			TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
             UnicodeString name = Order->Item;
-			TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+		   	TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+            
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+            {
+                TDBSecurity::SavePMSGuestDetails(PaymentTransaction, Order, Order->TableNo, Order->SeatNo);
+            }
 			for (int i = 0; i < Order->SubOrders->Count; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
 				if (SubOrder)
 				{
-					TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+			 		TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                    {
+					    TDBSecurity::SavePMSGuestDetails(PaymentTransaction, SubOrder, Order->TableNo, Order->SeatNo);
+                    }
 				}
 			}
 		}
@@ -6611,7 +6622,6 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
 {
     bool retVal = false;

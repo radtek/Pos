@@ -1658,7 +1658,6 @@ PARSER_ERROR TApplyParser::apply6_49( TDBControl* const inDBControl )
 	}
 	try
 	{
-
 		upgrade6_49Tables();
 		updateVersionNumber( current_version, _dbControl );
 		_errorMsg.append( "Updates have been succesfully applied." );
