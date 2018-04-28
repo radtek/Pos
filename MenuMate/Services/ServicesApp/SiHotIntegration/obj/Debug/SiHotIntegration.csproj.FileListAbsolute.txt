@@ -22,3 +22,4 @@ D:\VMShared\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.csp
 D:\VMShared\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
 D:\VMShared\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft.Json.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft.Json.xml

@@ -270,3 +270,98 @@ void __fastcall TDBSecurity::ClearSecurity(Database::TDBTransaction &DBTransacti
 	  throw;
    }
 }
+//----------------------------------------------------------------------------------------------------------------
+void TDBSecurity::SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, TItemMinorComplete *Order, int tableNo, int seatNo)
+{
+    try
+    {
+        TItemMinorComplete *ItemMinorComplete = (TItemMinorComplete *)Order;
+        TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+        bool isRecordAlresdyExist = CheckWhetherGuestRecordExists(paymentTransaction.DBTransaction, Order->Security->GetSecurityRefNumber(),
+                                        Order->RoomNoStr, seatNo, Order->AccNo);
+        if(!isRecordAlresdyExist)
+        {
+             for (int i = 0; i < Order->Security->Count; i++)
+             {
+                TSecurityReference *SecRef = Order->Security->SecurityGet(i);
+                if (SecRef && SecRef->UserKey && SecRef->Event.SubString(1, 50).Pos("Ordered By"))
+                {
+                    IBInternalQuery->Close();
+                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSGUESTDETAIL, 1) FROM RDB$DATABASE";
+                    IBInternalQuery->ExecQuery();
+                    int guestDetailsKey = IBInternalQuery->Fields[0]->AsInteger;
+
+                    IBInternalQuery->Close();
+                    IBInternalQuery->ParamCheck = true;
+                    IBInternalQuery->SQL->Clear();
+                    IBInternalQuery->SQL->Text =
+
+                    "INSERT INTO PMSGUESTDETAILS ("
+                    "GUESTDETAILKEY,"
+                    "SECURITYREF,"
+                    "ACCOUNTNUBER,"
+                    "ROOMNUMBER,"
+                    "FIRSTNAME, "
+                    "LASTNAME, "
+                    "TABLENUMBER, "
+                    "SEATNUMBER  "
+                    ")"
+                    " VALUES "
+                    "("
+                    ":GUESTDETAILKEY, "
+                    ":SECURITYREF,"
+                    ":ACCOUNTNUBER,"
+                    ":ROOMNUMBER,"
+                    ":FIRSTNAME, "
+                    ":LASTNAME, "
+                    ":TABLENUMBER, "
+                    ":SEATNUMBER  "
+                    ");";
+
+                    IBInternalQuery->ParamByName("GUESTDETAILKEY")->AsInteger = guestDetailsKey;
+                    IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = Order->Security->GetSecurityRefNumber();
+
+                    IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = Order->AccNo.SubString(1, 20);//paymentTransaction.Phoenix.AccountNumber.SubString(1, 20);
+                    IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = Order->RoomNoStr;//paymentTransaction.Phoenix.RoomNumber;
+                    IBInternalQuery->ParamByName("FIRSTNAME")->AsString = Order->FirstName.SubString(1, 50);//paymentTransaction.Phoenix.FirstName.SubString(1, 50);
+                    IBInternalQuery->ParamByName("LASTNAME")->AsString = Order->LastName.SubString(1, 50);//paymentTransaction.Phoenix.LastName.SubString(1, 50);
+                    IBInternalQuery->ParamByName("TABLENUMBER")->AsInteger = tableNo;
+                    IBInternalQuery->ParamByName("SEATNUMBER")->AsInteger = seatNo;
+                    IBInternalQuery->ExecQuery();
+                }
+            }
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//----------------------------------------------------------------------------------------
+bool TDBSecurity::CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTransaction, int securityRef, UnicodeString roomNumber,
+                                int seatNo, UnicodeString accNo)
+{
+    bool isRecordExist = false;
+    try
+    {
+        TIBSQL *IBInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.SECURITYREF FROM PMSGUESTDETAILS a "
+                                     "WHERE a.SECURITYREF = :SECURITYREF AND A.ROOMNUMBER = :ROOMNUMBER "
+                                        "AND A.SEATNUMBER = :SEATNUMBER AND A.ACCOUNTNUBER = :ACCOUNTNUBER ";
+        IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = securityRef;
+        IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = roomNumber;
+        IBInternalQuery->ParamByName("SEATNUMBER")->AsInteger = seatNo;
+        IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = accNo.SubString(1, 20);
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            isRecordExist = true;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+    return isRecordExist;
+}

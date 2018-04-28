@@ -2979,6 +2979,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Float GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+     SetVarStr( DBTransaction, vmSurchargeGLCode, "Surcharge GL Code",
+                    "Surcharge GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,
@@ -3227,11 +3231,19 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Default is ",
 		vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmCustomerId, "Customer ID", "Customer ID.\r"
-            "Default is null", vmg3rdPartyInterface, "" );
+        "Default is null", vmg3rdPartyInterface, "" );
         SetVarBool(DBTransaction, vmIsBillSplittedByMenuType, "Split Bill By Menu",
-                 "Split Bill on Menu type basis"
-                 "Default is False.",
-                  vmgPOS, false);
+        "Split Bill on Menu type basis"
+        "Default is False.",
+        vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableEftPosSmartConnect, "Use SmartConnect EFTPOS",
+         "Till uses SmartConnect Intergrated EFTPOS.\r"
+         "Default is False",
+         vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction,vmSmartConnectPairingCode, "Uses SmartConnect EFTPOS",
+         "Pairing code by which terminal is paired to machine.\r"
+         "Default is ",
+         vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction,vmEnableCustomerJourney, "PMS Enable Customer Journey",
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",

@@ -4,7 +4,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Setup GL Codes'
-  ClientHeight = 475
+  ClientHeight = 549
   ClientWidth = 829
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     Left = 6
     Top = 6
     Width = 680
-    Height = 467
+    Height = 539
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
@@ -253,12 +253,31 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCashVarianceMouseClick
     end
+    object btnDiscountAndSurcharge: TTouchBtn
+      Left = 15
+      Top = 464
+      Width = 300
+      Height = 60
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindow
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Payment Surcharge'
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnDiscountSurchargeClick
+    end
   end
   object Panel2: TPanel
     Left = 690
     Top = 6
     Width = 136
-    Height = 467
+    Height = 539
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
@@ -283,7 +302,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnCancel: TTouchBtn
       Left = 8
-      Top = 398
+      Top = 472
       Width = 120
       Height = 60
       Font.Charset = DEFAULT_CHARSET

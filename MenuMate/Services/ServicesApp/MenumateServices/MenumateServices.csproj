@@ -193,6 +193,7 @@
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -275,6 +276,12 @@
     <Compile Include="MenumateServiceLoyaltyMate.Designer.cs">
       <DependentUpon>MenumateServiceLoyaltyMate.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenumateServiceSmartConnect.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSmartConnect.Designer.cs">
+      <DependentUpon>MenumateServiceSmartConnect.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServiceSmartLink.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -317,6 +324,7 @@
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
+    <Compile Include="WCFServices\IWCFSmartConnect.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
@@ -331,6 +339,7 @@
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WCFServices\WCFServiceSmartConnect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -380,6 +389,10 @@
     <ProjectReference Include="..\SiHotIntegration\SiHotIntegration.csproj">
       <Project>{BE08BEA6-3A39-43C9-9E2A-94C2D89734C4}</Project>
       <Name>SiHotIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartConnectIntegration\SmartConnectIntegration.csproj">
+      <Project>{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}</Project>
+      <Name>SmartConnectIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\WalletPaymets\WalletPaymets.csproj">
       <Project>{843E831F-1B70-4238-AA55-96492F53AAE5}</Project>
