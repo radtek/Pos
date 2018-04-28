@@ -216,7 +216,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
                                         "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME ";
 
-        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId !=2)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId ==1 )
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.DEVICE_KEY = :DEVICE_KEY ";
         }
@@ -227,7 +227,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
         IBInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
         IBInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
-        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId != 2)
+        if(!isMasterTerminal && TGlobalSettings::Instance().mallInfo.MallId == 1)
         {
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
         }
