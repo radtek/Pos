@@ -57,6 +57,11 @@ void TApplyParser::upgrade6_48Tables()
 {
     update6_48Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_50Tables()
+{
+    update6_50Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -1649,6 +1654,38 @@ void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
         executeQuery(
 		"ALTER TABLE TABPATRONCOUNT ADD CONSTRAINT TABPATRONCOUNT_TABLE_KEY "
 		"FOREIGN KEY (TAB_KEY) REFERENCES TAB (TAB_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_50Tables()
+{
+    Create6_50Generator(_dbControl);
+    CreateTabPatronCount6_48Table(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_EFTPOSTRANSAC_IDENTFIER", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTableEFTPOSTransaction(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSTRANSAC_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSTRANSAC_DETAILS       "
+        "( "
+        "  EFTPOSTRANSAC_KEY Integer NOT NULL,    "
+        "  INVOICE_NUMBER Varchar(50),            "
+        "  EFTPOS_IDENTIFIER Varchar(50),         "
+        "  TRANSAC_IDENTIFIER Varchar(50),        "
+        "  PRIMARY KEY (EFTPOSTRANSAC_KEY)        "
+        ");",
+		inDBControl );
     }
 }
 //------------------------------------------------------------------------------

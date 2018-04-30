@@ -3472,6 +3472,10 @@
 				<DependentOn>EFTPOSConfiguration.h</DependentOn>
 				<BuildOrder>791</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="EftposAdyen.cpp">
+				<DependentOn>EftposAdyen.h</DependentOn>
+				<BuildOrder>792</BuildOrder>
+			</CppCompile>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
 			<FormResources Include="SelectTable2.dfm"/>
