@@ -140,8 +140,10 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
     if(!roomResponse.IsSuccessful)
     {
         UnicodeString errorMessage = roomResponse.ResponseMessage;
-        if(errorMessage == "")
-           errorMessage = "Room Not Found";
+        if(errorMessage.Pos("roomnotfound") || errorMessage == "")
+            errorMessage = "Room Not Found";
+        else if(errorMessage.Pos("roomnotoccupied"))
+           errorMessage = "Room Not Occupied";
         MessageBox(errorMessage,"PMS Error",MB_OK + MB_ICONERROR);
     }
     siHotDataProcessor->PrepareRoomStatus(siHotAccounts,roomResponse);
@@ -219,9 +221,12 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
                 if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                     break;
-                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
+                if(Order->TabType != TabCashAccount)
+                {
+                    Order->TabType          = TabRoom;
+                    Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                    Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
             roomResponse = siHotInterface->SendRoomChargePost(roomCharge);

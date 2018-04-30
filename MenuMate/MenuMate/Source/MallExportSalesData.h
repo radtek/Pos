@@ -20,6 +20,7 @@ private:
     int _arcBillKey;
     int _zKey;
     int _deviceKey;
+    UnicodeString _invoiceNumber;
 
     void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
@@ -32,6 +33,7 @@ private:
     void SetArcBillKey(int arcBillKey);
     void SetZKey(int zKey);
     void SetDeviceKey(int deviceKey);
+    void SetInvoiceNumber(UnicodeString invoiceNumber);
 
 public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
@@ -45,6 +47,7 @@ public:
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
     __property int DeviceKey = {read = _deviceKey, write = SetDeviceKey};
+    __property UnicodeString InvoiceNumber = {read = _invoiceNumber, write = SetInvoiceNumber};
 };
 
 class TMallExportSalesWrapper

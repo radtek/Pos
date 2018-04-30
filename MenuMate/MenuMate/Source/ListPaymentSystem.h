@@ -232,6 +232,7 @@ protected:
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
+     bool ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction);
 };
 
 #endif

@@ -2341,13 +2341,13 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 75
           Width = 505
-          Height = 250
+          Height = 275
           Anchors = [akLeft]
           Caption = 'Integrated EFTPOS'
           TabOrder = 0
           DesignSize = (
             505
-            250)
+            275)
           object cbIntegratedEftposANZ: TCheckBox
             Left = 8
             Top = 25
@@ -2428,6 +2428,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 7
             OnClick = cbEnableDPSTippingClick
           end
+          object cbIntegratedEftposSmartConnect: TCheckBox
+            Left = 8
+            Top = 250
+            Width = 257
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'EFTPOS SmartConnect'
+            TabOrder = 9
+            OnClick = cbIntegratedEftposSmartConnectClick
+          end
           object cbCadmusCronos: TCheckBox
             Left = 8
             Top = 125
@@ -2458,7 +2468,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox13: TGroupBox
           Left = 8
-          Top = 325
+          Top = 350
           Width = 497
           Height = 130
           Anchors = [akLeft]
@@ -2527,7 +2537,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object cbDuplicateEftPos: TCheckBox
           Left = 8
-          Top = 460
+          Top = 485
           Width = 289
           Height = 20
           Anchors = [akLeft]
@@ -2537,7 +2547,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object smartLinkGroupBox: TGroupBox
           Left = 8
-          Top = 480
+          Top = 505
           Width = 497
           Height = 90
           Caption = 'SmartLink Ip Address '
@@ -2564,7 +2574,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox20: TGroupBox
           Left = 8
-          Top = 570
+          Top = 595
           Width = 497
           Height = 70
           Anchors = [akLeft]

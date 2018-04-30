@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiHotIntegration", "SiHotIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletPaymets", "WalletPaymets\WalletPaymets.csproj", "{843E831F-1B70-4238-AA55-96492F53AAE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConnectIntegration", "SmartConnectIntegration\SmartConnectIntegration.csproj", "{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -252,6 +254,18 @@ Global
 		{843E831F-1B70-4238-AA55-96492F53AAE5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{843E831F-1B70-4238-AA55-96492F53AAE5}.Release|x64.ActiveCfg = Release|Any CPU
 		{843E831F-1B70-4238-AA55-96492F53AAE5}.Release|x86.ActiveCfg = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|x64.ActiveCfg = Release|Any CPU
+		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

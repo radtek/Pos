@@ -36,16 +36,18 @@ void __fastcall TfrmEftPos::FormResize(TObject *Sender)
    	ScaleBy(Screen->Width, Temp);
  //  }
 
-   if(this->Height > Screen->Height)
-   {
-   	this->Height = Screen->Height;
+    if(this->Height > Screen->Height)
+    {
+   	    this->Height = Screen->Height;
+        pnlSignature->Top = 100;
         pnlSuccess->Top = 100;
+        GUIScale::ParentHeight(pnlSignature, 0.8);
+        GUIScale::ChildrenTop(pnlSignature, 0.85);
         GUIScale::ParentHeight(pnlSuccess, 0.8);
         GUIScale::ChildrenTop(pnlSuccess, 0.85);
         lbeElectronicTransType->Top = lbeElectronicTransType->Top * 0.9;
         lbeSuccess->Top = lbeSuccess->Top * 0.9;
-   }
-
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEftPos::FormShow(TObject *Sender)

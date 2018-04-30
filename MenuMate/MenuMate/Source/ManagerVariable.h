@@ -53,6 +53,7 @@ enum vmVariables
    vmEnableAARewardsReminder,vmAutoAddWebMembers,vmAutoAcceptWebOrders,vmReservationsAddress,vmReservationsEnabled,
    vmFloorPlanTransparentTables,vmFloorPlanTableColour,vmFloorPlanTextColour,vmLastSelectedFloorPlanLocationID,
    vmExternalMembershipDiscountCode,vmExternalMembershipPointsCode,vmExternalMembershipSystemCode, vmEnableDPSTipping,vmEnableEftPosSmartPay,vmEftPosSmartPayIp,
+   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,
    // Connections  ----------------------------------------------------------------
    vmPMSIPAddress = 2100, vmPMSTCPPort, vmPMSPOSID, vmPMSPaymentCategory, vmPMSItemCategory, vmPMSPointsCategory, vmPMSCreditCategory,
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
@@ -164,7 +165,7 @@ enum vmVariables
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
-   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance,
+   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
     vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,

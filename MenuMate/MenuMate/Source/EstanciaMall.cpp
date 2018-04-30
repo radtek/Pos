@@ -388,11 +388,12 @@ TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransactio
                 }
         }
 
-        fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+        fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5,mallid);
         fieldData.ControlNumber = 0;
         fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 0 : 1);
         fieldData.SalesType = 1;
-        fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
+        fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38,mallid);
 
         fieldData.DeductionVatable = (double)(fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
@@ -634,28 +635,6 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------
-long TEstanciaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    long saleKey;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SALE_KEY, 1) FROM RDB$DATABASE";
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-            saleKey = IBInternalQuery->Fields[0]->AsInteger;
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return saleKey;
-}
-//------------------------------------------------------------------------------------------------
 int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
 {
     //patron count
@@ -668,70 +647,6 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount;
 }
 //---------------------------------------------------------------------------------
-double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
-{
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    double oldAccumulatedSales = 0.00;
-    try
-    {
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
-        }
-
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
-        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
-
-        if(!isMasterTerminal)
-        {
-            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        }
-
-        IBInternalQuery->ExecQuery();
-        bool  recordPresent = false;
-
-        if(IBInternalQuery->RecordCount )
-           recordPresent = true;
-
-        if(recordPresent)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
-            }
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
-
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
-            if(!isMasterTerminal)
-            {
-                IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
-            }
-            IBInternalQuery->ExecQuery();
-
-            if(IBInternalQuery->RecordCount)
-                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
-        }
-        else
-        {
-            oldAccumulatedSales = 0;
-        }
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return oldAccumulatedSales;
-}
 //--------------------------------------------------------------------------------------------------------
 void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
                                         TEstanciaMallField fieldData, int arcBillKey)
@@ -807,31 +722,6 @@ void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction,
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Invoice Number", "UnicodeString", fieldData.InvoiceNumber, 68, arcBillKey);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
-{
-    try
-    {
-        TMallExportSalesData salesData;
-        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-        salesData.DataValue = fieldValue;
-        salesData.Field = field;
-        salesData.DataValueType = dataType;
-        salesData.FieldIndex = fieldIndex;
-        salesData.DateCreated = Now();
-        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-        salesData.ArcBillKey = arcBillKey;
-        salesData.ZKey = 0;
-        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        mallExportSalesData.push_back(salesData);
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//--------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)
 {
     //Create TMallExportPrepareData  for returning prepared data
@@ -1575,7 +1465,8 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
 //----------------------------------------------------------------------------------------------------------------------------
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
-    UnicodeString exportType = GetExportType();
+    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+    UnicodeString exportType = GetExportType(mallid)  ;
     if(exportType == ".txt")
     {
         return new TMallExportTextFile;
@@ -1739,41 +1630,5 @@ std::set<int> TEstanciaMall::InsertInToSet(int arr[], int size)
     return keyToCheck;
 }
 //------------------------------------------------------------------------------------------------------------------------
-UnicodeString TEstanciaMall::GetExportType()
-{
-    UnicodeString typeOfFile = "";
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
-
-    try
-    {
-        ///Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dbTransaction.RegisterQuery(IBInternalQuery);
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
-                                     "FROM MALLEXPORT_SETTINGS MES "
-                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
-                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
-                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
-
-        IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
-        IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 1;
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-            typeOfFile = IBInternalQuery->Fields[3]->AsString;
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-
-    return typeOfFile;
-}
 //-----------------------------------------------------------------------------------------------------------------------------
 

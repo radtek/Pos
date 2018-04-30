@@ -6,7 +6,17 @@
 #include "PaymentTransaction.h"
 #include "MallExportData.h"
 #include "IExporterInterface.h"
+#include <DateUtils.hpp>
 //---------------------------------------------------------------------------
+
+struct TMallExportDiscount
+{
+    double scdDiscount;
+    double pwdDiscount;
+    double otherDiscount;
+};
+
+
 class TMallExport: public TMallExportInterface
 {
 private:
@@ -15,6 +25,13 @@ private:
 
     //Get OldAccumulated Sale
     double GetOldAccumulatedSales(int fieldIndex);
+
+    //Generate SalesKey for MallExport_sales Table
+    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
+
+    TDateTime BilledTimeStamp;
+
+    UnicodeString InvoiceNumber;
 
 protected:
 
@@ -33,6 +50,20 @@ protected:
     //if sales type is assigned to items then sales total according to sales type will get stored in new table
     virtual void InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey,
                                                 TDateTime billedTime);
+
+    //Insert field in to list so that it can be inserted in db later.
+    virtual void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
+                    UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey);
+
+    //will return type of file which will be exported.
+    virtual UnicodeString GetExportType(int mallid);
+
+    //Getting old accumulated total.
+    virtual double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex,int mallid);
+    
+	//prepare SCD, PWD and others discount
+	virtual TMallExportDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
+
 
 public:
 

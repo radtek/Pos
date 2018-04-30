@@ -3187,19 +3187,20 @@ Zed:
 
                 //Method for mall Design According to newly pattern
 
-                 if(TGlobalSettings::Instance().mallInfo.MallId)
+                if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
                     {
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
-                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3)
                     {
                         isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        if(TGlobalSettings::Instance().mallInfo.MallId == 3)
+                            UpdateStallCodeForEviaMall(2);
                     }
-
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
@@ -3376,10 +3377,11 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         TIBSQL *IBInternalQueryTotal = DBTransaction.Query(DBTransaction.AddQuery());
          TIBSQL *IBInternalQueryTabRefundCredit = DBTransaction.Query(DBTransaction.AddQuery());
 
-
+         TIBSQL *IBInternalQuerySurcharge =  DBTransaction.Query(DBTransaction.AddQuery());
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
-            terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
+
+          terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
         }
         AnsiString paymentDetails = "";
         GetPaymentDetails(paymentDetails, terminalNamePredicate);
@@ -3387,11 +3389,11 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 
         IBInternalQueryTotal->SQL->Text =   "Select e.CATEGORY,e.GL_CODE,e.PRICE,f.TAX from "
                                             "( "
-                                            "Select c.CATEGORY,c.GL_CODE, Sum(a.PRICE * a.QTY) PRICE  from  DAYARCHIVE a "
+                                            "Select c.CATEGORY,c.GL_CODE, Sum(a.PRICE * a.QTY) PRICE from  DAYARCHIVE a "
                                             "left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY "
                                             "where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY  "
                                             "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + ") "
-                                            "group by c.CATEGORY,c.GL_CODE "
+                                            "group by c.CATEGORY,c.GL_CODE  "
                                             ") e "
                                             "left join  "
                                             "(  "
@@ -3404,6 +3406,26 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                                             ") f "
                                             "on e.CATEGORY = f.CATEGORY ";
 
+   IBInternalQuerySurcharge->SQL->Text =   "Select SUM(SUBTOTAL) SUBTOTAL FROM  DAYARCSURCHARGE WHERE ARCBILL_KEY "
+                                            "in (Select distinct a.ARCBILL_KEY from DAYARCBILL a inner join DAYARCBILLPAY b "
+                                            "on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                            "where b.CHARGED_TO_XERO <> 'T' "
+                                            "and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " group by a.ARCBILL_KEY) " ;
+
+
+
+
+       IBInternalQuerySurcharge->ParamByName("STARTTIME")->AsDateTime = preZTime;
+       IBInternalQuerySurcharge->ParamByName("ENDTIME")->AsDateTime   =  nextDay;
+       if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+       {
+
+            IBInternalQuerySurcharge->ParamByName("TERMINAL_NAME")->AsString = TerminalName;  // add terminal param..
+
+        }
+
+        IBInternalQuerySurcharge->Close();
+        IBInternalQuerySurcharge->ExecQuery();
 
         bool canContinue = true;
 
@@ -3416,6 +3438,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         double PurchasedVoucher = 0;
         double TipAmount = 0;
         double tip = 0.0;
+        double SurchargeAmount=0;
         UnicodeString floatGlCode = "";
         UnicodeString tabCreditReceivedGLCode = "200";
         UnicodeString tabCreditRefundGlCode = "200";
@@ -3608,6 +3631,23 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         else if(!addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment && cashAmount > 0.0)
              AddInvoicePayment(XeroInvoiceDetail,"Cash", ( cashAmount) , cashGlCode,0);
 
+           //   SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
+
+
+        bool isSurchargeGLCodePresent = false;
+        if(TGlobalSettings::Instance().SurchargeGLCode !=""  &&  TGlobalSettings::Instance().SurchargeGLCode !=NULL &&  TGlobalSettings::Instance().SurchargeGLCode !=0)
+        {
+           isSurchargeGLCodePresent = true;
+           if(IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat !=0)
+            {
+                SurchargeAmount = IBInternalQuerySurcharge->FieldByName("SUBTOTAL")->AsFloat;
+                AddInvoiceItem(XeroInvoiceDetail,"Surcharge",SurchargeAmount,TGlobalSettings::Instance().SurchargeGLCode,0);
+            }
+        }
+        if(isSurchargeGLCodePresent)
+        {
+           catTotal += SurchargeAmount;
+        }
 
         if(catTotal - payTotal)
         {
@@ -8926,10 +8966,6 @@ double TfrmAnalysis::GetCashBlindBalance(TBlindBalances Balances)
 //-------------------------------------------------------------------------------------------------------
 double TfrmAnalysis::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
 {
-//    //Register the database transaction..
-//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-//    dbTransaction.StartTransaction();
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
     double oldAccumulatedSales = 0.00;
@@ -9054,4 +9090,43 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
     {
        zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
+}
+
+void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
+{
+    std::list<TMallExportSettings> ::iterator itUISettings;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    UnicodeString Stallcode = "";
+    try
+    {
+        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+        {
+
+                if(itUISettings->ControlName == "edMallTenantNo")
+                    Stallcode = itUISettings->Value;
+        }
+        UnicodeString StallCodeFormat =  "\"" + Stallcode + "\""   ;
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Stallcode WHERE MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX and MALLEXPORT_SALES.FIELD_VALUE = :FIELD_VALUE ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 2;
+        IBInternalQuery->ParamByName("Stallcode")->AsString = StallCodeFormat;
+        IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = "";
+
+        IBInternalQuery->ExecQuery();
+        IBInternalQuery->Close();
+
+        DBTransaction.Commit();
+    }
+
+    catch(Exception & E)
+    {
+    DBTransaction.Rollback();
+    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
 }

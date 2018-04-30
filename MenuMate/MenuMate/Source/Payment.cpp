@@ -66,6 +66,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     WalletSecurityToken = "";
     WalletQrCode = "";
     CSVString = "";
+    SmartConnectQREnabled = false;
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -118,6 +119,7 @@ void TPayment:: operator = (const TPayment & Data)
     WalletPassword = Data.WalletPassword;
     WalletSecurityToken = Data.WalletSecurityToken;
     WalletQrCode = Data.WalletQrCode;
+    SmartConnectQREnabled = Data.SmartConnectQREnabled;
 }
 
 void TPayment::Reset()
@@ -139,6 +141,7 @@ void TPayment::Reset()
    SuppressEftPosReceipt = false;
    TipAmount = 0;
    WalletQrCode = "";
+   SmartConnectQREnabled = false;
 }
 
 void TPayment::Failed()

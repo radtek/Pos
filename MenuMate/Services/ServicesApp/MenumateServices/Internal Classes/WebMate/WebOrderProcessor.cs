@@ -201,7 +201,7 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            removeCompleteOrder( process.WebOrder );
+           // removeCompleteOrder( process.WebOrder );
             
             System.Reflection.MethodBase currentMethod = System.Reflection.MethodBase.GetCurrentMethod();
             ServiceLogger.LogWithMethod(currentMethod, @": Complete order file has been removed from folder");
@@ -254,18 +254,25 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="args"></param>
         protected void dbAccessProcessComplete(object sender, WebOrderDBAccessEventArgs args)
         {
+            try { 
             WebOrderDBAccessProcess process = (WebOrderDBAccessProcess)sender;
 
             System.Reflection.MethodBase currentMethod = System.Reflection.MethodBase.GetCurrentMethod();
             ServiceLogger.LogWithMethod(currentMethod, string.Format(@": Completing order: {0}", process.WebOrder.Handle));
 
             moveToSucessfulOrder(process.WebOrder);
+            removeCompleteOrder(process.WebOrder);
             ServiceLogger.LogWithMethod(currentMethod, @": Complete order file has been moved from succesful folder");
 
             web_order_db_manager.TerminateProcess(process);
 
              ServiceLogger.LogWithMethod(currentMethod, string.Format(@": Order {0} has been completed", process.WebOrder.Handle));
-        }
+            }  
+            catch (Exception exc)
+            {
+                ServiceLogger.Log(string.Format(@"Failed to  moved from succesful folder",  exc.Message));
+            }
+}
 
         /// <summary>
         /// 

@@ -23,6 +23,10 @@ public:
 	UnicodeString SeatName;
 	int SeatNumber;
 	TContainerOrders *Orders;
+    UnicodeString RoomNumber;
+    bool isDefaultGuest;
+    bool wasGuestSelected;
+    bool isChangeTablePressed;
 };
 
 #endif

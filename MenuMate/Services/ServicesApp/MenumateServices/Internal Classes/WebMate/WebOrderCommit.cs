@@ -10,6 +10,7 @@ using MenumateServices.WebMate.DTO;
 using MenumateServices.Tools;
 using XMLManager;
 using FirebirdSql.Data.FirebirdClient;
+using MenumateServices.WCFServices;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -95,6 +96,8 @@ namespace MenumateServices.WebMate.InternalClasses
                 dbValidateWebOrder(inWebOrder);
                 web_order_xml_manager.SaveComplete(inWebOrder);
                 web_order_xml_manager.RemoveIncomplete(inWebOrder);
+                //WebOrderDBAccessProcess cfg = new WebOrderDBAccessProcess();
+                //cfg.dbSaveOrder(inWebOrder);
             }
             catch(Exception e)
             {
@@ -240,6 +243,7 @@ namespace MenumateServices.WebMate.InternalClasses
                                            string inOrderHandle,
                                        out WebOrderStatus outStatus)
         {
+            ServiceLogger.Log(@"site name:" + inSiteName + @"store name:" + inStoreName);
             if (web_order_xml_manager.WebOrderWaitingToBeAccepted(
                                         inSiteName,
                                         inStoreName,
@@ -252,7 +256,15 @@ namespace MenumateServices.WebMate.InternalClasses
                                                     inStoreName,
                                                     inOrderHandle))
             {
-                outStatus = WebOrderStatus.Incomplete;
+                try
+                {
+                    WCFServiceWebMate sg = new WCFServiceWebMate();
+                    sg.getWebOrder(inOrderHandle).Commit();
+                    outStatus = WebOrderStatus.Committed;
+                }
+                catch(Exception e) { outStatus = WebOrderStatus.Incomplete; }
+              
+               
             }
             else if (web_order_xml_manager.WebOrderNotAccepted(
                                            inSiteName,
@@ -269,6 +281,7 @@ namespace MenumateServices.WebMate.InternalClasses
             {
                 outStatus = WebOrderStatus.Unknown;
             }
+           
         }
 
         /// <summary>
@@ -430,6 +443,7 @@ namespace MenumateServices.WebMate.InternalClasses
             catch (Exception e)
             {
                 EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 300, short.MaxValue);
+                throw;
             }
 
             //WebOrderDBValidate.Instance.ValidateOrder(inOrder);

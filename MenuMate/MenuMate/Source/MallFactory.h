@@ -4,6 +4,7 @@
 #define MallFactoryH
 #include "EstanciaMall.h"
 #include "DeanAndDelucaMall.h"
+#include "Eviamall.h"
 //---------------------------------------------------------------------------
 
 class TMallFactory
