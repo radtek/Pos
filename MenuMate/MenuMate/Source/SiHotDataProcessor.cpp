@@ -685,7 +685,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest) ;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut) ;
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")
@@ -726,7 +726,7 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest);
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut);
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")

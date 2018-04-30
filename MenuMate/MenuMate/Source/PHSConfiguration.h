@@ -44,6 +44,7 @@ __published:	// IDE-managed Components
     TLabel *Label2;
     TTouchBtn *tbOracleInterfaceIP;
     TTouchBtn *tbOracleInterfacePort;
+    TTouchBtn *tbTimeOut;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -67,6 +68,7 @@ __published:	// IDE-managed Components
     void __fastcall cbMakePOSServer(TObject *Sender);
     void __fastcall tbOracleInterfacePortMouseClick(TObject *Sender);
     void __fastcall tbOracleInterfaceIPMouseClick(TObject *Sender);
+    void __fastcall tbTimeOutMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();

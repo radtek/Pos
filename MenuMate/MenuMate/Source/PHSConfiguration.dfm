@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 632
+  ClientHeight = 670
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -18,13 +18,13 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   PixelsPerInch = 96
   TextHeight = 13
   object Panel24: TPanel
-    Left = 8
+    Left = 9
     Top = 8
     Width = 600
-    Height = 616
+    Height = 657
     Color = 10011108
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
+    Font.Color = clWhite
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
@@ -33,7 +33,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     TabOrder = 0
     DesignSize = (
       600
-      616)
+      657)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -382,7 +382,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Left = 558
       Top = 365
       Width = 27
-      Height = 58
+      Height = 51
       Anchors = [akLeft]
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
@@ -440,12 +440,31 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbOracleInterfacePortMouseClick
     end
+    object tbTimeOut: TTouchBtn
+      Left = 16
+      Top = 587
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      Color = 10011108
+      ParentFont = False
+      Caption = 'Time Out'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbTimeOutMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 615
     Top = 8
     Width = 137
-    Height = 616
+    Height = 657
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

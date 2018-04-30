@@ -18,8 +18,8 @@ class TSiHotInterface
        SiHotPayment* GetPayment(std::vector<TSiHotPayments>::iterator it);
     public:
        TSiHotInterface();
-       TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);
-       TRoomChargeResponse SendRoomChargePost(TRoomCharge _roomCharge);
+       TRoomResponse SendRoomRequest(TRoomRequest _roomRequest, int timeOut);
+       TRoomChargeResponse SendRoomChargePost(TRoomCharge _roomCharge, int timeOut);
        bool ValidateIPAddressPort(AnsiString address,int port, int transno);
 };
 #endif

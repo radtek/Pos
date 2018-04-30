@@ -158,6 +158,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
+        tbTimeOut->Enabled = true;
+        tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
     }
     else if(PMSType == oracle)
     {
@@ -173,6 +175,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbSurchargeCat->Enabled = false;
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
+        tbTimeOut->Enabled = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -216,12 +219,14 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
+        tbTimeOut->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+    tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
 }
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
@@ -739,6 +744,43 @@ bool TfrmPHSConfiguration::CanEnablePOSServer()
         retValue = false;
     }
     return retValue;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::tbTimeOutMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+		frmTouchNumpad->Caption = "Enter SiHot Communication Time-Out in seconds.";
+		frmTouchNumpad->btnSurcharge->Caption = "Ok";
+		frmTouchNumpad->btnSurcharge->Visible = true;
+		frmTouchNumpad->btnDiscount->Visible = false;
+		frmTouchNumpad->Mode = pmNumber;
+		frmTouchNumpad->INTInitial = TGlobalSettings::Instance().PMSTimeOut;
+		if (frmTouchNumpad->ShowModal() == mrOk)
+		{
+            if(frmTouchNumpad->INTResult >= 3 && frmTouchNumpad->INTResult <= 11)
+            {
+                TGlobalSettings::Instance().PMSTimeOut = frmTouchNumpad->INTResult;
+                tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSTimeOut,TGlobalSettings::Instance().PMSTimeOut);
+                DBTransaction1.Commit();
+            }
+            else
+            {
+                MessageBox("Please enter a value from 3 to 11 seconds","Information",MB_OK + MB_ICONINFORMATION);
+                tbTimeOutMouseClick(NULL);
+            }
+
+		}
+	}
 }
 //---------------------------------------------------------------------------
 

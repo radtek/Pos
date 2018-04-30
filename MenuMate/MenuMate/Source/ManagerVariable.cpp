@@ -3378,6 +3378,12 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		vmgPOS,
 		0);
         SetVarStr(DBTransaction, vmOracleInterfaceIPAddress, "Oracle Interface IP Address",  "Oracle Interface IP Address", vmgPOS, "");
+        SetVarInt(DBTransaction,
+		vmPMSTimeOut,
+		"PMS Time Out",
+		"PMS Time Out",
+		vmgPOS,
+		3);
 	}
 	catch(Exception &E)
 	{

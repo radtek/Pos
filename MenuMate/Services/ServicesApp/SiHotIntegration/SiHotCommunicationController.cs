@@ -35,7 +35,7 @@ namespace SiHotIntegration
         {
             return ipAddress + @"/paymenttype" + @"/";
         }
-        public RoomDetails GetRoomDetails(RoomRequest roomRequest)
+        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut)
         {
             RoomDetails roomDetails = new RoomDetails();
             List<string> stringList = new List<string>();
@@ -53,7 +53,8 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
-                    tc.ReceiveTimeout = 5000;
+                    int clientTimeOut = timeOut + 1000;
+                    tc.ReceiveTimeout = clientTimeOut;
                     if (myUri.Port != -1)
                         portNumber = myUri.Port;
                     else
@@ -65,7 +66,7 @@ namespace SiHotIntegration
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                         using (var ns = tc.GetStream())
                         {
-                            ns.ReadTimeout = 3000;
+                            ns.ReadTimeout = timeOut;
                             List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
                             var bytes = GetRoomByteArray(detailsList);
                             var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
@@ -133,7 +134,7 @@ namespace SiHotIntegration
             }
             return roomDetails;
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount , int timeOut)
         {
             List<string> stringList = new List<string>();
             RoomChargeResponse response = new RoomChargeResponse();
@@ -154,7 +155,8 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
-                    tc.ReceiveTimeout = 5000;
+                    int clientTimeOut = timeOut + 1000;
+                    tc.ReceiveTimeout = clientTimeOut;
                     if (myUri.Port != -1)
                         portNumber = myUri.Port;
                     else
@@ -167,7 +169,7 @@ namespace SiHotIntegration
                         GetDetailsList(roomChargeDetails, stringList);
                         using (var ns = tc.GetStream())
                         {
-                            ns.ReadTimeout = 3000;
+                            ns.ReadTimeout = timeOut;
                             List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                             byte[] bytes = bytesList.ToArray<byte>();
                             var strHttpRequest = GetHttpRequest(myUri, bytes.Length);

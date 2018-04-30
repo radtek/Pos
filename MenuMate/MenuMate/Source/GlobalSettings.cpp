@@ -422,5 +422,6 @@ TGlobalSettings::TGlobalSettings()
     OracleInterfaceIPAddress = "";
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
+    PMSTimeOut = 0;
 }
 
