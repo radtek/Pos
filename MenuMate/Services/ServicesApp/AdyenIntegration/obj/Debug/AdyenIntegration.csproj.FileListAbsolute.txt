@@ -1,0 +1,8 @@
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\AdyenIntegration.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\AdyenIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\Newtonsoft.Json.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\NLog.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\NLog.xml
