@@ -3406,11 +3406,12 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                                             ") f "
                                             "on e.CATEGORY = f.CATEGORY ";
 
-   IBInternalQuerySurcharge->SQL->Text =   "Select SUM(SUBTOTAL) SUBTOTAL FROM  DAYARCSURCHARGE WHERE ARCBILL_KEY "
+   IBInternalQuerySurcharge->SQL->Text =   "Select SUM(SUBTOTAL) SUBTOTAL FROM  DAYARCSURCHARGE ds  WHERE ds.ARCBILL_KEY "
                                             "in (Select distinct a.ARCBILL_KEY from DAYARCBILL a inner join DAYARCBILLPAY b "
                                             "on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                             "where b.CHARGED_TO_XERO <> 'T' "
-                                            "and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " group by a.ARCBILL_KEY) " ;
+                                            "and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " group by a.ARCBILL_KEY) "
+                                            "and ds.PROPERTIES like '%15%' ";
 
 
 
