@@ -67,6 +67,8 @@ void TdmStockReportData::SetupStockValueByGroup(TStrings *Groups)
 		"Order By "
 			"StockCategory.Sort_Order, "
 			"StockGroup.Sort_Order, "
+           "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"StockLocation.Location, "
              "stock.DESCRIPTION asc ";
 	for (int i=0; i<Groups->Count; i++)
@@ -122,6 +124,8 @@ void TdmStockReportData::SetupStockValueByLocation(TStrings *Locations, TStrings
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order, "
 			"StockGroup.Sort_Order, "
+             "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
              "stock.DESCRIPTION asc ";
 	for (int i=0; i<Locations->Count; i++)
 	{
@@ -427,6 +431,8 @@ void TdmStockReportData::SetupStockDetails(TStrings *Locations, TStrings *Groups
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order, "
+             "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
             "Stock.Description asc ";
 	if (Locations)
 	{
@@ -862,6 +868,8 @@ void TdmStockReportData::SetupStockReorderItem(TStrings *Locations, TStrings *Gr
 		"Order By "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order,"
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"StockLocation.Location";
 	for (int i=0; i<Locations->Count; i++)
 	{
@@ -1414,6 +1422,8 @@ void TdmStockReportData::SetupPurchaseOrder(int OrderKey)
 		"Order By "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order,"
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"Stock.Description,"
 			"PurchaseStock.Supplier_Unit ";
 	qrPurchaseOrder->ParamByName("Order_LK")->AsInteger = OrderKey;
@@ -1958,6 +1968,8 @@ void TdmStockReportData::SetupStocktakeStockValuation(TStrings *Stocktakes)
             " order by     "
            "StockCategory.Sort_Order,  "
 			"StockGroup.Sort_Order,  "
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"Stock.Description,     "
 			"StockLocation.Location  " ;
 

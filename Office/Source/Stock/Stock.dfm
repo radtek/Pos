@@ -1305,6 +1305,8 @@ object frmStock: TfrmStock
       '     Order by'
       '        StockCategory.Sort_Order,'
       '        StockGroup.Sort_Order,'
+      '        UPPER(StockCategory.STOCK_CATEGORY),'
+      '        UPPER(STOCKGROUP.STOCK_GROUP),'
       '        Stock.Description')
     Transaction = Transaction
     Left = 168

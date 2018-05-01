@@ -668,7 +668,9 @@ object frmTransferMulti: TfrmTransferMulti
       
         'WHERE S.ENABLED = '#39'T'#39' AND (S.DELETED IS NULL OR S.DELETED = '#39'F'#39')' +
         ' AND SRS.ISPROCESSED != '#39'T'#39' AND SR.REQUEST_TYPE = '#39'Transfer'#39
-      'ORDER BY SC.SORT_ORDER, SG.SORT_ORDER, S.DESCRIPTION'
+      
+        'ORDER BY SC.SORT_ORDER, SG.SORT_ORDER, UPPER(SC.STOCK_CATEGORY), ' +
+        'UPPER(SG.STOCK_GROUP),S.DESCRIPTION'
       '')
     Left = 208
     Top = 312
@@ -758,6 +760,8 @@ object frmTransferMulti: TfrmTransferMulti
       'Order By'
       '   StockCategory.Sort_Order,'
       '   StockGroup.Sort_Order,'
+      '   UPPER(StockCategory.STOCK_CATEGORY),'
+      '    UPPER(STOCKGROUP.STOCK_GROUP),'
       '   Stock.Description')
     Left = 296
     Top = 312
