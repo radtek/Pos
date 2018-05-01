@@ -84,13 +84,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                          wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
                         break;
                     case TransactionType_INQUIRY :
-                         TEftPosTransaction *EftTrans = GetTransactionEvent();
-                         if(EftTrans != NULL)
-                            {
-                               EftTrans->Result = eManualQuery;
-                               EftTrans->ResultText = "Confirm Eftpos Transaction.";
-                               EftTrans->EventCompleted = true;
-                            }
+                         wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
                     break;
                 }
                   if(wcfResponse->ResponseSuccessful)
