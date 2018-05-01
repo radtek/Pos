@@ -161,6 +161,7 @@ private:	// User declarations
 	TPayment Payment;
 	void RedrawButtons(TObject * Sender);
     AnsiString GLCode;
+    void EnableOrCheckQRCodeButton(bool isQRCodeChecked, bool isQRCodeEnabled);
 public:		// User declarations
     static TfrmNewPaymentType *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey);
 

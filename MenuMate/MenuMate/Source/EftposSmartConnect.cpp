@@ -379,11 +379,11 @@ bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
         if(wcfResponse->ResponseSuccessful)
         {
             retval = true;
+            LoadEftPosReceipt(wcfResponse);
         }
-        else
+        else if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
         {
-            if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
-                DoQRCodeTransaction(Payment);
+            DoQRCodeTransaction(Payment);
         }
     }
     catch( Exception& E )
