@@ -136,6 +136,7 @@ class TEftPos
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool DoQRCodeTransaction(TPayment &Payment);
+    virtual bool IsCashOutSupported();
 };
 
 extern TEftPos *EftPos;

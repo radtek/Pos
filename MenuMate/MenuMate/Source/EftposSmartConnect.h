@@ -51,6 +51,6 @@ public:
         void __fastcall DoPairing();
         AnsiString GetRefNumber();
         bool DoQRCodeTransaction(TPayment &Payment);
-
+        bool IsCashOutSupported();
 };
 #endif

@@ -48,8 +48,6 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 19
   object lbeVersion: TLabel

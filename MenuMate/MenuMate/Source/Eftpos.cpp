@@ -301,3 +301,8 @@ bool TEftPos::DoQRCodeTransaction(TPayment &Payment)
 	return false;
 }
 //--------------------------------------------------------------------------
+bool TEftPos::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

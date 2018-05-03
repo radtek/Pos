@@ -517,6 +517,10 @@ public:
     UnicodeString SurchargeGLCode;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
+    bool EnableEftPosAdyen;
+    UnicodeString EFTPosAPIKey;
+    UnicodeString EFTPosDeviceID;
+    UnicodeString EFTPosURL;
 };
 
 #endif

@@ -62,6 +62,11 @@ void TApplyParser::upgrade6_49Tables()
 {
     update6_49Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_50Tables()
+{
+    update6_50Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -1689,7 +1694,13 @@ void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
 		inDBControl );
     }
 }
-//-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------
+void TApplyParser::update6_50Tables()
+{
+    Create6_50Generator(_dbControl);
+    CreateTableEFTPOSTransaction(_dbControl);
+}
+//------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_PMSGUESTDETAIL", _dbControl))
@@ -1854,8 +1865,50 @@ void TApplyParser::AlterTable6_49MallExportSales(TDBControl* const inDBControl)
         "ADD INVOICE_NUMBER VARCHAR(50) ; ",
 		inDBControl);
 	}
-
 }
-//-----------------------------------------------------------------
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_EFTPOSTRANSAC_IDENTFIER", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_ADYENSERVICEID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_ADYENSERVICEID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_ADYENSERVICEID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_ADYENTRANSACTIONID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_ADYENTRANSACTIONID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_ADYENTRANSACTIONID TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTableEFTPOSTransaction(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSTRANSAC_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSTRANSAC_DETAILS       "
+        "( "
+        "  EFTPOSTRANSAC_KEY Integer NOT NULL,    "
+        "  INVOICE_NUMBER Varchar(50),            "
+        "  EFTPOS_IDENTIFIER Varchar(50),         "
+        "  TRANSAC_IDENTIFIER Varchar(50),        "
+        "  PRIMARY KEY (EFTPOSTRANSAC_KEY)        "
+        ");",
+		inDBControl );
+    }
+    if (fieldExists( "VARSPROFILE", "VARCHAR_VAL", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE VARSPROFILE  "
+        "ALTER VARCHAR_VAL TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

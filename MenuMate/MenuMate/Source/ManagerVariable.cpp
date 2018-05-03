@@ -3378,6 +3378,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		vmgPOS,
 		0);
         SetVarStr(DBTransaction, vmOracleInterfaceIPAddress, "Oracle Interface IP Address",  "Oracle Interface IP Address", vmgPOS, "");
+        SetVarBool(DBTransaction,vmEnableEftPosAdyen,"Use Adyen EFTPOS", "This setting will set EFTPOS to Adyen", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmEFTPosAPIKey,  "API Key", "API Key for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosDeviceID,  "Device ID", "Device ID for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosURL,  "API URL", "API URL for EFTPOS CLoud", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

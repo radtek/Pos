@@ -422,5 +422,9 @@ TGlobalSettings::TGlobalSettings()
     OracleInterfaceIPAddress = "";
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
+    EnableEftPosAdyen = false;
+    EFTPosAPIKey = "";
+    EFTPosDeviceID = "";
+    EFTPosURL = "";
 }
 

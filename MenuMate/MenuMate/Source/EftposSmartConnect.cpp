@@ -422,4 +422,9 @@ void TEftPosSmartConnect::LoadEftPosReceipt(SmartConnectResponse *wcfResponse)
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosSmartConnect::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

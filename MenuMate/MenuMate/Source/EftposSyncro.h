@@ -46,6 +46,7 @@ class TEftPosSyncro : public TEftPos
 		void __fastcall DoLogon();
 		void __fastcall DoUtilityFunctions();		
       void __fastcall ReprintReceipt();
+      bool IsCashOutSupported();
 };
 
 #endif
