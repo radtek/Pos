@@ -100,7 +100,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Merchent Id'
+      Caption = 'Merchant Id'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace

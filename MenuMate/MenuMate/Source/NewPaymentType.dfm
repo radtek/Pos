@@ -1335,7 +1335,7 @@ object frmNewPaymentType: TfrmNewPaymentType
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'Merchent Details'
+            Caption = 'Merchant Details'
             ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = 14342874
