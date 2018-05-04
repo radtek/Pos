@@ -417,6 +417,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().OracleInterfaceIPAddress = TManagerVariable::Instance().GetStr(DBTransaction, vmOracleInterfaceIPAddress, "");
         TGlobalSettings::Instance().EnableEftPosSmartConnect = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosSmartConnect, false);
         TGlobalSettings::Instance().SmartConnectPairingCode = TManagerVariable::Instance().GetStr(DBTransaction, vmSmartConnectPairingCode, "");
+        TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

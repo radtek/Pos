@@ -72,6 +72,7 @@ void TMoney::Clear()
     RoundingAdjustment = 0;
     IsSCD = false;
     PaymentTip = 0;
+    SurchargeByEFTPOS = 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,6 +132,11 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
           PaymentTip += Payment->TipAmount;
         }
 
+        if(Payment->EFTPOSSurcharge != 0)
+        {
+          SurchargeByEFTPOS += Payment->EFTPOSSurcharge;
+        }
+
     }
 
     TPayment *CashPayment = Transaction.PaymentFind(CASH);
@@ -183,13 +189,12 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
           TotalOwing = RoundToNearest(TotalOwing, TGlobalSettings::Instance().RoundOnBillingAmount, TGlobalSettings::Instance().MidPointRoundsDown);
           TotalRounding  += (TotalOwing - TempTotalOwing);
         }
-       TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints + PaymentTip);
+       TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints + PaymentTip + SurchargeByEFTPOS);
 
-
+       if(TGlobalSettings::Instance().EnableEftPosSmartConnect && (PaymentTip > 0 || SurchargeByEFTPOS > 0) && PaymentCashOut > 0)
+            TotalOwing  +=  RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
     }
-
     PaymentDue = TotalOwing - PaymentAmount;
-
     if(!Transaction.CreditTransaction)
     {
         PaymentDiscountsGSTContent = 0;

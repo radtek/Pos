@@ -517,6 +517,7 @@ public:
     UnicodeString SurchargeGLCode;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
+    bool IsSmartConnectQRTransaction;
 };
 
 #endif

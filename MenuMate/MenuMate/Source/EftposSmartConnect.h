@@ -25,7 +25,8 @@ class TEftPosSmartConnect : public TEftPos
         void GetTransResult();
         void GetStatus();
         void ReadCard();
-        void LoadEftPosReceipt(SmartConnectResponse *wcfResponse) ;
+        void LoadEftPosReceipt(UnicodeString eftPosReceipt) ;
+        void IsQRCodeTransaction(eEFTTransactionType TxnType);
 public:
         TEftPosSmartConnect();
         ~TEftPosSmartConnect();
@@ -50,7 +51,5 @@ public:
         void __fastcall ReprintReceipt();
         void __fastcall DoPairing();
         AnsiString GetRefNumber();
-        bool DoQRCodeTransaction(TPayment &Payment);
-
 };
 #endif

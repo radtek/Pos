@@ -356,7 +356,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         btnWalletConfig->Enabled = cbWalletPayments->Checked;
         tbtnUniUser->Caption = "Universal User\r" + UniUser;
         tbtnUniPass->Caption = "Universal Password\r" + UniPass;
-        if(cbIntegrated->Checked)
+       
+        if(cbCashOut->Checked)
         {
             EnableOrCheckQRCodeButton(false, false);
         }
@@ -653,6 +654,12 @@ void __fastcall TfrmNewPaymentType::cbCashOutClick(TObject *Sender)
 	  {
 		 cbIsCash->Checked = false;
 	  }
+
+      EnableOrCheckQRCodeButton(false, false);
+   }
+   else
+   {
+        EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
    }
 }
 // ---------------------------------------------------------------------------
@@ -707,12 +714,8 @@ void __fastcall TfrmNewPaymentType::cbIntegratedClick(TObject *Sender)
 	  {
 		 cbIsTip->Checked = false;
 	  }
-      EnableOrCheckQRCodeButton(false, false);
-   }
-   else
-   {
-        EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
-   }
+    }
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::tbChequeVerifyClick(TObject *Sender)
@@ -1308,18 +1311,43 @@ void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmNewPaymentType::EnableOrCheckQRCodeButton(bool isQRCodeChecked, bool isQRCodeEnabled)
 {
-    cbSmartConnectQR->Checked = isQRCodeChecked;
     cbSmartConnectQR->Enabled = isQRCodeEnabled;
+    cbSmartConnectQR->OnClick = NULL;
+    cbSmartConnectQR->Checked = isQRCodeChecked;
+    cbSmartConnectQR->OnClick = cbSmartConnectQRClick;
+    if(cbSmartConnectQR->Checked)
+    {
+        EnableOrCheckCashOutButton(false, false);
+    }
+    else
+    {
+        cbCashOut->Enabled = true;
+    }
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
 {
-    if(cbSmartConnectQR->Checked)
+    if(cbSmartConnectQR->Checked )
     {
-        cbIntegrated->Enabled = false;
+        if(MessageBox("Cash Out functionality will be disabled.", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
+        {
+            EnableOrCheckCashOutButton(false, false);
+        }
+        else
+        {
+            cbSmartConnectQR->Checked = false;
+            cbCashOut->Enabled = true;
+        }
     }
     else
     {
-        cbIntegrated->Enabled = true;
+        cbCashOut->Enabled = true;
     }
+}
+//----------------------------------------------------------------------------
+void TfrmNewPaymentType::EnableOrCheckCashOutButton(bool checkCashout, bool enableCashOut)
+{
+    cbCashOut->Checked = checkCashout;
+    cbCashOut->Enabled = enableCashOut;
 }
