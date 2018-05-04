@@ -68,20 +68,15 @@ std::auto_ptr<TStringList> TDocketLogs::AddItemsToList(TList *Orders)
             value += "ItemName: " + ic->Item + "        " + "Menu Name: " + ic->MenuName + "        "  +
                      "Course Kitchen Name: " + ic->CourseKitchenName + "        " +
                      "Course Name :"+ ic->Course + "        " +
-                     "QTY: " + ic->GetQty() + "        " + "Table No: " + ic->TableNo + "        " +
-                     "Seat No: " + ic->SeatNo + "        " "Tab Name: " + ic->TabName + "        " +
-                     "Tab Type: " + ic->TabType;
+                     "QTY: " + (UnicodeString)ic->GetQty() + "        " + "Table No: " + IntToStr(ic->TableNo) + "        " +
+                     "Seat No: " + IntToStr(ic->SeatNo) + "        " "Tab Name: " + ic->TabName + "        " +
+                     "Tab Type: " + IntToStr(ic->TabType);
             OrderList->Add(value);
             for(int indexSub = 0; indexSub < ic->SubOrders->Count; indexSub++)
             {
                TItemComplete* sub = (TItemComplete*)ic->SubOrders->Items[indexSub];
                 UnicodeString valueSub = "";
-                valueSub += "ItemName: " + sub->Item + "        " + "Menu Name: " + sub->MenuName + "        "  +
-                         "Course Kitchen Name: " + sub->CourseKitchenName + "        " +
-                         "Course Name :"+ sub->Course + "        " +
-                         "QTY: " + sub->GetQty() + "        " + "Table No: " + sub->TableNo + "        " +
-                         "Seat No: " + sub->SeatNo + "        " "Tab Name: " + sub->TabName + "        " +
-                         "Tab Type: " + sub->TabType;
+                valueSub += "ItemName: " + sub->Item + "        " + "QTY: " + (UnicodeString)sub->GetQty() ;
                 OrderList->Add(valueSub);
             }
         }

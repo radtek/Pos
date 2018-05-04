@@ -593,7 +593,7 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayCo
 
                   if(Printout)
                   {
-                      ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + Request->Printouts->Count);
+                      ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + IntToStr(Request->Printouts->Count));
                       ListItemsLogs1->Add("Docket Number is : " + Printout->PrintInfo["DocketNumber"]);
                   }
 
@@ -671,7 +671,6 @@ try
 bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJob *Request, TPrinterTypeFilter PrinterTypeFilter,
    TSectionInstructStorage *inTemplate, int VirtualPrinterKeyFilter,bool isChefmate)
 {
-   MessageBox("1","1",MB_OK);
    if (Request->JobType == pjInit)
    {
 	  Request->JobType = pjKitchen;
@@ -758,7 +757,7 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJo
 
                   if(Printout)
                   {
-                     ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + Request->Printouts->Count);
+                     ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + IntToStr(Request->Printouts->Count));
                      ListItemsLogs1->Add("Docket Number is : " + Printout->PrintInfo["DocketNumber"]);
                   }
 

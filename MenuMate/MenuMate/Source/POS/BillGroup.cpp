@@ -50,6 +50,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "PMSHelper.h"
 #include "SCDPatronUtility.h"
+#include "DocketLogs.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -810,6 +811,14 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 
 					std::auto_ptr <TReqPrintJob> Request(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 					Request->Transaction = TempTransaction.get();
+
+                    std::auto_ptr<TStringList> ListItemsLogs0 = TDocketLogs::AddItemsToList(Request->Transaction->Orders);
+                    if(ListItemsLogs0->Count > 0)
+                    {
+                        ListItemsLogs0->Add("***********List was extracted just after Request->Transaction = TempTransaction.get(); in method CancelItems of Billgroup***********");
+                        TDocketLogs::SaveLogs(ListItemsLogs0);
+                    }
+
 					Request->SenderType = devPC;
 					Request->Waiter = CancelUserInfo.Name;
 					Request->Transaction->Money.Recalc(*Request->Transaction);
@@ -824,6 +833,14 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
 					Kitchen->Initialise(DBTransaction);
 					Kitchen->GetPrintouts(DBTransaction, Request.get());
+
+                    std::auto_ptr<TStringList> ListItemsLogs1 = TDocketLogs::AddItemsToList(Request->Transaction->Orders);
+                    if(ListItemsLogs1->Count > 0)
+                    {
+                        ListItemsLogs1->Add("***********List was extracted just before Print Command in method CancelItems of Billgroup***********");
+                        TDocketLogs::SaveLogs(ListItemsLogs1);
+                    }
+
 					Request->Printouts->Print(devPC);
 					if (Request->Header.Error != proA_Ok)
 					{
