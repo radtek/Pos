@@ -15653,7 +15653,8 @@ void TfrmSelectDish::DisplayRoomNoUI()
             TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
             dbTransaction.StartTransaction();
             LoadDefaultGuestDetailsToSeatOrders(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,
-                                    TManagerVariable::Instance().GetStr(dbTransaction,vmSiHotDefaultTransactionName));
+                                    TManagerVariable::Instance().GetStr(dbTransaction,vmSiHotDefaultTransactionName),
+                                    TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber);
             dbTransaction.Commit();
             RedrawSeatOrders();
             SeatOrders[SelectedSeat]->wasGuestSelected = true;
@@ -15721,7 +15722,7 @@ void TfrmSelectDish::GetRoomDetails()
                         SiHotAccount.AccountDetails.push_back(accountDetails);
 
                         //For displaying room details like member.
-                        LoadDefaultGuestDetailsToSeatOrders(accIt->RoomBedNumber, accIt->FirstName, accIt->LastName);
+                        LoadDefaultGuestDetailsToSeatOrders(accIt->RoomBedNumber, accIt->FirstName, it->AccountNumber, accIt->LastName);
                     }
                 }
             }
@@ -16069,7 +16070,7 @@ bool TfrmSelectDish::LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction
     return isGuestExist;
 }
 //-------------------------------------------------------------------------------------
-void TfrmSelectDish::LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString lastName)
+void TfrmSelectDish::LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo, UnicodeString lastName)
 {
     SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.RoomNumber = roomNo;
     SeatOrders[SelectedSeat]->Orders->pmsAccountDetails.FirstName = firstName;
@@ -16083,6 +16084,7 @@ void TfrmSelectDish::LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, U
             SeatOrders[SelectedSeat]->Orders->Items[index]->RoomNoStr = roomNo;
             SeatOrders[SelectedSeat]->Orders->Items[index]->FirstName = firstName;
             SeatOrders[SelectedSeat]->Orders->Items[index]->LastName = lastName;
+            SeatOrders[SelectedSeat]->Orders->Items[index]->AccNo = accNo;
         }
     }
 }
@@ -16140,7 +16142,7 @@ void TfrmSelectDish::GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSea
                     SeatOrders[0]->Orders->Clear();
                     SelectedSeat = i;
                     SeatOrders[SelectedSeat]->RoomNumber = firstItem->RoomNoStr;
-                    LoadDefaultGuestDetailsToSeatOrders(firstItem->RoomNoStr, firstItem->FirstName, firstItem->LastName);
+                    LoadDefaultGuestDetailsToSeatOrders(firstItem->RoomNoStr, firstItem->FirstName, firstItem->AccNo ,firstItem->LastName);
                     break;
                 }
 
