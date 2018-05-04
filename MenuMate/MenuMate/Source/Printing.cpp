@@ -20,6 +20,7 @@
 #include "DocketManager.h"
 #include "Printout.h"
 #include "ReqPrintJob.h"
+#include "DocketLogs.h"
 
 // #include "Comms.h"
 
@@ -566,6 +567,9 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayCo
 
 	  TManagerPhysicalPrinter ManagerPhysicalPrinter;
 
+      std::auto_ptr<TStringList> ListItemsLogs1(new TStringList);
+      ListItemsLogs1->Add("Inside GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayComplete *CallAway, TReqPrintJob *Request)");
+
 	  std::auto_ptr <TStringList> PrinterCallAwaysList(new TStringList);
       for(int i = 0; i < VirtualPrinters.size(); i++)
 	  {
@@ -579,16 +583,33 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TCallAwayCo
 			// Is the printer attached to this machine
 			if (GetCallAwaysForThisPrinter(DBTransaction, &CurrentPrinter, PrinterCallAwaysList.get()))
 			{
+                ListItemsLogs1->Add("Items were found for CurrentPrinter VirtualKey " + IntToStr(CurrentPrinter.VirtualPrinterKey) +
+                    "  Physical Key :" + IntToStr(CurrentPrinter.PhysicalPrinterKey) + "  Virtual Name : " + CurrentPrinter.VirtualPrinterName +
+                    " & count of Order List " + IntToStr(PrinterCallAwaysList->Count) + " after GetCallAwaysForThisPrinter(DBTransaction, &CurrentPrinter, PrinterOrderList.get())");
 			   BundleCallAwayCoursesTables(CallAway, Request, PrinterCallAwaysList.get());
 			   if (Courses->Count > 0)
 			   {
 				  TPrintout *Printout = GetPrintout(DBTransaction, Request, &CurrentPrinter, true);
+
+                  if(Printout)
+                  {
+                      ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + Request->Printouts->Count);
+                      ListItemsLogs1->Add("Docket Number is : " + Printout->PrintInfo["DocketNumber"]);
+                  }
+
 				  AddCallAwayToPrintout(Printout->PrintFormat);
 				  callAwaysPrintedCount += Courses->Count;
 			   }
 			}
+           else
+           {
+             ListItemsLogs1->Add("Items were not found for CurrentPrinter VirtualKey " + IntToStr(CurrentPrinter.VirtualPrinterKey) +
+                                "  Physical Key :" + IntToStr(CurrentPrinter.PhysicalPrinterKey) + "  Virtual Name : " + CurrentPrinter.VirtualPrinterName);
+
+           }
 		 }
 	  }
+      TDocketLogs::SaveLogs(ListItemsLogs1);
 	  return callAwaysCount == callAwaysPrintedCount;
    }
    catch(EErrorPrinter & Err) // Incase printer not found and cant be redirected.
@@ -650,6 +671,7 @@ try
 bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJob *Request, TPrinterTypeFilter PrinterTypeFilter,
    TSectionInstructStorage *inTemplate, int VirtualPrinterKeyFilter,bool isChefmate)
 {
+   MessageBox("1","1",MB_OK);
    if (Request->JobType == pjInit)
    {
 	  Request->JobType = pjKitchen;
@@ -695,6 +717,9 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJo
 
 	  TManagerPhysicalPrinter ManagerPhysicalPrinter;
 
+      std::auto_ptr<TStringList> ListItemsLogs1(new TStringList);
+      ListItemsLogs1->Add("Inside GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJob *Request, TPrinterTypeFilter PrinterTypeFilter,TSectionInstructStorage *inTemplate, int VirtualPrinterKeyFilter,bool isChefmate)");
+
       for(int i = 0; i < VirtualPrinters.size(); i++)
 	  {
        	 TPrinterVirtual CurrentPrinter = VirtualPrinters[i];
@@ -717,11 +742,26 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJo
 				  KitchenTemplate = *inTemplate;
 			   }
 
+
+
 			   // Is the printer attached to this machine
 			   std::auto_ptr <TList> PrinterOrderList(new TList);
 			   if (GetOrdersForThisPrinter(DBTransaction, &CurrentPrinter, PrinterOrderList.get()))
 			   {
+
+                 ListItemsLogs1->Add("Items were found for CurrentPrinter VirtualKey " + IntToStr(CurrentPrinter.VirtualPrinterKey) +
+                                    "  Physical Key :" + IntToStr(CurrentPrinter.PhysicalPrinterKey) + "  Virtual Name : " + CurrentPrinter.VirtualPrinterName +
+                                    " & count of Order List " + IntToStr(PrinterOrderList->Count) + " after GetOrdersForThisPrinter(DBTransaction, &CurrentPrinter, PrinterOrderList.get())");
+
+
 				  TPrintout *Printout = GetPrintout(DBTransaction, Request, &CurrentPrinter);
+
+                  if(Printout)
+                  {
+                     ListItemsLogs1->Add("Print Out not null & size of Print Outs is : " + Request->Printouts->Count);
+                     ListItemsLogs1->Add("Docket Number is : " + Printout->PrintInfo["DocketNumber"]);
+                  }
+
 
 				  TPtrSectionInstructStorage TemplateSection;
 				  TSectionInstructStorage::iterator itInstruction = KitchenTemplate.begin();
@@ -742,11 +782,17 @@ bool TKitchen::GetPrintouts(Database::TDBTransaction &DBTransaction, TReqPrintJo
 					 advance(itPtrInstruction, 1);
 				  }
 			   }
+               else
+               {
+                 ListItemsLogs1->Add("Items were not found for CurrentPrinter VirtualKey " + IntToStr(CurrentPrinter.VirtualPrinterKey) +
+                                    "  Physical Key :" + IntToStr(CurrentPrinter.PhysicalPrinterKey) + "  Virtual Name : " + CurrentPrinter.VirtualPrinterName);
+
+               }
 			}
 
 		 }
-
 	  }
+      TDocketLogs::SaveLogs(ListItemsLogs1);
 	  return true;
    }
    catch(EErrorPrinter & Err) // Incase printer not found and cant be redirected.
@@ -826,6 +872,7 @@ bool TKitchen::GetPrintoutsPreview(Database::TDBTransaction &DBTransaction, TReq
 	  DefaultScreenPrinter.BoldCharPerLine = 30;
 
 	  std::auto_ptr <TList> PrinterOrderList(new TList);
+
 	  if (GetOrdersForThisPrinter(DBTransaction, CurrentPrinter, PrinterOrderList.get()))
 	  {
 		 TPrintout *Printout = new TPrintout;

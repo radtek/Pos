@@ -48,6 +48,7 @@
 #include "DiscountGroup.h"
 #include "CardSwipe.h"
 #include "SCDPatronUtility.h"
+#include "DocketLogs.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_PAYMENT_TYPES_IN_VIEW 9
 #define ALTCOL 0
@@ -3285,6 +3286,14 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				std::auto_ptr<TReqPrintJob> req(
 				new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 				req->Transaction = &CurrentTransaction;
+
+                std::auto_ptr<TStringList> ListItemsLogs0 = TDocketLogs::AddItemsToList(req->Transaction->Orders);
+                if(ListItemsLogs0->Count > 0)
+                {
+                    ListItemsLogs0->Add("***********List was extracted just after CurrentTransaction to req->Transaction in method tbCreditClick of PayType***********");
+                    TDocketLogs::SaveLogs(ListItemsLogs0);
+                }
+
 				req->SenderType = devPC;
 				req->Waiter = TempUserInfo.Name;
 				CurrentTransaction.Money.Recalc(CurrentTransaction);
@@ -3293,6 +3302,13 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				Kitchen->Initialise(CurrentTransaction.DBTransaction);
 				Kitchen->GetPrintouts(CurrentTransaction.DBTransaction,
 				req.get());
+                std::auto_ptr<TStringList> ListItemsLogs1 = TDocketLogs::AddItemsToList(req->Transaction->Orders);
+                if(ListItemsLogs1->Count > 0)
+                {
+                    ListItemsLogs1->Add("***********List was extracted just before sending Print Command in method tbCreditClick of PayType***********");
+                    TDocketLogs::SaveLogs(ListItemsLogs1);
+                }
+
 				req->Printouts->Print(devPC);
 				if (req->Header.Error != proA_Ok)
 				ShowMessage(req->Header.ErrorMsg);

@@ -133,6 +133,7 @@
 #include "GuestList.h"
 #include "FiscalPrinterAdapter.h"
 #include "SCDPatronUtility.h"
+#include "DocketLogs.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -3650,6 +3651,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 			}
 		}
+        std::auto_ptr<TStringList> ListItemsLogs = TDocketLogs::AddItemsToList(OrdersList.get());
+        if(ListItemsLogs->Count > 0)
+        {
+            ListItemsLogs->Add("***********List was extracted from Seat Orders***********");
+            TDocketLogs::SaveLogs(ListItemsLogs);
+        }
+
 
         if(Sender == tbtnSave)
             PaymentTransaction.IgnoreLoyaltyKey = true;
@@ -3985,6 +3993,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                              }
                          }
 
+                        std::auto_ptr<TStringList> ListItemsLogs = TDocketLogs::AddItemsToList(PrintTransaction->Orders);
+                        if(ListItemsLogs->Count > 0)
+                        {
+                            ListItemsLogs->Add("***********List was extracted from PrintTransaction->Orders of SelectDish***********");
+                            TDocketLogs::SaveLogs(ListItemsLogs);
+                        }
+
 						Request->Transaction->Money.Recalc(*Request->Transaction);
 						bool TabBilledOff = BillOff || !(TabType == TabTableSeat || TabType == TabNormal || TabType == TabStaff || TabType == TabMember);
 
@@ -4000,6 +4015,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 							if ((OrderHeld = !DisplayHoldSend(OrdersList, PrintTransaction->Patrons)) == 0)
 							{
 								PrintTransaction->Orders->Assign(OrdersList.get());
+
+                                std::auto_ptr<TStringList> ListItemsLogs = TDocketLogs::AddItemsToList(PrintTransaction->Orders);
+                                if(ListItemsLogs->Count > 0)
+                                {
+                                    ListItemsLogs->Add("***********List was extracted in OrderHeld = !DisplayHoldSend from PrintTransaction->Orders of Select DIsh***********");
+                                    TDocketLogs::SaveLogs(ListItemsLogs);
+                                }
+
+
 								PrintTransaction->ChitNumber = ChitNumber;
 								PrintTransaction->CustomerOrder = TCustNameAndOrderType::Instance()->GetStringPair();
 								Request->MiscData["PartyName"] = ((TItemComplete*)OrdersList->Items[0])->PartyName;
@@ -4059,7 +4083,16 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
                             Kitchen->GetPrintouts(DBTransaction, Request.get());
                             Request->Transaction = PrintTransaction.get();
+
+                            std::auto_ptr<TStringList> ListItemsLogs1 = TDocketLogs::AddItemsToList(Request->Transaction->Orders);
+                            if(ListItemsLogs1->Count > 0)
+                            {
+                                ListItemsLogs1->Add("***********List was extracted from Request->Transaction before sending command to print in method ProcessOrders ofSelectDish***********");
+                                TDocketLogs::SaveLogs(ListItemsLogs1);
+                            }
+
                             Request->Printouts->Print(devPC);
+
                             ManagerDockets->Archive(DBTransaction,Request.get());
                             completeOrderToChefMate( PrintTransaction.get() );
 						}
@@ -4747,6 +4780,14 @@ void __fastcall TfrmSelectDish::tbtnCallAwayClick()
                                 Kitchen->Initialise(DBTransaction);
 				Kitchen->GetPrintouts(DBTransaction, CallAway.get(), NormalRequest.get());
 				callAwayToChefMate(CallAway.get());
+
+                std::auto_ptr<TStringList> ListItemsLogs2 = TDocketLogs::AddItemsToList(NormalRequest->Transaction->Orders);
+                if(ListItemsLogs2->Count > 0)
+                {
+                    ListItemsLogs2->Add("***********List was extracted just before sending Print command in method tbtnCallAwayClick***********");
+                    TDocketLogs::SaveLogs(ListItemsLogs2);
+                }
+
 				NormalRequest->Printouts->Print(devPC);
                                 //Set Table status for call away
                                 TDBTables::SetTableBillingStatus(DBTransaction,CallAway->TableNo,eCallAwayStatus);
@@ -11238,11 +11279,28 @@ void TfrmSelectDish::SendOrderListToKitchen(Database::TDBTransaction &DBTransact
 		}
 	}
 
+    std::auto_ptr<TStringList> ListItemsLogs0 = TDocketLogs::AddItemsToList(PrintTransaction->Orders);
+    if(ListItemsLogs0->Count > 0)
+    {
+        ListItemsLogs0->Add("***********List was extracted just after iteration from OrderList in method SendOrderListToKitchen***********");
+        TDocketLogs::SaveLogs(ListItemsLogs0);
+    }
+
+
 	Request->Transaction->Money.Recalc(*Request->Transaction);
     std::auto_ptr<TKitchen> Kitchen(new TKitchen());
     Kitchen->Initialise(DBTransaction);
 	Kitchen->GetPrintouts(DBTransaction, Request.get());
+
+    std::auto_ptr<TStringList> ListItemsLogs1 = TDocketLogs::AddItemsToList(Request->Transaction->Orders);
+    if(ListItemsLogs1->Count > 0)
+    {
+        ListItemsLogs1->Add("***********List was extracted just before sending Print command in method SendOrderListToKitchen***********");
+        TDocketLogs::SaveLogs(ListItemsLogs1);
+    }
+
 	Request->Printouts->Print(devPC);
+
 	ManagerDockets->Archive(Request.get());
 
 	//::::::::::::::::::::::::::::::::::::::::
