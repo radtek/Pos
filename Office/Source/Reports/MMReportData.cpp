@@ -701,6 +701,8 @@ void TdmMMReportData::SetupStockReductionItems(TStrings *Locations, TStrings *Gr
 		"Order By "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order,"
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"Stock.Description";
 	if (Groups)
 	{
