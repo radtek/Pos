@@ -2605,6 +2605,7 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			}
 		}
 	}
+
 	if(!IsSubSidizeProcessed&&!IsSubSidizeOrderCancil)
 	{
         AutoLogOut();
@@ -3778,7 +3779,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
                 if(isGuestExist)
 				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
-
+                
                 customerDisp.TierLevel = TGlobalSettings::Instance().TierLevelChange ;
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
@@ -15835,8 +15836,9 @@ std::vector<UnicodeString> TfrmSelectDish::LoadGuestDetails(UnicodeString defaul
             TItemMinorComplete * CompressedOrder = (TItemMinorComplete*)ItemRedirector->ItemObject;
             if (CompressedOrder)
             {
-                isWalkInUser = false;
-                SiHotAccount.AccountDetails.clear();
+                if(!CompressedOrder->AccNo.Compare(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount))
+                    isWalkInUser = false;
+               // SiHotAccount.AccountDetails.clear();
                 guestDetails.push_back(CompressedOrder->AccNo);
                 guestDetails.push_back(CompressedOrder->RoomNoStr);
                 guestDetails.push_back(CompressedOrder->FirstName);
