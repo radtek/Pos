@@ -438,8 +438,15 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		updateHTMLDisplay(DBBootTransaction);
 		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
 		// recover any lost eftpos transactions
+        bool processRecovery = true;
 		TMMTransactionRecovery transactionRecovery;
-		transactionRecovery.ProcessTransactionRecovery();
+
+        if(TGlobalSettings::Instance().EnableEftPosSmartConnect && TGlobalSettings::Instance().IsSmartConnectQRTransaction)
+            processRecovery = false;
+
+        if(processRecovery)
+		    transactionRecovery.ProcessTransactionRecovery();
+
 		SetGridColors(tgridMenu);
         tgridMenu->GridColor = RGB(255,255,255);
         tgridMenu->Color	= RGB(255,255,255);

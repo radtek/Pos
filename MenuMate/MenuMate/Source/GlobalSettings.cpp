@@ -426,5 +426,7 @@ TGlobalSettings::TGlobalSettings()
     EFTPosAPIKey = "";
     EFTPosDeviceID = "";
     EFTPosURL = "";
+    PMSTimeOut = 0;
+    IsSmartConnectQRTransaction = false;
 }
 

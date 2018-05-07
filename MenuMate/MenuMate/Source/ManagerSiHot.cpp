@@ -163,7 +163,7 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
+    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut);
     Processing->Close();
     if(roomResponse.IsSuccessful)
     {
@@ -229,7 +229,7 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
-            roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut);
             if(roomResponse.IsSuccessful)
                 retValue = true;
             else
@@ -269,7 +269,7 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 {
      // Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-     return siHotInterface->SendRoomRequest(_roomRequest);
+     return siHotInterface->SendRoomRequest(_roomRequest,TGlobalSettings::Instance().PMSTimeOut);
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)

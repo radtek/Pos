@@ -422,6 +422,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EFTPosAPIKey = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosAPIKey, "");
         TGlobalSettings::Instance().EFTPosDeviceID = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosDeviceID, "");
         TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
+        TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
+        TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

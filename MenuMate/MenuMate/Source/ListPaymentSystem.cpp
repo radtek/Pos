@@ -1223,6 +1223,19 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 					Pay = Payment->GetPayTendered();
 					CashOut = Payment->GetCashOutTotal();
 				}
+                else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+                {
+                    if(!Payment->CreditTransaction)
+                    {
+                        TransType = TransactionType_QR_Merchant;
+                        Pay = Payment->GetPayTendered();
+                    }
+                    else if (Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
+                    {
+                        TransType = TransactionType_QR_Refund;
+                        Pay = -Payment->GetPayTendered();
+                    }
+                }
 				else if (Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
 				{
 					TransType = TransactionType_REFUND;
@@ -1302,7 +1315,15 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
                                    if(FinalAmount != (Pay + CashOut))
                                    {
-                                       Payment->TipAmount = FinalAmount - (Pay + CashOut);
+                                        if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                        }
+                                        else
+                                        {
+                                            Payment->TipAmount = FinalAmount - (Pay + CashOut);
+                                        }
                                        Payment->SetPay(FinalAmount);
                                    }
                                 }
@@ -2133,7 +2154,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		{
 			TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
 
-
 			if (SubPayment->GetCashOut() != 0)
 			{
 				// Get New Key
@@ -2222,6 +2242,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 			TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
 			Currency Value = 0;
 			Currency ValueRnd = 0;
+            Currency EFTPOSSurcharge = 0;
 			if(PaymentTransaction.CreditTransaction)
 			{
 				Value = SubPayment->GetDiscount();
@@ -2233,21 +2254,27 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				ValueRnd = SubPayment->GetSurchargeRounding();
 			}
 
+            if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
+                EFTPOSSurcharge = SubPayment->EFTPOSSurcharge;
+
+            // Get New Key
+            IBInternalQuery2->Close();
+            IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCSURCHARGE, 1) FROM RDB$DATABASE";
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "INSERT INTO DAYARCSURCHARGE (" "SURCHARGE_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "PAY_TYPE_DETAILS, "
+            "SUBTOTAL, " "ROUNDING, " "TAX_FREE, " "NOTE, " "PROPERTIES," "GROUP_NUMBER) " "VALUES (" ":SURCHARGE_KEY, "
+            ":ARCBILL_KEY, " ":PAY_TYPE, " ":PAY_TYPE_DETAILS, " ":SUBTOTAL, " ":ROUNDING, " ":TAX_FREE, " ":NOTE, " ":PROPERTIES,"
+            ":GROUP_NUMBER) ";
+
 			if (Value != 0)
 			{
-				// Get New Key
-				IBInternalQuery2->Close();
-				IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCSURCHARGE, 1) FROM RDB$DATABASE";
+                IBInternalQuery2->Close();
 				IBInternalQuery2->ExecQuery();
 				int SurchargeKey = IBInternalQuery2->Fields[0]->AsInteger;
 
 				IBInternalQuery->Close();
-				IBInternalQuery->SQL->Text =
-				"INSERT INTO DAYARCSURCHARGE (" "SURCHARGE_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "PAY_TYPE_DETAILS, "
-				"SUBTOTAL, " "ROUNDING, " "TAX_FREE, " "NOTE, " "PROPERTIES," "GROUP_NUMBER) " "VALUES (" ":SURCHARGE_KEY, "
-				":ARCBILL_KEY, " ":PAY_TYPE, " ":PAY_TYPE_DETAILS, " ":SUBTOTAL, " ":ROUNDING, " ":TAX_FREE, " ":NOTE, " ":PROPERTIES,"
-				":GROUP_NUMBER) ";
-
 				IBInternalQuery->ParamByName("SURCHARGE_KEY")->AsInteger = SurchargeKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
@@ -2288,6 +2315,49 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                 {
 				    IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
                 }
+				IBInternalQuery->ExecQuery();
+			}
+
+            if (EFTPOSSurcharge != 0)
+			{
+				IBInternalQuery2->Close();
+				IBInternalQuery2->ExecQuery();
+				int SurchargeKey = IBInternalQuery2->Fields[0]->AsInteger;
+
+				IBInternalQuery->Close();
+				IBInternalQuery->ParamByName("SURCHARGE_KEY")->AsInteger = SurchargeKey;
+				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
+				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
+				IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(EFTPOSSurcharge,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = ValueRnd;
+				if (SubPayment->GetPaymentAttribute(ePayTypeTaxFree))
+				{
+					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
+				}
+				else
+				{
+					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "F";
+				}
+                UnicodeString payName = + "_ExternalSurcharge";
+				if (SubPayment->SysNameOveride != "")
+				{
+					IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->SysNameOveride + payName;
+				}
+				else
+				{
+					if (SubPayment->NameOveride == "")
+					{
+						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->Name + payName;
+					}
+					else
+					{
+						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->NameOveride + payName;
+					}
+				}
+
+				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
+				IBInternalQuery->ParamByName("PROPERTIES")->AsString = "0-0-0-0";
+				IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
 				IBInternalQuery->ExecQuery();
 			}
 		}
@@ -3580,14 +3650,8 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool WalletTransaction = true;
     bool FiscalTransaction = true;
 
-    bool SmartConnectQRTransaction = true;
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
-       return RetVal;
-
-
-    SmartConnectQRTransaction = ProcessSmartConnectQRTransaction(PaymentTransaction);
-    if (!SmartConnectQRTransaction)
        return RetVal;
      
     ChequesOk = ProcessChequePayment(PaymentTransaction);
@@ -6641,21 +6705,3 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
     return retVal;
 }
 //--------------------------------------------------------------------------------------
-bool TListPaymentSystem::ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction)
-{
-    bool paymentComplete = true;
-
-   // TEftPosSmartConnect* smartConnectQR = new TWalletPaymentsInterface();
-	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-	{
-		TPayment *Payment = PaymentTransaction.PaymentGet(i);
-		if (Payment->GetPaymentAttribute(ePayTypeSmartConnectQR) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
-		{
-           paymentComplete = EftPos->DoQRCodeTransaction(*Payment);
-           if(paymentComplete)
-              break;
-		}
-	}
-    return paymentComplete;
-}
-//------------------------------------------------------------------------------

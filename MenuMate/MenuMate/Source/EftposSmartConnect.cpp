@@ -68,7 +68,7 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
         {
                SmartConnectResponse *wcfResponse;
                CoInitialize(NULL);
-
+               IsQRCodeTransaction(TxnType);
                switch (TxnType)
                {
                     case TransactionType_PURCHASE :
@@ -84,14 +84,14 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                          wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
                         break;
                     case TransactionType_INQUIRY :
-                         TEftPosTransaction *EftTrans = GetTransactionEvent();
-                         if(EftTrans != NULL)
-                            {
-                               EftTrans->Result = eManualQuery;
-                               EftTrans->ResultText = "Confirm Eftpos Transaction.";
-                               EftTrans->EventCompleted = true;
-                            }
-                    break;
+                         wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
+                        break;
+                    case TransactionType_QR_Merchant:
+                         wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, AmtPurchase);
+                        break;
+                    case TransactionType_QR_Refund :
+                         wcfResponse = smartConnectClient->QRCodeRefund(transactionType, AmtPurchase);
+                        break;
                 }
                   if(wcfResponse->ResponseSuccessful)
                    {    
@@ -104,7 +104,9 @@ void TEftPosSmartConnect::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
                           EftTrans->CardType = wcfResponse->Data->CardType;
-                          LoadEftPosReceipt(wcfResponse) ;
+                          EftTrans->TipAmount = wcfResponse->Data->AmountTip;
+                          EftTrans->SurchargeAmount = wcfResponse->Data->AmountSurcharge;
+                          LoadEftPosReceipt(wcfResponse->Data->Receipt) ;
                         }
                    }
                   else
@@ -365,50 +367,15 @@ void TEftPosSmartConnect::ReadCard()
     }
 }
 //-----------------------------------------------------------------------
-bool TEftPosSmartConnect::DoQRCodeTransaction(TPayment &Payment)
+void TEftPosSmartConnect::LoadEftPosReceipt(UnicodeString eftPosReceipt)
 {
     try
     {
-        bool retval = false;
-        SmartConnectResponse *wcfResponse;
-        CoInitialize(NULL);
-
-        if(Payment.GetPayTendered() > 0)
-        {
-            wcfResponse = smartConnectClient->MerchantPurchaseWithQRCode(transactionType, Payment.GetPayTendered());
-        }
-        else
-        {
-            wcfResponse = smartConnectClient->QRCodeRefund(transactionType, Payment.GetPayTendered());
-        }
-
-        if(wcfResponse->ResponseSuccessful)
-        {
-            retval = true;
-        }
-        else
-        {
-            if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
-                DoQRCodeTransaction(Payment);
-        }
-    }
-    catch( Exception& E )
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
-    }
-}
-//-----------------------------------------------------------------------
-void TEftPosSmartConnect::LoadEftPosReceipt(SmartConnectResponse *wcfResponse)
-{
-    try
-    {
-
          LastEftPosReceipt->Clear();
-         AnsiString EftReceipt = wcfResponse->Data->Receipt;
 
-          for( int i = 1 ; i < EftReceipt.Length();)
+          for( int i = 1 ; i < eftPosReceipt.Length();)
           {
-                AnsiString Data = EftReceipt.SubString(i,EftReceipt.Length());//.Trim();
+                AnsiString Data = eftPosReceipt.SubString(i,eftPosReceipt.Length());//.Trim();
                 int width =  Data.Pos("\n");
                 Data = Data.SubString(1,width);
                 if(Data == "")
@@ -422,9 +389,28 @@ void TEftPosSmartConnect::LoadEftPosReceipt(SmartConnectResponse *wcfResponse)
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
-//--------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
+void TEftPosSmartConnect:: IsQRCodeTransaction(eEFTTransactionType TxnType)
+{
+    switch (TxnType)
+    {
+        case TransactionType_QR_Merchant:
+        case TransactionType_QR_Refund :
+            TGlobalSettings::Instance().IsSmartConnectQRTransaction = true;
+            break;
+        default:
+            TGlobalSettings::Instance().IsSmartConnectQRTransaction = false;
+            break;
+    }
+     //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsSmartConnectQRTransaction,TGlobalSettings::Instance().IsSmartConnectQRTransaction);
+	dbTransaction.Commit();
+}
+//--------------------------------------------------------------------------------------
 bool TEftPosSmartConnect::IsCashOutSupported()
 {
     return true;
 }
-//--------------------------------------------------------------------------

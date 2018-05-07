@@ -205,6 +205,8 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
 	CardType = "";
 	EftposTransactionID = "";
     TimeOut = false;
+    TipAmount = "";
+    SurchargeAmount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()
@@ -296,9 +298,6 @@ std::vector<AnsiString> TEftPos::GetTippableCardTypes()
     return TippableCardTypes;
 }
 //--------------------------------------------------------------------------
-bool TEftPos::DoQRCodeTransaction(TPayment &Payment)
-{
-	return false;
 }
 //--------------------------------------------------------------------------
 bool TEftPos::IsCashOutSupported()

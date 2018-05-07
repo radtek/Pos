@@ -100,6 +100,7 @@ public:
     Currency RoundedProductAmount;
     Currency RoundingAdjustment;
     Currency PaymentTip;
+    Currency SurchargeByEFTPOS;
     bool IsBilling;
     bool IsSCD;
    void Recalc(TPaymentTransaction &Transaction, bool isBilling = true);

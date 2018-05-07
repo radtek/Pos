@@ -638,6 +638,8 @@ object frmStocktake: TfrmStocktake
       '   Order By'
       '   StockCategory.Sort_Order,'
       '   StockGroup.Sort_Order,'
+      '   UPPER(StockCategory.STOCK_CATEGORY),'
+      '   UPPER(STOCKGROUP.STOCK_GROUP),'
       '   upper(Stock.Description)asc '
       ''
       '   ')

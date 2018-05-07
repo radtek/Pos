@@ -521,6 +521,8 @@ public:
     UnicodeString EFTPosAPIKey;
     UnicodeString EFTPosDeviceID;
     UnicodeString EFTPosURL;
+    int PMSTimeOut;
+    bool IsSmartConnectQRTransaction;
 };
 
 #endif
