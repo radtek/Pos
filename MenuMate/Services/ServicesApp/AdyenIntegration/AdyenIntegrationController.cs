@@ -16,7 +16,7 @@ using AdyenIntegration.Tools;
 
 namespace AdyenIntegration
 {
-    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund };
+    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund, eLoginToSystem, eLogoutSystem };
 
     public class AdyenIntegrationController
     {
@@ -35,13 +35,46 @@ namespace AdyenIntegration
             return response; 
         }
 
+        public SaleToPOIResponse LoginToSystem(Envelop envelop, ResourceDetails details)
+        {
+            SaleToPOIResponse response = null;
+            try
+            {
+                var webRequest = CreateWebRequest(details);
+                envelop.SaleToPOIRequest.LoginRequest.DateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+                response = PostRequest(envelop, webRequest, RequestType.eLoginToSystem);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Ping Terminal " + ex.Message);
+            }
+            return response;
+        }
+
+
+        public SaleToPOIResponse LogoutSystem(Envelop envelop, ResourceDetails details)
+        {
+            SaleToPOIResponse response = null;
+            try
+            {
+                var webRequest = CreateWebRequest(details);
+                response = PostRequest(envelop, webRequest, RequestType.eLogoutSystem);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Ping Terminal " + ex.Message);
+            }
+            return response;
+        }
+
         public SaleToPOIResponse Purchase(Envelop envelop, ResourceDetails details)
         {
             SaleToPOIResponse response = null;
             try
             {
                 var webRequest = CreateWebRequest(details);
-                response = PostRequest(envelop, webRequest, RequestType.ePingTerminal);
+                envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+                response = PostRequest(envelop, webRequest, RequestType.eProcessSale);
             }
             catch (Exception ex)
             {
@@ -56,7 +89,7 @@ namespace AdyenIntegration
             try
             {
                 var webRequest = CreateWebRequest(details);
-                response = PostRequest(envelop, webRequest, RequestType.ePingTerminal);
+                response = PostRequest(envelop, webRequest, RequestType.eProcessRefund);
             }
             catch (Exception ex)
             {
@@ -70,7 +103,8 @@ namespace AdyenIntegration
             try
             {
                 var webRequest = CreateWebRequest(details);
-                response = PostRequest(envelop, webRequest, RequestType.ePingTerminal);
+                envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+                response = PostRequest(envelop, webRequest, RequestType.eTransactionStatus);
             }
             catch (Exception ex)
             {
@@ -113,8 +147,8 @@ namespace AdyenIntegration
                     responseEnvelop = JSonUtility.Deserialize<ResponseEnvelop>(responseText);
                     if ( CanReceiptsBePresent(requestType,responseEnvelop)/*requestType == RequestType.eProcessSale) && responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0*/)
                     {
-                        responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable =
-                            CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt);
+                        //responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable =
+                        //    CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt);
                     }
                 }
                 return responseEnvelop.SaleToPOIResponse;

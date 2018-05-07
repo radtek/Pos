@@ -7,9 +7,8 @@ namespace AdyenIntegration.Domain
     [DataContract]
     public class PaymentResponse
     {
-        public PaymentReceipt[] PaymentReceipt { get; set; }
         [DataMember]
-        public string[] PaymentReceiptUsable { get; set; }
+        public PaymentReceipt[] PaymentReceipt { get; set; }
         [DataMember]
         public POIData POIData { get; set; }
         [DataMember]
@@ -18,5 +17,7 @@ namespace AdyenIntegration.Domain
         public SaleData SaleData { get; set; }
         [DataMember]
         public Response Response { get; set; }
+        [DataMember]
+        public string[] PaymentReceiptUsable { get; set; }
     }
 }

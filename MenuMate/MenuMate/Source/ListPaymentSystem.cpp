@@ -1267,7 +1267,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-
 					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
 
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))

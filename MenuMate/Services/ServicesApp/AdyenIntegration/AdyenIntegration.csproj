@@ -71,6 +71,8 @@
     <Compile Include="Domain\GeographicCoordinates.cs" />
     <Compile Include="Domain\Geolocation.cs" />
     <Compile Include="Domain\Instalment.cs" />
+    <Compile Include="Domain\LoginLogOut\LoginRequest.cs" />
+    <Compile Include="Domain\LoginLogOut\LogoutRequest.cs" />
     <Compile Include="Domain\MobileData.cs" />
     <Compile Include="Domain\OutputContent.cs" />
     <Compile Include="Domain\OutputText.cs" />
@@ -95,6 +97,7 @@
     <Compile Include="Domain\ReversalRequest.cs" />
     <Compile Include="Domain\SaleData.cs" />
     <Compile Include="Domain\SaleProfile.cs" />
+    <Compile Include="Domain\SalesSoftware.cs" />
     <Compile Include="Domain\SaleTerminalData.cs" />
     <Compile Include="Domain\SaleToIssuerData.cs" />
     <Compile Include="Domain\RequestEnvelop\SaleToPOIRequest.cs" />

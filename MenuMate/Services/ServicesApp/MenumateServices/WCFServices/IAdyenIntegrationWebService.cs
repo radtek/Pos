@@ -25,5 +25,11 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         SaleToPOIResponse GetTransactionStatus(Envelop envelop, ResourceDetails details);
+
+        [OperationContract]
+        SaleToPOIResponse LoginToSystem(Envelop envelop, ResourceDetails details);
+
+        [OperationContract]
+        SaleToPOIResponse LogoutSystem(Envelop envelop, ResourceDetails details);
     }
 }

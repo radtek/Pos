@@ -35,6 +35,36 @@ namespace MenumateServices.WCFServices
             return response;
         }
 
+        public SaleToPOIResponse LoginToSystem(Envelop envelop, ResourceDetails details)
+        {
+            SaleToPOIResponse response = null;
+            try
+            {
+                AdyenIntegrationController controller = new AdyenIntegrationController();
+                response = controller.PingTerminal(envelop, details);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in LogIn Terminal   " + ex.Message);
+            }
+            return response;
+        }
+
+        public SaleToPOIResponse LogoutSystem(Envelop envelop, ResourceDetails details)
+        {
+            SaleToPOIResponse response = null;
+            try
+            {
+                AdyenIntegrationController controller = new AdyenIntegrationController();
+                response = controller.PingTerminal(envelop, details);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in LogOut Terminal   " + ex.Message);
+            }
+            return response;
+        }
+
         public SaleToPOIResponse Purchase(Envelop envelop, ResourceDetails details)
         {
             SaleToPOIResponse response = null;

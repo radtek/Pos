@@ -7,6 +7,7 @@
 #include "DropDown.h"
 #include "DropDownVar.h"
 //---------------------------------------------------------------------------
+enum AdyenRequestType {eAdyenNormalSale = 1, eAdyenRefundSale, eAdyenPingRequest, eAdyenLoginRequest, eAdyenLogOutRequest, eAdyenTransactionStatus};
 class TEftposAdyen : public TEftPos
 {
    protected :
@@ -18,7 +19,13 @@ class TEftposAdyen : public TEftPos
         Envelop* GetPingTerminalEnvelop();
         _di_IAdyenIntegrationWebService AdyenClient;
         ResourceDetails* GetResourceDetails();
-//        bool  PingTerminal(eEFTTransactionType TxnType);
+        SaleToPOIResponse* TriggerSaleTransaction(Currency AmtPurchase);
+        SaleToPOIResponse* TriggerRefundTransaction(Currency AmtPurchase);
+        bool  PingTerminal(eEFTTransactionType TxnType);
+        Envelop* GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType requestType);
+        MessageHeader* GetMessageHeader(AdyenRequestType requestType);
+        bool GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIResponse *response);
+        Envelop* GetLoginLogOutEnvelop(AdyenRequestType requestType);
 public:
         TEftposAdyen();
         ~TEftposAdyen();
@@ -44,7 +51,6 @@ public:
         void __fastcall ReprintReceipt();
         void __fastcall DoLogOut();
         AnsiString GetRefNumber();
-        bool  PingTerminal(eEFTTransactionType TxnType);
         bool IsCashOutSupported();
 };
 #endif
