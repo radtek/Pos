@@ -1572,20 +1572,15 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
                     std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
                     canContinue = (innerit == outerit->second.end());
                 }
+                InsertMezzanineSales(PaymentTransaction);
             }
-        }
 
-        if(canContinue)
-        {
-            //Instantiation is happenning in a factory based on the active mall in database
-            TMallExport* mall = TMallFactory::GetMallType();
-            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-            delete mall;
         }
-        else
-        {
-            InsertMezzanineSales(PaymentTransaction);
-        }
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+        delete mall;
+
     }
 }
 
