@@ -135,8 +135,9 @@ void TApplyParser::update6_48Tables()
 void TApplyParser::update6_49Tables()
 {
     Insert6_39Malls(_dbControl, 3, "Evia ", "F");
-    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
-    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 3);
+    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 3);
+    AlterTable6_49MallExportSales(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1643,7 +1644,6 @@ void TApplyParser::Create6_48Generator(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
 {
-
     if ( !tableExists( "TABPATRONCOUNT", _dbControl ) )
 	{
 		executeQuery(
@@ -1662,5 +1662,23 @@ void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_49MallExportSales(TDBControl* const inDBControl)
+{
+    if (!fieldExists( "MALLEXPORT_SALES", "INVOICE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALLEXPORT_SALES  "
+        "ADD INVOICE_NUMBER VARCHAR(50) ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "MALL_SALES_BY_SALES_TYPE", "INVOICE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALL_SALES_BY_SALES_TYPE  "
+        "ADD INVOICE_NUMBER VARCHAR(50) ; ",
+		inDBControl);
+	}
+}
 }
 //------------------------------------------------------------------------------

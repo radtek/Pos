@@ -418,21 +418,21 @@ void TManagerMallSetup::InsertSettingValuesForEvia(Database::TDBTransaction &dbT
 
         if(!isRecordExist)
         {
-            const int numberOfFields = 14;
+            const int numberOfFields = 10;
              UnicodeString fieldTypes[numberOfFields] =
              {
-                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString" , "UnicodeString",
+                "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString",
                 "UnicodeString", "bool", "bool", "bool", "bool"
              };
 
              UnicodeString fieldValues[numberOfFields] =
              {
-                "", "", "", "true", "", "", "", "", ".sal", "Z", "false", "false", "true", "false"
+                "", "", "", "true", ".sal", "Z", "false", "false", "true", "false"
              };
 
              int settingID[numberOfFields] =
              {
-                1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25
+                1, 2, 7, 9, 16, 18, 19, 20, 24, 25
              };
 
             TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );

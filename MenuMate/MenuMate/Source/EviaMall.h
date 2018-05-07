@@ -21,6 +21,7 @@ class TEviaMall : public TMallExport
    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
    UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey, int saletypeid );
+   int GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallid ,int devicekey, int zKey = 0);
    bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
    void Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
    bool IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData);

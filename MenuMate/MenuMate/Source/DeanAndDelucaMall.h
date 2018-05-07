@@ -54,6 +54,9 @@ private:
     //Check whether item is assigned to any sales type..
     int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
 
+    //Get Max Zed Key Present in mall Table..
+    int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
+
      //Prepare data for Invoice Sales File
     void PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareDataForDiscount, int index, int zKey = 0);
 

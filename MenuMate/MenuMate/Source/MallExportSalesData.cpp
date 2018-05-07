@@ -64,6 +64,11 @@ void TMallExportSalesData::SetDeviceKey(int deviceKey)
     _deviceKey = deviceKey;
 }
 //---------------------------------------------------------------------------
+void TMallExportSalesData::SetInvoiceNumber(UnicodeString invoiceNumber)
+{
+    _invoiceNumber= invoiceNumber;
+}
+//---------------------------------------------------------------------------
 void TMallExportSalesWrapper::SetMallExportSalesData(std::list<TMallExportSalesData> salesData)
 {
     _mallExportSalesData = salesData;

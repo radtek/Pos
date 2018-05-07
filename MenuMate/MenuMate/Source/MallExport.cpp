@@ -17,6 +17,7 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
     try
     {
         BilledTimeStamp = currentTime;
+        InvoiceNumber = paymentTransaction.InvoiceNumber;
 
         // Create TMallExportPrepareData object to store Preapared Data
         TMallExportSalesWrapper salesData;
@@ -50,7 +51,6 @@ bool TMallExport::Export()
             //Create Export Medium
            TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
            exporter->WriteToFile(preparedData);
-
         }
     }
     catch(Exception &E)
@@ -95,8 +95,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     "CREATED_BY, "
                     "Z_KEY, "
                     "ARCBILL_KEY, "
-                    "DEVICE_KEY "
-                    " ) "
+                    "DEVICE_KEY, "
+                    "INVOICE_NUMBER ) "
             "VALUES ("
                     ":MALLEXPORT_SALE_KEY, "
                     ":MALL_KEY, "
@@ -108,7 +108,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     ":CREATED_BY, "
                     ":Z_KEY,"
                     ":ARCBILL_KEY, "
-                    ":DEVICE_KEY "
+                    ":DEVICE_KEY, "
+                    ":INVOICE_NUMBER "
                     " );";
 
             IBInternalQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger = it->MallExportSalesId;
@@ -133,6 +134,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = it->ZKey;
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
+            IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = it->InvoiceNumber;
             arcBillKey = it->ArcBillKey;
             billedTime = it->DateCreated;
             IBInternalQuery->ExecQuery();
@@ -208,6 +210,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dbTransaction.RegisterQuery(IBInternalQuery);
 
+
         //Query for selecting data for invoice file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
@@ -237,11 +240,13 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
        {
             //Fetch z-key
             zKey = IBInternalQuery->Fields[0]->AsInteger;
-            
+
             //Prepare Data For Exporting into File
             preparedData = PrepareDataForExport(zKey);
+//            MessageBox("1","1",MB_OK);
 
            exporter->WriteToFile(preparedData);
+//                       MessageBox("2","2",MB_OK);
        }
        delete exporter;
 
@@ -285,7 +290,8 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     "SALES_TYPE_ID, "
                     "SUBTOTAL, "
                     "DEVICE_KEY, "
-                    "DATE_CREATED "
+                    "DATE_CREATED, "
+                    "INVOICE_NUMBER "
                      ") "
             "VALUES ( "
                     ":SALES_ID, "
@@ -293,7 +299,8 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     ":SALES_TYPE_ID, "
                     ":SUBTOTAL, "
                     ":DEVICE_KEY, "
-                    ":DATE_CREATED "
+                    ":DATE_CREATED, "
+                    "INVOICE_NUMBER "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
@@ -302,6 +309,7 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
             ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
             ibInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = billedTime;
+            ibInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = InvoiceNumber;
             ibInternalQuery->ExecQuery();
         }
     }
@@ -374,6 +382,7 @@ void TMallExport::PushFieldsInToList(Database::TDBTransaction &dbTransaction, st
         salesData.ArcBillKey = arcBillKey;
         salesData.ZKey = 0;
         salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        salesData.InvoiceNumber = InvoiceNumber;
         mallExportSalesData.push_back(salesData);
     }
     catch(Exception &E)
@@ -541,37 +550,4 @@ TMallExportDiscount TMallExport::PrepareDiscounts(Database::TDBTransaction &dbTr
     return discounts;
 }
 
-int TMallExport::GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallid, int zKey)
-{
-    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
-    dbTransaction.RegisterQuery(selectQuery);
-    int maxZedKey = 0;
-
-    try
-    {
-        selectQuery->Close();
-        selectQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a "
-                                 "WHERE a.MALL_KEY = :MALL_KEY ";
-
-        if(zKey)
-            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY < :Z_KEY ";
-
-        selectQuery->ParamByName("MALL_KEY")->AsInteger = mallid;
-
-        if(zKey)
-            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
-
-        selectQuery->ExecQuery();
-
-        if(selectQuery->RecordCount)
-                maxZedKey = selectQuery->Fields[0]->AsInteger;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-	}
-
-    return maxZedKey;
-}
 

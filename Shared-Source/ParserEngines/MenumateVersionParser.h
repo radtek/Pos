@@ -910,6 +910,7 @@ namespace MenumateVersionParser
 
         void upgrade6_49Tables();
         void update6_49Tables();
+        void AlterTable6_49MallExportSales(TDBControl* const inDBControl);
     };// class
 } // namespace
 

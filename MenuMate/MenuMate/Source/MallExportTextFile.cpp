@@ -107,7 +107,7 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
             }
 
             //First Write Settings in the file ex:- Tenant Code, TerminalNumber etc
-            if(itSettings->second.size())
+            if(itSettings->second.size() && TGlobalSettings::Instance().mallInfo.MallId != 3)
             {
                 for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
                 {

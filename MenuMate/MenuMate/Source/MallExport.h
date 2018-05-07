@@ -31,6 +31,8 @@ private:
 
     TDateTime BilledTimeStamp;
 
+    UnicodeString InvoiceNumber;
+
 protected:
 
     //Prepare data for inserting into database according to mall type. child class will override it.
@@ -62,8 +64,6 @@ protected:
 	//prepare SCD, PWD and others discount
 	virtual TMallExportDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
 
-	//Get Max Zed Key Present in mall Table..
-    virtual int GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallkey, int zKey = 0);
 
 public:
 

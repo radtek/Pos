@@ -1020,7 +1020,7 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
         " UNION all";
 
          if(maxZedKey2)
-         {   MessageBox(maxZedKey,"maxZedKey",MB_OK);
+         {  
              IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
 
          " SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD,CAST((DAILYDATA.FIELD_VALUE) AS NUMERIC(17,2))FIELD_VALUE,"
@@ -1139,10 +1139,10 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
        }
        IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = terminalkey;
        IBInternalQuery->ExecQuery();
-       int counter = 0;
+      
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
        {
-            counter++;
+            
             TMallExportSalesData salesData;
 
             salesData.DataValue = IBInternalQuery->Fields[2]->AsString;
@@ -1160,8 +1160,6 @@ void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransa
 
             salesData.DataValue = salesData.DataValue + " ";
             prepareListForDGT.push_back(salesData);
-          //  if(!IsmultipledevicekeyExist && counter == 6)
-              //  break;
        }
 
     }

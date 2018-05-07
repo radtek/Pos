@@ -405,7 +405,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
          //Get Max Z key;
         int maxZedKey;
         if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction,2);
+            maxZedKey = GetMaxZedKey(dBTransaction);
         else
             maxZedKey = zKey;
 
@@ -719,12 +719,12 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         //Get Max Z key;
         int maxZedKey;
         if(!zKey)
-            maxZedKey = GetMaxZedKey(dBTransaction,2);
+            maxZedKey = GetMaxZedKey(dBTransaction);
         else
             maxZedKey = zKey;
 
         //Get Second maximum key;
-        int maxZedKey2 = GetMaxZedKey(dBTransaction, 2,maxZedKey);
+        int maxZedKey2 = GetMaxZedKey(dBTransaction, maxZedKey);
 
         //Query for fetching data for writing into daily sales file.
         IBInternalQuery->Close();
@@ -1260,5 +1260,38 @@ UnicodeString TDeanAndDelucaMall::GetMonthCode(int month)
     return code;
 }
 //-----------------------------------------------------------------------------------------------------------
+int TDeanAndDelucaMall::GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey)
+{
+    Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
+    dbTransaction.RegisterQuery(selectQuery);
+    int maxZedKey = 0;
+
+    try
+    {
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a "
+                                 "WHERE a.MALL_KEY = :MALL_KEY ";
+
+        if(zKey)
+            selectQuery->SQL->Text = selectQuery->SQL->Text + "AND a.Z_KEY < :Z_KEY ";
+
+        selectQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey)
+            selectQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+                maxZedKey = selectQuery->Fields[0]->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+
+    return maxZedKey;
+}
 
 
