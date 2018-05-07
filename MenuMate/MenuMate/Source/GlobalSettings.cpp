@@ -423,5 +423,6 @@ TGlobalSettings::TGlobalSettings()
     EnableEftPosSmartConnect = false;
     SmartConnectPairingCode = "";
     PMSTimeOut = 0;
+    IsSmartConnectQRTransaction = false;
 }
 

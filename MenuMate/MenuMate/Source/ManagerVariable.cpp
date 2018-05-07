@@ -3244,6 +3244,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
          "Pairing code by which terminal is paired to machine.\r"
          "Default is ",
          vmg3rdPartyInterface, "");
+         SetVarBool(DBTransaction,vmIsSmartConnectQRTransaction, "Smart Connect QR Transaction",
+         "Tells whether last transaction was qr code trans.\r"
+         "Default is False",
+         vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmEnableCustomerJourney, "PMS Enable Customer Journey",
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",

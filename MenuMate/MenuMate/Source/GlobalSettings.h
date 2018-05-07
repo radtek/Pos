@@ -518,6 +518,7 @@ public:
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
     int PMSTimeOut;
+    bool IsSmartConnectQRTransaction;
 };
 
 #endif
