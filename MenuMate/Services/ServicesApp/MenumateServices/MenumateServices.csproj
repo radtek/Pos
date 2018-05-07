@@ -192,6 +192,7 @@
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
+    <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
     <Compile Include="MenumateServiceSiHotIntegration.cs">
@@ -300,6 +301,12 @@
     <Compile Include="MenumateServiceWebMate.Designer.cs">
       <DependentUpon>MenumateServiceWebMate.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenumateServicePaymentSense.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServicePaymentSense.Designer.cs">
+      <DependentUpon>MenumateServicePaymentSense.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -323,6 +330,7 @@
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServicePaymentSense.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\IWCFSmartConnect.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
@@ -334,6 +342,7 @@
     <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
+    <Compile Include="WCFServices\WCFServicePaymentSense.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
