@@ -42,7 +42,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalletPaymets", "WalletPaym
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartConnectIntegration", "SmartConnectIntegration\SmartConnectIntegration.csproj", "{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentSenseIntegration", "PaymentSenseIntegration\PaymentSenseIntegration.csproj", "{A623C2CE-7E9A-4A72-81DA-7DB377333670}"
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = ServicesApp.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -266,14 +271,23 @@ Global
 		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|x64.ActiveCfg = Release|Any CPU
 		{AA9378DD-4610-4B61-B3BC-0A0A8AE7651F}.Release|x86.ActiveCfg = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|x64.ActiveCfg = Release|Any CPU
+		{A623C2CE-7E9A-4A72-81DA-7DB377333670}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5D90E82-FFBE-4CEE-A585-8A06C94FB53C}
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = ServicesApp.vsmdi
 	EndGlobalSection
 EndGlobal
