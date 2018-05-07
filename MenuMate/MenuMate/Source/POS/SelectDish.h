@@ -494,7 +494,7 @@ private: // User declarations
     bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
     void RestructureBillForPatrons(std::vector<TPatronType> patrons);
     bool LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction);
-    void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString lastName = "");
+    void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo,UnicodeString lastName = "");
     void GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat);
 
 protected:

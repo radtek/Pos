@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (27/03/2018 9:25:16 p.m. - - $Rev: 25127 $)
+// (30/04/2018 10:40:11 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -31,6 +31,8 @@ _di_ISiHotIntegrationWebService GetISiHotIntegrationWebService(bool useWSDL, Ans
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
+  rio->HTTPWebNode->SendTimeout = 120000;
+  rio->HTTPWebNode->ReceiveTimeout = 120000;
   if (useWSDL) {
     rio->WSDLLocation = addr;
     rio->Service = defSvc;
