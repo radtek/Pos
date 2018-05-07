@@ -419,6 +419,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().SmartConnectPairingCode = TManagerVariable::Instance().GetStr(DBTransaction, vmSmartConnectPairingCode, "");
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
+        TGlobalSettings::Instance().EnablePaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnablePaymentSense, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

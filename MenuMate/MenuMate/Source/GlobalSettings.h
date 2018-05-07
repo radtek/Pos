@@ -519,6 +519,7 @@ public:
     UnicodeString SmartConnectPairingCode;
     int PMSTimeOut;
     bool IsSmartConnectQRTransaction;
+    bool EnablePaymentSense;
 };
 
 #endif

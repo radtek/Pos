@@ -424,5 +424,6 @@ TGlobalSettings::TGlobalSettings()
     SmartConnectPairingCode = "";
     PMSTimeOut = 0;
     IsSmartConnectQRTransaction = false;
+    EnablePaymentSense = false;
 }
 
