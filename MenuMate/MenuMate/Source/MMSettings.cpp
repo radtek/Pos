@@ -424,7 +424,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
-        TGlobalSettings::Instance().EnablePaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnablePaymentSense, false);
+        TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

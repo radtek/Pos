@@ -523,7 +523,7 @@ public:
     UnicodeString EFTPosURL;
     int PMSTimeOut;
     bool IsSmartConnectQRTransaction;
-    bool EnablePaymentSense;
+    bool EnableEftPosPaymentSense;
 };
 
 #endif

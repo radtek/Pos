@@ -428,6 +428,6 @@ TGlobalSettings::TGlobalSettings()
     EFTPosURL = "";
     PMSTimeOut = 0;
     IsSmartConnectQRTransaction = false;
-    EnablePaymentSense = false;
+    EnableEftPosPaymentSense = false;
 }
 
