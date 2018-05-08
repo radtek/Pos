@@ -473,6 +473,8 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposAdyen->Checked                     = false;
         cbIntegratedEftposSmartConnect->Enabled              = false;
         cbIntegratedEftposSmartConnect->Checked              = false;
+        cbIntegratedEftposPaymentSense->Checked              = false;
+        cbIntegratedEftposPaymentSense->Enabled              = false;
         cbIntegratedEftposSmartPay->Enabled                  = true;
         cbIntegratedEftposSmartPay->Checked                  = true;
         TGlobalSettings::Instance().EnableEftPosAdyen        = false;
@@ -486,6 +488,8 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposAdyen->Checked                     = false;
         cbIntegratedEftposSmartPay->Enabled                  = false;
         cbIntegratedEftposSmartPay->Checked                  = false;
+        cbIntegratedEftposPaymentSense->Checked              = false;
+        cbIntegratedEftposPaymentSense->Enabled              = false;
         cbIntegratedEftposSmartConnect->Enabled              = true;
         cbIntegratedEftposSmartConnect->Checked              = true;
         TGlobalSettings::Instance().EnableEftPosAdyen        = false;
@@ -498,6 +502,8 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposSmartPay->Checked                  = false;
         cbIntegratedEftposSmartConnect->Enabled              = false;
         cbIntegratedEftposSmartConnect->Checked              = false;
+        cbIntegratedEftposPaymentSense->Checked              = false;
+        cbIntegratedEftposPaymentSense->Enabled              = false;
         TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
         TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
         cbIntegratedEftposAdyen->Checked                     = true;

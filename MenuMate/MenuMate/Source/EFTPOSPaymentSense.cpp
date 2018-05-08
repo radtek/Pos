@@ -17,13 +17,26 @@ TEftPosPaymentSense::~TEftPosPaymentSense()
 {
 }
 //---------------------------------------------------------------------------
+void TEftPosPaymentSense::Initialise()
+{
+    TEftPos::Initialise();
+    if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+        Enabled = true;
+    }
+    else
+    {
+        Enabled = false;
+    }
+}
+//----------------------------------------------------------------------------
 void TEftPosPaymentSense::DoControlPannel()
 {
     if(!Enabled) return;
 	try
 	{
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
-		frmDropDown->AddButton("EFTPOS Logon",&DoLogon);
+		//frmDropDown->AddButton("EFTPOS Logon",&DoLogon);
 		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
 		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
@@ -65,3 +78,37 @@ bool TEftPosPaymentSense::CheckChequeAccount(AnsiString ChequeAccount)
     return false;
 }
 // ---------------------------------------------------------------------------
+void __fastcall TEftPosPaymentSense::DoSettlementEnquiry()
+{
+    try
+    {
+
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+// ---------------------------------------------------------------------------
+void __fastcall TEftPosPaymentSense::DoSettlementCutover()
+{
+    try
+    {
+
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+// ---------------------------------------------------------------------------
+void _fastcall TEftPosPaymentSense::ReprintReceipt()
+{
+}
+// ---------------------------------------------------------------------------
+AnsiString TEftPosPaymentSense::GetRefNumber()
+{
+  return AnsiString("S_") + TDateTime::CurrentDateTime().FormatString("yyyymmddhhmmss");
+}
+// ---------------------------------------------------------------------------
+
