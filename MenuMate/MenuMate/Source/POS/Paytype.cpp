@@ -549,13 +549,39 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
               if(!AllowRefund)
               {
                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption != "Refund Points")
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                   {
+                        if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                        {
+                            if(EftPos->IsCashOutSupported())
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                            }
+                            else
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                            }
+                        }
+                   }
                    else
-                   tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   {
+                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   }
               }
               else
               {
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                    {
+                        if(EftPos->IsCashOutSupported())
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                        }
+                        else
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                        }
+                    }
+                    else
+                        tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
               }
             }
 
@@ -2924,13 +2950,17 @@ void TfrmPaymentType::EnableElectronicPayments()
 						tgPayments->Buttons[b][PAYCOL]->Enabled = true;
 						if (CurrentTransaction.CreditTransaction == false)
 						{
-							tgPayments->Buttons[b][ALTCOL]->Enabled = true;
+    						tgPayments->Buttons[b][ALTCOL]->Enabled = true;
 						}
 					}
 				}
 			}
 		}
 	}
+    if(!EftPos->IsCashOutSupported())
+    {
+        DisableCashOutElectronicPayments();
+    }
 }
 // ---------------------------------------------------------------------------
 bool TfrmPaymentType::NoElectronicPayments()

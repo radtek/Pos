@@ -55,6 +55,7 @@ class TEftPosMMDPS : public TEftPos
 
 	  bool AllowsTipsOnTransactions();
 	  void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef);
+      bool IsCashOutSupported();
 };
 
 #endif

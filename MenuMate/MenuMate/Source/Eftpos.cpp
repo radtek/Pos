@@ -292,9 +292,14 @@ void TEftPos::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, 
 {
     // does nothing here. this method needs to be overwritten by childs who implements tipping
 }
-
+//--------------------------------------------------------------------------
 std::vector<AnsiString> TEftPos::GetTippableCardTypes()
 {
     return TippableCardTypes;
+}
+//--------------------------------------------------------------------------
+bool TEftPos::IsCashOutSupported()
+{
+    return true;
 }
 //--------------------------------------------------------------------------

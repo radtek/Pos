@@ -532,4 +532,9 @@ bool TEftPosIngenico::CheckChequeAccount(AnsiString ChequeAccount)
 	}
    return RetVal;
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosIngenico::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

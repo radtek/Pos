@@ -417,6 +417,11 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().OracleInterfaceIPAddress = TManagerVariable::Instance().GetStr(DBTransaction, vmOracleInterfaceIPAddress, "");
         TGlobalSettings::Instance().EnableEftPosSmartConnect = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosSmartConnect, false);
         TGlobalSettings::Instance().SmartConnectPairingCode = TManagerVariable::Instance().GetStr(DBTransaction, vmSmartConnectPairingCode, "");
+
+        TGlobalSettings::Instance().EnableEftPosAdyen = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosAdyen, false);
+        TGlobalSettings::Instance().EFTPosAPIKey = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosAPIKey, "");
+        TGlobalSettings::Instance().EFTPosDeviceID = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosDeviceID, "");
+        TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
         TGlobalSettings::Instance().EnablePaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnablePaymentSense, false);

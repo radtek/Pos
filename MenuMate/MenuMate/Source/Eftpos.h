@@ -139,6 +139,7 @@ class TEftPos
 	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
+    virtual bool IsCashOutSupported();
 };
 
 extern TEftPos *EftPos;

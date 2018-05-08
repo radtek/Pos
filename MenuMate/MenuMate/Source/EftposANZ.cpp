@@ -471,4 +471,9 @@ bool TEftPosANZ::CheckChequeAccount(AnsiString ChequeAccount)
 	}
    return RetVal;
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosANZ::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

@@ -702,4 +702,9 @@ void __fastcall TEftPosSyncro::EndPrintBanner(TObject *Sender,
       delete Printout;
    }
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosSyncro::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

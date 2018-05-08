@@ -249,3 +249,9 @@ void TEftPosSmartLink::initSmartLinkClient()
     AnsiString smartLinkURL = "http://localhost:8738/MenumateServices/SmartLink";
     smartLinkClient = GetIWCFServiceSmartLink(useWSDL, smartLinkURL, NULL );
 }
+//--------------------------------------------------------------------------
+bool TEftPosSmartLink::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

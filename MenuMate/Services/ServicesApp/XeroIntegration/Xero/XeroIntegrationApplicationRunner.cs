@@ -436,6 +436,7 @@ namespace AccountingIntegration.Xero
         {
             var xeroInvoice = XeroInvoiceController.Instance.CreateInvoice(invoice);
             var createdInvoice = _repository.Create(xeroInvoice);
+            var Accounts = _repository.Accounts;
 
             if (createdInvoice.ValidationStatus == ValidationStatus.Error)
             {

@@ -44,6 +44,7 @@ class TEftPosIngenico : public TEftPos
 	void __fastcall DoSettlementEnquiry();
 	void __fastcall ReprintReceipt();
    AnsiString GetRefNumber();
+   bool IsCashOutSupported();
 };
 
 #endif

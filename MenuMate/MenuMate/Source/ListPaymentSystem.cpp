@@ -1280,7 +1280,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-
 					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
 
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))
@@ -1320,6 +1319,10 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
                                             Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                        }
+                                        else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
                                         }
                                         else
                                         {

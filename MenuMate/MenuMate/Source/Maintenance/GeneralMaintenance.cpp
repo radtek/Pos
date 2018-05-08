@@ -38,7 +38,7 @@
 #include "Registration.h"
 #include "PrintOut.h"
 #include "Comms.h"
-
+#include "EFTPOSConfiguration.h"
 #define semi_colon 0x3B
 
 //---------------------------------------------------------------------------
@@ -409,8 +409,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     }
     cbConfirmResetPoint->Checked = TGlobalSettings::Instance().ConfirmResetPoint;
     cbGiftCardOnly->Checked = TGlobalSettings::Instance().GiftCardOnly  ;
-    cbIntegratedEftposSmartPay->Checked = TGlobalSettings::Instance().EnableEftPosSmartPay;
-    tbtnSmartLinkIp->Caption = TGlobalSettings::Instance().EftPosSmartPayIp;
+    //cbIntegratedEftposSmartPay->Checked = TGlobalSettings::Instance().EnableEftPosSmartPay;
     cbDeleteItemSizeAfterSale->Checked = TGlobalSettings::Instance().DeleteItemSizeAfterSale;
     cbDisplayItemSizesAsList->Checked = TGlobalSettings::Instance().ShowItemSizesAsList;
     cbShowItemPricesInTransferScreen->Checked = TGlobalSettings::Instance().ShowItemPriceInTransferScreen;
@@ -453,12 +452,78 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
     cbFloatWithdrawFromCash->Checked = TGlobalSettings::Instance().FloatWithdrawFromCash;
     cbSplitBillByMenuType->Checked = TGlobalSettings::Instance().IsBillSplittedByMenuType;
-    cbIntegratedEftposSmartConnect->OnClick = NULL;
-    cbIntegratedEftposSmartConnect->Checked = TGlobalSettings::Instance().EnableEftPosSmartConnect;
-    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
+//    cbIntegratedEftposSmartConnect->OnClick = NULL;
+//    cbIntegratedEftposSmartConnect->Checked = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+//    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
+    //cbIntegratedEftposAdyen->Checked = TGlobalSettings::Instance().EnableEftPosAdyen;
+    CustomizeCloudEFTPOS();
     FormResize(this);
 }
-
+//---------------------------------------------------------------------------
+/*
+    Refreshes the screen and saves the relevant setting to database.
+*/
+//---------------------------------------------------------------------------
+void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
+{
+    cbIntegratedEftposSmartConnect->OnClick = NULL;
+    if(TGlobalSettings::Instance().EnableEftPosSmartPay)
+    {
+        cbIntegratedEftposAdyen->Enabled                     = false;
+        cbIntegratedEftposAdyen->Checked                     = false;
+        cbIntegratedEftposSmartConnect->Enabled              = false;
+        cbIntegratedEftposSmartConnect->Checked              = false;
+        cbIntegratedEftposSmartPay->Enabled                  = true;
+        cbIntegratedEftposSmartPay->Checked                  = true;
+        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
+        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
+    {
+        cbIntegratedEftposAdyen->Enabled                     = false;
+        cbIntegratedEftposAdyen->Checked                     = false;
+        cbIntegratedEftposSmartPay->Enabled                  = false;
+        cbIntegratedEftposSmartPay->Checked                  = false;
+        cbIntegratedEftposSmartConnect->Enabled              = true;
+        cbIntegratedEftposSmartConnect->Checked              = true;
+        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Smart Connect Details";
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        cbIntegratedEftposSmartPay->Enabled                  = false;
+        cbIntegratedEftposSmartPay->Checked                  = false;
+        cbIntegratedEftposSmartConnect->Enabled              = false;
+        cbIntegratedEftposSmartConnect->Checked              = false;
+        TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
+        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+        cbIntegratedEftposAdyen->Checked                     = true;
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Adyen Details";
+    }
+    else if(!TGlobalSettings::Instance().EnableEftPosSmartPay && !TGlobalSettings::Instance().EnableEftPosAdyen &&
+           !TGlobalSettings::Instance().EnableEftPosSmartConnect)
+    {
+        cbIntegratedEftposAdyen->Enabled                    = true;
+        cbIntegratedEftposSmartPay->Enabled                 = true;
+        cbIntegratedEftposSmartConnect->Enabled             = true;
+        cbIntegratedEftposAdyen->Checked                    = false;
+        cbIntegratedEftposSmartPay->Checked                 = false;
+        cbIntegratedEftposSmartConnect->Checked             = false;
+        tbtnSmartLinkIp->Enabled                            = false;
+        tbtnSmartLinkIp->Caption                            = "EFTPOS Network Details";
+    }
+    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
+	DBTransaction.Commit();
+}
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::WMDisplayChange(TWMDisplayChange& Message)
 {
@@ -3992,46 +4057,15 @@ void _fastcall TfrmGeneralMaintenance::cbGiftCardOnlyClick(TObject *Sender)
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartPayClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
-    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
-	DBTransaction.Commit();
-	cbIntegratedEftposSmartConnect->Enabled = true;
-
-	if(cbIntegratedEftposSmartPay->Checked)
-	{
-		cbIntegratedEftposSmartConnect->Enabled = false;
-		cbIntegratedEftposSmartConnect->Checked = false;
-    }
+    CustomizeCloudEFTPOS();
 }
 
 void _fastcall TfrmGeneralMaintenance::tbtnSmartLinkIpClick(TObject *Sender)
 {
-	std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-	frmTouchKeyboard->MaxLength = 0;
-	frmTouchKeyboard->AllowCarriageReturn = true;
-	frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
-	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = tbtnSmartLinkIp->Caption;
-    if(TGlobalSettings::Instance().EnableEftPosSmartPay)
-    {
-	    frmTouchKeyboard->Caption = "Enter SmartLink Ip Address";
-    }
-    else
-    {
-        frmTouchKeyboard->Caption = "Enter SmartConnect Ip Address";
-    }
-
-	if (frmTouchKeyboard->ShowModal() == mrOk)
-	{
-        TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
-        tbtnSmartLinkIp->Caption = TGlobalSettings::Instance().EftPosSmartPayIp;
-        Database::TDBTransaction DBTransaction(DBControl);
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
-        DBTransaction.Commit();
-	}
+    std::auto_ptr<TfrmEFTPOSConfig>(frmEFTPosConfig)(TfrmEFTPOSConfig::Create<TfrmEFTPOSConfig>(this));
+    frmEFTPosConfig->Left = ((Screen->Width/2) - (frmEFTPosConfig->Width/2));
+    frmEFTPosConfig->Top = ((Screen->Height/2) - (frmEFTPosConfig->Height/2));
+    frmEFTPosConfig->ShowModal();
 }
 
 
@@ -4507,11 +4541,24 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 	tr.StartTransaction();
 	ref_mv.SetProfileBool(tr, isBillSplittted, vmIsBillSplittedByMenuType, ref_gs.IsBillSplittedByMenuType);
 	tr.Commit();
-}//-------------------------------------------------------------------------------------void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender){    TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartConnect,TGlobalSettings::Instance().EnableEftPosSmartConnect);
-	DBTransaction.Commit();
-	cbIntegratedEftposSmartPay->Enabled = true;
+}//-------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;
+    CustomizeCloudEFTPOS();
+    MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);
+}
 
-	if(cbIntegratedEftposSmartConnect->Checked)
-	    cbIntegratedEftposSmartPay->Enabled = false;    MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);}
+//----------------------------------------------------------------------------
+void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().EnableEftPosAdyen = cbIntegratedEftposAdyen->Checked;
+    CustomizeCloudEFTPOS();
+}
+//----------------------------------------------------------------------------
+void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposPaymentSenseClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().EnablePaymentSense = cbIntegratedEftposPaymentSense->Checked;
+    CustomizeCloudEFTPOS();
+}
+//----------------------------------------------------------------------------

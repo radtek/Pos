@@ -1158,3 +1158,9 @@ void TEftPosCadmusCronos::Print()
       TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
    }
 }
+//--------------------------------------------------------------------------
+bool TEftPosCadmusCronos::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------
