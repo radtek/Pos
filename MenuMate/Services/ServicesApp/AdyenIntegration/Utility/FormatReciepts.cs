@@ -10,32 +10,63 @@ namespace AdyenIntegration.Utility
 {
     public class FormatReciepts
     {
-        public string FormatReceipt(List<OutputText> textList)
+        //public string[] FormatReceipt(List<OutputText> textList)
+        //{
+        //    string[] value = textList.Count();
+        //    int index = 0;
+        //    foreach (var item in textList)
+        //    {
+        //        if (item.Text.Trim() == "")
+        //        {
+        //            if (item.EndOfLineFlag == "true")
+        //            {
+        //                value[index] = @"\n";
+        //            }
+        //        }
+        //        else
+        //        {
+        //            string text = System.Uri.UnescapeDataString(item.Text);
+        //            var pair = HttpUtility.ParseQueryString(text);
+        //            value += pair["name"];
+        //            string s2 = pair["key"];
+        //            value += " ";
+        //            value += pair["value"];
+        //            int i = 0;
+        //            if (item.EndOfLineFlag == "true")
+        //                value += "\n";
+        //        }
+
+        //    }
+        //    return value;
+        //}
+        public List<string> FormatReceipt(List<OutputText> textList)
         {
-            string value = "";
+            List<string> stringList = new List<string>();
             foreach (var item in textList)
             {
                 if (item.Text.Trim() == "")
                 {
                     if (item.EndOfLineFlag == "true")
                     {
-                        value += @"\n";
+                        stringList.Add(@"\n");
                     }
                 }
                 else
                 {
                     string text = System.Uri.UnescapeDataString(item.Text);
+                    string value = "";
                     var pair = HttpUtility.ParseQueryString(text);
                     value += pair["name"];
                     string s2 = pair["key"];
                     value += " ";
                     value += pair["value"];
-                    int i = 0;
+                    stringList.Add(value);
                     if (item.EndOfLineFlag == "true")
-                        value += "\n";
+                       stringList.Add("\n");
                 }
+
             }
-            return value;
+            return stringList;
         }
     }
 }

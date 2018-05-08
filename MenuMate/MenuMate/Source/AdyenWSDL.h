@@ -14,7 +14,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (7/05/2018 5:55:24 p.m. - - $Rev: 25127 $)
+// (8/05/2018 2:49:11 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
@@ -49,7 +49,7 @@ namespace NS__AdyenWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also
+// typically map to predefined/known XML or Embarcadero types; however, they could also 
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
@@ -639,8 +639,10 @@ private:
   bool            FPOIData_Specified;
   ArrayOfPaymentReceipt FPaymentReceipt;
   bool            FPaymentReceipt_Specified;
-  ArrayOfstring   FPaymentReceiptUsable;
-  bool            FPaymentReceiptUsable_Specified;
+  ArrayOfstring   FPaymentReceiptUsable1;
+  bool            FPaymentReceiptUsable1_Specified;
+  ArrayOfstring   FPaymentReceiptUsable2;
+  bool            FPaymentReceiptUsable2_Specified;
   PaymentResult*  FPaymentResult;
   bool            FPaymentResult_Specified;
   Response*       FResponse;
@@ -655,10 +657,14 @@ private:
   {  FPaymentReceipt = _prop_val; FPaymentReceipt_Specified = true;  }
   bool __fastcall PaymentReceipt_Specified(int Index)
   {  return FPaymentReceipt_Specified;  } 
-  void __fastcall SetPaymentReceiptUsable(int Index, ArrayOfstring _prop_val)
-  {  FPaymentReceiptUsable = _prop_val; FPaymentReceiptUsable_Specified = true;  }
-  bool __fastcall PaymentReceiptUsable_Specified(int Index)
-  {  return FPaymentReceiptUsable_Specified;  } 
+  void __fastcall SetPaymentReceiptUsable1(int Index, ArrayOfstring _prop_val)
+  {  FPaymentReceiptUsable1 = _prop_val; FPaymentReceiptUsable1_Specified = true;  }
+  bool __fastcall PaymentReceiptUsable1_Specified(int Index)
+  {  return FPaymentReceiptUsable1_Specified;  } 
+  void __fastcall SetPaymentReceiptUsable2(int Index, ArrayOfstring _prop_val)
+  {  FPaymentReceiptUsable2 = _prop_val; FPaymentReceiptUsable2_Specified = true;  }
+  bool __fastcall PaymentReceiptUsable2_Specified(int Index)
+  {  return FPaymentReceiptUsable2_Specified;  } 
   void __fastcall SetPaymentResult(int Index, PaymentResult* _prop_val)
   {  FPaymentResult = _prop_val; FPaymentResult_Specified = true;  }
   bool __fastcall PaymentResult_Specified(int Index)
@@ -677,7 +683,8 @@ public:
 __published:
   __property POIData*      POIData = { index=(IS_OPTN|IS_NLBL), read=FPOIData, write=SetPOIData, stored = POIData_Specified };
   __property ArrayOfPaymentReceipt PaymentReceipt = { index=(IS_OPTN|IS_NLBL), read=FPaymentReceipt, write=SetPaymentReceipt, stored = PaymentReceipt_Specified };
-  __property ArrayOfstring PaymentReceiptUsable = { index=(IS_OPTN|IS_NLBL), read=FPaymentReceiptUsable, write=SetPaymentReceiptUsable, stored = PaymentReceiptUsable_Specified };
+  __property ArrayOfstring PaymentReceiptUsable1 = { index=(IS_OPTN|IS_NLBL), read=FPaymentReceiptUsable1, write=SetPaymentReceiptUsable1, stored = PaymentReceiptUsable1_Specified };
+  __property ArrayOfstring PaymentReceiptUsable2 = { index=(IS_OPTN|IS_NLBL), read=FPaymentReceiptUsable2, write=SetPaymentReceiptUsable2, stored = PaymentReceiptUsable2_Specified };
   __property PaymentResult* PaymentResult = { index=(IS_OPTN|IS_NLBL), read=FPaymentResult, write=SetPaymentResult, stored = PaymentResult_Specified };
   __property Response*    Response = { index=(IS_OPTN|IS_NLBL), read=FResponse, write=SetResponse, stored = Response_Specified };
   __property SaleData*    SaleData = { index=(IS_OPTN|IS_NLBL), read=FSaleData, write=SetSaleData, stored = SaleData_Specified };

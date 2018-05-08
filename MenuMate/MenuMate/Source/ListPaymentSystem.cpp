@@ -1320,6 +1320,10 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
                                             Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
                                         }
+                                        else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                        }
                                         else
                                         {
                                             Payment->TipAmount = FinalAmount - (Pay + CashOut);

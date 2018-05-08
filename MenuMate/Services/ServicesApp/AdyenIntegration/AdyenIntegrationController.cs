@@ -147,8 +147,16 @@ namespace AdyenIntegration
                     responseEnvelop = JSonUtility.Deserialize<ResponseEnvelop>(responseText);
                     if ( CanReceiptsBePresent(requestType,responseEnvelop)/*requestType == RequestType.eProcessSale) && responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0*/)
                     {
-                        //responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable =
-                        //    CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt);
+                        if (responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() >= 1)
+                        {
+                            responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable1 =
+                            CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.ElementAt(0));
+                        }
+                        if (responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() >= 2)
+                        {
+                            responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable2 =
+                                CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.ElementAt(1));
+                        }
                     }
                 }
                 return responseEnvelop.SaleToPOIResponse;
@@ -160,17 +168,18 @@ namespace AdyenIntegration
             }
         }
 
-        private string[] CreateFormattedReceipts(PaymentReceipt[] receiptArray)
+        private List<string> CreateFormattedReceipts(PaymentReceipt receiptArray)
         {
             try
             {
-                string[] receipts = new string[receiptArray.Count()];
+                List<string> receipts = new List<string>();
                 FormatReciepts format = new FormatReciepts();
-                int index = 0;
-                foreach (var item in receiptArray)
-                {
-                    receipts[index] = format.FormatReceipt(receiptArray[index].OutputContent.OutputText.ToList());
-                }
+                //int index = 0;
+                //foreach (var item in receiptArray.OutputContent.OutputText)
+                //{
+                //    receipts[index] = format.FormatReceipt(receiptArray[index].OutputContent.OutputText.ToList());
+                //}
+                receipts = format.FormatReceipt(receiptArray.OutputContent.OutputText.ToList());
                 return receipts;
             }
             catch (Exception ex)

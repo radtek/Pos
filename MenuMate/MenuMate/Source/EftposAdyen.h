@@ -26,6 +26,8 @@ class TEftposAdyen : public TEftPos
         MessageHeader* GetMessageHeader(AdyenRequestType requestType);
         bool GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIResponse *response);
         Envelop* GetLoginLogOutEnvelop(AdyenRequestType requestType);
+        void LoadEftPosReceipt(ArrayOfstring receipt);
+        void LoadEftPosReceiptSecond(ArrayOfstring receipt);
 public:
         TEftposAdyen();
         ~TEftposAdyen();

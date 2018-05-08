@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using AdyenIntegration.Domain;
+using System.Collections.Generic;
 
 namespace AdyenIntegration.Domain
 {
@@ -18,6 +19,8 @@ namespace AdyenIntegration.Domain
         [DataMember]
         public Response Response { get; set; }
         [DataMember]
-        public string[] PaymentReceiptUsable { get; set; }
+        public List<string> PaymentReceiptUsable1 { get; set; }
+        [DataMember]
+        public List<string> PaymentReceiptUsable2 { get; set; }
     }
 }

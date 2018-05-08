@@ -51,5 +51,6 @@ public:
         void __fastcall ReprintReceipt();
         void __fastcall DoPairing();
         AnsiString GetRefNumber();
-		bool IsCashOutSupported()};
+		bool IsCashOutSupported();
+};
 #endif
