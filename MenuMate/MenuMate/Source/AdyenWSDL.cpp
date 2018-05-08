@@ -11,10 +11,11 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd4
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd6
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd7
+//  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd9
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (8/05/2018 2:49:11 a.m. - - $Rev: 25127 $)
+// (8/05/2018 10:45:18 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -33,7 +34,7 @@ _di_IAdyenIntegrationWebService GetIAdyenIntegrationWebService(bool useWSDL, Ans
   static const char* defWSDL= "http://localhost:8745/MenumateServices/AdyenService/?wsdl";
   static const char* defURL = "http://localhost:8745/MenumateServices/AdyenService/";
   static const char* defSvc = "AdyenIntegrationWebService";
-  static const char* defPrt = "basicHttpBinding_ServiceSalesForce";
+  static const char* defPrt = "basicHttpBinding_ServiceAdyen";
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
@@ -196,6 +197,46 @@ __fastcall LoginRequest::~LoginRequest()
   delete FSaleTerminalData;
 }
 
+__fastcall LoginResponse::~LoginResponse()
+{
+  delete FPOISystemData;
+  delete FResponse;
+}
+
+__fastcall POISystemData::~POISystemData()
+{
+  delete FMyProperty;
+  delete FPOISoftware;
+}
+
+__fastcall LogoutResponse::~LogoutResponse()
+{
+  delete FResponse;
+}
+
+__fastcall TransactionStatusRequest::~TransactionStatusRequest()
+{
+  delete FMessageReference;
+}
+
+__fastcall TransactionStatusResponse::~TransactionStatusResponse()
+{
+  delete FMessageReference;
+  delete FRepeatedMessageResponse;
+  delete FResponse;
+}
+
+__fastcall RepeatedMessageResponse::~RepeatedMessageResponse()
+{
+  delete FMessageHeader;
+  delete FRepeatedResponseMessageBody;
+}
+
+__fastcall RepeatedResponseMessageBody::~RepeatedResponseMessageBody()
+{
+  delete FPaymentResponse;
+}
+
 __fastcall Envelop::~Envelop()
 {
   delete FSaleToPOIRequest;
@@ -209,14 +250,18 @@ __fastcall SaleToPOIRequest::~SaleToPOIRequest()
   delete FMessageHeader;
   delete FPaymentRequest;
   delete FReversalRequest;
+  delete FTransactionStatusRequest;
 }
 
 __fastcall SaleToPOIResponse::~SaleToPOIResponse()
 {
   delete FDiagnosisResponse;
   delete FEventNotification;
+  delete FLoginResponse;
+  delete FLogoutResponse;
   delete FMessageHeader;
   delete FPaymentResponse;
+  delete FTransactionStatusResponse;
 }
 
 // ************************************************************************ //
@@ -430,10 +475,26 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(LoginRequest), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LoginRequest");
   /* LogoutRequest */
   RemClassRegistry()->RegisterXSClass(__classid(LogoutRequest), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LogoutRequest");
+  /* LoginResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LoginResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LoginResponse");
+  /* POISystemData */
+  RemClassRegistry()->RegisterXSClass(__classid(POISystemData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"POISystemData");
+  /* POISoftware */
+  RemClassRegistry()->RegisterXSClass(__classid(POISoftware), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"POISoftware");
+  /* LogoutResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LogoutResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LogoutResponse");
   /* LoginRequest */
   RemClassRegistry()->RegisterXSClass(__classid(LoginRequest2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LoginRequest2", L"LoginRequest");
   /* LogoutRequest */
   RemClassRegistry()->RegisterXSClass(__classid(LogoutRequest2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LogoutRequest2", L"LogoutRequest");
+  /* LoginResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LoginResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LoginResponse2", L"LoginResponse");
+  /* POISystemData */
+  RemClassRegistry()->RegisterXSClass(__classid(POISystemData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"POISystemData2", L"POISystemData");
+  /* POISoftware */
+  RemClassRegistry()->RegisterXSClass(__classid(POISoftware2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"POISoftware2", L"POISoftware");
+  /* LogoutResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LogoutResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut", L"LogoutResponse2", L"LogoutResponse");
   /* MessageHeader */
   RemClassRegistry()->RegisterXSClass(__classid(MessageHeader), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.Common", L"MessageHeader");
   /* ResourceDetails */
@@ -442,6 +503,26 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(MessageHeader2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.Common", L"MessageHeader2", L"MessageHeader");
   /* ResourceDetails */
   RemClassRegistry()->RegisterXSClass(__classid(ResourceDetails2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.Common", L"ResourceDetails2", L"ResourceDetails");
+  /* MessageReference */
+  RemClassRegistry()->RegisterXSClass(__classid(MessageReference), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"MessageReference");
+  /* TransactionStatusRequest */
+  RemClassRegistry()->RegisterXSClass(__classid(TransactionStatusRequest), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"TransactionStatusRequest");
+  /* TransactionStatusResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(TransactionStatusResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"TransactionStatusResponse");
+  /* RepeatedMessageResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(RepeatedMessageResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"RepeatedMessageResponse");
+  /* RepeatedResponseMessageBody */
+  RemClassRegistry()->RegisterXSClass(__classid(RepeatedResponseMessageBody), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"RepeatedResponseMessageBody");
+  /* TransactionStatusRequest */
+  RemClassRegistry()->RegisterXSClass(__classid(TransactionStatusRequest2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"TransactionStatusRequest2", L"TransactionStatusRequest");
+  /* MessageReference */
+  RemClassRegistry()->RegisterXSClass(__classid(MessageReference2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"MessageReference2", L"MessageReference");
+  /* TransactionStatusResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(TransactionStatusResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"TransactionStatusResponse2", L"TransactionStatusResponse");
+  /* RepeatedMessageResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(RepeatedMessageResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"RepeatedMessageResponse2", L"RepeatedMessageResponse");
+  /* RepeatedResponseMessageBody */
+  RemClassRegistry()->RegisterXSClass(__classid(RepeatedResponseMessageBody2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus", L"RepeatedResponseMessageBody2", L"RepeatedResponseMessageBody");
   /* Envelop */
   RemClassRegistry()->RegisterXSClass(__classid(Envelop), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.RequestEnvelop", L"Envelop");
   /* SaleToPOIRequest */
@@ -454,16 +535,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse");
   /* SaleToPOIResponse */
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse2", L"SaleToPOIResponse");
-  /* ArrayOfstring */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
-  /* ArrayOfOutputText */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOutputText), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfOutputText");
-  /* ArrayOfCustomerOrder */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCustomerOrder), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfCustomerOrder");
   /* ArrayOfPaymentReceipt */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPaymentReceipt), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfPaymentReceipt");
   /* ArrayOfAllowedProduct */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfAllowedProduct), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfAllowedProduct");
+  /* ArrayOfstring */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
+  /* ArrayOfCustomerOrder */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCustomerOrder), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfCustomerOrder");
+  /* ArrayOfOutputText */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOutputText), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfOutputText");
 }
 #pragma startup RegTypes 32
 

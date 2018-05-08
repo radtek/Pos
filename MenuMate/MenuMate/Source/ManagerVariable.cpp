@@ -3392,6 +3392,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"PMS Time Out",
 		vmgPOS,
 		3);
+        SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

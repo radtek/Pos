@@ -36,7 +36,7 @@ bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
     EftPos = new TEftposAdyen();
     EftPos->Initialise();
     if(EftPos->Enabled)
-        MessageBox("Please Log in to EFTPOS Terminal before using payment type integrated with Adyen.","Info",MB_OK + MB_ICONINFORMATION);
+        MessageBox("Details for Adyen integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)

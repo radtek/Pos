@@ -1698,7 +1698,6 @@ void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
 void TApplyParser::update6_50Tables()
 {
     Create6_50Generator(_dbControl);
-    CreateTableEFTPOSTransaction(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
@@ -1883,30 +1882,6 @@ void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
 	{
 		executeQuery("CREATE GENERATOR GEN_ADYENTRANSACTIONID;", inDBControl);
 		executeQuery("SET GENERATOR GEN_ADYENTRANSACTIONID TO 0;", inDBControl);
-	}
-}
-//------------------------------------------------------------------------------
-void TApplyParser::CreateTableEFTPOSTransaction(TDBControl* const inDBControl)
-{
-    if ( !tableExists( "EFTPOSTRANSAC_DETAILS", _dbControl ) )
-	{
-		executeQuery(
-		"CREATE TABLE EFTPOSTRANSAC_DETAILS       "
-        "( "
-        "  EFTPOSTRANSAC_KEY Integer NOT NULL,    "
-        "  INVOICE_NUMBER Varchar(50),            "
-        "  EFTPOS_IDENTIFIER Varchar(50),         "
-        "  TRANSAC_IDENTIFIER Varchar(50),        "
-        "  PRIMARY KEY (EFTPOSTRANSAC_KEY)        "
-        ");",
-		inDBControl );
-    }
-    if (fieldExists( "VARSPROFILE", "VARCHAR_VAL", _dbControl ) )
-	{
-        executeQuery (
-        "ALTER TABLE VARSPROFILE  "
-        "ALTER VARCHAR_VAL TYPE VARCHAR(200) ; ",
-		inDBControl);
 	}
 }
 //------------------------------------------------------------------------------

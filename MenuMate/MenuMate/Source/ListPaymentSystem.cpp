@@ -3870,6 +3870,10 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
                            TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
                            EftPos->AcquirerRefSmartConnect.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
+                        else if(TGlobalSettings::Instance().EnableEftPosAdyen &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefAdyen.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefAdyen;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}

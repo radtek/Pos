@@ -72,7 +72,10 @@
     <Compile Include="Domain\Geolocation.cs" />
     <Compile Include="Domain\Instalment.cs" />
     <Compile Include="Domain\LoginLogOut\LoginRequest.cs" />
+    <Compile Include="Domain\LoginLogOut\LoginResponse.cs" />
     <Compile Include="Domain\LoginLogOut\LogoutRequest.cs" />
+    <Compile Include="Domain\LoginLogOut\LogoutResponse.cs" />
+    <Compile Include="Domain\LoginLogOut\POISoftware.cs" />
     <Compile Include="Domain\MobileData.cs" />
     <Compile Include="Domain\OutputContent.cs" />
     <Compile Include="Domain\OutputText.cs" />
@@ -83,6 +86,7 @@
     <Compile Include="Domain\PaymentResult.cs" />
     <Compile Include="Domain\PaymentToken.cs" />
     <Compile Include="Domain\POIData.cs" />
+    <Compile Include="Domain\LoginLogOut\POISystemData.cs" />
     <Compile Include="Domain\PredefinedContent.cs" />
     <Compile Include="Domain\RequestEnvelop\Envelop.cs" />
     <Compile Include="Domain\Common\MessageHeader.cs" />
@@ -106,6 +110,11 @@
     <Compile Include="Domain\SensitiveMobileData.cs" />
     <Compile Include="Domain\StoredValueAccountID.cs" />
     <Compile Include="Domain\TrackData.cs" />
+    <Compile Include="Domain\TransactionStatus\MessageReference.cs" />
+    <Compile Include="Domain\TransactionStatus\RepeatedMessageResponse.cs" />
+    <Compile Include="Domain\TransactionStatus\RepeatedResponseMessageBody.cs" />
+    <Compile Include="Domain\TransactionStatus\TransactionStatusRequest.cs" />
+    <Compile Include="Domain\TransactionStatus\TransactionStatusResponse.cs" />
     <Compile Include="Domain\UTMCoordinates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\ServiceLogger.cs" />

@@ -118,6 +118,7 @@ class TEftPos
 	AnsiString WaitingOnReferenceNumber;
     AnsiString AcquirerRefSmartPay;
     AnsiString AcquirerRefSmartConnect;
+    AnsiString AcquirerRefAdyen;
 	int ChequeAccountMaxLength;
 	int ChequeBranchMaxLength;
 	int ChequeSerialMaxLength;

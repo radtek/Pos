@@ -224,7 +224,7 @@ enum vmVariables
     vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
-    vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL
+    vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund
 };
 
 // ---------------------------------------------------------------------------

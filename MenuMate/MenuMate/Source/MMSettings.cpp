@@ -424,6 +424,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
+        TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmAdyenRecoveryTransactionIsRefund, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

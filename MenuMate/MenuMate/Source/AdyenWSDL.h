@@ -11,10 +11,11 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd4
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd6
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd7
+//  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd9
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (8/05/2018 2:49:11 a.m. - - $Rev: 25127 $)
+// (8/05/2018 10:45:18 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
@@ -55,6 +56,7 @@ namespace NS__AdyenWSDL {
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS SaleSoftware;
 class SOAP_REMOTABLE_CLASS SaleTerminalData;
@@ -152,12 +154,30 @@ class SOAP_REMOTABLE_CLASS POIStatus2;
 class SOAP_REMOTABLE_CLASS EventNotification2;
 class SOAP_REMOTABLE_CLASS LoginRequest;
 class SOAP_REMOTABLE_CLASS LogoutRequest;
+class SOAP_REMOTABLE_CLASS LoginResponse;
+class SOAP_REMOTABLE_CLASS POISystemData;
+class SOAP_REMOTABLE_CLASS POISoftware;
+class SOAP_REMOTABLE_CLASS LogoutResponse;
 class SOAP_REMOTABLE_CLASS LoginRequest2;
 class SOAP_REMOTABLE_CLASS LogoutRequest2;
+class SOAP_REMOTABLE_CLASS LoginResponse2;
+class SOAP_REMOTABLE_CLASS POISystemData2;
+class SOAP_REMOTABLE_CLASS POISoftware2;
+class SOAP_REMOTABLE_CLASS LogoutResponse2;
 class SOAP_REMOTABLE_CLASS MessageHeader;
 class SOAP_REMOTABLE_CLASS ResourceDetails;
 class SOAP_REMOTABLE_CLASS MessageHeader2;
 class SOAP_REMOTABLE_CLASS ResourceDetails2;
+class SOAP_REMOTABLE_CLASS MessageReference;
+class SOAP_REMOTABLE_CLASS TransactionStatusRequest;
+class SOAP_REMOTABLE_CLASS TransactionStatusResponse;
+class SOAP_REMOTABLE_CLASS RepeatedMessageResponse;
+class SOAP_REMOTABLE_CLASS RepeatedResponseMessageBody;
+class SOAP_REMOTABLE_CLASS TransactionStatusRequest2;
+class SOAP_REMOTABLE_CLASS MessageReference2;
+class SOAP_REMOTABLE_CLASS TransactionStatusResponse2;
+class SOAP_REMOTABLE_CLASS RepeatedMessageResponse2;
+class SOAP_REMOTABLE_CLASS RepeatedResponseMessageBody2;
 class SOAP_REMOTABLE_CLASS Envelop;
 class SOAP_REMOTABLE_CLASS SaleToPOIRequest;
 class SOAP_REMOTABLE_CLASS Envelop2;
@@ -2763,6 +2783,133 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : LoginResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class LoginResponse : public TRemotable {
+private:
+  POISystemData*  FPOISystemData;
+  bool            FPOISystemData_Specified;
+  Response*       FResponse;
+  bool            FResponse_Specified;
+  void __fastcall SetPOISystemData(int Index, POISystemData* _prop_val)
+  {  FPOISystemData = _prop_val; FPOISystemData_Specified = true;  }
+  bool __fastcall POISystemData_Specified(int Index)
+  {  return FPOISystemData_Specified;  } 
+  void __fastcall SetResponse(int Index, Response* _prop_val)
+  {  FResponse = _prop_val; FResponse_Specified = true;  }
+  bool __fastcall Response_Specified(int Index)
+  {  return FResponse_Specified;  } 
+
+public:
+  __fastcall ~LoginResponse();
+__published:
+  __property POISystemData* POISystemData = { index=(IS_OPTN|IS_NLBL), read=FPOISystemData, write=SetPOISystemData, stored = POISystemData_Specified };
+  __property Response*    Response = { index=(IS_OPTN|IS_NLBL), read=FResponse, write=SetResponse, stored = Response_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : POISystemData, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class POISystemData : public TRemotable {
+private:
+  UnicodeString   FDateTime;
+  bool            FDateTime_Specified;
+  POIStatus*      FMyProperty;
+  bool            FMyProperty_Specified;
+  POISoftware*    FPOISoftware;
+  bool            FPOISoftware_Specified;
+  void __fastcall SetDateTime(int Index, UnicodeString _prop_val)
+  {  FDateTime = _prop_val; FDateTime_Specified = true;  }
+  bool __fastcall DateTime_Specified(int Index)
+  {  return FDateTime_Specified;  } 
+  void __fastcall SetMyProperty(int Index, POIStatus* _prop_val)
+  {  FMyProperty = _prop_val; FMyProperty_Specified = true;  }
+  bool __fastcall MyProperty_Specified(int Index)
+  {  return FMyProperty_Specified;  } 
+  void __fastcall SetPOISoftware(int Index, POISoftware* _prop_val)
+  {  FPOISoftware = _prop_val; FPOISoftware_Specified = true;  }
+  bool __fastcall POISoftware_Specified(int Index)
+  {  return FPOISoftware_Specified;  } 
+
+public:
+  __fastcall ~POISystemData();
+__published:
+  __property UnicodeString   DateTime = { index=(IS_OPTN|IS_NLBL), read=FDateTime, write=SetDateTime, stored = DateTime_Specified };
+  __property POIStatus* MyProperty = { index=(IS_OPTN|IS_NLBL), read=FMyProperty, write=SetMyProperty, stored = MyProperty_Specified };
+  __property POISoftware* POISoftware = { index=(IS_OPTN|IS_NLBL), read=FPOISoftware, write=SetPOISoftware, stored = POISoftware_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : POISoftware, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class POISoftware : public TRemotable {
+private:
+  UnicodeString   FApplicationName;
+  bool            FApplicationName_Specified;
+  UnicodeString   FCertificationCode;
+  bool            FCertificationCode_Specified;
+  UnicodeString   FManufacturerID;
+  bool            FManufacturerID_Specified;
+  UnicodeString   FSoftwareVersion;
+  bool            FSoftwareVersion_Specified;
+  void __fastcall SetApplicationName(int Index, UnicodeString _prop_val)
+  {  FApplicationName = _prop_val; FApplicationName_Specified = true;  }
+  bool __fastcall ApplicationName_Specified(int Index)
+  {  return FApplicationName_Specified;  } 
+  void __fastcall SetCertificationCode(int Index, UnicodeString _prop_val)
+  {  FCertificationCode = _prop_val; FCertificationCode_Specified = true;  }
+  bool __fastcall CertificationCode_Specified(int Index)
+  {  return FCertificationCode_Specified;  } 
+  void __fastcall SetManufacturerID(int Index, UnicodeString _prop_val)
+  {  FManufacturerID = _prop_val; FManufacturerID_Specified = true;  }
+  bool __fastcall ManufacturerID_Specified(int Index)
+  {  return FManufacturerID_Specified;  } 
+  void __fastcall SetSoftwareVersion(int Index, UnicodeString _prop_val)
+  {  FSoftwareVersion = _prop_val; FSoftwareVersion_Specified = true;  }
+  bool __fastcall SoftwareVersion_Specified(int Index)
+  {  return FSoftwareVersion_Specified;  } 
+__published:
+  __property UnicodeString ApplicationName = { index=(IS_OPTN|IS_NLBL), read=FApplicationName, write=SetApplicationName, stored = ApplicationName_Specified };
+  __property UnicodeString CertificationCode = { index=(IS_OPTN|IS_NLBL), read=FCertificationCode, write=SetCertificationCode, stored = CertificationCode_Specified };
+  __property UnicodeString ManufacturerID = { index=(IS_OPTN|IS_NLBL), read=FManufacturerID, write=SetManufacturerID, stored = ManufacturerID_Specified };
+  __property UnicodeString SoftwareVersion = { index=(IS_OPTN|IS_NLBL), read=FSoftwareVersion, write=SetSoftwareVersion, stored = SoftwareVersion_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LogoutResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class LogoutResponse : public TRemotable {
+private:
+  Response*       FResponse;
+  bool            FResponse_Specified;
+  void __fastcall SetResponse(int Index, Response* _prop_val)
+  {  FResponse = _prop_val; FResponse_Specified = true;  }
+  bool __fastcall Response_Specified(int Index)
+  {  return FResponse_Specified;  } 
+
+public:
+  __fastcall ~LogoutResponse();
+__published:
+  __property Response*    Response = { index=(IS_OPTN|IS_NLBL), read=FResponse, write=SetResponse, stored = Response_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : LoginRequest, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
 // ************************************************************************ //
@@ -2779,6 +2926,54 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
 // ************************************************************************ //
 class LogoutRequest2 : public LogoutRequest {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LoginResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class LoginResponse2 : public LoginResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : POISystemData, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class POISystemData2 : public POISystemData {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : POISoftware, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class POISoftware2 : public POISoftware {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LogoutResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.LoginLogOut
+// ************************************************************************ //
+class LogoutResponse2 : public LogoutResponse {
 private:
 __published:
 };
@@ -2898,6 +3093,222 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : MessageReference, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class MessageReference : public TRemotable {
+private:
+  UnicodeString   FMessageCategory;
+  bool            FMessageCategory_Specified;
+  UnicodeString   FSaleID;
+  bool            FSaleID_Specified;
+  UnicodeString   FServiceID;
+  bool            FServiceID_Specified;
+  void __fastcall SetMessageCategory(int Index, UnicodeString _prop_val)
+  {  FMessageCategory = _prop_val; FMessageCategory_Specified = true;  }
+  bool __fastcall MessageCategory_Specified(int Index)
+  {  return FMessageCategory_Specified;  } 
+  void __fastcall SetSaleID(int Index, UnicodeString _prop_val)
+  {  FSaleID = _prop_val; FSaleID_Specified = true;  }
+  bool __fastcall SaleID_Specified(int Index)
+  {  return FSaleID_Specified;  } 
+  void __fastcall SetServiceID(int Index, UnicodeString _prop_val)
+  {  FServiceID = _prop_val; FServiceID_Specified = true;  }
+  bool __fastcall ServiceID_Specified(int Index)
+  {  return FServiceID_Specified;  } 
+__published:
+  __property UnicodeString MessageCategory = { index=(IS_OPTN|IS_NLBL), read=FMessageCategory, write=SetMessageCategory, stored = MessageCategory_Specified };
+  __property UnicodeString     SaleID = { index=(IS_OPTN|IS_NLBL), read=FSaleID, write=SetSaleID, stored = SaleID_Specified };
+  __property UnicodeString  ServiceID = { index=(IS_OPTN|IS_NLBL), read=FServiceID, write=SetServiceID, stored = ServiceID_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TransactionStatusRequest, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class TransactionStatusRequest : public TRemotable {
+private:
+  ArrayOfstring   FDocumentQualifier;
+  bool            FDocumentQualifier_Specified;
+  MessageReference* FMessageReference;
+  bool            FMessageReference_Specified;
+  bool            FReceiptReprintFlag;
+  bool            FReceiptReprintFlag_Specified;
+  void __fastcall SetDocumentQualifier(int Index, ArrayOfstring _prop_val)
+  {  FDocumentQualifier = _prop_val; FDocumentQualifier_Specified = true;  }
+  bool __fastcall DocumentQualifier_Specified(int Index)
+  {  return FDocumentQualifier_Specified;  } 
+  void __fastcall SetMessageReference(int Index, MessageReference* _prop_val)
+  {  FMessageReference = _prop_val; FMessageReference_Specified = true;  }
+  bool __fastcall MessageReference_Specified(int Index)
+  {  return FMessageReference_Specified;  } 
+  void __fastcall SetReceiptReprintFlag(int Index, bool _prop_val)
+  {  FReceiptReprintFlag = _prop_val; FReceiptReprintFlag_Specified = true;  }
+  bool __fastcall ReceiptReprintFlag_Specified(int Index)
+  {  return FReceiptReprintFlag_Specified;  } 
+
+public:
+  __fastcall ~TransactionStatusRequest();
+__published:
+  __property ArrayOfstring DocumentQualifier = { index=(IS_OPTN|IS_NLBL), read=FDocumentQualifier, write=SetDocumentQualifier, stored = DocumentQualifier_Specified };
+  __property MessageReference* MessageReference = { index=(IS_OPTN|IS_NLBL), read=FMessageReference, write=SetMessageReference, stored = MessageReference_Specified };
+  __property bool       ReceiptReprintFlag = { index=(IS_OPTN), read=FReceiptReprintFlag, write=SetReceiptReprintFlag, stored = ReceiptReprintFlag_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TransactionStatusResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class TransactionStatusResponse : public TRemotable {
+private:
+  MessageReference* FMessageReference;
+  bool            FMessageReference_Specified;
+  RepeatedMessageResponse* FRepeatedMessageResponse;
+  bool            FRepeatedMessageResponse_Specified;
+  Response*       FResponse;
+  bool            FResponse_Specified;
+  void __fastcall SetMessageReference(int Index, MessageReference* _prop_val)
+  {  FMessageReference = _prop_val; FMessageReference_Specified = true;  }
+  bool __fastcall MessageReference_Specified(int Index)
+  {  return FMessageReference_Specified;  } 
+  void __fastcall SetRepeatedMessageResponse(int Index, RepeatedMessageResponse* _prop_val)
+  {  FRepeatedMessageResponse = _prop_val; FRepeatedMessageResponse_Specified = true;  }
+  bool __fastcall RepeatedMessageResponse_Specified(int Index)
+  {  return FRepeatedMessageResponse_Specified;  } 
+  void __fastcall SetResponse(int Index, Response* _prop_val)
+  {  FResponse = _prop_val; FResponse_Specified = true;  }
+  bool __fastcall Response_Specified(int Index)
+  {  return FResponse_Specified;  } 
+
+public:
+  __fastcall ~TransactionStatusResponse();
+__published:
+  __property MessageReference* MessageReference = { index=(IS_OPTN|IS_NLBL), read=FMessageReference, write=SetMessageReference, stored = MessageReference_Specified };
+  __property RepeatedMessageResponse* RepeatedMessageResponse = { index=(IS_OPTN|IS_NLBL), read=FRepeatedMessageResponse, write=SetRepeatedMessageResponse, stored = RepeatedMessageResponse_Specified };
+  __property Response*    Response = { index=(IS_OPTN|IS_NLBL), read=FResponse, write=SetResponse, stored = Response_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : RepeatedMessageResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class RepeatedMessageResponse : public TRemotable {
+private:
+  MessageHeader*  FMessageHeader;
+  bool            FMessageHeader_Specified;
+  RepeatedResponseMessageBody* FRepeatedResponseMessageBody;
+  bool            FRepeatedResponseMessageBody_Specified;
+  void __fastcall SetMessageHeader(int Index, MessageHeader* _prop_val)
+  {  FMessageHeader = _prop_val; FMessageHeader_Specified = true;  }
+  bool __fastcall MessageHeader_Specified(int Index)
+  {  return FMessageHeader_Specified;  } 
+  void __fastcall SetRepeatedResponseMessageBody(int Index, RepeatedResponseMessageBody* _prop_val)
+  {  FRepeatedResponseMessageBody = _prop_val; FRepeatedResponseMessageBody_Specified = true;  }
+  bool __fastcall RepeatedResponseMessageBody_Specified(int Index)
+  {  return FRepeatedResponseMessageBody_Specified;  } 
+
+public:
+  __fastcall ~RepeatedMessageResponse();
+__published:
+  __property MessageHeader* MessageHeader = { index=(IS_OPTN|IS_NLBL), read=FMessageHeader, write=SetMessageHeader, stored = MessageHeader_Specified };
+  __property RepeatedResponseMessageBody* RepeatedResponseMessageBody = { index=(IS_OPTN|IS_NLBL), read=FRepeatedResponseMessageBody, write=SetRepeatedResponseMessageBody, stored = RepeatedResponseMessageBody_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : RepeatedResponseMessageBody, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class RepeatedResponseMessageBody : public TRemotable {
+private:
+  PaymentResponse* FPaymentResponse;
+  bool            FPaymentResponse_Specified;
+  void __fastcall SetPaymentResponse(int Index, PaymentResponse* _prop_val)
+  {  FPaymentResponse = _prop_val; FPaymentResponse_Specified = true;  }
+  bool __fastcall PaymentResponse_Specified(int Index)
+  {  return FPaymentResponse_Specified;  } 
+
+public:
+  __fastcall ~RepeatedResponseMessageBody();
+__published:
+  __property PaymentResponse* PaymentResponse = { index=(IS_OPTN|IS_NLBL), read=FPaymentResponse, write=SetPaymentResponse, stored = PaymentResponse_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TransactionStatusRequest, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class TransactionStatusRequest2 : public TransactionStatusRequest {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : MessageReference, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class MessageReference2 : public MessageReference {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TransactionStatusResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class TransactionStatusResponse2 : public TransactionStatusResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : RepeatedMessageResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class RepeatedMessageResponse2 : public RepeatedMessageResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : RepeatedResponseMessageBody, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.TransactionStatus
+// ************************************************************************ //
+class RepeatedResponseMessageBody2 : public RepeatedResponseMessageBody {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : Envelop, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.RequestEnvelop
 // ************************************************************************ //
@@ -2937,6 +3348,8 @@ private:
   bool            FPaymentRequest_Specified;
   ReversalRequest* FReversalRequest;
   bool            FReversalRequest_Specified;
+  TransactionStatusRequest* FTransactionStatusRequest;
+  bool            FTransactionStatusRequest_Specified;
   void __fastcall SetDiagnosisRequest(int Index, DiagnosisRequest* _prop_val)
   {  FDiagnosisRequest = _prop_val; FDiagnosisRequest_Specified = true;  }
   bool __fastcall DiagnosisRequest_Specified(int Index)
@@ -2961,6 +3374,10 @@ private:
   {  FReversalRequest = _prop_val; FReversalRequest_Specified = true;  }
   bool __fastcall ReversalRequest_Specified(int Index)
   {  return FReversalRequest_Specified;  } 
+  void __fastcall SetTransactionStatusRequest(int Index, TransactionStatusRequest* _prop_val)
+  {  FTransactionStatusRequest = _prop_val; FTransactionStatusRequest_Specified = true;  }
+  bool __fastcall TransactionStatusRequest_Specified(int Index)
+  {  return FTransactionStatusRequest_Specified;  } 
 
 public:
   __fastcall ~SaleToPOIRequest();
@@ -2971,6 +3388,7 @@ __published:
   __property MessageHeader* MessageHeader = { index=(IS_OPTN|IS_NLBL), read=FMessageHeader, write=SetMessageHeader, stored = MessageHeader_Specified };
   __property PaymentRequest* PaymentRequest = { index=(IS_OPTN|IS_NLBL), read=FPaymentRequest, write=SetPaymentRequest, stored = PaymentRequest_Specified };
   __property ReversalRequest* ReversalRequest = { index=(IS_OPTN|IS_NLBL), read=FReversalRequest, write=SetReversalRequest, stored = ReversalRequest_Specified };
+  __property TransactionStatusRequest* TransactionStatusRequest = { index=(IS_OPTN|IS_NLBL), read=FTransactionStatusRequest, write=SetTransactionStatusRequest, stored = TransactionStatusRequest_Specified };
 };
 
 
@@ -3010,10 +3428,16 @@ private:
   bool            FDiagnosisResponse_Specified;
   EventNotification* FEventNotification;
   bool            FEventNotification_Specified;
+  LoginResponse*  FLoginResponse;
+  bool            FLoginResponse_Specified;
+  LogoutResponse* FLogoutResponse;
+  bool            FLogoutResponse_Specified;
   MessageHeader*  FMessageHeader;
   bool            FMessageHeader_Specified;
   PaymentResponse* FPaymentResponse;
   bool            FPaymentResponse_Specified;
+  TransactionStatusResponse* FTransactionStatusResponse;
+  bool            FTransactionStatusResponse_Specified;
   void __fastcall SetDiagnosisResponse(int Index, DiagnosisResponse* _prop_val)
   {  FDiagnosisResponse = _prop_val; FDiagnosisResponse_Specified = true;  }
   bool __fastcall DiagnosisResponse_Specified(int Index)
@@ -3022,6 +3446,14 @@ private:
   {  FEventNotification = _prop_val; FEventNotification_Specified = true;  }
   bool __fastcall EventNotification_Specified(int Index)
   {  return FEventNotification_Specified;  } 
+  void __fastcall SetLoginResponse(int Index, LoginResponse* _prop_val)
+  {  FLoginResponse = _prop_val; FLoginResponse_Specified = true;  }
+  bool __fastcall LoginResponse_Specified(int Index)
+  {  return FLoginResponse_Specified;  } 
+  void __fastcall SetLogoutResponse(int Index, LogoutResponse* _prop_val)
+  {  FLogoutResponse = _prop_val; FLogoutResponse_Specified = true;  }
+  bool __fastcall LogoutResponse_Specified(int Index)
+  {  return FLogoutResponse_Specified;  } 
   void __fastcall SetMessageHeader(int Index, MessageHeader* _prop_val)
   {  FMessageHeader = _prop_val; FMessageHeader_Specified = true;  }
   bool __fastcall MessageHeader_Specified(int Index)
@@ -3030,14 +3462,21 @@ private:
   {  FPaymentResponse = _prop_val; FPaymentResponse_Specified = true;  }
   bool __fastcall PaymentResponse_Specified(int Index)
   {  return FPaymentResponse_Specified;  } 
+  void __fastcall SetTransactionStatusResponse(int Index, TransactionStatusResponse* _prop_val)
+  {  FTransactionStatusResponse = _prop_val; FTransactionStatusResponse_Specified = true;  }
+  bool __fastcall TransactionStatusResponse_Specified(int Index)
+  {  return FTransactionStatusResponse_Specified;  } 
 
 public:
   __fastcall ~SaleToPOIResponse();
 __published:
   __property DiagnosisResponse* DiagnosisResponse = { index=(IS_OPTN|IS_NLBL), read=FDiagnosisResponse, write=SetDiagnosisResponse, stored = DiagnosisResponse_Specified };
   __property EventNotification* EventNotification = { index=(IS_OPTN|IS_NLBL), read=FEventNotification, write=SetEventNotification, stored = EventNotification_Specified };
+  __property LoginResponse* LoginResponse = { index=(IS_OPTN|IS_NLBL), read=FLoginResponse, write=SetLoginResponse, stored = LoginResponse_Specified };
+  __property LogoutResponse* LogoutResponse = { index=(IS_OPTN|IS_NLBL), read=FLogoutResponse, write=SetLogoutResponse, stored = LogoutResponse_Specified };
   __property MessageHeader* MessageHeader = { index=(IS_OPTN|IS_NLBL), read=FMessageHeader, write=SetMessageHeader, stored = MessageHeader_Specified };
   __property PaymentResponse* PaymentResponse = { index=(IS_OPTN|IS_NLBL), read=FPaymentResponse, write=SetPaymentResponse, stored = PaymentResponse_Specified };
+  __property TransactionStatusResponse* TransactionStatusResponse = { index=(IS_OPTN|IS_NLBL), read=FTransactionStatusResponse, write=SetTransactionStatusResponse, stored = TransactionStatusResponse_Specified };
 };
 
 
@@ -3059,12 +3498,12 @@ __published:
 // soapAction: http://tempuri.org/IAdyenIntegrationWebService/%operationName%
 // transport : http://schemas.xmlsoap.org/soap/http
 // style     : document
-// binding   : basicHttpBinding_ServiceSalesForce
+// binding   : basicHttpBinding_ServiceAdyen
 // service   : AdyenIntegrationWebService
-// port      : basicHttpBinding_ServiceSalesForce
+// port      : basicHttpBinding_ServiceAdyen
 // URL       : http://localhost:8745/MenumateServices/AdyenService/
 // ************************************************************************ //
-__interface INTERFACE_UUID("{DB7B4163-C900-4F6C-5230-756B7B10FF19}") IAdyenIntegrationWebService : public IInvokable
+__interface INTERFACE_UUID("{CB7DA158-8289-7B0C-E0D7-1BD2CB8F2A59}") IAdyenIntegrationWebService : public IInvokable
 {
 public:
   virtual SaleToPOIResponse* PingTerminal(const Envelop* envelop, const ResourceDetails* details) = 0; 
