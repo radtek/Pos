@@ -197,7 +197,7 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
                 }
         }
 
-         for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
 			if (SubPayment->GetPay() != 0)

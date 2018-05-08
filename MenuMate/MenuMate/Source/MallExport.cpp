@@ -300,7 +300,7 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     ":SUBTOTAL, "
                     ":DEVICE_KEY, "
                     ":DATE_CREATED, "
-                    "INVOICE_NUMBER "
+                    ":INVOICE_NUMBER "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
