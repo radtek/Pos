@@ -243,10 +243,10 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 
             //Prepare Data For Exporting into File
             preparedData = PrepareDataForExport(zKey);
-//            MessageBox("1","1",MB_OK);
+
 
            exporter->WriteToFile(preparedData);
-//                       MessageBox("2","2",MB_OK);
+
        }
        delete exporter;
 
