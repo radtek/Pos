@@ -205,6 +205,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->TimeOut = "2";
                               EftTrans->FinalAmount = response->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                               EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
+                              EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
                               LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
                               LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
                            }
@@ -213,7 +214,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                       {
                           if(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody != NULL)
                           {
-                             if(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->Response->Result.Pos("Failure") == 0)
+                             if(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->Response->Result.Pos("Success") != 0)
                              {
                                   AcquirerRefAdyen = response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
                                   if(EftTrans != NULL)
@@ -222,6 +223,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                       EftTrans->ResultText = "Eftpos Transaction Completed.";
                                       EftTrans->Result = eAccepted;
                                       EftTrans->TimeOut = "2";
+                                      EftTrans->CardType = response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
                                       EftTrans->FinalAmount =
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                                       EftTrans->TipAmount =
