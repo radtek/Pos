@@ -1342,7 +1342,14 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                     ||  EftTrans->TimeOut)
                                  {
                                     if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    {
+                                       if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                       {
+                                           EftPos->DelTransactionEvent(Payment->ReferenceNumber);
+                                           Payment->ReferenceNumber = EftPos->GetRefNumber();
+                                       }
                                        TransRetriveElectronicResult(PaymentTransaction, Payment);
+                                    }
                                  }
                                  else
                                  {
