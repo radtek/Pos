@@ -11,10 +11,19 @@
 
 TEftPosPaymentSense::TEftPosPaymentSense()
 {
+    InitPaymentSenseClient();
+    Initialise();
 }
 //---------------------------------------------------------------------------
 TEftPosPaymentSense::~TEftPosPaymentSense()
 {
+}
+//---------------------------------------------------------------------------
+void TEftPosPaymentSense::InitPaymentSenseClient()
+{
+    bool useWSDL = false;
+    AnsiString paymentSenseURL = "http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/";
+    paymentSenseClient = GetIWCFServicePaymentSense(useWSDL, paymentSenseURL, NULL );
 }
 //---------------------------------------------------------------------------
 void TEftPosPaymentSense::Initialise()
@@ -22,7 +31,10 @@ void TEftPosPaymentSense::Initialise()
     TEftPos::Initialise();
     if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
+//        if(Enabled)
+//            GetAllTerminals();
         Enabled = true;
+
     }
     else
     {
@@ -30,6 +42,14 @@ void TEftPosPaymentSense::Initialise()
     }
 }
 //----------------------------------------------------------------------------
+void TEftPosPaymentSense::InitializeProperties()
+{
+//    authorizationDetails = new AuthorizationDetails();
+//    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+//    authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
+//    authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
+}
+//---------------------------------------------------------------------
 void TEftPosPaymentSense::DoControlPannel()
 {
     if(!Enabled) return;
@@ -40,6 +60,7 @@ void TEftPosPaymentSense::DoControlPannel()
 		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
 		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
+        frmDropDown->AddButton("Terminal List",&GetAllTerminals);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -111,4 +132,18 @@ AnsiString TEftPosPaymentSense::GetRefNumber()
   return AnsiString("S_") + TDateTime::CurrentDateTime().FormatString("yyyymmddhhmmss");
 }
 // ---------------------------------------------------------------------------
+void _fastcall TEftPosPaymentSense::GetAllTerminals()
+{
+    ArrayOfCardTerminal terminalList;
+    CoInitialize(NULL);
+    MessageBox("1","1",MB_OK);
+    authorizationDetails = new AuthorizationDetails();
+    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+    MessageBox("1.1","1",MB_OK);
+    authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
+    authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
+    MessageBox(authorizationDetails->URL,authorizationDetails->URL,MB_OK);
+    paymentSenseClient->GetAllCardTerminals(authorizationDetails);
+    MessageBox("2","2",MB_OK);
+}
 

@@ -400,6 +400,10 @@
       <Project>{37B0F64A-677E-4AD0-8C04-252BF7A5D3AE}</Project>
       <Name>MenumateUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PaymentSenseIntegration\PaymentSenseIntegration.csproj">
+      <Project>{a623c2ce-7e9a-4a72-81da-7db377333670}</Project>
+      <Name>PaymentSenseIntegration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PocketVoucherIntegration\PocketVoucherIntegration.csproj">
       <Project>{FDC94DD6-180E-4E83-9D28-091BDDFC13DE}</Project>
       <Name>PocketVoucherIntegration</Name>

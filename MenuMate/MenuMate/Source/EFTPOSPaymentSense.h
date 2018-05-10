@@ -5,11 +5,15 @@
 #include "Eftpos.h"
 #include "DropDown.h"
 #include "DropDownVar.h"
+#include "PaymentSenseWSDL.h"
 //---------------------------------------------------------------------------
 class TEftPosPaymentSense : public TEftPos
 {
  private:
+        _di_IWCFServicePaymentSense paymentSenseClient;
+        AuthorizationDetails *authorizationDetails;
         void InitPaymentSenseClient();
+        void InitializeProperties();
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();
@@ -33,5 +37,6 @@ public:
         void __fastcall DoLogon();
         void __fastcall ReprintReceipt();
         AnsiString GetRefNumber();
+        void _fastcall GetAllTerminals();
 };
 #endif

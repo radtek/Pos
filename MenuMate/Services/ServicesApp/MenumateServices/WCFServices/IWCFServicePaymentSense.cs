@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using PaymentSenseIntegration.Domain;
 
 namespace MenumateServices.WCFServices
 {
@@ -12,6 +13,6 @@ namespace MenumateServices.WCFServices
     public interface IWCFServicePaymentSense
     {
         [OperationContract]
-        void DoWork();
+        List<CardTerminal> GetAllCardTerminals(AuthorizationDetails autorizationDetails);
     }
 }

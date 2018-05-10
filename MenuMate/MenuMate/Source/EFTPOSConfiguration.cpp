@@ -9,6 +9,7 @@
 #include "MMTouchKeyboard.h"
 #include "EftPos.h"
 #include "EftposAdyen.h"
+#include "EFTPOSPaymentSense.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -24,19 +25,26 @@ __fastcall TfrmEFTPOSConfig::TfrmEFTPOSConfig(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbOKMouseClick(TObject *Sender)
 {
-    if(TGlobalSettings::Instance().EnableEftPosAdyen)
-    {
-        EnableEFTPOSTerminal();
-    }
+    EnableEFTPOSTerminal();
     Close();
 }
 //---------------------------------------------------------------------------
 bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
 {
-    EftPos = new TEftposAdyen();
-    EftPos->Initialise();
-    if(EftPos->Enabled)
-        MessageBox("Please Log in to EFTPOS Terminal before using payment type integrated with Adyen.","Info",MB_OK + MB_ICONINFORMATION);
+    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        EftPos = new TEftposAdyen();
+        EftPos->Initialise();
+        if(EftPos->Enabled)
+            MessageBox("Please Log in to EFTPOS Terminal before using payment type integrated with Adyen.","Info",MB_OK + MB_ICONINFORMATION);
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+        EftPos = new TEftPosPaymentSense();
+        EftPos->Initialise();
+//        if(EftPos->Enabled)
+//            EftPos->GetAllTerminals();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
@@ -58,6 +66,11 @@ void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
         frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EftPosSmartPayIp;
     }
     else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        frmTouchKeyboard->Caption = "Enter Adyen URL";
+        frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EFTPosURL;
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
         frmTouchKeyboard->Caption = "Enter Adyen URL";
         frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EFTPosURL;
@@ -84,6 +97,12 @@ void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
             tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosURL,TGlobalSettings::Instance().EFTPosURL);
         }
+        else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        {
+            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText;
+            tbEFTPOSURL->Caption = "PaymentSense URL\r" + TGlobalSettings::Instance().EFTPosURL;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosURL,TGlobalSettings::Instance().EFTPosURL);
+        }
 
         DBTransaction.Commit();
 	}
@@ -102,7 +121,15 @@ void __fastcall TfrmEFTPOSConfig::tbAPIKeyMouseClick(TObject *Sender)
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText;
-        tbAPIKey->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+        if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        {
+            tbAPIKey->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+        }
+        else
+        {
+            tbAPIKey->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+        }
+
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosAPIKey,TGlobalSettings::Instance().EFTPosAPIKey);
@@ -123,7 +150,14 @@ void __fastcall TfrmEFTPOSConfig::tbDeviceIDMouseClick(TObject *Sender)
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText;
-        tbDeviceID->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        {
+            tbDeviceID->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        }
+        else
+        {
+            tbDeviceID->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        }
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosDeviceID,TGlobalSettings::Instance().EFTPosDeviceID);
@@ -143,6 +177,12 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbEFTPOSURL->Caption = "SmartLink IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
         tbAPIKey->Enabled = false;
         tbDeviceID->Enabled = false;
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+        tbEFTPOSURL->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosURL;
+        tbAPIKey->Caption = "Password\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+        tbDeviceID->Caption = "User ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
     }
     else
     {
