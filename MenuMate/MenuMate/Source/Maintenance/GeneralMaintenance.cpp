@@ -490,8 +490,8 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposSmartConnect->Enabled              = true;
         cbIntegratedEftposSmartConnect->Checked              = true;
         TGlobalSettings::Instance().EnableEftPosAdyen        = false;
-        tbtnSmartLinkIp->Enabled                             = true;
-        tbtnSmartLinkIp->Caption                             = "Smart Connect Details";
+        tbtnSmartLinkIp->Enabled                             = false;
+        tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
     }
     else if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
@@ -4555,7 +4555,8 @@ void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObj
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sender)
 {
     TGlobalSettings::Instance().EnableEftPosAdyen = cbIntegratedEftposAdyen->Checked;
-    MessageBox("Please provide Adyen Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
+    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        MessageBox("Please provide Adyen Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
     CustomizeCloudEFTPOS();
 }
 //----------------------------------------------------------------------------

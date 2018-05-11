@@ -15,7 +15,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (8/05/2018 10:45:18 p.m. - - $Rev: 25127 $)
+// (11/05/2018 2:37:48 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
@@ -23,8 +23,8 @@
 
 #include <System.hpp>
 #include <InvokeRegistry.hpp>
-#include <XSBuiltIns.hpp>
 #include <winsock2.h>
+#include <XSBuiltIns.hpp>
 #include <SOAPHTTPClient.hpp>
 
 #if !defined(SOAP_REMOTABLE_CLASS)
@@ -448,8 +448,6 @@ private:
   bool            FCurrency_Specified;
   double          FRequestedAmount;
   bool            FRequestedAmount_Specified;
-  double          FTipAmount;
-  bool            FTipAmount_Specified;
   void __fastcall SetCurrency(int Index, UnicodeString _prop_val)
   {  FCurrency = _prop_val; FCurrency_Specified = true;  }
   bool __fastcall Currency_Specified(int Index)
@@ -458,14 +456,9 @@ private:
   {  FRequestedAmount = _prop_val; FRequestedAmount_Specified = true;  }
   bool __fastcall RequestedAmount_Specified(int Index)
   {  return FRequestedAmount_Specified;  } 
-  void __fastcall SetTipAmount(int Index, double _prop_val)
-  {  FTipAmount = _prop_val; FTipAmount_Specified = true;  }
-  bool __fastcall TipAmount_Specified(int Index)
-  {  return FTipAmount_Specified;  } 
 __published:
   __property UnicodeString   Currency = { index=(IS_OPTN|IS_NLBL), read=FCurrency, write=SetCurrency, stored = Currency_Specified };
   __property double     RequestedAmount = { index=(IS_OPTN), read=FRequestedAmount, write=SetRequestedAmount, stored = RequestedAmount_Specified };
-  __property double      TipAmount = { index=(IS_OPTN), read=FTipAmount, write=SetTipAmount, stored = TipAmount_Specified };
 };
 
 

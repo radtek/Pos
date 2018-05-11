@@ -68,19 +68,19 @@ void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
         DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().EnableEftPosSmartPay)
         {
-            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "SmartLink IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
         }
         else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
         {
-            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "SmartConnect IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
         }
         else if(TGlobalSettings::Instance().EnableEftPosAdyen)
         {
-            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosURL,TGlobalSettings::Instance().EFTPosURL);
         }
@@ -101,8 +101,8 @@ void __fastcall TfrmEFTPOSConfig::tbAPIKeyMouseClick(TObject *Sender)
 	frmTouchKeyboard->Caption = "Enter EFTPOS API Key";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText;
-        tbAPIKey->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+        TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText.Trim();
+        tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosAPIKey,TGlobalSettings::Instance().EFTPosAPIKey);
@@ -122,8 +122,8 @@ void __fastcall TfrmEFTPOSConfig::tbDeviceIDMouseClick(TObject *Sender)
 	frmTouchKeyboard->Caption = "Enter EFTPOS Device ID";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText;
-        tbDeviceID->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText.Trim();
+        tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosDeviceID,TGlobalSettings::Instance().EFTPosDeviceID);

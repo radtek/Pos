@@ -224,11 +224,6 @@ namespace AdyenIntegration
             {
                 List<string> receipts = new List<string>();
                 FormatReciepts format = new FormatReciepts();
-                //int index = 0;
-                //foreach (var item in receiptArray.OutputContent.OutputText)
-                //{
-                //    receipts[index] = format.FormatReceipt(receiptArray[index].OutputContent.OutputText.ToList());
-                //}
                 receipts = format.FormatReceipt(receiptArray.OutputContent.OutputText.ToList());
                 stringList.Add("Receipt Extracted :-                                                  ");
                 return receipts;
@@ -247,9 +242,12 @@ namespace AdyenIntegration
             bool retValue = false;
             if ((requestType == RequestType.eProcessSale) || (requestType == RequestType.eProcessRefund))
             {
-                if (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt != null)
+                if (envelop.SaleToPOIResponse.PaymentResponse != null)
                 {
-                    retValue = (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0);
+                    if (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt != null)
+                    {
+                        retValue = (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0);
+                    }
                 }
             }
             return retValue;

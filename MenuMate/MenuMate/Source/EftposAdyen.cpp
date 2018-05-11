@@ -137,18 +137,9 @@ void TEftposAdyen::DoControlPannel()
  if(!Enabled) return;
 	try
 	{
-		/*Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-		DBTransaction.StartTransaction();
-		MerchantNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposMerchantNumber,1);
-		PortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort,-1);
-		DBTransaction.Commit();*/
-
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("EFTPOS Login",&DoLogon);
         frmDropDown->AddButton("EFTPOS Log Out",&DoLogOut);
-//		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
-//		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
-//		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 //			frmDropDown->FunctionToCall();
@@ -202,10 +193,11 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->EventCompleted = true;
                               EftTrans->ResultText = "Eftpos Transaction Completed.";
                               EftTrans->Result = eAccepted;
-                              EftTrans->TimeOut = "2";
+                              EftTrans->TimeOut = true;
                               EftTrans->FinalAmount = response->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                               EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                               EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
+                              // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                               LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
                               LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
                            }
@@ -222,12 +214,13 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                       EftTrans->EventCompleted = true;
                                       EftTrans->ResultText = "Eftpos Transaction Completed.";
                                       EftTrans->Result = eAccepted;
-                                      EftTrans->TimeOut = "2";
+                                      EftTrans->TimeOut = true;
                                       EftTrans->CardType = response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
                                       EftTrans->FinalAmount =
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                                       EftTrans->TipAmount =
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
+                                      // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                                       LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
                                       LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
                                    }
@@ -252,7 +245,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                           EftTrans->EventCompleted = true;
                           EftTrans->Result = eDeclined;
                           EftTrans->ResultText = "Manual Error";
-                          EftTrans->TimeOut = "2";
+                          EftTrans->TimeOut = true;
                       }
                   }
             }
@@ -617,10 +610,13 @@ bool TEftposAdyen::GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIRespo
         {
             if(response)
             {
-                if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
-                    retValue = true;
-                else
-                    retValue = false;
+                if(response->PaymentResponse)
+                {
+                    if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
+                        retValue = true;
+                    else
+                        retValue = false;
+                }
             }
             else
                 retValue = false;
@@ -630,10 +626,13 @@ bool TEftposAdyen::GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIRespo
         {
             if(response)
             {
-                if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
-                    retValue = true;
-                else
-                    retValue = false;
+                if(response->PaymentResponse)
+                {
+                    if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
+                        retValue = true;
+                    else
+                        retValue = false;
+                }
             }
             else
                 retValue = false;

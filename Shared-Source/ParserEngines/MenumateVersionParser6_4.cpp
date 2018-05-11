@@ -1698,6 +1698,7 @@ void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
 void TApplyParser::update6_50Tables()
 {
     Create6_50Generator(_dbControl);
+    Alter6_50Tables(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
@@ -1882,6 +1883,16 @@ void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
 	{
 		executeQuery("CREATE GENERATOR GEN_ADYENTRANSACTIONID;", inDBControl);
 		executeQuery("SET GENERATOR GEN_ADYENTRANSACTIONID TO 0;", inDBControl);
+	}
+}
+void TApplyParser::Alter6_50Tables(TDBControl* const inDBControl)
+{
+    if (fieldExists( "VARSPROFILE", "VARCHAR_VAL", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE  VARSPROFILE "
+        "ALTER VARCHAR_VAL TYPE VARCHAR(200) ; ",
+		inDBControl);
 	}
 }
 //------------------------------------------------------------------------------

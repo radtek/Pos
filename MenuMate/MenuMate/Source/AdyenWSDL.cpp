@@ -15,7 +15,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (8/05/2018 10:45:18 p.m. - - $Rev: 25127 $)
+// (11/05/2018 2:37:48 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -38,8 +38,8 @@ _di_IAdyenIntegrationWebService GetIAdyenIntegrationWebService(bool useWSDL, Ans
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
-  rio->HTTPWebNode->SendTimeout = 120000;
-  rio->HTTPWebNode->ReceiveTimeout = 120000;
+  rio->HTTPWebNode->SendTimeout = 200000;
+  rio->HTTPWebNode->ReceiveTimeout = 200000;
   if (useWSDL) {
     rio->WSDLLocation = addr;
     rio->Service = defSvc;
