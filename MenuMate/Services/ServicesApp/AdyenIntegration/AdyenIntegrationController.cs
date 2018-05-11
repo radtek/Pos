@@ -142,7 +142,7 @@ namespace AdyenIntegration
             httpWebRequest.Headers.Add("x-api-key", details.APIKey);
             httpWebRequest.Headers.Add("Accept-Charset", "UTF-8");
             httpWebRequest.Headers.Add("Cache-Control", "no-cache");
-            httpWebRequest.Timeout = 100000;
+            httpWebRequest.Timeout = 180000;
             stringList.Add("Web Request Created at :-                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             return httpWebRequest;
         }
@@ -172,37 +172,24 @@ namespace AdyenIntegration
                     stringList.Add("Data received is :-                                              " + responseText);
                     responseEnvelop = JSonUtility.Deserialize<ResponseEnvelop>(responseText);
                     stringList.Add("Data deserialized at :-                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
-                    if (requestType != RequestType.eTransactionStatus)
+                    if (responseEnvelop != null)
                     {
-                        if (CanReceiptsBePresent(requestType, responseEnvelop))
+                        if (requestType != RequestType.eTransactionStatus)
                         {
-                            stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count());
-                            if (responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() >= 1)
+                            if (CanReceiptsBePresent(requestType, responseEnvelop))
                             {
-                                responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable1 =
-                                CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.ElementAt(0));
-                            }
-                            if (responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() >= 2)
-                            {
-                                responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable2 =
-                                    CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.ElementAt(1));
+                                stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count());
+                                ArrangeAndAssignReceipts(responseEnvelop, responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt, false);
+
                             }
                         }
-                    }
-                    else if (requestType == RequestType.eTransactionStatus)
-                    {
-                        if (CanReceiptsBePresentInEnquiry(requestType, responseEnvelop))
+                        else if (requestType == RequestType.eTransactionStatus)
                         {
-                            stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count());
-                            if (responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count() >= 1)
+                            if (CanReceiptsBePresentInEnquiry(requestType, responseEnvelop))
                             {
-                                responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceiptUsable1 =
-                                CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.ElementAt(0));
-                            }
-                            if (responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count() >= 2)
-                            {
-                                responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceiptUsable2 =
-                                    CreateFormattedReceipts(responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.ElementAt(1));
+                                stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count());
+                                ArrangeAndAssignReceipts(responseEnvelop,responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt, true);
+
                             }
                         }
                     }
@@ -218,6 +205,45 @@ namespace AdyenIntegration
             }
         }
 
+        private void ArrangeAndAssignReceipts(ResponseEnvelop responseEnvelop, PaymentReceipt[] receiptArray, bool isEnquiryResult)
+        {
+            try
+            {
+                if (!isEnquiryResult)
+                {
+                    foreach (var item in receiptArray)
+                    {
+                        if (item.DocumentQualifier.Contains("CashierReceipt"))
+                        {
+                            responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable2 = CreateFormattedReceipts(item);
+                        }
+                        else if(item.DocumentQualifier.Contains("CustomerReceipt"))
+                        {
+                            responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceiptUsable1 = CreateFormattedReceipts(item);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var item in receiptArray)
+                    {
+                        if (item.DocumentQualifier.Contains("CashierReceipt"))
+                        {
+                            responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceiptUsable2 = CreateFormattedReceipts(item);
+                        }
+                        else if (item.DocumentQualifier.Contains("CustomerReceipt"))
+                        {
+                            responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceiptUsable1 = CreateFormattedReceipts(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception Occured in Arranging Receipts at  :-                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+        }
         private List<string> CreateFormattedReceipts(PaymentReceipt receiptArray)
         {
             try
