@@ -302,4 +302,9 @@ bool TEftPos::IsCashOutSupported()
 {
     return true;
 }
-//--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+std::vector<AnsiString> TEftPos::GetAllTerminals()
+{
+    std::vector<AnsiString> terminalList;
+    return terminalList;
+}

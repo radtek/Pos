@@ -118,6 +118,7 @@ class TEftPos
 	AnsiString WaitingOnReferenceNumber;
     AnsiString AcquirerRefSmartPay;
     AnsiString AcquirerRefSmartConnect;
+    AnsiString AcquirerRefAdyen;
 	int ChequeAccountMaxLength;
 	int ChequeBranchMaxLength;
 	int ChequeSerialMaxLength;
@@ -140,6 +141,7 @@ class TEftPos
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool IsCashOutSupported();
+    virtual std::vector<AnsiString> GetAllTerminals();
 };
 
 extern TEftPos *EftPos;

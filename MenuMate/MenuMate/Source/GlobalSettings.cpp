@@ -428,6 +428,7 @@ TGlobalSettings::TGlobalSettings()
     EFTPosURL = "";
     PMSTimeOut = 0;
     IsSmartConnectQRTransaction = false;
+    AdyenRecoveryTransactionIsRefund = false;
     EnableEftPosPaymentSense = false;
 }
 

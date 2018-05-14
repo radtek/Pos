@@ -13,5 +13,7 @@ public:
 	~TDBAdyen();
     static UnicodeString GetServiceID();
     static UnicodeString GetTransactionID();
+    static UnicodeString GetCompanyName();
+    static void SetRefundTransaction(bool isRefund);
 };
 #endif

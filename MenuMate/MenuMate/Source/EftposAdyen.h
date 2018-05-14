@@ -19,15 +19,17 @@ class TEftposAdyen : public TEftPos
         Envelop* GetPingTerminalEnvelop();
         _di_IAdyenIntegrationWebService AdyenClient;
         ResourceDetails* GetResourceDetails();
-        SaleToPOIResponse* TriggerSaleTransaction(Currency AmtPurchase);
-        SaleToPOIResponse* TriggerRefundTransaction(Currency AmtPurchase);
+        SaleToPOIResponse* TriggerSaleTransaction(Currency AmtPurchase, UnicodeString TxnRef);
+        SaleToPOIResponse* TriggerRefundTransaction(Currency AmtPurchase, UnicodeString TxnRef);
         bool  PingTerminal(eEFTTransactionType TxnType);
-        Envelop* GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType requestType);
-        MessageHeader* GetMessageHeader(AdyenRequestType requestType);
+        Envelop* GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef);
+        MessageHeader* GetMessageHeader(AdyenRequestType requestType, UnicodeString TxnRef);
         bool GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIResponse *response);
         Envelop* GetLoginLogOutEnvelop(AdyenRequestType requestType);
         void LoadEftPosReceipt(ArrayOfstring receipt);
         void LoadEftPosReceiptSecond(ArrayOfstring receipt);
+        SaleToPOIResponse* TriggerEnquiry(Currency AmtPurchase, UnicodeString TxnRef);
+        Envelop* GetEnquiryEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef);
 public:
         TEftposAdyen();
         ~TEftposAdyen();

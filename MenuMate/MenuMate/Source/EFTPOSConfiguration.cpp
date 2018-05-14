@@ -34,9 +34,9 @@ bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
     if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
         EftPos = new TEftposAdyen();
-        EftPos->Initialise();
-        if(EftPos->Enabled)
-            MessageBox("Please Log in to EFTPOS Terminal before using payment type integrated with Adyen.","Info",MB_OK + MB_ICONINFORMATION);
+    EftPos->Initialise();
+    if(EftPos->Enabled)
+        MessageBox("Details for Adyen integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
@@ -81,29 +81,28 @@ void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
         DBTransaction.StartTransaction();
         if(TGlobalSettings::Instance().EnableEftPosSmartPay)
         {
-            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "SmartLink IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
         }
         else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
         {
-            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EftPosSmartPayIp = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "SmartConnect IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosSmartPayIp,TGlobalSettings::Instance().EftPosSmartPayIp);
         }
         else if(TGlobalSettings::Instance().EnableEftPosAdyen)
         {
-            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosURL,TGlobalSettings::Instance().EFTPosURL);
         }
         else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         {
-            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText;
+            TGlobalSettings::Instance().EFTPosURL = frmTouchKeyboard->KeyboardText.Trim();
             tbEFTPOSURL->Caption = "PaymentSense URL\r" + TGlobalSettings::Instance().EFTPosURL;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEFTPosURL,TGlobalSettings::Instance().EFTPosURL);
         }
-
         DBTransaction.Commit();
 	}
 }
@@ -120,6 +119,8 @@ void __fastcall TfrmEFTPOSConfig::tbAPIKeyMouseClick(TObject *Sender)
 	frmTouchKeyboard->Caption = "Enter EFTPOS API Key";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
+        TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText.Trim();
+        tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText;
         if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         {
@@ -149,6 +150,8 @@ void __fastcall TfrmEFTPOSConfig::tbDeviceIDMouseClick(TObject *Sender)
 	frmTouchKeyboard->Caption = "Enter EFTPOS Device ID";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
+        TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText.Trim();
+        tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
         TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText;
         if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         {
@@ -193,4 +196,9 @@ void TfrmEFTPOSConfig::UpdateGUI()
 }
 
 //---------------------------------------------------------------------------
-
+void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
+{
+    //EftPos = new TEftPosPaymentSense();
+    //EftPos->Initialise();
+    //EftPos->GetAllTerminals();
+}

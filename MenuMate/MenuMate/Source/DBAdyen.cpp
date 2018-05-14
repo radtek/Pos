@@ -68,3 +68,46 @@ UnicodeString TDBAdyen::GetTransactionID()
     return retValue;
 }
 //---------------------------------------------------------------------------
+UnicodeString TDBAdyen::GetCompanyName()
+{
+    UnicodeString CompanyName = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "SELECT a.COMPANY FROM REGISTRATION a where a.TERMINAL_NAME = :TERMINAL_NAME";
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof)
+         {
+           CompanyName = IBInternalQuery->FieldByName("COMPANY")->AsString;
+         }
+         DBTransaction.Commit();
+    }
+    catch(Exception & E)
+	{
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
+    return CompanyName;
+}
+//---------------------------------------------------------------------------
+void TDBAdyen::SetRefundTransaction(bool isRefund)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund = isRefund;
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund);
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+	{
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
+}
+//---------------------------------------------------------------------------

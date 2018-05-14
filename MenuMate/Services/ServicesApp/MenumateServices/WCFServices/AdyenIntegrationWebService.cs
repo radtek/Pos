@@ -41,7 +41,7 @@ namespace MenumateServices.WCFServices
             try
             {
                 AdyenIntegrationController controller = new AdyenIntegrationController();
-                response = controller.PingTerminal(envelop, details);
+                response = controller.LoginToSystem(envelop, details);
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace MenumateServices.WCFServices
             try
             {
                 AdyenIntegrationController controller = new AdyenIntegrationController();
-                response = controller.PingTerminal(envelop, details);
+                response = controller.LogoutSystem(envelop, details);
             }
             catch (Exception ex)
             {
@@ -100,6 +100,9 @@ namespace MenumateServices.WCFServices
             try
             {
                 AdyenIntegrationController controller = new AdyenIntegrationController();
+                envelop.SaleToPOIRequest.TransactionStatusRequest.DocumentQualifier = new string[2];
+                envelop.SaleToPOIRequest.TransactionStatusRequest.DocumentQualifier[0] = "CashierReceipt";
+                envelop.SaleToPOIRequest.TransactionStatusRequest.DocumentQualifier[1] = "CustomerReceipt";
                 response = controller.GetTransactionStatus(envelop, details);
             }
             catch (Exception ex)

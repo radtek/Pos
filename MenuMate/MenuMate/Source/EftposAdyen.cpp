@@ -95,7 +95,11 @@ void TEftposAdyen::Initialise()
          }
          else
          {
-             MessageBox("Adyen EFTPOS Terminal was not available.\rAdyen EFTPOS is disabled.\rAlso please ensure your system is & EFTPOS Terminal are connected to internet.","Information",MB_OK+MB_ICONINFORMATION);
+             UnicodeString strValue = "Adyen EFTPOS Terminal was not available.\r";
+             strValue += "Please ensure below mentioned things:-.\r";
+             strValue += "1. Details are correct.\r";
+             strValue += "2. POS & EFTPOS terminal are connected to network.";
+             MessageBox(strValue,"Information",MB_OK+MB_ICONINFORMATION);
              Enabled = false;
          }
       }
@@ -133,21 +137,12 @@ void TEftposAdyen::DoControlPannel()
  if(!Enabled) return;
 	try
 	{
-		/*Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-		DBTransaction.StartTransaction();
-		MerchantNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposMerchantNumber,1);
-		PortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort,-1);
-		DBTransaction.Commit();*/
-
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("EFTPOS Login",&DoLogon);
         frmDropDown->AddButton("EFTPOS Log Out",&DoLogOut);
-//		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
-//		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
-//		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
-			frmDropDown->FunctionToCall();
+//			frmDropDown->FunctionToCall();
 		}
 	}
 	catch(Exception &E)
@@ -171,50 +166,92 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                   {
                     case TransactionType_PURCHASE :
                     {
-                        response = TriggerSaleTransaction(AmtPurchase);
+                        TDBAdyen::SetRefundTransaction(false);
+                        response = TriggerSaleTransaction(AmtPurchase,TxnRef);
                     }
                     break;
                     case TransactionType_REFUND :
-                        response = TriggerRefundTransaction(AmtPurchase);
+                    {
+                        TDBAdyen::SetRefundTransaction(true);
+                        response = TriggerRefundTransaction(AmtPurchase,TxnRef);
+                    }
                     break;
                     case TransactionType_INQUIRY :
+                    {
+                        response = TriggerEnquiry(AmtPurchase,TxnRef);
+                    }
                     break;
                   }
                   if(GetResponseStatus(TxnType, response))
                   {
-                      AcquirerRefSmartPay = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
-                      MessageBox("Transaction Passed", "EFTPOS ",MB_OK + MB_ICONERROR);
-                      //wcfResponse->AcquirerRef;
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-                      if(EftTrans != NULL)
+                      if(TxnType != TransactionType_INQUIRY)
                       {
-                          EftTrans->EventCompleted = true;
-                          EftTrans->ResultText = "Eftpos Transaction Completed.";
-                          EftTrans->Result = eAccepted;
-                          EftTrans->TimeOut = "2";
-                          EftTrans->FinalAmount = response->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
-                          EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
-                          LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
-                          LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
-                       }
+                          AcquirerRefAdyen = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                          if(EftTrans != NULL)
+                          {
+                              EftTrans->EventCompleted = true;
+                              EftTrans->ResultText = "Eftpos Transaction Completed.";
+                              EftTrans->Result = eAccepted;
+                              EftTrans->TimeOut = true;
+                              EftTrans->FinalAmount = response->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
+                              EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
+                              EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
+                              // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
+                              LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
+                              LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
+                           }
+                      }
+                      else
+                      {
+                          if(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody != NULL)
+                          {
+                             if(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->Response->Result.Pos("Success") != 0)
+                             {
+                                  AcquirerRefAdyen = response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                                  if(EftTrans != NULL)
+                                  {
+                                      EftTrans->EventCompleted = true;
+                                      EftTrans->ResultText = "Eftpos Transaction Completed.";
+                                      EftTrans->Result = eAccepted;
+                                      EftTrans->TimeOut = true;
+                                      EftTrans->CardType = response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
+                                      EftTrans->FinalAmount =
+                                            response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
+                                      EftTrans->TipAmount =
+                                            response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
+                                      // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
+                                      LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
+                                      LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
+                                   }
+                              }
+                              else
+                              {
+                                      EftTrans->EventCompleted = true;
+                                      EftTrans->ResultText = "Eftpos Transaction Completed.";
+                                      EftTrans->Result = eAccepted;
+                                      EftTrans->TimeOut = "2";
+                                      EftTrans->FinalAmount = "0";
+                                      EftTrans->TipAmount = "0" ;
+                              }
+                          }
+                      }
                   }
                   else
                   {
-                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                       {
                           EftTrans->EventCompleted = true;
                           EftTrans->Result = eDeclined;
                           EftTrans->ResultText = "Manual Error";
-                          EftTrans->TimeOut = "2";
+                          EftTrans->TimeOut = true;
                       }
                   }
             }
         }
         catch( Exception& exc )
         {
-              MessageBox("In Exception of ProcessEftPos","",MB_OK);
               TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
               if(EftTrans != NULL)
                {
@@ -290,27 +327,23 @@ void __fastcall TEftposAdyen::DoLogon()
     SaleToPOIResponse* response;
     try
     {
-        MessageBox(1,"LogON",MB_OK);
         Envelop *envelop = GetLoginLogOutEnvelop(eAdyenLoginRequest);
-        MessageBox(2,"LogON",MB_OK);
         ResourceDetails *details = GetResourceDetails();
-        MessageBox(3,"LogON",MB_OK);
         CoInitialize(NULL);
-        MessageBox(4,"LogON",MB_OK);
         response = AdyenClient->LoginToSystem(envelop,details);
         if(response != NULL)
         {
-                MessageBox("Response is not null","LogON",MB_OK);
-            if(response->DiagnosisResponse->Response->Result.Pos("Success") != 0)
+            if(response->LoginResponse->Response->Result.Pos("Success") != 0)
             {
-             MessageBox("Response is successful","LogON",MB_OK);
                 int i = 0;
+            }
+            else
+            {
             }
         }
     }
     catch(Exception &Ex)
     {
-                MessageBox(Ex.Message,"LogON Exception",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -320,21 +353,21 @@ void __fastcall TEftposAdyen::DoLogOut()
     SaleToPOIResponse* response;
     try
     {
-        MessageBox(1,"LogOut",MB_OK);
-        Envelop *envelop = GetLoginLogOutEnvelop(eAdyenLoginRequest);
-        MessageBox(2,"LogOut",MB_OK);
+        Envelop *envelop = GetLoginLogOutEnvelop(eAdyenLogOutRequest);
         ResourceDetails *details = GetResourceDetails();
-        MessageBox(3,"LogOut",MB_OK);
         CoInitialize(NULL);
-        MessageBox(4,"LogOut",MB_OK);
         response = AdyenClient->LogoutSystem(envelop,details);
         if(response != NULL)
         {
-            MessageBox("Not null","LogOut",MB_OK);
-            if(response->DiagnosisResponse->Response->Result.Pos("Success") != 0)
+            if(response->LogoutResponse->Response->Result.Pos("Success") != 0)
             {
-                MessageBox("Successful","LogOut",MB_OK);
             }
+            else
+            {
+            }
+        }
+        else
+        {
         }
     }
     catch(Exception &Ex)
@@ -350,7 +383,7 @@ Envelop* TEftposAdyen::GetLoginLogOutEnvelop(AdyenRequestType requestType)
     {
         envelop->SaleToPOIRequest = new SaleToPOIRequest();
 
-        envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenLoginRequest);
+        envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenLoginRequest, TDBAdyen::GetServiceID());
 
          if(requestType == eAdyenLoginRequest)
          {
@@ -362,9 +395,9 @@ Envelop* TEftposAdyen::GetLoginLogOutEnvelop(AdyenRequestType requestType)
             envelop->SaleToPOIRequest->LoginRequest->SaleSoftware->SoftwareVersion = GetFileVersion();
             envelop->SaleToPOIRequest->LoginRequest->SaleSoftware->CertificationCode = "";
             envelop->SaleToPOIRequest->LoginRequest->SaleTerminalData = new SaleTerminalData();
-            envelop->SaleToPOIRequest->LoginRequest->SaleTerminalData->TotalsGroupID = "ABC";
+            envelop->SaleToPOIRequest->LoginRequest->SaleTerminalData->TotalsGroupID = TDBAdyen::GetCompanyName();
             envelop->SaleToPOIRequest->LoginRequest->OperatorID = TDeviceRealTerminal::Instance().ID.Name;
-            envelop->SaleToPOIRequest->LoginRequest->OperatorLanguage = "English";
+            envelop->SaleToPOIRequest->LoginRequest->OperatorLanguage = "en";
          }
          else if(requestType == eAdyenLogOutRequest)
          {
@@ -380,15 +413,15 @@ Envelop* TEftposAdyen::GetLoginLogOutEnvelop(AdyenRequestType requestType)
 // ---------------------------------------------------------------------------
 AnsiString TEftposAdyen::GetRefNumber()
 {
-//  return AnsiString("S_") + TDateTime::CurrentDateTime().FormatString("yyyymmddhhmmss");
+  return TDBAdyen::GetServiceID();
 }
 //----------------------------------------------------------------------------
-SaleToPOIResponse* TEftposAdyen::TriggerSaleTransaction(Currency AmtPurchase)
+SaleToPOIResponse* TEftposAdyen::TriggerSaleTransaction(Currency AmtPurchase, UnicodeString TxnRef)
 {
     SaleToPOIResponse* response;
     try
     {
-        Envelop *envelop = GetSaleEnvelop(AmtPurchase, eAdyenNormalSale);
+        Envelop *envelop = GetSaleEnvelop(AmtPurchase, eAdyenNormalSale, TxnRef);
         ResourceDetails *details = GetResourceDetails();
         CoInitialize(NULL);
         response = AdyenClient->Purchase(envelop,details);
@@ -400,12 +433,12 @@ SaleToPOIResponse* TEftposAdyen::TriggerSaleTransaction(Currency AmtPurchase)
     return response;
 }
 //----------------------------------------------------------------------------
-SaleToPOIResponse* TEftposAdyen::TriggerRefundTransaction(Currency AmtPurchase)
+SaleToPOIResponse* TEftposAdyen::TriggerRefundTransaction(Currency AmtPurchase, UnicodeString TxnRef)
 {
     SaleToPOIResponse* response;
     try
     {
-        Envelop *envelop = GetSaleEnvelop(AmtPurchase, eAdyenRefundSale);
+        Envelop *envelop = GetSaleEnvelop(AmtPurchase, eAdyenRefundSale, TxnRef);
         ResourceDetails *details = GetResourceDetails();
         CoInitialize(NULL);
         response = AdyenClient->Refund(envelop,details);
@@ -417,14 +450,57 @@ SaleToPOIResponse* TEftposAdyen::TriggerRefundTransaction(Currency AmtPurchase)
     return response;
 }
 //----------------------------------------------------------------------------
-Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType requestType)
+SaleToPOIResponse* TEftposAdyen::TriggerEnquiry(Currency AmtPurchase, UnicodeString TxnRef)
+{
+    SaleToPOIResponse* response;
+    try
+    {
+        Envelop *envelop = GetEnquiryEnvelop(AmtPurchase, eAdyenTransactionStatus, TxnRef);
+        ResourceDetails *details = GetResourceDetails();
+        CoInitialize(NULL);
+        response = AdyenClient->GetTransactionStatus(envelop,details);
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return response;
+}
+//----------------------------------------------------------------------------
+Envelop* TEftposAdyen::GetEnquiryEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef)
 {
     Envelop* envelop = new Envelop();
     try
     {
         envelop->SaleToPOIRequest = new SaleToPOIRequest();
 
-        envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenNormalSale);
+        envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenTransactionStatus,TDBAdyen::GetServiceID());
+
+        envelop->SaleToPOIRequest->TransactionStatusRequest = new TransactionStatusRequest();
+        envelop->SaleToPOIRequest->TransactionStatusRequest->ReceiptReprintFlag = true;
+        envelop->SaleToPOIRequest->TransactionStatusRequest->MessageReference = new MessageReference();
+        if(!TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund)
+            envelop->SaleToPOIRequest->TransactionStatusRequest->MessageReference->MessageCategory = PaymentVar;
+        else
+            envelop->SaleToPOIRequest->TransactionStatusRequest->MessageReference->MessageCategory = ReversalVar;
+        envelop->SaleToPOIRequest->TransactionStatusRequest->MessageReference->SaleID = TDeviceRealTerminal::Instance().ID.Name;
+        envelop->SaleToPOIRequest->TransactionStatusRequest->MessageReference->ServiceID = TxnRef;
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return envelop;
+}
+//----------------------------------------------------------------------------
+Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef)
+{
+    Envelop* envelop = new Envelop();
+    try
+    {
+        envelop->SaleToPOIRequest = new SaleToPOIRequest();
+
+        envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenNormalSale,TxnRef);
 
         UnicodeString transactionId = TDBAdyen::GetTransactionID();
         UnicodeString saleRefId     = "SaleRef" + transactionId;
@@ -459,7 +535,7 @@ Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType req
     return envelop;
 }
 //----------------------------------------------------------------------------
-MessageHeader* TEftposAdyen::GetMessageHeader(AdyenRequestType requestType)
+MessageHeader* TEftposAdyen::GetMessageHeader(AdyenRequestType requestType, UnicodeString TxnRef)
 {
     MessageHeader* messageHeader = new MessageHeader();
     if(requestType == eAdyenPingRequest)
@@ -470,13 +546,15 @@ MessageHeader* TEftposAdyen::GetMessageHeader(AdyenRequestType requestType)
         messageHeader->MessageCategory = LoginVar;
     else if(requestType == eAdyenLogOutRequest)
         messageHeader->MessageCategory = LogoutVar;
+    else if(requestType == eAdyenTransactionStatus)
+        messageHeader->MessageCategory = TransactionStatusVar;
 
     messageHeader->MessageClass    = ServiceVar;
     messageHeader->MessageType     = RequestVar;
     messageHeader->POIID           = TGlobalSettings::Instance().EFTPosDeviceID;
     messageHeader->ProtocolVersion = "3.0";
     messageHeader->SaleID          = TDeviceRealTerminal::Instance().ID.Name;
-    messageHeader->ServiceID       = TDBAdyen::GetServiceID();
+    messageHeader->ServiceID       = TxnRef;//TDBAdyen::GetServiceID();
     return messageHeader;
 }
 //----------------------------------------------------------------------------
@@ -484,7 +562,7 @@ Envelop* TEftposAdyen::GetPingTerminalEnvelop()
 {
     Envelop* envelop = new Envelop();
     envelop->SaleToPOIRequest = new SaleToPOIRequest();
-    envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenPingRequest);
+    envelop->SaleToPOIRequest->MessageHeader = GetMessageHeader(eAdyenPingRequest, TDBAdyen::GetServiceID());
 
     envelop->SaleToPOIRequest->DiagnosisRequest = new DiagnosisRequest();
     return envelop;
@@ -494,7 +572,7 @@ void TEftposAdyen::LoadEftPosReceipt(ArrayOfstring receipt)
 {
     try
     {
-         LastEftPosReceipt->Clear();
+        LastEftPosReceipt->Clear();
         for(int i = 0; i < receipt.Length; i++)
         {
             AnsiString Data = receipt[i].t_str();
@@ -532,10 +610,13 @@ bool TEftposAdyen::GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIRespo
         {
             if(response)
             {
-                if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
-                    retValue = true;
-                else
-                    retValue = false;
+                if(response->PaymentResponse)
+                {
+                    if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
+                        retValue = true;
+                    else
+                        retValue = false;
+                }
             }
             else
                 retValue = false;
@@ -545,10 +626,13 @@ bool TEftposAdyen::GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIRespo
         {
             if(response)
             {
-                if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
-                    retValue = true;
-                else
-                    retValue = false;
+                if(response->PaymentResponse)
+                {
+                    if(response->PaymentResponse->Response->Result.Pos("Success") != 0)
+                        retValue = true;
+                    else
+                        retValue = false;
+                }
             }
             else
                 retValue = false;
@@ -556,7 +640,21 @@ bool TEftposAdyen::GetResponseStatus(eEFTTransactionType TxnType, SaleToPOIRespo
         break;
         case TransactionType_INQUIRY :
         {
-            int i = 0;
+            if(response)
+            {
+                if(response->TransactionStatusResponse->Response->Result.Pos("Success") != 0)
+                {
+                    retValue = true;
+                }
+                else
+                {
+                    retValue = false;
+                }
+            }
+            else
+            {
+                retValue = false;
+            }
         }
         break;
     }

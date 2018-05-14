@@ -921,7 +921,7 @@ namespace MenumateVersionParser
         void upgrade6_50Tables();
         void update6_50Tables();
         void Create6_50Generator(TDBControl* const inDBControl);
-        void CreateTableEFTPOSTransaction(TDBControl* const inDBControl);
+        void Alter6_50Tables(TDBControl* const inDBControl);
     };// class
 } // namespace
 

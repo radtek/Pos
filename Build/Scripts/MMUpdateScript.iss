@@ -300,6 +300,7 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\PocketVoucherIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\MYOB.AccountRight.SDK.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AdyenIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\WalletPaymets.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SmartConnectIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 

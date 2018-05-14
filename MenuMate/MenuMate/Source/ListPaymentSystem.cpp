@@ -1341,8 +1341,25 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                  if((EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
                                     ||  EftTrans->TimeOut)
                                  {
-                                    if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    AnsiString messageEftPos = "";
+                                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.\rPlease ensure Card Terminal is not holding any transaction";
+                                    }
+                                    else
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.";
+                                    }
+
+                                    if(MessageBox(messageEftPos, "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    {
+                                       if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                       {
+                                           EftPos->DelTransactionEvent(Payment->ReferenceNumber);
+                                           Payment->ReferenceNumber = EftPos->GetRefNumber();
+                                       }
                                        TransRetriveElectronicResult(PaymentTransaction, Payment);
+                                    }
                                  }
                                  else
                                  {
@@ -3870,6 +3887,10 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
                            TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
                            EftPos->AcquirerRefSmartConnect.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
+                        else if(TGlobalSettings::Instance().EnableEftPosAdyen &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefAdyen.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefAdyen;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}
