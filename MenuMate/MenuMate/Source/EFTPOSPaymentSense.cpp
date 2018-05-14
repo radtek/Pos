@@ -75,7 +75,70 @@ void TEftPosPaymentSense::DoControlPannel()
 void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchase, Currency AmtCash, UnicodeString TxnRef,
                    ePANSource PANSource, UnicodeString CardSwipe, int ExpiryMonth, int ExpiryYear)
 {
-
+   if(Enabled)
+   {
+        try
+        {
+              // SmartConnectResponse *wcfResponse;
+               CoInitialize(NULL);
+               switch (TxnType)
+               {
+                    case TransactionType_PURCHASE :
+                       // wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
+                        break;
+                    case TransactionType_CASH_ADVANCE :
+                     //   wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
+                        break;
+                    case TransactionType_PURCHASE_PLUS_CASH :
+                     //    wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
+                        break;
+                    case TransactionType_REFUND :
+                     //    wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
+                        break;
+                    case TransactionType_INQUIRY :
+                      //   wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
+                      break;
+                }
+//                  if(wcfResponse->ResponseSuccessful)
+//                   {
+//                      AcquirerRefSmartConnect = wcfResponse->Data->AcquirerRef;
+//                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+//                      if(EftTrans != NULL)
+//                       {
+//                          EftTrans->EventCompleted = true;
+//                          EftTrans->FinalAmount = wcfResponse->Data->AmountTotal;
+//                          EftTrans->ResultText = "Eftpos Transaction Completed.";
+//                          EftTrans->Result = eAccepted;
+//                          EftTrans->CardType = wcfResponse->Data->CardType;
+//                          EftTrans->TipAmount = wcfResponse->Data->AmountTip;
+//                          EftTrans->SurchargeAmount = wcfResponse->Data->AmountSurcharge;
+//                          LoadEftPosReceipt(wcfResponse->Data->Receipt) ;
+//                        }
+//                   }
+//                  else
+//                   {
+//                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+//                      if(EftTrans != NULL)
+//                       {
+//                          EftTrans->EventCompleted = true;
+//                          EftTrans->Result = eDeclined;
+//                          EftTrans->ResultText = wcfResponse->Data->TransactionResult;
+//                          if(wcfResponse->Data->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
+//                            EftTrans->TimeOut = true;
+//                       }
+//                   }
+        }
+        catch( Exception& exc )
+        {
+              TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+              if(EftTrans != NULL)
+               {
+                  EftTrans->EventCompleted = true;
+                  EftTrans->Result = eDeclined;
+                  EftTrans->ResultText = exc.Message;
+               }
+        }
+   }
 }
 // ---------------------------------------------------------------------------
 void TEftPosPaymentSense::ChequeVerify( Currency AmtPurchase, AnsiString ChequeSerial, AnsiString ChequeBranch,
@@ -134,7 +197,7 @@ AnsiString TEftPosPaymentSense::GetRefNumber()
 // ---------------------------------------------------------------------------
 void _fastcall TEftPosPaymentSense::GetAllTerminals()
 {
-    ArrayOfCardTerminal terminalList;
+//    PACTerminalWrapper terminalList;
     CoInitialize(NULL);
     MessageBox("1","1",MB_OK);
     authorizationDetails = new AuthorizationDetails();

@@ -13,6 +13,10 @@ namespace MenumateServices.WCFServices
     public interface IWCFServicePaymentSense
     {
         [OperationContract]
-        List<CardTerminal> GetAllCardTerminals(AuthorizationDetails autorizationDetails);
+        PACTerminalWrapper GetAllCardTerminals(AuthorizationDetails autorizationDetails);
+        [OperationContract]
+        PACTerminal PingTerminal(AuthorizationDetails autorizationDetails);
+        [OperationContract]
+        TransactionData DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request);
     }
 }
