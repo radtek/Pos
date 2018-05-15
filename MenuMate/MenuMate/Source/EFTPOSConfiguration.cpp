@@ -10,6 +10,7 @@
 #include "EftPos.h"
 #include "EftposAdyen.h"
 #include "EFTPOSPaymentSense.h"
+#include "VerticalSelect.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -34,16 +35,16 @@ bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
     if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
         EftPos = new TEftposAdyen();
-    EftPos->Initialise();
-    if(EftPos->Enabled)
-        MessageBox("Details for Adyen integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
+        EftPos->Initialise();
+        if(EftPos->Enabled)
+            MessageBox("Details for Adyen integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
         EftPos = new TEftPosPaymentSense();
         EftPos->Initialise();
-//        if(EftPos->Enabled)
-//            EftPos->GetAllTerminals();
+        if(EftPos->Enabled)
+            MessageBox("Details for Payment Sense integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
     }
 }
 //---------------------------------------------------------------------------
@@ -180,25 +181,59 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbEFTPOSURL->Caption = "SmartLink IP\r" + TGlobalSettings::Instance().EftPosSmartPayIp;
         tbAPIKey->Enabled = false;
         tbDeviceID->Enabled = false;
+        tbEftPosTerminalID->Enabled = false;
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
         tbEFTPOSURL->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "Password\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "User ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
     }
     else
     {
         tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        tbEftPosTerminalID->Enabled = false;
     }
 }
 
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
 {
-    //EftPos = new TEftPosPaymentSense();
-    //EftPos->Initialise();
-    //EftPos->GetAllTerminals();
+    EftPos = new TEftPosPaymentSense();
+    EftPos->Initialise();
+    std::vector<AnsiString>tidList = EftPos->GetAllTerminals();
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.CloseSelection = true;
+    SelectionForm->Items.push_back(Item);
+
+    for(int index = 0; index < tidList.size(); index++)
+    {   
+        TVerticalSelection Item1;
+        Item1.Title = tidList[index];
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+    }
+
+    SelectionForm->ShowModal();
+    TVerticalSelection SelectedItem;
+    if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+        if(Action)
+        {
+            TGlobalSettings::Instance().EftPosTerminalId = SelectedItem.Title.Trim();
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
+            DBTransaction.Commit();
+        }
+    }
 }

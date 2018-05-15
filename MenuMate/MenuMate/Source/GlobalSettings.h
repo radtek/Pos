@@ -525,6 +525,7 @@ public:
     bool IsSmartConnectQRTransaction;
     bool AdyenRecoveryTransactionIsRefund;
     bool EnableEftPosPaymentSense;
+    UnicodeString EftPosTerminalId;
 };
 
 #endif

@@ -14,6 +14,8 @@ class TEftPosPaymentSense : public TEftPos
         AuthorizationDetails *authorizationDetails;
         void InitPaymentSenseClient();
         void InitializeProperties();
+        bool PingTerminal(eEFTTransactionType TxnType);
+        TransactionData* DoPurchase(Currency amtPurchase);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();
@@ -37,6 +39,6 @@ public:
         void __fastcall DoLogon();
         void __fastcall ReprintReceipt();
         AnsiString GetRefNumber();
-        void _fastcall GetAllTerminals();
+        std::vector<AnsiString> GetAllTerminals();
 };
 #endif

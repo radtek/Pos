@@ -430,5 +430,6 @@ TGlobalSettings::TGlobalSettings()
     IsSmartConnectQRTransaction = false;
     AdyenRecoveryTransactionIsRefund = false;
     EnableEftPosPaymentSense = false;
+    EftPosTerminalId = "";
 }
 

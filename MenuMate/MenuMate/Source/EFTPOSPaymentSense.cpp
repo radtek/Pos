@@ -12,6 +12,7 @@
 TEftPosPaymentSense::TEftPosPaymentSense()
 {
     InitPaymentSenseClient();
+    InitializeProperties();
     Initialise();
 }
 //---------------------------------------------------------------------------
@@ -31,10 +32,19 @@ void TEftPosPaymentSense::Initialise()
     TEftPos::Initialise();
     if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
-//        if(Enabled)
-//            GetAllTerminals();
-        Enabled = true;
-
+         if(PingTerminal(TransactionType_NONE))
+         {
+            Enabled = true;
+         }
+         else
+         {
+             UnicodeString strValue = "Payment Sense EFTPOS Terminal was not available.\r";
+             strValue += "Please ensure below mentioned things:-.\r";
+             strValue += "1. Details are correct.\r";
+             strValue += "2. POS & EFTPOS terminal are connected to network.";
+             MessageBox(strValue,"Information",MB_OK+MB_ICONINFORMATION);
+             Enabled = false;
+         }
     }
     else
     {
@@ -44,10 +54,10 @@ void TEftPosPaymentSense::Initialise()
 //----------------------------------------------------------------------------
 void TEftPosPaymentSense::InitializeProperties()
 {
-//    authorizationDetails = new AuthorizationDetails();
-//    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
-//    authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
-//    authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
+    authorizationDetails = new AuthorizationDetails();
+    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+    authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
+    authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
 }
 //---------------------------------------------------------------------
 void TEftPosPaymentSense::DoControlPannel()
@@ -60,7 +70,7 @@ void TEftPosPaymentSense::DoControlPannel()
 		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
 		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
-        frmDropDown->AddButton("Terminal List",&GetAllTerminals);
+     //   frmDropDown->AddButton("Terminal List",&GetAllTerminals);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -72,6 +82,27 @@ void TEftPosPaymentSense::DoControlPannel()
 	}
 }
 //------------------------------------------------------------------------------
+bool  TEftPosPaymentSense::PingTerminal(eEFTTransactionType TxnType)
+{
+    bool retVal = false;
+    try
+    {
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId;
+        CoInitialize(NULL);
+        PACTerminal *response = paymentSenseClient->PingTerminal(authorizationDetails);
+        if(response != NULL)
+        {
+            if(response->Status.UpperCase().Pos("AVAILABLE") != 0)
+                retVal = true;
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return retVal;
+}
+//-----------------------------------------------------------------------------------------
 void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchase, Currency AmtCash, UnicodeString TxnRef,
                    ePANSource PANSource, UnicodeString CardSwipe, int ExpiryMonth, int ExpiryYear)
 {
@@ -79,12 +110,12 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    {
         try
         {
-              // SmartConnectResponse *wcfResponse;
+               TransactionData *wcfResponse;
                CoInitialize(NULL);
                switch (TxnType)
                {
                     case TransactionType_PURCHASE :
-                       // wcfResponse = smartConnectClient->Purchase(transactionType, AmtPurchase);
+                        wcfResponse = DoPurchase(AmtPurchase);
                         break;
                     case TransactionType_CASH_ADVANCE :
                      //   wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
@@ -195,18 +226,51 @@ AnsiString TEftPosPaymentSense::GetRefNumber()
   return AnsiString("S_") + TDateTime::CurrentDateTime().FormatString("yyyymmddhhmmss");
 }
 // ---------------------------------------------------------------------------
-void _fastcall TEftPosPaymentSense::GetAllTerminals()
+std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
 {
-//    PACTerminalWrapper terminalList;
-    CoInitialize(NULL);
-    MessageBox("1","1",MB_OK);
-    authorizationDetails = new AuthorizationDetails();
-    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
-    MessageBox("1.1","1",MB_OK);
-    authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
-    authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
-    MessageBox(authorizationDetails->URL,authorizationDetails->URL,MB_OK);
-    paymentSenseClient->GetAllCardTerminals(authorizationDetails);
-    MessageBox("2","2",MB_OK);
+    std::vector<AnsiString> terminalIdList;
+    try
+    {
+        CoInitialize(NULL);
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+        // = new PACTerminalWrapper();
+//        authorizationDetails = new AuthorizationDetails();
+//        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+//        authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
+//        authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
+        MessageBox(authorizationDetails->URL,authorizationDetails->URL,MB_OK);
+        PACTerminalWrapper* terminalList = paymentSenseClient->GetAllCardTerminals(authorizationDetails);
+        //MessageBox("2","2",MB_OK);
+       // ArrayOfPACTerminal terminalArray;
+        for(int index = 0; index < terminalList->Terminals.Length; index++)
+        {
+            PACTerminal *terminal = terminalList->Terminals[index];
+            terminalIdList.push_back(terminal->TPI);
+            MessageBox(terminal->TPI,"terminal->TPI",MB_OK);
+        }
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+    return terminalIdList;
 }
-
+//------------------------------------------------------------------------------
+TransactionData* TEftPosPaymentSense::DoPurchase(Currency amtPurchase)
+{
+    TransactionData* responseData = new TransactionData();
+    try
+    {
+        TransactionRequest * request  = new TransactionRequest();
+        request->Currency = "GBP"; //CurrencyString;
+        request->amount = double(amtPurchase*100);
+        request->TransactionType = "SALE";
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
+        responseData = paymentSenseClient->DoTransaction(authorizationDetails, request);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+    return responseData;
+}
