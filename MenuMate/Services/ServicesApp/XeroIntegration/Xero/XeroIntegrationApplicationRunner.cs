@@ -31,7 +31,7 @@ namespace AccountingIntegration.Xero
         Timer _retryTimer;
         int _retryPeriod = 5 * 60000; // 5 min
         string _cacheFolder;
-        string _retryFolder;
+       string _retryFolder;
         string _successfulFolder;
         string _failedFolder;
         List<XMLFileObject> _xmlObjectList;
@@ -40,11 +40,11 @@ namespace AccountingIntegration.Xero
         XeroIntegrationApplicationRunner(Credentials inCredentials)
         {
             InitFolderVars();
-            _retryTimer = createRetryTimer();
+          // _retryTimer = createRetryTimer();
             _xmlObjectList = new List<XMLFileObject>();
             CheckOnFolders();
             _repository = CreateRepository(inCredentials);
-            FetchRetryInvoices();
+           // FetchRetryInvoices();
             SendOldCachedInvoices(_cacheFolder);
             StartMonitoring(_cacheFolder);
         }
@@ -161,7 +161,7 @@ namespace AccountingIntegration.Xero
         private void ProcessRetryFolder()
         {
             StopMonitoring();
-            FetchRetryInvoices();
+            //FetchRetryInvoices();
             SendOldCachedInvoices(_cacheFolder);
             ResumeActivityMonitoring();
         }
