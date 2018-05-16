@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using PaymentSenseIntegration.Domain;
-
 namespace MenumateServices.WCFServices
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the interface name "IWCFServicePaymentSense" in both code and config file together.
@@ -17,6 +16,6 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         PACTerminal PingTerminal(AuthorizationDetails autorizationDetails);
         [OperationContract]
-        TransactionData DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request);
+        TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request);
     }
 }

@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (14/05/2018 8:55:47 p.m. - - $Rev: 25127 $)
+// (17/05/2018 12:20:24 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -54,14 +54,14 @@ class SOAP_REMOTABLE_CLASS AuthorizationDetails;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper;
 class SOAP_REMOTABLE_CLASS PACTerminal;
 class SOAP_REMOTABLE_CLASS TransactionRequest;
-class SOAP_REMOTABLE_CLASS TransactionData;
+class SOAP_REMOTABLE_CLASS TransactionDataResponse;
 class SOAP_REMOTABLE_CLASS ReceiptLines;
 class SOAP_REMOTABLE_CLASS ReceiptData;
 class SOAP_REMOTABLE_CLASS AuthorizationDetails2;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper2;
 class SOAP_REMOTABLE_CLASS PACTerminal2;
 class SOAP_REMOTABLE_CLASS TransactionRequest2;
-class SOAP_REMOTABLE_CLASS TransactionData2;
+class SOAP_REMOTABLE_CLASS TransactionDataResponse2;
 class SOAP_REMOTABLE_CLASS ReceiptLines2;
 class SOAP_REMOTABLE_CLASS ReceiptData2;
 
@@ -184,38 +184,38 @@ __published:
 // ************************************************************************ //
 class TransactionRequest : public TRemotable {
 private:
-  UnicodeString   FCurrency;
-  bool            FCurrency_Specified;
-  UnicodeString   FTransactionType;
-  bool            FTransactionType_Specified;
   double          Famount;
   bool            Famount_Specified;
-  void __fastcall SetCurrency(int Index, UnicodeString _prop_val)
-  {  FCurrency = _prop_val; FCurrency_Specified = true;  }
-  bool __fastcall Currency_Specified(int Index)
-  {  return FCurrency_Specified;  } 
-  void __fastcall SetTransactionType(int Index, UnicodeString _prop_val)
-  {  FTransactionType = _prop_val; FTransactionType_Specified = true;  }
-  bool __fastcall TransactionType_Specified(int Index)
-  {  return FTransactionType_Specified;  } 
+  UnicodeString   Fcurrency;
+  bool            Fcurrency_Specified;
+  UnicodeString   FtransactionType;
+  bool            FtransactionType_Specified;
   void __fastcall Setamount(int Index, double _prop_val)
   {  Famount = _prop_val; Famount_Specified = true;  }
   bool __fastcall amount_Specified(int Index)
   {  return Famount_Specified;  } 
+  void __fastcall Setcurrency(int Index, UnicodeString _prop_val)
+  {  Fcurrency = _prop_val; Fcurrency_Specified = true;  }
+  bool __fastcall currency_Specified(int Index)
+  {  return Fcurrency_Specified;  } 
+  void __fastcall SettransactionType(int Index, UnicodeString _prop_val)
+  {  FtransactionType = _prop_val; FtransactionType_Specified = true;  }
+  bool __fastcall transactionType_Specified(int Index)
+  {  return FtransactionType_Specified;  } 
 __published:
-  __property UnicodeString   Currency = { index=(IS_OPTN|IS_NLBL), read=FCurrency, write=SetCurrency, stored = Currency_Specified };
-  __property UnicodeString TransactionType = { index=(IS_OPTN|IS_NLBL), read=FTransactionType, write=SetTransactionType, stored = TransactionType_Specified };
   __property double         amount = { index=(IS_OPTN), read=Famount, write=Setamount, stored = amount_Specified };
+  __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
+  __property UnicodeString transactionType = { index=(IS_OPTN|IS_NLBL), read=FtransactionType, write=SettransactionType, stored = transactionType_Specified };
 };
 
 
 
 
 // ************************************************************************ //
-// XML       : TransactionData, global, <complexType>
+// XML       : TransactionDataResponse, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
-class TransactionData : public TRemotable {
+class TransactionDataResponse : public TRemotable {
 private:
   UnicodeString   FAmountBase;
   bool            FAmountBase_Specified;
@@ -363,7 +363,7 @@ private:
   {  return FTransactionType_Specified;  } 
 
 public:
-  __fastcall ~TransactionData();
+  __fastcall ~TransactionDataResponse();
 __published:
   __property UnicodeString AmountBase = { index=(IS_OPTN|IS_NLBL), read=FAmountBase, write=SetAmountBase, stored = AmountBase_Specified };
   __property UnicodeString AmountCashBack = { index=(IS_OPTN|IS_NLBL), read=FAmountCashBack, write=SetAmountCashBack, stored = AmountCashBack_Specified };
@@ -506,10 +506,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : TransactionData, global, <element>
+// XML       : TransactionDataResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
-class TransactionData2 : public TransactionData {
+class TransactionDataResponse2 : public TransactionDataResponse {
 private:
 __published:
 };
@@ -555,14 +555,14 @@ __interface INTERFACE_UUID("{04119E0C-FE8A-C15E-CA06-2E077AB0B3F4}") IWCFService
 public:
   virtual PACTerminalWrapper* GetAllCardTerminals(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual PACTerminal*    PingTerminal(const AuthorizationDetails* autorizationDetails) = 0; 
-  virtual TransactionData* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
+  virtual TransactionDataResponse* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
 };
 typedef DelphiInterface<IWCFServicePaymentSense> _di_IWCFServicePaymentSense;
 
 _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__PaymentSenseWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__PaymentSenseWSDL;

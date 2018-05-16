@@ -4,13 +4,13 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
-using PaymentSenseIntegration.Domain;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 using PaymentSenseIntegration;
+using PaymentSenseIntegration.Domain;
 
 namespace MenumateServices.WCFServices
 {
@@ -54,20 +54,20 @@ namespace MenumateServices.WCFServices
             return response;
         }
 
-        public TransactionData DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
+        public TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
         {
-            TransactionData response = new TransactionData();
+            TransactionDataResponse response = new TransactionDataResponse();
             try
             {
                 PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
                 response = controller.DoTransaction(autorizationDetails, request);
+                
             }
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in DoPurchase " + ex.Message);
             }
             return response;
-        } 
-
+        }
     }
 }

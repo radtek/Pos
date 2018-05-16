@@ -55,7 +55,7 @@
     <Compile Include="Domain\PaymentSenseResponse.cs" />
     <Compile Include="Domain\ReceiptData.cs" />
     <Compile Include="Domain\ReceiptLines.cs" />
-    <Compile Include="Domain\TransactionData.cs" />
+    <Compile Include="Domain\TransactionDataResponse.cs" />
     <Compile Include="Domain\TransactionRequest.cs" />
     <Compile Include="Enums\TransactionResult.cs" />
     <Compile Include="Enums\TransactionType.cs" />

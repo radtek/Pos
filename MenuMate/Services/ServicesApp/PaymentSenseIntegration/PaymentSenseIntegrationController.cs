@@ -8,12 +8,14 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Timers;
+using System.Threading;
 
 namespace PaymentSenseIntegration
 {
     public class PaymentSenseIntegrationController
     {    
-        private List<string> stringList;
+        private List<string> stringList;        
         public PaymentSenseIntegrationController()
         {
             stringList = new List<string>();
@@ -94,9 +96,9 @@ namespace PaymentSenseIntegration
             return terminalDetails;
         }
 
-        public TransactionData DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
+        public TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
         {
-            TransactionData transactionData = new TransactionData();
+            TransactionDataResponse transactionData = new TransactionDataResponse();
             try
             {
                 stringList.Add("====================DoTransaction=========================================================");
@@ -125,12 +127,14 @@ namespace PaymentSenseIntegration
                     }
                     PaymentSenseResponse deSerializedResponse = JsonConvert.DeserializeObject<PaymentSenseResponse>(result);// await responseNew.Content.ReadAsStringAsync());
                     autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
-                    transactionData = GetTransactionDataForRequestedId(autorizationDetails);
+
+                    //wait for a period of time or untill you get the transaction finished response.
+                    transactionData = WaitAndGetResponse(autorizationDetails);  
                 }
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Purchase SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                EventLog.WriteEntry("In Purchase PaymentSense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
                 //ServiceLogger.LogException("Exception in Purchase", ex);
                 stringList.Add("Exception in  Purchase: ");
             }
@@ -141,9 +145,42 @@ namespace PaymentSenseIntegration
             return transactionData;
         }
 
-        public TransactionData GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
+        private TransactionDataResponse WaitAndGetResponse(AuthorizationDetails autorizationDetails)
         {
-            TransactionData transactionData = new TransactionData();
+            TransactionDataResponse response = new TransactionDataResponse();
+            try
+            {
+                bool waitflag = true;
+
+                Stopwatch watch = new Stopwatch();
+                watch.Reset();
+                watch.Start();
+                while (waitflag)
+                {
+                    Thread.Sleep(2000);
+                    //Get Response from Eftpos Terminal to check  transaction is in which state.
+                    response = GetTransactionDataForRequestedId(autorizationDetails);
+
+                    //If transation is finished then return.
+                    if (IsCardTransactionCompleted(response.Notifications))
+                        break;
+
+                    //If didn't get response in the mentioned time then also return;
+                    if (watch.Elapsed.TotalMinutes > 2.00)
+                        break; //to do make response as false;
+                }
+            }
+            catch (Exception ex)
+            {
+                //EventLog.WriteEntry("In WaitForResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
+                // ServiceLogger.LogException("Exception in WaitForResponse", ex);
+            }
+            return response;
+        }
+
+        private TransactionDataResponse GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
+        {
+            TransactionDataResponse transactionData = new TransactionDataResponse();
             try
             {
                 stringList.Add("====================GetTransactionDetailsForRequestedId=========================================================");
@@ -157,7 +194,7 @@ namespace PaymentSenseIntegration
                                                                                                     autorizationDetails.UserName, autorizationDetails.Password))));
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
                     var authorizationResponse = client.GetStringAsync(apiUrl).Result;
-                    transactionData = JsonConvert.DeserializeObject<TransactionData>(authorizationResponse);
+                    transactionData = JsonConvert.DeserializeObject<TransactionDataResponse>(authorizationResponse);
                 }
             }
             catch (Exception ex)
@@ -171,6 +208,34 @@ namespace PaymentSenseIntegration
                 WriteAndClearStringList();
             }
             return transactionData;
+        }
+
+        private bool IsCardTransactionCompleted(string[] Notifications)
+        {
+            bool retval = false;
+            try
+            {
+                foreach(string eventNotification in Notifications)
+                {
+                    int value = string.Compare(eventNotification, "TRANSACTION_FINISHED", true);
+                    if (value == 0)
+                    {
+                        retval = true;
+                        break;
+                    }                     
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("IsCardTransactionCompleted", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                //ServiceLogger.LogException("Exception in GetTransactionDetailsForRequestedId", ex);
+                stringList.Add("Exception in IsCardTransactionCompleted()");
+            }
+            finally
+            {
+                WriteAndClearStringList();
+            }
+            return retval;
         }
 
         private void WriteToFile(List<string> list)

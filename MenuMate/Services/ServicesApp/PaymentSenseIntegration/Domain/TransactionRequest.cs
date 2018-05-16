@@ -10,10 +10,10 @@ namespace PaymentSenseIntegration.Domain
     public class TransactionRequest
     {
         [DataMember]
-        public string TransactionType {get; set; }
+        public string transactionType { get; set; }//TransactionType starting from small letter because api is not accepting this parameter in caps when doint refund.
         [DataMember]
         public double amount { get; set; } //amount starting from small letter because api is not accepting this parameter in caps.
         [DataMember]
-        public string Currency { get; set; }
+        public string currency { get; set; }//amount starting from small letter because api is not accepting this parameter in caps  when doint refund.
     }
 }

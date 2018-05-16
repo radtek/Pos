@@ -110,54 +110,52 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
    {
         try
         {
-               TransactionData *wcfResponse;
+               TransactionDataResponse *wcfResponse;
                CoInitialize(NULL);
                switch (TxnType)
                {
                     case TransactionType_PURCHASE :
-                        wcfResponse = DoPurchase(AmtPurchase);
+                        wcfResponse = DoTransaction(AmtPurchase, "SALE");
                         break;
                     case TransactionType_CASH_ADVANCE :
                      //   wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
                         break;
                     case TransactionType_PURCHASE_PLUS_CASH :
-                     //    wcfResponse = smartConnectClient->PurchasePlusCash(transactionType, AmtPurchase, AmtCash);
+//                        wcfResponse = DoTransaction(AmtPurchase, "REFUND");
                         break;
                     case TransactionType_REFUND :
-                     //    wcfResponse = smartConnectClient->Refund(transactionType, AmtPurchase);
+                        wcfResponse = DoTransaction(AmtPurchase, "REFUND");
                         break;
                     case TransactionType_INQUIRY :
                       //   wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
                       break;
                 }
-//                  if(wcfResponse->ResponseSuccessful)
-//                   {
-//                      AcquirerRefSmartConnect = wcfResponse->Data->AcquirerRef;
-//                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-//                      if(EftTrans != NULL)
-//                       {
-//                          EftTrans->EventCompleted = true;
-//                          EftTrans->FinalAmount = wcfResponse->Data->AmountTotal;
-//                          EftTrans->ResultText = "Eftpos Transaction Completed.";
-//                          EftTrans->Result = eAccepted;
-//                          EftTrans->CardType = wcfResponse->Data->CardType;
-//                          EftTrans->TipAmount = wcfResponse->Data->AmountTip;
-//                          EftTrans->SurchargeAmount = wcfResponse->Data->AmountSurcharge;
-//                          LoadEftPosReceipt(wcfResponse->Data->Receipt) ;
-//                        }
-//                   }
-//                  else
-//                   {
-//                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-//                      if(EftTrans != NULL)
-//                       {
-//                          EftTrans->EventCompleted = true;
-//                          EftTrans->Result = eDeclined;
-//                          EftTrans->ResultText = wcfResponse->Data->TransactionResult;
-//                          if(wcfResponse->Data->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
-//                            EftTrans->TimeOut = true;
-//                       }
-//                   }
+                  if(GetResponseStatus(TxnType, wcfResponse))
+                   {    MessageBox("2","2",MB_OK);
+                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+                      if(EftTrans != NULL)
+                       {
+                          EftTrans->EventCompleted = true;
+                          EftTrans->FinalAmount = wcfResponse->AmountTotal;
+                          EftTrans->ResultText = "Eftpos Transaction Completed.";
+                          EftTrans->Result = eAccepted;
+                          EftTrans->CardType = wcfResponse->CardSchemeName;
+                          EftTrans->TipAmount = wcfResponse->AmountGratuity;
+                          //LoadEftPosReceipt(wcfResponse->Data->Receipt) ;
+                        }
+                   }
+                  else
+                   {   MessageBox("3","3",MB_OK);
+                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+                      if(EftTrans != NULL)
+                       {
+                          EftTrans->EventCompleted = true;
+                          EftTrans->Result = eDeclined;
+                          EftTrans->ResultText = wcfResponse->TransactionResult;
+                          if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
+                            EftTrans->TimeOut = true;
+                       }
+                   }
         }
         catch( Exception& exc )
         {
@@ -219,6 +217,15 @@ void __fastcall TEftPosPaymentSense::DoSettlementCutover()
 // ---------------------------------------------------------------------------
 void _fastcall TEftPosPaymentSense::ReprintReceipt()
 {
+    try
+    {
+        CoInitialize(NULL);
+        DoTransaction(1, "DUPLICATE");
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
 }
 // ---------------------------------------------------------------------------
 AnsiString TEftPosPaymentSense::GetRefNumber()
@@ -256,21 +263,41 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
     return terminalIdList;
 }
 //------------------------------------------------------------------------------
-TransactionData* TEftPosPaymentSense::DoPurchase(Currency amtPurchase)
+TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase, UnicodeString transactionType)
 {
-    TransactionData* responseData = new TransactionData();
+    TransactionDataResponse* response = new TransactionDataResponse();
     try
     {
         TransactionRequest * request  = new TransactionRequest();
-        request->Currency = "GBP"; //CurrencyString;
-        request->amount = double(amtPurchase*100);
-        request->TransactionType = "SALE";
+        request->currency = CurrencyString;
+        request->amount = double(amtPurchase);
+        request->transactionType = transactionType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
-        responseData = paymentSenseClient->DoTransaction(authorizationDetails, request);
+        response = paymentSenseClient->DoTransaction(authorizationDetails, request);
     }
     catch( Exception& E )
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
-    return responseData;
+    return response;
+}
+//------------------------------------------------------------------------------------------------
+bool TEftPosPaymentSense::GetResponseStatus(eEFTTransactionType TxnType, TransactionDataResponse* response)
+{
+    bool retValue = false;
+    switch (TxnType)
+    {
+        case TransactionType_PURCHASE:
+        case TransactionType_REFUND:
+        {
+            retValue = false;
+            if(response)
+            {    MessageBox(response->TransactionResult,response->TransactionResult,MB_OK);
+                if(response->TransactionResult.UpperCase().Pos("SUCCESSFUL") != 0)
+                    retValue = true;
+            }
+        }
+        break;
+    }
+    return retValue;
 }

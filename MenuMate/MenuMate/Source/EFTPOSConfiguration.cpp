@@ -44,7 +44,7 @@ bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
         EftPos = new TEftPosPaymentSense();
         EftPos->Initialise();
         if(EftPos->Enabled)
-            MessageBox("Details for Payment Sense integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
+            MessageBox("Details for Payment Sense integration have verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
     }
 }
 //---------------------------------------------------------------------------

@@ -8,7 +8,7 @@ using PaymentSenseIntegration.Enums;
 namespace PaymentSenseIntegration.Domain
 {
     [DataContract]
-    public class TransactionData
+    public class TransactionDataResponse
     {
         [DataMember]
         public string[] Notifications { get; set; }
