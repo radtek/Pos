@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (17/05/2018 12:20:24 a.m. - - $Rev: 25127 $)
+// (17/05/2018 2:19:34 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -403,22 +403,36 @@ class ReceiptLines : public TRemotable {
 private:
   ArrayOfReceiptData FCustomer;
   bool            FCustomer_Specified;
+  ArrayOfstring   FCustomerReceipt;
+  bool            FCustomerReceipt_Specified;
   ArrayOfReceiptData FMerchant;
   bool            FMerchant_Specified;
+  ArrayOfstring   FMerchantReceipt;
+  bool            FMerchantReceipt_Specified;
   void __fastcall SetCustomer(int Index, ArrayOfReceiptData _prop_val)
   {  FCustomer = _prop_val; FCustomer_Specified = true;  }
   bool __fastcall Customer_Specified(int Index)
   {  return FCustomer_Specified;  } 
+  void __fastcall SetCustomerReceipt(int Index, ArrayOfstring _prop_val)
+  {  FCustomerReceipt = _prop_val; FCustomerReceipt_Specified = true;  }
+  bool __fastcall CustomerReceipt_Specified(int Index)
+  {  return FCustomerReceipt_Specified;  } 
   void __fastcall SetMerchant(int Index, ArrayOfReceiptData _prop_val)
   {  FMerchant = _prop_val; FMerchant_Specified = true;  }
   bool __fastcall Merchant_Specified(int Index)
   {  return FMerchant_Specified;  } 
+  void __fastcall SetMerchantReceipt(int Index, ArrayOfstring _prop_val)
+  {  FMerchantReceipt = _prop_val; FMerchantReceipt_Specified = true;  }
+  bool __fastcall MerchantReceipt_Specified(int Index)
+  {  return FMerchantReceipt_Specified;  } 
 
 public:
   __fastcall ~ReceiptLines();
 __published:
   __property ArrayOfReceiptData   Customer = { index=(IS_OPTN|IS_NLBL), read=FCustomer, write=SetCustomer, stored = Customer_Specified };
+  __property ArrayOfstring CustomerReceipt = { index=(IS_OPTN|IS_NLBL), read=FCustomerReceipt, write=SetCustomerReceipt, stored = CustomerReceipt_Specified };
   __property ArrayOfReceiptData   Merchant = { index=(IS_OPTN|IS_NLBL), read=FMerchant, write=SetMerchant, stored = Merchant_Specified };
+  __property ArrayOfstring MerchantReceipt = { index=(IS_OPTN|IS_NLBL), read=FMerchantReceipt, write=SetMerchantReceipt, stored = MerchantReceipt_Specified };
 };
 
 

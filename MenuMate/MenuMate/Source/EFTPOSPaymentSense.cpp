@@ -141,7 +141,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                           EftTrans->Result = eAccepted;
                           EftTrans->CardType = wcfResponse->CardSchemeName;
                           EftTrans->TipAmount = wcfResponse->AmountGratuity;
-                          //LoadEftPosReceipt(wcfResponse->Data->Receipt) ;
+                          LoadEftPosReceipt(wcfResponse->ReceiptLines);
                         }
                    }
                   else
@@ -301,3 +301,26 @@ bool TEftPosPaymentSense::GetResponseStatus(eEFTTransactionType TxnType, Transac
     }
     return retValue;
 }
+//------------------------------------------------------------------------------------------------
+void TEftPosPaymentSense::LoadEftPosReceipt(ReceiptLines* receiptLines)
+{
+    try
+    {
+        LastEftPosReceipt->Clear();
+        for(int i = 0; i < receiptLines->MerchantReceipt.Length; i++)
+        {
+            AnsiString Data = receiptLines->MerchantReceipt[i].t_str();
+            LastEftPosReceipt->Add(Data);
+        }
+        for(int i = 0; i < receiptLines->CustomerReceipt.Length; i++)
+        {
+            AnsiString Data = receiptLines->CustomerReceipt[i].t_str();
+            LastEftPosReceipt->Add(Data);
+        }
+    }
+    catch(Exception &Ex)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//--------------------------------------------------------------------------------------------------------

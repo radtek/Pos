@@ -17,6 +17,7 @@ class TEftPosPaymentSense : public TEftPos
         bool PingTerminal(eEFTTransactionType TxnType);
         TransactionDataResponse* DoTransaction(Currency amtPurchase, UnicodeString transactionType);
         bool GetResponseStatus(eEFTTransactionType TxnType, TransactionDataResponse* response);
+        void LoadEftPosReceipt(ReceiptLines* receiptLines);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();

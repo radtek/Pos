@@ -112,10 +112,9 @@ namespace PaymentSenseIntegration
                                                                                     Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}",
                                                                                                     autorizationDetails.UserName, autorizationDetails.Password))));
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
+
+                    request.amount *= 100; 
                     var serializedJson = JsonConvert.SerializeObject(request);
-
-                  //  var stringContent = new StringContent(serializedJson, UnicodeEncoding.UTF8, "application/json");
-
                     HttpContent httpContent = new StringContent(serializedJson, Encoding.UTF8);
                     httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
@@ -129,7 +128,13 @@ namespace PaymentSenseIntegration
                     autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
 
                     //wait for a period of time or untill you get the transaction finished response.
-                    transactionData = WaitAndGetResponse(autorizationDetails);  
+                    transactionData = WaitAndGetResponse(autorizationDetails);
+
+                    int value = string.Compare(transactionData.TransactionResult, "SUCCESSFUL", true);
+                    if (value== 0)
+                    {
+                        ConvertInToFinalValue(ref transactionData);
+                    }
                 }
             }
             catch (Exception ex)
@@ -166,7 +171,7 @@ namespace PaymentSenseIntegration
                         break;
 
                     //If didn't get response in the mentioned time then also return;
-                    if (watch.Elapsed.TotalMinutes > 2.00)
+                    if (watch.Elapsed.TotalMinutes > 3.00)
                         break; //to do make response as false;
                 }
             }
@@ -236,6 +241,34 @@ namespace PaymentSenseIntegration
                 WriteAndClearStringList();
             }
             return retval;
+        }
+
+        private void ConvertInToFinalValue(ref TransactionDataResponse responseData)
+        {
+            responseData.AmountBase = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountBase) / 100);
+            responseData.AmountCashBack = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountCashBack) / 100);
+            responseData.AmountGratuity = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountGratuity) / 100);
+            responseData.AmountTotal = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountTotal) / 100);
+        }
+
+        private void ArrangeAndAssignReceipts(ReceiptLines receiptLines)
+        {
+            try
+            {
+                foreach (var item in receiptLines.Merchant)
+                {
+                    receiptLines.MerchantReceipt.Add(item.Value);
+                }
+                foreach (var item in receiptLines.Customer)
+                {
+                    receiptLines.CustomerReceipt.Add(item.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception Occured in Arranging Receipts at  :-                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
         }
 
         private void WriteToFile(List<string> list)

@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (17/05/2018 12:20:24 a.m. - - $Rev: 25127 $)
+// (17/05/2018 2:19:34 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -21,7 +21,7 @@
 
 
 
-namespace NS__PaymentSenseWSDL {
+namespace  NS__PaymentSenseWSDL{
 
 _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
