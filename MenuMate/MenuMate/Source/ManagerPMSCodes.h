@@ -53,7 +53,7 @@ class TManagerPMSCodes
         ~TManagerPMSCodes();
         std::map<int,TaxCodesDetails> TaxCodesMap;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
-        std::map<int, TPMSPaymentType> PMSPaymentTypeMap;
+        std::map<int,TPMSPaymentType> PMSPaymentTypeMap;
         void GetTaxCodesDetails(Database::TDBTransaction &DBTransaction, TStringGrid * StringGrid,
                                 std::map<int,TaxCodesDetails> &TaxCodesMap);
         void GetRevenueCodesDetails(Database::TDBTransaction &DBTransaction, TStringGrid * StringGrid,
@@ -75,8 +75,8 @@ class TManagerPMSCodes
         void DeleteMealDetails(Database::TDBTransaction &DBTransaction,int key);
         void UpdateItemSizes(Database::TDBTransaction &DBTransaction,int newValue,int key);
         void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPayment, bool isNewPaymentType, bool isMMPayType);
-        void GetPMSPaymentTypeDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::map<int, TPMSPaymentType> &PMSPaymentTypeMap);
-        void GetPMSPaymentTypeFromDB(Database::TDBTransaction &DBTransaction,std::map<int, TPMSPaymentType> &PMSPaymentTypeMap);
+        void GetPMSPaymentTypeDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::map<int,TPMSPaymentType> &PMSPaymentTypeMap);
+        void GetPMSPaymentTypeFromDB(Database::TDBTransaction &DBTransaction,std::map<int,TPMSPaymentType> &PMSPaymentTypeMap);
         void PopulatePaymenyTypeToGrid(std::map<int, TPMSPaymentType> PMSPaymentTypeMap,TStringGrid * StringGrid);
         void DeletePMSPaymentType(Database::TDBTransaction &DBTransaction,int key);
         void UpdatePMSPaymentType(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPaymentType);

@@ -15,7 +15,7 @@ bool TPMSHelper::LoadRevenueCodes(std::map<int,TRevenueCodeDetails> &RevenueCode
 {
     bool retValue = false;
     RevenueCodesMap.clear();
-  
+
     TIBSQL* queryRevenue = GetRevenueCodesQuery(DBTransaction);
     for(;!queryRevenue->Eof;queryRevenue->Next())
     {
@@ -70,84 +70,4 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
     }
 }
 //----------------------------------------------------------------------------
-void TPMSHelper::LoadPMSPaymentTypes(std::map<int, TPMSPaymentType> &PMSPaymentTypesMapContainer)
-{
-    //InitializePMSDefaultPayment();
-    Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
-    transaction.StartTransaction();
-    try
-    {
-        std::auto_ptr<TManagerPMSCodes> pmsCodes(new TManagerPMSCodes());
-        pmsCodes->GetPMSPaymentTypeFromDB(transaction,PMSPaymentTypesMapContainer);
-        transaction.Commit();
-    }
-    catch(Exception &ex)
-    {
-        transaction.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
-    }
-}
-//---------------------------------------------------------------------------
-void TPMSHelper::InitializePMSDefaultPayment()
-{
-    if(DefaultPaymentInitRequired())
-    {
-        InitDefaultPaymentInDB();
-    }
-}
 
-//---------------------------------------------------------------------------
-bool TPMSHelper::DefaultPaymentInitRequired()
-{
-    bool retValue = false;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    try
-    {
-        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        SelectQuery->Close();
-        SelectQuery->SQL->Text =
-                   "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_NAME like '%Default Payment Category%'";
-        SelectQuery->ExecQuery();
-        UnicodeString value = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
-        if(value.Trim() == "")
-        {
-            retValue = true;
-        }
-        else
-        {
-            retValue = false;
-        }
-        DBTransaction.Commit();
-    }
-    catch(Exception &Ex)
-    {
-        DBTransaction.Rollback();
-    }
-    return retValue;
-}
-
-//---------------------------------------------------------------------------
-void TPMSHelper::InitDefaultPaymentInDB()
-{
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    try
-    {
-        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        UpdateQuery->Close();
-        UpdateQuery->SQL->Text =
-                   "UPDATE PMSPAYMENTSCONFIG SET PMS_PAYTYPE_CODE = :PMS_PAYTYPE_CODE "
-                   "WHERE PMS_PAYTYPE_NAME like '%Default Payment Category%'";
-
-        UpdateQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-        UpdateQuery->ExecQuery();
-        DBTransaction.Commit();
-    }
-    catch(Exception &Ex)
-    {
-        DBTransaction.Rollback();
-    }
-}
-
-//---------------------------------------------------------------------------

@@ -93,9 +93,10 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = true;
         std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
-        //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypesMapContainer);
+        //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
         if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
         {
+
             Enabled = GetRoundingandDefaultAccount();
         }
         else

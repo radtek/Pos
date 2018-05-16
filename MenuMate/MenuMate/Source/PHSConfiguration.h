@@ -75,6 +75,9 @@ private:	// User declarations
    void InitializePMS();
    void LogPMSEnabling();
    bool CanEnablePOSServer();
+   void InitializePMSDefaultPayment();
+   bool DefaultPaymentInitRequired();
+   void InitDefaultPaymentInDB();
 public:		// User declarations
    ePMS PMSType;
 

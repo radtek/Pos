@@ -381,7 +381,6 @@ void TManagerPMSCodes::InsertIntoPMSPaymentsConfig(Database::TDBTransaction &DBT
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in InsertIntoPMSPaymentsConfig",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -420,7 +419,6 @@ void TManagerPMSCodes::UpdatePMSPaymentConfig(Database::TDBTransaction &DBTransa
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in UpdatePMSPaymentConfig",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -457,7 +455,6 @@ void TManagerPMSCodes::GetPMSPaymentTypeFromDB(Database::TDBTransaction &DBTrans
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in GetPMSPaymentTypeFromDB",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -489,7 +486,6 @@ void TManagerPMSCodes::PopulatePaymenyTypeToGrid(std::map<int, TPMSPaymentType> 
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in PopulatePaymenyTypeToGrid",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -506,7 +502,6 @@ void TManagerPMSCodes::DeletePMSPaymentType(Database::TDBTransaction &DBTransact
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in DeletePMSPaymentType",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
@@ -527,10 +522,13 @@ void TManagerPMSCodes::UpdatePMSPaymentType(Database::TDBTransaction &DBTransact
         UpdateQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = pmsPaymentType.PMSPayTypeCode;
         UpdateQuery->ParamByName("PMS_PAYTYPE_ID2")->AsInteger = pmsPaymentType.PMSPayTypeID;
         UpdateQuery->ExecQuery();
+        if(pmsPaymentType.PMSPayTypeCategory == 0)
+        {
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPaymentCategory,pmsPaymentType.PMSPayTypeCode);
+        }
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in UpdatePMSPaymentType",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
