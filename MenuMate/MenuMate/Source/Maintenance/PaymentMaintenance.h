@@ -54,6 +54,7 @@ private:	// User declarations
     void UpdateGlCode(AnsiString GlCode,int paymentKey);
     AnsiString GetGlCode(int paymentKey);
     int GeneratePaymentKey(Database::TDBTransaction &DBTransaction);
+    void MakePaymentinPMS(Database::TDBTransaction &DBTransaction,AnsiString name, bool isElectronicPayment,int key);
 public:		// User declarations
 	TfrmPaymentMaintenance static *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
     bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);

@@ -72,6 +72,7 @@
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
 #include "FiscalPrinterAdapter.h"
+#include "ManagerPMSCodes.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -375,7 +376,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -418,6 +420,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, false,true);
 		}
 		else
 		{
@@ -451,7 +454,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -492,6 +496,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, true,true);
 		}
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
@@ -6728,5 +6733,21 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
         }
     }
     return retVal;
+}
+//--------------------------------------------------------------------------------------
+void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType)
+{
+    TPMSPaymentType pmsPayment;
+    pmsPayment.PMSPayTypeName       = payment.Name;
+    pmsPayment.PMSPayTypeCode       = "";
+    pmsPayment.PMSPayTypeCategory   = eMMCategory;
+    pmsPayment.PMSMMPayTypeLink     = paymentKey;
+    if(payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
+        pmsPayment.isElectronicPayment   = true;
+    else
+        pmsPayment.isElectronicPayment   = false;
+
+    std::auto_ptr<TManagerPMSCodes> managerPMSCodes(new TManagerPMSCodes());
+    managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPayment,isNewPayment, isMMPayType);
 }
 //--------------------------------------------------------------------------------------

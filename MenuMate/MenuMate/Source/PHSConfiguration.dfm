@@ -143,7 +143,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Style = [fsBold]
       ParentFont = False
       ParentColor = True
-      Caption = 'Default Payment Category'
+      Caption = 'Payment Category'
       ButtonColor = clGreen
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -450,8 +450,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Height = -17
       Font.Name = 'Arial'
       Font.Style = [fsBold]
-      Color = 10011108
       ParentFont = False
+      ParentColor = True
       Caption = 'Time Out'
       ButtonColor = clGreen
       LatchedColor = clBtnFace

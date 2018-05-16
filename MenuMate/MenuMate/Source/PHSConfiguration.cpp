@@ -120,6 +120,7 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIDClick(TObject *Sender)
 void __fastcall TfrmPHSConfiguration::FormShow(TObject *Sender)
 {
    InitializePMS();
+
    UpdateGUI();
 }
 //---------------------------------------------------------------------------
@@ -137,7 +138,7 @@ void TfrmPHSConfiguration::UpdateGUI()
 	tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 	tbPointCat->Caption = "Points Category\r" + TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
 	tbCreditCat->Caption = "Credit Category\r" + TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-    tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+    tbPaymentDefCat->Caption = "Default Payment Category\r" ;//+ TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
     tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     // enable default transaction count button for sihot also
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
@@ -254,24 +255,11 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 	}
 	else
 	{
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-        if(PMSType != oracle)
-		    frmTouchKeyboard->MaxLength = 255;
-        else
-            frmTouchKeyboard->MaxLength = 6;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-		frmTouchKeyboard->Caption = "Enter the default Category Number for Payments.";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory = frmTouchKeyboard->KeyboardText;
-			tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-			Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction1.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPaymentCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory);
-			DBTransaction1.Commit();
-		}
+       std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                     (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                                  (this,TDeviceRealTerminal::Instance().DBControl));
+       frmMessageMaintenance->MessageType = ePMSPaymentType;
+       frmMessageMaintenance->ShowModal();
 	}
 }
 //---------------------------------------------------------------------------
@@ -782,5 +770,4 @@ void __fastcall TfrmPHSConfiguration::tbTimeOutMouseClick(TObject *Sender)
 		}
 	}
 }
-//---------------------------------------------------------------------------
-
+//-------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 #include "GlobalSettings.h"
 #include "StringTools.h"
 #include "ManagerPanasonic.h"
+#include "ManagerPMSCodes.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -155,6 +156,8 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+
+          MakePaymentinPMS(DBTransaction,CASH, false,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Cheque"))
@@ -174,6 +177,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Cheque", false,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Eftpos"))
@@ -196,6 +200,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Eftpos", true,PayKey);
       }
       if(!IsPaymentExist(DBTransaction,"Amex"))
       {
@@ -216,6 +221,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Amex", false,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Diners"))
@@ -237,6 +243,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Diners", true,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Visa"))
@@ -258,6 +265,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Visa", true,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Master Card"))
@@ -279,6 +287,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Master Card", true,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Tips"))
@@ -299,6 +308,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+          MakePaymentinPMS(DBTransaction,"Tips", false,PayKey);
       }
       DBTransaction.Commit();
       UpdateList();
@@ -440,6 +450,17 @@ void __fastcall TfrmPaymentMaintenance::btnGlCodeMouseClick(TObject *Sender)
       MessageBox("Please Select a Payment Type to work with.", "Error", MB_ICONWARNING + MB_OK);
    }
 }
-
+//---------------------------------------------------------------------------
+void TfrmPaymentMaintenance::MakePaymentinPMS(Database::TDBTransaction &DBTransaction,AnsiString name, bool isElectronicPayment,int key)
+{
+    TPMSPaymentType pmsPaymentType;
+    pmsPaymentType.PMSPayTypeName = name;
+    pmsPaymentType.PMSPayTypeCode = "";
+    pmsPaymentType.PMSPayTypeCategory = eMMCategory;
+    pmsPaymentType.PMSMMPayTypeLink = key;
+    pmsPaymentType.isElectronicPayment = isElectronicPayment;
+    std::auto_ptr<TManagerPMSCodes> managerPMSCodes(new TManagerPMSCodes());
+    managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPaymentType,true, true);
+}
 //---------------------------------------------------------------------------
 
