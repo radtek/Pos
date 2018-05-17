@@ -41,7 +41,8 @@ void TEftPosPaymentSense::Initialise()
              UnicodeString strValue = "Payment Sense EFTPOS Terminal was not available.\r";
              strValue += "Please ensure below mentioned things:-.\r";
              strValue += "1. Details are correct.\r";
-             strValue += "2. POS & EFTPOS terminal are connected to network.";
+             strValue += "2. POS & EFTPOS terminal are connected to network.\r";
+             strValue += "3. EFTPOS terminal is not busy.";
              MessageBox(strValue,"Information",MB_OK+MB_ICONINFORMATION);
              Enabled = false;
          }
@@ -67,8 +68,8 @@ void TEftPosPaymentSense::DoControlPannel()
 	{
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		//frmDropDown->AddButton("EFTPOS Logon",&DoLogon);
-		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
-		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
+//		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
+//		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
      //   frmDropDown->AddButton("Terminal List",&GetAllTerminals);
 		if(frmDropDown->ShowModal() == mrOk)
@@ -117,45 +118,39 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                     case TransactionType_PURCHASE :
                         wcfResponse = DoTransaction(AmtPurchase, "SALE");
                         break;
-                    case TransactionType_CASH_ADVANCE :
-                     //   wcfResponse = smartConnectClient->CashOutOnly(transactionType, AmtCash);
-                        break;
-                    case TransactionType_PURCHASE_PLUS_CASH :
-//                        wcfResponse = DoTransaction(AmtPurchase, "REFUND");
-                        break;
                     case TransactionType_REFUND :
                         wcfResponse = DoTransaction(AmtPurchase, "REFUND");
                         break;
                     case TransactionType_INQUIRY :
-                      //   wcfResponse = smartConnectClient->GetTransactionResult(transactionType);
+                      wcfResponse = DoTransaction(1, "DUPLICATE");
                       break;
-                }
-                  if(GetResponseStatus(TxnType, wcfResponse))
-                   {    MessageBox("2","2",MB_OK);
-                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-                      if(EftTrans != NULL)
-                       {
-                          EftTrans->EventCompleted = true;
-                          EftTrans->FinalAmount = wcfResponse->AmountTotal;
-                          EftTrans->ResultText = "Eftpos Transaction Completed.";
-                          EftTrans->Result = eAccepted;
-                          EftTrans->CardType = wcfResponse->CardSchemeName;
-                          EftTrans->TipAmount = wcfResponse->AmountGratuity;
-                          LoadEftPosReceipt(wcfResponse->ReceiptLines);
-                        }
+               }
+               if(GetResponseStatus(TxnType, wcfResponse))
+               {
+                  TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+                  if(EftTrans != NULL)
+                   {
+                      EftTrans->EventCompleted = true;
+                      EftTrans->FinalAmount = wcfResponse->AmountTotal;
+                      EftTrans->ResultText = "Eftpos Transaction Completed.";
+                      EftTrans->Result = eAccepted;
+                      EftTrans->CardType = wcfResponse->CardSchemeName;
+                      EftTrans->TipAmount = wcfResponse->AmountGratuity;
+                      LoadEftPosReceipt(wcfResponse->ReceiptLines);
+                    }
+               }
+               else
+               {    
+                  TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+                  if(EftTrans != NULL)
+                   {
+                      EftTrans->EventCompleted = true;
+                      EftTrans->Result = eDeclined;
+                      EftTrans->ResultText = wcfResponse->TransactionResult;
+                      if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 || wcfResponse->TransactionResult.UpperCase().Pos("TIME OUT") != 0)
+                        EftTrans->TimeOut = true;
                    }
-                  else
-                   {   MessageBox("3","3",MB_OK);
-                      TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-                      if(EftTrans != NULL)
-                       {
-                          EftTrans->EventCompleted = true;
-                          EftTrans->Result = eDeclined;
-                          EftTrans->ResultText = wcfResponse->TransactionResult;
-                          if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
-                            EftTrans->TimeOut = true;
-                       }
-                   }
+               }
         }
         catch( Exception& exc )
         {
@@ -240,20 +235,11 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
     {
         CoInitialize(NULL);
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
-        // = new PACTerminalWrapper();
-//        authorizationDetails = new AuthorizationDetails();
-//        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
-//        authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
-//        authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
-        MessageBox(authorizationDetails->URL,authorizationDetails->URL,MB_OK);
         PACTerminalWrapper* terminalList = paymentSenseClient->GetAllCardTerminals(authorizationDetails);
-        //MessageBox("2","2",MB_OK);
-       // ArrayOfPACTerminal terminalArray;
         for(int index = 0; index < terminalList->Terminals.Length; index++)
         {
             PACTerminal *terminal = terminalList->Terminals[index];
             terminalIdList.push_back(terminal->TPI);
-            MessageBox(terminal->TPI,"terminal->TPI",MB_OK);
         }
     }
     catch( Exception& E )
@@ -289,6 +275,7 @@ bool TEftPosPaymentSense::GetResponseStatus(eEFTTransactionType TxnType, Transac
     {
         case TransactionType_PURCHASE:
         case TransactionType_REFUND:
+        case TransactionType_INQUIRY :
         {
             retValue = false;
             if(response)
@@ -309,14 +296,18 @@ void TEftPosPaymentSense::LoadEftPosReceipt(ReceiptLines* receiptLines)
         LastEftPosReceipt->Clear();
         for(int i = 0; i < receiptLines->MerchantReceipt.Length; i++)
         {
-            AnsiString Data = receiptLines->MerchantReceipt[i].t_str();
+            AnsiString Data = receiptLines->MerchantReceipt[i].Trim().t_str();
             LastEftPosReceipt->Add(Data);
+            AddNewLine(Data);
         }
+        LastEftPosReceipt->Add("\r");
         for(int i = 0; i < receiptLines->CustomerReceipt.Length; i++)
         {
-            AnsiString Data = receiptLines->CustomerReceipt[i].t_str();
+            AnsiString Data = receiptLines->CustomerReceipt[i].Trim().t_str();
             LastEftPosReceipt->Add(Data);
+            AddNewLine(Data);
         }
+        LastEftPosReceipt->Add("\r");
     }
     catch(Exception &Ex)
     {
@@ -324,3 +315,14 @@ void TEftPosPaymentSense::LoadEftPosReceipt(ReceiptLines* receiptLines)
     }
 }
 //--------------------------------------------------------------------------------------------------------
+bool TEftPosPaymentSense::IsCashOutSupported()
+{
+    return false;
+}
+//----------------------------------------------------------------------------
+void TEftPosPaymentSense::AddNewLine(AnsiString data)
+{
+    if(data.Pos("HANDSET") || data.Pos("PPC") || data.Pos("CONTACTLESS") || data.Pos("TOTAL") || data.Pos("TXN") || data.Pos("SIGN BELOW")
+            ||data.Pos("PLEASE RETAIN RECEIPT"))
+                LastEftPosReceipt->Add("\r");
+}

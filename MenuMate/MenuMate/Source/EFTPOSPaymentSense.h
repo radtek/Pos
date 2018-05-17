@@ -18,6 +18,7 @@ class TEftPosPaymentSense : public TEftPos
         TransactionDataResponse* DoTransaction(Currency amtPurchase, UnicodeString transactionType);
         bool GetResponseStatus(eEFTTransactionType TxnType, TransactionDataResponse* response);
         void LoadEftPosReceipt(ReceiptLines* receiptLines);
+        void AddNewLine(AnsiString data);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();
@@ -42,5 +43,6 @@ public:
         void __fastcall ReprintReceipt();
         AnsiString GetRefNumber();
         std::vector<AnsiString> GetAllTerminals();
+        bool IsCashOutSupported();
 };
 #endif

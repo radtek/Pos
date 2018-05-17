@@ -1346,6 +1346,10 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                     {
                                         messageEftPos = "Transaction Cancelled/Timed-Out.\rPlease ensure Card Terminal is not holding any transaction";
                                     }
+                                    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                    {
+                                        messageEftPos = "Transaction " + EftTrans->ResultText;
+                                    }
                                     else
                                     {
                                         messageEftPos = "Transaction Cancelled/Timed-Out.";
@@ -3309,7 +3313,12 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		Printout->PrintFormat->Line->FontInfo.Reset();
 		Printout->PrintFormat->Line->ColCount = 1;
 		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-		Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+
+        if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
+		    Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        else
+           Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+
 		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
 		Printout->PrintFormat->AddLine();
 		Printout->PrintFormat->NewLine();
