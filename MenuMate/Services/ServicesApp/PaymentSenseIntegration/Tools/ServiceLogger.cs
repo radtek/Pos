@@ -15,7 +15,7 @@ using NLog;
 
 #endregion
 
-namespace SmartConnectIntegration.Tools
+namespace PaymentSenseIntegration.Tools
 {
     public class ServiceLogger
     {
