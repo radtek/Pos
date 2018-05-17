@@ -630,7 +630,7 @@ AnsiString TSiHotDataProcessor::GetPMSPaymentCode(TPayment *payment,std::map<int
         }
         else
         {
-            if(it->second.PMSPayTypeCode == payment->CardType)
+            if(it->second.PMSPayTypeName == payment->CardType)
             {
                 value = it->second.PMSPayTypeCode;
                 break;
