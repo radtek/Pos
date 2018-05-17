@@ -58,6 +58,7 @@ private:	// User declarations
 public:		// User declarations
 	TfrmPaymentMaintenance static *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
     bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
+    bool PaymentExistsInPMS(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
 
 };
 //---------------------------------------------------------------------------

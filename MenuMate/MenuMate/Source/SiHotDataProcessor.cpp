@@ -620,10 +620,21 @@ AnsiString TSiHotDataProcessor::GetPMSPaymentCode(TPayment *payment,std::map<int
 
     for(;it != paymentsMap.end(); ++it)
     {
-        if(it->second.PMSPayTypeName == payment->Name)
+        if(!payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
         {
-            value = it->second.PMSPayTypeCode;
-            break;
+            if(it->second.PMSPayTypeName == payment->Name)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+        else
+        {
+            if(it->second.PMSPayTypeCode == payment->CardType)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
         }
     }
     return value;
@@ -691,9 +702,13 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 amountV                     = RoundTo(amountV,-2);
                 siHotPayment.Amount         = amountV;//(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
+                {
                     siHotPayment.Description    = payment->CardType;
+                }
                 else
+                {
                     siHotPayment.Description    = payment->Name;
+                }
                 siHotPayment.Billno         = billNo;
                 siHotPayment.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
                 siHotPayment.Cashier        = TDeviceRealTerminal::Instance().User.Name;

@@ -197,7 +197,6 @@ void TfrmMessageMaintenance::ShowMessages()
     sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 2 / 3;
     sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
     }
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
@@ -1177,7 +1176,6 @@ void TfrmMessageMaintenance::UpdatePMSPaymentType(Database::TDBTransaction &DBTr
                 catch(Exception &Ex)
                 {
                     DBTransaction.Rollback();
-                    MessageBox(Ex.Message,"Exception in UpdatePMSPaymentType1",MB_OK);
                     TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
                 }
                 ShowMessages();
@@ -1191,7 +1189,6 @@ void TfrmMessageMaintenance::UpdatePMSPaymentType(Database::TDBTransaction &DBTr
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in UpdatePMSPaymentType2",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }

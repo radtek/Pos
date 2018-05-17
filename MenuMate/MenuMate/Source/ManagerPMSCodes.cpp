@@ -346,7 +346,8 @@ void TManagerPMSCodes::SetPMSPaymentType(Database::TDBTransaction &DBTransaction
     }
     else
     {
-        UpdatePMSPaymentType(DBTransaction,pmsPayment);// Update Query
+        //UpdatePMSPaymentType(DBTransaction,pmsPayment);// Update Query
+        UpdatePMSPaymentConfig(DBTransaction,pmsPayment);
     }
 }
 //----------------------------------------------------------------------------
@@ -410,6 +411,7 @@ void TManagerPMSCodes::UpdatePMSPaymentConfig(Database::TDBTransaction &DBTransa
                    " WHERE  PMS_MM_PAYTYPELINK      = :PMS_MM_PAYTYPELINK ";
 
         UpdateQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = pmsPayment.PMSPayTypeName;
+        UpdateQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsString = pmsPayment.PMSPayTypeCategory;
         if(pmsPayment.isElectronicPayment)
             UpdateQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
         else

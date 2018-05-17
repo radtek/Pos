@@ -390,7 +390,23 @@ bool TfrmPaymentMaintenance::IsPaymentExist(Database::TDBTransaction &DBTransact
     }
     return retVal;
 }
-
+//-----------------------------------------------------------------------------
+bool TfrmPaymentMaintenance::PaymentExistsInPMS(Database::TDBTransaction &DBTransaction,AnsiString PaymentName)
+{
+    bool retVal = false;
+    TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
+    IBInternalQuery->SQL->Text =  "SELECT PMS_PAYTYPE_ID FROM PMSPAYMENTSCONFIG WHERE UPPER(PMS_PAYTYPE_NAME) = :PMS_PAYTYPE_NAME"
+                                  " OR PMS_PAYTYPE_NAME = :MODIFIEDPAYMENTNAME ";
+    IBInternalQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = PaymentName.UpperCase();
+    IBInternalQuery->ParamByName("MODIFIEDPAYMENTNAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(PaymentName);
+    IBInternalQuery->ExecQuery();
+    if(!IBInternalQuery->Eof)
+    {
+      retVal = true;
+    }
+    return retVal;
+}
+//-----------------------------------------------------------------------------
 AnsiString TfrmPaymentMaintenance::GetGlCode(int paymentKey)
 {
     AnsiString retVal = "";

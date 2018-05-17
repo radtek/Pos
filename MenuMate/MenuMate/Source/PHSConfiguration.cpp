@@ -154,7 +154,6 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         //tbDefTransAccount->Caption = "ServiceCharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
         tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
@@ -173,7 +172,6 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
         TouchBtn1->Enabled = false;
@@ -217,7 +215,6 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
         tbServingTime->Enabled = false;
@@ -509,33 +506,6 @@ void __fastcall TfrmPHSConfiguration::TouchBtn1MouseClick(TObject *Sender)
          }
       }
    }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmPHSConfiguration::tbTipAccountClick(TObject *Sender)
-{
-    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
-	{
-		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
-	}
-	else
-	{
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 255;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->TipAccount;
-		frmTouchKeyboard->Caption = "Enter the Tip Account";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->TipAccount = frmTouchKeyboard->KeyboardText;
-			tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSTipAccount,TDeviceRealTerminal::Instance().BasePMS->TipAccount);
-            DBTransaction1.Commit();
-		}
-	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbExpensesAccountClick(TObject *Sender)

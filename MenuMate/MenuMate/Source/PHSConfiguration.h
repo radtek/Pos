@@ -32,7 +32,6 @@ __published:	// IDE-managed Components
    TTouchBtn *tbRoundingCategory;
    TTouchBtn *TouchBtn1;
    TTouchBtn *btnOk;
-   TTouchBtn *tbTipAccount;
    TTouchBtn *tbExpensesAccount;
    TTouchBtn *tbServiceCharge;
     TLabel *Label1;
@@ -58,7 +57,6 @@ __published:	// IDE-managed Components
 	void __fastcall tbSurchargeCatClick(TObject *Sender);
 	void __fastcall tbRoundingCategoryClick(TObject *Sender);
    void __fastcall TouchBtn1MouseClick(TObject *Sender);
-    void __fastcall tbTipAccountClick(TObject *Sender);
     void __fastcall tbExpensesAccountClick(TObject *Sender);
     void __fastcall tbServiceChargeMouseClick(TObject *Sender);
     void __fastcall cbEnableCustomerJourneyClick(TObject *Sender);
