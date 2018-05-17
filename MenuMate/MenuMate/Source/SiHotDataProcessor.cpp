@@ -701,14 +701,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 double amountV              = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
                 amountV                     = RoundTo(amountV,-2);
                 siHotPayment.Amount         = amountV;//(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
-                if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
-                {
-                    siHotPayment.Description    = payment->CardType;
-                }
-                else
-                {
-                    siHotPayment.Description    = payment->Name;
-                }
+                siHotPayment.Description    = payment->Name;
                 siHotPayment.Billno         = billNo;
                 siHotPayment.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
                 siHotPayment.Cashier        = TDeviceRealTerminal::Instance().User.Name;
