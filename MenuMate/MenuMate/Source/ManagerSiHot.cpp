@@ -6,8 +6,7 @@
 #include "ManagerSiHot.h"
 #include "SiHotDataProcessor.h"
 #include "MMMessageBox.h"
-#include "DeviceRealterminal.h"
-#include "SiHotInterface.h"
+//#include "SiHotInterface.h"
 #include "Processing.h"
 #include "PMSHelper.h"
 //---------------------------------------------------------------------------

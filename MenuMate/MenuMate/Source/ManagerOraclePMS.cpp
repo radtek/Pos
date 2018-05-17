@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "ManagerOraclePMS.h"
-#include "DeviceRealterminal.h"
 #include "MMMessageBox.h"
 #include "OracleManagerDB.h"
 #include "OracleTCPIP.h"

@@ -40,7 +40,7 @@ class TBasePMS
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
-        std::map<int, TPMSPaymentType> PMSPaymentTypesMapContainer;
+//        std::map<int, TPMSPaymentType> PMSPaymentTypeMap;
         public :
         bool Registered;
         bool nabled;

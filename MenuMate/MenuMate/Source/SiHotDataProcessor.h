@@ -6,7 +6,7 @@
 #include "DeviceRealTerminal.h"
 #include "DBOrder.h"
 #include "SiHotInterface.h"
-#include "SiHotDataObjects.h"
+//#include "SiHotDataObjects.h"
 //#include "ManagerPMSCodes.h"
 //---------------------------------------------------------------------------
 
