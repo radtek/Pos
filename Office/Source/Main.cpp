@@ -32,7 +32,7 @@
 #include "MMReportData.h"
 #include "ExportForm.h"
 #include "CashupForm.h"
-#include <dbxdsnint.h>
+#include <dbxdsnint.h>          
 
 #include <Registry.hpp>
 #include "MMRegistry.h"
@@ -271,7 +271,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 	bool Registered;
 	unsigned int Modules;
 	dmMMData->Registered(&Registered, &Modules);
-	if (Registered)
+	/*if (Registered)
 	{
 		//btnStock->Enabled = !(Modules & eMenuMateDirect);
 		btnLoyalty->Enabled = (Modules & eRegMembers);
@@ -283,8 +283,13 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		btnReports->Enabled = false;
 		btnBackup->Enabled = false;
 		btnWages->Enabled = false;
-	}
-
+	} */
+    btnLoyalty->Enabled = true;
+    btnStock->Enabled = true;
+    btnLoyalty->Enabled = true;
+    btnReports->Enabled = true;
+    btnBackup->Enabled = true;
+    btnWages->Enabled = true;
 		//................................
 
 		InitXeroIntegration();

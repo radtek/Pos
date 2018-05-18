@@ -180,7 +180,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           MakePaymentinPMS(DBTransaction,"Cheque", false,PayKey);
       }
 
-      if(!IsPaymentExist(DBTransaction,"Eftpos"))
+      if(!IsPaymentExist(DBTransaction,"EFTPOS"))
       {
           IBInternalQuery->Close();
           PayKey = GeneratePaymentKey(DBTransaction);
@@ -202,7 +202,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
           MakePaymentinPMS(DBTransaction,"Eftpos", true,PayKey);
       }
-      if(!IsPaymentExist(DBTransaction,"Amex"))
+      if(!IsPaymentExist(DBTransaction,"AMEX"))
       {
           IBInternalQuery->Close();
           PayKey = GeneratePaymentKey(DBTransaction);
@@ -221,10 +221,10 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Amex", false,PayKey);
+          MakePaymentinPMS(DBTransaction,"AMEX", false,PayKey);
       }
 
-      if(!IsPaymentExist(DBTransaction,"Diners"))
+      if(!IsPaymentExist(DBTransaction,"DINERS"))
       {
           IBInternalQuery->Close();
           PayKey = GeneratePaymentKey(DBTransaction);
@@ -243,10 +243,10 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Diners", true,PayKey);
+          MakePaymentinPMS(DBTransaction,"DINERS", true,PayKey);
       }
 
-      if(!IsPaymentExist(DBTransaction,"Visa"))
+      if(!IsPaymentExist(DBTransaction,"VISA"))
       {
           IBInternalQuery->Close();
           PayKey = GeneratePaymentKey(DBTransaction);
@@ -265,10 +265,10 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Visa", true,PayKey);
+          MakePaymentinPMS(DBTransaction,"VISA", true,PayKey);
       }
 
-      if(!IsPaymentExist(DBTransaction,"Master Card"))
+      if(!IsPaymentExist(DBTransaction,"MASTERCARD"))
       {
           IBInternalQuery->Close();
           PayKey = GeneratePaymentKey(DBTransaction);
@@ -287,7 +287,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
           if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
             PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Master Card", true,PayKey);
+          MakePaymentinPMS(DBTransaction,"MASTERCARD", true,PayKey);
       }
 
       if(!IsPaymentExist(DBTransaction,"Tips"))
