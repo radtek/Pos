@@ -145,7 +145,7 @@ namespace PaymentSenseIntegration
                     //wait for a period of time or untill you get the transaction finished response.
                     transactionData = WaitAndGetResponse(autorizationDetails);
 
-                    int value = string.Compare(transactionData.TransactionResult, "SUCCESSFUL", true);
+                    int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
                     if (value== 0)
                     {
                         ConvertInToFinalValue(ref transactionData);
@@ -190,8 +190,9 @@ namespace PaymentSenseIntegration
                     //If didn't get response in the mentioned time then also return;
                     if (watch.Elapsed.TotalMinutes > 3.00)
                     {
+                        response.TransactionResult = "TIME OUT";
                         stringList.Add("====================Didn't get reponse in specified time interval. SO Time out occured. ========================================================");
-                        break; //to do make response as false;
+                        break; 
                     }
                 }
             }
@@ -290,14 +291,14 @@ namespace PaymentSenseIntegration
                 {
                     foreach (var item in data.ReceiptLines.Merchant)
                     {
-                        data.ReceiptLines.MerchantReceipt.Add(item.Value);
+                        data.ReceiptLines.MerchantReceipt.Add(item.Value.TrimStart());
                     }
                 }
                 if (data.ReceiptLines.CustomerReceipt != null)
                 {
                     foreach (var item in data.ReceiptLines.Customer)
                     {
-                        data.ReceiptLines.CustomerReceipt.Add(item.Value);
+                        data.ReceiptLines.CustomerReceipt.Add(item.Value.TrimStart());
                     }
                 }
             }
@@ -312,6 +313,7 @@ namespace PaymentSenseIntegration
         {
             try
             {
+                list.Add("=================================================================================");
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
@@ -352,6 +354,7 @@ namespace PaymentSenseIntegration
                         }
                     }
                 }
+                list.Add("  ");
             }
             catch (Exception ex)
             {
