@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 616
+  ClientHeight = 670
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 9
     Top = 8
     Width = 600
-    Height = 601
+    Height = 657
     Color = 10011108
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -33,7 +33,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     TabOrder = 0
     DesignSize = (
       600
-      601)
+      657)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -264,6 +264,25 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbRoundingCategoryClick
     end
+    object tbTipAccount: TTouchBtn
+      Left = 16
+      Top = 422
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Tip Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbTipAccountClick
+    end
     object tbExpensesAccount: TTouchBtn
       Left = 16
       Top = 367
@@ -304,7 +323,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbRevenueCodes: TTouchBtn
       Left = 16
-      Top = 422
+      Top = 477
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -372,7 +391,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 15
+      TabOrder = 16
       OnClick = cbEnableCustomerJourneyClick
     end
     object cbMakeOracleServer: TCheckBox
@@ -380,12 +399,12 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Top = 495
       Width = 11
       Height = 17
-      TabOrder = 16
+      TabOrder = 17
       OnClick = cbMakePOSServer
     end
     object tbOracleInterfaceIP: TTouchBtn
       Left = 16
-      Top = 477
+      Top = 532
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -423,7 +442,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbTimeOut: TTouchBtn
       Left = 16
-      Top = 532
+      Top = 587
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -445,7 +464,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 615
     Top = 8
     Width = 137
-    Height = 601
+    Height = 657
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

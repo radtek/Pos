@@ -140,175 +140,232 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 
       if(!IsPaymentExist(DBTransaction,CASH))
       {
-          PayKey = GeneratePaymentKey(DBTransaction);
-          Properties = "-" + IntToStr(ePayTypeOpensCashDrawer) + "-" + IntToStr(ePayTypeCash)  + "-";
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = CASH;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGreen;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 0;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = 0.10;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeOpensCashDrawer);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCash);
+          if(!PaymentExistsInPMS(DBTransaction, CASH))
+          {
+              PayKey = GeneratePaymentKey(DBTransaction);
+              Properties = "-" + IntToStr(ePayTypeOpensCashDrawer) + "-" + IntToStr(ePayTypeCash)  + "-";
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = CASH;
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGreen;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 0;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = 0.10;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeOpensCashDrawer);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCash);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
 
-          MakePaymentinPMS(DBTransaction,CASH, false,PayKey);
+              MakePaymentinPMS(DBTransaction,CASH, false,PayKey);
+          }
+          else
+          {
+              MessageBox("Cash Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"Cheque"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Cheque";
-          Properties = "-0-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clBlue;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 1;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
+          if(!PaymentExistsInPMS(DBTransaction, "Cheque"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Cheque";
+              Properties = "-0-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clBlue;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 1;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Cheque", false,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"Cheque", false,PayKey);
+          }
+          else
+          {
+              MessageBox("Cheque Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"EFTPOS"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Eftpos";
-          Properties = "-" + IntToStr(ePayTypeAllowCashOut) + "-" + IntToStr(ePayTypeElectronicTransaction)  + "-" + IntToStr(ePayTypeCheckAccepted) +"-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clTeal;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 2;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeAllowCashOut);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+          if(!PaymentExistsInPMS(DBTransaction, "EFTPOS"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "EFTPOS";
+              Properties = "-" + IntToStr(ePayTypeAllowCashOut) + "-" + IntToStr(ePayTypeElectronicTransaction)  + "-" + IntToStr(ePayTypeCheckAccepted) +"-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clTeal;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 2;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeAllowCashOut);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Eftpos", true,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"EFTPOS", true,PayKey);
+          }
+          else
+          {
+              MessageBox("EFTPOS Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
       if(!IsPaymentExist(DBTransaction,"AMEX"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Amex";
-          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clAqua;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 3;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+          if(!PaymentExistsInPMS(DBTransaction, "AMEX"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "AMEX";
+              Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clAqua;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 3;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"AMEX", false,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"AMEX", true,PayKey);
+          }
+          else
+          {
+              MessageBox("AMEX Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"DINERS"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Diners";
-          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clCream;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 4;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+          if(!PaymentExistsInPMS(DBTransaction, "DINERS"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "DINERS";
+              Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clCream;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 4;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"DINERS", true,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"DINERS", true,PayKey);
+          }
+          else
+          {
+              MessageBox("DINERS Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"VISA"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Visa";
-          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clWhite;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 5;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+          if(!PaymentExistsInPMS(DBTransaction, "VISA"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "VISA";
+              Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clWhite;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 5;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"VISA", true,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"VISA", true,PayKey);
+          }
+          else
+          {
+              MessageBox("VISA Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"MASTERCARD"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Master Card";
-          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clOlive;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 6;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
+          if(!PaymentExistsInPMS(DBTransaction, "MASTERCARD"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "MASTERCARD";
+              Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clOlive;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 6;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"MASTERCARD", true,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              MakePaymentinPMS(DBTransaction,"MASTERCARD", true,PayKey);
+          }
+          else
+          {
+              MessageBox("MASTERCARD Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
 
       if(!IsPaymentExist(DBTransaction,"Tips"))
       {
-          IBInternalQuery->Close();
-          PayKey = GeneratePaymentKey(DBTransaction);
-          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
-          IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Tips";
-          Properties = "-" + IntToStr(ePayTypeCustomSurcharge) + "-";
-          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
-          IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGray;
-          IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 7;
-          IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
-          IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 15;
-          IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-          IBInternalQuery->ExecQuery();
-          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCustomSurcharge);
+          if(!PaymentExistsInPMS(DBTransaction, "Tips"))
+          {
+              IBInternalQuery->Close();
+              PayKey = GeneratePaymentKey(DBTransaction);
+              IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
+              IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Tips";
+              Properties = "-" + IntToStr(ePayTypeCustomSurcharge) + "-";
+              IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
+              IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGray;
+              IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 7;
+              IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
+              IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 15;
+              IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+              IBInternalQuery->ExecQuery();
+              PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCustomSurcharge);
 
-          if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-          MakePaymentinPMS(DBTransaction,"Tips", false,PayKey);
+              if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+                PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+              // Not required for Tips as they already are present as separate enitity under PMS
+              //MakePaymentinPMS(DBTransaction,"Tips", false,PayKey);
+          }
+          else
+          {
+              MessageBox("Tips Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+          }
       }
       DBTransaction.Commit();
       UpdateList();

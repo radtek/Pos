@@ -6737,6 +6737,10 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
 //--------------------------------------------------------------------------------------
 void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType)
 {
+    //contains tip as property only  this is required to not insert & update such payment type as it is present as separate entity under PMS config
+    if(payment.GetPaymentAttribute(ePayTypeCustomSurcharge) && payment.GetPropertyString().Trim().Length() == 3)
+        return;
+
     TPMSPaymentType pmsPayment;
     pmsPayment.PMSPayTypeName       = payment.Name;
     pmsPayment.PMSPayTypeCode       = "";
