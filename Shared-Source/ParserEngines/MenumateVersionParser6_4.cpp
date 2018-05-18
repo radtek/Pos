@@ -1937,6 +1937,10 @@ void TApplyParser::PopulateMMPaymentTypes(TDBControl* const inDBControl)
 
         for (; !SelectQuery->Eof; SelectQuery->Next())
         {
+            AnsiString tipProperties = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(tipProperties.Pos("-7-") && tipProperties.Length() == 3)
+                continue;
+
             InsertQuery->Close();
             InsertQuery->SQL->Text = "INSERT INTO  PMSPAYMENTSCONFIG (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
                                      " PMS_PAYTYPE_CATEGORY, PMS_MM_PAYTYPELINK, IS_ELECTRONICPAYMENT) VALUES "
@@ -1952,7 +1956,7 @@ void TApplyParser::PopulateMMPaymentTypes(TDBControl* const inDBControl)
             InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger =  1;
             InsertQuery->ParamByName("PMS_MM_PAYTYPELINK")->AsInteger   =  SelectQuery->FieldByName("PAYMENT_KEY")->AsInteger;
             UnicodeString valueFetched = SelectQuery->FieldByName("PROPERTIES")->AsString;
-            if(valueFetched.Pos("19"))
+            if(valueFetched.Pos("-3-"))
                 InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
             else
                 InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
