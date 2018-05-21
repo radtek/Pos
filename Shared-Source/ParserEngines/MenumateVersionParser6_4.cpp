@@ -1699,6 +1699,7 @@ void TApplyParser::update6_50Tables()
 {
     Create6_50Generator(_dbControl);
     Alter6_50Tables(_dbControl);
+    Create6_50Table(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
@@ -1869,10 +1870,10 @@ void TApplyParser::AlterTable6_49MallExportSales(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
 {
-    if(!generatorExists("GEN_EFTPOSTRANSAC_IDENTFIER", _dbControl))
+    if(!generatorExists("GEN_PMSPAYTYPEID", _dbControl))
 	{
-		executeQuery("CREATE GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER;", inDBControl);
-		executeQuery("SET GENERATOR GEN_EFTPOSTRANSAC_IDENTFIER TO 0;", inDBControl);
+		executeQuery("CREATE GENERATOR GEN_PMSPAYTYPEID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSPAYTYPEID TO 0;", inDBControl);
 	}
     if(!generatorExists("GEN_ADYENSERVICEID", _dbControl))
 	{
@@ -1894,6 +1895,160 @@ void TApplyParser::Alter6_50Tables(TDBControl* const inDBControl)
         "ALTER VARCHAR_VAL TYPE VARCHAR(200) ; ",
 		inDBControl);
 	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_50Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSPAYMENTSCONFIG", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSPAYMENTSCONFIG "
+        "( "
+        "  PMS_PAYTYPE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  PMS_PAYTYPE_NAME VARCHAR(50),                "
+        "  PMS_PAYTYPE_CODE VARCHAR(10),                " // length to be checked
+        "  PMS_PAYTYPE_CATEGORY INTEGER,                "
+        "  PMS_MM_PAYTYPELINK INTEGER,                  "
+        "  IS_ELECTRONICPAYMENT T_TRUEFALSE DEFAULT 'F'  "
+        ");",
+		inDBControl );    //PAYMENT_KEY
+        executeQuery(
+		"ALTER TABLE PMSPAYMENTSCONFIG ADD CONSTRAINT PMS_PAYTYPE_CONSTRAINT "
+		"FOREIGN KEY (PMS_MM_PAYTYPELINK) REFERENCES PAYMENTTYPES (PAYMENT_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+        ModifyElectronicsPayments(_dbControl);
+        PopulateMMPaymentTypes(_dbControl);
+        PopulateDefaultPaymentType(_dbControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateMMPaymentTypes(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *InsertQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *GeneratorQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PAYMENTTYPES ";
+        SelectQuery->ExecQuery();
+
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {
+            AnsiString tipProperties = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(tipProperties.Pos("-7-") && tipProperties.Length() == 3)
+                continue;
+
+            InsertQuery->Close();
+            InsertQuery->SQL->Text = "INSERT INTO  PMSPAYMENTSCONFIG (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                                     " PMS_PAYTYPE_CATEGORY, PMS_MM_PAYTYPELINK, IS_ELECTRONICPAYMENT) VALUES "
+                                     " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                                     " :PMS_PAYTYPE_CATEGORY, :PMS_MM_PAYTYPELINK, :IS_ELECTRONICPAYMENT)";
+            GeneratorQuery->Close();
+            GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSPAYTYPEID, 1) FROM RDB$DATABASE ";
+            GeneratorQuery->ExecQuery();
+            int generatedValue = GeneratorQuery->Fields[0]->AsInteger;
+            InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger      =  generatedValue;
+            InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString     =  SelectQuery->FieldByName("PAYMENT_NAME")->AsString;
+            InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString     =  "";
+            InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger =  1;
+            InsertQuery->ParamByName("PMS_MM_PAYTYPELINK")->AsInteger   =  SelectQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+            UnicodeString valueFetched = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(valueFetched.Pos("-3-"))
+                InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+            else
+                InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateDefaultPaymentType(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *InsertQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *GeneratorQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2103;
+        SelectQuery->ExecQuery();
+
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "INSERT INTO  PMSPAYMENTSCONFIG (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                                 " PMS_PAYTYPE_CATEGORY, IS_ELECTRONICPAYMENT) VALUES "
+                                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                                 " :PMS_PAYTYPE_CATEGORY, :IS_ELECTRONICPAYMENT)";
+        GeneratorQuery->Close();
+        GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSPAYTYPEID, 1) FROM RDB$DATABASE ";
+        GeneratorQuery->ExecQuery();
+        int generatedValue = GeneratorQuery->Fields[0]->AsInteger;
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger      =  generatedValue;
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString     =  "Default Payment Category";
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString     =  "";
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger =  0;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::ModifyElectronicsPayments(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery       = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PAYMENTTYPES ";
+        SelectQuery->ExecQuery();
+
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {
+            AnsiString str = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(str.Pos("-3-") != 0)
+            {
+                AnsiString value = SelectQuery->FieldByName("PAYMENT_NAME")->AsString;
+                AnsiString newValue = "";
+                const char* line = value.c_str();
+                for(int i = 0; line[i] != '\0'; i++)
+                {
+                    if(line[i] != ' ')
+                    {
+                        newValue += (char)toupper(line[i]);
+                    }
+                }
+                UpdateQuery->Close();
+                UpdateQuery->SQL->Text = "UPDATE PAYMENTTYPES  SET PAYMENT_NAME = :PAYMENT_NAME WHERE PAYMENT_KEY = :PAYMENT_KEY";
+                UpdateQuery->ParamByName("PAYMENT_NAME")->AsString   =  newValue;
+                UpdateQuery->ParamByName("PAYMENT_KEY")->AsInteger   =  SelectQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+                UpdateQuery->ExecQuery();
+            }
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
 }
 //------------------------------------------------------------------------------
 }

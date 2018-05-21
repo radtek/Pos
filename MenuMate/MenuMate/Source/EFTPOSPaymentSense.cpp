@@ -13,7 +13,6 @@ TEftPosPaymentSense::TEftPosPaymentSense()
 {
     InitPaymentSenseClient();
     InitializeProperties();
-    Initialise();
 }
 //---------------------------------------------------------------------------
 TEftPosPaymentSense::~TEftPosPaymentSense()
@@ -67,11 +66,8 @@ void TEftPosPaymentSense::DoControlPannel()
 	try
 	{
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
-		//frmDropDown->AddButton("EFTPOS Logon",&DoLogon);
-//		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
-//		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
-        frmDropDown->AddButton("Terminal List",&PrintZedReport);
+        frmDropDown->AddButton("End Of Day Report",&PrintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -137,7 +133,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       EftTrans->CardType = wcfResponse->CardSchemeName;
                       EftTrans->TipAmount = wcfResponse->AmountGratuity;
                       EftTrans->CashOutAmount = "5";//wcfResponse->AmountGratuity;
-                      LoadEftPosReceipt(wcfResponse->ReceiptLines);  //id integration to receipt needs then uncomment it
+                      //LoadEftPosReceipt(wcfResponse->ReceiptLines);  //id integration to receipt needs then uncomment it
                     }
                }
                else
@@ -280,7 +276,7 @@ bool TEftPosPaymentSense::GetResponseStatus(eEFTTransactionType TxnType, Transac
         {
             retValue = false;
             if(response)
-            {    MessageBox(response->TransactionResult,response->TransactionResult,MB_OK);
+            {
                 if(response->TransactionResult.UpperCase().Pos("SUCCESSFUL") != 0)
                     retValue = true;
             }

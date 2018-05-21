@@ -67,6 +67,11 @@ private:	// User declarations
     void LoadServingDetails(Database::TDBTransaction &DBTransaction);
     void InsertMealSlotToDB(TTimeSlots slots);
     void UpdateMealDetails(Database::TDBTransaction &DBTransaction, int key);
+    void LoadPMSPaymentTypes(Database::TDBTransaction &DBTransaction);
+    void AddPMSPaymentType(TObject *Sender);
+    void UpdatePMSPaymentType(Database::TDBTransaction &DBTransaction, int key) ;
+    bool ValidatePMSPayTypeDeletion(Database::TDBTransaction &DBTransaction, int key);
+    bool IsNotDuplicatePMSPayName(AnsiString name,bool forUpdate,int key);
 public:		// User declarations
 
 	eMessageType MessageType;

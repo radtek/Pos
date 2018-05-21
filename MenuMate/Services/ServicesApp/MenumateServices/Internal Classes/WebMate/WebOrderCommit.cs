@@ -258,9 +258,15 @@ namespace MenumateServices.WebMate.InternalClasses
             {
                 try
                 {
-                    WCFServiceWebMate sg = new WCFServiceWebMate();
-                    sg.getWebOrder(inOrderHandle).Commit();
-                    outStatus = WebOrderStatus.Committed;
+                     WebOrderCommit webOrderCommit = new WebOrderCommit();
+                    if (webOrderCommit.dbWebOrderAccepted(inOrderHandle))
+                    { outStatus = WebOrderStatus.Accepted; }
+                    else
+                    {
+                        WCFServiceWebMate sg = new WCFServiceWebMate();
+                        sg.getWebOrder(inOrderHandle).Commit();
+                        outStatus = WebOrderStatus.Committed;
+                    }
                 }
                 catch(Exception e) { outStatus = WebOrderStatus.Incomplete; }
               

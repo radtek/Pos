@@ -922,6 +922,10 @@ namespace MenumateVersionParser
         void update6_50Tables();
         void Create6_50Generator(TDBControl* const inDBControl);
         void Alter6_50Tables(TDBControl* const inDBControl);
+        void Create6_50Table(TDBControl* const inDBControl);
+        void ModifyElectronicsPayments(TDBControl* const inDBControl);
+        void PopulateMMPaymentTypes(TDBControl* const inDBControl);
+        void PopulateDefaultPaymentType(TDBControl* const inDBControl);
     };// class
 } // namespace
 

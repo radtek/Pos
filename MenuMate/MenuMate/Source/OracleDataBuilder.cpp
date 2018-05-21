@@ -5,7 +5,6 @@
 
 #include "OracleDataBuilder.h"
 #include "OracleManagerDB.h"
-#include "ManagerPMSCodes.h"
 #include "DBThirdPartyCodes.h"
 #include "ManagerOraclePMS.h"
 //---------------------------------------------------------------------------
@@ -46,6 +45,8 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
+    std::map<int,TPMSPaymentType> paymentsMap;
+    GetPMSPaymentType(paymentsMap);
     try
     {
         std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
@@ -59,7 +60,7 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
             TPayment payment = paymentsVector[i];
             if(payment.GetPaymentAttribute(ePayTypeRoomInterface))
             {
-               postRoomInquiry.PaymentMethod = payment.PaymentThirdPartyID;
+               postRoomInquiry.PaymentMethod = GetPMSPaymentCode(&payment,paymentsMap);//payment.PaymentThirdPartyID;
                break;
             }
         }
@@ -153,6 +154,8 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
     TPostRequest postRequest;
     Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction1.StartTransaction();
+    std::map<int,TPMSPaymentType> paymentsMap;
+    GetPMSPaymentType(paymentsMap);
     try
     {
         double serviceCharge = 0;
@@ -184,13 +187,13 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         AnsiString paymentMethod = "";
         bool isNotRoomPaymentType = false;
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-        paymentMethod = payment->PaymentThirdPartyID;
+        paymentMethod = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
         if(payment->GetPaymentAttribute(ePayTypePoints))
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
         if(payment->GetPaymentAttribute(ePayTypeCredit))
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
         if(paymentMethod.Trim() == "" || paymentMethod.Trim().Length() > 6)
-            paymentMethod = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+            paymentMethod = GetPMSDefaultCode(paymentsMap);//TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
         if(!payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
             isNotRoomPaymentType = true;
@@ -1078,6 +1081,80 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
         }
     }
     return retValue;
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    paymentMap.clear();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG";
+        SelectQuery->ExecQuery();
+        for(;!SelectQuery->Eof;SelectQuery->Next())
+        {
+           TPMSPaymentType pmsPayment;
+           pmsPayment.PMSPayTypeID                  = SelectQuery->FieldByName("PMS_PAYTYPE_ID")->AsInteger;
+           pmsPayment.PMSPayTypeName                = SelectQuery->FieldByName("PMS_PAYTYPE_NAME")->AsString;
+           pmsPayment.PMSPayTypeCode                = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+           pmsPayment.PMSPayTypeCategory            = SelectQuery->FieldByName("PMS_PAYTYPE_CATEGORY")->AsInteger;
+           pmsPayment.PMSMMPayTypeLink              = SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger == NULL ? 0 : SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger;
+           pmsPayment.isElectronicPayment           = SelectQuery->FieldByName("IS_ELECTRONICPAYMENT")->AsString == "T" ? true : false;
+           paymentMap[pmsPayment.PMSPayTypeID]
+                                                    = pmsPayment;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//----------------------------------------------------------------------------
+AnsiString TOracleDataBuilder::GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(!payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+        {
+            if(it->second.PMSPayTypeName == payment->Name)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+        else
+        {
+            if(it->second.PMSPayTypeName == payment->CardType)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+    }
+    return value;
+}
+//----------------------------------------------------------------------------
+AnsiString TOracleDataBuilder::GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(it->second.PMSPayTypeCategory == eDefaultCategory)
+        {
+            value = it->second.PMSPayTypeCode;
+            break;
+        }
+    }
+    return value;
 }
 //----------------------------------------------------------------------------
 

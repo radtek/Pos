@@ -73,7 +73,7 @@ void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
-        frmTouchKeyboard->Caption = "Enter Adyen URL";
+        frmTouchKeyboard->Caption = "Enter Payment Sense URL";
         frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EFTPosURL;
     }
 	if (frmTouchKeyboard->ShowModal() == mrOk)
@@ -125,11 +125,11 @@ void __fastcall TfrmEFTPOSConfig::tbAPIKeyMouseClick(TObject *Sender)
         TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText;
         if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         {
-            tbAPIKey->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+            tbAPIKey->Caption = "Payment Sense Password \r" + TGlobalSettings::Instance().EFTPosAPIKey;
         }
         else
         {
-            tbAPIKey->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosAPIKey;
+            tbAPIKey->Caption = "Adyen API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         }
 
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -156,11 +156,7 @@ void __fastcall TfrmEFTPOSConfig::tbDeviceIDMouseClick(TObject *Sender)
         TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText;
         if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         {
-            tbDeviceID->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
-        }
-        else
-        {
-            tbDeviceID->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+            tbDeviceID->Caption = "User Name \r" + TGlobalSettings::Instance().EFTPosDeviceID;
         }
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
@@ -187,7 +183,7 @@ void TfrmEFTPOSConfig::UpdateGUI()
     {
         tbEFTPOSURL->Caption = "Payment Sense URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "Password\r" + TGlobalSettings::Instance().EFTPosAPIKey;
-        tbDeviceID->Caption = "User ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        tbDeviceID->Caption = "User Name \r" + TGlobalSettings::Instance().EFTPosDeviceID;
         tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
     }
     else
@@ -202,6 +198,8 @@ void TfrmEFTPOSConfig::UpdateGUI()
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
 {
+    if(EftPos)
+        delete EftPos;
     EftPos = new TEftPosPaymentSense();
     EftPos->Initialise();
     std::vector<AnsiString>tidList = EftPos->GetAllTerminals();
@@ -235,5 +233,9 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
             TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
             DBTransaction.Commit();
         }
+    }
+    else
+    {
+     //save blank
     }
 }

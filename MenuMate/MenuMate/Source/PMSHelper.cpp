@@ -15,7 +15,7 @@ bool TPMSHelper::LoadRevenueCodes(std::map<int,TRevenueCodeDetails> &RevenueCode
 {
     bool retValue = false;
     RevenueCodesMap.clear();
-  
+
     TIBSQL* queryRevenue = GetRevenueCodesQuery(DBTransaction);
     for(;!queryRevenue->Eof;queryRevenue->Next())
     {
@@ -70,3 +70,4 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
     }
 }
 //----------------------------------------------------------------------------
+

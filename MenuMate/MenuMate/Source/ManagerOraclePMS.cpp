@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "ManagerOraclePMS.h"
-#include "DeviceRealterminal.h"
 #include "MMMessageBox.h"
 #include "OracleManagerDB.h"
 #include "OracleTCPIP.h"
@@ -64,6 +63,7 @@ void TManagerOraclePMS::Initialise()
         if(Registered && TCPIPAddress != "")
         {
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+            //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
             if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
             {
                 if(RevenueCodesMap.size() < 17)
