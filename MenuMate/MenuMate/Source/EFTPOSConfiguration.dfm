@@ -3,7 +3,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
   Top = 0
   BorderIcons = []
   Caption = 'EFTPOS Network Details'
-  ClientHeight = 385
+  ClientHeight = 298
   ClientWidth = 417
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     Left = 8
     Top = 8
     Width = 281
-    Height = 369
+    Height = 285
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
@@ -42,7 +42,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object tbAPIKey: TTouchBtn
       Left = 8
-      Top = 95
+      Top = 78
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -60,7 +60,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object tbDeviceID: TTouchBtn
       Left = 8
-      Top = 190
+      Top = 148
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -78,7 +78,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object tbEftPosTerminalID: TTouchBtn
       Left = 8
-      Top = 285
+      Top = 218
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -99,7 +99,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     Left = 295
     Top = 8
     Width = 114
-    Height = 369
+    Height = 285
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

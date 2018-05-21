@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (19/05/2018 12:05:34 a.m. - - $Rev: 25127 $)
+// (21/05/2018 6:03:53 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
