@@ -364,10 +364,26 @@ namespace MenumateServices.WebMate.InternalClasses
                                     inSiteName,
                                     inStoreName,
                                     inOrderHandle);
-
-            return File.Exists(filename);
+            return FileExists(order_url_manager.CompleteOrderURL, inOrderHandle);
+           // return File.Exists(filename);
         }
+        private bool FileExists(string rootpath, string filename)
+        {
+            filename = "*" + filename + ".xml";
+            if (File.Exists(Path.Combine(rootpath, filename)))
+                return true;
+            if (Directory.EnumerateFiles(rootpath, filename).Any())
+                return true;
+            foreach (string subDir in Directory.GetDirectories(rootpath, "*", SearchOption.AllDirectories))
+            {
 
+                if ((File.Exists(Path.Combine(subDir, filename))) || Directory.EnumerateFiles(subDir, filename).Any())
+                    return true;
+            }
+
+
+            return false;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -384,8 +400,8 @@ namespace MenumateServices.WebMate.InternalClasses
                                     inSiteName,
                                     inStoreName,
                                     inOrderHandle);
-
-            return File.Exists(filename);
+            return FileExists(order_url_manager.FailedOrderURL, inOrderHandle);
+           // return File.Exists(filename);
         }
 
         /// <summary>
@@ -401,8 +417,8 @@ namespace MenumateServices.WebMate.InternalClasses
                         string inOrderHandle)
         {
             string incompletefilename = createIncompleteURI(inOrderHandle);
-
-            return File.Exists(incompletefilename);
+            return FileExists(order_url_manager.IncompleteOrderURL, inOrderHandle);
+           // return File.Exists(incompletefilename);
 
             /*
                         string completefilename   = createXMLCompleteOrderURI(inSiteName, inStoreName, inOrderHandle);

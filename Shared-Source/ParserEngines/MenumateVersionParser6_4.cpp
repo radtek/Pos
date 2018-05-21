@@ -52,6 +52,21 @@ void TApplyParser::upgrade6_47Tables()
 {
     update6_47Tables();
 }
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_48Tables()
+{
+    update6_48Tables();
+}
+//-----------------------------------------------------------
+void TApplyParser::upgrade6_49Tables()
+{
+    update6_49Tables();
+}
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_50Tables()
+{
+    update6_50Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -90,7 +105,6 @@ void TApplyParser::update6_44Tables()
     InsertInTo_MallExport_Settings_Values6_44(_dbControl, 27, 2);
     CreateMezzanineAreaTable6_44(_dbControl);
     CreateMezzanineSalesTable6_44(_dbControl);
-
 }
 //----------------------------------------------------
 void TApplyParser::update6_45Tables()
@@ -116,6 +130,27 @@ void TApplyParser::update6_46Tables()
 void TApplyParser::update6_47Tables()
 {
     AlterTableDiscount6_47(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_48Tables()
+{
+    Create6_48Generator(_dbControl);
+    CreateTabPatronCount6_48Table(_dbControl);
+}
+//--------------------------------------------
+void TApplyParser::update6_49Tables()
+{
+    UpdateTable6_49Orders(_dbControl);
+    UpdateTable6_49DayArchive(_dbControl);
+    UpdateTable6_49Archive(_dbControl);
+    Create6_49Generator(_dbControl);
+    Create6_49Tables(_dbControl);
+    Create6_49_DomainNotNull(_dbControl);
+    Alter6_49_Tables(_dbControl);
+    Insert6_39Malls(_dbControl, 3, "Evia ", "F");
+    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 3);
+    AlterTable6_49MallExportSales(_dbControl);
 }
 //--------------------------------------------
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
@@ -1610,5 +1645,411 @@ void TApplyParser::AlterTableDiscount6_47(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_48Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_TABPATRONCOUNT", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_TABPATRONCOUNT;", inDBControl);
+		executeQuery("SET GENERATOR GEN_TABPATRONCOUNT TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTabPatronCount6_48Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "TABPATRONCOUNT", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE TABPATRONCOUNT "
+        "( "
+        "  TABPATRONCOUNT_KEY Integer NOT NULL, "
+        "  TAB_KEY Integer,                "
+        "  PATRON_TYPE Varchar(40),          "
+        "  PATRON_COUNT Integer,             "
+        "  PRIMARY KEY (TABPATRONCOUNT_KEY)     "
+        ");",
+		inDBControl );
+        executeQuery(
+		"ALTER TABLE TABPATRONCOUNT ADD CONSTRAINT TABPATRONCOUNT_TABLE_KEY "
+		"FOREIGN KEY (TAB_KEY) REFERENCES TAB (TAB_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_49Tables(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSGUESTDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSGUESTDETAILS "
+        "( "
+        "  GUESTDETAILKEY INTEGER NOT NULL PRIMARY KEY, "
+        "  SECURITYREF INTEGER,                "
+        "  ACCOUNTNUBER VARCHAR(20),          "
+        "  ROOMNUMBER VARCHAR(20),             "
+        "  FIRSTNAME VARCHAR(50),     "
+        "  LASTNAME VARCHAR(50), "
+        "  TABLENUMBER INTEGER NOT NULL, "
+        "  SEATNUMBER INTEGER NOT NULL "
+        ");",
+		inDBControl );
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::update6_50Tables()
+{
+    Create6_50Generator(_dbControl);
+    Alter6_50Tables(_dbControl);
+    Create6_50Table(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSGUESTDETAIL", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSGUESTDETAIL;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSGUESTDETAIL TO 0;", inDBControl);
+	}
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Create6_49_DomainNotNull(TDBControl* const inDBControl)
+{
+    if(!DomainExists("INT_NN", _dbControl))
+    {
+        executeQuery("CREATE DOMAIN INT_NN AS INT NOT NULL CHECK((VALUE IS NOT NULL));", inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------
+void TApplyParser::Alter6_49_Tables(TDBControl* const inDBControl)
+{
+    if (fieldExists( "ORDERS", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ORDERS", "SEATNO", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ORDERS ALTER SEATNO TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "DAYARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE DAYARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "TABLE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER TABLE_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "SEAT_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCHIVE ALTER SEAT_NUMBER TYPE INT_NN ;",
+		inDBControl);
+	}
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Orders(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "ORDERS ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ORDERS ", "SEATNO ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEATNO = 0 WHERE a.SEATNO IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49DayArchive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "DAYARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "DAYARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::UpdateTable6_49Archive(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "ARCHIVE ", "TABLE_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.TABLE_NUMBER = 0 WHERE a.TABLE_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        if ( fieldExists( "ARCHIVE ", "SEAT_NUMBER ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SEAT_NUMBER = 0 WHERE a.SEAT_NUMBER IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------
+void TApplyParser::AlterTable6_49MallExportSales(TDBControl* const inDBControl)
+{
+    if (!fieldExists( "MALLEXPORT_SALES", "INVOICE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALLEXPORT_SALES  "
+        "ADD INVOICE_NUMBER VARCHAR(50) ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "MALL_SALES_BY_SALES_TYPE", "INVOICE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALL_SALES_BY_SALES_TYPE  "
+        "ADD INVOICE_NUMBER VARCHAR(50) ; ",
+		inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSPAYTYPEID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSPAYTYPEID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSPAYTYPEID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_ADYENSERVICEID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_ADYENSERVICEID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_ADYENSERVICEID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_ADYENTRANSACTIONID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_ADYENTRANSACTIONID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_ADYENTRANSACTIONID TO 0;", inDBControl);
+	}
+}
+void TApplyParser::Alter6_50Tables(TDBControl* const inDBControl)
+{
+    if (fieldExists( "VARSPROFILE", "VARCHAR_VAL", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE  VARSPROFILE "
+        "ALTER VARCHAR_VAL TYPE VARCHAR(200) ; ",
+		inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_50Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSPAYMENTSCONFIG", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSPAYMENTSCONFIG "
+        "( "
+        "  PMS_PAYTYPE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  PMS_PAYTYPE_NAME VARCHAR(50),                "
+        "  PMS_PAYTYPE_CODE VARCHAR(10),                " // length to be checked
+        "  PMS_PAYTYPE_CATEGORY INTEGER,                "
+        "  PMS_MM_PAYTYPELINK INTEGER,                  "
+        "  IS_ELECTRONICPAYMENT T_TRUEFALSE DEFAULT 'F'  "
+        ");",
+		inDBControl );    //PAYMENT_KEY
+        executeQuery(
+		"ALTER TABLE PMSPAYMENTSCONFIG ADD CONSTRAINT PMS_PAYTYPE_CONSTRAINT "
+		"FOREIGN KEY (PMS_MM_PAYTYPELINK) REFERENCES PAYMENTTYPES (PAYMENT_KEY) ON UPDATE CASCADE ON DELETE CASCADE;", inDBControl );
+        ModifyElectronicsPayments(_dbControl);
+        PopulateMMPaymentTypes(_dbControl);
+        PopulateDefaultPaymentType(_dbControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateMMPaymentTypes(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *InsertQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *GeneratorQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PAYMENTTYPES ";
+        SelectQuery->ExecQuery();
+
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {
+            AnsiString tipProperties = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(tipProperties.Pos("-7-") && tipProperties.Length() == 3)
+                continue;
+
+            InsertQuery->Close();
+            InsertQuery->SQL->Text = "INSERT INTO  PMSPAYMENTSCONFIG (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                                     " PMS_PAYTYPE_CATEGORY, PMS_MM_PAYTYPELINK, IS_ELECTRONICPAYMENT) VALUES "
+                                     " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                                     " :PMS_PAYTYPE_CATEGORY, :PMS_MM_PAYTYPELINK, :IS_ELECTRONICPAYMENT)";
+            GeneratorQuery->Close();
+            GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSPAYTYPEID, 1) FROM RDB$DATABASE ";
+            GeneratorQuery->ExecQuery();
+            int generatedValue = GeneratorQuery->Fields[0]->AsInteger;
+            InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger      =  generatedValue;
+            InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString     =  SelectQuery->FieldByName("PAYMENT_NAME")->AsString;
+            InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString     =  "";
+            InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger =  1;
+            InsertQuery->ParamByName("PMS_MM_PAYTYPELINK")->AsInteger   =  SelectQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+            UnicodeString valueFetched = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(valueFetched.Pos("-3-"))
+                InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+            else
+                InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateDefaultPaymentType(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *InsertQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *GeneratorQuery    = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 2103;
+        SelectQuery->ExecQuery();
+
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "INSERT INTO  PMSPAYMENTSCONFIG (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                                 " PMS_PAYTYPE_CATEGORY, IS_ELECTRONICPAYMENT) VALUES "
+                                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                                 " :PMS_PAYTYPE_CATEGORY, :IS_ELECTRONICPAYMENT)";
+        GeneratorQuery->Close();
+        GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSPAYTYPEID, 1) FROM RDB$DATABASE ";
+        GeneratorQuery->ExecQuery();
+        int generatedValue = GeneratorQuery->Fields[0]->AsInteger;
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger      =  generatedValue;
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString     =  "Default Payment Category";
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString     =  "";
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger =  0;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::ModifyElectronicsPayments(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery       = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery       = transaction.Query(transaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PAYMENTTYPES ";
+        SelectQuery->ExecQuery();
+
+        for (; !SelectQuery->Eof; SelectQuery->Next())
+        {
+            AnsiString str = SelectQuery->FieldByName("PROPERTIES")->AsString;
+            if(str.Pos("-3-") != 0)
+            {
+                AnsiString value = SelectQuery->FieldByName("PAYMENT_NAME")->AsString;
+                AnsiString newValue = "";
+                const char* line = value.c_str();
+                for(int i = 0; line[i] != '\0'; i++)
+                {
+                    if(line[i] != ' ')
+                    {
+                        newValue += (char)toupper(line[i]);
+                    }
+                }
+                UpdateQuery->Close();
+                UpdateQuery->SQL->Text = "UPDATE PAYMENTTYPES  SET PAYMENT_NAME = :PAYMENT_NAME WHERE PAYMENT_KEY = :PAYMENT_KEY";
+                UpdateQuery->ParamByName("PAYMENT_NAME")->AsString   =  newValue;
+                UpdateQuery->ParamByName("PAYMENT_KEY")->AsInteger   =  SelectQuery->FieldByName("PAYMENT_KEY")->AsInteger;
+                UpdateQuery->ExecQuery();
+            }
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

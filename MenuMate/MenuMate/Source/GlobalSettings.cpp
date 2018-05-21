@@ -360,6 +360,7 @@ TGlobalSettings::TGlobalSettings()
     ItemSearch = false;
     IsXeroEnabled = false;
     IsMYOBEnabled = false;
+    SurchargeGLCode= "";
 
     // MallExport Additional Settings
     ConsolidateReportPaths = "";
@@ -419,5 +420,14 @@ TGlobalSettings::TGlobalSettings()
     ZeroMemory( &piOracleApp, sizeof(piOracleApp) );
     OracleInterfacePortNumber = 0;
     OracleInterfaceIPAddress = "";
+    EnableEftPosSmartConnect = false;
+    SmartConnectPairingCode = "";
+    EnableEftPosAdyen = false;
+    EFTPosAPIKey = "";
+    EFTPosDeviceID = "";
+    EFTPosURL = "";
+    PMSTimeOut = 0;
+    IsSmartConnectQRTransaction = false;
+    AdyenRecoveryTransactionIsRefund = false;
 }
 

@@ -72,7 +72,6 @@ void TMMTransactionRecovery::ProcessTransactionRecovery()
 							RecoverTransaction.Type = eTransEFTPOSRecovery;
 							MessageBox("Recovering Incomplete Transaction", "EFTPOS Recovery", MB_OK + MB_ICONINFORMATION);
 						}
-
 						paymentSystem->ProcessTransaction( RecoverTransaction, isRecovery );
 					}
 

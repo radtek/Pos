@@ -218,6 +218,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
+
 	if(DiscountKey == dsMMMebersPointsKEY)
 	{
 		Discount.DiscountKey = dsMMMebersPointsKEY;

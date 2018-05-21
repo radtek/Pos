@@ -27,18 +27,22 @@ namespace MenumateServices.WCFServices
         /// <returns></returns>
         public DTO_WebOrderResponse OpenWebOrder(out string outHandle)
         {
-            try
+                try
             {
+               
                 WebOrder webOrder = openWebOrder();
+              
                 outHandle = webOrder.Handle;
-
+              
                 // WebOrder successfuly open
-                ServiceLogger.Log("In OpenWebOrder(out string outHandle) with handle as " + webOrder.Handle);
-                return createResponseNoError();
+
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("In OpenWebOrder with handle as End " + webOrder.Handle + "Time Stamp:" +DateTime.Now);
+                return returnResponse;
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in createResponse " + exc.Message, exc);
+                ServiceLogger.LogException(@"in createResponse Exception" + exc.Message, exc);
                 //EventLog.WriteEntry("In OpenWebOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 42, short.MaxValue);
                 outHandle = Guid.Empty.ToString();
 
@@ -54,31 +58,39 @@ namespace MenumateServices.WCFServices
         /// <returns></returns>
         public DTO_WebOrderResponse CommitOrder(string inOrderHandle)
         {
+           
             try
             {
+                WebOrderCommit webOrderCommit = new WebOrderCommit();
+                if(webOrderCommit.dbWebOrderAccepted(inOrderHandle))
+                { }
+                else
                 getWebOrder(inOrderHandle).Commit();
 
                 // WebOrder successfuly committed
-                ServiceLogger.Log("In CommitOrder(string inOrderHandle) after commit of order with " +  inOrderHandle);
-                return createResponseNoError();
+            
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("In CommitOrder after commit of order with " + inOrderHandle + "Time Stamp:" + DateTime.Now);
+
+                return returnResponse;
             }
             catch (ExceptionOrderGUIDDuplicate exc)
             {
-                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                ServiceLogger.LogException(@"in CommitOrder Exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 43, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.OrderGUIDDuplicate);
             }
             catch (ExceptionOrderEmpty exc)
             {
-                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                ServiceLogger.LogException(@"in CommitOrder exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 44, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.OrderEmpty);
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in CommitOrder " + exc.Message, exc);
+                ServiceLogger.LogException(@"in CommitOrder Exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In CommitOrder WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 45, short.MaxValue);
                 // WebOrder: Failed to commit an order
                 return createResponseError("Failed to commit a weborder", exc.Message, ResponseCode.FailedToCommitOrder);
@@ -95,15 +107,20 @@ namespace MenumateServices.WCFServices
                                             string inOrderHandle,
                                             DTO_WebOrderHeader inOrderHeaderSection)
         {
-            try
+                try
             {
                 if ((getWebOrder(inOrderHandle).HeaderSection = inOrderHeaderSection) != null)
                 {
+               
+                    DTO_WebOrderResponse returnResponse = createResponseNoError();
+                    ServiceLogger.Log("in SaveIncompleteOrderHeaderSection NotnullWithoutError " + inOrderHandle + "Time Stamp:" + DateTime.Now);
+
                     // WebOrder successfuly open
-                    return createResponseNoError();
+                    return returnResponse;
                 }
                 else
                 {
+                    ServiceLogger.Log(@"in SaveIncompleteOrderHeaderSection  nullWithError Failed");
                     // WebOrder: Failed to create an order
                     return createResponseError(@"Failed to set order's header",
                                                string.Format(@"Invalid order handle [{0}]", inOrderHandle),
@@ -112,7 +129,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in SaveIncompleteOrderHeaderSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderHeaderSection  Exception" + exc.Message, exc);
                 //EventLog.WriteEntry("In SaveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 46, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's header", exc.Message, ResponseCode.FailedToCreateOrderHeaderSection);
@@ -133,11 +150,15 @@ namespace MenumateServices.WCFServices
             {
                 if ((getWebOrder(inOrderHandle).FromSection = inOrderFromSection) != null)
                 {
+                   
+                    DTO_WebOrderResponse returnResponse = createResponseNoError();
+                    ServiceLogger.Log("in SaveIncompleteOrderFromSection NotnullWithoutError " + inOrderHandle + "Time Stamp:" + DateTime.Now);
                     // WebOrder successfuly open
-                    return createResponseNoError();
+                    return returnResponse;
                 }
                 else
                 {
+                    ServiceLogger.Log(@"in SaveIncompleteOrderFromSection nullWithError Failed");
                     // WebOrder: Failed to create an order
                     return createResponseError(@"Failed to set order's from section",
                                                string.Format(@"Invalid order handle [{0}]", inOrderHandle),
@@ -146,7 +167,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in SaveIncompleteOrderFromSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderFromSection exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In SaveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 47, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's from section", exc.Message, ResponseCode.FailedToCreateOrderFromSection);
@@ -163,6 +184,7 @@ namespace MenumateServices.WCFServices
                                             string inOrderHandle,
                                             DTO_WebOrderAccount intOrderAccountSection)
         {
+            
             try
             {
                 try
@@ -185,21 +207,28 @@ namespace MenumateServices.WCFServices
                 }
 
                 if ((getWebOrder(inOrderHandle).AccountSection = intOrderAccountSection) != null)
-                {
+                { 
+
+                    DTO_WebOrderResponse returnResponse = createResponseNoError();
+                    ServiceLogger.Log("in SaveIncompleteOrderAccountSection NotnullWithoutError " + inOrderHandle + "Time Stamp:" + DateTime.Now);
                     // WebOrder successfuly open
-                    return createResponseNoError();
+                    return returnResponse;
                 }
                 else
                 {
-                    // WebOrder: Failed to create an order
-                    return createResponseError(@"Failed to set order's account section",
+                    ServiceLogger.Log(@"in SaveIncompleteOrderAccountSection IsnullWithError ");
+
+                    DTO_WebOrderResponse returnResponse = createResponseError(@"Failed to set order's account section",
                                                string.Format(@"Invalid order handle [{0}]", inOrderHandle),
                                                ResponseCode.FailedToCreateOrderAccountSection);
+                    ServiceLogger.Log("in SaveIncompleteOrderAccountSection IsnullWithError " + inOrderHandle + "Time Stamp:" + DateTime.Now);
+                    // WebOrder: Failed to create an order
+                    return returnResponse;
                 }
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in SaveIncompleteOrderAccountSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in SaveIncompleteOrderAccountSection exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In SaveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 49, short.MaxValue);
                 // WebOrder: Failed to create an order
                 return createResponseError(@"Failed to set order's account section", exc.Message, ResponseCode.FailedToCreateOrderAccountSection);
@@ -216,22 +245,27 @@ namespace MenumateServices.WCFServices
                                     string inOrderHandle,
                                 out DTO_WebOrderHeader outHeaderSection)
         {
+            
             try
             {
                 outHeaderSection = getWebOrder(inOrderHandle).HeaderSection;
 
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("in RetrieveIncompleteOrderHeaderSection Method" + inOrderHandle + "Time Stamp:" + DateTime.Now);
+                
+                return returnResponse;
                 // WebOrder's header successfuly retrieved
-                return createResponseNoError();
+                
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in RetrieveIncompleteOrderHeaderSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderHeaderSection exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In RetrieveIncompleteOrderHeaderSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 50, short.MaxValue);
                 //outHeaderSection = getWebOrder(inOrderHandle).EmptyHeaderSection;
                 outHeaderSection = null;
 
                 // WebOrder: Failed to retrieve an order's header section
-                return createResponseError(@"Failed to retrieve order's header",
+                return createResponseError(@"Failed to retrieve order's header exception",
                                            exc.Message,
                                            ResponseCode.FailedToRetrieveOrderHeaderSection);
             }
@@ -247,16 +281,21 @@ namespace MenumateServices.WCFServices
                                     string inOrderHandle,
                                 out DTO_WebOrderFrom outFromSection)
         {
+ 
             try
             {
                 outFromSection = getWebOrder(inOrderHandle).FromSection;
 
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("in RetrieveIncompleteOrderFromSection Method " + inOrderHandle + "Time Stamp:" + DateTime.Now);
+              
+                return returnResponse;
                 // WebOrder's header successfuly retrieved
-                return createResponseNoError();
+               
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in RetrieveIncompleteOrderFromSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderFromSection  exception" + exc.Message, exc);
                 //EventLog.WriteEntry("In RetrieveIncompleteOrderFromSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 51, short.MaxValue);
                 //outFromSection = getWebOrder(inOrderHandle).EmptyFromSection;
                 outFromSection = null;
@@ -278,16 +317,21 @@ namespace MenumateServices.WCFServices
                                 string inOrderHandle,
                                 out DTO_WebOrderAccount outAccountSection)
         {
-            try
+              try
             {
                 outAccountSection = getWebOrder(inOrderHandle).AccountSection;
 
                 // WebOrder's header successfuly retrieved
-                return createResponseNoError();
+
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("in RetrieveIncompleteOrderAccountSection Method " + inOrderHandle + "Time Stamp:" + DateTime.Now);
+
+                return returnResponse;
+               
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in RetrieveIncompleteOrderAccountSection " + exc.Message, exc);
+                ServiceLogger.LogException(@"in RetrieveIncompleteOrderAccountSection exception " + exc.Message, exc);
                 //EventLog.WriteEntry("In RetrieveIncompleteOrderAccountSection WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 52, short.MaxValue);
                 //outAccountSection = getWebOrder(inOrderHandle).EmptyAccountSection;
                 outAccountSection = null;
@@ -305,10 +349,12 @@ namespace MenumateServices.WCFServices
                                     string inOrderHandle,
                                 out WebOrderStatus outStatus)
         {
+         
             try
             {
                 WebOrderCommit webOrderCommit = new WebOrderCommit();
-
+               
+                    //System.Threading.Thread.Sleep(2000);
                 webOrderCommit.GetCommittedWebOrderStatus(
                                       inSiteName,
                                       inStoreName,
@@ -316,11 +362,16 @@ namespace MenumateServices.WCFServices
                                   out outStatus);
 
                 // WebOrder's header successfuly retrieved
-                return createResponseNoError();
+
+                DTO_WebOrderResponse returnResponse = createResponseNoError();
+                ServiceLogger.Log("in GetCommittedWebOrderStatus Method " + inOrderHandle +"Status:"+ outStatus + "  Time Stamp:" + DateTime.Now);
+
+                return returnResponse;
+           
             }
             catch (Exception exc)
             {
-                ServiceLogger.LogException(@"in GetCommittedWebOrderStatus " + exc.Message, exc);
+                ServiceLogger.LogException(@"in GetCommittedWebOrderStatus exception" + exc.Message, exc);
                 //EventLog.WriteEntry("In GetCommittedWebOrderStatus WebMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 53, short.MaxValue);
                 outStatus = WebOrderStatus.Unknown;
 
@@ -370,7 +421,7 @@ namespace MenumateServices.WCFServices
         /// </summary>
         /// <param name="inOrderHandle"></param>
         /// <returns></returns>
-        WebOrder getWebOrder(string inOrderHandle)
+      public  WebOrder getWebOrder(string inOrderHandle)
         {
             WebOrder order = findWebOrder(inOrderHandle);
 
@@ -441,6 +492,8 @@ namespace MenumateServices.WCFServices
         /// <returns></returns>
         protected DTO_WebOrderResponse createResponseNoError()
         {
+            
+
             return createResponse(true, "", "", ResponseCode.Successful);
         }
 

@@ -72,6 +72,7 @@
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
 #include "FiscalPrinterAdapter.h"
+#include "ManagerPMSCodes.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -191,6 +192,7 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
             Payment.TabKey =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             Payment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
             Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
+            Payment.SmartConnectQREnabled =  IBInternalQuery->FieldByName("IS_QR_CODE_ENABLED")->AsString == "T" ? true : false;
 		}
 	}
 	catch(Exception & E)
@@ -369,11 +371,13 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			" TAX_RATE = :TAX_RATE, " " DEST_IP = :DEST_IP, " " DEST_PORT = :DEST_PORT, " " PRE_VOUCHER_CODE = :PRE_VOUCHER_CODE, "
 			" VOUCHER_MERCHANT_ID = :VOUCHER_MERCHANT_ID, INVOICE_EXPORT = :INVOICE_EXPORT, VOUCHER_URL = :VOUCHER_URL, "
 			" VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, CSV_READ_LOCATION = :CSV_READ_LOCATION, "
-			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE, IS_AUTO_POPULATE_BLIND_BALANCE = :IS_AUTO_POPULATE_BLIND_BALANCE "
+			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE, IS_AUTO_POPULATE_BLIND_BALANCE = :IS_AUTO_POPULATE_BLIND_BALANCE, "
+            "  IS_QR_CODE_ENABLED = :IS_QR_CODE_ENABLED "
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -400,6 +404,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
             IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
+            IBInternalQuery->ParamByName("IS_QR_CODE_ENABLED")->AsString = Payment.SmartConnectQREnabled == true ? "T" : "F";
 
 			if (Payment.PaymentThirdPartyID != "")
 			{
@@ -415,6 +420,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, false,true);
 		}
 		else
 		{
@@ -438,16 +444,18 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			"INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "EXCHANGE_RATE, " "COLOUR, "
 			"DISPLAY_ORDER, " "PERCENT_ADJUST, " "AMOUNT_ADJUST, " "ROUNDTO, " "ADJUST_REASON, " "GROUP_NUMBER, " "THIRDPARTYCODES_KEY, "
 			"DEST_IP," "DEST_PORT," "TAX_RATE," "PRE_VOUCHER_CODE," "VOUCHER_MERCHANT_ID," "INVOICE_EXPORT,VOUCHER_URL,VOUCHER_USER, "
-			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE, " "IS_AUTO_POPULATE_BLIND_BALANCE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
+			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE, " "IS_AUTO_POPULATE_BLIND_BALANCE, " "IS_QR_CODE_ENABLED ) "
+            "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
 			":PROPERTIES, " ":EXCHANGE_RATE, " ":COLOUR, " ":DISPLAY_ORDER, " ":PERCENT_ADJUST, " ":AMOUNT_ADJUST, " ":ROUNDTO, "
 			":ADJUST_REASON, " ":GROUP_NUMBER, " ":THIRDPARTYCODES_KEY, " ":DEST_IP," ":DEST_PORT," ":TAX_RATE," ":PRE_VOUCHER_CODE,"
 			":VOUCHER_MERCHANT_ID, " ":INVOICE_EXPORT,:VOUCHER_URL,:VOUCHER_USER,:VOUCHER_PASS,"
-			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE, :IS_AUTO_POPULATE_BLIND_BALANCE  ) ";
+			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE, :IS_AUTO_POPULATE_BLIND_BALANCE, :IS_QR_CODE_ENABLED  ) ";
 
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -474,6 +482,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
             IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
+            IBInternalQuery->ParamByName("IS_QR_CODE_ENABLED")->AsString = Payment.SmartConnectQREnabled == true ? "T" : "F";
 			if (Payment.PaymentThirdPartyID != "")
 			{
 				int ThirdPartyCodeKey = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Payment.PaymentThirdPartyID, "Payment Type Code",
@@ -487,6 +496,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, true,true);
 		}
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
@@ -542,6 +552,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
         NewPayment->TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
         NewPayment->GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
         NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
+        NewPayment->SmartConnectQREnabled = IBInternalQuery->FieldByName("IS_QR_CODE_ENABLED")->AsString == "T" ? true : false;
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
         //NewPayment->Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
         GetPaymentAttributes(PaymentTransaction.DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment);
@@ -725,6 +736,7 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
             NewPayment.TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             NewPayment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
             NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
+            NewPayment.SmartConnectQREnabled = IBInternalQuery->FieldByName("IS_QR_CODE_ENABLED")->AsString == "T" ? true : false;
             //NewPayment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
             GetPaymentAttributes(DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,NewPayment);
     		Payments.push_back(NewPayment);
@@ -810,7 +822,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		{
 		case eTransOrderSet:
 			_processOrderSetTransaction( PaymentTransaction );
-
 			break;
 		case eTransSplitPayment:
 			_processSplitPaymentTransaction( PaymentTransaction );
@@ -1217,6 +1228,19 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 					Pay = Payment->GetPayTendered();
 					CashOut = Payment->GetCashOutTotal();
 				}
+                else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+                {
+                    if(!Payment->CreditTransaction)
+                    {
+                        TransType = TransactionType_QR_Merchant;
+                        Pay = Payment->GetPayTendered();
+                    }
+                    else if (Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
+                    {
+                        TransType = TransactionType_QR_Refund;
+                        Pay = -Payment->GetPayTendered();
+                    }
+                }
 				else if (Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
 				{
 					TransType = TransactionType_REFUND;
@@ -1261,7 +1285,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-
 					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
 
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))
@@ -1292,13 +1315,24 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 AnsiString cardtype = EftTrans->CardType;
 								Payment->CardType = TStringTools::Instance()->UpperCaseWithNoSpace(cardtype); // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
-
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
                                    if(FinalAmount != (Pay + CashOut))
                                    {
-                                       Payment->TipAmount = FinalAmount - (Pay + CashOut);
+                                        if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                        }
+                                        else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                        }
+                                        else
+                                        {
+                                            Payment->TipAmount = FinalAmount - (Pay + CashOut);
+                                        }
                                        Payment->SetPay(FinalAmount);
                                    }
                                 }
@@ -1312,13 +1346,32 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                  if((EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
                                     ||  EftTrans->TimeOut)
                                  {
-                                    if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    AnsiString messageEftPos = "";
+                                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.\rPlease ensure Card Terminal is not holding any transaction";
+                                    }
+                                    else
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.";
+                                    }
+
+                                    if(MessageBox(messageEftPos, "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    {
+                                       if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                       {
+                                           EftPos->DelTransactionEvent(Payment->ReferenceNumber);
+                                           Payment->ReferenceNumber = EftPos->GetRefNumber();
+                                       }
                                        TransRetriveElectronicResult(PaymentTransaction, Payment);
+                                    }
                                  }
                                  else
                                  {
                                     if(EftTrans->ResultText == "")
                                         EftTrans->ResultText = "Transaction Failed.";
+                                    else if(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftTrans->ResultText.UpperCase().Pos("ACCESS") != 0)
+                                        EftTrans->ResultText = "Please Configure the EFTPOS properly";
                                     MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
                                  }
                             }
@@ -2127,7 +2180,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		{
 			TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
 
-
 			if (SubPayment->GetCashOut() != 0)
 			{
 				// Get New Key
@@ -2216,6 +2268,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 			TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
 			Currency Value = 0;
 			Currency ValueRnd = 0;
+            Currency EFTPOSSurcharge = 0;
 			if(PaymentTransaction.CreditTransaction)
 			{
 				Value = SubPayment->GetDiscount();
@@ -2227,21 +2280,27 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				ValueRnd = SubPayment->GetSurchargeRounding();
 			}
 
+            if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
+                EFTPOSSurcharge = SubPayment->EFTPOSSurcharge;
+
+            // Get New Key
+            IBInternalQuery2->Close();
+            IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCSURCHARGE, 1) FROM RDB$DATABASE";
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "INSERT INTO DAYARCSURCHARGE (" "SURCHARGE_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "PAY_TYPE_DETAILS, "
+            "SUBTOTAL, " "ROUNDING, " "TAX_FREE, " "NOTE, " "PROPERTIES," "GROUP_NUMBER) " "VALUES (" ":SURCHARGE_KEY, "
+            ":ARCBILL_KEY, " ":PAY_TYPE, " ":PAY_TYPE_DETAILS, " ":SUBTOTAL, " ":ROUNDING, " ":TAX_FREE, " ":NOTE, " ":PROPERTIES,"
+            ":GROUP_NUMBER) ";
+
 			if (Value != 0)
 			{
-				// Get New Key
-				IBInternalQuery2->Close();
-				IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCSURCHARGE, 1) FROM RDB$DATABASE";
+                IBInternalQuery2->Close();
 				IBInternalQuery2->ExecQuery();
 				int SurchargeKey = IBInternalQuery2->Fields[0]->AsInteger;
 
 				IBInternalQuery->Close();
-				IBInternalQuery->SQL->Text =
-				"INSERT INTO DAYARCSURCHARGE (" "SURCHARGE_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "PAY_TYPE_DETAILS, "
-				"SUBTOTAL, " "ROUNDING, " "TAX_FREE, " "NOTE, " "PROPERTIES," "GROUP_NUMBER) " "VALUES (" ":SURCHARGE_KEY, "
-				":ARCBILL_KEY, " ":PAY_TYPE, " ":PAY_TYPE_DETAILS, " ":SUBTOTAL, " ":ROUNDING, " ":TAX_FREE, " ":NOTE, " ":PROPERTIES,"
-				":GROUP_NUMBER) ";
-
 				IBInternalQuery->ParamByName("SURCHARGE_KEY")->AsInteger = SurchargeKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
@@ -2282,6 +2341,49 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                 {
 				    IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
                 }
+				IBInternalQuery->ExecQuery();
+			}
+
+            if (EFTPOSSurcharge != 0)
+			{
+				IBInternalQuery2->Close();
+				IBInternalQuery2->ExecQuery();
+				int SurchargeKey = IBInternalQuery2->Fields[0]->AsInteger;
+
+				IBInternalQuery->Close();
+				IBInternalQuery->ParamByName("SURCHARGE_KEY")->AsInteger = SurchargeKey;
+				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
+				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
+				IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(EFTPOSSurcharge,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = ValueRnd;
+				if (SubPayment->GetPaymentAttribute(ePayTypeTaxFree))
+				{
+					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
+				}
+				else
+				{
+					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "F";
+				}
+                UnicodeString payName = + "_ExternalSurcharge";
+				if (SubPayment->SysNameOveride != "")
+				{
+					IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->SysNameOveride + payName;
+				}
+				else
+				{
+					if (SubPayment->NameOveride == "")
+					{
+						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->Name + payName;
+					}
+					else
+					{
+						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->NameOveride + payName;
+					}
+				}
+
+				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
+				IBInternalQuery->ParamByName("PROPERTIES")->AsString = "0-0-0-0";
+				IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
 				IBInternalQuery->ExecQuery();
 			}
 		}
@@ -3577,7 +3679,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
        return RetVal;
-
+     
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
@@ -3786,6 +3888,14 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
                            TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
                            EftPos->AcquirerRefSmartPay.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
+                        else if(TGlobalSettings::Instance().EnableEftPosSmartConnect &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefSmartConnect.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
+                        else if(TGlobalSettings::Instance().EnableEftPosAdyen &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefAdyen.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefAdyen;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}
@@ -4166,13 +4276,24 @@ void TListPaymentSystem::ProcessSecurity(TPaymentTransaction &PaymentTransaction
 		{
 			TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
             UnicodeString name = Order->Item;
-			TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+		   	TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, Order->Security);
+            
+            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+            {
+                TDBSecurity::SavePMSGuestDetails(PaymentTransaction, Order, Order->TableNo, Order->SeatNo);
+            }
 			for (int i = 0; i < Order->SubOrders->Count; i++)
 			{
 				TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(i);
 				if (SubOrder)
 				{
-					TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+			 		TDBSecurity::ProcessSecurity(PaymentTransaction.DBTransaction, SubOrder->Security);
+                    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                    {
+					    TDBSecurity::SavePMSGuestDetails(PaymentTransaction, SubOrder, Order->TableNo, Order->SeatNo);
+                    }
 				}
 			}
 		}
@@ -4613,7 +4734,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 	//MM-1649, If the sale type is of table then the patron count has already been asked for while selecting the table.
 	//Adding the condition for allowing this only if sale type is not table seat.
 
-   	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && TGlobalSettings::Instance().PromptForPatronCount;
+   	frmPaymentType->QueryPatronCount = PaymentTransaction.SalesType != eTableSeat && TGlobalSettings::Instance().PromptForPatronCount && (!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction));
 
     //In case of quich payment check only once
     int QuickTransactionCounter = 0;
@@ -6315,16 +6436,6 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
     }
 }
 //-------------------------------------------------------------------------------------
-UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList *_receipt)
-{
-    UnicodeString _lastreceipt = "";
-    for(int i = 0; i < _receipt->Count; i++)
-    {
-       _lastreceipt += _receipt->Strings[i] + '\n';
-    }
-    return _lastreceipt;
-}
-//-----------------------------------------------------------------------------------
 void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
 {
     TDBPanasonic* dbPanasonic = new TDBPanasonic();
@@ -6604,7 +6715,6 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
 {
     bool retVal = false;
@@ -6623,5 +6733,25 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
         }
     }
     return retVal;
+}
+//--------------------------------------------------------------------------------------
+void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType)
+{
+    //contains tip as property only  this is required to not insert & update such payment type as it is present as separate entity under PMS config
+    if(payment.GetPaymentAttribute(ePayTypeCustomSurcharge) && payment.GetPropertyString().Trim().Length() == 3)
+        return;
+
+    TPMSPaymentType pmsPayment;
+    pmsPayment.PMSPayTypeName       = payment.Name;
+    pmsPayment.PMSPayTypeCode       = "";
+    pmsPayment.PMSPayTypeCategory   = eMMCategory;
+    pmsPayment.PMSMMPayTypeLink     = paymentKey;
+    if(payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
+        pmsPayment.isElectronicPayment   = true;
+    else
+        pmsPayment.isElectronicPayment   = false;
+
+    std::auto_ptr<TManagerPMSCodes> managerPMSCodes(new TManagerPMSCodes());
+    managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPayment,isNewPayment, isMMPayType);
 }
 //--------------------------------------------------------------------------------------

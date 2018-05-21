@@ -103,6 +103,8 @@ __published:	// IDE-managed Components
         TTouchBtn *btnWalletType;
         TTouchBtn *btnWalletConfig;
         TCheckBox *cbreservationmaster;
+        TCheckBox *cbSmartConnectQR;
+        TGroupBox *GrpSmartConnect;
         void __fastcall pnlOkClick(TObject *Sender);
         void __fastcall Panel20Click(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
@@ -147,6 +149,7 @@ __published:	// IDE-managed Components
         void __fastcall btnWalletTypeMouseClick(TObject *Sender);
         void __fastcall cbWalletPaymentsClick(TObject *Sender);
         void __fastcall cbCSVPaymentTypeClick(TObject *Sender);
+        void __fastcall cbSmartConnectQRClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmNewPaymentType(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey = 0);
@@ -158,6 +161,8 @@ private:	// User declarations
 	TPayment Payment;
 	void RedrawButtons(TObject * Sender);
     AnsiString GLCode;
+    void EnableOrCheckQRCodeButton(bool isQRCodeChecked, bool isQRCodeEnabled);
+    void EnableOrCheckCashOutButton(bool checkCashout, bool enableCashOut);
 public:		// User declarations
     static TfrmNewPaymentType *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey);
 

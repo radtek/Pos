@@ -22,7 +22,7 @@
 #include "BasePMS.h"
 #include "PhoenixHotelSystem.h"
 #include "FiscalPort.h"
-#include "OracleDataObjects.h"
+//#include "OracleDataObjects.h"
 
 //---------------------------------------------------------------------------
 class TDeviceRealTerminal : public TDeviceRealControl

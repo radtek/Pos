@@ -54,7 +54,7 @@ enum ePaymentAttribute
     ePayTypeClipp,                 //33
     ePayTypeWallet,                //34
     ePayTypeReservationMasterPay,  //35
-
+    ePayTypeSmartConnectQR,        //36
 };
 
 enum eWalletType{eNoWallet,eWeChatWallet,eJioWallet,};
@@ -129,6 +129,9 @@ public:
     UnicodeString WalletPassword;
     UnicodeString WalletSecurityToken;
     UnicodeString WalletQrCode;
+    bool SmartConnectQREnabled;
+    UnicodeString CSVString;
+    Currency EFTPOSSurcharge;  //this is the surcharge like tip that will be applied from eftpos machine ex: smart connect
     void Reset();
     void Failed();
     void SetAssignedGroups( std::vector<TPaymentTypeGroup> groups );
@@ -171,8 +174,6 @@ public:
     void ClearPaymentAttribute();
     bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
     AnsiString GetPropertyString();
-    UnicodeString CSVString;
-
 };
 
 #endif

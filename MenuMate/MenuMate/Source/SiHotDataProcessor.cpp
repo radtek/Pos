@@ -46,10 +46,13 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
             TItemComplete *Order    = (TItemComplete*)_paymentTransaction.Orders->Items[i];
             if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                 break;
-            Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabName          = _paymentTransaction.Phoenix.RoomNumber;
-            Order->TabType          = TabRoom;
-            Order->RoomNoStr        = _paymentTransaction.Phoenix.AccountNumber;
+            if(Order->TabType != TabCashAccount)
+            {
+                Order->TabType          = TabRoom;
+                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                Order->RoomNoStr        = _paymentTransaction.Phoenix.AccountNumber;
+            }
         }
     }
 
@@ -108,7 +111,22 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
-    UnicodeString categoryCode        = itemComplete->ThirdPartyCode;
+
+    if(itemComplete->RevenueCode == 0)
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               itemComplete->RevenueCode = itRev->first;
+               break;
+            }
+        }
+    }
+
+    UnicodeString categoryCode        = itemComplete->RevenueCode;
+   
     if(categoryCode == "")
         categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
@@ -564,6 +582,80 @@ void TSiHotDataProcessor::ReadCurrentRoundingSettingForVat()
     }
 }
 //----------------------------------------------------------------------------
+void TSiHotDataProcessor::GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    paymentMap.clear();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG";
+        SelectQuery->ExecQuery();
+        for(;!SelectQuery->Eof;SelectQuery->Next())
+        {
+           TPMSPaymentType pmsPayment;
+           pmsPayment.PMSPayTypeID                  = SelectQuery->FieldByName("PMS_PAYTYPE_ID")->AsInteger;
+           pmsPayment.PMSPayTypeName                = SelectQuery->FieldByName("PMS_PAYTYPE_NAME")->AsString;
+           pmsPayment.PMSPayTypeCode                = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+           pmsPayment.PMSPayTypeCategory            = SelectQuery->FieldByName("PMS_PAYTYPE_CATEGORY")->AsInteger;
+           pmsPayment.PMSMMPayTypeLink              = SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger == NULL ? 0 : SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger;
+           pmsPayment.isElectronicPayment           = SelectQuery->FieldByName("IS_ELECTRONICPAYMENT")->AsString == "T" ? true : false;
+           paymentMap[pmsPayment.PMSPayTypeID]
+                                                    = pmsPayment;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//----------------------------------------------------------------------------
+AnsiString TSiHotDataProcessor::GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(!payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+        {
+            if(it->second.PMSPayTypeName == payment->Name)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+        else
+        {
+            if(it->second.PMSPayTypeName == payment->CardType)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+    }
+    return value;
+}
+//----------------------------------------------------------------------------
+AnsiString TSiHotDataProcessor::GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(it->second.PMSPayTypeCategory == eDefaultCategory)
+        {
+            value = it->second.PMSPayTypeCode;
+            break;
+        }
+    }
+    return value;
+}
+//----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     double surcharge = 0.0;
@@ -571,6 +663,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     double cashOutStore = 0.0;
     double tip = 0.0;
     UnicodeString cashType = "";
+    std::map<int,TPMSPaymentType> paymentsMap;
+    GetPMSPaymentType(paymentsMap);
     for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
     {
         TSiHotPayments siHotPayment;
@@ -585,15 +679,15 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         }
         if(payment->GetPaymentAttribute(ePayTypeCash))
         {
-            cashType = payment->PaymentThirdPartyID;
+            cashType = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
         }
 
         if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->GetPaymentAttribute(ePayTypeRoomInterface)))
         {
             tip += (double)payment->TipAmount;
-            siHotPayment.Type       = payment->PaymentThirdPartyID;
+            siHotPayment.Type       = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
             if(siHotPayment.Type    == "")
-                siHotPayment.Type   = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+                siHotPayment.Type   = GetPMSDefaultCode(paymentsMap);//TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
             if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type    = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
             if(payment->GetPaymentAttribute(ePayTypeCredit) && (double)payment->GetPayTendered() < 0.0)
@@ -667,7 +761,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest) ;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut) ;
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")
@@ -708,7 +802,7 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest);
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut);
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")

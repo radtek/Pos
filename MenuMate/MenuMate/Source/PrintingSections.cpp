@@ -22,7 +22,7 @@
 #include <map>
 #include <list>
 #include <cmath>
-
+#include "MMMessageBox.h"
 #include "DiscountGroup.h"
 #include "MMTouchKeyboard.h"
 #include "ZForm.h"
@@ -320,6 +320,10 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintSignatureSection, "Signature Section");
 	DefaultCaption[epofiPrintSignatureSection] = "Signature Section";
+
+    Instructions[i++] = InstructionPair(epofiPrintPatronsSection, "Patron Count Section");
+	DefaultCaption[epofiPrintPatronsSection] = "Patron Count Section";
+
 }
 
 
@@ -501,6 +505,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
     case epofiPrintOrganizationNumber:
     case epofiPrintOracleCheckNumber:
     case epofiPrintSignatureSection:
+    case epofiPrintPatronsSection:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -1018,6 +1023,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintSignatureSection:
             PrintSignatureSection(PrintJob);
+            break;
+        case epofiPrintPatronsSection:
+            PrintPatronSection(PrintJob);
             break;
 		default:
 			break;
@@ -1616,7 +1624,6 @@ void TPrintSection::PrintReceiptInfo(TReqPrintJob *PrintJob)
 	{
 		PatronCount = TManagerPatron::Instance().GetTotalPatrons(PrintJob->Transaction->Patrons);
 	}
-
 	UnicodeString CurrentSeatCount = "";
 	if (PatronCount == 0)
 	{
@@ -3932,15 +3939,15 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 			ffNumber,
 			CurrencyDecimals);
 
-//            if(Adjustment != "0.00")
-//            {
+            if(Adjustment != "0.00")
+            {
                 pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
                 pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
                 pPrinter->Line->Columns[1]->Text = Adjustment;
                 pPrinter->AddLine();
-//            }
+            }
 		}
 	}
 	else
@@ -6600,6 +6607,14 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             ffNumber,
             CurrencyDecimals));
         }
+
+        if(SubPayment->EFTPOSSurcharge != 0)
+        {
+            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)
@@ -7691,7 +7706,8 @@ bool TOrderBundle::isDifferentItemFromInitial( TItemComplete* InitialOrder, TIte
 	|| (InitialOrder->Size != CurrentOrder->Size)
 	|| ( seperatePriceChangedItemsNMI( InitialOrder, CurrentOrder )) 		// for NMI standards, tackles the same item, but with different prices
 	|| ( seperateWeightedItemsNMI( CurrentOrder ) )							// for NMI standards, add each weighted item in its own bundle
-	|| ( seperatePriceBarcodedItemsNMI( CurrentOrder) );					// for NMI standards, add price barcoded items in its own bundle
+	|| ( seperatePriceBarcodedItemsNMI( CurrentOrder) ) 					// for NMI standards, add price barcoded items in its own bundle
+    || (InitialOrder->SplitMessage != CurrentOrder->SplitMessage);          // If order is splitted on basis of SCD and SC patron, items should not get clubbed.
 
 	return result;
 }
@@ -9145,7 +9161,7 @@ void TPrintSection::PrintSignatureSection(TReqPrintJob* PrintJob)
     }
 
     if(TGlobalSettings::Instance().NewBook == 2 && IsRMSPaymentType(PrintJob))
-    {    
+    {
         PrintJob->Transaction->Customer.Name = PrintJob->Transaction->Customer.Name;
         PrintJob->Transaction->Customer.RoomNumberStr =  PrintJob->Transaction->Customer.RoomNumber;
     }
@@ -9228,3 +9244,55 @@ bool TPrintSection::IsRMSPaymentType(TReqPrintJob *PrintJob)
     }
     return retVal;
 }
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintPatronSection(TReqPrintJob *PrintJob)
+{
+    Empty = false;
+    if(CheckToPrintPatronSection(PrintJob))
+    {
+        pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+        pPrinter->Line->ColCount = 2;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+        pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text = "Patron Name";
+        pPrinter->Line->Columns[1]->Text = "Count";
+        pPrinter->AddLine();
+        std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
+        for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
+        {
+            if(ptrPatronTypes->Count != 0)
+            {
+                pPrinter->Line->ColCount = 2;
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width/2;
+                pPrinter->Line->Columns[1]->Width = pPrinter->Width/2;
+                pPrinter->Line->Columns[0]->Text = ptrPatronTypes->Name;//customerDetails[index];
+                pPrinter->Line->Columns[1]->Text = "#" + (AnsiString)ptrPatronTypes->Count;//customerData[index];
+                pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+                pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+                pPrinter->AddLine();
+            }
+        }
+    }
+    else
+        Empty = true;
+}
+//-----------------------------------------------------------------------------
+bool TPrintSection::CheckToPrintPatronSection(TReqPrintJob *PrintJob)
+{
+    bool retValue = false;
+    bool isSCDAvailable = false;
+    bool isOtherAvailable = false;
+    std::vector <TPatronType> ::iterator ptrPatronTypes = PrintJob->Transaction->Patrons.begin();
+    for (; ptrPatronTypes != PrintJob->Transaction->Patrons.end(); ptrPatronTypes++)
+    {
+         if(ptrPatronTypes->Name.UpperCase().Trim() == "SENIOR CITIZEN" && ptrPatronTypes->Count > 0)
+            isSCDAvailable = true;
+         if(ptrPatronTypes->Name.UpperCase().Trim() != "SENIOR CITIZEN" && ptrPatronTypes->Count > 0)
+            isOtherAvailable = true;
+    }
+    retValue = isSCDAvailable && isOtherAvailable;
+    return retValue;
+}
+//-----------------------------------------------------------------------------

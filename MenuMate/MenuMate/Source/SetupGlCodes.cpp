@@ -78,7 +78,7 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   btnTabAmountRefunded->Caption = "Tab Deposit/Credit Refunded \r" + TabDepositCreditRefunded;
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
   btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
-
+  btnDiscountAndSurcharge->Caption = "Payment Surcharge \r" + SurchargeGLCode;
   if(TGlobalSettings::Instance().FloatWithdrawFromCash)
   {
       btnCashWidthwral->Enabled = true;
@@ -136,6 +136,12 @@ void __fastcall TfrmSetupGlCodes::btnFloatGlCodeClick(TObject *Sender)
 {
   ShowKeyBoard("Enter GL Code for Float ",FloatGLCode);
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetupGlCodes:: btnDiscountSurchargeClick(TObject *Sender)
+{
+  ShowKeyBoard("Enter GL Code for Surcharge",SurchargeGLCode);
+  btnDiscountAndSurcharge->Caption = "Payment Surcharge \r" + SurchargeGLCode;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetupGlCodes::btnEftPosTipMouseClick(TObject *Sender)

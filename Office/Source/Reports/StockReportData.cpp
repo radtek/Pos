@@ -67,6 +67,8 @@ void TdmStockReportData::SetupStockValueByGroup(TStrings *Groups)
 		"Order By "
 			"StockCategory.Sort_Order, "
 			"StockGroup.Sort_Order, "
+           "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"StockLocation.Location, "
              "stock.DESCRIPTION asc ";
 	for (int i=0; i<Groups->Count; i++)
@@ -122,6 +124,8 @@ void TdmStockReportData::SetupStockValueByLocation(TStrings *Locations, TStrings
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order, "
 			"StockGroup.Sort_Order, "
+             "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
              "stock.DESCRIPTION asc ";
 	for (int i=0; i<Locations->Count; i++)
 	{
@@ -427,6 +431,8 @@ void TdmStockReportData::SetupStockDetails(TStrings *Locations, TStrings *Groups
 			"StockLocation.Location, "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order, "
+             "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
             "Stock.Description asc ";
 	if (Locations)
 	{
@@ -862,6 +868,8 @@ void TdmStockReportData::SetupStockReorderItem(TStrings *Locations, TStrings *Gr
 		"Order By "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order,"
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"StockLocation.Location";
 	for (int i=0; i<Locations->Count; i++)
 	{
@@ -1414,6 +1422,8 @@ void TdmStockReportData::SetupPurchaseOrder(int OrderKey)
 		"Order By "
 			"StockCategory.Sort_Order,"
 			"StockGroup.Sort_Order,"
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"Stock.Description,"
 			"PurchaseStock.Supplier_Unit ";
 	qrPurchaseOrder->ParamByName("Order_LK")->AsInteger = OrderKey;
@@ -1587,9 +1597,8 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey,int RadioButtonValu
 }
 //---------------------------------------------------------------------------
 void TdmStockReportData::SetupStockVariance(int StocktakeKey)
-{    //     int prevStocktakeKey =StocktakeKey-1;
-	// called from the Stocktake Menu ( after Commit ) & the Reports Menu
-	qrStockVariance->Close();
+{
+  	qrStockVariance->Close();
 	qrStockVariance->SQL->Text =
 		"Select "
 			"StocktakeHistory.Code,"
@@ -1686,9 +1695,13 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 				 "* StocktakeHistory.Average_Unit_Cost As Numeric(15, 4))) Usage, "
 			"Sum(Cast((StocktakeHistory.Opening + StocktakeHistory.Inwards + StocktakeHistory.Transfer - StocktakeHistory.Closing) "
 			"	 * StockLocation.Assessed_Value As Numeric(15, 4))) Assessed_Total, "
-            " coalesce(STK.QTY,0)  QTY, "
-            "sum(cast((coalesce(STOCKTAKEHISTORY.AVERAGE_UNIT_COST,0 )* coalesce(STOCKTAKEHISTORY.OPENING, 0))as numeric(17,4))) opening_New  "
-		"From "
+            "coalesce(STK.QTY,0)  QTY, "
+            " case "
+            " when  (StocktakeHistory.PREV_AVERAGE_UNIT_COST <> null) "
+            " then Sum(Cast(COALESCE(StocktakeHistory.Average_Unit_Cost,0) * COALESCE(StocktakeHistory.opening ,0) As Numeric(15, 4))) "
+            "else "
+            "Sum(Cast(COALESCE(StocktakeHistory.PREV_AVERAGE_UNIT_COST,0) * COALESCE(StocktakeHistory.opening ,0) As Numeric(15, 4))) end opening_New "
+            "From "
 			"StocktakeHistory Left Join Stock On  "
 			 "StocktakeHistory.Code = Stock.Code left join (select sum(abs(stocktrans.QTY))QTY,STOCKTRANS.LOCATION,STOCKTRANS.STOCK_GROUP from STOCKTRANS where stocktrans.TRANSACTION_TYPE='Manufacture'  and STOCKTRANS.CREATED>= "
 			   "(select max(STOCKTAKEHISTORY.LAST_STOCKTAKE)from STOCKTAKEHISTORY where STOCKTAKEHISTORY.STOCKTAKE_KEY = :Stocktake_Key ) "
@@ -1702,36 +1715,15 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 			"StocktakeHistory.Location, "
 			"StocktakeHistory.Stock_Category, "
 			"StocktakeHistory.Stock_Group , "
-			"STK.QTY "
+            "STK.QTY, "
+            "StocktakeHistory.Last_Stocktake, "
+            " StocktakeHistory.PREV_AVERAGE_UNIT_COST "
+
+
 		"Order By "
 			"StocktakeHistory.Location,  "
 			"StocktakeHistory.Stock_Category, "
 			"StocktakeHistory.Stock_Group) B "
-		  /*	"		  	left Join "
-
-"(   	Select "
-			"StocktakeHistory.Location LocationA,  "
-			"StocktakeHistory.Stock_Category Stock_CategoryA,  "
-			"StocktakeHistory.Stock_Group Stock_GroupA,  "
-			"Sum(Cast(COALESCE(StocktakeHistory.Average_Unit_Cost,0) * COALESCE(StocktakeHistory.Closing ,0) As Numeric(15, 4))) Opening "
-		"From  "
-			"StocktakeHistory Left Join Stock On  "
-			"	StocktakeHistory.Code = Stock.Code  "
-			"Left Join StockLocation On  "
-			"	Stock.Stock_Key = StockLocation.Stock_Key and StocktakeHistory.Location = StockLocation.Location "
-		   "Where "
-			"StocktakeHistory.Stocktake_Key = :prevStocktakeKey "
-			
-		"Group By  "
-			"LocationA, "
-			"Stock_CategoryA, "
-			"Stock_GroupA  "
-		"Order By "
-		"	LocationA, "
-		"	Stock_CategoryA, "  
-		 " 	Stock_GroupA  ) A "
-
- "on A.LocationA = B.Location and A.Stock_CategoryA = B.Stock_Category and A.Stock_GroupA= B.Stock_Group */
  " ) R "
  " left join (select stocktrans.STOCK_CATEGORY, "
  " stocktrans.STOCK_GROUP, "
@@ -1742,8 +1734,10 @@ void TdmStockReportData::SetupStockVariance(int StocktakeKey)
 		 " StockTrans.Created <= (select cast('NOW' as timestamp) from rdb$database)  "
 		  "group by STOCKTRANS.STOCK_CATEGORY, stocktrans.STOCK_GROUP)K on R.Stock_Category=K.Stock_Category and R.STOCK_GROUP=K.STOCK_GROUP " ;
 
-    qrStockGroupVariance->ParamByName("Stocktake_Key")->AsInteger = StocktakeKey;
-   // qrStockGroupVariance->ParamByName("prevStocktakeKey")->AsInteger = prevStocktakeKey;
+
+   //qrStockGroupVariance->ParamByName("datetime")->AsDateTime =  datetime;
+   qrStockGroupVariance->ParamByName("Stocktake_Key")->AsInteger = StocktakeKey;
+  
   }
 
 //---------------------------------------------------------------------------
@@ -1974,6 +1968,8 @@ void TdmStockReportData::SetupStocktakeStockValuation(TStrings *Stocktakes)
             " order by     "
            "StockCategory.Sort_Order,  "
 			"StockGroup.Sort_Order,  "
+            "UPPER(StockCategory.STOCK_CATEGORY), "
+            "UPPER(STOCKGROUP.STOCK_GROUP), "
 			"Stock.Description,     "
 			"StockLocation.Location  " ;
 
@@ -2213,4 +2209,5 @@ void TdmStockReportData::SetupStockReconcialation(TDateTime StartTime, TDateTime
     qrStockReconcialation->ParamByName("StartTime")->AsDateTime	= StartTime;
     qrStockReconcialation->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
+//-----------------------------------------------------------------------------
 

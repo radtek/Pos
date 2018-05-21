@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "ManagerOraclePMS.h"
-#include "DeviceRealterminal.h"
 #include "MMMessageBox.h"
 #include "OracleManagerDB.h"
 #include "OracleTCPIP.h"
@@ -12,6 +11,7 @@
 #include <process.h>
 #include <Tlhelp32.h>
 #include <winbase.h>
+#include "PMSHelper.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -62,67 +62,77 @@ void TManagerOraclePMS::Initialise()
         TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
         {
-            if(LoadRevenueCodes(DBTransaction))
+            std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+            //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
+            if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
             {
-                if(Slots.size() > 0)
+                if(RevenueCodesMap.size() < 17)
                 {
-                    if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory != NULL)
+                    if(Slots.size() > 0)
                     {
-                        if(PointsCategory.Trim() != "" && PointsCategory != NULL)
+                        if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory != NULL)
                         {
-                            if(CreditCategory.Trim() != "" && CreditCategory != NULL)
+                            if(PointsCategory.Trim() != "" && PointsCategory != NULL)
                             {
-                                if(TGlobalSettings::Instance().IsOraclePOSServer)
+                                if(CreditCategory.Trim() != "" && CreditCategory != NULL)
                                 {
-                                   if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
-                                   {
-                                        if(TriggerApplication())
-                                        {
-                                            Enabled = GetLinkStatus();
-                                        }
-                                   }
-                                   else
-                                   {
-                                        MessageBox("Oracle Interface IP Address and Oracle Port Number are must","Information",MB_OK);
-                                        Enabled = false;
-                                   }
-                                }
-                                else
-                                {
-                                    FindAndTerminateProcess();
-                                    Sleep(1000);
-                                    if(InitializeoracleTCP())
+                                    if(TGlobalSettings::Instance().IsOraclePOSServer)
                                     {
-                                       Enabled = true;
-                                       TOracleTCPIP::Instance().Disconnect();
+                                       if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
+                                       {
+                                            if(TriggerApplication())
+                                            {
+                                                Enabled = GetLinkStatus();
+                                            }
+                                       }
+                                       else
+                                       {
+                                            MessageBox("Oracle Interface IP Address and Oracle Port Number are must","Information",MB_OK);
+                                            Enabled = false;
+                                       }
                                     }
                                     else
                                     {
-                                        Enabled = false;
+                                        FindAndTerminateProcess();
+                                        Sleep(1000);
+                                        if(InitializeoracleTCP())
+                                        {
+                                           Enabled = true;
+                                           TOracleTCPIP::Instance().Disconnect();
+                                        }
+                                        else
+                                        {
+                                            Enabled = false;
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    MessageBox("Credit Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                                    Enabled = false;
                                 }
                             }
                             else
                             {
-                                MessageBox("Credit Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                                MessageBox("Points Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
                                 Enabled = false;
                             }
                         }
                         else
                         {
-                            MessageBox("Points Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                            MessageBox("Default Payment Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
                             Enabled = false;
                         }
                     }
                     else
                     {
-                        MessageBox("Default Payment Category is incorrect.\nIt is required for set up of Oracle PMS.", "Warning", MB_OK + MB_ICONINFORMATION);
+                        MessageBox("Serving Times are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
                         Enabled = false;
                     }
                 }
                 else
                 {
-                    MessageBox("Serving Times are required for set up of Oracle.", "Warning", MB_OK + MB_ICONINFORMATION);
+                    MessageBox("Number of Revenue codes can be 1 to 16 only.","WARNING",MB_ICONWARNING + MB_OK);
                     Enabled = false;
                 }
             }
@@ -144,6 +154,7 @@ void TManagerOraclePMS::Initialise()
         DBTransaction.Rollback();
     }
 }
+
 //---------------------------------------------------------------------------
 bool TManagerOraclePMS::TriggerApplication()
 {
@@ -213,25 +224,6 @@ bool TManagerOraclePMS::FindAndTerminateProcess()
     }
 
     CloseHandle(snapshot);
-    return retValue;
-}
-//---------------------------------------------------------------------------
-bool TManagerOraclePMS::LoadRevenueCodes(Database::TDBTransaction &DBTransaction)
-{
-    bool retValue = false;
-    RevenueCodesMap.clear();
-    std::auto_ptr<TOracleManagerDB> managerDB(new TOracleManagerDB());
-    TIBSQL* queryRevenue = managerDB->LoadRevenueCodes(DBTransaction);
-    for(;!queryRevenue->Eof;queryRevenue->Next())
-    {
-        TRevenueCodeDetails codeDetails;
-        codeDetails.IsDefault = queryRevenue->FieldByName("ISDEFAULT_REVENUECODE")->AsString == "T" ?
-                                true : false;
-        codeDetails.RevenueCodeDescription = queryRevenue->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
-        RevenueCodesMap[queryRevenue->FieldByName("REVENUECODE")->AsInteger] =
-            codeDetails;
-        retValue = true;
-    }
     return retValue;
 }
 //---------------------------------------------------------------------------

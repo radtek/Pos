@@ -152,7 +152,11 @@ std::string TApplyParser::getForeignKeysListForTableQuery( std::string inTableNa
            "WHERE RDB$RELATION_NAME = '" + inTableName + "' AND RDB$CONSTRAINT_TYPE = 'FOREIGN KEY'";
 }
 // ---------------------------------------------------------------------------
-
+std::string TApplyParser::checkWhetherADomainExistsQuery()
+{
+	return "SELECT RDB$FIELD_NAME FROM RDB$FIELDS WHERE UPPER(RDB$FIELD_NAME) = :name ";
+}
+// ---------------------------------------------------------------------------
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::
 // Tool Functions
 bool TApplyParser::tableExists(
@@ -283,6 +287,11 @@ bool TApplyParser::dbObjectExists(
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	return result;
+}
+//---------------------------------------------------------------------
+bool TApplyParser::DomainExists(std::string inDomainName, TDBControl* inDBControl )
+{
+    return dbObjectExists(inDomainName, checkWhetherADomainExistsQuery(), inDBControl );
 }
 //---------------------------------------------------------------------------
 // It only checks for the existance of the version number in the

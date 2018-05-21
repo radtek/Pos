@@ -21,7 +21,7 @@ namespace PocketVoucherIntegration
             (sender, cert, chain, sslPolicyErrors) => true;
         }
         public RedemptionResponseDetails RedemptionRequest(VoucherRedemptionDetails redemptionDetails)
-        {
+        {            
             RedemptionResponseDetails responseDetails = new RedemptionResponseDetails();
             string reference = "";
             string message = "";

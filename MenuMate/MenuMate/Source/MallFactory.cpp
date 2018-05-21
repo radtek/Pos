@@ -23,6 +23,9 @@ TMallExport* TMallFactory::GetMallType()
         case 2:
             mallType = new TDeanAndDelucaMall();
             break;
+         case 3:
+            mallType = new TEviaMall();
+            break;
         default:
            mallType = NULL;
     }

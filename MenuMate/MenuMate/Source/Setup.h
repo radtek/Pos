@@ -245,6 +245,10 @@ __published:	// IDE-managed Components
     void __fastcall edTaxRateClick(TObject *Sender);
     void __fastcall btnAssignMallSalesTypeMouseClick(TObject *Sender);
     void __fastcall btnMezzanineAreaMouseClick(TObject *Sender);
+    void __fastcall edMallServerIPClick(TObject *sender);
+    void __fastcall edMallServerPathClick(TObject *sender);
+    void __fastcall edMallUserNameClick(TObject *sender);
+    void __fastcall edMallPasswordClick(TObject *sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);
@@ -261,6 +265,8 @@ private:	// User declarations
     void UpdateNoMallUI();
     UnicodeString CheckAbsolutePath(UnicodeString path);
     void ShowMezzanineArea();
+    void EditServerDetils(int tagKey);
+    void DisplayServerInfo(int tagKey, AnsiString KeyboardText);
 
 public:		// User declarations
 

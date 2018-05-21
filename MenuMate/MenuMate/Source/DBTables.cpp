@@ -492,7 +492,8 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
 			"SELECT DISTINCT "
-				"SEAT.SEATNO SEAT_NUMBER, TAB.TAB_NAME NAME, TAB.TAB_KEY TAB_KEY "
+				"SEAT.SEATNO SEAT_NUMBER, TAB.TAB_NAME NAME, TAB.TAB_KEY TAB_KEY, "
+                    "ORDERS.FIRST_NAME, ORDERS.LAST_NAME, ORDERS.ROOM_NO "
 			"FROM "
 				"TABLES INNER JOIN SEAT ON TABLES.TABLE_KEY = SEAT.TABLE_KEY "
 				"INNER JOIN TAB ON SEAT.TAB_KEY = TAB.TAB_KEY "
@@ -513,7 +514,18 @@ void TDBTables::GetSeats(Database::TDBTransaction &DBTransaction,TStringList * T
 			}
 			else
 			{
-				Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("NAME")->AsString);
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                            TGlobalSettings::Instance().EnableCustomerJourney)
+                {
+                    UnicodeString Name = IBInternalQuery->FieldByName("FIRST_NAME")->AsString.Trim() != "" ? IBInternalQuery->FieldByName("FIRST_NAME")->AsString
+                                            : IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("ROOM_NO")->AsString
+                            + " " + Name);
+                }
+                else
+                {
+                    Index = TabList->Add(IBInternalQuery->FieldByName("SEAT_NUMBER")->AsString + "." + IBInternalQuery->FieldByName("NAME")->AsString);
+                }
 			}
          // Little bit of pointer abuse but we just want to store the int somewhere.
          TabList->Objects[Index] = (TObject *)IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
@@ -1573,7 +1585,7 @@ void TDBTables::SaveMezzanineAreaTables(std::map<int, std::vector<TMezzanineTabl
 void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
-    { //   MessageBox( "Inserting DB.", "", MB_OK );
+    {
         TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
         incrementGenerator->Close();
         incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MEZZANINE_TABLE_ID, 1) FROM RDB$DATABASE";
@@ -1599,7 +1611,7 @@ void TDBTables::InsertMezzanineTablesRecord(Database::TDBTransaction &dbTransact
 void TDBTables::DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails)
 {
     try
-    { //   MessageBox( "Deleting DB.", "", MB_OK );
+    {
         TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
         deleteQuery->Close();
         deleteQuery->SQL->Text =  "DELETE FROM MEZZANINE_AREA_TABLES a "

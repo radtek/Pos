@@ -331,7 +331,7 @@ namespace SiHotIntegration
                 {
                     if(i > 0)
                         paymentNames += "                                          ";
-                    paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Amount;
+                    paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Type +" " + roomChargeDetails.PaymentList[i].Amount;
                     paymentNames += "\r\n";
                 }
                 stringList.Add("Payments:                                 " + paymentNames);

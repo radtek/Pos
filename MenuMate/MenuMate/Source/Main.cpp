@@ -91,6 +91,8 @@
 #include "CSVExportReceiver.h"
 #include "ManagerPanasonic.h"
 #include "ManagerPMS.h"
+#include "EftposSmartConnect.h"
+#include "EftposAdyen.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -313,6 +315,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Sale Time Mod Registered");
 		}
 		bool EftPosRegiestered = TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
+
 		if (TGlobalSettings::Instance().EnableEftPosDPS && EftPosRegiestered)
 		{
 			EftPos = new TEftPosMMDPS();
@@ -346,6 +349,16 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		else if (TGlobalSettings::Instance().EnableEftPosSmartPay && EftPosRegiestered)
 		{
 			EftPos = new TEftPosSmartLink();
+			EftPos->Initialise();
+		}
+        else if (TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPosRegiestered)
+		{
+			EftPos = new TEftPosSmartConnect();
+			EftPos->Initialise();
+		}
+		else if (TGlobalSettings::Instance().EnableEftPosAdyen && EftPosRegiestered)
+		{
+			EftPos = new TEftposAdyen();
 			EftPos->Initialise();
 		}
 		else
@@ -425,8 +438,15 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		updateHTMLDisplay(DBBootTransaction);
 		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
 		// recover any lost eftpos transactions
+        bool processRecovery = true;
 		TMMTransactionRecovery transactionRecovery;
-		transactionRecovery.ProcessTransactionRecovery();
+
+        if(TGlobalSettings::Instance().EnableEftPosSmartConnect && TGlobalSettings::Instance().IsSmartConnectQRTransaction)
+            processRecovery = false;
+
+        if(processRecovery)
+		    transactionRecovery.ProcessTransactionRecovery();
+
 		SetGridColors(tgridMenu);
         tgridMenu->GridColor = RGB(255,255,255);
         tgridMenu->Color	= RGB(255,255,255);

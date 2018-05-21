@@ -120,6 +120,7 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIDClick(TObject *Sender)
 void __fastcall TfrmPHSConfiguration::FormShow(TObject *Sender)
 {
    InitializePMS();
+   InitializePMSDefaultPayment();
    UpdateGUI();
 }
 //---------------------------------------------------------------------------
@@ -127,6 +128,7 @@ void TfrmPHSConfiguration::InitializePMS()
 {
    std::auto_ptr<TManagerPMS> managerPMS (new TManagerPMS());
    managerPMS->Initialize(TDeviceRealTerminal::Instance().DBControl,PMSType);
+   TGlobalSettings::Instance().PMSType = PMSType;
    TDeviceRealTerminal::Instance().BasePMS->Initialise();
    TDeviceRealTerminal::Instance().BasePMS->Registered = true;
 }
@@ -136,7 +138,14 @@ void TfrmPHSConfiguration::UpdateGUI()
 	tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 	tbPointCat->Caption = "Points Category\r" + TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
 	tbCreditCat->Caption = "Credit Category\r" + TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-    tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+    if(PMSType == oracle || PMSType == siHot)
+    {
+        tbPaymentDefCat->Caption = "Payment Category\r" ;//+ TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+    }
+    else
+    {
+        tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+    }
     tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     // enable default transaction count button for sihot also
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
@@ -145,25 +154,27 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         //tbDefTransAccount->Caption = "ServiceCharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
         tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
+		tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
         tbPhoenixPortNumber->Enabled = false;
         TouchBtn1->Enabled = false;
         cbEnableCustomerJourney->Enabled = true;
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
-        tbRevenueCodes->Enabled = false;
+        tbItemDefCat->Enabled = false;
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
+        tbTimeOut->Enabled = true;
+        tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
     }
     else if(PMSType == oracle)
     {
         tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
+		tbTipAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
         TouchBtn1->Enabled = false;
         tbRoundingCategory->Enabled = false;
@@ -172,6 +183,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbSurchargeCat->Enabled = false;
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
+        tbTimeOut->Enabled = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -205,8 +217,8 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
+		tbTipAccount->Enabled = false;
         tbServiceCharge->Enabled = false;
         tbServingTime->Enabled = false;
         tbRevenueCodes->Enabled = false;
@@ -215,12 +227,14 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
+        tbTimeOut->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+    tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
 }
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
@@ -248,24 +262,35 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 	}
 	else
 	{
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-        if(PMSType != oracle)
-		    frmTouchKeyboard->MaxLength = 255;
+        if(PMSType == oracle || PMSType == siHot)
+        {
+           std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                         (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                                      (this,TDeviceRealTerminal::Instance().DBControl));
+           frmMessageMaintenance->MessageType = ePMSPaymentType;
+           frmMessageMaintenance->ShowModal();
+        }
         else
-            frmTouchKeyboard->MaxLength = 6;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = false;
-		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-		frmTouchKeyboard->Caption = "Enter the default Category Number for Payments.";
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory = frmTouchKeyboard->KeyboardText;
-			tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-			Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction1.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPaymentCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory);
-			DBTransaction1.Commit();
-		}
+        {
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            if(PMSType != oracle)
+                frmTouchKeyboard->MaxLength = 255;
+            else
+                frmTouchKeyboard->MaxLength = 6;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+            frmTouchKeyboard->Caption = "Enter the default Category Number for Payments.";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory = frmTouchKeyboard->KeyboardText;
+                tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPaymentCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory);
+                DBTransaction1.Commit();
+            }
+       }
 	}
 }
 //---------------------------------------------------------------------------
@@ -741,3 +766,100 @@ bool TfrmPHSConfiguration::CanEnablePOSServer()
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmPHSConfiguration::tbTimeOutMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+		frmTouchNumpad->Caption = "Enter SiHot Communication Time-Out in seconds.";
+		frmTouchNumpad->btnSurcharge->Caption = "Ok";
+		frmTouchNumpad->btnSurcharge->Visible = true;
+		frmTouchNumpad->btnDiscount->Visible = false;
+		frmTouchNumpad->Mode = pmNumber;
+		frmTouchNumpad->INTInitial = TGlobalSettings::Instance().PMSTimeOut;
+		if (frmTouchNumpad->ShowModal() == mrOk)
+		{
+            if(frmTouchNumpad->INTResult >= 3 && frmTouchNumpad->INTResult <= 11)
+            {
+                TGlobalSettings::Instance().PMSTimeOut = frmTouchNumpad->INTResult;
+                tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSTimeOut,TGlobalSettings::Instance().PMSTimeOut);
+                DBTransaction1.Commit();
+            }
+            else
+            {
+                MessageBox("Please enter a value from 3 to 11 seconds","Information",MB_OK + MB_ICONINFORMATION);
+                tbTimeOutMouseClick(NULL);
+            }
+
+		}
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::InitializePMSDefaultPayment()
+{
+    if(DefaultPaymentInitRequired())
+    {
+        InitDefaultPaymentInDB();
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmPHSConfiguration::DefaultPaymentInitRequired()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text =
+                   "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_CATEGORY = 0";
+        SelectQuery->ExecQuery();
+        UnicodeString value = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+        if(value.Trim() == "")
+        {
+            retValue = true;
+        }
+        else
+        {
+            retValue = false;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+    }
+    return retValue;
+}
+
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::InitDefaultPaymentInDB()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        UpdateQuery->Close();
+        UpdateQuery->SQL->Text =
+                   "UPDATE PMSPAYMENTSCONFIG SET PMS_PAYTYPE_CODE = :PMS_PAYTYPE_CODE "
+                   "WHERE PMS_PAYTYPE_CATEGORY = 0";
+
+        UpdateQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+        UpdateQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------

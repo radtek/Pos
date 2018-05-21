@@ -2979,6 +2979,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Float GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+     SetVarStr( DBTransaction, vmSurchargeGLCode, "Surcharge GL Code",
+                    "Surcharge GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,
@@ -3227,11 +3231,23 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Default is ",
 		vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmCustomerId, "Customer ID", "Customer ID.\r"
-            "Default is null", vmg3rdPartyInterface, "" );
+        "Default is null", vmg3rdPartyInterface, "" );
         SetVarBool(DBTransaction, vmIsBillSplittedByMenuType, "Split Bill By Menu",
-                 "Split Bill on Menu type basis"
-                 "Default is False.",
-                  vmgPOS, false);
+        "Split Bill on Menu type basis"
+        "Default is False.",
+        vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableEftPosSmartConnect, "Use SmartConnect EFTPOS",
+         "Till uses SmartConnect Intergrated EFTPOS.\r"
+         "Default is False",
+         vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction,vmSmartConnectPairingCode, "Uses SmartConnect EFTPOS",
+         "Pairing code by which terminal is paired to machine.\r"
+         "Default is ",
+         vmg3rdPartyInterface, "");
+         SetVarBool(DBTransaction,vmIsSmartConnectQRTransaction, "Smart Connect QR Transaction",
+         "Tells whether last transaction was qr code trans.\r"
+         "Default is False",
+         vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmEnableCustomerJourney, "PMS Enable Customer Journey",
 		"when this is checked it will ask room number for every transaction./r"
 		"Default is false ",
@@ -3366,6 +3382,17 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		vmgPOS,
 		0);
         SetVarStr(DBTransaction, vmOracleInterfaceIPAddress, "Oracle Interface IP Address",  "Oracle Interface IP Address", vmgPOS, "");
+        SetVarBool(DBTransaction,vmEnableEftPosAdyen,"Use Adyen EFTPOS", "This setting will set EFTPOS to Adyen", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmEFTPosAPIKey,  "API Key", "API Key for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosDeviceID,  "Device ID", "Device ID for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosURL,  "API URL", "API URL for EFTPOS CLoud", vmg3rdPartyInterface, "");
+        SetVarInt(DBTransaction,
+		vmPMSTimeOut,
+		"PMS Time Out",
+		"PMS Time Out",
+		vmgPOS,
+		3);
+        SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

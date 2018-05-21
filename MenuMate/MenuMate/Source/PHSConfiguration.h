@@ -44,6 +44,7 @@ __published:	// IDE-managed Components
     TLabel *Label2;
     TTouchBtn *tbOracleInterfaceIP;
     TTouchBtn *tbOracleInterfacePort;
+    TTouchBtn *tbTimeOut;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -56,8 +57,8 @@ __published:	// IDE-managed Components
 	void __fastcall tbDefTransAccountClick(TObject *Sender);
 	void __fastcall tbSurchargeCatClick(TObject *Sender);
 	void __fastcall tbRoundingCategoryClick(TObject *Sender);
-   void __fastcall TouchBtn1MouseClick(TObject *Sender);
-    void __fastcall tbTipAccountClick(TObject *Sender);
+    void __fastcall TouchBtn1MouseClick(TObject *Sender);
+	void __fastcall tbTipAccountClick(TObject *Sender);
     void __fastcall tbExpensesAccountClick(TObject *Sender);
     void __fastcall tbServiceChargeMouseClick(TObject *Sender);
     void __fastcall cbEnableCustomerJourneyClick(TObject *Sender);
@@ -67,12 +68,16 @@ __published:	// IDE-managed Components
     void __fastcall cbMakePOSServer(TObject *Sender);
     void __fastcall tbOracleInterfacePortMouseClick(TObject *Sender);
     void __fastcall tbOracleInterfaceIPMouseClick(TObject *Sender);
+    void __fastcall tbTimeOutMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
    void InitializePMS();
    void LogPMSEnabling();
    bool CanEnablePOSServer();
+   void InitializePMSDefaultPayment();
+   bool DefaultPaymentInitRequired();
+   void InitDefaultPaymentInDB();
 public:		// User declarations
    ePMS PMSType;
 

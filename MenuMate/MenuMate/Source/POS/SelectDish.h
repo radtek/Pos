@@ -481,6 +481,22 @@ private: // User declarations
     bool LoadRoomDetailsToPaymentTransaction(TPaymentTransaction &inTransaction);
     bool CloseActiveForm();
     std::vector<UnicodeString> LoadGuestDetails(UnicodeString defaultTransaction);
+    std::vector<TPatronType> patronsStore;
+    int storedPatronCountFromMenu;
+    void StorePatronsInformation(TPaymentTransaction &PaymentTransaction);
+    void InitializePatronForQuickSale(TPaymentTransaction &PaymentTransaction);
+    void ExtractPatronInformation(TPaymentTransaction &PaymentTransaction);
+    //void RestructureBillForPatrons(TPaymentTransaction &PaymentTransaction);
+    void RestructureBillForSplit();
+    void ApplyDiscountWithRestructure(TList *Orders, TDiscount CurrentDiscount);
+    void MakeDummyPaymentTransaction(TList *Orders, TPaymentTransaction &paymentTransaction);
+    void ExtractFromDummyPaymentTransaction(TPaymentTransaction &paymentTransaction, TList *Orders);
+    bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
+    void RestructureBillForPatrons(std::vector<TPatronType> patrons);
+    bool LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction);
+    void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo,UnicodeString lastName = "");
+    void GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat);
+
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

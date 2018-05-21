@@ -47,6 +47,7 @@
 #include "ComboDiscount.h"
 #include "DiscountGroup.h"
 #include "CardSwipe.h"
+#include "SCDPatronUtility.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_PAYMENT_TYPES_IN_VIEW 9
 #define ALTCOL 0
@@ -104,9 +105,7 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
-	if (TGlobalSettings::Instance().EnableMenuPatronCount)
-	CurrentTransaction.CalculatePatronCountFromMenu();
-
+    CalculatePatrons(CurrentTransaction);
 	int TotalCount = 0;
 	std::vector <TPatronType> ::iterator ptrPatronTypes = CurrentTransaction.Patrons.begin();
 	for (ptrPatronTypes = CurrentTransaction.Patrons.begin(); ptrPatronTypes != CurrentTransaction.Patrons.end(); ptrPatronTypes++)
@@ -294,6 +293,11 @@ void TfrmPaymentType::Reset()
            if(Payment->GetPaymentAttribute(ePayTypeWallet))
            {
               tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+           }
+           else if(Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+           {
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;//!CurrentTransaction.CreditTransaction;
               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
            }
            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
@@ -545,13 +549,39 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
               if(!AllowRefund)
               {
                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption != "Refund Points")
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                   {
+                        if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                        {
+                            if(EftPos->IsCashOutSupported())
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                            }
+                            else
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                            }
+                        }
+                   }
                    else
-                   tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   {
+                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   }
               }
               else
               {
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                    {
+                        if(EftPos->IsCashOutSupported())
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                        }
+                        else
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                        }
+                    }
+                    else
+                        tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
               }
             }
 
@@ -855,6 +885,7 @@ void __fastcall TfrmPaymentType::WMDisplayChange(TWMDisplayChange& Message)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
 {
+    int delayedTabKey = 0;
 	if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
 	{
 		MessageBox("Please select a receipt printer from Setup first.", "Print error", MB_OK + MB_ICONERROR);
@@ -892,7 +923,11 @@ void __fastcall TfrmPaymentType::btnPrelimClick(TObject *Sender)
                      if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Order->ItemType)
                           isMixedMenuOrder = false;
 
-                     TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable, isMixedMenuOrder);
+                     delayedTabKey = TManagerDelayedPayment::Instance().MoveOrderToTab(CurrentTransaction,isTable, isMixedMenuOrder);
+                    if(delayedTabKey != 0)
+                    {
+                        TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,CurrentTransaction.Patrons);
+                    }
                      DBTransaction.Commit();
                      ShowReceipt();
                  }
@@ -1761,16 +1796,26 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         {
             if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
             {
-                if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
-                                    ffNumber, CurrencyDecimals) +
-                                " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
-                            MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
+                if(!TGlobalSettings::Instance().EnableEftPosAdyen)
                 {
-                    Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
-                    Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
+                                        ffNumber, CurrencyDecimals) +
+                                    " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
+                                MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
+                    {
+                        Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
+                        Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    }
+                    else
+                    {
+                        Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    }
                 }
                 else
                 {
+                    MessageBox(AnsiString("Amount entered i.e. " + CurrencyString+ " " +CurrToStrF(wrkPayAmount,ffNumber, CurrencyDecimals) +
+                                    " is more than due amount. Adyen Integrated EFTPOS does not support this feature.").c_str(), "Info",
+                                MB_OK + MB_ICONINFORMATION);
                     Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }
             }
@@ -2128,8 +2173,12 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
 
         if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
-        {
+        {  
            ProcessWalletTransaction(Payment);
+        }
+        else if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeSmartConnectQR))
+        {
+           Payment->SetPay(wrkPayAmount);
         }
 
         //apply changes here..
@@ -2179,7 +2228,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
        if(!CurrentTransaction.IsQuickPayTransaction)
             btnCancel->SetFocus();
     }
-}// ---------------------------------------------------------------------------
+}
 // ---------------------------------------------------------------------------
 void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 {
@@ -2911,13 +2960,17 @@ void TfrmPaymentType::EnableElectronicPayments()
 						tgPayments->Buttons[b][PAYCOL]->Enabled = true;
 						if (CurrentTransaction.CreditTransaction == false)
 						{
-							tgPayments->Buttons[b][ALTCOL]->Enabled = true;
+    						tgPayments->Buttons[b][ALTCOL]->Enabled = true;
 						}
 					}
 				}
 			}
 		}
 	}
+    if(!EftPos->IsCashOutSupported())
+    {
+        DisableCashOutElectronicPayments();
+    }
 }
 // ---------------------------------------------------------------------------
 bool TfrmPaymentType::NoElectronicPayments()
@@ -2944,6 +2997,9 @@ __fastcall TPaymentTypeTouchButton::TPaymentTypeTouchButton(Classes::TComponent*
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 {
+    std::vector<TPatronType> patronsOld = CurrentTransaction.Patrons;
+    std::vector<TPatronType> patronsNew;
+    patronsNew.clear();
 	if (TManagerPatron::Instance().GetCount(CurrentTransaction.DBTransaction) > 0)
 	{
 		std::auto_ptr <TfrmPatronCount> frmPatronCount(TfrmPatronCount::Create <TfrmPatronCount> (this,
@@ -2952,7 +3008,12 @@ void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 		frmPatronCount->ShowModal();
 		tbPatronCount->Caption = "Patron Count \r" + IntToStr(TManagerPatron::Instance().GetTotalPatrons(frmPatronCount->Patrons));
 		CurrentTransaction.Patrons = frmPatronCount->Patrons;
-
+        // ReStructure Bill
+        patronsNew = CurrentTransaction.Patrons;
+        if(ArePatronsChanged(patronsOld,patronsNew))
+        {
+            RestructureBillForPatrons();
+        }
 		Reset();
 		ShowPaymentTotals();
 	}
@@ -2960,6 +3021,20 @@ void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
 	{
 		MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
 	}
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew)
+{
+    bool retValue = false;
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+    retValue = scdpatronUtility->ArePatronsChanged(patronsOld,patronsNew);
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TfrmPaymentType::RestructureBillForPatrons()
+{
+    std::auto_ptr<TSCDPatronUtility> scdpatronUtility(new TSCDPatronUtility());
+    scdpatronUtility->RestructureBill(CurrentTransaction);
 }
 // ---------------------------------------------------------------------------
 bool TfrmPaymentType::SecurePaymentAccess(TPayment * Payment)
@@ -4371,12 +4446,19 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 	bool ProcessDiscount = true;
 	TDiscount CurrentDiscount;
 	TSCDPWDChecker SCDChecker;
-
 	bool bailout = false;
 	CurrentDiscount.DiscountKey = DiscountKey;
 	ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
+    std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+    if(patronUtility->CanByPassSCDValidity(CurrentTransaction.Orders,CurrentTransaction.Patrons,CurrentDiscount))
+    {
+        ProcessDiscount = SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
+    }
+    else
+    {
+        ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
                       SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
+    }
     if(DiscountSource == dsMMMembership)
     {
        CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
@@ -4501,7 +4583,9 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
          CurrentTransaction.DiscountReason = CurrentDiscount.Description;
 		 CurrentTransaction.Discounts.clear();
          ManagerDiscount->ClearDiscount(CurrentTransaction.Orders, CurrentDiscount);
-         ManagerDiscount->AddDiscount(CurrentTransaction.Orders, CurrentDiscount);
+         // Check if Discount application needs restructure of bill on patron basis
+         ApplyDiscount(CurrentDiscount);
+//         ManagerDiscount->AddDiscount(CurrentTransaction.Orders, CurrentDiscount);
         if( CurrentDiscount.Source == dsMMMebersPoints && CurrentTransaction.Membership.Member.ContactKey != 0)
             {
                 TPointsTypePair Pair(pttRedeemed,ptstLoyalty);
@@ -4525,6 +4609,44 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 		TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityAdd(SecRef);
 		ShowPaymentTotals(true);
 	}
+}
+//----------------------------------------------------------------------------
+void TfrmPaymentType::ApplyDiscount(TDiscount discount)
+{
+    std::auto_ptr<TSCDPatronUtility> patronUtility(new TSCDPatronUtility());
+    if(patronUtility->CheckPatronsAvailable(CurrentTransaction))
+    {
+        std::auto_ptr <TList> SCDOrders(new TList);
+        SCDOrders->Clear();
+        std::auto_ptr <TList> NormalOrders(new TList);
+        NormalOrders->Clear();
+
+        patronUtility->DivideBill(CurrentTransaction,SCDOrders,NormalOrders);
+
+        if(discount.IsSeniorCitizensDiscount())
+           ManagerDiscount->AddDiscount(SCDOrders.get(), discount);
+        else
+           ManagerDiscount->AddDiscount(NormalOrders.get(), discount);
+
+        CurrentTransaction.Orders->Clear();
+        for(int indexSCD = 0; indexSCD < SCDOrders->Count; indexSCD++)
+        {
+            TItemComplete *Order = (TItemComplete *)SCDOrders->Items[indexSCD];
+            CurrentTransaction.Orders->Add(Order);
+        }
+        for(int indexNormal = 0; indexNormal < NormalOrders->Count; indexNormal++)
+        {
+            TItemComplete *Order = (TItemComplete *)NormalOrders->Items[indexNormal];
+            CurrentTransaction.Orders->Add(Order);
+        }
+        CurrentTransaction.Money.Recalc(CurrentTransaction);
+
+    }
+    else
+    {
+        ManagerDiscount->AddDiscount(CurrentTransaction.Orders, discount);
+    }
+
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ApplyAccount(TMMContactInfo &Member)
@@ -4638,5 +4760,60 @@ bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
         lastChar = currentChar;
     }
     return true;
+}
+//---------------------------------------------------------------------
+void TfrmPaymentType::CalculatePatrons(TPaymentTransaction &CurrentTransaction)
+{
+    std::vector<TPatronType> patronsStore = CurrentTransaction.Patrons;
+    bool isRestoreRequired = false;
+	if (TGlobalSettings::Instance().EnableMenuPatronCount)
+    {
+	    CurrentTransaction.CalculatePatronCountFromMenu();
+        isRestoreRequired = true;
+        for(int indexPatrons = 0; indexPatrons < CurrentTransaction.Patrons.size(); indexPatrons++)
+        {
+            if(CurrentTransaction.Patrons[indexPatrons].Default)
+            {
+                CurrentTransaction.PatronCountFromMenu = CurrentTransaction.Patrons[indexPatrons].Count;
+                break;
+            }
+        }
+    }
+    if(isRestoreRequired)
+    {
+        for(int indexPatrons = 0; indexPatrons < CurrentTransaction.Patrons.size(); indexPatrons++)
+        {
+            if(CurrentTransaction.Patrons[indexPatrons].Default)
+            {
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                     if(patronsStore[indexStore].Default)
+                     {
+                       int backStore = patronsStore[indexStore].Count - CurrentTransaction.PatronCountFromMenu;
+                       CurrentTransaction.Patrons[indexPatrons].Count += patronsStore[indexStore].Count;
+                     }
+                }
+            }
+            else
+            {
+                for(int indexStore = 0; indexStore < patronsStore.size(); indexStore++)
+                {
+                     if(!patronsStore[indexStore].Default)
+                       CurrentTransaction.Patrons[indexPatrons].Count += patronsStore[indexStore].Count;
+                }
+            }
+        }
+    }
+    bool isDefaultInitializeRequired = true;
+    for(int indexPatron = 0; indexPatron < CurrentTransaction.Patrons.size(); indexPatron++)
+    {
+        if(CurrentTransaction.Patrons[indexPatron].Count != 0)
+        {
+             isDefaultInitializeRequired = false;
+             break;
+        }
+    }
+    if(isDefaultInitializeRequired)
+        TManagerPatron::Instance().SetDefaultPatrons(CurrentTransaction.DBTransaction, CurrentTransaction.Patrons, 1);
 }
 //---------------------------------------------------------------------

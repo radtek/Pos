@@ -6,9 +6,9 @@
 #include "ManagerSiHot.h"
 #include "SiHotDataProcessor.h"
 #include "MMMessageBox.h"
-#include "DeviceRealterminal.h"
-#include "SiHotInterface.h"
+//#include "SiHotInterface.h"
 #include "Processing.h"
+#include "PMSHelper.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -87,13 +87,25 @@ void TManagerSiHot::Initialise()
     RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
     RevenueCodesMap.clear();
     UnsetPostingFlag();
-	if(Registered && TCPIPAddress != "")
+
+    if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
-        Enabled = GetRoundingandDefaultAccount();
+        std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+        //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
+        if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
+        {
+
+            Enabled = GetRoundingandDefaultAccount();
+        }
+        else
+        {
+            MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
+            Enabled = false;
+        }
         if(Enabled)
         {
-           DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+            DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
         }
 	}
 	else
@@ -129,8 +141,10 @@ void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,Ans
     if(!roomResponse.IsSuccessful)
     {
         UnicodeString errorMessage = roomResponse.ResponseMessage;
-        if(errorMessage == "")
-           errorMessage = "Room Not Found";
+        if(errorMessage.Pos("roomnotfound") || errorMessage == "")
+            errorMessage = "Room Not Found";
+        else if(errorMessage.Pos("roomnotoccupied"))
+           errorMessage = "Room Not Occupied";
         MessageBox(errorMessage,"PMS Error",MB_OK + MB_ICONERROR);
     }
     siHotDataProcessor->PrepareRoomStatus(siHotAccounts,roomResponse);
@@ -150,7 +164,7 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
+    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut);
     Processing->Close();
     if(roomResponse.IsSuccessful)
     {
@@ -208,12 +222,15 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 TItemComplete *Order = (TItemComplete*)_paymentTransaction.Orders->Items[i];
                 if(Order->TabType != TabNone && Order->TabType != TabCashAccount)
                     break;
-                Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
-                Order->TabType = TabRoom;
+                if(Order->TabType != TabCashAccount)
+                {
+                    Order->TabType          = TabRoom;
+                    Order->TabContainerName = _paymentTransaction.Phoenix.RoomNumber;
+                    Order->TabName = _paymentTransaction.Phoenix.RoomNumber;
+                }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
-            roomResponse = siHotInterface->SendRoomChargePost(roomCharge);
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut);
             if(roomResponse.IsSuccessful)
                 retValue = true;
             else
@@ -253,7 +270,7 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 {
      // Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-     return siHotInterface->SendRoomRequest(_roomRequest);
+     return siHotInterface->SendRoomRequest(_roomRequest,TGlobalSettings::Instance().PMSTimeOut);
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)

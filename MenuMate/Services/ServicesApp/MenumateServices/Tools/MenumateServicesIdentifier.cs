@@ -15,6 +15,8 @@ namespace MenumateServices
         PocketVoucher,
         SalesForceIntegration,
         SiHotIntegration,
-        WalletPayments
+        WalletPayments,
+        SmartConnect,
+        AdyenIntegration
     };
 }

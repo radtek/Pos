@@ -66,6 +66,8 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     WalletSecurityToken = "";
     WalletQrCode = "";
     CSVString = "";
+    SmartConnectQREnabled = false;
+    EFTPOSSurcharge = 0;
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -118,6 +120,8 @@ void TPayment:: operator = (const TPayment & Data)
     WalletPassword = Data.WalletPassword;
     WalletSecurityToken = Data.WalletSecurityToken;
     WalletQrCode = Data.WalletQrCode;
+    SmartConnectQREnabled = Data.SmartConnectQREnabled;
+    EFTPOSSurcharge = Data.EFTPOSSurcharge;
 }
 
 void TPayment::Reset()
@@ -139,6 +143,8 @@ void TPayment::Reset()
    SuppressEftPosReceipt = false;
    TipAmount = 0;
    WalletQrCode = "";
+   SmartConnectQREnabled = false;
+   EFTPOSSurcharge = 0;
 }
 
 void TPayment::Failed()
@@ -155,6 +161,7 @@ void TPayment::Failed()
    ReferenceNumber = "";
    ExternalReferenceNumber = "";
    TipAmount = 0;
+   EFTPOSSurcharge = 0;
 }
 
 void __fastcall TPayment::SetPay(Currency value)

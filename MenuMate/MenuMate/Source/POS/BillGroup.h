@@ -175,6 +175,13 @@ private:	// User declarations
     bool CanMoveItemToOtherTab(int sourceAccNumber, int TabTransferTo);
     bool CheckBillEntireWithCustomerJourney();
     void CustomizeForSiHot(TPaymentTransaction &PaymentTransaction);
+    void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
+    int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
+    void UpdateContainerList();
+    void ClearLoyaltyVoucher();
+    void ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount);
+    void CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction);
+//    bool IsMultipleRoomNumberDataSavedOnTab();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
@@ -228,12 +235,6 @@ public:		// User declarations
    int CheckIfListContainOnlyClipItems(Database::TDBTransaction &DBTransaction,std::map<__int64,TPnMOrder> &SelectedItems);
    void CheckLinkedTable(int TableNumber);
    int PatronCountForMallExport;
-private:
-    void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
-    int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
-    void UpdateContainerList();
-    void ClearLoyaltyVoucher();
-
 };
 #endif
 

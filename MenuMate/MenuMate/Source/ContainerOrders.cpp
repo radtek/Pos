@@ -198,6 +198,19 @@ void __fastcall TContainerOrders::Compress()
          CompressedItem->Display->AddObject(AppliedMembership.Note, ItemRedirect);
       }
 	}
+    else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
+                TGlobalSettings::Instance().EnableCustomerJourney && pmsAccountDetails.RoomNumber != "")
+    {
+        TItemsCompleteCompressed *CompressedItem = new TItemsCompleteCompressed(this);
+		fCompressedItemsList->Add(CompressedItem);
+		CompressedItem->Type = icMemberInfo;
+		TItemRedirector *ItemParentRedirect = new TItemRedirector(CompressedItem);
+		ItemParentRedirect->ParentRedirector = ItemParentRedirect;
+		ItemParentRedirect->ItemType << itMembershipDisplay;
+		ItemParentRedirect->ItemObject = NULL;
+
+        CompressedItem->Display->AddObject(pmsAccountDetails.FirstName +" "+ pmsAccountDetails.LastName +" (" + pmsAccountDetails.RoomNumber + ")" , ItemParentRedirect);
+    }
 
 	if(Count > 0)
 	{
