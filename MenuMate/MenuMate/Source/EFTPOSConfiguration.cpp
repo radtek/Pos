@@ -228,14 +228,14 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
         if(Action)
         {
             TGlobalSettings::Instance().EftPosTerminalId = SelectedItem.Title.Trim();
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
-            DBTransaction.Commit();
         }
     }
     else
     {
-     //save blank
+        TGlobalSettings::Instance().EftPosTerminalId = "";
     }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
+    DBTransaction.Commit();
 }

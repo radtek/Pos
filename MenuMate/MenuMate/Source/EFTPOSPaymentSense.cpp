@@ -17,6 +17,7 @@ TEftPosPaymentSense::TEftPosPaymentSense()
 //---------------------------------------------------------------------------
 TEftPosPaymentSense::~TEftPosPaymentSense()
 {
+    delete authorizationDetails;
 }
 //---------------------------------------------------------------------------
 void TEftPosPaymentSense::InitPaymentSenseClient()
@@ -132,7 +133,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       EftTrans->Result = eAccepted;
                       EftTrans->CardType = wcfResponse->CardSchemeName;
                       EftTrans->TipAmount = wcfResponse->AmountGratuity;
-                      EftTrans->CashOutAmount = "5";//wcfResponse->AmountGratuity;
+                      EftTrans->CashOutAmount = wcfResponse->AmountCashBack;
                       //LoadEftPosReceipt(wcfResponse->ReceiptLines);  //id integration to receipt needs then uncomment it
                     }
                }
@@ -257,6 +258,7 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         request->transactionType = transactionType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
         response = paymentSenseClient->DoTransaction(authorizationDetails, request);
+        delete request;
     }
     catch( Exception& E )
     {

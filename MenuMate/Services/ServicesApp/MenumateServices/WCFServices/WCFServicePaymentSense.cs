@@ -17,11 +17,8 @@ namespace MenumateServices.WCFServices
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "WCFServicePaymentSense" in both code and config file together.
     public class WCFServicePaymentSense : IWCFServicePaymentSense
     {
-        private List<string> stringList;
-
         public WCFServicePaymentSense()
         {
-            stringList = new List<string>();     
         }
 
         public PACTerminalWrapper GetAllCardTerminals(AuthorizationDetails autorizationDetails)
