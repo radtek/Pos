@@ -134,23 +134,23 @@ namespace PaymentSenseIntegration
                     {
                         result = response.Content.ReadAsStringAsync().Result;
                         stringList.Add("Response is succesfull and is :-                                      " + result);
-                    }
-                    PostRequestResponse deSerializedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
-                    stringList.Add("Response Deserialized.");
-                    autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
+                        PostRequestResponse deSerializedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
+                        stringList.Add("Response Deserialized.");
+                        autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
 
-                    stringList.Add("====================Get Transaction Data correspoding to above created request id. Details of id and URL are=========================================================");
-                    stringList.Add("New URL is :-                     " + autorizationDetails.URL);
-                    stringList.Add("Request Id is :-                           " + deSerializedResponse.RequestId);
-                    //wait for a period of time or untill you get the transaction finished response.
-                    transactionData = WaitAndGetResponse(autorizationDetails);
+                        stringList.Add("====================Get Transaction Data correspoding to above created request id. Details of id and URL are=========================================================");
+                        stringList.Add("New URL is :-                     " + autorizationDetails.URL);
+                        stringList.Add("Request Id is :-                           " + deSerializedResponse.RequestId);
+                        //wait for a period of time or untill you get the transaction finished response.
+                        transactionData = WaitAndGetResponse(autorizationDetails);
 
-                    int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
-                    if (value== 0)
-                    {
-                        ConvertInToFinalValue(ref transactionData);
-                        ArrangeAndAssignReceipts(ref transactionData);
-                    }
+                        int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
+                        if (value == 0)
+                        {
+                            ConvertInToFinalValue(ref transactionData);
+                            ArrangeAndAssignReceipts(ref transactionData);
+                        }
+                    }                    
                 }
             }
             catch (Exception ex)
