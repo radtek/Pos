@@ -7,11 +7,9 @@ using System.Runtime.Serialization;
 namespace PaymentSenseIntegration.Domain
 {
     [DataContract]
-    public class PaymentSenseResponse
+    public class Reports
     {
         [DataMember]
-        public string RequestId { get; set; }
-        [DataMember]
-        public string Location { get; set; }
+        public string reportType { get; set; } // property is starting with small letter because of  format.
     }
 }

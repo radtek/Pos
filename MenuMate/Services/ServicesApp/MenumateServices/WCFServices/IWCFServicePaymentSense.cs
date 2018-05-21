@@ -17,5 +17,7 @@ namespace MenumateServices.WCFServices
         PACTerminal PingTerminal(AuthorizationDetails autorizationDetails);
         [OperationContract]
         TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request);
+        [OperationContract]
+        bool PrintReports(AuthorizationDetails autorizationDetails, Reports reportData);
     }
 }

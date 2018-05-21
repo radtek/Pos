@@ -1324,6 +1324,11 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
                                         }
+                                        else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            Payment->ExternalCashOut = StrToCurr(EftTrans->CashOutAmount);
+                                        }
                                         else
                                         {
                                             Payment->TipAmount = FinalAmount - (Pay + CashOut);
@@ -1348,6 +1353,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                     }
                                     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
                                     {
+                                        if(EftTrans->ResultText == "")
+                                            EftTrans->ResultText = "Failed.";
                                         messageEftPos = "Transaction " + EftTrans->ResultText;
                                     }
                                     else

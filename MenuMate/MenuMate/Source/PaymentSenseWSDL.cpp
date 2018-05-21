@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (17/05/2018 2:19:34 a.m. - - $Rev: 25127 $)
+// (19/05/2018 12:05:34 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -21,7 +21,7 @@
 
 
 
-namespace  NS__PaymentSenseWSDL{
+namespace NS__PaymentSenseWSDL {
 
 _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
@@ -32,8 +32,8 @@ _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL, AnsiString 
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
-  rio->HTTPWebNode->SendTimeout = 200000;
-  rio->HTTPWebNode->ReceiveTimeout = 200000;
+    rio->HTTPWebNode->SendTimeout = 190000;
+  rio->HTTPWebNode->ReceiveTimeout = 190000;
   if (useWSDL) {
     rio->WSDLLocation = addr;
     rio->Service = defSvc;
@@ -100,6 +100,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(ReceiptLines), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptLines");
   /* ReceiptData */
   RemClassRegistry()->RegisterXSClass(__classid(ReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData");
+  /* Reports */
+  RemClassRegistry()->RegisterXSClass(__classid(Reports), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"Reports");
   /* AuthorizationDetails */
   RemClassRegistry()->RegisterXSClass(__classid(AuthorizationDetails2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"AuthorizationDetails2", L"AuthorizationDetails");
   /* PACTerminalWrapper */
@@ -114,12 +116,14 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(ReceiptLines2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptLines2", L"ReceiptLines");
   /* ReceiptData */
   RemClassRegistry()->RegisterXSClass(__classid(ReceiptData2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData2", L"ReceiptData");
-  /* ArrayOfPACTerminal */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPACTerminal), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfPACTerminal");
+  /* Reports */
+  RemClassRegistry()->RegisterXSClass(__classid(Reports2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"Reports2", L"Reports");
   /* ArrayOfstring */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
   /* ArrayOfReceiptData */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfReceiptData");
+  /* ArrayOfPACTerminal */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPACTerminal), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfPACTerminal");
 }
 #pragma startup RegTypes 32
 

@@ -69,5 +69,21 @@ namespace MenumateServices.WCFServices
             }
             return response;
         }
+
+        public bool PrintReports(AuthorizationDetails autorizationDetails, Reports reportData)
+        {
+            bool reportPrinted = false;
+            try
+            {
+                PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
+                reportPrinted = controller.PrintReports(autorizationDetails, reportData);
+
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in DoPurchase " + ex.Message);
+            }
+            return reportPrinted;
+        }
     }
 }

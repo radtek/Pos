@@ -207,6 +207,7 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
     TimeOut = false;
     TipAmount = "";
     SurchargeAmount = "";
+    CashOutAmount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()

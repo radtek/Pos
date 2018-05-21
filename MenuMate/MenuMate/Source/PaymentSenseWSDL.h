@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (17/05/2018 2:19:34 a.m. - - $Rev: 25127 $)
+// (19/05/2018 12:05:34 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -49,6 +49,7 @@ namespace NS__PaymentSenseWSDL {
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS AuthorizationDetails;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper;
@@ -57,6 +58,7 @@ class SOAP_REMOTABLE_CLASS TransactionRequest;
 class SOAP_REMOTABLE_CLASS TransactionDataResponse;
 class SOAP_REMOTABLE_CLASS ReceiptLines;
 class SOAP_REMOTABLE_CLASS ReceiptData;
+class SOAP_REMOTABLE_CLASS Reports;
 class SOAP_REMOTABLE_CLASS AuthorizationDetails2;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper2;
 class SOAP_REMOTABLE_CLASS PACTerminal2;
@@ -64,6 +66,7 @@ class SOAP_REMOTABLE_CLASS TransactionRequest2;
 class SOAP_REMOTABLE_CLASS TransactionDataResponse2;
 class SOAP_REMOTABLE_CLASS ReceiptLines2;
 class SOAP_REMOTABLE_CLASS ReceiptData2;
+class SOAP_REMOTABLE_CLASS Reports2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -472,6 +475,25 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : Reports, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class Reports : public TRemotable {
+private:
+  UnicodeString   FreportType;
+  bool            FreportType_Specified;
+  void __fastcall SetreportType(int Index, UnicodeString _prop_val)
+  {  FreportType = _prop_val; FreportType_Specified = true;  }
+  bool __fastcall reportType_Specified(int Index)
+  {  return FreportType_Specified;  } 
+__published:
+  __property UnicodeString reportType = { index=(IS_OPTN|IS_NLBL), read=FreportType, write=SetreportType, stored = reportType_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : AuthorizationDetails, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
@@ -554,6 +576,18 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : Reports, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class Reports2 : public Reports {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IWCFServicePaymentSense/%operationName%
@@ -570,6 +604,7 @@ public:
   virtual PACTerminalWrapper* GetAllCardTerminals(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual PACTerminal*    PingTerminal(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual TransactionDataResponse* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
+  virtual bool            PrintReports(const AuthorizationDetails* autorizationDetails, const Reports* reportData) = 0; 
 };
 typedef DelphiInterface<IWCFServicePaymentSense> _di_IWCFServicePaymentSense;
 

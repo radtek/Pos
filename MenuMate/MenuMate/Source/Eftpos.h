@@ -59,6 +59,7 @@ public:
     bool TimeOut;
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
+    AnsiString CashOutAmount;
 };
 
 class TListEftPosTransContainer : public TList

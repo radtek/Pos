@@ -71,7 +71,7 @@ void TEftPosPaymentSense::DoControlPannel()
 //		frmDropDown->AddButton("Settlement  Enquiry",&DoSettlementEnquiry);
 //		frmDropDown->AddButton("Settlement  CutOver",&DoSettlementCutover);
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
-     //   frmDropDown->AddButton("Terminal List",&GetAllTerminals);
+        frmDropDown->AddButton("Terminal List",&PrintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -136,7 +136,8 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       EftTrans->Result = eAccepted;
                       EftTrans->CardType = wcfResponse->CardSchemeName;
                       EftTrans->TipAmount = wcfResponse->AmountGratuity;
-                      LoadEftPosReceipt(wcfResponse->ReceiptLines);
+                      EftTrans->CashOutAmount = "5";//wcfResponse->AmountGratuity;
+                      LoadEftPosReceipt(wcfResponse->ReceiptLines);  //id integration to receipt needs then uncomment it
                     }
                }
                else
@@ -326,3 +327,34 @@ void TEftPosPaymentSense::AddNewLine(AnsiString data)
             ||data.Pos("PLEASE RETAIN RECEIPT"))
                 LastEftPosReceipt->Add("\r");
 }
+// ---------------------------------------------------------------------------
+void _fastcall TEftPosPaymentSense::PrintZedReport()
+{
+    try
+    {
+        CoInitialize(NULL);
+        PrintReports("END_OF_DAY");
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
+{
+    try
+    {
+        CoInitialize(NULL);
+        Reports* report = new Reports();
+        report->reportType =  reportType;
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
+        paymentSenseClient->PrintReports(authorizationDetails, report);
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+
