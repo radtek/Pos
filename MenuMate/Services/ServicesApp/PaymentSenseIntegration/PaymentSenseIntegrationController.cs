@@ -150,14 +150,19 @@ namespace PaymentSenseIntegration
                             ConvertInToFinalValue(ref transactionData);
                             ArrangeAndAssignReceipts(ref transactionData);
                         }
-                    }                    
+                    }
+                    else
+                    {
+                        stringList.Add("Response is Unsuccesfull and response message is: " + response.ReasonPhrase);
+                        //transactionData.TransactionResult = response.ReasonPhrase;
+                    }                
                 }
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Purchase PaymentSense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
-                ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                EventLog.WriteEntry("In DoTransaction PaymentSense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                ServiceLogger.LogException("Exception in DoTransaction", ex);
+                stringList.Add("Exception in  DoTransaction: ");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             WriteAndClearStringList();
