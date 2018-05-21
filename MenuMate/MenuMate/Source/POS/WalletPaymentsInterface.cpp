@@ -31,7 +31,7 @@ TWalletTransactionResponse TWalletPaymentsInterface::DoTransaction(TPayment &Pay
        WalletTransaction* walletTransaction = new WalletTransaction();
        CreateWalletAccountInfo(walletAccount,Payment);
        CreateWalletTransactionInfo(walletTransaction,Payment);
-       walletActionResponse = walletPaymentsClient->DoTransaction(walletAccount, walletTransaction);
+       walletActionResponse = walletPaymentsClient->DoPurchaseTransaction(walletAccount, walletTransaction);
        delete walletAccount;
        delete walletTransaction;
        if(!walletActionResponse->ResponseSuccessful)
