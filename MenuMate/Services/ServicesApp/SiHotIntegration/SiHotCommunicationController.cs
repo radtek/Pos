@@ -172,6 +172,15 @@ namespace SiHotIntegration
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                         GetDetailsList(roomChargeDetails, stringList);
+                        // to clear existing data if any
+                        if (tc.Available > 0)
+                        {
+                            stringList.Add("Found existing data " + tc.Available);
+                            Stream old = tc.GetStream();
+                            byte[] oldBytes = new byte[2000];
+                            int l = old.Read(oldBytes, 0, oldBytes.Length);
+                            stringList.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
+                        }
                         using (var ns = tc.GetStream())
                         {
                             ns.ReadTimeout = timeOut;
