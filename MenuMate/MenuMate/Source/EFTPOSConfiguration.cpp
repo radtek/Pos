@@ -117,7 +117,14 @@ void __fastcall TfrmEFTPOSConfig::tbAPIKeyMouseClick(TObject *Sender)
 	frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
 	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EFTPosAPIKey;
-	frmTouchKeyboard->Caption = "Enter EFTPOS API Key";
+    if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+	    frmTouchKeyboard->Caption = "Enter Payment Sense Password";
+    }
+    else
+    {
+        frmTouchKeyboard->Caption = "Enter EFTPOS API Key";
+    }
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         TGlobalSettings::Instance().EFTPosAPIKey = frmTouchKeyboard->KeyboardText.Trim();
@@ -148,7 +155,14 @@ void __fastcall TfrmEFTPOSConfig::tbDeviceIDMouseClick(TObject *Sender)
 	frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
 	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EFTPosDeviceID;
-	frmTouchKeyboard->Caption = "Enter EFTPOS Device ID";
+    if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+	    frmTouchKeyboard->Caption = "Enter Payment Sense User Name";
+    }
+    else
+    {
+	    frmTouchKeyboard->Caption = "Enter EFTPOS Device ID";
+    }
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         TGlobalSettings::Instance().EFTPosDeviceID = frmTouchKeyboard->KeyboardText.Trim();
@@ -238,4 +252,5 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
     DBTransaction.Commit();
+    tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
 }
