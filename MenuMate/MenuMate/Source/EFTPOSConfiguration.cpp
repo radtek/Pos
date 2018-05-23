@@ -217,40 +217,43 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
     EftPos = new TEftPosPaymentSense();
     EftPos->Initialise();
     std::vector<AnsiString>tidList = EftPos->GetAllTerminals();
-    std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-    TVerticalSelection Item;
-    Item.Title = "Cancel";
-    Item.Properties["Color"] = "0x000098F5";
-    Item.CloseSelection = true;
-    SelectionForm->Items.push_back(Item);
-
-    for(int index = 0; index < tidList.size(); index++)
-    {   
-        TVerticalSelection Item1;
-        Item1.Title = tidList[index];
-        Item1.Properties["Action"] = IntToStr(1);
-        Item1.Properties["Color"] = IntToStr(clNavy);
-        Item1.CloseSelection = true;
-        SelectionForm->Items.push_back(Item1);
-    }
-
-    SelectionForm->ShowModal();
-    TVerticalSelection SelectedItem;
-    if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+    if(tidList.size())
     {
-        int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
-        if(Action)
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        for(int index = 0; index < tidList.size(); index++)
         {
-            TGlobalSettings::Instance().EftPosTerminalId = SelectedItem.Title.Trim();
+            TVerticalSelection Item1;
+            Item1.Title = tidList[index];
+            Item1.Properties["Action"] = IntToStr(1);
+            Item1.Properties["Color"] = IntToStr(clNavy);
+            Item1.CloseSelection = true;
+            SelectionForm->Items.push_back(Item1);
         }
+
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            if(Action)
+            {
+                TGlobalSettings::Instance().EftPosTerminalId = SelectedItem.Title.Trim();
+            }
+        }
+        else
+        {
+            TGlobalSettings::Instance().EftPosTerminalId = "";
+        }
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
+        DBTransaction.Commit();
+        tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
     }
-    else
-    {
-        TGlobalSettings::Instance().EftPosTerminalId = "";
-    }
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
-    DBTransaction.Commit();
-    tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
 }
