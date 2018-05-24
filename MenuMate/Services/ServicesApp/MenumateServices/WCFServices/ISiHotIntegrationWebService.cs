@@ -12,9 +12,9 @@ namespace MenumateServices.WCFServices
     public interface ISiHotIntegrationWebService
     {
         [OperationContract]
-        RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut);
+        RoomDetails GetRoomDetails(RoomRequest roomRequest);
         [OperationContract]
-        RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut);
+        RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails);
         [OperationContract]
         bool ValidateCreadentials(string address, int port, int transno);
 

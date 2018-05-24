@@ -16,6 +16,7 @@ namespace MenumateServices
         SalesForceIntegration,
         SiHotIntegration,
         WalletPayments,
-        SmartConnect
+        SmartConnect,
+        AdyenIntegration
     };
 }

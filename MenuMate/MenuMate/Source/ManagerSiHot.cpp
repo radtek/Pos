@@ -6,8 +6,7 @@
 #include "ManagerSiHot.h"
 #include "SiHotDataProcessor.h"
 #include "MMMessageBox.h"
-#include "DeviceRealterminal.h"
-#include "SiHotInterface.h"
+//#include "SiHotInterface.h"
 #include "Processing.h"
 #include "PMSHelper.h"
 //---------------------------------------------------------------------------
@@ -93,8 +92,10 @@ void TManagerSiHot::Initialise()
 	{
 		Enabled = true;
         std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
+        //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
         if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
         {
+
             Enabled = GetRoundingandDefaultAccount();
         }
         else

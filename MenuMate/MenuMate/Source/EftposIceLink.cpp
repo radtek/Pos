@@ -654,4 +654,9 @@ AnsiString TEftPosIceLink::BuildSettlementEnquiryPacket(TDateTime Date)
 	AnsiString RetVal = "";
 	return RetVal;
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosIceLink::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

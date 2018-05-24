@@ -674,4 +674,9 @@ AnsiString TEftPosCadmus::BuildSettlementEnquiryPacket(TDateTime Date)
 	RetVal += FormatDateTime("ddmmyyyy",Date);
 	return RetVal;
 }
-
+//--------------------------------------------------------------------------
+bool TEftPosCadmus::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

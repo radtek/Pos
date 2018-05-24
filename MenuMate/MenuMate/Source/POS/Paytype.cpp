@@ -549,13 +549,39 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
               if(!AllowRefund)
               {
                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption != "Refund Points")
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                   {
+                        if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                        {
+                            if(EftPos->IsCashOutSupported())
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                            }
+                            else
+                            {
+                                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                            }
+                        }
+                   }
                    else
-                   tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   {
+                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                   }
               }
               else
               {
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                    if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption.Pos("Cash Out") != 0)
+                    {
+                        if(EftPos->IsCashOutSupported())
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                        }
+                        else
+                        {
+                            tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                        }
+                    }
+                    else
+                        tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
               }
             }
 
@@ -1770,16 +1796,26 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         {
             if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
             {
-                if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
-                                    ffNumber, CurrencyDecimals) +
-                                " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
-                            MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
+                if(!TGlobalSettings::Instance().EnableEftPosAdyen)
                 {
-                    Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
-                    Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
+                                        ffNumber, CurrencyDecimals) +
+                                    " can be applied to the purchases. Do you want the difference to be cash-out?").c_str(), "Warning",
+                                MB_OKCANCEL + MB_ICONINFORMATION) == ID_OK)
+                    {
+                        Payment->SetCashOut(wrkPayAmount - (CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()));
+                        Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    }
+                    else
+                    {
+                        Payment->SetPay(CurrentTransaction.Money.PaymentDue);
+                    }
                 }
                 else
                 {
+                    MessageBox(AnsiString("Amount entered i.e. " + CurrencyString+ " " +CurrToStrF(wrkPayAmount,ffNumber, CurrencyDecimals) +
+                                    " is more than due amount. Adyen Integrated EFTPOS does not support this feature.").c_str(), "Info",
+                                MB_OK + MB_ICONINFORMATION);
                     Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }
             }
@@ -2924,13 +2960,17 @@ void TfrmPaymentType::EnableElectronicPayments()
 						tgPayments->Buttons[b][PAYCOL]->Enabled = true;
 						if (CurrentTransaction.CreditTransaction == false)
 						{
-							tgPayments->Buttons[b][ALTCOL]->Enabled = true;
+    						tgPayments->Buttons[b][ALTCOL]->Enabled = true;
 						}
 					}
 				}
 			}
 		}
 	}
+    if(!EftPos->IsCashOutSupported())
+    {
+        DisableCashOutElectronicPayments();
+    }
 }
 // ---------------------------------------------------------------------------
 bool TfrmPaymentType::NoElectronicPayments()

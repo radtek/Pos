@@ -6607,6 +6607,14 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             ffNumber,
             CurrencyDecimals));
         }
+
+        if(SubPayment->EFTPOSSurcharge != 0)
+        {
+            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)

@@ -90,6 +90,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.TabKey  =TabKey;
         Payment.GLCode = GLCode;
         Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
+        Payment.SmartConnectQREnabled = cbSmartConnectQR->Checked;
 
         Payment.SetPaymentAttribute(ePayTypeCustomSurcharge,cbIsTip->Checked);
         Payment.SetPaymentAttribute(ePayTypeOpensCashDrawer,cbOpendrawer->Checked);
@@ -120,7 +121,6 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
         Payment.SetPaymentAttribute(ePayTypeRMSInterface,cbRMSInterface->Checked);
         Payment.SetPaymentAttribute(ePayTypeAllowTips,cbAllowTips->Checked);
         Payment.SetPaymentAttribute(ePayTypeWallet,cbWalletPayments->Checked);
-        
         Payment.SetPaymentAttribute(ePayTypeReservationMasterPay,cbreservationmaster->Checked);
         Payment.SetPaymentAttribute(ePayTypeSmartConnectQR,cbSmartConnectQR->Checked);
         if (Reason != "")
@@ -354,10 +354,18 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbWalletPayments->Checked = Payment.GetPaymentAttribute(ePayTypeWallet);
         btnWalletType->Enabled = cbWalletPayments->Checked;
         btnWalletConfig->Enabled = cbWalletPayments->Checked;
+        tbtnUniUser->Caption = "Universal User\r" + UniUser;
+        tbtnUniPass->Caption = "Universal Password\r" + UniPass;
+       
+        if(cbCashOut->Checked)
+        {
+            EnableOrCheckQRCodeButton(false, false);
+        }
+        else
+        {
+            EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
+        }
 
-
-	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
-	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;
    }
    else
    {
@@ -370,10 +378,9 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled && Payment.GetPaymentAttribute(ePayTypeChargeToAccount);
       btnWalletType->Enabled = cbWalletPayments->Checked;
       btnWalletConfig->Enabled = cbWalletPayments->Checked;
+      EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
    }
-    cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
-
-   cbSmartConnectQR->Enabled = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+   cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
@@ -422,16 +429,23 @@ void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
            {
                 if(!frmPaymentMaintenance->IsPaymentExist(DBTransaction, frmTouchKeyboard->KeyboardText.UpperCase()))
                 {
-                    if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
+                      if(!frmPaymentMaintenance->PaymentExistsInPMS(DBTransaction, frmTouchKeyboard->KeyboardText.UpperCase()))
                       {
-                         MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
-                         frmTouchKeyboard->KeyboardText = "Credit Card";
+                          if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
+                          {
+                             MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
+                             frmTouchKeyboard->KeyboardText = "Credit Card";
+                          }
+                          btnName->Caption = frmTouchKeyboard->KeyboardText;
                       }
-                      btnName->Caption = frmTouchKeyboard->KeyboardText;
+                      else
+                      {
+                        MessageBox("This Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+                      }
                 }
                 else
                 {
-                    MessageBox("This Payment Name already Exist", "Error", MB_OK);
+                    MessageBox("This Payment Name already exists.", "Error", MB_OK);
                 }
            }
            DBTransaction.Commit();
@@ -647,6 +661,12 @@ void __fastcall TfrmNewPaymentType::cbCashOutClick(TObject *Sender)
 	  {
 		 cbIsCash->Checked = false;
 	  }
+
+      EnableOrCheckQRCodeButton(false, false);
+   }
+   else
+   {
+        EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
    }
 }
 // ---------------------------------------------------------------------------
@@ -701,7 +721,8 @@ void __fastcall TfrmNewPaymentType::cbIntegratedClick(TObject *Sender)
 	  {
 		 cbIsTip->Checked = false;
 	  }
-   }
+    }
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::tbChequeVerifyClick(TObject *Sender)
@@ -1287,19 +1308,53 @@ void __fastcall TfrmNewPaymentType::cbCSVPaymentTypeClick(TObject *Sender)
     if(cbCSVPaymentType->Checked)
     {
         cbreservationmaster->Enabled = true;
-
     }
-    else if(!cbCSVPaymentType->Checked)
+    else
     {
         cbreservationmaster->Enabled = false;
         cbreservationmaster->Checked = cbreservationmaster->Enabled ;
     }
 }
+//---------------------------------------------------------------------------
+void TfrmNewPaymentType::EnableOrCheckQRCodeButton(bool isQRCodeChecked, bool isQRCodeEnabled)
+{
+    cbSmartConnectQR->Enabled = isQRCodeEnabled;
+    cbSmartConnectQR->OnClick = NULL;
+    cbSmartConnectQR->Checked = isQRCodeChecked;
+    cbSmartConnectQR->OnClick = cbSmartConnectQRClick;
+    if(cbSmartConnectQR->Checked)
+    {
+        EnableOrCheckCashOutButton(false, false);
+    }
+    else
+    {
+        cbCashOut->Enabled = true;
+    }
 
+}
 //---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::cbSmartConnectQRClick(TObject *Sender)
 {
-//  btnWalletType->Enabled = cbWalletPayments->Checked;
-//  btnWalletConfig->Enabled = cbWalletPayments->Checked;
+    if(cbSmartConnectQR->Checked )
+    {
+        if(MessageBox("Cash Out functionality will be disabled.", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
+        {
+            EnableOrCheckCashOutButton(false, false);
+        }
+        else
+        {
+            cbSmartConnectQR->Checked = false;
+            cbCashOut->Enabled = true;
+        }
+    }
+    else
+    {
+        cbCashOut->Enabled = true;
+    }
 }
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+void TfrmNewPaymentType::EnableOrCheckCashOutButton(bool checkCashout, bool enableCashOut)
+{
+    cbCashOut->Checked = checkCashout;
+    cbCashOut->Enabled = enableCashOut;
+}

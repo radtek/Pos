@@ -2,7 +2,7 @@
 
 #ifndef ManagerPMSH
 #define ManagerPMSH
-#include "BasePMS.h"
+//#include "BasePMS.h"
 #include "DeviceRealterminal.h"
 #include "MM_DBCore.h"
 #include <memory>

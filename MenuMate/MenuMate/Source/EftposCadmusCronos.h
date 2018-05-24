@@ -159,5 +159,6 @@ class TEftPosCadmusCronos : public TEftPos
 		void __fastcall ReprintReceipt();
       void __fastcall DoEFTUtils();
       bool DoConnected();
+      bool IsCashOutSupported();
 };
 #endif

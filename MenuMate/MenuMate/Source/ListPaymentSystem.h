@@ -232,7 +232,7 @@ protected:
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
-     bool ProcessSmartConnectQRTransaction(TPaymentTransaction &PaymentTransaction);
+     void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
 };
 
 #endif

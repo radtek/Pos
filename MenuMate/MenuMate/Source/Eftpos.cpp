@@ -205,6 +205,8 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
 	CardType = "";
 	EftposTransactionID = "";
     TimeOut = false;
+    TipAmount = "";
+    SurchargeAmount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()
@@ -290,14 +292,14 @@ void TEftPos::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, 
 {
     // does nothing here. this method needs to be overwritten by childs who implements tipping
 }
-
+//--------------------------------------------------------------------------
 std::vector<AnsiString> TEftPos::GetTippableCardTypes()
 {
     return TippableCardTypes;
 }
 //--------------------------------------------------------------------------
-bool TEftPos::DoQRCodeTransaction(TPayment &Payment)
+bool TEftPos::IsCashOutSupported()
 {
-	return false;
+    return true;
 }
 //--------------------------------------------------------------------------

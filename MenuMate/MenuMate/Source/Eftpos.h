@@ -31,7 +31,9 @@ enum eEFTTransactionType
   TransactionType_PURCHASE_PLUS_CASH = 3,
   TransactionType_REFUND = 4,
   TransactionType_INQUIRY = 5,
-  TransactionType_TIP = 6
+  TransactionType_TIP = 6,
+  TransactionType_QR_Merchant = 7,
+  TransactionType_QR_Refund = 8
 };
 
 enum ePANSource
@@ -55,6 +57,8 @@ public:
 	AnsiString EftposTransactionID;
     AnsiString FinalAmount;
     bool TimeOut;
+    AnsiString TipAmount;
+    AnsiString SurchargeAmount;
 };
 
 class TListEftPosTransContainer : public TList
@@ -114,6 +118,7 @@ class TEftPos
 	AnsiString WaitingOnReferenceNumber;
     AnsiString AcquirerRefSmartPay;
     AnsiString AcquirerRefSmartConnect;
+    AnsiString AcquirerRefAdyen;
 	int ChequeAccountMaxLength;
 	int ChequeBranchMaxLength;
 	int ChequeSerialMaxLength;
@@ -135,7 +140,7 @@ class TEftPos
 	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
-    virtual bool DoQRCodeTransaction(TPayment &Payment);
+    virtual bool IsCashOutSupported();
 };
 
 extern TEftPos *EftPos;

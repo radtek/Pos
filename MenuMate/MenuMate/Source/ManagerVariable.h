@@ -53,7 +53,7 @@ enum vmVariables
    vmEnableAARewardsReminder,vmAutoAddWebMembers,vmAutoAcceptWebOrders,vmReservationsAddress,vmReservationsEnabled,
    vmFloorPlanTransparentTables,vmFloorPlanTableColour,vmFloorPlanTextColour,vmLastSelectedFloorPlanLocationID,
    vmExternalMembershipDiscountCode,vmExternalMembershipPointsCode,vmExternalMembershipSystemCode, vmEnableDPSTipping,vmEnableEftPosSmartPay,vmEftPosSmartPayIp,
-   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,
+   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,vmIsSmartConnectQRTransaction,
    // Connections  ----------------------------------------------------------------
    vmPMSIPAddress = 2100, vmPMSTCPPort, vmPMSPOSID, vmPMSPaymentCategory, vmPMSItemCategory, vmPMSPointsCategory, vmPMSCreditCategory,
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
@@ -223,7 +223,8 @@ enum vmVariables
     vmOrganizationNumber, vmShowCashDrawerOpeningsCount, vmShowReprintReceiptDetails,
     vmApplyRoundingTax = 9617, vmRoundingTaxProfileKey, vmRoundingTaxRate,
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
-    vmOracleInterfacePortNumber,vmPMSTimeOut
+    vmOracleInterfacePortNumber,vmPMSTimeOut,
+    vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund
 };
 
 // ---------------------------------------------------------------------------
