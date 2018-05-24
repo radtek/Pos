@@ -349,7 +349,7 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
    std::auto_ptr<TLoyaltyMateUtilities> LoyaltyMateUtilities;
    int CalcCRC = LoyaltyMateUtilities->StreamCheckCRC(value);
    UnicodeString hex_token = IntToHex(CalcCRC, 2);
-   value += hex_token;
+   value = hex_token;
    TManagerSyndCode ManagerSyndicateCode;
   ManagerSyndicateCode.Initialise(DBTransaction);
   int nextNumber = TDBContacts::GenerateNextMemberEmailNumber(DBTransaction);
@@ -357,6 +357,7 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
   AnsiString syndicate = ManagerSyndicateCode.GetCommunicationSyndCodeString();
 
   AnsiString uniqueString = siteString + syndicate.SubString(1,10) + IntToStr(nextNumber) + value;
+
   /*TGUID uniqueId;
   CreateGUID(uniqueId);
   AnsiString uniqueString = Sysutils::GUIDToString(uniqueId);
