@@ -346,7 +346,7 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
   AnsiString siteString = IntToStr(TGlobalSettings::Instance().SiteID);
   AnsiString syndicate = ManagerSyndicateCode.GetCommunicationSyndCodeString();
 
-  AnsiString uniqueString = siteString + syndicate.SubString(1,10) + IntToStr(nextNumber);
+  AnsiString uniqueString = siteString + syndicate.SubString(1,10) + IntToStr(nextNumber) + TDateTime::CurrentDateTime().FormatString("yyyymmddhhmmss");
   /*TGUID uniqueId;
   CreateGUID(uniqueId);
   AnsiString uniqueString = Sysutils::GUIDToString(uniqueId);
