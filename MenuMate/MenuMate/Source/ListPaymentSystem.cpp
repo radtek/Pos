@@ -1609,15 +1609,22 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
             {
                 TGlobalSettings::Instance().MezzanineTablesMap.clear();
                 TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
-                InsertMezzanineSales(PaymentTransaction);
-            }
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    bool canContinue = (innerit == outerit->second.end());
 
+                    if(!canContinue)
+                        InsertMezzanineSales(PaymentTransaction);
+                }
+            }
         }
         //Instantiation is happenning in a factory based on the active mall in database
         TMallExport* mall = TMallFactory::GetMallType();
         mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
         delete mall;
-
     }
 }
 
