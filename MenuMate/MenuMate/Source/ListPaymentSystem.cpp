@@ -1601,8 +1601,6 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        bool canContinue = true;
-
         //Check if mall type is dean and deluca
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
         {
@@ -1611,13 +1609,6 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
             {
                 TGlobalSettings::Instance().MezzanineTablesMap.clear();
                 TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
-                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
-                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
-                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
-                {
-                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
-                    canContinue = (innerit == outerit->second.end());
-                }
                 InsertMezzanineSales(PaymentTransaction);
             }
 
