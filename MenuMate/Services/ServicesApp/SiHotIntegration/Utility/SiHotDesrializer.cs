@@ -85,7 +85,7 @@ namespace SiHotIntegration.Utility
                 if (response.Contains("transno:") && response.Contains("notok:") &&
                     (response.IndexOf("notok:") > response.IndexOf("transno:")))
                     roomPostResponse.IsSuccessful = false;
-                else if (response.Contains("transno:") && response.Contains("ok"))
+                else if (response.Contains("transno:") && response.Contains("ok") && !response.Contains("notok:"))
                     roomPostResponse.IsSuccessful = true;
                 else if (!response.Contains("transno:") || response.Trim() == "")
                     roomPostResponse.IsSuccessful = false;

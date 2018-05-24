@@ -1131,10 +1131,21 @@ AnsiString TOracleDataBuilder::GetPMSPaymentCode(TPayment *payment,std::map<int,
         }
         else
         {
-            if(it->second.PMSPayTypeName == payment->CardType)
+            if(payment->CardType != "")
             {
-                value = it->second.PMSPayTypeCode;
-                break;
+                if(it->second.PMSPayTypeName == payment->CardType)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
+            }
+            else
+            {
+                if(it->second.PMSPayTypeName == payment->Name)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
             }
         }
     }
