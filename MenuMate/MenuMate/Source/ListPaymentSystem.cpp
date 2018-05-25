@@ -1601,8 +1601,6 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        bool canContinue = true;
-
         //Check if mall type is dean and deluca
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
         {
@@ -1616,22 +1614,17 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
                 if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
                 {
                     std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
-                    canContinue = (innerit == outerit->second.end());
+                    bool canContinue = (innerit == outerit->second.end());
+
+                    if(!canContinue)
+                        InsertMezzanineSales(PaymentTransaction);
                 }
             }
         }
-
-        if(canContinue)
-        {
-            //Instantiation is happenning in a factory based on the active mall in database
-            TMallExport* mall = TMallFactory::GetMallType();
-            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-            delete mall;
-        }
-        else
-        {
-            InsertMezzanineSales(PaymentTransaction);
-        }
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+        delete mall;
     }
 }
 
