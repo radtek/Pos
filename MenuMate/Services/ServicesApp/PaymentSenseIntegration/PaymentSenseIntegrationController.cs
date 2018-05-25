@@ -322,9 +322,9 @@ namespace PaymentSenseIntegration
             try
             {
                 responseData.AmountBase = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountBase) / 100);
+                responseData.AmountTotal = System.Convert.ToString((System.Convert.ToDecimal(responseData.AmountTotal) - System.Convert.ToDecimal(responseData.AmountCashBack)) / 100);
                 responseData.AmountCashBack = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountCashBack) / 100);
-                responseData.AmountGratuity = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountGratuity) / 100);
-                responseData.AmountTotal = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountTotal) / 100);
+                responseData.AmountGratuity = System.Convert.ToString(System.Convert.ToDecimal(responseData.AmountGratuity) / 100);                                
             }
             catch (Exception ex)
             {
