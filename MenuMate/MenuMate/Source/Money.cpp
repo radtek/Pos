@@ -179,7 +179,8 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     {
        TotalOwing  =   Transaction.RequestPartialPayment;
        isSplitPayment = true;
-       if(TGlobalSettings::Instance().EnableEftPosDPS && PaymentTip > 0)
+       if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosPaymentSense ||
+                TGlobalSettings::Instance().EnableEftPosSmartConnect)&& PaymentTip > 0)
             TotalOwing  += PaymentTip;
     }
     else
@@ -245,8 +246,8 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     GrandTotalGSTContent = ProductGSTContent + PaymentSurchargesGSTContent + PaymentDiscountsGSTContent;
     Round();
 
-    if(TGlobalSettings::Instance().EnableEftPosDPS && PaymentTip > 0 &&
-                (Transaction.Type == eTransPartialPayment || Transaction.Type == eTransSplitPayment) &&
+    if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosPaymentSense || TGlobalSettings::Instance().EnableEftPosSmartConnect)
+    && PaymentTip > 0 && (Transaction.Type == eTransPartialPayment || Transaction.Type == eTransSplitPayment) &&
                     Transaction.RequestPartialPayment > 0 && TotalAdjustment == 0)
     {
             GrandTotal  -= PaymentTip;

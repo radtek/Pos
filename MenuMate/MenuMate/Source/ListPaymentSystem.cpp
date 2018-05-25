@@ -1318,13 +1318,16 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
-
+                                   Currency tipAmount = 0;
                                    if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
                                    {
                                         CashOut = StrToCurr(EftTrans->CashOutAmount);
+                                        tipAmount = StrToCurr(EftTrans->TipAmount);
+                                        if(CashOut != tipAmount)
+                                            tipAmount = 0;
                                    }
-                                   if(FinalAmount != (Pay + CashOut))
-                                   {
+                                   if(FinalAmount != (Pay + CashOut + tipAmount))
+                                   {     
                                         if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
