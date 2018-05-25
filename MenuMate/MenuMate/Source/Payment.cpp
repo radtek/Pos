@@ -170,7 +170,7 @@ void TPayment::Failed()
 
 void __fastcall TPayment::SetPay(Currency value)
 {
-   if (FPay != value)
+   if (FPay != value || TGlobalSettings::Instance().EnableEftPosPaymentSense)
    {
 	  FPay = value;
 

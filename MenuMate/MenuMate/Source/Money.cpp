@@ -191,10 +191,12 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
         }
        TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints + PaymentTip + SurchargeByEFTPOS);
 
-       if(TGlobalSettings::Instance().EnableEftPosSmartConnect && (PaymentTip > 0 || SurchargeByEFTPOS > 0) && PaymentCashOut > 0)
+       if((TGlobalSettings::Instance().EnableEftPosSmartConnect || TGlobalSettings::Instance().EnableEftPosPaymentSense) &&
+                    (PaymentTip > 0 || SurchargeByEFTPOS > 0) && PaymentCashOut > 0)    //remove the cashout amount because it will be added later
             TotalOwing  +=  RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
     }
     PaymentDue = TotalOwing - PaymentAmount;
+
     if(!Transaction.CreditTransaction)
     {
         PaymentDiscountsGSTContent = 0;
