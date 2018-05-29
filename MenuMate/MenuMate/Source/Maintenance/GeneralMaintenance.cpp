@@ -4560,3 +4560,7 @@ void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sen
     CustomizeCloudEFTPOS();
 }
 //----------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbCompanyDetailOnReprintReceiptClick(TObject *Sender)
+{
+    //
+}
