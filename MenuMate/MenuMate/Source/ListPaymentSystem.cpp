@@ -3692,7 +3692,8 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-        ResetPayments(PaymentTransaction);
+        if(!PhoenixHSOk)
+            ResetPayments(PaymentTransaction);
 	}
     else if(TGlobalSettings::Instance().PMSType == SiHot &&
         TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
