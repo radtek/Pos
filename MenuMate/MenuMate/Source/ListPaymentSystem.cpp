@@ -6618,7 +6618,7 @@ void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
     {
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
         //if(payment->GetPay() != 0)
-        if(Payment->Result != eAccepted)
+        if(payment->Result != eAccepted)
         {
 //            payment->SetPay(0);
 //            payment->SetAdjustment(0);
