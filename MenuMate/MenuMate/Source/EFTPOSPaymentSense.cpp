@@ -279,7 +279,7 @@ bool TEftPosPaymentSense::GetResponseStatus(eEFTTransactionType TxnType, Transac
             retValue = false;
             if(response)
             {
-                if(response->TransactionResult.UpperCase().Pos("SUCCESSFUL") != 0)
+                if(!response->TransactionResult.UpperCase().Compare("SUCCESSFUL"))
                     retValue = true;
             }
         }
