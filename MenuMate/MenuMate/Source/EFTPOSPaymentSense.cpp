@@ -68,7 +68,7 @@ void TEftPosPaymentSense::DoControlPannel()
 	{
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
-        frmDropDown->AddButton("End Of Day Report",&PrintZedReport);
+        frmDropDown->AddButton("Settlement  CutOver",&PrintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
