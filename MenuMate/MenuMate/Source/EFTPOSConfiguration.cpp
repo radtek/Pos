@@ -215,8 +215,19 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
     if(EftPos)
         delete EftPos;
     EftPos = new TEftPosPaymentSense();
-    EftPos->Initialise();
-    std::vector<AnsiString>tidList = EftPos->GetAllTerminals();
+    std::vector<AnsiString>tidList;
+
+    if(TGlobalSettings::Instance().EFTPosURL != "" && TGlobalSettings::Instance().EFTPosAPIKey != ""
+        && TGlobalSettings::Instance().EFTPosDeviceID != "")
+    {
+        tidList = EftPos->GetAllTerminals();
+    }
+    else
+    {
+         MessageBox("Please fill all details of Eftpos for getting terminal list.", "Error", MB_OK + MB_ICONERROR);
+         return;
+    }
+
     if(tidList.size())
     {
         std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
@@ -255,5 +266,14 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
         DBTransaction.Commit();
         tbEftPosTerminalID->Caption = "TID \r" + TGlobalSettings::Instance().EftPosTerminalId;
+    }
+    else
+    {
+         UnicodeString strValue = "Payment Sense EFTPOS Terminal list not available.\r";
+         strValue += "Please ensure below mentioned things:-.\r";
+         strValue += "1. Details are correct.\r";
+         strValue += "2. POS & EFTPOS terminal are connected to network.\r";
+         strValue += "3. EFTPOS terminal is not busy.";
+         MessageBox(strValue,"Information",MB_OK+MB_ICONINFORMATION);
     }
 }
