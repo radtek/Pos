@@ -1422,14 +1422,14 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
-			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-			{
-				TPayment *Payment = PaymentTransaction.PaymentGet(i);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Reset();
-				}
-			}
+//			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+//			{
+//				TPayment *Payment = PaymentTransaction.PaymentGet(i);
+//				if (Payment->Result != eAccepted)
+//				{
+//					Payment->Reset();
+//				}
+//			}
 		}
 		else
 		{
@@ -3692,6 +3692,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        ResetPayments(PaymentTransaction);
 	}
     else if(TGlobalSettings::Instance().PMSType == SiHot &&
         TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
@@ -6613,17 +6614,19 @@ bool TListPaymentSystem::IsOracleConfigured()
 //---------------------------------------------------------------------------
 void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
 {
-  for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
-  {
-      TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-      if(payment->GetPay() != 0)
-      {
-        payment->SetPay(0);
-        payment->SetAdjustment(0);
-        payment->SetCashOut(0);
-        payment->Result = eFailed;
-      }
-  }
+    for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+    {
+        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+        //if(payment->GetPay() != 0)
+        if(Payment->Result != eAccepted)
+        {
+//            payment->SetPay(0);
+//            payment->SetAdjustment(0);
+//            payment->SetCashOut(0);
+//            payment->Result = eFailed;
+            payment->Reset();
+        }
+    }
 }
 //------------------------------------------------------------------------------------------
 void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
