@@ -230,7 +230,7 @@ namespace PaymentSenseIntegration
                 watch.Start();
                 while (waitflag)
                 {
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     //Get Response from Eftpos Terminal to check  transaction is in which state.
                     response = GetTransactionDataForRequestedId(autorizationDetails);
 
@@ -252,7 +252,7 @@ namespace PaymentSenseIntegration
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In WaitForResponse Smartlink", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
+                EventLog.WriteEntry("In WaitAndGetResponse payment sense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
                 ServiceLogger.LogException("Exception in WaitForResponse", ex);
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
