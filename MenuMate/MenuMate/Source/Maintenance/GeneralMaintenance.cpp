@@ -456,7 +456,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 //    cbIntegratedEftposSmartConnect->Checked = TGlobalSettings::Instance().EnableEftPosSmartConnect;
 //    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     //cbIntegratedEftposAdyen->Checked = TGlobalSettings::Instance().EnableEftPosAdyen;
-    cbCompanyDetailOnReprintReceipt->Checked = TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt ;
+    cbCompanyDetailOnReprintReceipt->Checked = TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt;
     CustomizeCloudEFTPOS();
     FormResize(this);
 }
@@ -4563,7 +4563,10 @@ void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sen
 //----------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbCompanyDetailOnReprintReceiptClick(TObject *Sender)
 {
-    //
-   TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = cbCompanyDetailOnReprintReceipt->Checked;
+    TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = cbCompanyDetailOnReprintReceipt->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCompanyDetails, TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt);
+	DBTransaction.Commit();
 
 }
