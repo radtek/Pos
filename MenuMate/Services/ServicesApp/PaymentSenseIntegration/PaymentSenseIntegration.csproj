@@ -58,6 +58,7 @@
     <Compile Include="Domain\RequestData\Reports.cs" />
     <Compile Include="Domain\ResponseData\TransactionDataResponse.cs" />
     <Compile Include="Domain\RequestData\TransactionRequest.cs" />
+    <Compile Include="Domain\SignatureRequest\SignatureRequest.cs" />
     <Compile Include="PaymentSenseIntegrationController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\ServiceLogger.cs" />

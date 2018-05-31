@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using PaymentSenseIntegration.Tools;
+using PaymentSenseIntegration.Domain.SignatureRequest;
 
 namespace PaymentSenseIntegration
 {
@@ -256,7 +257,7 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             return response;
-        }        
+        }
 
         private TransactionDataResponse GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
         {
@@ -285,6 +286,51 @@ namespace PaymentSenseIntegration
                 EventLog.WriteEntry("In GetTransactionDetailsForRequestedId", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetTransactionDetailsForRequestedId", ex);
                 stringList.Add("Exception in GetTransactionDetailsForRequestedId()");
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+            return transactionData;
+        }
+
+        private TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
+        {
+            TransactionDataResponse transactionData = new TransactionDataResponse();
+            try
+            {
+                stringList.Add("====================SignatureVerificationForRequestedId=========================================================");
+                stringList.Add("URL is :-                           " + autorizationDetails.URL);
+                stringList.Add("User Name is :-                     " + autorizationDetails.UserName);
+                stringList.Add("API Key/ Password is :-             " + autorizationDetails.Password);
+                stringList.Add("signature accepted is :-                     " + signRequest.accepted);
+
+                string apiUrl = autorizationDetails.URL;
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                                                                                    Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}",
+                                                                                                    autorizationDetails.UserName, autorizationDetails.Password))));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
+
+                    var serializedJson = JsonConvert.SerializeObject(signRequest);
+                    HttpContent httpContent = new StringContent(serializedJson, Encoding.UTF8);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    stringList.Add("Post Request for signature verification created at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    HttpResponseMessage response = client.PutAsync(apiUrl, httpContent).Result;
+                    stringList.Add("Response got at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    string result = "";
+                    if (response.IsSuccessStatusCode)
+                    {
+                        result = response.Content.ReadAsStringAsync().Result;
+                        stringList.Add("Response is succesfull and is :-                                      " + result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In SignatureVerificationForRequestedId", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in SignatureVerificationForRequestedId", ex);
+                stringList.Add("Exception in SignatureVerificationForRequestedId()");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             return transactionData;
