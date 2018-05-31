@@ -84,7 +84,25 @@ void TfrmSelectReceipt::ShowReceipt()
 
 void __fastcall TfrmSelectReceipt::btnPrintClick(TObject *Sender)
 {
-	ManagerReceipt->Print();
+    if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt)
+    {
+        std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+        frmTouchKeyboard->AllowCarriageReturn = true;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->MaxLength = 300;
+        frmTouchKeyboard->Caption = "Enter the Company Details.";
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+           ManagerReceipt->Companydetails = frmTouchKeyboard->KeyboardText ;
+           ManagerReceipt->Print();
+        }
+    }
+    else
+    {
+      ManagerReceipt->Print();
+    }
+
+
 }
 //---------------------------------------------------------------------------
 /*

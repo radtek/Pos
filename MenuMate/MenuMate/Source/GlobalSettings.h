@@ -524,6 +524,7 @@ public:
     int PMSTimeOut;
     bool IsSmartConnectQRTransaction;
     bool AdyenRecoveryTransactionIsRefund;
+    bool EnableCompanyDetailOnReprintReceipt;
 };
 
 #endif

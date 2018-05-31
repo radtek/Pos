@@ -825,7 +825,7 @@ void TManagerReceipt::Print()
         if(proceed)
         {
             Receipt->Position = 0;
-            PrintDuplicateReceipt(Receipt);
+            PrintDuplicateReceipt(Receipt,true);
             TMallExportUpdateAdaptor exportUpdateAdaptor;
             exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
 
@@ -874,7 +874,7 @@ bool TManagerReceipt::CanReprintReceipt(Database::TDBTransaction &DBTransaction,
     return retValue;
 }
 //------------------------------------------------------------------------------
-void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
+void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool ReprintReceiptWithCompanydetails)
 {
     try
     {
@@ -882,7 +882,7 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
         {
             TPrintout *Printout = new TPrintout;
             Printout->Printer = TComms::Instance().ReceiptPrinter;
-            Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
+            Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName(),ReprintReceiptWithCompanydetails);
             delete Printout;
         }
         else
