@@ -3232,7 +3232,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
 		tgridItemList->RowCount = VisibleItems.size();
-        
+
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType &&  VisibleItems.size() != SelectedItems.size() && VisibleItems.size() &&
                 SelectedItems.size() && VisibleItems.size() > 1 )
         {
@@ -4397,7 +4397,8 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		PaymentTransaction.ApplyMembership(Membership);
 
         TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, ItemsToBill);
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot))
+
+        if(IsPMSConfigured())
         {
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
             pmsHelper->GetRevenueCode(PaymentTransaction.Orders);
@@ -5718,3 +5719,13 @@ multiple places to handle the required situations.
 Also changes to CheckLoyalty() calling is changed in case of loyaltymate by
 appending if clause to the calling.
 */
+//---------------------------------------------------------------------------
+bool TfrmBillGroup::IsPMSConfigured()
+{
+    bool retValue = false;
+    retValue = ((TDeviceRealTerminal::Instance().PaymentSystem->IsOracleConfigured() || TDeviceRealTerminal::Instance().PaymentSystem->IsSiHotConfigured() ) &&
+                (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot));
+    return retValue;
+}
+
+//---------------------------------------------------------------------------

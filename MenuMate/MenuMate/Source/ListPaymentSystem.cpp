@@ -3695,10 +3695,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         if(!PhoenixHSOk)
             ResetPayments(PaymentTransaction);
 	}
-    else if(TGlobalSettings::Instance().PMSType == SiHot &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "")
+    else if(IsSiHotConfigured())
     {
             /*
                SiHot could be enabled but is not. Hence we need to try making it
@@ -3744,7 +3741,9 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             if(!PhoenixHSOk || !isOracleEnabled)
             {
                 if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                {
                       PhoenixHSOk = true;
+                }
                 else
                 {
                   PhoenixHSOk = false;
@@ -3763,6 +3762,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(fiscalData, eFiscalNormalReceipt);
         FiscalTransaction = dataUtility->AnalyzeResponse(response, eFiscalNormalReceipt);
     }
+
     if(!FiscalTransaction)
         return RetVal;
 
@@ -6600,6 +6600,14 @@ bool TListPaymentSystem::TryToEnableSiHot()
         retValue = false;
     }
     return retValue;
+}
+//--------------------------------------------------------------------------
+bool TListPaymentSystem::IsSiHotConfigured()
+{
+    return (TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "");
 }
 //--------------------------------------------------------------------------
 bool TListPaymentSystem::IsOracleConfigured()
