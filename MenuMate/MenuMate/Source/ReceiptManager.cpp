@@ -890,10 +890,6 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
 		Printout1->Printer = TComms::Instance().ReceiptPrinter;
 		TempReceipt->Printouts->Add(Printout1);
 
-        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails)
-        {
-             //
-        }
 		for(int i = 0; i < StringReceipt->Count; i++)
 		{
 		   Printout1->PrintFormat->Line->ColCount = 1;
