@@ -267,7 +267,6 @@ bool WinPrinters::PrintRaw(const UnicodeString &PrinterName, UnicodeString DocNa
 				  if (WritePrinter(PrinterHandle, PrintData.c_str(), PrintData.Length(), &BytesWritten))
 				  {
 					 Success = true;
-                     PrintData="";
 				  }
                   else
                   {

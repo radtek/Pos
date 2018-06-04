@@ -550,7 +550,6 @@ void TManagerReceipt::Get(TStringList *Lines)
 {
    try
    {
-   //   UnicodeString data2 = "" ;
       bool IsFirstOccurance = false;
 	  ManagerReceipt->Receipt->Position = 0;
 	  AnsiString TrimmedLine;
