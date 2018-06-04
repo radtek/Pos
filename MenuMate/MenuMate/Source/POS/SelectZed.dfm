@@ -171,7 +171,7 @@ object frmSelectZed: TfrmSelectZed
       Width = 288
       Height = 263
       AutoSize = True
-      Date = 37497.878441041670000000
+      Date = 37497.768408946760000000
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -21

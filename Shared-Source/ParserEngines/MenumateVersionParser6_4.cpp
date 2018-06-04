@@ -67,6 +67,11 @@ void TApplyParser::upgrade6_50Tables()
 {
     update6_50Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_51Tables()
+{
+    update6_51Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -1701,6 +1706,12 @@ void TApplyParser::update6_50Tables()
     Alter6_50Tables(_dbControl);
     Create6_50Table(_dbControl);
 }
+//-----------------------------------------------------------------
+void TApplyParser::update6_51Tables()
+{
+   Create6_51Generators(_dbControl);
+   Create6_51Tables(_dbControl);
+}
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
 {
@@ -2048,6 +2059,33 @@ void TApplyParser::ModifyElectronicsPayments(TDBControl* const inDBControl)
     catch( Exception &E )
     {
         transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_51Generators(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_EFTPOSZEDID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSZEDID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSZEDID TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_51Tables(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSZED", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSZED "
+        "( "
+        "  EFTPOS_ZED_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  TIME_STAMP TIMESTAMP,                       "
+        "  EFTPOS_TYPE INT,                            "
+        "  POS_TERMINALNAME VARCHAR(22),               "
+        "  EFTPOS_TERMINALID VARCHAR(20),              "
+        "  ZED_RECEIPT BLOB SUB_TYPE 1                 "
+        ");",
+		inDBControl );
     }
 }
 //------------------------------------------------------------------------------
