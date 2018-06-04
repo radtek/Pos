@@ -286,7 +286,7 @@ public:
    UnicodeString DocumentName; // Title of windows print job
 
    bool Print(UnicodeString Printer, UnicodeString DocName);
-   bool Print(UnicodeString PrinterName, UnicodeString DocName, AnsiString PrintData,bool PrintCompanyDetailsToPrinter = false);
+   bool Print(UnicodeString PrinterName, UnicodeString DocName, AnsiString PrintData);
 };
 
 // ---------------------------------------------------------------------------

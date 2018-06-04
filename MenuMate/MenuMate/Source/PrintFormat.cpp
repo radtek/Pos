@@ -8,8 +8,6 @@
 #include "PrinterDefs.h"
 #include "WindowsPrinters.h"
 #include "Enum.h"
-#include "GlobalSettings.h"
-#include "ReceiptManager.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -356,26 +354,17 @@ bool TPrintFormat::Print(UnicodeString PrinterName, UnicodeString DocName)
 }
 
 // ---------------------------------------------------------------------------
-bool TPrintFormat::Print(UnicodeString PrinterName, UnicodeString DocName, AnsiString PrintData,bool CompanyDetailsPrint)
+bool TPrintFormat::Print(UnicodeString PrinterName, UnicodeString DocName, AnsiString PrintData)
 {
    int JobID;
 
    bool Success;
    if (GraphicPrinterSettings.GraphicPrinter)
    {
-      if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && CompanyDetailsPrint )
-      {
-        PrintData = PrintData + "Sold to:" + "\r\n" + ManagerReceipt->Companydetails ;
-      }
 	  Success = WinPrinters::PrintGraphics(PrinterName, JobID, PrintData, JobID, GraphicPrinterSettings);
    }
    else
    {
-      if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && CompanyDetailsPrint )
-      {
-        PrintData = PrintData + "Sold to:" + "\r\n" + ManagerReceipt->Companydetails ;
-      }
-
 	  Success = WinPrinters::PrintRaw(PrinterName, JobID, PrintData, JobID);
    }
    return Success;

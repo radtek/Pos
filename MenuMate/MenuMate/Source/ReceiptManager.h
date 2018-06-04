@@ -49,7 +49,6 @@ class TManagerReceipt : public TManager
 	void GetLastReceipt(Database::TDBTransaction &DBTransaction);
 	void PrintLastReceipt();
 	void Print();
-    AnsiString Companydetails;
    
 	__property TDateTime Date = { read = FSelectedDate ,write = SetCurrentDate};
 	bool CanApplyTipOnThisReceiptsTransaction(

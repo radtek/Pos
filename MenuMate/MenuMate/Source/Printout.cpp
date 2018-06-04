@@ -127,12 +127,12 @@ bool TPrintout::PrintToPrinterRaw(TStringList *Text, UnicodeString PrinterName)
 }
 
 // ---------------------------------------------------------------------------
-bool TPrintout::PrintToPrinterStream(TMemoryStream *Data, UnicodeString PrinterName,bool PrintCompanyDetailsToPrinterStream)
+bool TPrintout::PrintToPrinterStream(TMemoryStream *Data, UnicodeString PrinterName)
 {
    Data->Position = 0;
    const char* ptr = (const char*)Data->Memory;
    AnsiString StreamData(ptr, (unsigned int)(Data->Size));
-   return PrintFormat->Print(PrinterName, "", StreamData,PrintCompanyDetailsToPrinterStream);
+   return PrintFormat->Print(PrinterName, "", StreamData);
 }
 
 bool TPrintout::PrintToStrings(TStrings *Strings)

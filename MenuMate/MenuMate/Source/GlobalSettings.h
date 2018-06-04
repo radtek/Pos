@@ -525,6 +525,7 @@ public:
     bool IsSmartConnectQRTransaction;
     bool AdyenRecoveryTransactionIsRefund;
     bool EnableCompanyDetailOnReprintReceipt;
+    UnicodeString Companydetails;
 };
 
 #endif

@@ -889,9 +889,11 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
 		TPrintout *Printout1 = new TPrintout;
 		Printout1->Printer = TComms::Instance().ReceiptPrinter;
 		TempReceipt->Printouts->Add(Printout1);
-        // to do add condition
-		UnicodeString data = "Sold to:" ;
-                // end of condition
+
+        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails)
+        {
+             //
+        }
 		for(int i = 0; i < StringReceipt->Count; i++)
 		{
 		   Printout1->PrintFormat->Line->ColCount = 1;
@@ -911,55 +913,57 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
 
 		   Printout1->PrintFormat->AddLine();
 		}
-        // to do :- add condition
-		Printout1->PrintFormat->Line->Columns[0]->Text = data;
-		Printout1->PrintFormat->AddLine();
+        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails)
+        {
+            UnicodeString data = "Sold to:" ;
+            Printout1->PrintFormat->Line->Columns[0]->Text = data;
+            Printout1->PrintFormat->AddLine();
 
-		UnicodeString data2 = TGlobalSettings::Instance().Companydetails;
-		int widthprinter = Printout1->PrintFormat->Width ;
-		int datacount = data2.Length();
-		UnicodeString tempData = "";
-		UnicodeString truncatedData = "";
-		int dataAdded = 0;
-		truncatedData =  data2;
-		for(int i = 0; i < data2.Length();)
-		{
-			if(truncatedData.Pos("\n"))
-			{
-				tempData = truncatedData.SubString(0,truncatedData.Pos("\n"));
-			}
-			else
-			{
-				tempData = truncatedData;
-			}
-			if(tempData.Length() >= widthprinter)
-			{
-				int storedValue = 0;
-				for(int j = 0; j < tempData.Length();)
-				{
-					Printout1->PrintFormat->Line->Columns[0]->Text = tempData.SubString(storedValue+1,widthprinter);
-					Printout1->PrintFormat->AddLine();
-					dataAdded += tempData.SubString(storedValue+1,widthprinter).Length();
-					storedValue += widthprinter;
-					j += storedValue;
-				}
-			}
-			else
-			{
-				bool skipAdding = false;
-				if(tempData.Length() == 1 && (tempData.Pos("\n") || tempData.Pos("\r")))
-				   skipAdding = true;
-				if(!skipAdding)
-				{
-					Printout1->PrintFormat->Line->Columns[0]->Text = tempData;
-					Printout1->PrintFormat->AddLine();
-				}
-				dataAdded += tempData.Length();
-			}
-			truncatedData = data2.SubString(dataAdded,data2.Length()-dataAdded);
-			i = dataAdded;
-		}
-        // end of condition
+            UnicodeString data2 = TGlobalSettings::Instance().Companydetails;
+            int widthprinter = Printout1->PrintFormat->Width ;
+            int datacount = data2.Length();
+            UnicodeString tempData = "";
+            UnicodeString truncatedData = "";
+            int dataAdded = 0;
+            truncatedData =  data2;
+            for(int i = 0; i < data2.Length();)
+            {
+                if(truncatedData.Pos("\n"))
+                {
+                    tempData = truncatedData.SubString(0,truncatedData.Pos("\n"));
+                }
+                else
+                {
+                    tempData = truncatedData;
+                }
+                if(tempData.Length() >= widthprinter)
+                {
+                    int storedValue = 0;
+                    for(int j = 0; j < tempData.Length();)
+                    {
+                        Printout1->PrintFormat->Line->Columns[0]->Text = tempData.SubString(storedValue+1,widthprinter);
+                        Printout1->PrintFormat->AddLine();
+                        dataAdded += tempData.SubString(storedValue+1,widthprinter).Length();
+                        storedValue += widthprinter;
+                        j += storedValue;
+                    }
+                }
+                else
+                {
+                    bool skipAdding = false;
+                    if(tempData.Length() == 1 && (tempData.Pos("\n") || tempData.Pos("\r")))
+                       skipAdding = true;
+                    if(!skipAdding)
+                    {
+                        Printout1->PrintFormat->Line->Columns[0]->Text = tempData;
+                        Printout1->PrintFormat->AddLine();
+                    }
+                    dataAdded += tempData.Length();
+                }
+                truncatedData = data2.SubString(dataAdded,data2.Length()-dataAdded);
+                i = dataAdded;
+            }
+        }
 		Printout1->PrintFormat->PartialCut();
 
 		TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);

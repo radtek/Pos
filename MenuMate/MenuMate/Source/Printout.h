@@ -30,7 +30,7 @@ public:
 	bool PrintToFile(UnicodeString FileName);
 	bool PrintToStream(TStream *Stream);
 	bool PrintToPrinterRaw(TStringList *Text, UnicodeString PrinterName);	// Bit of a hack for reprinting receipts.
-	bool PrintToPrinterStream(TMemoryStream *Data, UnicodeString PrinterName,bool PrintCompanyDetails = false);
+	bool PrintToPrinterStream(TMemoryStream *Data, UnicodeString PrinterName);
 	std::map<UnicodeString,UnicodeString> PrintInfo; // Stores Docket Number, Chit Numbers, Barcodes for this Print Out.
 private:
 	TPrinterPhysical FPrinter;
