@@ -430,6 +430,6 @@ TGlobalSettings::TGlobalSettings()
     IsSmartConnectQRTransaction = false;
     AdyenRecoveryTransactionIsRefund = false;
     EnableCompanyDetailOnReprintReceipt = false;
-    Companydetails = "";
+    CompanydetailsSaved = "";
 }
 

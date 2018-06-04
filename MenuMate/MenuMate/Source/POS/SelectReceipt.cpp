@@ -93,10 +93,10 @@ void __fastcall TfrmSelectReceipt::btnPrintClick(TObject *Sender)
         frmTouchKeyboard->Caption = "Enter the Company Details.";
         if (frmTouchKeyboard->ShowModal() == mrOk)
         {
-          TGlobalSettings::Instance().Companydetails = frmTouchKeyboard->KeyboardText.Trim() ;
+          TGlobalSettings::Instance().CompanydetailsSaved = frmTouchKeyboard->KeyboardText.Trim() ;
            ManagerReceipt->Print();
         }
-        TGlobalSettings::Instance().Companydetails ="";
+        TGlobalSettings::Instance().CompanydetailsSaved ="";
     }
     else
     {

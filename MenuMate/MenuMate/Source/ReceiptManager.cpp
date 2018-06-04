@@ -914,7 +914,7 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
             Printout1->PrintFormat->Line->Columns[0]->Text = data;
             Printout1->PrintFormat->AddLine();
 
-            UnicodeString data2 = TGlobalSettings::Instance().Companydetails;
+            UnicodeString data2 = TGlobalSettings::Instance().CompanydetailsSaved;
             int widthprinter = Printout1->PrintFormat->Width ;
             int datacount = data2.Length();
             UnicodeString tempData = "";
