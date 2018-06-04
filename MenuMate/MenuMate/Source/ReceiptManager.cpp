@@ -908,12 +908,17 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
 
 		   Printout1->PrintFormat->AddLine();
 		}
-        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails)
+        AnsiString Endline = "-------------------------------------------" ;
+
+        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails
+                                        && TGlobalSettings::Instance().CompanydetailsSaved.Trim().Length()!= 0)
         {
+
+            Printout1->PrintFormat->Line->Columns[0]->Text = Endline;
+            Printout1->PrintFormat->AddLine();
             UnicodeString data = "Sold to:" ;
             Printout1->PrintFormat->Line->Columns[0]->Text = data;
             Printout1->PrintFormat->AddLine();
-
             UnicodeString data2 = TGlobalSettings::Instance().CompanydetailsSaved;
             int widthprinter = Printout1->PrintFormat->Width ;
             int datacount = data2.Length();
@@ -955,9 +960,11 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
                     }
                     dataAdded += tempData.Length();
                 }
-                truncatedData = data2.SubString(dataAdded,data2.Length()-dataAdded);
+                truncatedData = data2.SubString(dataAdded,data2.Length()-dataAdded+1);
                 i = dataAdded;
             }
+             Printout1->PrintFormat->Line->Columns[0]->Text = Endline;
+             Printout1->PrintFormat->AddLine();
         }
 		Printout1->PrintFormat->PartialCut();
 

@@ -88,6 +88,7 @@ void __fastcall TfrmSelectReceipt::btnPrintClick(TObject *Sender)
     {
         std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
         frmTouchKeyboard->AllowCarriageReturn = true;
+        frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
         frmTouchKeyboard->StartWithShiftDown = false;
         frmTouchKeyboard->MaxLength = 300;
         frmTouchKeyboard->Caption = "Enter the Company Details.";
