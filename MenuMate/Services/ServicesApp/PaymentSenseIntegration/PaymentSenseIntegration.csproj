@@ -35,7 +35,9 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.4.12\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http">
@@ -56,6 +58,8 @@
     <Compile Include="Domain\ResponseData\ReceiptData.cs" />
     <Compile Include="Domain\ResponseData\ReceiptLines.cs" />
     <Compile Include="Domain\RequestData\Reports.cs" />
+    <Compile Include="Domain\ResponseData\ReportLines.cs" />
+    <Compile Include="Domain\ResponseData\ReportResponseData.cs" />
     <Compile Include="Domain\ResponseData\TransactionDataResponse.cs" />
     <Compile Include="Domain\RequestData\TransactionRequest.cs" />
     <Compile Include="Domain\SignatureRequest\SignatureRequest.cs" />

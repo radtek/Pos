@@ -358,18 +358,79 @@ void _fastcall TEftPosPaymentSense::PrintZedReport()
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
 {
+    TMemoryStream *stream = new TMemoryStream;
     try
     {
         CoInitialize(NULL);
         Reports* report = new Reports();
         report->reportType =  reportType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
-        paymentSenseClient->PrintReports(authorizationDetails, report);
+        ReportResponseData *reportData = paymentSenseClient->PrintReports(authorizationDetails, report);
+        MessageBox(reportData->Report.Length,"Length",MB_OK);
+        std::auto_ptr<TStringList> List(new TStringList());
+
+        for(int i = 0; i < reportData->Report.Length; i++)
+        {
+            List->Add(reportData->Report[i]);
+        }
+        MessageBox(List->Count,"Count of List",MB_OK);
+        for(int i = 0 ; i < List->Count; i++)
+        {
+            MessageBox(List->operator [](i),i,MB_OK);
+        }
+        if(List->Count > 0)
+        {
+            stream = new TMemoryStream;
+            List->SaveToStream(stream);
+        }
+        MessageBox("Going to Save receipt",stream->Size,MB_OK);
+        SaveReportToDataBase(reportData,stream);
     }
     catch( Exception& E )
     {
+        MessageBox(E.Message,"Exception in PrintReports",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
+    delete stream;
+}
+//-----------------------------------------------------------------------------
+void TEftPosPaymentSense::SaveReportToDataBase(ReportResponseData* report, TMemoryStream *stream)
+{
+   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction.StartTransaction();
+   try
+   {
+       TIBSQL *GeneratorQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       GeneratorQuery->Close();
+       GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSZEDID, 1) FROM RDB$DATABASE";
+       GeneratorQuery->ExecQuery();
+
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "INSERT INTO EFTPOSZED (EFTPOS_ZED_ID, TIME_STAMP,EFTPOS_TYPE,POS_TERMINALNAME,EFTPOS_TERMINALID,ZED_RECEIPT) "
+                                    "VALUES (:EFTPOS_ZED_ID, :TIME_STAMP, :EFTPOS_TYPE, :POS_TERMINALNAME, :EFTPOS_TERMINALID, :ZED_RECEIPT)";
+       IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = GeneratorQuery->Fields[0]->AsInteger;
+       IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+       IBInternalQuery->ParamByName("EFTPOS_TYPE")->AsInteger = eTEftPosPaymentSense;
+       IBInternalQuery->ParamByName("POS_TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+       IBInternalQuery->ParamByName("EFTPOS_TERMINALID")->AsString = report->tpi;
+       if(stream->Size > 0)
+       {
+           stream->Position = 0;
+           IBInternalQuery->ParamByName("ZED_RECEIPT")->LoadFromStream(stream);
+       }
+       else
+           IBInternalQuery->ParamByName("ZED_RECEIPT")->Clear();
+       IBInternalQuery->ExecQuery();
+
+       DBTransaction.Commit();
+   }
+   catch(Exception &Ex)
+   {
+        MessageBox(Ex.Message,"Exception in SaveReportToDataBase",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        DBTransaction.Rollback();
+   }
 }
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::ShowPreviousZED()

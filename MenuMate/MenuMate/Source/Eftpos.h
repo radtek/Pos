@@ -18,6 +18,7 @@ enum eEFTPOSType
   eTEftPosICELink,
   eTEftPosDPS,
   eTEftPosCadmusCronos,
+  eTEftPosPaymentSense
 };
 
 enum TEftPosEvent {ePrintReceiptEvent,eChequeVerifyEvent,

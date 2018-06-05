@@ -6,10 +6,11 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd0
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd2
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd3
+//  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd4
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (21/05/2018 6:03:53 p.m. - - $Rev: 25127 $)
+// (5/06/2018 9:11:05 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -49,7 +50,6 @@ namespace NS__PaymentSenseWSDL {
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS AuthorizationDetails;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper;
@@ -67,6 +67,8 @@ class SOAP_REMOTABLE_CLASS TransactionDataResponse2;
 class SOAP_REMOTABLE_CLASS ReceiptLines2;
 class SOAP_REMOTABLE_CLASS ReceiptData2;
 class SOAP_REMOTABLE_CLASS Reports2;
+class SOAP_REMOTABLE_CLASS ReportResponseData;
+class SOAP_REMOTABLE_CLASS ReportResponseData2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -588,6 +590,96 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : ReportResponseData, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.ResponseData
+// ************************************************************************ //
+class ReportResponseData : public TRemotable {
+private:
+  ArrayOfstring   FReport;
+  bool            FReport_Specified;
+  UnicodeString   Flocation;
+  bool            Flocation_Specified;
+  ArrayOfstring   Fnotifications;
+  bool            Fnotifications_Specified;
+  ArrayOfReceiptData FreportLines;
+  bool            FreportLines_Specified;
+  UnicodeString   FreportResult;
+  bool            FreportResult_Specified;
+  UnicodeString   FreportTime;
+  bool            FreportTime_Specified;
+  UnicodeString   FreportType;
+  bool            FreportType_Specified;
+  UnicodeString   FrequestId;
+  bool            FrequestId_Specified;
+  UnicodeString   Ftpi;
+  bool            Ftpi_Specified;
+  void __fastcall SetReport(int Index, ArrayOfstring _prop_val)
+  {  FReport = _prop_val; FReport_Specified = true;  }
+  bool __fastcall Report_Specified(int Index)
+  {  return FReport_Specified;  } 
+  void __fastcall Setlocation(int Index, UnicodeString _prop_val)
+  {  Flocation = _prop_val; Flocation_Specified = true;  }
+  bool __fastcall location_Specified(int Index)
+  {  return Flocation_Specified;  } 
+  void __fastcall Setnotifications(int Index, ArrayOfstring _prop_val)
+  {  Fnotifications = _prop_val; Fnotifications_Specified = true;  }
+  bool __fastcall notifications_Specified(int Index)
+  {  return Fnotifications_Specified;  } 
+  void __fastcall SetreportLines(int Index, ArrayOfReceiptData _prop_val)
+  {  FreportLines = _prop_val; FreportLines_Specified = true;  }
+  bool __fastcall reportLines_Specified(int Index)
+  {  return FreportLines_Specified;  } 
+  void __fastcall SetreportResult(int Index, UnicodeString _prop_val)
+  {  FreportResult = _prop_val; FreportResult_Specified = true;  }
+  bool __fastcall reportResult_Specified(int Index)
+  {  return FreportResult_Specified;  } 
+  void __fastcall SetreportTime(int Index, UnicodeString _prop_val)
+  {  FreportTime = _prop_val; FreportTime_Specified = true;  }
+  bool __fastcall reportTime_Specified(int Index)
+  {  return FreportTime_Specified;  } 
+  void __fastcall SetreportType(int Index, UnicodeString _prop_val)
+  {  FreportType = _prop_val; FreportType_Specified = true;  }
+  bool __fastcall reportType_Specified(int Index)
+  {  return FreportType_Specified;  } 
+  void __fastcall SetrequestId(int Index, UnicodeString _prop_val)
+  {  FrequestId = _prop_val; FrequestId_Specified = true;  }
+  bool __fastcall requestId_Specified(int Index)
+  {  return FrequestId_Specified;  } 
+  void __fastcall Settpi(int Index, UnicodeString _prop_val)
+  {  Ftpi = _prop_val; Ftpi_Specified = true;  }
+  bool __fastcall tpi_Specified(int Index)
+  {  return Ftpi_Specified;  } 
+
+public:
+  __fastcall ~ReportResponseData();
+__published:
+  __property ArrayOfstring     Report = { index=(IS_OPTN|IS_NLBL), read=FReport, write=SetReport, stored = Report_Specified };
+  __property UnicodeString   location = { index=(IS_OPTN|IS_NLBL), read=Flocation, write=Setlocation, stored = location_Specified };
+  __property ArrayOfstring notifications = { index=(IS_OPTN|IS_NLBL), read=Fnotifications, write=Setnotifications, stored = notifications_Specified };
+  __property ArrayOfReceiptData reportLines = { index=(IS_OPTN|IS_NLBL), read=FreportLines, write=SetreportLines, stored = reportLines_Specified };
+  __property UnicodeString reportResult = { index=(IS_OPTN|IS_NLBL), read=FreportResult, write=SetreportResult, stored = reportResult_Specified };
+  __property UnicodeString reportTime = { index=(IS_OPTN|IS_NLBL), read=FreportTime, write=SetreportTime, stored = reportTime_Specified };
+  __property UnicodeString reportType = { index=(IS_OPTN|IS_NLBL), read=FreportType, write=SetreportType, stored = reportType_Specified };
+  __property UnicodeString  requestId = { index=(IS_OPTN|IS_NLBL), read=FrequestId, write=SetrequestId, stored = requestId_Specified };
+  __property UnicodeString        tpi = { index=(IS_OPTN|IS_NLBL), read=Ftpi, write=Settpi, stored = tpi_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ReportResponseData, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.ResponseData
+// ************************************************************************ //
+class ReportResponseData2 : public ReportResponseData {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IWCFServicePaymentSense/%operationName%
@@ -604,14 +696,14 @@ public:
   virtual PACTerminalWrapper* GetAllCardTerminals(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual PACTerminal*    PingTerminal(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual TransactionDataResponse* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
-  virtual bool            PrintReports(const AuthorizationDetails* autorizationDetails, const Reports* reportData) = 0; 
+  virtual ReportResponseData* PrintReports(const AuthorizationDetails* autorizationDetails, const Reports* reportData) = 0; 
 };
 typedef DelphiInterface<IWCFServicePaymentSense> _di_IWCFServicePaymentSense;
 
 _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__PaymentSenseWSDL
+};     // NS__
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__PaymentSenseWSDL;

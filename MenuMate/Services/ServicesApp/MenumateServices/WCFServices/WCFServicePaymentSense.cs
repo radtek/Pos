@@ -11,6 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using PaymentSenseIntegration;
 using PaymentSenseIntegration.Domain;
+using PaymentSenseIntegration.Domain.ResponseData;
 
 namespace MenumateServices.WCFServices
 {
@@ -67,20 +68,20 @@ namespace MenumateServices.WCFServices
             return response;
         }
 
-        public bool PrintReports(AuthorizationDetails autorizationDetails, Reports reportData)
+        public ReportResponseData PrintReports(AuthorizationDetails autorizationDetails, Reports reportData)
         {
-            bool reportPrinted = false;
+            ReportResponseData responseData = new ReportResponseData();
             try
             {
                 PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
-                reportPrinted = controller.PrintReports(autorizationDetails, reportData);
+                responseData = controller.PrintReports(autorizationDetails, reportData);
 
             }
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in DoPurchase " + ex.Message);
             }
-            return reportPrinted;
+            return responseData;
         }
     }
 }

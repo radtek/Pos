@@ -372,7 +372,7 @@ bool TCurrentZed::GetEFTPOSZed(Database::TDBTransaction &DBTransaction)
 
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text = "SELECT ZED_RECEIPT, POS_TERMINALNAME, TIME_STAMP FROM EFTPOSZED WHERE EFTPOS_ZED_ID = :EFTPOS_ZED_ID";
-    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+    IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = ZedKey;
     IBInternalQuery->ExecQuery();
 
     CurrentZed->Clear();
