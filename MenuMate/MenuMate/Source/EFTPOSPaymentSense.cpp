@@ -264,6 +264,7 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
             PACTerminal *terminal = terminalList->Terminals[index];
             terminalIdList.push_back(terminal->TPI);
         }
+        delete terminalList;
     }
     catch( Exception& E )
     {
@@ -384,6 +385,7 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
         report->reportType =  reportType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
         paymentSenseClient->PrintReports(authorizationDetails, report);
+        delete report;
     }
     catch( Exception& E )
     {
@@ -438,6 +440,7 @@ bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* respon
                 signRequest->accepted = "true";
 
             paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
+            delete signRequest;
         }
     }
     return retval;
