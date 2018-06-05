@@ -4,7 +4,9 @@
 #pragma hdrstop
 
 #include "EFTPOSPaymentSense.h"
+#include "SelectZed.h"
 #include "DeviceRealTerminal.h"
+#include "Main.h"
 #include "EftPosDialogs.h"
 
 //---------------------------------------------------------------------------
@@ -72,6 +74,7 @@ void TEftPosPaymentSense::DoControlPannel()
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
         frmDropDown->AddButton("Settlement  CutOver",&PrintZedReport);
+        frmDropDown->AddButton("Reprint ZED", &ReprintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -230,6 +233,18 @@ void _fastcall TEftPosPaymentSense::ReprintReceipt()
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
+//----------------------------------------------------------------------------
+void _fastcall TEftPosPaymentSense::ReprintZedReport()
+{
+    try
+    {
+        ShowPreviousZED();
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
 // ---------------------------------------------------------------------------
 AnsiString TEftPosPaymentSense::GetRefNumber()
 {
@@ -373,6 +388,22 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
     catch( Exception& E )
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TEftPosPaymentSense::ShowPreviousZED()
+{
+    try
+    {
+        TfrmSelectZed *frmSelectZed = new TfrmSelectZed(frmMain, TDeviceRealTerminal::Instance().DBControl);
+        frmSelectZed->Initialize(eEFTPOSZED);
+		frmSelectZed->ShowModal();
+        delete frmSelectZed;
+    }
+    catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message,"Exception in ShowPreviousZED",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
     }
 }
 //----------------------------------------------------------------------
