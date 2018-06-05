@@ -20,6 +20,9 @@ class TEftPosPaymentSense : public TEftPos
         void LoadEftPosReceipt(ReceiptLines* receiptLines);
         void AddNewLine(AnsiString data);
         void PrintReports(UnicodeString reportType);
+        bool IsTransfactionFinished(TransactionDataResponse* response );
+        UnicodeString lastNotification;
+        TransactionDataResponse*  WaitAndGetResponse(TransactionDataResponse *response);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();
