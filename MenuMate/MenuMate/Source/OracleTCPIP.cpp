@@ -77,13 +77,8 @@ bool TOracleTCPIP::Connect()
         Disconnect();
         UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//        if(!IsSilentConnect)
-//        {
-//           	MessageBox(E.Message+"\nPlease check IP address and Port number Values.\nOracle is disabled.",
-//                                                 "Abort", MB_OK + MB_ICONERROR);
-           MessageBox(E.Message+"\nPlease ensure Oracle Communication Server is running with same credentials.\nOracle is disabled.",
-                                                 "Abort", MB_OK + MB_ICONERROR);
-//        }
+        MessageBox(E.Message+"\nPlease ensure Oracle Communication Server is running with same credentials.\nOracle is disabled.",
+        "Abort", MB_OK + MB_ICONERROR);
         List->Add("Exception Occurred " + E.Message + "\n");
         TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
 	}
@@ -118,18 +113,14 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
 	{
         try
         {
-            fileName = GetFileName();
-            if (FileExists(fileName) )
-              List->LoadFromFile(fileName);
-            List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Request Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
-            List->Add("Request Data:- " +inData + "\n");
-            sendData(inData);
-            outResponse = fetchResponse();
-            UnsetPostingFlag();
-            List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
-            List->Add("Response Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
-            List->Add("Response Data:- " +outResponse + "\n");
+            outResponse = PostToOracle(inData,List);
+            if(outResponse.Trim().Length() == 0)
+            {
+                Disconnect();
+                Sleep(20000);
+                Connect();
+                outResponse = PostToOracle(inData,List);
+            }
         }
         catch( Exception& exc)
         {
@@ -146,6 +137,27 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
     }
     MakeOracleLogFile(List,fileName);
     Disconnect();
+    return outResponse;
+}
+//--------------------------------------------------------------------------
+AnsiString TOracleTCPIP::PostToOracle(AnsiString inData,std::auto_ptr<TStringList> &List)
+{
+    AnsiString outResponse = "";
+    AnsiString fileName = "";
+
+    fileName = GetFileName();
+    if (FileExists(fileName) )
+    List->LoadFromFile(fileName);
+    List->Add("Request Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+    List->Add("Request Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
+    List->Add("Request Data:- " +inData + "\n");
+    sendData(inData);
+    outResponse = fetchResponse();
+    UnsetPostingFlag();
+    List->Add("Response Date- " + (AnsiString)Now().FormatString("DDMMMYYYY") + "\n");
+    List->Add("Response Time- " + (AnsiString)Now().CurrentTime().FormatString("hh:nn:ss am/pm") + "\n");
+    List->Add("Response Data:- " +outResponse + "\n");
+
     return outResponse;
 }
 //--------------------------------------------------------------------------
@@ -379,3 +391,4 @@ TBytes TOracleTCPIP::CreateETX()
     return ETX;
 }
 //---------------------------------------------------------------------------
+
