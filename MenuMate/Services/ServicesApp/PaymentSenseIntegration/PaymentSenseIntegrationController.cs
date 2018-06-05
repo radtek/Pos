@@ -98,9 +98,9 @@ namespace PaymentSenseIntegration
             return terminalDetails;
         }
 
-        public TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
+        public PostRequestResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
         {
-            TransactionDataResponse transactionData = new TransactionDataResponse();
+            PostRequestResponse postedResponse = new PostRequestResponse();
             try
             {
                 stringList.Add("====================DoTransaction=========================================================");
@@ -135,27 +135,13 @@ namespace PaymentSenseIntegration
                     {
                         result = response.Content.ReadAsStringAsync().Result;
                         stringList.Add("Response is succesfull and is :-                                      " + result);
-                        PostRequestResponse deSerializedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
+                        postedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
                         stringList.Add("Response Deserialized.");
-                        autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
-
-                        stringList.Add("====================Get Transaction Data correspoding to above created request id. Details of id and URL are=========================================================");
-                        stringList.Add("New URL is :-                     " + autorizationDetails.URL);
-                        stringList.Add("Request Id is :-                           " + deSerializedResponse.RequestId);
-                        //wait for a period of time or untill you get the transaction finished response.
-                        transactionData = WaitAndGetResponse(autorizationDetails);
-
-                        int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
-                        if (value == 0)
-                        {
-                            ConvertInToFinalValue(ref transactionData);
-                            ArrangeAndAssignReceipts(ref transactionData);
-                        }
                     }
                     else
                     {
                         stringList.Add("Response is Unsuccesfull and response message is: " + response.ReasonPhrase);
-                        //transactionData.TransactionResult = response.ReasonPhrase;
+                        stringList.Add("Unavailable terminal or no data available. Please Check that PDQ is available.");
                     }                
                 }
             }
@@ -167,7 +153,7 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             WriteAndClearStringList();
-            return transactionData;
+            return postedResponse;
         }
 
         public bool PrintReports(AuthorizationDetails autorizationDetails, Reports report)
@@ -216,50 +202,9 @@ namespace PaymentSenseIntegration
             }
             WriteAndClearStringList();
             return retVal;
-        }
+        }       
 
-        private TransactionDataResponse WaitAndGetResponse(AuthorizationDetails autorizationDetails)
-        {
-            TransactionDataResponse response = new TransactionDataResponse();
-            try
-            {
-                stringList.Add("====================Inside WaitAndGetResponse()=========================================================");
-                bool waitflag = true;
-                Stopwatch watch = new Stopwatch();
-                watch.Reset();
-                watch.Start();
-                while (waitflag)
-                {
-                    Thread.Sleep(1000);
-                    //Get Response from Eftpos Terminal to check  transaction is in which state.
-                    response = GetTransactionDataForRequestedId(autorizationDetails);
-
-                    //If transation is finished then return.
-                    if (IsCardTransactionCompleted(response.Notifications))
-                    {
-                        stringList.Add("====================Got Transaction Finished Notification ========================================================");
-                        break;
-                    }
-
-                    //If didn't get response in the mentioned time then also return;
-                    if (watch.Elapsed.TotalMinutes > 2.00)
-                    {
-                        response.TransactionResult = "TIMED_OUT";
-                        stringList.Add("====================Didn't get reponse in specified time interval. SO Time out occured. ========================================================");
-                        break; 
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                EventLog.WriteEntry("In WaitAndGetResponse payment sense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 28, short.MaxValue);
-                ServiceLogger.LogException("Exception in WaitForResponse", ex);
-                stringList.Add("Exception is :-                                                  " + ex.Message);
-            }
-            return response;
-        }
-
-        private TransactionDataResponse GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
+        public TransactionDataResponse GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
         {
             TransactionDataResponse transactionData = new TransactionDataResponse();
             try
@@ -279,6 +224,13 @@ namespace PaymentSenseIntegration
                     stringList.Add(authorizationResponse);
                     transactionData = JsonConvert.DeserializeObject<TransactionDataResponse>(authorizationResponse);
                     stringList.Add("Response Deserialized.  ");
+
+                    int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
+                    if (value == 0)
+                    {
+                        ConvertInToFinalValue(ref transactionData);
+                        ArrangeAndAssignReceipts(ref transactionData);
+                    }
                 }
             }
             catch (Exception ex)
@@ -288,10 +240,11 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception in GetTransactionDetailsForRequestedId()");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
+            WriteAndClearStringList();
             return transactionData;
         }
 
-        private TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
+        public TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
         {
             TransactionDataResponse transactionData = new TransactionDataResponse();
             try
@@ -303,7 +256,7 @@ namespace PaymentSenseIntegration
                 stringList.Add("signature accepted is :-                     " + signRequest.accepted);
 
                 string apiUrl = autorizationDetails.URL;
-                using (HttpClient client = new HttpClient())
+                using ( HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
                     client.DefaultRequestHeaders.Accept.Clear();
@@ -333,34 +286,8 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception in SignatureVerificationForRequestedId()");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
+            WriteAndClearStringList();
             return transactionData;
-        }
-
-        private bool IsCardTransactionCompleted(string[] Notifications)
-        {
-            bool retval = false;
-            try
-            {
-                foreach(string eventNotification in Notifications)
-                {
-                    int value = string.Compare(eventNotification, "TRANSACTION_FINISHED", true);
-                    if (value == 0)
-                    {
-                        stringList.Add("TRANSACTION_FINISHED found in function IsCardTransactionCompleted().  ");
-                        retval = true;
-                        break;
-                    }                     
-                }
-            }
-            catch (Exception ex)
-            {
-                EventLog.WriteEntry("IsCardTransactionCompleted", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
-                ServiceLogger.LogException("Exception in GetTransactionDetailsForRequestedId", ex);
-                stringList.Add("Exception in IsCardTransactionCompleted()");
-                stringList.Add("Exception is :-                                                  " + ex.Message);
-                throw;
-            }
-            return retval;
         }
 
         private void ConvertInToFinalValue(ref TransactionDataResponse responseData)
