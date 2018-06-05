@@ -412,47 +412,63 @@ void TEftPosPaymentSense::ShowPreviousZED()
 bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* response )
 {
     bool retval = false;
-    if(response->Notifications.Length)
+    try
     {
-        if(response->Notifications[0].UpperCase().Compare(lastNotification))
+        if(response->Notifications.Length)
         {
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-            TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
-                                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            if(response->Notifications[0].UpperCase().Compare(lastNotification))
+            {
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
+                                    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            }
+
+            lastNotification = response->Notifications[0];
+
+            if(!response->Notifications[0].UpperCase().Compare("TRANSACTION_FINISHED"))
+            {
+                retval = true;
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            }
+            else if(!response->Notifications[0].UpperCase().Compare("SIGNATURE_VERIFICATION"))
+            {
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
+                bool  isSignatureAccepted = frmEftPos->SignatureOk() == mrYes;
+                SignatureRequest *signRequest = new SignatureRequest();
+                signRequest->accepted = "false";
+
+                if(isSignatureAccepted)
+                    signRequest->accepted = "true";
+
+                paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
+                delete signRequest;
+            }
         }
-
-        lastNotification = response->Notifications[0];
-
-        if(!response->Notifications[0].UpperCase().Compare("TRANSACTION_FINISHED"))
-        {
-            retval = true;
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-        }
-        else if(!response->Notifications[0].UpperCase().Compare("SIGNATURE_VERIFICATION"))
-        {
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-            std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
-            bool  isSignatureAccepted = frmEftPos->SignatureOk() == mrYes;
-            SignatureRequest *signRequest = new SignatureRequest();
-            signRequest->accepted = "false";
-
-            if(isSignatureAccepted)
-                signRequest->accepted = "true";
-
-            paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
-            delete signRequest;
-        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        throw;
     }
     return retval;
 }
 //----------------------------------------------------------------------------------------------
 TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDataResponse *response)
 {
-    lastNotification = "";
-    while(!IsTransfactionFinished(response))
+    try
     {
-        ::Sleep(1000);
-        response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+        lastNotification = "";
+        while(!IsTransfactionFinished(response))
+        {
+            ::Sleep(1000);
+            response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        throw;
     }
     return response;
 }
