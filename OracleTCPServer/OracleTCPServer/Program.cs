@@ -117,8 +117,8 @@ namespace OracleTCPServer
         private static void SendLinkDescription()
         {
             LinkDescription ld = new LinkDescription();
-            ld.Date = DateTime.Now.ToString("YYMMDD");
-            ld.Time = DateTime.Now.ToString("HHMMSS");
+            ld.Date = DateTime.Now.ToString("yyMMdd");
+            ld.Time = DateTime.Now.ToString("HHmmss");
             ld.VerNum = GetVersionNumber();
             PostLinkDescription(ld);
         }
