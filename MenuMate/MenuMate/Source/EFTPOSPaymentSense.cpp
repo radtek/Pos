@@ -286,7 +286,7 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
         PostRequestResponse* responseData = paymentSenseClient->DoTransaction(authorizationDetails, request);
 
-        if(responseData->RequestId != NULL || responseData->RequestId.Trim() != "")
+        if(responseData->RequestId.Trim() != "")
         {
             authorizationDetails->URL = authorizationDetails->URL + "/" + responseData->RequestId;
             response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
