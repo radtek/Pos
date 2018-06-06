@@ -12,6 +12,7 @@ using System.Diagnostics;
 using PaymentSenseIntegration;
 using PaymentSenseIntegration.Domain;
 using PaymentSenseIntegration.Domain.ResponseData;
+using PaymentSenseIntegration.Domain.SignatureRequest;
 
 namespace MenumateServices.WCFServices
 {
@@ -52,9 +53,9 @@ namespace MenumateServices.WCFServices
             return response;
         }
 
-        public TransactionDataResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
+        public PostRequestResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request)
         {
-            TransactionDataResponse response = new TransactionDataResponse();
+            PostRequestResponse response = new PostRequestResponse();
             try
             {
                 PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
@@ -80,6 +81,37 @@ namespace MenumateServices.WCFServices
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in DoPurchase " + ex.Message);
+            }
+            return responseData;
+        }
+
+        public TransactionDataResponse GetResponseForRequestedId(AuthorizationDetails autorizationDetails) 
+        {
+            TransactionDataResponse responseData = new TransactionDataResponse();
+            try
+            {
+                PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
+                responseData = controller.GetTransactionDataForRequestedId(autorizationDetails);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in GetResponseForRequestedId " + ex.Message);
+            }
+            return responseData;
+        }
+
+        public TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
+        {
+            TransactionDataResponse responseData = new TransactionDataResponse();
+            try
+            {
+                PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
+                autorizationDetails.URL = autorizationDetails.URL + "/signature";
+                responseData = controller.SignatureVerificationForRequestedId(autorizationDetails, signRequest);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in GetResponseForRequestedId " + ex.Message);
             }
             return responseData;
         }

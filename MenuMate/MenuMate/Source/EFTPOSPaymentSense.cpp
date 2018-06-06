@@ -7,6 +7,7 @@
 #include "SelectZed.h"
 #include "DeviceRealTerminal.h"
 #include "Main.h"
+#include "EftPosDialogs.h"
 
 //---------------------------------------------------------------------------
 
@@ -14,6 +15,7 @@
 
 TEftPosPaymentSense::TEftPosPaymentSense()
 {
+    lastNotification = "";
     InitPaymentSenseClient();
     InitializeProperties();
 }
@@ -59,7 +61,7 @@ void TEftPosPaymentSense::Initialise()
 void TEftPosPaymentSense::InitializeProperties()
 {
     authorizationDetails = new AuthorizationDetails();
-    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+    authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL  + "/pac/terminals";
     authorizationDetails->UserName = TGlobalSettings::Instance().EFTPosDeviceID;
     authorizationDetails->Password = TGlobalSettings::Instance().EFTPosAPIKey;
 }
@@ -89,7 +91,7 @@ bool  TEftPosPaymentSense::PingTerminal(eEFTTransactionType TxnType)
     bool retVal = false;
     try
     {
-        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId;
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId;
         CoInitialize(NULL);
         PACTerminal *response = paymentSenseClient->PingTerminal(authorizationDetails);
         if(response != NULL)
@@ -123,7 +125,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                         wcfResponse = DoTransaction(AmtPurchase, "REFUND");
                         break;
                     case TransactionType_INQUIRY :
-                      wcfResponse = DoTransaction(1, "DUPLICATE");
+                        wcfResponse = DoTransaction(1, "DUPLICATE");
                       break;
                }
                if(GetResponseStatus(TxnType, wcfResponse))
@@ -149,7 +151,14 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       EftTrans->EventCompleted = true;
                       EftTrans->Result = eDeclined;
                       EftTrans->ResultText = wcfResponse->TransactionResult;
-                      if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 || wcfResponse->TransactionResult.UpperCase().Pos("TIME OUT") != 0)
+                      if(!wcfResponse->TransactionResult.UpperCase().Compare("TIMED_OUT"))
+                      {
+                            UnicodeString strVal = "Communication with the PDQ has failed and payment may or may not have been taken.\r";
+                                          strVal = strVal + "Please manually check if the transaction was successful on the PDQ.";
+                            EftTrans->ResultText = strVal;
+                            EftTrans->TimeOut = true;
+                      }
+                      if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 )
                         EftTrans->TimeOut = true;
                    }
                }
@@ -248,13 +257,14 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
     try
     {
         CoInitialize(NULL);
-        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL;
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals";
         PACTerminalWrapper* terminalList = paymentSenseClient->GetAllCardTerminals(authorizationDetails);
         for(int index = 0; index < terminalList->Terminals.Length; index++)
         {
             PACTerminal *terminal = terminalList->Terminals[index];
             terminalIdList.push_back(terminal->TPI);
         }
+        delete terminalList;
     }
     catch( Exception& E )
     {
@@ -272,8 +282,19 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         request->currency = CurrencyString;
         request->amount = double(amtPurchase);
         request->transactionType = transactionType;
-        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
-        response = paymentSenseClient->DoTransaction(authorizationDetails, request);
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
+        PostRequestResponse* responseData = paymentSenseClient->DoTransaction(authorizationDetails, request);
+
+        if(responseData->RequestId.Trim() != "")
+        {
+            authorizationDetails->URL = authorizationDetails->URL + "/" + responseData->RequestId;
+            response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+            response = WaitAndGetResponse(response);
+        }
+        else
+        {
+            response->TransactionResult = "Unavailable terminal or no data available. Please Check that PDQ is available.";
+        }
         delete request;
     }
     catch( Exception& E )
@@ -354,7 +375,6 @@ void _fastcall TEftPosPaymentSense::PrintZedReport()
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
-
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
 {
@@ -364,7 +384,7 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
         CoInitialize(NULL);
         Reports* report = new Reports();
         report->reportType =  reportType;
-        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
         ReportResponseData *reportData = paymentSenseClient->PrintReports(authorizationDetails, report);
         MessageBox(reportData->Report.Length,"Length",MB_OK);
         std::auto_ptr<TStringList> List(new TStringList());
@@ -385,6 +405,7 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
         }
         MessageBox("Going to Save receipt",stream->Size,MB_OK);
         SaveReportToDataBase(reportData,stream);
+        delete report;
     }
     catch( Exception& E )
     {
@@ -448,4 +469,51 @@ void TEftPosPaymentSense::ShowPreviousZED()
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
     }
 }
+//----------------------------------------------------------------------
+bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* response )
+{
+    bool retval = false;
+    if(response->Notifications.Length)
+    {
+        if(response->Notifications[0].UpperCase().Compare(lastNotification))
+        {
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
+                                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        }
 
+        lastNotification = response->Notifications[0];
+
+        if(!response->Notifications[0].UpperCase().Compare("TRANSACTION_FINISHED"))
+        {
+            retval = true;
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        }
+        else if(!response->Notifications[0].UpperCase().Compare("SIGNATURE_VERIFICATION"))
+        {
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
+            bool  isSignatureAccepted = frmEftPos->SignatureOk() == mrYes;
+            SignatureRequest *signRequest = new SignatureRequest();
+            signRequest->accepted = "false";
+
+            if(isSignatureAccepted)
+                signRequest->accepted = "true";
+
+            paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
+            delete signRequest;
+        }
+    }
+    return retval;
+}
+//----------------------------------------------------------------------------------------------
+TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDataResponse *response)
+{
+    lastNotification = "";
+    while(!IsTransfactionFinished(response))
+    {
+        ::Sleep(1000);
+        response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+    }
+    return response;
+}

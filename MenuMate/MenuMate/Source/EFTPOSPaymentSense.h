@@ -22,6 +22,9 @@ class TEftPosPaymentSense : public TEftPos
         void PrintReports(UnicodeString reportType);
         void ShowPreviousZED();
         void SaveReportToDataBase(ReportResponseData* report, TMemoryStream *stream);
+        bool IsTransfactionFinished(TransactionDataResponse* response );
+        UnicodeString lastNotification;
+        TransactionDataResponse*  WaitAndGetResponse(TransactionDataResponse *response);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();

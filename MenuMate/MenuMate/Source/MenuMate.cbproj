@@ -1237,7 +1237,7 @@
 				<DependentOn>MYOBInvoiceBuilder.h</DependentOn>
 				<BuildOrder>714</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="EFTPOSPaymentSense.cpp">
+			<CppCompile Include="EftposPaymentSense.cpp">
 				<DependentOn>EftposPaymentSense.h</DependentOn>
 				<BuildOrder>798</BuildOrder>
 			</CppCompile>
