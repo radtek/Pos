@@ -381,6 +381,11 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
    }
    cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
+   if(TGlobalSettings::Instance().EnableEftPosPaymentSense && Payment.GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+   {
+        cbCheckSig->Enabled = false;
+        cbCheckSig->Checked = false;
+   }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)

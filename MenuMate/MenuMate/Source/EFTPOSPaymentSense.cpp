@@ -294,7 +294,9 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         }
         else
         {
-            response->TransactionResult = "Unavailable terminal or no data available. Please Check that PDQ is available.";
+            response->TransactionResult = TGlobalSettings::Instance().EftPosTerminalId + " is unavailable. \r";
+            response->TransactionResult += "Please try again in 10 seconds or check the PDQ screen and cabling or restart the PDQ. \r";
+            response->TransactionResult += "Contact support if the problem persists.";
         }
         delete request;
     }
