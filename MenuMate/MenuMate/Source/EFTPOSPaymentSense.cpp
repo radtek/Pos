@@ -440,7 +440,7 @@ bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* respon
 
                 if(isSignatureAccepted)
                     signRequest->accepted = "true";
-
+                CoInitialize(NULL);
                 paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
                 delete signRequest;
             }
@@ -462,6 +462,7 @@ TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDat
         while(!IsTransfactionFinished(response))
         {
             ::Sleep(1000);
+            CoInitialize(NULL);
             response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
         }
     }
