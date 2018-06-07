@@ -347,12 +347,12 @@ bool TDBSecurity::CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTran
         TIBSQL *IBInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.SECURITYREF FROM PMSGUESTDETAILS a "
-                                     "WHERE a.SECURITYREF = :SECURITYREF AND A.ROOMNUMBER = :ROOMNUMBER "
-                                        "AND A.SEATNUMBER = :SEATNUMBER AND A.ACCOUNTNUBER = :ACCOUNTNUBER ";
+                                     "WHERE a.SECURITYREF = :SECURITYREF ";//AND A.ROOMNUMBER = :ROOMNUMBER "
+                                     //   "AND A.SEATNUMBER = :SEATNUMBER AND A.ACCOUNTNUBER = :ACCOUNTNUBER ";
         IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = securityRef;
-        IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = roomNumber;
-        IBInternalQuery->ParamByName("SEATNUMBER")->AsInteger = seatNo;
-        IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = accNo.SubString(1, 20);
+//        IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = roomNumber;
+//        IBInternalQuery->ParamByName("SEATNUMBER")->AsInteger = seatNo;
+//        IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = accNo.SubString(1, 20);
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
