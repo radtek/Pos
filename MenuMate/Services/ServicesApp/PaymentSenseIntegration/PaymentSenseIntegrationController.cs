@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using PaymentSenseIntegration.Tools;
 using PaymentSenseIntegration.Domain.SignatureRequest;
+using PaymentSenseIntegration.Domain.ResponseData;
 
 namespace PaymentSenseIntegration
 {
@@ -156,9 +157,10 @@ namespace PaymentSenseIntegration
             return postedResponse;
         }
 
-        public bool PrintReports(AuthorizationDetails autorizationDetails, Reports report)
+        public ReportResponseData PrintReports(AuthorizationDetails autorizationDetails, Reports report)
         {
-            bool retVal = false;
+            ReportResponseData reportData = new ReportResponseData();
+            reportData.Report = new List<string>();
             try
             {
                 stringList.Add("====================PrintReports=========================================================");
@@ -187,21 +189,38 @@ namespace PaymentSenseIntegration
                     string result = "";
                     if (response.IsSuccessStatusCode)
                     {
+                        //result = response.Content.ReadAsStringAsync().Result;
+                        //stringList.Add("Response is succesfull and is :-                                      " + result);
+                        //retVal = true;
                         result = response.Content.ReadAsStringAsync().Result;
                         stringList.Add("Response is succesfull and is :-                                      " + result);
-                        retVal = true;
+                        PostRequestResponse deSerializedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
+                        stringList.Add("Response Deserialized.");
+                        autorizationDetails.URL = autorizationDetails.URL + "/" + deSerializedResponse.RequestId;
+
+                        stringList.Add("====================Get Transaction Data correspoding to above created request id. Details of id and URL are=========================================================");
+                        stringList.Add("New URL is :-                     " + autorizationDetails.URL);
+                        stringList.Add("Request Id is :-                           " + deSerializedResponse.RequestId);
+                        //wait for a period of time or untill you get the transaction finished response.
+                        reportData = WaitAndGetReport(autorizationDetails);
+
+                       // int value = string.Compare(reportData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
+                        if (reportData.reportLines.Length > 1)
+                        {
+                            ArrangeAndAssignReport(reportData);
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Purchase PaymentSense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
-                ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                EventLog.WriteEntry("In PrintReports", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                ServiceLogger.LogException("Exception in PrintReports", ex);
+                stringList.Add("Exception in  PrintReports: ");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             WriteAndClearStringList();
-            return retVal;
+            return reportData;
         }       
 
         public TransactionDataResponse GetTransactionDataForRequestedId(AuthorizationDetails autorizationDetails)
@@ -233,13 +252,10 @@ namespace PaymentSenseIntegration
 						int value = 1;
                         value = string.Compare(transactionData.TransactionResult, "SUCCESSFUL", true);
                         stringList.Add("value " + value);
-                        WriteAndClearStringList();
                         if (value == 0)
                         {
                             ConvertInToFinalValue(ref transactionData);
                             ArrangeAndAssignReceipts(ref transactionData);
-                            stringList.Add("inside if  " + value);
-                            WriteAndClearStringList();
                         }
                     }
                 }
@@ -250,12 +266,82 @@ namespace PaymentSenseIntegration
                 ServiceLogger.LogException("Exception in GetTransactionDetailsForRequestedId", ex);
                 stringList.Add("Exception in GetTransactionDetailsForRequestedId()");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
-                WriteAndClearStringList();
             }
             WriteAndClearStringList();
             return transactionData;
         }
+        private ReportResponseData WaitAndGetReport(AuthorizationDetails autorizationDetails)
+        {
+            ReportResponseData reportData = new ReportResponseData();
+            try
+            {
+                stringList.Add("====================Inside WaitAndGetResponse()=========================================================");
+                bool waitflag = true;
+                Stopwatch watch = new Stopwatch();
+                watch.Reset();
+                watch.Start();
+                while (waitflag)
+                {
+                    Thread.Sleep(1000);
+                    //Get Response from Eftpos Terminal to check  transaction is in which state.
+                    reportData = GetReportDataForRequestID(autorizationDetails);
 
+                    //If transation is finished then return.
+                    if (IsReportCompleted(reportData.notifications))
+                    {
+                        stringList.Add("====================Got Transaction Finished Notification ========================================================");
+                        break;
+                    }
+
+                    //If didn't get response in the mentioned time then also return;
+                    if (watch.Elapsed.TotalMinutes > 2.00)
+                    {
+                        reportData.reportResult = "TIMED_OUT";
+                        stringList.Add("====================Didn't get reponse in specified time interval. SO Time out occured. ========================================================");
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In WaitAndGetReport", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in WaitAndGetReport", ex);
+                stringList.Add("Exception in WaitAndGetReport()");
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+            return reportData;
+        }
+        private ReportResponseData GetReportDataForRequestID(AuthorizationDetails autorizationDetails)
+        {
+            ReportResponseData reportData = new ReportResponseData();
+            try
+            {
+                stringList.Add("====================GetTransactionDetailsForRequestedId=========================================================");
+                string apiUrl = autorizationDetails.URL;
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                                                                                    Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}",
+                                                                                                    autorizationDetails.UserName, autorizationDetails.Password))));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
+                    var authorizationResponse = client.GetStringAsync(apiUrl).Result;
+                    stringList.Add("Response For Requested Id is as follows:-                                  ");
+                    stringList.Add(authorizationResponse);
+                    reportData = JsonConvert.DeserializeObject<ReportResponseData>(authorizationResponse);
+                    stringList.Add("Response Deserialized.  ");
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In GetReportDataForTransactionID", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in GetReportDataForTransactionID", ex);
+                stringList.Add("Exception in GetReportDataForTransactionID()");
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+            return reportData;
+        }
         public TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
         {
             TransactionDataResponse transactionData = new TransactionDataResponse();
@@ -302,6 +388,33 @@ namespace PaymentSenseIntegration
             return transactionData;
         }
 
+        private bool IsReportCompleted(string[] Notifications)
+        {
+            bool retval = false;
+            try
+            {
+                foreach (string eventNotification in Notifications)
+                {
+                    int value = string.Compare(eventNotification, "REPORT_FINISHED", true);
+                    if (value == 0)
+                    {
+                        stringList.Add("Report Transaction found in function IsReportCompleted().  ");
+                        retval = true;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("IsReportCompleted", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in IsReportCompleted", ex);
+                stringList.Add("Exception in IsReportCompleted()");
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+                throw;
+            }
+            return retval;
+        }
+
         private void ConvertInToFinalValue(ref TransactionDataResponse responseData)
         {
             try
@@ -346,7 +459,25 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
         }
-
+        private void ArrangeAndAssignReport(ReportResponseData reportData)
+        {
+            try
+            {
+                reportData.Report = new List<string>();
+                if (reportData.reportLines != null)
+                {
+                    foreach (var item in reportData.reportLines)
+                    {
+                        reportData.Report.Add(item.Value.TrimStart());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception Occured in Arranging Reports at  :-                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+        }
         private void WriteToFile(List<string> list)
         {
             try

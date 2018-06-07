@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using PaymentSenseIntegration.Domain;
+using PaymentSenseIntegration.Domain.ResponseData;
 using PaymentSenseIntegration.Domain.SignatureRequest;
 
 namespace MenumateServices.WCFServices
@@ -20,7 +21,7 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         PostRequestResponse DoTransaction(AuthorizationDetails autorizationDetails, TransactionRequest request);
         [OperationContract]
-        bool PrintReports(AuthorizationDetails autorizationDetails, Reports reportData);
+        ReportResponseData PrintReports(AuthorizationDetails autorizationDetails, Reports reportData);
         [OperationContract]
         TransactionDataResponse GetResponseForRequestedId(AuthorizationDetails autorizationDetails);
         [OperationContract]

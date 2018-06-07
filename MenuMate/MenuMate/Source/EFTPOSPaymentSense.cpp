@@ -8,6 +8,7 @@
 #include "DeviceRealTerminal.h"
 #include "Main.h"
 #include "EftPosDialogs.h"
+#include "GeneratorManager.h"
 
 //---------------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ void TEftPosPaymentSense::DoControlPannel()
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
         frmDropDown->AddButton("Settlement  CutOver",&PrintZedReport);
-       // frmDropDown->AddButton("Reprint ZED", &ReprintZedReport);
+        frmDropDown->AddButton("Reprint ZED", &ReprintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -371,8 +372,10 @@ void TEftPosPaymentSense::AddNewLine(AnsiString data)
 // ---------------------------------------------------------------------------
 void _fastcall TEftPosPaymentSense::PrintZedReport()
 {
+    TMMProcessingState State(Screen->ActiveForm, "REPORT_STARTED", "Processing EftPos Transaction");
     try
     {
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         CoInitialize(NULL);
         PrintReports("END_OF_DAY");
     }
@@ -380,23 +383,73 @@ void _fastcall TEftPosPaymentSense::PrintZedReport()
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
 {
+    TMemoryStream *stream = new TMemoryStream;
     try
     {
         CoInitialize(NULL);
         Reports* report = new Reports();
         report->reportType =  reportType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
-        paymentSenseClient->PrintReports(authorizationDetails, report);
+        ReportResponseData *reportData = paymentSenseClient->PrintReports(authorizationDetails, report);
+
+        std::auto_ptr<TStringList> List(new TStringList());
+
+        for(int i = 0; i < reportData->Report.Length; i++)
+        {
+            List->Add(reportData->Report[i]);
+        }
+
+        if(List->Count > 0)
+        {
+            stream = new TMemoryStream;
+            List->SaveToStream(stream);
+        }
+        SaveReportToDataBase(reportData,stream);
         delete report;
     }
     catch( Exception& E )
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
+    delete stream;
+}
+//-----------------------------------------------------------------------------
+void TEftPosPaymentSense::SaveReportToDataBase(ReportResponseData* report, TMemoryStream *stream)
+{
+   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction.StartTransaction();
+   try
+   {
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "INSERT INTO EFTPOSZED (EFTPOS_ZED_ID, TIME_STAMP,EFTPOS_TYPE,POS_TERMINALNAME,EFTPOS_TERMINALID,ZED_RECEIPT) "
+                                    "VALUES (:EFTPOS_ZED_ID, :TIME_STAMP, :EFTPOS_TYPE, :POS_TERMINALNAME, :EFTPOS_TERMINALID, :ZED_RECEIPT)";
+       IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_EFTPOSZEDID");
+       IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+       IBInternalQuery->ParamByName("EFTPOS_TYPE")->AsInteger = eTEftPosPaymentSense;
+       IBInternalQuery->ParamByName("POS_TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+       IBInternalQuery->ParamByName("EFTPOS_TERMINALID")->AsString = report->tpi;
+       if(stream->Size > 0)
+       {
+           stream->Position = 0;
+           IBInternalQuery->ParamByName("ZED_RECEIPT")->LoadFromStream(stream);
+       }
+       else
+           IBInternalQuery->ParamByName("ZED_RECEIPT")->Clear();
+       IBInternalQuery->ExecQuery();
+
+       DBTransaction.Commit();
+   }
+   catch(Exception &Ex)
+   {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        DBTransaction.Rollback();
+   }
 }
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::ShowPreviousZED()
@@ -407,6 +460,7 @@ void TEftPosPaymentSense::ShowPreviousZED()
         frmSelectZed->Initialize(eEFTPOSZED);
 		frmSelectZed->ShowModal();
         delete frmSelectZed;
+        frmSelectZed = NULL;
     }
     catch(Exception &Ex)
     {
