@@ -230,6 +230,7 @@ namespace PaymentSenseIntegration
             {
                 stringList.Add("====================GetTransactionDetailsForRequestedId=========================================================");
                 string apiUrl = autorizationDetails.URL;
+                stringList.Add("==================== api url=============================" + apiUrl);
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(apiUrl);
@@ -238,17 +239,24 @@ namespace PaymentSenseIntegration
                                                                                     Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}",
                                                                                                     autorizationDetails.UserName, autorizationDetails.Password))));
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
+                     
+                    stringList.Add("==================== Before authorization=============================" );
                     var authorizationResponse = client.GetStringAsync(apiUrl).Result;
                     stringList.Add("Response For Requested Id is as follows:-                                  ");
                     stringList.Add(authorizationResponse);
                     transactionData = JsonConvert.DeserializeObject<TransactionDataResponse>(authorizationResponse);
                     stringList.Add("Response Deserialized.  ");
 
-                    int value = string.Compare(transactionData.TransactionResult.ToUpper(), "SUCCESSFUL", true);
-                    if (value == 0)
+                    if (transactionData.TransactionResult != null)
                     {
-                        ConvertInToFinalValue(ref transactionData);
-                        ArrangeAndAssignReceipts(ref transactionData);
+						int value = 1;
+                        value = string.Compare(transactionData.TransactionResult, "SUCCESSFUL", true);
+                        stringList.Add("value " + value);
+                        if (value == 0)
+                        {
+                            ConvertInToFinalValue(ref transactionData);
+                            ArrangeAndAssignReceipts(ref transactionData);
+                        }
                     }
                 }
             }

@@ -7,10 +7,11 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd2
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd3
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd4
+//  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd5
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (5/06/2018 9:11:05 p.m. - - $Rev: 25127 $)
+// (6/06/2018 5:48:30 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -100,16 +101,18 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(PACTerminal), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"PACTerminal");
   /* TransactionRequest */
   RemClassRegistry()->RegisterXSClass(__classid(TransactionRequest), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"TransactionRequest");
-  /* TransactionDataResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(TransactionDataResponse), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"TransactionDataResponse");
-  /* ArrayOfReceiptData */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfReceiptData");
-  /* ReceiptLines */
-  RemClassRegistry()->RegisterXSClass(__classid(ReceiptLines), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptLines");
-  /* ReceiptData */
-  RemClassRegistry()->RegisterXSClass(__classid(ReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData");
+  /* PostRequestResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(PostRequestResponse), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"PostRequestResponse");
   /* Reports */
   RemClassRegistry()->RegisterXSClass(__classid(Reports), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"Reports");
+  /* ArrayOfReceiptData */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfReceiptData");
+  /* ReceiptData */
+  RemClassRegistry()->RegisterXSClass(__classid(ReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData");
+  /* TransactionDataResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(TransactionDataResponse), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"TransactionDataResponse");
+  /* ReceiptLines */
+  RemClassRegistry()->RegisterXSClass(__classid(ReceiptLines), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptLines");
   /* AuthorizationDetails */
   RemClassRegistry()->RegisterXSClass(__classid(AuthorizationDetails2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"AuthorizationDetails2", L"AuthorizationDetails");
   /* PACTerminalWrapper */
@@ -118,18 +121,24 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(PACTerminal2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"PACTerminal2", L"PACTerminal");
   /* TransactionRequest */
   RemClassRegistry()->RegisterXSClass(__classid(TransactionRequest2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"TransactionRequest2", L"TransactionRequest");
+  /* PostRequestResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(PostRequestResponse2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"PostRequestResponse2", L"PostRequestResponse");
+  /* Reports */
+  RemClassRegistry()->RegisterXSClass(__classid(Reports2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"Reports2", L"Reports");
+  /* ReceiptData */
+  RemClassRegistry()->RegisterXSClass(__classid(ReceiptData2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData2", L"ReceiptData");
   /* TransactionDataResponse */
   RemClassRegistry()->RegisterXSClass(__classid(TransactionDataResponse2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"TransactionDataResponse2", L"TransactionDataResponse");
   /* ReceiptLines */
   RemClassRegistry()->RegisterXSClass(__classid(ReceiptLines2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptLines2", L"ReceiptLines");
-  /* ReceiptData */
-  RemClassRegistry()->RegisterXSClass(__classid(ReceiptData2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ReceiptData2", L"ReceiptData");
-  /* Reports */
-  RemClassRegistry()->RegisterXSClass(__classid(Reports2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"Reports2", L"Reports");
   /* ReportResponseData */
   RemClassRegistry()->RegisterXSClass(__classid(ReportResponseData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.ResponseData", L"ReportResponseData");
   /* ReportResponseData */
   RemClassRegistry()->RegisterXSClass(__classid(ReportResponseData2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.ResponseData", L"ReportResponseData2", L"ReportResponseData");
+  /* SignatureRequest */
+  RemClassRegistry()->RegisterXSClass(__classid(SignatureRequest), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.SignatureRequest", L"SignatureRequest");
+  /* SignatureRequest */
+  RemClassRegistry()->RegisterXSClass(__classid(SignatureRequest2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.SignatureRequest", L"SignatureRequest2", L"SignatureRequest");
   /* ArrayOfPACTerminal */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPACTerminal), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfPACTerminal");
   /* ArrayOfReceiptData */

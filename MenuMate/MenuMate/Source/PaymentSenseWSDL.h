@@ -7,10 +7,11 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd2
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd3
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd4
+//  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd5
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (5/06/2018 9:11:05 p.m. - - $Rev: 25127 $)
+// (6/06/2018 5:48:30 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -55,20 +56,24 @@ class SOAP_REMOTABLE_CLASS AuthorizationDetails;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper;
 class SOAP_REMOTABLE_CLASS PACTerminal;
 class SOAP_REMOTABLE_CLASS TransactionRequest;
+class SOAP_REMOTABLE_CLASS PostRequestResponse;
+class SOAP_REMOTABLE_CLASS Reports;
+class SOAP_REMOTABLE_CLASS ReceiptData;
 class SOAP_REMOTABLE_CLASS TransactionDataResponse;
 class SOAP_REMOTABLE_CLASS ReceiptLines;
-class SOAP_REMOTABLE_CLASS ReceiptData;
-class SOAP_REMOTABLE_CLASS Reports;
 class SOAP_REMOTABLE_CLASS AuthorizationDetails2;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper2;
 class SOAP_REMOTABLE_CLASS PACTerminal2;
 class SOAP_REMOTABLE_CLASS TransactionRequest2;
+class SOAP_REMOTABLE_CLASS PostRequestResponse2;
+class SOAP_REMOTABLE_CLASS Reports2;
+class SOAP_REMOTABLE_CLASS ReceiptData2;
 class SOAP_REMOTABLE_CLASS TransactionDataResponse2;
 class SOAP_REMOTABLE_CLASS ReceiptLines2;
-class SOAP_REMOTABLE_CLASS ReceiptData2;
-class SOAP_REMOTABLE_CLASS Reports2;
 class SOAP_REMOTABLE_CLASS ReportResponseData;
 class SOAP_REMOTABLE_CLASS ReportResponseData2;
+class SOAP_REMOTABLE_CLASS SignatureRequest;
+class SOAP_REMOTABLE_CLASS SignatureRequest2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -211,6 +216,85 @@ __published:
   __property double         amount = { index=(IS_OPTN), read=Famount, write=Setamount, stored = amount_Specified };
   __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
   __property UnicodeString transactionType = { index=(IS_OPTN|IS_NLBL), read=FtransactionType, write=SettransactionType, stored = transactionType_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : PostRequestResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class PostRequestResponse : public TRemotable {
+private:
+  UnicodeString   FLocation;
+  bool            FLocation_Specified;
+  UnicodeString   FRequestId;
+  bool            FRequestId_Specified;
+  void __fastcall SetLocation(int Index, UnicodeString _prop_val)
+  {  FLocation = _prop_val; FLocation_Specified = true;  }
+  bool __fastcall Location_Specified(int Index)
+  {  return FLocation_Specified;  } 
+  void __fastcall SetRequestId(int Index, UnicodeString _prop_val)
+  {  FRequestId = _prop_val; FRequestId_Specified = true;  }
+  bool __fastcall RequestId_Specified(int Index)
+  {  return FRequestId_Specified;  } 
+__published:
+  __property UnicodeString   Location = { index=(IS_OPTN|IS_NLBL), read=FLocation, write=SetLocation, stored = Location_Specified };
+  __property UnicodeString  RequestId = { index=(IS_OPTN|IS_NLBL), read=FRequestId, write=SetRequestId, stored = RequestId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Reports, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class Reports : public TRemotable {
+private:
+  UnicodeString   FreportType;
+  bool            FreportType_Specified;
+  void __fastcall SetreportType(int Index, UnicodeString _prop_val)
+  {  FreportType = _prop_val; FreportType_Specified = true;  }
+  bool __fastcall reportType_Specified(int Index)
+  {  return FreportType_Specified;  } 
+__published:
+  __property UnicodeString reportType = { index=(IS_OPTN|IS_NLBL), read=FreportType, write=SetreportType, stored = reportType_Specified };
+};
+
+
+typedef DynamicArray<ReceiptData*> ArrayOfReceiptData; /* "http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : ReceiptData, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class ReceiptData : public TRemotable {
+private:
+  ArrayOfstring   FFormat;
+  bool            FFormat_Specified;
+  UnicodeString   FType;
+  bool            FType_Specified;
+  UnicodeString   FValue;
+  bool            FValue_Specified;
+  void __fastcall SetFormat(int Index, ArrayOfstring _prop_val)
+  {  FFormat = _prop_val; FFormat_Specified = true;  }
+  bool __fastcall Format_Specified(int Index)
+  {  return FFormat_Specified;  } 
+  void __fastcall SetType(int Index, UnicodeString _prop_val)
+  {  FType = _prop_val; FType_Specified = true;  }
+  bool __fastcall Type_Specified(int Index)
+  {  return FType_Specified;  } 
+  void __fastcall SetValue(int Index, UnicodeString _prop_val)
+  {  FValue = _prop_val; FValue_Specified = true;  }
+  bool __fastcall Value_Specified(int Index)
+  {  return FValue_Specified;  } 
+__published:
+  __property ArrayOfstring     Format = { index=(IS_OPTN|IS_NLBL), read=FFormat, write=SetFormat, stored = Format_Specified };
+  __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
+  __property UnicodeString      Value = { index=(IS_OPTN|IS_NLBL), read=FValue, write=SetValue, stored = Value_Specified };
 };
 
 
@@ -397,7 +481,6 @@ __published:
 };
 
 
-typedef DynamicArray<ReceiptData*> ArrayOfReceiptData; /* "http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain"[GblCplx] */
 
 
 // ************************************************************************ //
@@ -438,58 +521,6 @@ __published:
   __property ArrayOfstring CustomerReceipt = { index=(IS_OPTN|IS_NLBL), read=FCustomerReceipt, write=SetCustomerReceipt, stored = CustomerReceipt_Specified };
   __property ArrayOfReceiptData   Merchant = { index=(IS_OPTN|IS_NLBL), read=FMerchant, write=SetMerchant, stored = Merchant_Specified };
   __property ArrayOfstring MerchantReceipt = { index=(IS_OPTN|IS_NLBL), read=FMerchantReceipt, write=SetMerchantReceipt, stored = MerchantReceipt_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : ReceiptData, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
-// ************************************************************************ //
-class ReceiptData : public TRemotable {
-private:
-  ArrayOfstring   FFormat;
-  bool            FFormat_Specified;
-  UnicodeString   FType;
-  bool            FType_Specified;
-  UnicodeString   FValue;
-  bool            FValue_Specified;
-  void __fastcall SetFormat(int Index, ArrayOfstring _prop_val)
-  {  FFormat = _prop_val; FFormat_Specified = true;  }
-  bool __fastcall Format_Specified(int Index)
-  {  return FFormat_Specified;  } 
-  void __fastcall SetType(int Index, UnicodeString _prop_val)
-  {  FType = _prop_val; FType_Specified = true;  }
-  bool __fastcall Type_Specified(int Index)
-  {  return FType_Specified;  } 
-  void __fastcall SetValue(int Index, UnicodeString _prop_val)
-  {  FValue = _prop_val; FValue_Specified = true;  }
-  bool __fastcall Value_Specified(int Index)
-  {  return FValue_Specified;  } 
-__published:
-  __property ArrayOfstring     Format = { index=(IS_OPTN|IS_NLBL), read=FFormat, write=SetFormat, stored = Format_Specified };
-  __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
-  __property UnicodeString      Value = { index=(IS_OPTN|IS_NLBL), read=FValue, write=SetValue, stored = Value_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : Reports, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
-// ************************************************************************ //
-class Reports : public TRemotable {
-private:
-  UnicodeString   FreportType;
-  bool            FreportType_Specified;
-  void __fastcall SetreportType(int Index, UnicodeString _prop_val)
-  {  FreportType = _prop_val; FreportType_Specified = true;  }
-  bool __fastcall reportType_Specified(int Index)
-  {  return FreportType_Specified;  } 
-__published:
-  __property UnicodeString reportType = { index=(IS_OPTN|IS_NLBL), read=FreportType, write=SetreportType, stored = reportType_Specified };
 };
 
 
@@ -544,10 +575,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : TransactionDataResponse, global, <element>
+// XML       : PostRequestResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
-class TransactionDataResponse2 : public TransactionDataResponse {
+class PostRequestResponse2 : public PostRequestResponse {
 private:
 __published:
 };
@@ -556,10 +587,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : ReceiptLines, global, <element>
+// XML       : Reports, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
-class ReceiptLines2 : public ReceiptLines {
+class Reports2 : public Reports {
 private:
 __published:
 };
@@ -580,10 +611,22 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : Reports, global, <element>
+// XML       : TransactionDataResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
 // ************************************************************************ //
-class Reports2 : public Reports {
+class TransactionDataResponse2 : public TransactionDataResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ReceiptLines, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain
+// ************************************************************************ //
+class ReceiptLines2 : public ReceiptLines {
 private:
 __published:
 };
@@ -680,6 +723,37 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : SignatureRequest, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.SignatureRequest
+// ************************************************************************ //
+class SignatureRequest : public TRemotable {
+private:
+  UnicodeString   Faccepted;
+  bool            Faccepted_Specified;
+  void __fastcall Setaccepted(int Index, UnicodeString _prop_val)
+  {  Faccepted = _prop_val; Faccepted_Specified = true;  }
+  bool __fastcall accepted_Specified(int Index)
+  {  return Faccepted_Specified;  } 
+__published:
+  __property UnicodeString   accepted = { index=(IS_OPTN|IS_NLBL), read=Faccepted, write=Setaccepted, stored = accepted_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : SignatureRequest, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.SignatureRequest
+// ************************************************************************ //
+class SignatureRequest2 : public SignatureRequest {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IWCFServicePaymentSense/%operationName%
@@ -695,8 +769,10 @@ __interface INTERFACE_UUID("{04119E0C-FE8A-C15E-CA06-2E077AB0B3F4}") IWCFService
 public:
   virtual PACTerminalWrapper* GetAllCardTerminals(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual PACTerminal*    PingTerminal(const AuthorizationDetails* autorizationDetails) = 0; 
-  virtual TransactionDataResponse* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
+  virtual PostRequestResponse* DoTransaction(const AuthorizationDetails* autorizationDetails, const TransactionRequest* request) = 0; 
   virtual ReportResponseData* PrintReports(const AuthorizationDetails* autorizationDetails, const Reports* reportData) = 0; 
+  virtual TransactionDataResponse* GetResponseForRequestedId(const AuthorizationDetails* autorizationDetails) = 0; 
+  virtual TransactionDataResponse* SignatureVerificationForRequestedId(const AuthorizationDetails* autorizationDetails, const SignatureRequest* signRequest) = 0; 
 };
 typedef DelphiInterface<IWCFServicePaymentSense> _di_IWCFServicePaymentSense;
 

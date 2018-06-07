@@ -8,6 +8,7 @@
 #include "DeviceRealTerminal.h"
 #include "Main.h"
 #include "EftPosDialogs.h"
+#include "GeneratorManager.h"
 
 //---------------------------------------------------------------------------
 
@@ -386,24 +387,19 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
         report->reportType =  reportType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/reports";
         ReportResponseData *reportData = paymentSenseClient->PrintReports(authorizationDetails, report);
-        MessageBox(reportData->Report.Length,"Length",MB_OK);
+
         std::auto_ptr<TStringList> List(new TStringList());
 
         for(int i = 0; i < reportData->Report.Length; i++)
         {
             List->Add(reportData->Report[i]);
         }
-        MessageBox(List->Count,"Count of List",MB_OK);
-        for(int i = 0 ; i < List->Count; i++)
-        {
-            MessageBox(List->operator [](i),i,MB_OK);
-        }
+
         if(List->Count > 0)
         {
             stream = new TMemoryStream;
             List->SaveToStream(stream);
         }
-        MessageBox("Going to Save receipt",stream->Size,MB_OK);
         SaveReportToDataBase(reportData,stream);
         delete report;
     }
@@ -421,16 +417,16 @@ void TEftPosPaymentSense::SaveReportToDataBase(ReportResponseData* report, TMemo
    DBTransaction.StartTransaction();
    try
    {
-       TIBSQL *GeneratorQuery = DBTransaction.Query(DBTransaction.AddQuery());
-       GeneratorQuery->Close();
-       GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSZEDID, 1) FROM RDB$DATABASE";
-       GeneratorQuery->ExecQuery();
+//       TIBSQL *GeneratorQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//       GeneratorQuery->Close();
+//       GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSZEDID, 1) FROM RDB$DATABASE";
+//       GeneratorQuery->ExecQuery();
 
        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
        IBInternalQuery->Close();
        IBInternalQuery->SQL->Text = "INSERT INTO EFTPOSZED (EFTPOS_ZED_ID, TIME_STAMP,EFTPOS_TYPE,POS_TERMINALNAME,EFTPOS_TERMINALID,ZED_RECEIPT) "
                                     "VALUES (:EFTPOS_ZED_ID, :TIME_STAMP, :EFTPOS_TYPE, :POS_TERMINALNAME, :EFTPOS_TERMINALID, :ZED_RECEIPT)";
-       IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = GeneratorQuery->Fields[0]->AsInteger;
+       IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_EFTPOSZEDID");
        IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
        IBInternalQuery->ParamByName("EFTPOS_TYPE")->AsInteger = eTEftPosPaymentSense;
        IBInternalQuery->ParamByName("POS_TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
@@ -448,7 +444,6 @@ void TEftPosPaymentSense::SaveReportToDataBase(ReportResponseData* report, TMemo
    }
    catch(Exception &Ex)
    {
-        MessageBox(Ex.Message,"Exception in SaveReportToDataBase",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
         DBTransaction.Rollback();
    }
@@ -462,6 +457,7 @@ void TEftPosPaymentSense::ShowPreviousZED()
         frmSelectZed->Initialize(eEFTPOSZED);
 		frmSelectZed->ShowModal();
         delete frmSelectZed;
+        frmSelectZed = NULL;
     }
     catch(Exception &Ex)
     {
@@ -473,47 +469,64 @@ void TEftPosPaymentSense::ShowPreviousZED()
 bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* response )
 {
     bool retval = false;
-    if(response->Notifications.Length)
+    try
     {
-        if(response->Notifications[0].UpperCase().Compare(lastNotification))
+        if(response->Notifications.Length)
         {
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-            TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
-                                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            if(response->Notifications[0].UpperCase().Compare(lastNotification))
+            {
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
+                                    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            }
+
+            lastNotification = response->Notifications[0];
+
+            if(!response->Notifications[0].UpperCase().Compare("TRANSACTION_FINISHED"))
+            {
+                retval = true;
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            }
+            else if(!response->Notifications[0].UpperCase().Compare("SIGNATURE_VERIFICATION"))
+            {
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
+                bool  isSignatureAccepted = frmEftPos->SignatureOk() == mrYes;
+                SignatureRequest *signRequest = new SignatureRequest();
+                signRequest->accepted = "false";
+
+                if(isSignatureAccepted)
+                    signRequest->accepted = "true";
+                CoInitialize(NULL);
+                paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
+                delete signRequest;
+            }
         }
-
-        lastNotification = response->Notifications[0];
-
-        if(!response->Notifications[0].UpperCase().Compare("TRANSACTION_FINISHED"))
-        {
-            retval = true;
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-        }
-        else if(!response->Notifications[0].UpperCase().Compare("SIGNATURE_VERIFICATION"))
-        {
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-            std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
-            bool  isSignatureAccepted = frmEftPos->SignatureOk() == mrYes;
-            SignatureRequest *signRequest = new SignatureRequest();
-            signRequest->accepted = "false";
-
-            if(isSignatureAccepted)
-                signRequest->accepted = "true";
-
-            paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
-            delete signRequest;
-        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        throw;
     }
     return retval;
 }
 //----------------------------------------------------------------------------------------------
 TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDataResponse *response)
 {
-    lastNotification = "";
-    while(!IsTransfactionFinished(response))
+    try
     {
-        ::Sleep(1000);
-        response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+        lastNotification = "";
+        while(!IsTransfactionFinished(response))
+        {
+            ::Sleep(1000);
+            CoInitialize(NULL);
+            response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        throw;
     }
     return response;
 }
