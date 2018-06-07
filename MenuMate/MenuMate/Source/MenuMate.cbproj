@@ -3232,6 +3232,10 @@
 				<DependentOn>ManagerPMS.h</DependentOn>
 				<BuildOrder>765</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="SiHotWSDL.cpp">
+				<DependentOn>SiHotWSDL.h</DependentOn>
+				<BuildOrder>763</BuildOrder>
+			</CppCompile>
 			<ResFiles Include="brush.res">
 				<BuildOrder>8</BuildOrder>
 				<BuildOrder>147</BuildOrder>
@@ -3490,10 +3494,6 @@
 			</CppCompile>
 			<CppCompile Include="AdyenWSDL.cpp">
 				<DependentOn>AdyenWSDL.h</DependentOn>
-				<BuildOrder>797</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SiHotWSDL.cpp">
-				<DependentOn>SiHotWSDL.h</DependentOn>
 				<BuildOrder>797</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
