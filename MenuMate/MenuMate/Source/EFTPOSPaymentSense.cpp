@@ -420,11 +420,6 @@ void TEftPosPaymentSense::SaveReportToDataBase(ReportResponseData* report, TMemo
    DBTransaction.StartTransaction();
    try
    {
-//       TIBSQL *GeneratorQuery = DBTransaction.Query(DBTransaction.AddQuery());
-//       GeneratorQuery->Close();
-//       GeneratorQuery->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSZEDID, 1) FROM RDB$DATABASE";
-//       GeneratorQuery->ExecQuery();
-
        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
        IBInternalQuery->Close();
        IBInternalQuery->SQL->Text = "INSERT INTO EFTPOSZED (EFTPOS_ZED_ID, TIME_STAMP,EFTPOS_TYPE,POS_TERMINALNAME,EFTPOS_TERMINALID,ZED_RECEIPT) "

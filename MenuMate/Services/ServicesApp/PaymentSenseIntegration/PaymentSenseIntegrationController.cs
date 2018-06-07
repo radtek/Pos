@@ -214,9 +214,9 @@ namespace PaymentSenseIntegration
             }
             catch (Exception ex)
             {
-                EventLog.WriteEntry("In Purchase PaymentSense", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
-                ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                EventLog.WriteEntry("In PrintReports", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
+                ServiceLogger.LogException("Exception in PrintReports", ex);
+                stringList.Add("Exception in  PrintReports: ");
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
             WriteAndClearStringList();
