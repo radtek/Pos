@@ -67,7 +67,9 @@ public:
    void RestoreCardWithPoints();
    void ReassignCard();
    void ExploreCard();
-
+   
+     bool GetAttributeId(int contactkey);
+     bool GetUIdCount(AnsiString uid);
    bool ProcessPoints(TPaymentTransaction &PaymentTransaction);
 
    bool CardIssueInProgress;
