@@ -129,10 +129,11 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                         wcfResponse = DoTransaction(1, "DUPLICATE");
                       break;
                }
-               if(GetResponseStatus(TxnType, wcfResponse))
+
+               TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
+               if(EftTrans != NULL)
                {
-                  TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-                  if(EftTrans != NULL)
+                   if(GetResponseStatus(TxnType, wcfResponse))
                    {
                       EftTrans->EventCompleted = true;
                       EftTrans->FinalAmount = wcfResponse->AmountTotal;
@@ -142,25 +143,25 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                       EftTrans->TipAmount = wcfResponse->AmountGratuity;
                       EftTrans->CashOutAmount = wcfResponse->AmountCashBack;
                       //LoadEftPosReceipt(wcfResponse->ReceiptLines);  //id integration to receipt needs then uncomment it
-                    }
-               }
-               else
-               {    
-                  TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
-                  if(EftTrans != NULL)
+                   }
+                   else
                    {
-                      EftTrans->EventCompleted = true;
-                      EftTrans->Result = eDeclined;
-                      EftTrans->ResultText = wcfResponse->TransactionResult;
-                      if(!wcfResponse->TransactionResult.UpperCase().Compare("TIMED_OUT"))
-                      {
-                            UnicodeString strVal = "Communication with the PDQ has failed and payment may or may not have been taken.\r";
-                                          strVal = strVal + "Please manually check if the transaction was successful on the PDQ.";
-                            EftTrans->ResultText = strVal;
+                          EftTrans->EventCompleted = true;
+                          EftTrans->Result = eDeclined;
+                          EftTrans->ResultText = wcfResponse->TransactionResult;
+                          if(!wcfResponse->TransactionResult.UpperCase().Compare("TIMED_OUT"))
+                          {
+                                UnicodeString strVal = "Communication with the PDQ has failed and payment may or may not have been taken.\r";
+                                              strVal = strVal + "Please manually check if the transaction was successful on the PDQ.";
+                                EftTrans->ResultText = strVal;
+                                MessageBox(strVal,"EFTPOS Error",MB_OK);
+                                EftTrans->FinalAmount = CurrToStr(AmtPurchase);
+                                EftTrans->ResultText = "Eftpos Transaction Completed.";
+                                EftTrans->Result = eAccepted;
+                                EftTrans->CardType = wcfResponse->CardSchemeName;
+                          }
+                          if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 )
                             EftTrans->TimeOut = true;
-                      }
-                      if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 )
-                        EftTrans->TimeOut = true;
                    }
                }
         }
@@ -294,7 +295,9 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         }
         else
         {
-            response->TransactionResult = "Unavailable terminal or no data available. Please Check that PDQ is available.";
+            response->TransactionResult = TGlobalSettings::Instance().EftPosTerminalId + " is unavailable. \r";
+            response->TransactionResult += "Please try again in 10 seconds or check the PDQ screen and cabling or restart the PDQ. \r";
+            response->TransactionResult += "Contact support if the problem persists.";
         }
         delete request;
     }
