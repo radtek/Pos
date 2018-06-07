@@ -181,6 +181,7 @@ private:	// User declarations
     void ClearLoyaltyVoucher();
     void ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount);
     void CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction);
+    bool IsPMSConfigured();
 //    bool IsMultipleRoomNumberDataSavedOnTab();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
