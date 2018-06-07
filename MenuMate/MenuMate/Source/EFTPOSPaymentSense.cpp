@@ -369,8 +369,10 @@ void TEftPosPaymentSense::AddNewLine(AnsiString data)
 // ---------------------------------------------------------------------------
 void _fastcall TEftPosPaymentSense::PrintZedReport()
 {
+    TMMProcessingState State(Screen->ActiveForm, "REPORT_STARTED", "Processing EftPos Transaction");
     try
     {
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         CoInitialize(NULL);
         PrintReports("END_OF_DAY");
     }
@@ -378,6 +380,7 @@ void _fastcall TEftPosPaymentSense::PrintZedReport()
     {
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
 //-----------------------------------------------------------------------------
 void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
@@ -408,7 +411,6 @@ void TEftPosPaymentSense::PrintReports(UnicodeString reportType)
     }
     catch( Exception& E )
     {
-        MessageBox(E.Message,"Exception in PrintReports",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
     delete stream;
