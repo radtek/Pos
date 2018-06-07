@@ -4432,7 +4432,6 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                     CustomizeForSiHot(PaymentTransaction);
 
                 invoicePaymentSystem->ProcessTransaction(PaymentTransaction);
-
                             // display last receipt if any
                 _displayLastReceipt( DBTransaction, invoicePaymentSystem->LastReceipt );
             }
@@ -5638,11 +5637,12 @@ void TfrmBillGroup::CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTra
     PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
     PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
-    if(PaymentTransaction.Orders->Count > 0)
+    if(PaymentTransaction.Orders->Count > 0 && (PaymentTransaction.Type != eTransSplitPayment && PaymentTransaction.Type != eTransPartialPayment))
     {
         ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr = PaymentTransaction.Phoenix.RoomNumber;
     }
 }
+//-----------------------------------------------------------------------------------------------
 
 /* In reference to case #90727(Salesforce)
 In case of Loyaltymate membership can not get saved to table.
