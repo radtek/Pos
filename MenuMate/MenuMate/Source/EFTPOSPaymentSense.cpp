@@ -75,7 +75,7 @@ void TEftPosPaymentSense::DoControlPannel()
 		std::auto_ptr<TfrmDropDownFunc>(frmDropDown)(TfrmDropDownFunc::Create<TfrmDropDownFunc>(Screen->ActiveForm));
 		frmDropDown->AddButton("Reprint Receipt",&ReprintReceipt);
         frmDropDown->AddButton("Settlement  CutOver",&PrintZedReport);
-        frmDropDown->AddButton("Reprint ZED", &ReprintZedReport);
+        frmDropDown->AddButton("Reprint Settlement", &ReprintZedReport);
 		if(frmDropDown->ShowModal() == mrOk)
 		{
 			frmDropDown->FunctionToCall();
@@ -155,10 +155,13 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                                               strVal = strVal + "Please manually check if the transaction was successful on the PDQ.";
                                 EftTrans->ResultText = strVal;
                                 MessageBox(strVal,"EFTPOS Error",MB_OK);
-                                EftTrans->FinalAmount = CurrToStr(AmtPurchase);
+                                EftTrans->FinalAmount = CurrToStrF(AmtPurchase, ffFixed, 2);
                                 EftTrans->ResultText = "Eftpos Transaction Completed.";
                                 EftTrans->Result = eAccepted;
                                 EftTrans->CardType = wcfResponse->CardSchemeName;
+                                EftTrans->CashOutAmount = "0";
+                                EftTrans->TipAmount = "0";
+                                EftTrans->CashOutAmount = "0";
                           }
                           if(wcfResponse->TransactionResult.UpperCase().Pos("CANCELLED") != 0 )
                             EftTrans->TimeOut = true;
@@ -166,7 +169,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                }
         }
         catch( Exception& exc )
-        {
+        {       
               TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
               if(EftTrans != NULL)
                {
