@@ -26,5 +26,7 @@ namespace MenumateServices.WCFServices
         TransactionDataResponse GetResponseForRequestedId(AuthorizationDetails autorizationDetails);
         [OperationContract]
         TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest);
+        [OperationContract]
+        void CancelRequestedTransaction(AuthorizationDetails autorizationDetails);
     }
 }

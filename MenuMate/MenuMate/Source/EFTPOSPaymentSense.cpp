@@ -285,7 +285,7 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
     {
         TransactionRequest * request  = new TransactionRequest();
         request->currency = CurrencyString;
-        request->amount = double(amtPurchase);
+        request->amount = int(amtPurchase*100);
         request->transactionType = transactionType;
         authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
         PostRequestResponse* responseData = paymentSenseClient->DoTransaction(authorizationDetails, request);
@@ -298,9 +298,9 @@ TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase
         }
         else
         {
-            response->TransactionResult = TGlobalSettings::Instance().EftPosTerminalId + " is unavailable. \r";
-            response->TransactionResult += "Please try again in 10 seconds or check the PDQ screen and cabling or restart the PDQ. \r";
-            response->TransactionResult += "Contact support if the problem persists.";
+            response->TransactionResult = "Unavailable terminal or no data available for: '" + TGlobalSettings::Instance().EftPosTerminalId + "'. \r";
+            response->TransactionResult += "Please check that the PDQ is idle and no action is prompted on its screen, that its network and power cables are correctly connected\r";
+            response->TransactionResult += "and that it is not in Standalone Mode. Finally, restart the PDQ and, if the problem persists, please contact support.";
         }
         delete request;
     }
@@ -479,9 +479,28 @@ bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* respon
             if(response->Notifications[0].UpperCase().Compare(lastNotification))
             {
                 TDeviceRealTerminal::Instance().ProcessingController.Pop();
-                TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction");
-                                    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+                TMMProcessingState State(Screen->ActiveForm, response->Notifications[0], "Processing EftPos Transaction", false);
+
+//                if(!(response->Notifications[0].UpperCase().Compare("PRESENT_CARD")))// || response->Notifications[0].UpperCase().Compare("PLEASE_WAIT")
+//                   // || response->Notifications[0].UpperCase().Compare("PIN_ENTRY")))
+//                {
+                  //  State.CanCancel = true;
+               // }
+
+                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+              //  paymentSenseClient->CancelRequestedTransaction(authorizationDetails);
+
             }
+
+//            if(TDeviceRealTerminal::Instance().ProcessingController.Cancelled())
+//                {  MessageBox("1","1",MB_OK);
+//                    CoInitialize(NULL);
+//                    paymentSenseClient->CancelRequestedTransaction(authorizationDetails);
+//                }
+//                else
+//                {
+//                    MessageBox("2","2",MB_OK);
+//                }
 
             lastNotification = response->Notifications[0];
 
@@ -500,6 +519,7 @@ bool TEftPosPaymentSense::IsTransfactionFinished(TransactionDataResponse* respon
 
                 if(isSignatureAccepted)
                     signRequest->accepted = "true";
+
                 CoInitialize(NULL);
                 paymentSenseClient->SignatureVerificationForRequestedId(authorizationDetails, signRequest);
                 delete signRequest;
@@ -533,3 +553,4 @@ TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDat
     }
     return response;
 }
+//-------------------------------------------------------------------------------------------

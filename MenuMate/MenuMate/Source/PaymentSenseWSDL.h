@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (7/06/2018 4:01:53 p.m. - - $Rev: 25127 $)
+// (8/06/2018 11:09:31 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   PaymentSenseWSDLH
@@ -50,7 +50,7 @@ namespace NS__PaymentSenseWSDL {
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS AuthorizationDetails;
 class SOAP_REMOTABLE_CLASS PACTerminalWrapper;
@@ -194,13 +194,13 @@ __published:
 // ************************************************************************ //
 class TransactionRequest : public TRemotable {
 private:
-  double          Famount;
+  int             Famount;
   bool            Famount_Specified;
   UnicodeString   Fcurrency;
   bool            Fcurrency_Specified;
   UnicodeString   FtransactionType;
   bool            FtransactionType_Specified;
-  void __fastcall Setamount(int Index, double _prop_val)
+  void __fastcall Setamount(int Index, int _prop_val)
   {  Famount = _prop_val; Famount_Specified = true;  }
   bool __fastcall amount_Specified(int Index)
   {  return Famount_Specified;  } 
@@ -213,7 +213,7 @@ private:
   bool __fastcall transactionType_Specified(int Index)
   {  return FtransactionType_Specified;  } 
 __published:
-  __property double         amount = { index=(IS_OPTN), read=Famount, write=Setamount, stored = amount_Specified };
+  __property int            amount = { index=(IS_OPTN), read=Famount, write=Setamount, stored = amount_Specified };
   __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
   __property UnicodeString transactionType = { index=(IS_OPTN|IS_NLBL), read=FtransactionType, write=SettransactionType, stored = transactionType_Specified };
 };
@@ -773,13 +773,14 @@ public:
   virtual ReportResponseData* PrintReports(const AuthorizationDetails* autorizationDetails, const Reports* reportData) = 0; 
   virtual TransactionDataResponse* GetResponseForRequestedId(const AuthorizationDetails* autorizationDetails) = 0; 
   virtual TransactionDataResponse* SignatureVerificationForRequestedId(const AuthorizationDetails* autorizationDetails, const SignatureRequest* signRequest) = 0; 
+  virtual void            CancelRequestedTransaction(const AuthorizationDetails* autorizationDetails) = 0; 
 };
 typedef DelphiInterface<IWCFServicePaymentSense> _di_IWCFServicePaymentSense;
 
 _di_IWCFServicePaymentSense GetIWCFServicePaymentSense(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__PaymentSenseWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__PaymentSenseWSDL;

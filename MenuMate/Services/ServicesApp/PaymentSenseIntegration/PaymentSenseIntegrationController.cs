@@ -124,7 +124,6 @@ namespace PaymentSenseIntegration
                                                                                                     autorizationDetails.UserName, autorizationDetails.Password))));
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
 
-                    request.amount *= 100; 
                     var serializedJson = JsonConvert.SerializeObject(request);
                     HttpContent httpContent = new StringContent(serializedJson, Encoding.UTF8);
                     httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -270,6 +269,7 @@ namespace PaymentSenseIntegration
             WriteAndClearStringList();
             return transactionData;
         }
+        
         private ReportResponseData WaitAndGetReport(AuthorizationDetails autorizationDetails)
         {
             ReportResponseData reportData = new ReportResponseData();
@@ -311,6 +311,7 @@ namespace PaymentSenseIntegration
             }
             return reportData;
         }
+        
         private ReportResponseData GetReportDataForRequestID(AuthorizationDetails autorizationDetails)
         {
             ReportResponseData reportData = new ReportResponseData();
@@ -342,6 +343,7 @@ namespace PaymentSenseIntegration
             }
             return reportData;
         }
+       
         public TransactionDataResponse SignatureVerificationForRequestedId(AuthorizationDetails autorizationDetails, SignatureRequest signRequest)
         {
             TransactionDataResponse transactionData = new TransactionDataResponse();
@@ -388,6 +390,51 @@ namespace PaymentSenseIntegration
             return transactionData;
         }
 
+        public void CancelCurrentTransaction(AuthorizationDetails autorizationDetails)
+        {
+            TransactionDataResponse transactionData = new TransactionDataResponse();
+            try
+            {
+                stringList.Add("====================CancelCurrentTransaction=========================================================");
+                stringList.Add("URL is :-                           " + autorizationDetails.URL);
+                stringList.Add("User Name is :-                     " + autorizationDetails.UserName);
+                stringList.Add("API Key/ Password is :-             " + autorizationDetails.Password);
+
+                string apiUrl = autorizationDetails.URL;
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(apiUrl);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                                                                                    Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}",
+                                                                                                    autorizationDetails.UserName, autorizationDetails.Password))));
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/connect.v1+json"));
+
+                    //var serializedJson = JsonConvert.SerializeObject(signRequest);
+                    //HttpContent httpContent = new StringContent(serializedJson, Encoding.UTF8);
+                    //httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    stringList.Add("Delete Request for CancelCurrentTransaction created at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    HttpResponseMessage response = client.DeleteAsync(apiUrl).Result;
+                    stringList.Add("Response got at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    string result = "";
+                    if (response.IsSuccessStatusCode)
+                    {
+                        result = response.Content.ReadAsStringAsync().Result;
+                        stringList.Add("Response is succesfull and is :-                                      " + result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("In SignatureVerificationForRequestedId", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
+                ServiceLogger.LogException("Exception in SignatureVerificationForRequestedId", ex);
+                stringList.Add("Exception in SignatureVerificationForRequestedId()");
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+            }
+            WriteAndClearStringList();
+            //return transactionData;           
+        }
+
         private bool IsReportCompleted(string[] Notifications)
         {
             bool retval = false;
@@ -414,7 +461,7 @@ namespace PaymentSenseIntegration
             }
             return retval;
         }
-
+        
         private void ConvertInToFinalValue(ref TransactionDataResponse responseData)
         {
             try
@@ -431,7 +478,7 @@ namespace PaymentSenseIntegration
                 throw;
             }
         }
-
+        
         private void ArrangeAndAssignReceipts(ref TransactionDataResponse data)
         {
             try
@@ -459,6 +506,7 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
         }
+        
         private void ArrangeAndAssignReport(ReportResponseData reportData)
         {
             try
@@ -478,6 +526,7 @@ namespace PaymentSenseIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
             }
         }
+        
         private void WriteToFile(List<string> list)
         {
             try

@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8746/MenumateServices.WCFServices/WCFServicePaymentSense/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (7/06/2018 4:01:53 p.m. - - $Rev: 25127 $)
+// (8/06/2018 11:09:31 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -141,12 +141,12 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SignatureRequest2), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain.SignatureRequest", L"SignatureRequest2", L"SignatureRequest");
   /* ArrayOfPACTerminal */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPACTerminal), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfPACTerminal");
-  /* ArrayOfReceiptData */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfReceiptData");
   /* ArrayOfstring */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
+  /* ArrayOfReceiptData */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfReceiptData), L"http://schemas.datacontract.org/2004/07/PaymentSenseIntegration.Domain", L"ArrayOfReceiptData");
 }
 #pragma startup RegTypes 32
 
-};     // NS__
+};     // NS__PaymentSenseWSDL
 

@@ -115,5 +115,20 @@ namespace MenumateServices.WCFServices
             }
             return responseData;
         }
+
+        public void CancelRequestedTransaction(AuthorizationDetails autorizationDetails)
+        {
+            TransactionDataResponse responseData = new TransactionDataResponse();
+            try
+            {
+                PaymentSenseIntegrationController controller = new PaymentSenseIntegrationController();
+                 controller.CancelCurrentTransaction(autorizationDetails);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in GetResponseForRequestedId " + ex.Message);
+            }
+            //return responseData;
+        }
     }
 }
