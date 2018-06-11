@@ -108,6 +108,7 @@ struct TRoomCharge
     UnicodeString IPAddress;
     int PortNumber;
     UnicodeString Total;
+    UnicodeString RoomNumber;
 };
 
 struct TRoomChargeResponse

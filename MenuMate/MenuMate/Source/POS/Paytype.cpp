@@ -1681,8 +1681,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 bool TfrmPaymentType::IsSavedSavesWithSiHot(TPaymentTransaction &CurrentTransaction)
 {
     bool retValue = false;
-    if(/*CurrentTransaction.SalesType == eTableSeat || CurrentTransaction.SalesType == eTab || CurrentTransaction.SalesType == eAccount || */CurrentTransaction.WasSavedSales
-       || (CurrentTransaction.SalesType == eRoomSale)
+    if((CurrentTransaction.WasSavedSales == false && CurrentTransaction.SalesType == eRoomSale)
        && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
     {
         if(CurrentTransaction.Orders->Count > 0)
