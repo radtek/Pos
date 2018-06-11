@@ -250,6 +250,7 @@ namespace SiHotIntegration
             }
             finally
             {
+                stringList.Add("Posting Details for room number:           " + roomChargeDetails.RoomNumber);
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Post Status:                              " + responseText);

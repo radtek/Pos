@@ -392,6 +392,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
          else
             TGlobalSettings::Instance().mallInfo.MallId = 0;
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
+        TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmCompanyDetails, false);
         TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
         TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
         TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");

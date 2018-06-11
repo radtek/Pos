@@ -182,7 +182,6 @@ private:	// User declarations
     void ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount);
     void CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction);
     bool IsPMSConfigured();
-//    bool IsMultipleRoomNumberDataSavedOnTab();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

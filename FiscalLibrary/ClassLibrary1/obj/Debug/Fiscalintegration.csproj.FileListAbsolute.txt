@@ -1,0 +1,6 @@
+C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.dll
+C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\Runtime\FiscalIntegration.tlb
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\ResolveAssemblyReference.cache
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.dll
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.pdb

@@ -199,7 +199,8 @@ void __fastcall TContainerOrders::Compress()
       }
 	}
     else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
-                TGlobalSettings::Instance().EnableCustomerJourney && pmsAccountDetails.RoomNumber != "")
+                TGlobalSettings::Instance().EnableCustomerJourney && pmsAccountDetails.RoomNumber != "" &&
+                !TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Pos(pmsAccountDetails.RoomNumber ))
     {
         TItemsCompleteCompressed *CompressedItem = new TItemsCompleteCompressed(this);
 		fCompressedItemsList->Add(CompressedItem);

@@ -898,12 +898,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                 }
 				else
 				{
-                    if(!CheckBillEntireWithCustomerJourney())
-                    {
-                        MessageBox("Multiple SiHot accounts can not be billed at same time","Error",MB_OK + MB_ICONERROR);
-                    }
-                    else
-                    {
                        if(totalDivision > 0 && CurrentDisplayMode == eTables)
                        {
                            int ptrCount = 0;
@@ -935,7 +929,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                           CheckLoyalty(ItemsToBill);
                        }
                        BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
-                    }
 				}
 			}
 		}
@@ -955,39 +948,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 	}
 }
 //----------------------------------------------------------------------------
-bool TfrmBillGroup::CheckBillEntireWithCustomerJourney()
-{
-    bool retValue = true;
-    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        try{
-            TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text = "SELECT DISTINCT ACC_NO FROM ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER";
-            IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = CurrentTable;
-            IBInternalQuery->ExecQuery();
-            int i = 0;
-            for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
-            {
-                i++;
-            }
-            if(i > 1)
-            {
-               retValue = false;
-            }
-            DBTransaction.Commit();
-        }
-        catch(Exception &ex)
-        {
-            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-            DBTransaction.Rollback();
-        }
-    }
-    return retValue;
-}
-// ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 {
     TGlobalSettings::Instance().IsThorBillSelected = true;
@@ -3539,24 +3499,24 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 	{
 		switch(CurrentTabType)
 		{
-                    case TabDelayedPayment:
-                            lbePartyName->Caption = "Delayed Payment Tabs";
-                            break;
-                    case TabNormal:
-                            lbePartyName->Caption = "Tabs";
-                            break;
-                    case TabStaff:
-                            lbePartyName->Caption = "Staff Tabs";
-                            break;
-                    case TabMember:
-                            lbePartyName->Caption = "Members Tabs";
-                            break;
-                    case TabWeb:
-                            lbePartyName->Caption = "Web Orders";
-                            break;
-                    case TabClipp:
-                            lbePartyName->Caption = "Clipp Tabs";
-                            break;
+            case TabDelayedPayment:
+                    lbePartyName->Caption = "Delayed Payment Tabs";
+                    break;
+            case TabNormal:
+                    lbePartyName->Caption = "Tabs";
+                    break;
+            case TabStaff:
+                    lbePartyName->Caption = "Staff Tabs";
+                    break;
+            case TabMember:
+                    lbePartyName->Caption = "Members Tabs";
+                    break;
+            case TabWeb:
+                    lbePartyName->Caption = "Web Orders";
+                    break;
+            case TabClipp:
+                    lbePartyName->Caption = "Clipp Tabs";
+                    break;
 		}
 
 		if (CurrentTabType == TabNormal || CurrentTabType == TabDelayedPayment || CurrentTabType == TabClipp)
@@ -4107,7 +4067,7 @@ bool TfrmBillGroup::AddToSelectedTabs(Database::TDBTransaction &DBTransaction, l
                 accountNumber = itItem->second.AccNumber;
                 break;
             }
-            if(accountNumber != "")
+            if(accountNumber != "" && CurrentDisplayMode != eTables)
             {
                 if(!CanMoveItemToOtherTab(atoi(accountNumber.t_str()), TabKey))
                 {
@@ -4130,8 +4090,8 @@ bool TfrmBillGroup::AddToSelectedTabs(Database::TDBTransaction &DBTransaction, l
 		else if (TabInUseOk(TabKey))
 		{
 				retval = true;
-			}
-		}
+        }
+	}
 	return retval;
 }
 // ---------------------------------------------------------------------------
@@ -4473,7 +4433,6 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                     CustomizeForSiHot(PaymentTransaction);
 
                 invoicePaymentSystem->ProcessTransaction(PaymentTransaction);
-
                             // display last receipt if any
                 _displayLastReceipt( DBTransaction, invoicePaymentSystem->LastReceipt );
             }
@@ -4542,7 +4501,7 @@ void TfrmBillGroup::CustomizeForSiHot(TPaymentTransaction &PaymentTransaction)
     PaymentTransaction.WasSavedSales = true;
     PaymentTransaction.SalesType = eRoomSale;
 
-    if(CurrentDisplayMode == eTabs)
+    if(CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables)
     {
         CustomizeDefaultCustomerInfo(PaymentTransaction);
     }
@@ -5672,26 +5631,6 @@ void TfrmBillGroup::ApplyDiscountWithRestructure(TPaymentTransaction &paymentTra
     paymentTransaction.Patrons.clear();
 }
 //----------------------------------------------------------------------------
-//bool TfrmBillGroup::IsMultipleRoomNumberDataSavedOnTab()
-//{
-//    bool retval = false;
-//    UnicodeString accountNumber = "";
-//
-//    if(SelectedItems.size())
-//        accountNumber = SelectedItems.begin()->second.AccNumber;
-//
-//    for(std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
-//        advance(itItem, 1))
-//    {
-//        if(accountNumber != itItem->second.AccNumber)
-//        {
-//            retval = true;
-//            break;
-//        }
-//    }
-//    return retval;
-//}
-//----------------------------------------------------------------------------
 void TfrmBillGroup::CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction)
 {
     PaymentTransaction.Phoenix.AccountNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber;;
@@ -5699,11 +5638,12 @@ void TfrmBillGroup::CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTra
     PaymentTransaction.Phoenix.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     PaymentTransaction.Phoenix.FirstName = TManagerVariable::Instance().GetStr(PaymentTransaction.DBTransaction,vmSiHotDefaultTransactionName);
     PaymentTransaction.Customer.RoomNumberStr = PaymentTransaction.Phoenix.RoomNumber;
-    if(PaymentTransaction.Orders->Count > 0)
+    if(PaymentTransaction.Orders->Count > 0 && (PaymentTransaction.Type != eTransSplitPayment && PaymentTransaction.Type != eTransPartialPayment))
     {
         ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr = PaymentTransaction.Phoenix.RoomNumber;
     }
 }
+//-----------------------------------------------------------------------------------------------
 
 /* In reference to case #90727(Salesforce)
 In case of Loyaltymate membership can not get saved to table.

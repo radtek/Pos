@@ -37,5 +37,7 @@ namespace SiHotIntegration.Domain
         public int PortNumber { get; set; }
         [DataMember]
         public string Total { get; set; }
+        [DataMember]
+        public string RoomNumber { get; set; }
     }
 }
