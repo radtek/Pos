@@ -2688,7 +2688,7 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
    TContactPoints pointsToSync;
    MemberMode memberMode = eInvalidMode;
    bool existInLocalDb = !triggeredByCard;
-
+   TModalResult Result;
    if(triggeredByCard)
    {
       existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
@@ -2895,10 +2895,8 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
            MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
            if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
            {
-
-               
                 bool AttributekeyExist = TDBContacts::CheckAttributeKey(DBTransaction,UserInfo.ContactKey);
-                 bool  gettingMemberUIdCount   =  GetUIdCount(UserInfo.CloudUUID);
+                bool  gettingMemberUIdCount   =  GetUIdCount(UserInfo.CloudUUID);
                 int contactKey = TDBContacts::CheckUUID(DBTransaction,UserInfo.CloudUUID);
 
                 if(AttributekeyExist && contactKey || !AttributekeyExist && !gettingMemberUIdCount )
@@ -2918,15 +2916,17 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
                         {
                             std::auto_ptr<TfrmMemberCreation> add_member_screen(new TfrmMemberCreation(Screen->ActiveForm, UserInfo));
                             UserInfo.EMail = "";
-
-
-                            add_member_screen->ShowModal() == mrOk;
-
-
-                            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                            if(add_member_screen->ShowModal() == mrOk)
                             {
+                                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                                {
 
-                               bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
+                                   bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
+                                }
+                            }
+                            else
+                            {
+                                return false;
                             }
                         }
                         else
@@ -2934,14 +2934,24 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
 
                             bool donotUseEmail = true;
                            TDeviceRealTerminal::Instance().ManagerMembership->EditMember(DBTransaction, UserInfo,donotUseEmail);
-                           bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
+
+                           if (Result == mrOk)
+                           {
+                              bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
+                           }
+                           else
+                           {
+                              return false;
+                           }
                         }
                     }
+                    else
+                    {
+                        return false;
+                    }
+                 }
 
-//                  }
-
-                }
-           }
+               }
        }
    }
    if(addDefaultPoints && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
@@ -2949,8 +2959,8 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
      AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey,triggeredByCard);
      TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- MemberCodeScanned");
    }
-    DBTransaction.Commit();
-    DBTransaction.StartTransaction();
+   DBTransaction.Commit();
+   DBTransaction.StartTransaction();
 
 }
 

@@ -15110,12 +15110,14 @@ void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, T
         {
             TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
             bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
-
-            if (Info.Valid())
+            if(memberExist)
+             {
+             if (Info.Valid())
              {
                 TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
                 ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
                 ApplyMembership(DBTransaction, Info);
+                }
              }
          }
      }
