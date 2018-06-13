@@ -496,15 +496,7 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     }
     else if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
-        cbIntegratedEftposSmartPay->Enabled                  = false;
-        cbIntegratedEftposSmartPay->Checked                  = false;
-        cbIntegratedEftposSmartConnect->Enabled              = false;
-        cbIntegratedEftposSmartConnect->Checked              = false;
-        TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
-        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
-        cbIntegratedEftposAdyen->Checked                     = true;
-        tbtnSmartLinkIp->Enabled                             = true;
-        tbtnSmartLinkIp->Caption                             = "Adyen Details";
+        DisableOtherEFTPOS();
     }
     else if(!TGlobalSettings::Instance().EnableEftPosSmartPay && !TGlobalSettings::Instance().EnableEftPosAdyen &&
            !TGlobalSettings::Instance().EnableEftPosSmartConnect)
@@ -517,6 +509,7 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposSmartConnect->Checked             = false;
         tbtnSmartLinkIp->Enabled                            = false;
         tbtnSmartLinkIp->Caption                            = "EFTPOS Network Details";
+        EnableOtherEFTPOS();
     }
     cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     cbIntegratedEftposAdyen->OnClick = cbIntegratedEftposAdyenClick;
@@ -4569,4 +4562,50 @@ void __fastcall TfrmGeneralMaintenance::cbCompanyDetailOnReprintReceiptClick(TOb
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCompanyDetails, TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt);
 	DBTransaction.Commit();
 
+}
+//---------------------------------------------------------------------------
+void TfrmGeneralMaintenance::DisableOtherEFTPOS()
+{
+    cbIntegratedEftposANZ->Enabled                       = false;
+    cbIntegratedEftposANZ->Checked                       = false;
+    cbIntegratedEftposSyncro->Enabled                    = false;
+    cbIntegratedEftposSyncro->Checked                    = false;
+    cbIntegratedEftposIngenico->Enabled                  = false;
+    cbIntegratedEftposIngenico->Checked                  = false;
+    cbIntegratedEftposCadmus->Enabled                    = false;
+    cbIntegratedEftposCadmus->Checked                    = false;
+    cbCadmusCronos->Enabled                              = false;
+    cbCadmusCronos->Checked                              = false;
+    cbICELink->Enabled                                   = false;
+    cbICELink->Checked                                   = false;
+    cbIntegratedEftposDPS->Enabled                       = false;
+    cbIntegratedEftposDPS->Checked                       = false;
+    cbEnableDPSTipping->Enabled                          = true;
+    cbIntegratedEftposSmartPay->Enabled                  = false;
+    cbIntegratedEftposSmartPay->Checked                  = false;
+    cbIntegratedEftposSmartConnect->Enabled              = false;
+    cbIntegratedEftposSmartConnect->Checked              = false;
+    TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
+    TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+    cbIntegratedEftposAdyen->Checked                     = true;
+    tbtnSmartLinkIp->Enabled                             = true;
+    tbtnSmartLinkIp->Caption                             = "Adyen Details";
+}
+//--------------------------------------------------------------------------------
+void TfrmGeneralMaintenance::EnableOtherEFTPOS()
+{
+    cbIntegratedEftposANZ->Enabled                       = true;
+    cbIntegratedEftposANZ->Checked                       = false;
+    cbIntegratedEftposSyncro->Enabled                    = true;
+    cbIntegratedEftposSyncro->Checked                    = false;
+    cbIntegratedEftposIngenico->Enabled                  = true;
+    cbIntegratedEftposIngenico->Checked                  = false;
+    cbIntegratedEftposCadmus->Enabled                    = true;
+    cbIntegratedEftposCadmus->Checked                    = false;
+    cbCadmusCronos->Enabled                              = true;
+    cbICELink->Enabled                                   = true;
+    cbICELink->Checked                                   = false;
+    cbIntegratedEftposDPS->Enabled                       = true;
+    cbIntegratedEftposDPS->Checked                       = false;
+    cbEnableDPSTipping->Enabled                          = false;
 }

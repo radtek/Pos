@@ -198,8 +198,11 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                               EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
                               // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
-                              LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
-                              LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
+                              if(TGlobalSettings::Instance().PrintCardHolderReceipt)
+                                    LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
+
+                              if(TGlobalSettings::Instance().PrintMerchantReceipt)
+                                    LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
                            }
                       }
                       else
@@ -221,8 +224,11 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                       EftTrans->TipAmount =
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                                       // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
-                                      LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
-                                      LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
+                                      if(TGlobalSettings::Instance().PrintCardHolderReceipt)
+                                            LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
+
+                                      if(TGlobalSettings::Instance().PrintMerchantReceipt)
+                                            LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
                                    }
                               }
                               else
@@ -512,7 +518,7 @@ Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType req
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleTransactionID->TimeStamp = "";
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleReferenceID = saleRefId;
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->TokenRequestedType = "Customer";
-        if(requestType == eAdyenNormalSale)
+        if(requestType == eAdyenNormalSale && TGlobalSettings::Instance().EnableDPSTipping )
         {
             envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "tenderOption=AskGratuity";
         }

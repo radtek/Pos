@@ -598,6 +598,8 @@ private:
         void CheckSettingsOfZed();
         bool IsEligibleForTrue();
         void CustomizeCloudEFTPOS();
+        void DisableOtherEFTPOS();
+        void EnableOtherEFTPOS();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
