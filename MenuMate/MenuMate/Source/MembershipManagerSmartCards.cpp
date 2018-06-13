@@ -2688,7 +2688,6 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
    TContactPoints pointsToSync;
    MemberMode memberMode = eInvalidMode;
    bool existInLocalDb = !triggeredByCard;
-   TModalResult Result;
    if(triggeredByCard)
    {
       existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
@@ -2897,8 +2896,8 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
            {
                 bool AttributekeyExist = TDBContacts::CheckAttributeKey(DBTransaction,UserInfo.ContactKey);
                 bool  gettingMemberUIdCount   =  GetUIdCount(UserInfo.CloudUUID);
+                UnicodeString  MemberEmailId = TDBContacts::GetEmailIdOfMember(DBTransaction,UserInfo.ContactKey);
                 int contactKey = TDBContacts::CheckUUID(DBTransaction,UserInfo.CloudUUID);
-
                 if(AttributekeyExist && contactKey || !AttributekeyExist && !gettingMemberUIdCount )
                 {
 
@@ -2907,9 +2906,10 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
                 else
                 {
                      AnsiString fullName;
+
                     fullName = TDBContacts::GetContactSurnameName(DBTransaction,contactKey);
-                    if (MessageBox("This Email_id already associated with " +  fullName ,
-                              "Do you wish to create a membership for " +  UserInfo.Name + " " + UserInfo.Surname + " at loyaltymate", MB_YESNO + MB_ICONQUESTION) == ID_YES)
+                    if (MessageBox("This   " "'"  +  MemberEmailId +  "'"  "  already associated with "  +  fullName +
+                              " Do you wish to create a membership for " +  UserInfo.Name + " " + UserInfo.Surname + " at loyaltymate","INFO" ,MB_YESNO + MB_ICONQUESTION) == ID_YES)
                     {
 
                         if (TGlobalSettings::Instance().AllowMemberDetailscreen)
@@ -2933,16 +2933,20 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
                         {
 
                             bool donotUseEmail = true;
-                           TDeviceRealTerminal::Instance().ManagerMembership->EditMember(DBTransaction, UserInfo,donotUseEmail);
+                            TDeviceRealTerminal::Instance().ManagerMembership->EditMember(DBTransaction, UserInfo,donotUseEmail);
+                            if(UserInfo.EMail > 0)
+                               {
 
-                           if (Result == mrOk)
-                           {
-                              bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
-                           }
-                           else
-                           {
-                              return false;
-                           }
+                                 bool  memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(), UserInfo);
+
+                               }
+                               else
+                               {
+
+                               return false;
+                               }
+
+
                         }
                     }
                     else

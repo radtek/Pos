@@ -1920,5 +1920,27 @@ UnicodeString TDBContacts::GetContactSurnameName(Database::TDBTransaction &DBTra
    return RetVal;
 }
 //--------------------------------------------------------------------------------------------------------------
+UnicodeString TDBContacts::GetEmailIdOfMember(Database::TDBTransaction &DBTransaction,int contactKey)
+{
+   UnicodeString result = "";
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT EMAIL FROM CONTACTS WHERE CONTACTS_KEY=:CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+	  IBInternalQuery->ExecQuery();
 
+      if(!IBInternalQuery->Eof)
+      {
+        result = IBInternalQuery->Fields[0]->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return result;
+}
 
