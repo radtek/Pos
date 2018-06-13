@@ -1156,6 +1156,8 @@ void TPrintSection::PrintHotelCustomerName(TReqPrintJob *PrintJob)
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
         CustomerName = PrintJob->Transaction->Phoenix.AccountName;
+        if(TGlobalSettings::Instance().PMSType == SiHot && ! IsRoomPayment(PrintJob))
+            CustomerName = "";
     }
     else
 	    CustomerName = PrintJob->Transaction->Customer.Name;
@@ -1205,7 +1207,7 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}
-    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" && TGlobalSettings::Instance().PMSType == SiHot)
+    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" && TGlobalSettings::Instance().PMSType == SiHot && IsRoomPayment(PrintJob))
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumberStr;

@@ -3178,6 +3178,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "If this setting is on float withdraw will happen from cash"
                  "Default is False.",
                   vmgPOS, false);
+         SetVarBool(DBTransaction, vmCompanyDetails, "Company details ",
+                 "If this setting is on company details will be printed on Reprint receipt "
+                 "Default is False.",
+                  vmgPOS, false);
         SetVarStr( DBTransaction, vmCashWithdrawal, "Cash Withdrawal GLCode",
                 "Cash Withdrawal GLCode."
                 "Default is null",
