@@ -406,7 +406,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 			FormatSectionData(PrintJob);
 			if (ThisInstruction->Cut)
 			{
-				pPrinter->PartialCut();
+			   	pPrinter->PartialCut();
 			}
 		}break;
 	case epofiPrintKitchenInfo:
@@ -714,7 +714,13 @@ void TPrintSection::FormatAndProcess(TReqPrintJob *PrintJob)
 	WorkingOrdersList->Clear();
 	if (ThisInstruction->Cut)
 	{
-		pPrinter->PartialCut();
+        if(!TGlobalSettings::Instance().EnableEftPosAdyen ||
+        ( TGlobalSettings::Instance().EnableEftPosAdyen && (!IsPaymentDoneWithParamPaymentType(PrintJob,ePayTypeIntegratedEFTPOS) ||
+           (TGlobalSettings::Instance().PrintMerchantReceipt && !TGlobalSettings::Instance().PrintCardHolderReceipt
+             ))))
+        {
+		    pPrinter->PartialCut();
+        }
 	}
 }
 
@@ -724,7 +730,7 @@ void TPrintSection::FormatAndProcessNoChildren(TReqPrintJob *PrintJob)
 	WorkingOrdersList->Clear();
 	if (ThisInstruction->Cut)
 	{
-		pPrinter->PartialCut();
+	   	    pPrinter->PartialCut();
 	}
 }
 
@@ -9298,3 +9304,17 @@ bool TPrintSection::CheckToPrintPatronSection(TReqPrintJob *PrintJob)
     return retValue;
 }
 //-----------------------------------------------------------------------------
+bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, ePaymentAttribute attributeIndex)
+{
+    bool retVal = false;
+    for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
+	{
+		TPayment *payment = PrintJob->Transaction->PaymentGet(i);
+        if(payment->GetPaymentAttribute(attributeIndex) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}

@@ -149,8 +149,23 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
-        cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
-        cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
+            cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
+        }
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        GroupBox1->Enabled = false;
+        cbCardHolderCopy->Enabled = false;
+        cbMerchantCopy->Enabled = false;
+        GroupBox1->Visible = false;
+        cbCardHolderCopy->Visible = false;
+        cbMerchantCopy->Visible = false;
+        MainPanel->Height = MainPanel->Height - GroupBox1->Height;
+        SidePanel->Height = SidePanel->Height - GroupBox1->Height;
+        Height =  Height - GroupBox1->Height;
     }
 }
 

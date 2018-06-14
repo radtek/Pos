@@ -458,6 +458,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     //cbIntegratedEftposAdyen->Checked = TGlobalSettings::Instance().EnableEftPosAdyen;
     cbCompanyDetailOnReprintReceipt->Checked = TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt;
     CustomizeCloudEFTPOS();
+    DisableOtherEFTPOS();
     FormResize(this);
 }
 //---------------------------------------------------------------------------
@@ -471,54 +472,71 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     cbIntegratedEftposAdyen->OnClick = NULL;
     if(TGlobalSettings::Instance().EnableEftPosSmartPay)
     {
-        cbIntegratedEftposAdyen->Enabled                     = false;
-        cbIntegratedEftposAdyen->Checked                     = false;
-        cbIntegratedEftposSmartConnect->Enabled              = false;
-        cbIntegratedEftposSmartConnect->Checked              = false;
+        //DisableOtherEFTPOS();
+//        cbIntegratedEftposAdyen->Enabled                     = false;
+//        cbIntegratedEftposAdyen->Checked                     = false;
+//        cbIntegratedEftposSmartConnect->Enabled              = false;
+//        cbIntegratedEftposSmartConnect->Checked              = false;
         cbIntegratedEftposSmartPay->Enabled                  = true;
         cbIntegratedEftposSmartPay->Checked                  = true;
-        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
-        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+//        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
+//        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+        DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
     }
     else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
-        cbIntegratedEftposAdyen->Enabled                     = false;
-        cbIntegratedEftposAdyen->Checked                     = false;
-        cbIntegratedEftposSmartPay->Enabled                  = false;
-        cbIntegratedEftposSmartPay->Checked                  = false;
+        //DisableOtherEFTPOS();
+//        cbIntegratedEftposAdyen->Enabled                     = false;
+//        cbIntegratedEftposAdyen->Checked                     = false;
+//        cbIntegratedEftposSmartPay->Enabled                  = false;
+//        cbIntegratedEftposSmartPay->Checked                  = false;
         cbIntegratedEftposSmartConnect->Enabled              = true;
         cbIntegratedEftposSmartConnect->Checked              = true;
-        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
-        tbtnSmartLinkIp->Enabled                             = false;
-        tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
+//        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
+//        tbtnSmartLinkIp->Enabled                             = false;
+//        tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
+        DisableOtherEFTPOS();
     }
     else if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
-        DisableOtherEFTPOS();
+
+//        cbIntegratedEftposSmartPay->Enabled                  = false;
+//        cbIntegratedEftposSmartPay->Checked                  = false;
+//        cbIntegratedEftposSmartConnect->Enabled              = false;
+//        cbIntegratedEftposSmartConnect->Checked              = false;
+//        TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
+//        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
+            cbIntegratedEftposAdyen->Checked                     = true;
+            cbIntegratedEftposAdyen->Enabled                     = true;
+            cbEnableDPSTipping->Enabled                          = true;
+            DisableOtherEFTPOS();
+            tbtnSmartLinkIp->Enabled                             = true;
+            tbtnSmartLinkIp->Caption                             = "Adyen Details";
     }
     else if(!TGlobalSettings::Instance().EnableEftPosSmartPay && !TGlobalSettings::Instance().EnableEftPosAdyen &&
            !TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
-        cbIntegratedEftposAdyen->Enabled                    = true;
-        cbIntegratedEftposSmartPay->Enabled                 = true;
-        cbIntegratedEftposSmartConnect->Enabled             = true;
-        cbIntegratedEftposAdyen->Checked                    = false;
-        cbIntegratedEftposSmartPay->Checked                 = false;
-        cbIntegratedEftposSmartConnect->Checked             = false;
-        tbtnSmartLinkIp->Enabled                            = false;
-        tbtnSmartLinkIp->Caption                            = "EFTPOS Network Details";
         EnableOtherEFTPOS();
+//        cbIntegratedEftposAdyen->Enabled                    = true;
+//        cbIntegratedEftposSmartPay->Enabled                 = true;
+//        cbIntegratedEftposSmartConnect->Enabled             = true;
+//        cbIntegratedEftposAdyen->Checked                    = false;
+//        cbIntegratedEftposSmartPay->Checked                 = false;
+//        cbIntegratedEftposSmartConnect->Checked             = false;
+//        tbtnSmartLinkIp->Enabled                            = false;
+//        tbtnSmartLinkIp->Caption                            = "EFTPOS Network Details";
     }
     cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     cbIntegratedEftposAdyen->OnClick = cbIntegratedEftposAdyenClick;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
-    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
-    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
-	DBTransaction.Commit();
+    SaveEFTPOSSettings();
+//	Database::TDBTransaction DBTransaction(DBControl);
+//	DBTransaction.StartTransaction();
+//	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
+//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
+//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
+//	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::WMDisplayChange(TWMDisplayChange& Message)
@@ -949,8 +967,7 @@ void __fastcall TfrmGeneralMaintenance::tbtnPointsGroupClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbDuplicateEftPosClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbDuplicateEftPosClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().DuplicateEftPosReceipt = cbDuplicateEftPos->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
@@ -959,28 +976,17 @@ TObject *Sender)
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
-
-
-void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposANZClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposANZClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosANZ = cbIntegratedEftposANZ->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosANZ,TGlobalSettings::Instance().EnableEftPosANZ);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosANZ);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSyncroClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSyncroClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosSyncro = cbIntegratedEftposSyncro->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSyncro,TGlobalSettings::Instance().EnableEftPosSyncro);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosSyncro);
 }
 //---------------------------------------------------------------------------
 
@@ -1017,14 +1023,10 @@ TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposIngenicoClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposIngenicoClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosIngenico = cbIntegratedEftposIngenico->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosIngenico,TGlobalSettings::Instance().EnableEftPosIngenico);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosIngenico);
 }
 //---------------------------------------------------------------------------
 
@@ -1260,8 +1262,7 @@ TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbRememberLastServingCourseClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbRememberLastServingCourseClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().RememberLastServingCourse = cbRememberLastServingCourse->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
@@ -1272,14 +1273,10 @@ TObject *Sender)
 //---------------------------------------------------------------------------
 
 
-void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposCadmusClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposCadmusClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosCadmus = cbIntegratedEftposCadmus->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosCadmus,TGlobalSettings::Instance().EnableEftPosCadmus);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosCadmus);
 }
 //---------------------------------------------------------------------------
 
@@ -1459,16 +1456,10 @@ TObject *Sender)
 void __fastcall TfrmGeneralMaintenance::cbICELinkClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosIceLink = cbICELink->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosIceLink,TGlobalSettings::Instance().EnableEftPosIceLink);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosIceLink);
 }
 //---------------------------------------------------------------------------
-
-
-void __fastcall TfrmGeneralMaintenance::cbDefaultToBevMenuClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbDefaultToBevMenuClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().DefaultToBevMenu  = cbDefaultToBevMenu->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
@@ -1479,8 +1470,7 @@ TObject *Sender)
 
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbSummariseDiscountsonZedClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbSummariseDiscountsonZedClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().SummariseDiscountOnZed  = cbSummariseDiscountsonZed->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
@@ -1602,21 +1592,14 @@ TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposDPSClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposDPSClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosDPS = cbIntegratedEftposDPS->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosDPS,TGlobalSettings::Instance().EnableEftPosDPS);
-	DBTransaction.Commit();
-
 	cbEnableDPSTipping->Enabled = TGlobalSettings::Instance().EnableEftPosDPS;
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosDPS);
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TfrmGeneralMaintenance::cbEnableDPSTippingClick(
-TObject *Sender)
+void __fastcall TfrmGeneralMaintenance::cbEnableDPSTippingClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableDPSTipping = cbEnableDPSTipping->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
@@ -2081,10 +2064,7 @@ TObject *Sender)
 void __fastcall TfrmGeneralMaintenance::cbCadmusCronosClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosCadmusCronos = cbCadmusCronos->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosCadmusCronos,TGlobalSettings::Instance().EnableEftPosCadmusCronos);
-	DBTransaction.Commit();
+    EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosCadmusCronos);
 }
 
 void __fastcall TfrmGeneralMaintenance::cbDisableInternalInvoicingClick(TObject *Sender)
@@ -4053,7 +4033,7 @@ void _fastcall TfrmGeneralMaintenance::cbGiftCardOnlyClick(TObject *Sender)
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartPayClick(TObject *Sender)
 {
 	TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;
-    CustomizeCloudEFTPOS();
+    CustomizeCloudEFTPOS  ();
 }
 
 void _fastcall TfrmGeneralMaintenance::tbtnSmartLinkIpClick(TObject *Sender)
@@ -4566,46 +4546,150 @@ void __fastcall TfrmGeneralMaintenance::cbCompanyDetailOnReprintReceiptClick(TOb
 //---------------------------------------------------------------------------
 void TfrmGeneralMaintenance::DisableOtherEFTPOS()
 {
-    cbIntegratedEftposANZ->Enabled                       = false;
-    cbIntegratedEftposANZ->Checked                       = false;
-    cbIntegratedEftposSyncro->Enabled                    = false;
-    cbIntegratedEftposSyncro->Checked                    = false;
-    cbIntegratedEftposIngenico->Enabled                  = false;
-    cbIntegratedEftposIngenico->Checked                  = false;
-    cbIntegratedEftposCadmus->Enabled                    = false;
-    cbIntegratedEftposCadmus->Checked                    = false;
-    cbCadmusCronos->Enabled                              = false;
-    cbCadmusCronos->Checked                              = false;
-    cbICELink->Enabled                                   = false;
-    cbICELink->Checked                                   = false;
-    cbIntegratedEftposDPS->Enabled                       = false;
-    cbIntegratedEftposDPS->Checked                       = false;
-    cbEnableDPSTipping->Enabled                          = true;
-    cbIntegratedEftposSmartPay->Enabled                  = false;
-    cbIntegratedEftposSmartPay->Checked                  = false;
-    cbIntegratedEftposSmartConnect->Enabled              = false;
-    cbIntegratedEftposSmartConnect->Checked              = false;
-    TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
-    TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
-    cbIntegratedEftposAdyen->Checked                     = true;
-    tbtnSmartLinkIp->Enabled                             = true;
-    tbtnSmartLinkIp->Caption                             = "Adyen Details";
+    tbtnSmartLinkIp->Enabled                             = false;
+    tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
+    if(!TGlobalSettings::Instance().EnableEftPosANZ)
+    {
+        cbIntegratedEftposANZ->Enabled                       = false;
+        cbIntegratedEftposANZ->Checked                       = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSyncro)
+    {
+        cbIntegratedEftposSyncro->Enabled                    = false;
+        cbIntegratedEftposSyncro->Checked                    = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosIngenico)
+    {
+        cbIntegratedEftposIngenico->Enabled                  = false;
+        cbIntegratedEftposIngenico->Checked                  = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosCadmus)
+    {
+        cbIntegratedEftposCadmus->Enabled                    = false;
+        cbIntegratedEftposCadmus->Checked                    = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosCadmusCronos)
+    {
+        cbCadmusCronos->Enabled                              = false;
+        cbCadmusCronos->Checked                              = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosIceLink)
+    {
+        cbICELink->Enabled                                   = false;
+        cbICELink->Checked                                   = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosDPS)
+    {
+        cbIntegratedEftposDPS->Enabled                       = false;
+        cbIntegratedEftposDPS->Checked                       = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        cbIntegratedEftposAdyen->Enabled                     = false;
+        cbIntegratedEftposAdyen->Checked                     = false;
+    }
+    else
+    {
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Adyen Details";
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSmartConnect)
+    {
+        cbIntegratedEftposSmartConnect->Enabled              = false;
+        cbIntegratedEftposSmartConnect->Checked              = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSmartPay)
+    {
+        cbIntegratedEftposSmartPay->Enabled                  = false;
+        cbIntegratedEftposSmartPay->Checked                  = false;
+    }
+    else
+    {
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
+    }
 }
 //--------------------------------------------------------------------------------
 void TfrmGeneralMaintenance::EnableOtherEFTPOS()
 {
-    cbIntegratedEftposANZ->Enabled                       = true;
-    cbIntegratedEftposANZ->Checked                       = false;
-    cbIntegratedEftposSyncro->Enabled                    = true;
-    cbIntegratedEftposSyncro->Checked                    = false;
-    cbIntegratedEftposIngenico->Enabled                  = true;
-    cbIntegratedEftposIngenico->Checked                  = false;
-    cbIntegratedEftposCadmus->Enabled                    = true;
-    cbIntegratedEftposCadmus->Checked                    = false;
-    cbCadmusCronos->Enabled                              = true;
-    cbICELink->Enabled                                   = true;
-    cbICELink->Checked                                   = false;
-    cbIntegratedEftposDPS->Enabled                       = true;
-    cbIntegratedEftposDPS->Checked                       = false;
+    if(!TGlobalSettings::Instance().EnableEftPosANZ)
+    {
+        cbIntegratedEftposANZ->Enabled                       = true;
+        cbIntegratedEftposANZ->Checked                       = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSyncro)
+    {
+        cbIntegratedEftposSyncro->Enabled                    = true;
+        cbIntegratedEftposSyncro->Checked                    = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosIngenico)
+    {
+        cbIntegratedEftposIngenico->Enabled                  = true;
+        cbIntegratedEftposIngenico->Checked                  = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosCadmus)
+    {
+        cbIntegratedEftposCadmus->Enabled                    = true;
+        cbIntegratedEftposCadmus->Checked                    = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosCadmusCronos)
+    {
+        cbCadmusCronos->Enabled                              = true;
+        cbCadmusCronos->Checked                              = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosIceLink)
+    {
+        cbICELink->Enabled                                   = true;
+        cbICELink->Checked                                   = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosDPS)
+    {
+        cbIntegratedEftposDPS->Enabled                       = true;
+        cbIntegratedEftposDPS->Checked                       = false;
+    }
     cbEnableDPSTipping->Enabled                          = false;
+
+    if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        cbIntegratedEftposAdyen->Enabled                     = true;
+        cbIntegratedEftposAdyen->Checked                     = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSmartConnect)
+    {
+        cbIntegratedEftposSmartConnect->Enabled              = true;
+        cbIntegratedEftposSmartConnect->Checked              = false;
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosSmartPay)
+    {
+        cbIntegratedEftposSmartPay->Enabled                  = true;
+        cbIntegratedEftposSmartPay->Checked                  = false;
+        tbtnSmartLinkIp->Enabled                             = false;
+        tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
+    }
+}
+//-----------------------------------------------------------------
+void TfrmGeneralMaintenance::EnableOrDisableEFTPOS(bool Value)
+{
+    if(Value)
+        DisableOtherEFTPOS();
+    else
+        EnableOtherEFTPOS();
+    SaveEFTPOSSettings();
+}
+//-----------------------------------------------------------------
+void TfrmGeneralMaintenance::SaveEFTPOSSettings()
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosANZ,TGlobalSettings::Instance().EnableEftPosANZ);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSyncro,TGlobalSettings::Instance().EnableEftPosSyncro);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosIngenico,TGlobalSettings::Instance().EnableEftPosIngenico);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosCadmus,TGlobalSettings::Instance().EnableEftPosCadmus);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosIceLink,TGlobalSettings::Instance().EnableEftPosIceLink);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosDPS,TGlobalSettings::Instance().EnableEftPosDPS);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosCadmusCronos,TGlobalSettings::Instance().EnableEftPosCadmusCronos);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
+    DBTransaction.Commit();
 }

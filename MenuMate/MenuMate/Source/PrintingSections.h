@@ -13,6 +13,7 @@
 #include "PSectionInstruction.h"
 #include "enumPrintOutFormatInstructions.h"
 #include "DocketFormat.h"
+#include "Payment.h"
 
 #include "IBillCalculator.h"
 using BillCalculator::TBillCalcResult;
@@ -344,6 +345,8 @@ private:
     bool IsRMSPaymentType(TReqPrintJob *PrintJob);
     void PrintPatronSection(TReqPrintJob *PrintJob);
     bool CheckToPrintPatronSection(TReqPrintJob *PrintJob);
+    //generic method to check whether payment done by param payment type. Old method has not removed. in future itr can be used.
+    bool IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, ePaymentAttribute attributeIndex);
 };
 
 // ------------------------------------------------------------------------------

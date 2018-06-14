@@ -3307,7 +3307,12 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		Printout->PrintFormat->Line->FontInfo.Reset();
 		Printout->PrintFormat->Line->ColCount = 1;
 		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-		Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+
+        if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+		    Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        else
+           Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+
 		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
 		Printout->PrintFormat->AddLine();
 		Printout->PrintFormat->NewLine();
@@ -3317,6 +3322,7 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 			Printout->PrintFormat->Line->Columns[0]->Text = EftPos->LastEftPosReceipt->Strings[i];
 			Printout->PrintFormat->AddLine();
 		}
+
 		Printout->PrintFormat->PartialCut();
 		// TODO : The last efpos receipt isnt cleared is the next transaction has no eftpos.
 		// so all following transactions ha eftpos receipt attached

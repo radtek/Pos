@@ -600,6 +600,8 @@ private:
         void CustomizeCloudEFTPOS();
         void DisableOtherEFTPOS();
         void EnableOtherEFTPOS();
+        void EnableOrDisableEFTPOS(bool value);
+        void SaveEFTPOSSettings();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
