@@ -526,6 +526,7 @@ public:
     bool AdyenRecoveryTransactionIsRefund;
     bool EnableCompanyDetailOnReprintReceipt;
     UnicodeString CompanydetailsSaved;
+    UnicodeString EmailCapturedForLoyaltyOperation;
 };
 
 #endif

@@ -431,5 +431,6 @@ TGlobalSettings::TGlobalSettings()
     AdyenRecoveryTransactionIsRefund = false;
     EnableCompanyDetailOnReprintReceipt = false;
     CompanydetailsSaved = "";
+    EmailCapturedForLoyaltyOperation = "";
 }
 

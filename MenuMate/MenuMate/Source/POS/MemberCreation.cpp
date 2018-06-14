@@ -41,8 +41,6 @@ void TfrmMemberCreation::DisplayCustomerDataFromPointers()
      lbeEmail->Caption = CustomerInfoPointers[0];
      lbeName->Caption = CustomerInfoPointers[1].Trim();
      lbeLastName->Caption = CustomerInfoPointers[2].Trim();
-     lbeContactPhone->Caption = CustomerInfoPointers[3];
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
@@ -75,10 +73,6 @@ void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
         Caption = "Enter Last Name";
         frmTouchKeyboard->KeyboardText = Info.Surname;
         break;
-        case 3:
-            Caption = "Enter phone Number";
-            frmTouchKeyboard->KeyboardText = Info.Phone;
-            break;
         default:
             break;
     }
@@ -128,7 +122,8 @@ void TfrmMemberCreation::RefreshScreen()
 {
     Info.Clear();
     Info.Surname = "";
-    tbtnClearBirthdayMouseClick(NULL);
+//    tbtnClearBirthdayMouseClick(NULL);
+    ClearBirthday();
     SetupCustomerInfoPointers();
     DisplayCustomerDataFromPointers();
     toggleActivateAccountButton();
@@ -186,8 +181,8 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
            MessageBox(firstNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
         else if(!Info.ValidateLastName(lastNameMessage))
            MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
-        else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
-           MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+//        else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
+//           MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
         else
         {
           try
@@ -301,8 +296,10 @@ void __fastcall TfrmMemberCreation::tbtnDayMouseClick(TObject *Sender)
 
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-	  tbtnDay->Caption = IntToStr(frmTouchNumpad->INTResult);
+        tbtnDay->Caption = IntToStr(frmTouchNumpad->INTResult);
    }
+   if(!SetBirthday())
+     tbtnDayMouseClick(NULL);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::tbtnMonthMouseClick(TObject *Sender)
@@ -317,8 +314,10 @@ std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouc
    frmTouchNumpad->INTInitial = MonthOf(Info.DateOfBirth); ;
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-	  tbtnMonth->Caption = IntToStr(frmTouchNumpad->INTResult);
+	    tbtnMonth->Caption = IntToStr(frmTouchNumpad->INTResult);
    }
+   if(!SetBirthday())
+     tbtnMonthMouseClick(NULL);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::tbtnYearMouseClick(TObject *Sender)
@@ -333,21 +332,31 @@ void __fastcall TfrmMemberCreation::tbtnYearMouseClick(TObject *Sender)
    frmTouchNumpad->INTInitial = YearOf(Info.DateOfBirth); ; ;
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-	  tbtnYear->Caption = IntToStr(frmTouchNumpad->INTResult);
+      tbtnYear->Caption = IntToStr(frmTouchNumpad->INTResult);
    }
+   if(!SetBirthday())
+      tbtnYearMouseClick(NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMemberCreation::tbtnClearBirthdayMouseClick(TObject *Sender)
+void TfrmMemberCreation::ClearBirthday()
 {
- Info.DateOfBirth = 0;
+   Info.DateOfBirth = 0;
    tbtnYear->Caption = "1899";
    tbtnMonth->Caption = "12";
    tbtnDay->Caption = "30";
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMemberCreation::tbtnSetBirthdayMouseClick(TObject *Sender)
+//void __fastcall TfrmMemberCreation::tbtnClearBirthdayMouseClick(TObject *Sender)
+//{
+//   Info.DateOfBirth = 0;
+//   tbtnYear->Caption = "1899";
+//   tbtnMonth->Caption = "12";
+//   tbtnDay->Caption = "30";
+//}//---------------------------------------------------------------------------
+bool TfrmMemberCreation::SetBirthday()
 {
-TDateTime Birthday;
+   bool retValue = false;
+   TDateTime Birthday;
    if (!TryEncodeDate(StrToInt(tbtnYear->Caption), StrToInt(tbtnMonth->Caption), StrToInt(tbtnDay->Caption), Birthday))
    {
 	  MessageBox("Invalid Date, Please Fix and Try again", "Invalid Date", MB_OK + MB_ICONERROR);
@@ -355,8 +364,23 @@ TDateTime Birthday;
    else
    {
 	  Info.DateOfBirth = Birthday;
+      retValue = true;
    }
+   return retValue;
 }
+//---------------------------------------------------------------------------
+//void __fastcall TfrmMemberCreation::tbtnSetBirthdayMouseClick(TObject *Sender)
+//{
+//   TDateTime Birthday;
+//   if (!TryEncodeDate(StrToInt(tbtnYear->Caption), StrToInt(tbtnMonth->Caption), StrToInt(tbtnDay->Caption), Birthday))
+//   {
+//	  MessageBox("Invalid Date, Please Fix and Try again", "Invalid Date", MB_OK + MB_ICONERROR);
+//   }
+//   else
+//   {
+//	  Info.DateOfBirth = Birthday;
+//   }
+//}
 //---------------------------------------------------------------------------
 void TfrmMemberCreation::DrawContactDetail()
 {
@@ -520,7 +544,8 @@ void TfrmMemberCreation::getMemberDetailsFromActivationEmail()
     {
         Info.Clear();
         Info.Surname = "";
-        tbtnClearBirthdayMouseClick(NULL);
+//        tbtnClearBirthdayMouseClick(NULL);
+        ClearBirthday();
         SetupCustomerInfoPointers();
         DisplayCustomerDataFromPointers();
         toggleActivateAccountButton();

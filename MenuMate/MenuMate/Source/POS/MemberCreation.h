@@ -28,8 +28,6 @@ __published:	// IDE-managed Components
     TTouchBtn *btnEmail;
     TTouchBtn *btnLastName;
     TLabel *lbeEmail;
-    TTouchBtn *btnContactPhone;
-    TLabel *lbeContactPhone;
     TLabel *lbeLastName;
     TTouchBtn *TouchBtn2;
     TLabel *lbeName;
@@ -40,8 +38,6 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnDay;
     TTouchBtn *tbtnMonth;
     TTouchBtn *tbtnYear;
-    TTouchBtn *tbtnClearBirthday;
-    TTouchBtn *tbtnSetBirthday;
     TTouchBtn *btnName;
     TGroupBox *gbLoyaltyMateActivation;
     TLabel *lbeLoyaltyMateActive;
@@ -57,8 +53,8 @@ __published:	// IDE-managed Components
     void __fastcall tbtnDayMouseClick(TObject *Sender);
     void __fastcall tbtnMonthMouseClick(TObject *Sender);
     void __fastcall tbtnYearMouseClick(TObject *Sender);
-    void __fastcall tbtnClearBirthdayMouseClick(TObject *Sender);
-    void __fastcall tbtnSetBirthdayMouseClick(TObject *Sender);
+//    void __fastcall tbtnClearBirthdayMouseClick(TObject *Sender);
+//    void __fastcall tbtnSetBirthdayMouseClick(TObject *Sender);
     void __fastcall btnActivateLoyaltyMateMouseClick(TObject *Sender);
     void __fastcall cbNoEmailMouseClick(TObject *Sender);
     void SetupCustomerInfoPointers();
@@ -70,6 +66,8 @@ private:	// User declarations
         TMMContactInfo &Info;
         int CheckEmailInDB(AnsiString email);
         void RefreshScreen();
+        void ClearBirthday();
+        bool SetBirthday();
 public:		// User declarations
         __fastcall TfrmMemberCreation(TComponent* Owner, TMMContactInfo &info);
         bool Editing;

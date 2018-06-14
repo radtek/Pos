@@ -52,18 +52,6 @@ object frmMemberCreation: TfrmMemberCreation
       Font.Style = []
       ParentFont = False
     end
-    object lbeContactPhone: TLabel
-      Left = 190
-      Top = 255
-      Width = 5
-      Height = 22
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -19
-      Font.Name = 'Arial'
-      Font.Style = []
-      ParentFont = False
-    end
     object lbeName: TLabel
       Left = 190
       Top = 135
@@ -147,7 +135,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object cbNoEmail: TCheckBox
       Left = 28
-      Top = 89
+      Top = 104
       Width = 167
       Height = 25
       Caption = 'Email not available'
@@ -163,7 +151,7 @@ object frmMemberCreation: TfrmMemberCreation
     object btnLastName: TTouchBtn
       Tag = 2
       Left = 28
-      Top = 180
+      Top = 220
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
@@ -174,26 +162,6 @@ object frmMemberCreation: TfrmMemberCreation
       ParentFont = False
       ParentColor = True
       Caption = 'Last Name*'
-      ButtonColor = 6052441
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = EditCustomerBasicDetails
-    end
-    object btnContactPhone: TTouchBtn
-      Tag = 3
-      Left = 28
-      Top = 240
-      Width = 150
-      Height = 53
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Phone'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -223,7 +191,7 @@ object frmMemberCreation: TfrmMemberCreation
       Left = 424
       Top = 4
       Width = 413
-      Height = 261
+      Height = 192
       Align = alCustom
       Caption = 'Date Of Birth'
       Color = 14342874
@@ -329,47 +297,11 @@ object frmMemberCreation: TfrmMemberCreation
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnYearMouseClick
       end
-      object tbtnClearBirthday: TTouchBtn
-        Left = 12
-        Top = 156
-        Width = 122
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -19
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ParentColor = True
-        Caption = 'Clear Birthday'
-        ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
-        LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = tbtnClearBirthdayMouseClick
-      end
-      object tbtnSetBirthday: TTouchBtn
-        Left = 268
-        Top = 156
-        Width = 122
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -19
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ParentColor = True
-        Caption = 'Set Birthday'
-        ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
-        LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = tbtnSetBirthdayMouseClick
-      end
     end
     object btnName: TTouchBtn
       Tag = 1
       Left = 28
-      Top = 120
+      Top = 143
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
