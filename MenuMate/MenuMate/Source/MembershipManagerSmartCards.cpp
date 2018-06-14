@@ -2294,7 +2294,7 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
         if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
-            MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+        MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
         DBTransaction.Commit();
     }
 	// cleanup
@@ -2908,7 +2908,7 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
                      AnsiString fullName;
 
                     fullName = TDBContacts::GetContactSurnameName(DBTransaction,contactKey);
-                    if (MessageBox("This   " "'"  +  MemberEmailId +  "'"  "  already associated with "  +  fullName +
+                    if (MessageBox("This Email  " "'"  +  MemberEmailId +  "'"  "  already associated with "  +  fullName +
                               " Do you wish to create a membership for " +  UserInfo.Name + " " + UserInfo.Surname + " at loyaltymate","INFO" ,MB_YESNO + MB_ICONQUESTION) == ID_YES)
                     {
 
