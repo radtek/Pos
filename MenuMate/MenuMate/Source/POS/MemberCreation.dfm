@@ -3,7 +3,7 @@ object frmMemberCreation: TfrmMemberCreation
   Top = 0
   AutoSize = True
   Caption = 'Member'#39's Details'
-  ClientHeight = 400
+  ClientHeight = 305
   ClientWidth = 837
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmMemberCreation: TfrmMemberCreation
     Left = 0
     Top = 0
     Width = 837
-    Height = 400
+    Height = 305
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
@@ -54,7 +54,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object lbeName: TLabel
       Left = 190
-      Top = 135
+      Top = 155
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -66,7 +66,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object lbeLastName: TLabel
       Left = 190
-      Top = 195
+      Top = 237
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -77,8 +77,8 @@ object frmMemberCreation: TfrmMemberCreation
       ParentFont = False
     end
     object btnOk: TTouchBtn
-      Left = 559
-      Top = 323
+      Left = 535
+      Top = 219
       Width = 120
       Height = 55
       Font.Charset = DEFAULT_CHARSET
@@ -96,8 +96,8 @@ object frmMemberCreation: TfrmMemberCreation
       OnMouseClick = btnOkMouseClick
     end
     object TouchBtn1: TTouchBtn
-      Left = 694
-      Top = 323
+      Left = 692
+      Top = 219
       Width = 120
       Height = 55
       Font.Charset = DEFAULT_CHARSET
@@ -167,25 +167,6 @@ object frmMemberCreation: TfrmMemberCreation
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = EditCustomerBasicDetails
-    end
-    object TouchBtn2: TTouchBtn
-      Left = 424
-      Top = 323
-      Width = 120
-      Height = 55
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Gift Card'
-      ButtonColor = 18944
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = TouchBtn2MouseClick
     end
     object GroupBox1: TGroupBox
       Left = 424
@@ -317,56 +298,6 @@ object frmMemberCreation: TfrmMemberCreation
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = EditCustomerBasicDetails
-    end
-    object gbLoyaltyMateActivation: TGroupBox
-      Left = 1
-      Top = 297
-      Width = 408
-      Height = 89
-      Caption = 'LoyaltyMate Activation'
-      Color = 14342874
-      Ctl3D = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentBackground = False
-      ParentColor = False
-      ParentCtl3D = False
-      ParentFont = False
-      TabOrder = 7
-      object lbeLoyaltyMateActive: TLabel
-        Left = 12
-        Top = 40
-        Width = 186
-        Height = 23
-        Caption = 'Member Not Activated'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clMaroon
-        Font.Height = -19
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object btnActivateLoyaltyMate: TTouchBtn
-        Left = 202
-        Top = 29
-        Width = 186
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWhite
-        Font.Height = -19
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ParentColor = True
-        Caption = 'Activate Member'
-        ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
-        LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = btnActivateLoyaltyMateMouseClick
-      end
     end
   end
 end

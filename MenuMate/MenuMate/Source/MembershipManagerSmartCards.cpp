@@ -2272,7 +2272,7 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
     {
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
-        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership) && !ManagerSmartCards->CardInserted)
             MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
         DBTransaction.Commit();
     }
