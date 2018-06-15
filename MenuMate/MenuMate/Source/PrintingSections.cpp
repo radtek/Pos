@@ -717,7 +717,7 @@ void TPrintSection::FormatAndProcess(TReqPrintJob *PrintJob)
         if(!TGlobalSettings::Instance().EnableEftPosAdyen ||
         ( TGlobalSettings::Instance().EnableEftPosAdyen && (!IsPaymentDoneWithParamPaymentType(PrintJob,ePayTypeIntegratedEFTPOS) ||
            (TGlobalSettings::Instance().PrintMerchantReceipt && !TGlobalSettings::Instance().PrintCardHolderReceipt
-             ))))
+             ) || (!TGlobalSettings::Instance().PrintMerchantReceipt && !TGlobalSettings::Instance().PrintCardHolderReceipt))))
         {
 		    pPrinter->PartialCut();
         }
