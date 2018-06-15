@@ -472,71 +472,35 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     cbIntegratedEftposAdyen->OnClick = NULL;
     if(TGlobalSettings::Instance().EnableEftPosSmartPay)
     {
-        //DisableOtherEFTPOS();
-//        cbIntegratedEftposAdyen->Enabled                     = false;
-//        cbIntegratedEftposAdyen->Checked                     = false;
-//        cbIntegratedEftposSmartConnect->Enabled              = false;
-//        cbIntegratedEftposSmartConnect->Checked              = false;
         cbIntegratedEftposSmartPay->Enabled                  = true;
         cbIntegratedEftposSmartPay->Checked                  = true;
-//        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
-//        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
     }
     else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
-        //DisableOtherEFTPOS();
-//        cbIntegratedEftposAdyen->Enabled                     = false;
-//        cbIntegratedEftposAdyen->Checked                     = false;
-//        cbIntegratedEftposSmartPay->Enabled                  = false;
-//        cbIntegratedEftposSmartPay->Checked                  = false;
         cbIntegratedEftposSmartConnect->Enabled              = true;
         cbIntegratedEftposSmartConnect->Checked              = true;
-//        TGlobalSettings::Instance().EnableEftPosAdyen        = false;
-//        tbtnSmartLinkIp->Enabled                             = false;
-//        tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
         DisableOtherEFTPOS();
     }
     else if(TGlobalSettings::Instance().EnableEftPosAdyen)
     {
-
-//        cbIntegratedEftposSmartPay->Enabled                  = false;
-//        cbIntegratedEftposSmartPay->Checked                  = false;
-//        cbIntegratedEftposSmartConnect->Enabled              = false;
-//        cbIntegratedEftposSmartConnect->Checked              = false;
-//        TGlobalSettings::Instance().EnableEftPosSmartPay     = false;
-//        TGlobalSettings::Instance().EnableEftPosSmartConnect = false;
-            cbIntegratedEftposAdyen->Checked                     = true;
-            cbIntegratedEftposAdyen->Enabled                     = true;
-            cbEnableDPSTipping->Enabled                          = true;
-            DisableOtherEFTPOS();
-            tbtnSmartLinkIp->Enabled                             = true;
-            tbtnSmartLinkIp->Caption                             = "Adyen Details";
+        cbIntegratedEftposAdyen->Checked                     = true;
+        cbIntegratedEftposAdyen->Enabled                     = true;
+        cbEnableDPSTipping->Enabled                          = true;
+        DisableOtherEFTPOS();
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "Adyen Details";
     }
     else if(!TGlobalSettings::Instance().EnableEftPosSmartPay && !TGlobalSettings::Instance().EnableEftPosAdyen &&
            !TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
         EnableOtherEFTPOS();
-//        cbIntegratedEftposAdyen->Enabled                    = true;
-//        cbIntegratedEftposSmartPay->Enabled                 = true;
-//        cbIntegratedEftposSmartConnect->Enabled             = true;
-//        cbIntegratedEftposAdyen->Checked                    = false;
-//        cbIntegratedEftposSmartPay->Checked                 = false;
-//        cbIntegratedEftposSmartConnect->Checked             = false;
-//        tbtnSmartLinkIp->Enabled                            = false;
-//        tbtnSmartLinkIp->Caption                            = "EFTPOS Network Details";
     }
     cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     cbIntegratedEftposAdyen->OnClick = cbIntegratedEftposAdyenClick;
     SaveEFTPOSSettings();
-//	Database::TDBTransaction DBTransaction(DBControl);
-//	DBTransaction.StartTransaction();
-//	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosSmartPay,TGlobalSettings::Instance().EnableEftPosSmartPay);
-//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
-//    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
-//	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::WMDisplayChange(TWMDisplayChange& Message)
@@ -4546,47 +4510,56 @@ void __fastcall TfrmGeneralMaintenance::cbCompanyDetailOnReprintReceiptClick(TOb
 //---------------------------------------------------------------------------
 void TfrmGeneralMaintenance::DisableOtherEFTPOS()
 {
+    int eftposSettingCount = 0;
     tbtnSmartLinkIp->Enabled                             = false;
     tbtnSmartLinkIp->Caption                             = "EFTPOS Network Details";
     if(!TGlobalSettings::Instance().EnableEftPosANZ)
     {
         cbIntegratedEftposANZ->Enabled                       = false;
         cbIntegratedEftposANZ->Checked                       = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosSyncro)
     {
         cbIntegratedEftposSyncro->Enabled                    = false;
         cbIntegratedEftposSyncro->Checked                    = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosIngenico)
     {
         cbIntegratedEftposIngenico->Enabled                  = false;
         cbIntegratedEftposIngenico->Checked                  = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosCadmus)
     {
         cbIntegratedEftposCadmus->Enabled                    = false;
         cbIntegratedEftposCadmus->Checked                    = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosCadmusCronos)
     {
         cbCadmusCronos->Enabled                              = false;
         cbCadmusCronos->Checked                              = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosIceLink)
     {
         cbICELink->Enabled                                   = false;
         cbICELink->Checked                                   = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosDPS)
     {
         cbIntegratedEftposDPS->Enabled                       = false;
         cbIntegratedEftposDPS->Checked                       = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosAdyen)
     {
         cbIntegratedEftposAdyen->Enabled                     = false;
         cbIntegratedEftposAdyen->Checked                     = false;
+        eftposSettingCount++;
     }
     else
     {
@@ -4597,17 +4570,22 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
     {
         cbIntegratedEftposSmartConnect->Enabled              = false;
         cbIntegratedEftposSmartConnect->Checked              = false;
+        eftposSettingCount++;
     }
     if(!TGlobalSettings::Instance().EnableEftPosSmartPay)
     {
         cbIntegratedEftposSmartPay->Enabled                  = false;
         cbIntegratedEftposSmartPay->Checked                  = false;
+        eftposSettingCount++;
     }
     else
     {
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
     }
+
+    if(eftposSettingCount == 10)
+        EnableOtherEFTPOS();
 }
 //--------------------------------------------------------------------------------
 void TfrmGeneralMaintenance::EnableOtherEFTPOS()

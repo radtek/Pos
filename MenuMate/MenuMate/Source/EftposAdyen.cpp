@@ -595,10 +595,11 @@ void TEftposAdyen::LoadEftPosReceiptSecond(ArrayOfstring receipt)
 {
     try
     {
+        SecondEftPosReceipt->Clear();
         for(int i = 0; i < receipt.Length; i++)
         {
             AnsiString Data = receipt[i].t_str();
-            LastEftPosReceipt->Add(Data);
+            SecondEftPosReceipt->Add(Data);
         }
     }
     catch(Exception &Ex)

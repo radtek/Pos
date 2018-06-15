@@ -1139,6 +1139,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 		else
 		{
 			EftPos->LastEftPosReceipt->Clear();
+            EftPos->SecondEftPosReceipt->Clear();
 			// Store All OrderKeys;
 			if (Payment->ReferenceNumber == "")
 			{
@@ -3289,44 +3290,13 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 
 	Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt, TComms::Instance().ReceiptPrinter);
 
-	if (RequestEFTPOSReceipt && EftPos->LastEftPosReceipt->Count > 0)
+	if (RequestEFTPOSReceipt )
 	{
-		TPrintout *Printout = new TPrintout();
-		if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
-		{
-			TPrinterPhysical DefaultScreenPrinter;
-			DefaultScreenPrinter.NormalCharPerLine = 40;
-			DefaultScreenPrinter.BoldCharPerLine = 40;
-			Printout->Printer = DefaultScreenPrinter;
-		}
-		else
-		{
-			Printout->Printer = TComms::Instance().ReceiptPrinter;
-		}
+        if(EftPos->LastEftPosReceipt->Count > 0)
+		    PrintEFTPOSReceipt(EftPos->LastEftPosReceipt);
 
-		Printout->PrintFormat->Line->FontInfo.Reset();
-		Printout->PrintFormat->Line->ColCount = 1;
-		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-
-        if(!TGlobalSettings::Instance().EnableEftPosAdyen)
-		    Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-        else
-           Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-
-		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
-		Printout->PrintFormat->AddLine();
-		Printout->PrintFormat->NewLine();
-
-		for (int i = 0; i < EftPos->LastEftPosReceipt->Count; i++)
-		{
-			Printout->PrintFormat->Line->Columns[0]->Text = EftPos->LastEftPosReceipt->Strings[i];
-			Printout->PrintFormat->AddLine();
-		}
-
-		Printout->PrintFormat->PartialCut();
-		// TODO : The last efpos receipt isnt cleared is the next transaction has no eftpos.
-		// so all following transactions ha eftpos receipt attached
-		LastReceipt->Printouts->Add(Printout);
+         if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->SecondEftPosReceipt->Count > 0)
+		    PrintEFTPOSReceipt(EftPos->SecondEftPosReceipt);
 	}
 	std::auto_ptr <TStringList> StringReceipt(new TStringList);
 	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
@@ -6766,3 +6736,42 @@ void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransacti
     managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPayment,isNewPayment, isMMPayType);
 }
 //--------------------------------------------------------------------------------------
+void TListPaymentSystem::PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt)
+{
+        TPrintout *Printout = new TPrintout();
+		if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
+		{
+			TPrinterPhysical DefaultScreenPrinter;
+			DefaultScreenPrinter.NormalCharPerLine = 40;
+			DefaultScreenPrinter.BoldCharPerLine = 40;
+			Printout->Printer = DefaultScreenPrinter;
+		}
+		else
+		{
+			Printout->Printer = TComms::Instance().ReceiptPrinter;
+		}
+
+		Printout->PrintFormat->Line->FontInfo.Reset();
+		Printout->PrintFormat->Line->ColCount = 1;
+		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+
+        if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+		    Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        else
+           Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+
+		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->NewLine();
+
+		for (int i = 0; i < eftPosReceipt->Count; i++)
+		{
+			Printout->PrintFormat->Line->Columns[0]->Text = eftPosReceipt->Strings[i];
+			Printout->PrintFormat->AddLine();
+		}
+
+		Printout->PrintFormat->PartialCut();
+		// TODO : The last efpos receipt isnt cleared is the next transaction has no eftpos.
+		// so all following transactions ha eftpos receipt attached
+		LastReceipt->Printouts->Add(Printout);
+}
