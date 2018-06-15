@@ -30,6 +30,7 @@ class TEftposAdyen : public TEftPos
         void LoadEftPosReceiptSecond(ArrayOfstring receipt);
         SaleToPOIResponse* TriggerEnquiry(Currency AmtPurchase, UnicodeString TxnRef);
         Envelop* GetEnquiryEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef);
+        void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
 public:
         TEftposAdyen();
         ~TEftposAdyen();

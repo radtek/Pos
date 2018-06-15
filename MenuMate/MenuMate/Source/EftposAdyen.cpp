@@ -8,6 +8,8 @@
 #include "MMMessageBox.h"
 #include "DeviceRealTerminal.h"
 #include "DBAdyen.h"
+#include "Printout.h"
+#include "Comms.h"
 #define BasicVar                                "Basic"
 #define StandardVar                             "Standard"
 #define ExtendedVar                             "Extended"
@@ -584,6 +586,10 @@ void TEftposAdyen::LoadEftPosReceipt(ArrayOfstring receipt)
             AnsiString Data = receipt[i].t_str();
             LastEftPosReceipt->Add(Data);
         }
+        if(LastEftPosReceipt->Count && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+        {
+            PrintEFTPOSReceipt(LastEftPosReceipt);
+        }
     }
     catch(Exception &Ex)
     {
@@ -600,6 +606,10 @@ void TEftposAdyen::LoadEftPosReceiptSecond(ArrayOfstring receipt)
         {
             AnsiString Data = receipt[i].t_str();
             SecondEftPosReceipt->Add(Data);
+        }
+        if(SecondEftPosReceipt->Count)
+        {
+            PrintEFTPOSReceipt(SecondEftPosReceipt);
         }
     }
     catch(Exception &Ex)
@@ -681,3 +691,44 @@ bool TEftposAdyen::IsCashOutSupported()
     return false;
 }
 //----------------------------------------------------------------------------
+void TEftposAdyen::PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt)
+{
+    if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
+	{
+		TManagerLogs::Instance().Add("NA",EFTPOSLOG,"No Recipt Printer Configured for EFTPOS output.");
+		TManagerLogs::Instance().Add("NA",ERRORLOG,"No Recipt Printer Configured for EFTPOS output.");
+		return;
+	}
+
+	TPrintout *Printout = new TPrintout;
+	Printout->Printer = TComms::Instance().ReceiptPrinter;
+
+   try
+   {
+        Printout->PrintFormat->Line->FontInfo.Reset();
+        Printout->PrintFormat->Line->ColCount = 1;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
+        Printout->PrintFormat->AddLine();
+        Printout->PrintFormat->NewLine();
+
+        for (int i = 0; i < eftPosReceipt->Count; i++)
+        {
+            Printout->PrintFormat->Line->Columns[0]->Text = eftPosReceipt->Strings[i];
+            Printout->PrintFormat->AddLine();
+        }
+
+        Printout->PrintFormat->PartialCut();
+        Printout->Print();
+		delete Printout;
+   }
+   catch (Exception &E)
+   {
+      TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+		delete Printout;
+   }
+}

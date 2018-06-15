@@ -3295,8 +3295,8 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
         if(EftPos->LastEftPosReceipt->Count > 0)
 		    PrintEFTPOSReceipt(EftPos->LastEftPosReceipt);
 
-         if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->SecondEftPosReceipt->Count > 0)
-		    PrintEFTPOSReceipt(EftPos->SecondEftPosReceipt);
+//         if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->SecondEftPosReceipt->Count > 0)
+//		    PrintEFTPOSReceipt(EftPos->SecondEftPosReceipt);
 	}
 	std::auto_ptr <TStringList> StringReceipt(new TStringList);
 	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
@@ -6626,7 +6626,9 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         // Only print the first TPrintout as the EFTPOS job does not need duplication.
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
-
+     if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
+        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
     if (TGlobalSettings::Instance().DuplicateReceipts)
     {
         if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)

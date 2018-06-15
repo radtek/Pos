@@ -718,7 +718,8 @@ void TPrintSection::FormatAndProcess(TReqPrintJob *PrintJob)
         ( TGlobalSettings::Instance().EnableEftPosAdyen && (!IsPaymentDoneWithParamPaymentType(PrintJob,ePayTypeIntegratedEFTPOS) ||
            (TGlobalSettings::Instance().PrintMerchantReceipt && !TGlobalSettings::Instance().PrintCardHolderReceipt
              ) || (!TGlobalSettings::Instance().PrintMerchantReceipt && !TGlobalSettings::Instance().PrintCardHolderReceipt)
-             || !TGlobalSettings::Instance().DuplicateEftPosReceipt)))
+             || (TGlobalSettings::Instance().DuplicateReceipts && !TGlobalSettings::Instance().DuplicateEftPosReceipt) //
+             ))) //|| !TGlobalSettings::Instance().DuplicateEftPosReceipt
         {
 		    pPrinter->PartialCut();
         }
