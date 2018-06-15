@@ -4584,7 +4584,7 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
         tbtnSmartLinkIp->Caption                             = "Smart Pay Details";
     }
 
-    if(eftposSettingCount == 10)
+    if(eftposSettingCount == 10) //if any new setting made then incremet 10 by 1.
         EnableOtherEFTPOS();
 }
 //--------------------------------------------------------------------------------
