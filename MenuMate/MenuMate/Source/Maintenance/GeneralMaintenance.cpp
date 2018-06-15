@@ -4620,13 +4620,16 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
         cbICELink->Enabled                                   = true;
         cbICELink->Checked                                   = false;
     }
+    cbEnableDPSTipping->Enabled                          = false;
     if(!TGlobalSettings::Instance().EnableEftPosDPS)
     {
         cbIntegratedEftposDPS->Enabled                       = true;
         cbIntegratedEftposDPS->Checked                       = false;
     }
-    cbEnableDPSTipping->Enabled                          = false;
-
+    else
+    {
+        cbEnableDPSTipping->Enabled                          = true;
+    }
     if(!TGlobalSettings::Instance().EnableEftPosAdyen)
     {
         cbIntegratedEftposAdyen->Enabled                     = true;
