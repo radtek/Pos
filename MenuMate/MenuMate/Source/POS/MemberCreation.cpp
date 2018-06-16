@@ -350,14 +350,20 @@ bool TfrmMemberCreation::SetBirthday()
 {
    bool retValue = false;
    TDateTime Birthday;
-   if (!TryEncodeDate(StrToInt(tbtnYear->Caption), StrToInt(tbtnMonth->Caption), StrToInt(tbtnDay->Caption), Birthday))
+   if (!TryEncodeDate(StrToInt(tbtnYear->Caption), StrToInt(tbtnMonth->Caption), StrToInt(tbtnDay->Caption), Birthday) ||
+      (StrToInt(tbtnYear->Caption) < 1899) || (YearOf(Now()) < StrToInt(tbtnYear->Caption)))
    {
 	  MessageBox("Invalid Date of Birth, Please Fix and Try again", "Invalid DOB", MB_OK + MB_ICONERROR);
    }
    else
    {
-	  Info.DateOfBirth = Birthday;
-      retValue = true;
+      if(Birthday <= Now())
+      {
+          Info.DateOfBirth = Birthday;
+          retValue = true;
+      }
+      else
+          MessageBox("Invalid Date of Birth, Please Fix and Try again", "Invalid DOB", MB_OK + MB_ICONERROR);
    }
    return retValue;
 }
