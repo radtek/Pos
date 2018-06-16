@@ -433,5 +433,6 @@ TGlobalSettings::TGlobalSettings()
     EnableCompanyDetailOnReprintReceipt = false;
     CompanydetailsSaved = "";
     PrintMerchantReceipt = false;
+    EmailCapturedForLoyaltyOperation = "";
 }
 

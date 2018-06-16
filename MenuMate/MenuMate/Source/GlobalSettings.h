@@ -528,6 +528,7 @@ public:
     UnicodeString CompanydetailsSaved;
     bool PrintCardHolderReceipt;
     bool PrintMerchantReceipt;
+    UnicodeString EmailCapturedForLoyaltyOperation;
 };
 
 #endif

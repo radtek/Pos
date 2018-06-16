@@ -28,10 +28,7 @@ __published:	// IDE-managed Components
     TTouchBtn *btnEmail;
     TTouchBtn *btnLastName;
     TLabel *lbeEmail;
-    TTouchBtn *btnContactPhone;
-    TLabel *lbeContactPhone;
     TLabel *lbeLastName;
-    TTouchBtn *TouchBtn2;
     TLabel *lbeName;
     TGroupBox *GroupBox1;
     TLabel *Label10;
@@ -40,10 +37,8 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnDay;
     TTouchBtn *tbtnMonth;
     TTouchBtn *tbtnYear;
-    TTouchBtn *tbtnClearBirthday;
-    TTouchBtn *tbtnSetBirthday;
     TTouchBtn *btnName;
-    TGroupBox *gbLoyaltyMateActivation;
+//    TGroupBox *gbLoyaltyMateActivation;
     TLabel *lbeLoyaltyMateActive;
     TTouchBtn *btnActivateLoyaltyMate;
     TLabel *lbeHeader;
@@ -53,23 +48,23 @@ __published:	// IDE-managed Components
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
     void __fastcall TouchBtn1MouseClick(TObject *Sender);
-    void __fastcall TouchBtn2MouseClick(TObject *Sender);
+//    void __fastcall TouchBtn2MouseClick(TObject *Sender);
     void __fastcall tbtnDayMouseClick(TObject *Sender);
     void __fastcall tbtnMonthMouseClick(TObject *Sender);
     void __fastcall tbtnYearMouseClick(TObject *Sender);
-    void __fastcall tbtnClearBirthdayMouseClick(TObject *Sender);
-    void __fastcall tbtnSetBirthdayMouseClick(TObject *Sender);
-    void __fastcall btnActivateLoyaltyMateMouseClick(TObject *Sender);
+//    void __fastcall btnActivateLoyaltyMateMouseClick(TObject *Sender);
     void __fastcall cbNoEmailMouseClick(TObject *Sender);
     void SetupCustomerInfoPointers();
     void DisplayCustomerDataFromPointers();
-    void getMemberDetailsFromActivationEmail();
-    void toggleActivateAccountButton();
+//    void getMemberDetailsFromActivationEmail();
+//    void toggleActivateAccountButton();
 private:	// User declarations
         UnicodeString CustomerInfoPointers[4];
         TMMContactInfo &Info;
         int CheckEmailInDB(AnsiString email);
         void RefreshScreen();
+        void ClearBirthday();
+        bool SetBirthday();
 public:		// User declarations
         __fastcall TfrmMemberCreation(TComponent* Owner, TMMContactInfo &info);
         bool Editing;

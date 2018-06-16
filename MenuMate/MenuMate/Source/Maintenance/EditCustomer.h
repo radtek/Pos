@@ -122,7 +122,10 @@ __published: // IDE-managed Components
     TRichEdit *reAddress;
     TRichEdit *reLocationAddress;
     TMMTouchKeyboard *TouchKeyboard1;
-    TDateTimePicker *DateTimePicker1;
+//    TDateTimePicker *DateTimePicker1;
+    TTouchBtn *tbDay;
+    TTouchBtn *tbMonth;
+    TTouchBtn *tbYear;
     TCheckBox *cbCopyAddress;
     TCheckBox *CheckBoxCharges;
     TCheckBox *cbNoEmail;
@@ -155,11 +158,14 @@ __published: // IDE-managed Components
     void __fastcall tcbeprAllowDiscountsClick(TObject *Sender);
     void __fastcall TouchKeyboard1Click(TObject *Sender, char Char);
     void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
-    void __fastcall cbCopyAddressClick(TObject *Sender);
+   // void __fastcall cbCopyAddressClick(TObject *Sender);
+    void __fastcall tbDayMouseClick(TObject *Sender) ;
+    void __fastcall tbMonthMouseClick(TObject *Sender) ;
+    void __fastcall tbYearMouseClick(TObject *Sender) ;
     void RichTextBoxValue(char valueChar);
     void PopulateRichTextBox(char valueChar, TRichEdit *edRichTextbox);
     bool ValidateDate(TDateTime datetime);
-    void __fastcall DateTimePicker1OnChange(TObject *Sender);
+//    void __fastcall DateTimePicker1OnChange(TObject *Sender);
 
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -195,6 +201,8 @@ private: // User declarations
     void UpdatePointsRuleOldMember();
     void UpdatePointsRuleNewMember();
     void LoadPointsRuleToContact();
+    bool SetBirthday();
+    void ClearBirthday();
 public: // User declarations
 	TMMContactInfo Info;
 	std::auto_ptr <TStringList> DiscountList;
