@@ -149,8 +149,41 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
+            cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
+        }
+    }
+    if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+        GroupBox1->Enabled = false;
+        cbCardHolderCopy->Enabled = false;
+        cbMerchantCopy->Enabled = false;
+        GroupBox1->Visible = false;
+        cbCardHolderCopy->Visible = false;
+        cbMerchantCopy->Visible = false;
+        MainPanel->Height = MainPanel->Height - GroupBox1->Height;
+        SidePanel->Height = SidePanel->Height - GroupBox1->Height;
+        Height =  Height - GroupBox1->Height;
     }
 }
 
 //---------------------------------------------------------------------------
-
+void __fastcall TfrmEFTPOSConfig::cbCardHolderCopyMouseClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().PrintCardHolderReceipt = cbCardHolderCopy->Checked;
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintCardHolderReceipt, TGlobalSettings::Instance().PrintCardHolderReceipt);
+	DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmEFTPOSConfig::cbMerchantCopyMouseClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().PrintMerchantReceipt = cbMerchantCopy->Checked;
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintMerchantReceipt, TGlobalSettings::Instance().PrintMerchantReceipt);
+	DBTransaction.Commit();
+}

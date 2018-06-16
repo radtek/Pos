@@ -60,12 +60,22 @@ namespace AdyenIntegration.Utility
                     string s2 = pair["key"];
                     value += " ";
                     value += pair["value"];
-                    stringList.Add(value);
-                    if (item.EndOfLineFlag == "true")
-                       stringList.Add("\n");
+
+                    if (value.Trim() != "") 
+                        stringList.Add(value);
+
+                    /*bool isNewline = true;
+                    if (text.Trim() != "")
+                    {
+                        string data = text.ToUpper();
+                        isNewline = data.Contains("NAME");
+                    }*/
+                    //if (item.EndOfLineFlag == "true" && isNewline)
+                    //   stringList.Add("\n");
                 }
 
             }
+            stringList.Add("\n");
             return stringList;
         }
     }

@@ -235,6 +235,7 @@ protected:
      void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
+     void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
 };
 
 #endif
