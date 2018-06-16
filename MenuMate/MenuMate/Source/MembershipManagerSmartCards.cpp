@@ -1117,6 +1117,8 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
             SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
             SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            if(SmartCardContact.Name == "")
+                SmartCardContact.Name = TDBContacts::GetContactName(DBTransaction, SmartCardContact.ContactKey);
             TDBContacts::GetDiscountDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
@@ -1349,7 +1351,10 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             // Update the Card with Held Points Transactions.
             // This will trigger a card update when the card events system is woken up again.
             TPointsTransactionContainer PointsTransactions;
-            SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            if(SmartCardContact.Surname == "")
+                SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            if(SmartCardContact.Name == "")
+                SmartCardContact.Name = TDBContacts::GetContactName(DBTransaction, SmartCardContact.ContactKey);
             GetValidPointsTransactions(DBTransaction, SmartCardContact.ContactKey, PointsTransactions);
             SmartCardContact.Points.Add(PointsTransactions);
             if (PointsTransactions.size() != 0 && SavePointsTransactionsToSmartCard(SmartCardContact.Points,""))
