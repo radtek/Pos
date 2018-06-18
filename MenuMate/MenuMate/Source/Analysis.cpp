@@ -2795,6 +2795,11 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    if(!TDeviceRealTerminal::Instance().OpenDatabases())
+    {
+        MessageBox("Error in opening Database","Info",MB_OK);
+        return;
+    }
     zedLogsList->Clear();
     zedLogsList->Add("-----------------------------Zed report button clicked.--------------------------------------------------------------" );
     zedLogsList->Add("ZED starts at: " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
