@@ -89,7 +89,8 @@ class TEftPos
 		TListEftPosTransContainer *EftPosTransContainer;
 	public:
 	__property bool Enabled  = { read=GetEnabled, write=SetEnabled };
-	std::auto_ptr<TStringList> LastEftPosReceipt;	
+	std::auto_ptr<TStringList> LastEftPosReceipt;
+    std::auto_ptr<TStringList> SecondEftPosReceipt;
 	eEFTPOSType EFTPOSType;
    TEftPos();
    ~TEftPos();

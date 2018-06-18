@@ -22,7 +22,7 @@
 
 TEftPos *EftPos;
 
-TEftPos::TEftPos(): LastEftPosReceipt(new TStringList)
+TEftPos::TEftPos(): LastEftPosReceipt(new TStringList), SecondEftPosReceipt(new TStringList)
 {
 	EftPosTransContainer					= new TListEftPosTransContainer;
 	Enabled = false;
@@ -34,7 +34,7 @@ TEftPos::TEftPos(): LastEftPosReceipt(new TStringList)
 	EnquiryEnabled = true;
 	AllowTimeOut = false;   
 	LastEftPosReceipt->Clear();
-
+    SecondEftPosReceipt->Clear();
 	OverLimitAmount = 0;
 	AllowsTipping = false;
 	TippableCardTypes.clear();

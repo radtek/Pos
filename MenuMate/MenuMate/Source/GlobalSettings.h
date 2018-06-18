@@ -526,6 +526,9 @@ public:
     bool AdyenRecoveryTransactionIsRefund;
     bool EnableCompanyDetailOnReprintReceipt;
     UnicodeString CompanydetailsSaved;
+    bool PrintCardHolderReceipt;
+    bool PrintMerchantReceipt;
+    UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
 };

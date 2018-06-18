@@ -426,6 +426,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
         TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmAdyenRecoveryTransactionIsRefund, false);
+        TGlobalSettings::Instance().PrintCardHolderReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintCardHolderReceipt, true);
+        TGlobalSettings::Instance().PrintMerchantReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintMerchantReceipt, false);
         TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
         TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
 }

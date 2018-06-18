@@ -369,6 +369,7 @@ TGlobalSettings::TGlobalSettings()
     OpenCashDrawer = false;
     CashWithdrawalGLCode = "";
     MergeSimilarItem = true;
+    PrintCardHolderReceipt = true;
     HideTaxInvoice = false;
     ExportReprintReceipt = false;
     CaptureRefundRefNo = false;
@@ -431,6 +432,8 @@ TGlobalSettings::TGlobalSettings()
     AdyenRecoveryTransactionIsRefund = false;
     EnableCompanyDetailOnReprintReceipt = false;
     CompanydetailsSaved = "";
+    PrintMerchantReceipt = false;
+    EmailCapturedForLoyaltyOperation = "";
     EnableEftPosPaymentSense = false;
     EftPosTerminalId = "";
 }

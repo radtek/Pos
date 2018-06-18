@@ -2,8 +2,8 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
   Left = 0
   Top = 0
   BorderIcons = []
-  Caption = 'EFTPOS Network Details'
-  ClientHeight = 298
+  Caption = 'EFTPOS Details'
+  ClientHeight = 365
   ClientWidth = 417
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -18,10 +18,13 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     Left = 8
     Top = 8
     Width = 281
-    Height = 285
+    Height = 349
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
+    DesignSize = (
+      281
+      349)
     object tbEFTPOSURL: TTouchBtn
       Left = 8
       Top = 8
@@ -42,7 +45,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object tbAPIKey: TTouchBtn
       Left = 8
-      Top = 78
+      Top = 75
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -60,7 +63,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object tbDeviceID: TTouchBtn
       Left = 8
-      Top = 148
+      Top = 142
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -76,9 +79,54 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbDeviceIDMouseClick
     end
+    object GroupBox1: TGroupBox
+      Left = 8
+      Top = 270
+      Width = 266
+      Height = 75
+      Anchors = [akLeft]
+      Caption = 'EFTPOS Integrated Receipt'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -14
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      object cbMerchantCopy: TCheckBox
+        Left = 8
+        Top = 52
+        Width = 200
+        Height = 20
+        Caption = 'Merchant Copy'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        OnClick = cbMerchantCopyMouseClick
+      end
+      object cbCardHolderCopy: TCheckBox
+        Left = 8
+        Top = 24
+        Width = 200
+        Height = 20
+        Caption = 'CardHolder Copy'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 1
+        OnClick = cbCardHolderCopyMouseClick
+      end
+    end
     object tbEftPosTerminalID: TTouchBtn
       Left = 8
-      Top = 218
+      Top = 207
       Width = 266
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -99,7 +147,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     Left = 295
     Top = 8
     Width = 114
-    Height = 285
+    Height = 349
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

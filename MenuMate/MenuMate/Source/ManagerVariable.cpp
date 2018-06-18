@@ -3390,13 +3390,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarStr(DBTransaction, vmEFTPosAPIKey,  "API Key", "API Key for EFTPOS Cloud", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmEFTPosDeviceID,  "Device ID", "Device ID for EFTPOS Cloud", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmEFTPosURL,  "API URL", "API URL for EFTPOS CLoud", vmg3rdPartyInterface, "");
-        SetVarInt(DBTransaction,
-		vmPMSTimeOut,
-		"PMS Time Out",
-		"PMS Time Out",
-		vmgPOS,
-		3);
+        SetVarInt(DBTransaction, vmPMSTimeOut, "PMS Time Out", "PMS Time Out", vmgPOS, 3);
         SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmPrintCardHolderReceipt,"Print Customer Receipt", "This setting will Prints CardHolder receipt", vmg3rdPartyInterface, true);
+        SetVarBool(DBTransaction,vmPrintMerchantReceipt,"Print Merchant Receipt", "This setting will  Print Merchant receipt", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmEnableEftPosPaymentSense, "Enable Payment Sense Integration", "Tells whether payment sense eftpos is enabled.\r"
          "Default is False", vmg3rdPartyInterface, false);
         SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
