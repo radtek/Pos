@@ -7,6 +7,7 @@ namespace AccountingIntegration.Xero
 {
     using RunningApplications = Dictionary<string, XeroIntegrationApplicationRunner>;
     using AccountingIntegration.Model;
+    using System.Net;
 
     class XeroIntegrationApplicationRunnerManager : IAccountingApllicationManager
     {
@@ -20,6 +21,7 @@ namespace AccountingIntegration.Xero
 
         private XeroIntegrationApplicationRunnerManager()
         {
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
         }
 
         public static XeroIntegrationApplicationRunnerManager Instance
