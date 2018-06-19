@@ -6,9 +6,8 @@
 #include "SiHotDataProcessor.h"
 #include "Math.h"
 #include "MMMessageBox.h"
-
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
-
 #pragma package(smart_init)
 
 TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)
@@ -699,8 +698,14 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         {
             tip += (double)payment->TipAmount;
             siHotPayment.Type       = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
+            if(siHotPayment.Type == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+               siHotPayment.Type = DoRequiredInsertion(payment, paymentsMap);
+            }
             if(siHotPayment.Type    == "")
+            {
                 siHotPayment.Type   = GetPMSDefaultCode(paymentsMap);//TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+            }
             if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type    = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
             if(payment->GetPaymentAttribute(ePayTypeCredit) && (double)payment->GetPayTendered() < 0.0)
@@ -838,4 +843,49 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     return retValue;
 }
 //----------------------------------------------------------------------------
-
+AnsiString TSiHotDataProcessor::DoRequiredInsertion(TPayment *payment, std::map<int,TPMSPaymentType> &paymentsMap)
+{
+   AnsiString retValue = "";
+   try
+   {
+       AnsiString defaultPayCode = GetPMSDefaultCode(paymentsMap);
+       AddPaymentToPMSPaymentTypes(payment,defaultPayCode);
+       GetPMSPaymentType(paymentsMap);
+       retValue = GetPMSPaymentCode(payment,paymentsMap);
+   }
+   catch(Exception &Exc)
+   {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+   }
+   return retValue;
+}
+//----------------------------------------------------------------------------
+void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = " INSERT INTO PMSPAYMENTSCONFIG "
+                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                 " PMS_PAYTYPE_CATEGORY ,IS_ELECTRONICPAYMENT) VALUES"
+                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                 " :PMS_PAYTYPE_CATEGORY ,:IS_ELECTRONICPAYMENT)";
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger =
+                                 TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        InsertQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------
