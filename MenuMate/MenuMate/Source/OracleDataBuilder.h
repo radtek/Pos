@@ -61,5 +61,7 @@ class TOracleDataBuilder
         void GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap);
         AnsiString GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap);
         AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
+       void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
+       AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
 };
 #endif
