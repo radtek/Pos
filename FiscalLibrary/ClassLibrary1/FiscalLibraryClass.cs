@@ -388,7 +388,8 @@ namespace FiscalLibraries
                         string sizeName = fiscalItem.SizeName;
                         totalItemprice += total;
                         fiscalItem.ItemDescription = fiscalItem.SizeName + " " + fiscalItem.ItemDescription;
-                        fiscalItem.ItemDescription = fiscalItem.ItemDescription.Substring(0, 30);
+                        int size = fiscalItem.ItemDescription.Length > 30 ? 30 : fiscalItem.ItemDescription.Length;
+                        fiscalItem.ItemDescription = fiscalItem.ItemDescription.Substring(0, size);
                         stringList.Add("Iteam iterated is: " + fiscalItem.ItemDescription);
                         if (isNormalSale)
                             fiscalprinter.PrintRecItem(fiscalItem.ItemDescription, (decimal)total, (int)qty, (int)vat, (decimal)ppu, fiscalItem.ItemDescription);
