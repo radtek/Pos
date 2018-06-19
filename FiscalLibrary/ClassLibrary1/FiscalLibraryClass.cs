@@ -388,6 +388,8 @@ namespace FiscalLibraries
                         string sizeName = fiscalItem.SizeName;
                         totalItemprice += total;
                         fiscalItem.ItemDescription = fiscalItem.SizeName + " " + fiscalItem.ItemDescription;
+                        fiscalItem.ItemDescription = fiscalItem.ItemDescription.Substring(0, 30);
+                        stringList.Add("Iteam iterated is: " + fiscalItem.ItemDescription);
                         if (isNormalSale)
                             fiscalprinter.PrintRecItem(fiscalItem.ItemDescription, (decimal)total, (int)qty, (int)vat, (decimal)ppu, fiscalItem.ItemDescription);
                         else
@@ -415,12 +417,13 @@ namespace FiscalLibraries
                     foreach (FiscalPayment paymentInfo in PaymentList)
                     {
                         decimal total = (Convert.ToDecimal(paymentInfo.Amount) * multiplier);
+                        stringList.Add("total amount for payment type: "+ paymentInfo.Description + " " + total);
                         totalPaymentcollected += total;
                         total = (Convert.ToDecimal(paymentInfo.PaymentSurcharge) * multiplier);
                         totalPaymentSurcharge += total;
                         total = (Convert.ToDecimal(paymentInfo.TipAmount) * multiplier);
                         totalTipAmount += total;
-                        total = total = (Convert.ToDecimal(paymentInfo.ChangeAmount) * multiplier);
+                        total = (Convert.ToDecimal(paymentInfo.ChangeAmount) * multiplier);
                         totalChange += total;
                     }
                     //if (!isNormalSale)
