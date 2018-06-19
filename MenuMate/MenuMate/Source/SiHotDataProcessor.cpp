@@ -698,7 +698,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         {
             tip += (double)payment->TipAmount;
             siHotPayment.Type       = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
-            if(siHotPayment.Type == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            if(siHotPayment.Type == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
             {
                siHotPayment.Type = DoRequiredInsertion(payment, paymentsMap);
             }
@@ -878,7 +878,7 @@ void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStri
         InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
         InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
         InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
-        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
         InsertQuery->ExecQuery();
         DBTransaction.Commit();
     }

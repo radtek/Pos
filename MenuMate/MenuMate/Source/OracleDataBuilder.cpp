@@ -189,7 +189,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         bool isNotRoomPaymentType = false;
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
         paymentMethod = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
-        if(paymentMethod == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+        if(paymentMethod == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
         {
            paymentMethod = DoRequiredInsertion(payment, paymentsMap);
         }
@@ -1208,7 +1208,7 @@ void TOracleDataBuilder::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStrin
         InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
         InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
         InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
-        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
         InsertQuery->ExecQuery();
         DBTransaction.Commit();
     }
