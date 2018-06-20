@@ -3387,7 +3387,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         GetPaymentDetails(paymentDetails, terminalNamePredicate);
         IBInternalQuery->SQL->Text = paymentDetails;
 
-        IBInternalQueryTotal->SQL->Text =   "Select e.CATEGORY,e.GL_CODE,e.PRICE,f.TAX from "
+        IBInternalQueryTotal->SQL->Text =   "Select e.CATEGORY,e.GL_CODE,CAST(f.TAX AS DECIMAL(18,2)) TAX,CAST((e.PRICE-f.TAX) AS DECIMAL(18,2)) PRICE  from "
                                             "( "
                                             "Select c.CATEGORY,c.GL_CODE, Sum(a.PRICE * a.QTY) PRICE from  DAYARCHIVE a "
                                             "left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY "
@@ -3464,12 +3464,11 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
           AnsiString AccountCode = "200";
           if(IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != NULL && IBInternalQueryTotal->FieldByName("GL_CODE")->AsString != "")
             AccountCode = IBInternalQueryTotal->FieldByName("GL_CODE")->AsString;
-          catTotal += IBInternalQueryTotal->FieldByName("PRICE")->AsFloat;
+          catTotal += IBInternalQueryTotal->FieldByName("PRICE")->AsFloat + IBInternalQueryTotal->FieldByName("TAX")->AsFloat;
           if(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat != 0)
            {
-             double price = RoundTo(IBInternalQueryTotal->FieldByName("PRICE")->AsFloat, -4) - RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -4);
-              double price1 =RoundTo(price,-2);
-             AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, price1, AccountCode, RoundTo(IBInternalQueryTotal->FieldByName("TAX")->AsFloat, -2));
+             AddInvoiceItem(XeroInvoiceDetail,IBInternalQueryTotal->FieldByName("CATEGORY")->AsString, IBInternalQueryTotal->FieldByName("PRICE")->AsFloat
+                            , AccountCode, IBInternalQueryTotal->FieldByName("TAX")->AsFloat);
            }
         }
 
@@ -3577,28 +3576,28 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
               if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Points")
                  AccountCode = TGlobalSettings::Instance().PointsSpentGLCode;
               payment.SetPaymentAttribute(ePayTypeCash);
-              payTotal += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+              payTotal += IBInternalQuery->FieldByName("Amount")->AsFloat;
 
               if( TGlobalSettings::Instance().PostMoneyAsPayment)
               {
                  if(addFloatAdjustmentToPayments && addEachPaymentNode)
                  {
                     if(IBInternalQuery->FieldByName("PROPERTIES")->AsString.Pos(payment.GetPropertyString()) != 0)
-                        cashAmount += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+                        cashAmount += IBInternalQuery->FieldByName("Amount")->AsFloat;
                     else
                         AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2) ,AccountCode,0);
+                                            IBInternalQuery->FieldByName("Amount")->AsFloat ,AccountCode,0);
                  }
                  else if(!addFloatAdjustmentToPayments && addEachPaymentNode)
                  {
                         AddInvoicePayment(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                                      RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2) ,AccountCode,0);
+                                            IBInternalQuery->FieldByName("Amount")->AsFloat ,AccountCode,0);
                  }
 
               }
               else
               {
-                double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+                double paymentAmount = IBInternalQuery->FieldByName("Amount")->AsFloat;
                 if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash" && TGlobalSettings::Instance().FloatWithdrawFromCash &&
                    cashWithdrawal != 0)
                 {
@@ -3610,7 +3609,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
            }
 
            if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
-            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -2);
+            TipAmount += IBInternalQuery->FieldByName("Tip")->AsFloat;
         }
 
         //Add payment Tip for DPS EftPOS
@@ -3652,7 +3651,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 
         if(catTotal - payTotal)
         {
-          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -2),TGlobalSettings::Instance().RoundingGLCode,0);
+          AddInvoiceItem(XeroInvoiceDetail,"ROUNDING",-1 * (catTotal - payTotal),TGlobalSettings::Instance().RoundingGLCode,0);
         }
 
         AnsiString daystr = Now().FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
@@ -3719,7 +3718,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
     try
     {
         AnsiString paymentDetailsPrimitive =
-             " SELECT  b.PAY_TYPE,c.PROPERTIES,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,4)) Tip,c.GL_CODE  From DAYARCBILL a "
+             " SELECT  b.PAY_TYPE,c.PROPERTIES,cast( Sum(b.SUBTOTAL) as numeric(17,2)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,2)) Tip,c.GL_CODE  From DAYARCBILL a "
              " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
              " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
              " where "

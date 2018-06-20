@@ -37,7 +37,7 @@ void TLoyaltyMateInterface::RefreshSiteID()
     InitSiteID();
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicateCode,TMMContactInfo contactInfo,AnsiString &uuid )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicateCode,TMMContactInfo &contactInfo,AnsiString &uuid )
 {
     try
     {
@@ -48,7 +48,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
             wcfInfo->Activated    = true;
         else
             wcfInfo->Activated    = false;     //trip
-	
+
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo );
         if( FAutoSync && wcfResponse->Successful)
@@ -56,6 +56,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
             contactInfo.CloudUUID = AnsiString(wcfResponse->MemberInfo->UniqueId);
             contactInfo.MemberCode = AnsiString(wcfResponse->MemberInfo->MemberCardCode);
             SyncLoyaltymateAttrs( &contactInfo );
+            ReadContactInfo(wcfResponse, contactInfo, true );
         }
         return CreateMMResponse( wcfResponse );
     }

@@ -14833,12 +14833,11 @@ void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sen
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 {
-  if(!Membership.Applied() && Active)
+  TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+  if(!Membership.Applied() && (Active || drt.ManagerMembership->ManagerSmartCards->CardInserted))
   {
-	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
     drt.ManagerMembership->ManagerSmartCards->GetContactInfo(info);
-
 	if (TSmartcard_Preloader::is_preloaded_card(info))
     {
 		if (!TGlobalSettings::Instance().QMSIsEnabled || ignore_preloaded_card ||
