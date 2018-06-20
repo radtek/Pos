@@ -369,6 +369,7 @@ TGlobalSettings::TGlobalSettings()
     OpenCashDrawer = false;
     CashWithdrawalGLCode = "";
     MergeSimilarItem = true;
+    PrintCardHolderReceipt = true;
     HideTaxInvoice = false;
     ExportReprintReceipt = false;
     CaptureRefundRefNo = false;
@@ -429,5 +430,9 @@ TGlobalSettings::TGlobalSettings()
     PMSTimeOut = 0;
     IsSmartConnectQRTransaction = false;
     AdyenRecoveryTransactionIsRefund = false;
+    EnableCompanyDetailOnReprintReceipt = false;
+    CompanydetailsSaved = "";
+    PrintMerchantReceipt = false;
+    EmailCapturedForLoyaltyOperation = "";
 }
 

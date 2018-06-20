@@ -32,6 +32,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     double discountValue          = 0.0;
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber     = _paymentTransaction.Phoenix.AccountNumber;
+    _roomCharge.RoomNumber        = _paymentTransaction.Phoenix.RoomNumber;
 
     if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
     {
@@ -40,6 +41,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         _paymentTransaction.Phoenix.RoomNumber    = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
         _paymentTransaction.SalesType             = eRoomSale;
+        _roomCharge.RoomNumber                    = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
 
         for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
         {
@@ -630,10 +632,21 @@ AnsiString TSiHotDataProcessor::GetPMSPaymentCode(TPayment *payment,std::map<int
         }
         else
         {
-            if(it->second.PMSPayTypeName == payment->CardType)
+            if(payment->CardType != "")
             {
-                value = it->second.PMSPayTypeCode;
-                break;
+                if(it->second.PMSPayTypeName == payment->CardType)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
+            }
+            else
+            {
+                if(it->second.PMSPayTypeName == payment->Name)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
             }
         }
     }

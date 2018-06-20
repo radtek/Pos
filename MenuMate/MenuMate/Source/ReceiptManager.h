@@ -21,7 +21,7 @@ class TManagerReceipt : public TManager
 	void SetCurrentDate(TDateTime SelectedDate);
 	bool Get(Database::TDBTransaction &DBTransaction);
     void AddDuplicateLabel(TMemoryStream* ReceiptToEdit,TStringList *Lines);
-    void PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt);
+    void PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool IsCompanyDetailsReprintReceipt = false);
     bool CanReprintReceipt(Database::TDBTransaction &DBTransaction, AnsiString InvoiceNumber);
 	public:
 	TManagerReceipt(Database::TDBControl &inDBControl);

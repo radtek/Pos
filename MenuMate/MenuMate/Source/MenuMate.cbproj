@@ -3005,6 +3005,10 @@
 				<DependentOn>MembershipEbetTCP.h</DependentOn>
 				<BuildOrder>256</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="POS\WalletPaymentsWSDL.cpp">
+				<DependentOn>POS\WalletPaymentsWSDL.h</DependentOn>
+				<BuildOrder>756</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.cpp">
 				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.h</DependentOn>
 				<BuildOrder>671</BuildOrder>
@@ -3490,10 +3494,6 @@
 			</CppCompile>
 			<CppCompile Include="AdyenWSDL.cpp">
 				<DependentOn>AdyenWSDL.h</DependentOn>
-				<BuildOrder>797</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="POS\WalletPaymentsWSDL.cpp">
-				<DependentOn>POS\WalletPaymentsWSDL.h</DependentOn>
 				<BuildOrder>797</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>

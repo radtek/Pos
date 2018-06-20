@@ -97,7 +97,7 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    edFirstName->SetFocus();
    if(Info.DateOfBirth.Val == 0)
    {
-     DateTimePicker1->Date = Now();
+     ClearBirthday();
    }
    cbNoEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    edEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
@@ -867,6 +867,11 @@ void TfrmEditCustomer::SetupCustomerInfoPointers()
     CustomerInfoPointers[8] = &Info.Sex;
     CustomerInfoPointers[9] = &Info.Note;
     CustomerInfoPointers[10] = &Info.Surname;
+
+    if(Info.DateOfBirth.Val == 0)
+    {
+        ClearBirthday();
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmEditCustomer::DisplayCustomerDataFromPointers()
@@ -885,7 +890,10 @@ void TfrmEditCustomer::DisplayCustomerDataFromPointers()
     edSex->Text = *CustomerInfoPointers[8];
     edNote->Text = *CustomerInfoPointers[9];
     edLastName->Text = *CustomerInfoPointers[10];
-    DateTimePicker1->DateTime = Info.DateOfBirth;
+    tbYear->Caption = IntToStr(YearOf(Info.DateOfBirth));
+    tbMonth->Caption = IntToStr(MonthOf(Info.DateOfBirth));
+    tbDay->Caption = IntToStr(DayOf(Info.DateOfBirth));
+    SetBirthday();
 }
 //---------------------------------------------------------------------------
 UnicodeString TfrmEditCustomer::RemoveLineBreaks(UnicodeString line)
@@ -974,10 +982,10 @@ void TfrmEditCustomer::ChangeTextBoxFocus()
    {
      edNote->SetFocus();
    }
-   else if(edNote->Focused())
-   {
-      DateTimePicker1->SetFocus();
-   }
+//   else if(edNote->Focused())
+//   {
+//      DateTimePicker1->SetFocus();
+//   }
    else
    {
       edFirstName->SetFocus();
@@ -1068,10 +1076,10 @@ void TfrmEditCustomer::TextBoxValue(char valueChar)
   {
     PopulateTextBox(valueChar, edNote);
   }
-  else if(DateTimePicker1->Focused())
-  {
-      PopulateDateTimePicker(valueChar, DateTimePicker1);
-  }
+//  else if(DateTimePicker1->Focused())
+//  {
+//      PopulateDateTimePicker(valueChar, DateTimePicker1);
+//  }
   UpdateSmartCardSpace();
 }
 // ---------------------------------------------------------------------------
@@ -1121,14 +1129,14 @@ void TfrmEditCustomer::ValidateTextBox()
     {
        edNote->SetFocus();
     }
-    else if(edNote->Focused())
-    {
-       DateTimePicker1->SetFocus();
-    }
-    else if(DateTimePicker1->Focused())
-    {
-       btnOkClick(btnClose);
-    }
+//    else if(edNote->Focused())
+//    {
+//       DateTimePicker1->SetFocus();
+//    }
+//    else if(DateTimePicker1->Focused())
+//    {
+//       btnOkClick(btnClose);
+//    }
     else
     {
        btnOkClick(btnClose);
@@ -1224,17 +1232,17 @@ bool TfrmEditCustomer::ValidateEmailId()
    return isEmailValid;
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmEditCustomer::cbCopyAddressClick(TObject *Sender)
-{
-  if(cbCopyAddress->Checked)
-  {
-    reAddress->Text = reLocationAddress->Text;
-  }
-  else
-  {
-     reAddress->Text = "";
-  }
-}
+//void __fastcall TfrmEditCustomer::cbCopyAddressClick(TObject *Sender)
+//{
+//  if(cbCopyAddress->Checked)
+//  {
+//    reAddress->Text = reLocationAddress->Text;
+//  }
+//  else
+//  {
+//     reAddress->Text = "";
+//  }
+//}
 // ---------------------------------------------------------------------------
 bool TfrmEditCustomer::ValidateDate(TDateTime datetime)
 {
@@ -1243,17 +1251,17 @@ bool TfrmEditCustomer::ValidateDate(TDateTime datetime)
     {
       if(MessageBox("Select Date is not valid.", "Invalid Date", MB_RETRYCANCEL) == IDRETRY)
       {
-        DateTimePicker1->SetFocus();
+        //DateTimePicker1->SetFocus();
       }
        retVal = false;
     }
    return retVal;
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmEditCustomer::DateTimePicker1OnChange(TObject *Sender)
-{
-   Info.DateOfBirth = DateTimePicker1->DateTime;
-}
+//void __fastcall TfrmEditCustomer::DateTimePicker1OnChange(TObject *Sender)
+//{
+//   Info.DateOfBirth = DateTimePicker1->DateTime;
+//}
 // ---------------------------------------------------------------------------
 void TfrmEditCustomer::ProcessData()
 {
@@ -1397,7 +1405,90 @@ void __fastcall TfrmEditCustomer::tcbeprAllowDiscountsClick(TObject *Sender)
    }
 }
 //-----------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tbDayMouseClick(TObject *Sender)
+{
+   std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+   frmTouchNumpad->Caption = "Enter the Day 1st - 31st";
+   frmTouchNumpad->btnSurcharge->Caption = "Ok";
+   frmTouchNumpad->btnSurcharge->Visible = true;
+   frmTouchNumpad->btnDiscount->Visible = false;
+   frmTouchNumpad->PreSelect = true;
+   frmTouchNumpad->Mode = pmNumber;
+   frmTouchNumpad->INTInitial = DayOf(Info.DateOfBirth);
 
-
+   if (frmTouchNumpad->ShowModal() == mrOk)
+   {
+        tbDay->Caption = IntToStr(frmTouchNumpad->INTResult);
+   }
+   if(!SetBirthday())
+     tbDayMouseClick(NULL);
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tbMonthMouseClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+   frmTouchNumpad->Caption = "Enter the Month 1 - 12";
+   frmTouchNumpad->btnSurcharge->Caption = "Ok";
+   frmTouchNumpad->btnSurcharge->Visible = true;
+   frmTouchNumpad->btnDiscount->Visible = false;
+   frmTouchNumpad->PreSelect = true;
+   frmTouchNumpad->Mode = pmNumber;
+   frmTouchNumpad->INTInitial = MonthOf(Info.DateOfBirth); ;
+   if (frmTouchNumpad->ShowModal() == mrOk)
+   {
+	    tbMonth->Caption = IntToStr(frmTouchNumpad->INTResult);
+   }
+   if(!SetBirthday())
+     tbMonthMouseClick(NULL);
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tbYearMouseClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+   frmTouchNumpad->Caption = "Enter the Year xxxx";
+   frmTouchNumpad->btnSurcharge->Caption = "Ok";
+   frmTouchNumpad->btnSurcharge->Visible = true;
+   frmTouchNumpad->btnDiscount->Visible = false;
+   frmTouchNumpad->PreSelect = true;
+   frmTouchNumpad->Mode = pmNumber;
+   frmTouchNumpad->INTInitial = YearOf(Info.DateOfBirth); ; ;
+   if (frmTouchNumpad->ShowModal() == mrOk)
+   {
+      tbYear->Caption = IntToStr(frmTouchNumpad->INTResult);
+   }
+   if(!SetBirthday())
+      tbYearMouseClick(NULL);
+}
+//-----------------------------------------------------------------------------
+bool TfrmEditCustomer::SetBirthday()
+{
+   bool retValue = false;
+   TDateTime Birthday;
+   if (!TryEncodeDate(StrToInt(tbYear->Caption), StrToInt(tbMonth->Caption), StrToInt(tbDay->Caption), Birthday)||
+      (StrToInt(tbYear->Caption) < 1899) || (YearOf(Now()) < StrToInt(tbYear->Caption)))
+   {
+	  MessageBox("Invalid Date of Birth, Please Fix and Try again", "Invalid DOB", MB_OK + MB_ICONERROR);
+   }
+   else
+   {
+      if(Birthday <= Now())
+      {
+          Info.DateOfBirth = Birthday;
+          retValue = true;
+      }
+      else
+          MessageBox("Invalid Date of Birth, Please Fix and Try again", "Invalid DOB", MB_OK + MB_ICONERROR);
+   }
+   return retValue;
+}
+//---------------------------------------------------------------------------
+void TfrmEditCustomer::ClearBirthday()
+{
+   Info.DateOfBirth = 0;
+   tbYear->Caption = "1899";
+   tbMonth->Caption = "12";
+   tbDay->Caption = "30";
+}
+//-----------------------------------------------------------------------------
 
 

@@ -6,6 +6,7 @@ using SiHotIntegration;
 using SiHotIntegration.Domain;
 using SiHotIntegration.Utility;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MenumateServices.WCFServices
 {
@@ -14,13 +15,13 @@ namespace MenumateServices.WCFServices
         public SiHotIntegrationWebService()
         {
         }
-        public RoomDetails GetRoomDetails(RoomRequest roomRequest)
+        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut)
         {
             RoomDetails roomDetails = new RoomDetails();
             try
             {
                 SiHotCommunicationController siCommController = new SiHotCommunicationController();
-                roomDetails = siCommController.GetRoomDetails(roomRequest);
+                roomDetails = siCommController.GetRoomDetails(roomRequest,timeOut);
                 return roomDetails;
             }
             catch (Exception ex)
@@ -30,7 +31,7 @@ namespace MenumateServices.WCFServices
             return roomDetails;
 
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut)
         {
             int retryCount = 1;
             bool retryPosting = true;
@@ -39,8 +40,9 @@ namespace MenumateServices.WCFServices
             {
                 while (retryPosting)
                 {
+                    roomChargeReponse = new RoomChargeResponse();
                     SiHotCommunicationController siCommController = new SiHotCommunicationController();
-                    roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails,retryCount);
+                    roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails,retryCount,timeOut);
                     if (!roomChargeReponse.IsSuccessful &&
                         (roomChargeReponse.Response == "" || roomChargeReponse.Response == null || 
                         roomChargeReponse.Response == siCommController.connectFailedMessage || roomChargeReponse.Response == siCommController.siHotUnavailable) && 
@@ -49,11 +51,18 @@ namespace MenumateServices.WCFServices
                         retryCount += 1;
                         retryPosting = true;
                         roomChargeReponse = new RoomChargeResponse();
-                        System.Threading.Thread.Sleep(500); 
+                        System.Threading.Thread.Sleep(500);
+                        List<string> stringList = new List<string>();
+                        stringList.Add("==============================================================================");
+                        stringList.Add("Retry detected:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        stringList.Add("==============================================================================");
+                        WriteToFile(stringList);
                     }
                     else
                     {
                         retryPosting = false;
+                        if (retryCount >= 3 || roomChargeReponse.IsSuccessful)
+                            break;
                     }
                 }
             }
@@ -68,7 +77,57 @@ namespace MenumateServices.WCFServices
             SiHotCommunicationController siCommController = new SiHotCommunicationController();
             return siCommController.ValidateCredentials(address, port, transno);
         }
+        private void WriteToFile(List<string> list)
+        {
+            try
+            {
+                list.Add("=================================================================================");
+                string path = System.IO.Path.GetDirectoryName(
+                          System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
+
+                string location = Path.Combine(path, "Sihot Post Logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string name2 = "SiHotPosts " + DateTime.Now.ToString("ddMMMyyyy") + ".txt";
+                string fileName = Path.Combine(location, name2);
+
+                if (fileName.Contains(@"file:\"))
+                {
+                    fileName = fileName.Replace(@"file:\", "");
+                }
+                if (!File.Exists(fileName))
+                {
+
+                    using (StreamWriter sw = File.CreateText(fileName))
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sw.WriteLine(list[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    using (var sw = File.AppendText(fileName))
+                    {
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sw.WriteLine(list[i]);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Making File" + ex.Message);
+            }
+        }
 
     }
 }

@@ -123,6 +123,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
     void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
+    bool IsOracleConfigured();
+    bool IsSiHotConfigured();
 
 protected:
 
@@ -228,11 +230,12 @@ protected:
      void PrintReceipt(bool RequestEFTPOSReceipt);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
      char* Formatdateseparator( UnicodeString date) ;
-     bool IsOracleConfigured();
+
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
      bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
+     void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
 };
 
 #endif

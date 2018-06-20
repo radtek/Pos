@@ -110,7 +110,7 @@ class TLoyaltyMateInterface
 
         // creates a member in the cloud
         // returns a globally unique identifier so the POS can store it on the card and in the database for future use
-        MMLoyaltyServiceResponse CreateMember(TSyndCode syndicateCode,TMMContactInfo contactInfo,AnsiString &uuid );
+        MMLoyaltyServiceResponse CreateMember(TSyndCode syndicateCode,TMMContactInfo &contactInfo,AnsiString &uuid );
 
         // updates member details using a uuid
         MMLoyaltyServiceResponse UpdateMember(TSyndCode syndicateCode,AnsiString uuid,const TMMContactInfo* const contactInfo);

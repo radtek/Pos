@@ -343,7 +343,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction1.Rollback();
-        MessageBox(E.Message,"Exception in creating XML",MB_OK);
+//        MessageBox(E.Message,"Exception in creating XML",MB_OK);
 	}
     return postRequest;
 }
@@ -1131,10 +1131,21 @@ AnsiString TOracleDataBuilder::GetPMSPaymentCode(TPayment *payment,std::map<int,
         }
         else
         {
-            if(it->second.PMSPayTypeName == payment->CardType)
+            if(payment->CardType != "")
             {
-                value = it->second.PMSPayTypeCode;
-                break;
+                if(it->second.PMSPayTypeName == payment->CardType)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
+            }
+            else
+            {
+                if(it->second.PMSPayTypeName == payment->Name)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
             }
         }
     }

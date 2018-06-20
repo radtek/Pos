@@ -278,7 +278,7 @@ void TDBSecurity::SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, T
         TItemMinorComplete *ItemMinorComplete = (TItemMinorComplete *)Order;
         TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
         bool isRecordAlresdyExist = CheckWhetherGuestRecordExists(paymentTransaction.DBTransaction, Order->Security->GetSecurityRefNumber(),
-                                        Order->RoomNoStr, seatNo, Order->AccNo);
+                                        seatNo, tableNo);   //Order->RoomNoStr,Order->AccNo,
         if(!isRecordAlresdyExist)
         {
              for (int i = 0; i < Order->Security->Count; i++)
@@ -338,8 +338,8 @@ void TDBSecurity::SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, T
 	}
 }
 //----------------------------------------------------------------------------------------
-bool TDBSecurity::CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTransaction, int securityRef, UnicodeString roomNumber,
-                                int seatNo, UnicodeString accNo)
+bool TDBSecurity::CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTransaction, int securityRef, //, UnicodeString roomNumber, UnicodeString accNo,
+                                int seatNo, int tableNo)
 {
     bool isRecordExist = false;
     try
@@ -347,12 +347,14 @@ bool TDBSecurity::CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTran
         TIBSQL *IBInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.SECURITYREF FROM PMSGUESTDETAILS a "
-                                     "WHERE a.SECURITYREF = :SECURITYREF AND A.ROOMNUMBER = :ROOMNUMBER "
-                                        "AND A.SEATNUMBER = :SEATNUMBER AND A.ACCOUNTNUBER = :ACCOUNTNUBER ";
+                                     "WHERE a.SECURITYREF = :SECURITYREF " //AND A.ROOMNUMBER = :ROOMNUMBER "
+                                     "AND A.SEATNUMBER = :SEATNUMBER AND A.TABLENUMBER = :TABLENUMBER ";
+                                    // "AND A.SEATNUMBER = :SEATNUMBER AND A.ACCOUNTNUBER = :ACCOUNTNUBER ";
         IBInternalQuery->ParamByName("SECURITYREF")->AsInteger = securityRef;
-        IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = roomNumber;
+        //IBInternalQuery->ParamByName("ROOMNUMBER")->AsString = roomNumber;
         IBInternalQuery->ParamByName("SEATNUMBER")->AsInteger = seatNo;
-        IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = accNo.SubString(1, 20);
+        IBInternalQuery->ParamByName("TABLENUMBER")->AsInteger = tableNo;
+        //IBInternalQuery->ParamByName("ACCOUNTNUBER")->AsString = accNo.SubString(1, 20);
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)

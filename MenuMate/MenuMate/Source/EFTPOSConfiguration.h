@@ -22,11 +22,16 @@ __published:	// IDE-managed Components
     TTouchBtn *tbAPIKey;
     TTouchBtn *tbDeviceID;
     TTouchBtn *tbOK;
+    TCheckBox *cbCardHolderCopy;
+    TCheckBox *cbMerchantCopy;
+    TGroupBox *GroupBox1;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall tbOKMouseClick(TObject *Sender);
     void __fastcall tbEFTPOSURLMouseClick(TObject *Sender);
     void __fastcall tbAPIKeyMouseClick(TObject *Sender);
     void __fastcall tbDeviceIDMouseClick(TObject *Sender);
+    void __fastcall cbCardHolderCopyMouseClick(TObject *Sender);
+    void __fastcall cbMerchantCopyMouseClick(TObject *Sender);
 private:	// User declarations
     __fastcall TfrmEFTPOSConfig(TComponent* Owner);
     void UpdateGUI();
