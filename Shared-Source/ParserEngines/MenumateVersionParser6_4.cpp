@@ -67,6 +67,11 @@ void TApplyParser::upgrade6_50Tables()
 {
     update6_50Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_51Tables()
+{
+    update6_51Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -153,6 +158,10 @@ void TApplyParser::update6_49Tables()
     AlterTable6_49MallExportSales(_dbControl);
 }
 //--------------------------------------------
+void TApplyParser::update6_51Tables()
+{
+   AlterTable6_51MallExport(_dbControl);
+}
 void TApplyParser::UpdateChargeToAccount(TDBControl* const inDBControl)
 {
     int invoiceInterface = 25;
@@ -2051,5 +2060,23 @@ void TApplyParser::ModifyElectronicsPayments(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_51MallExport(TDBControl* const inDBControl)
+{
+    if (!fieldExists( "ARCMALLEXPORTHOURLY", "Z_KEY", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORTHOURLY  "
+        "ADD Z_KEY INTEGER ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "ARCMALLEXPORT", "Z_KEY", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORT  "
+        "ADD Z_KEY INTEGER ; ",
+		inDBControl);
+	}
+}
 }
 //------------------------------------------------------------------------------
