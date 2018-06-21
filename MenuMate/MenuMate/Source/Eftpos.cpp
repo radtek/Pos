@@ -303,3 +303,11 @@ bool TEftPos::IsCashOutSupported()
     return true;
 }
 //--------------------------------------------------------------------------
+void TEftPos::LogEFTPOSEnabling(AdyenTriggerLocation triggerType)
+{
+}
+//---------------------------------------------------------------------------
+void TEftPos::UpdateEFTPOSLogs(bool status)
+{
+}
+//---------------------------------------------------------------------------

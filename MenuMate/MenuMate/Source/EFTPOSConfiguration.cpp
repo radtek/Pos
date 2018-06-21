@@ -34,9 +34,13 @@ void __fastcall TfrmEFTPOSConfig::tbOKMouseClick(TObject *Sender)
 bool TfrmEFTPOSConfig::EnableEFTPOSTerminal()
 {
     EftPos = new TEftposAdyen();
+    EftPos->LogEFTPOSEnabling(eUIForAdyen);
     EftPos->Initialise();
     if(EftPos->Enabled)
+    {
         MessageBox("Details for Adyen integration are verified.\rPlease make sure integrated EFTPOS payment type is configured under Payments.","Info",MB_OK + MB_ICONINFORMATION);
+    }
+    EftPos->UpdateEFTPOSLogs(EftPos->Enabled);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEFTPOSURLMouseClick(TObject *Sender)

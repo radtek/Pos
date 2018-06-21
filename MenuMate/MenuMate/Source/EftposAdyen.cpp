@@ -227,10 +227,10 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                                       // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                                       if(TGlobalSettings::Instance().PrintCardHolderReceipt)
-                                            LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
+                                            LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
 
                                       if(TGlobalSettings::Instance().PrintMerchantReceipt)
-                                            LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
+                                            LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
                                    }
                               }
                               else
@@ -247,6 +247,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                   }
                   else
                   {
+//                      MessageBox(4,2,MB_OK);
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                       {
@@ -732,3 +733,67 @@ void TEftposAdyen::PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt)
 		delete Printout;
    }
 }
+//------------------------------------------------------------------------------
+void TEftposAdyen::LogEFTPOSEnabling(AdyenTriggerLocation triggerType)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(triggerType == eUI)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Adyen as Selected from UI" +"\n");
+        }
+        else if(triggerType == eBoot)
+        {
+            List->Add("Note- "+ (AnsiString)"Enabling Adyen at start of Menumate" +"\n");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+
+}
+//------------------------------------------------------------------------------
+void TEftposAdyen::UpdateEFTPOSLogs(bool status)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(status)
+        {
+            List->Insert((List->Count-1),"<<< Adyen Enabled >>>");
+        }
+        else
+        {
+            List->Insert((List->Count-1),"<<< Adyen Interface Not Enabled >>>");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//------------------------------------------------------------------------------
+AnsiString TEftposAdyen::GetLogFileName()
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\Adyen Post Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "AdyenPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "\\" + name;
+    return fileName;
+}
+//------------------------------------------------------------------------------
+

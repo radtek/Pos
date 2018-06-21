@@ -359,7 +359,9 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		else if (TGlobalSettings::Instance().EnableEftPosAdyen && EftPosRegiestered)
 		{
 			EftPos = new TEftposAdyen();
+            EftPos->LogEFTPOSEnabling(eBootForAdyen);
 			EftPos->Initialise();
+            EftPos->UpdateEFTPOSLogs(EftPos->Enabled);
 		}
 		else
 		{
