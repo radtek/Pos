@@ -108,19 +108,27 @@ namespace OracleTCPServer
                 tcpclnt.Close();
                 listLogs.Add("Existing connection closed at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
+            try
+            {
+                listLogs.Add("Closing explicitely                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                tcpclnt.Close();
+                listLogs.Add("Closed explicitely                                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            catch (Exception ex)
+            {
+                listLogs.Add("Exception in closing explicitly at                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            Thread.Sleep(14000);
             if (InitializeClient())
             {
-                listLogs.Add("Connection established at                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 SendLinkDescription();
             }
+            MakeLogs(listLogs);
+            listLogs.Clear();
         }
         private static void SendLinkDescription()
         {
-            LinkDescription ld = new LinkDescription();
-            ld.Date = DateTime.Now.ToString("yyMMdd");
-            ld.Time = DateTime.Now.ToString("HHmmss");
-            ld.VerNum = GetVersionNumber();
-            PostLinkDescription(ld);
+            PostLinkDescription();
         }
         private static string GetVersionNumber()
         {
@@ -129,9 +137,10 @@ namespace OracleTCPServer
             retValue = od.GetVersionNumber();
             return retValue;
         }
-        private static byte[] PostLinkDescription(LinkDescription linkDescription)
+        private static byte[] PostLinkDescription()
         {
-            string data = XMLHelper.Serialize<LinkDescription>(linkDescription);
+            string data = "<LinkDescription Date=\"" + DateTime.Now.ToString("yyMMdd") + "\"" + " Time=\"" + DateTime.Now.ToString("HHmmss") + "\"" +
+                           " VerNum=\"" + GetVersionNumber() + "\"" + " />";
             byte[] buffer = System.Text.Encoding.ASCII.GetBytes(data);
             byte[] byteReponse = new byte[2000];
 
@@ -157,8 +166,8 @@ namespace OracleTCPServer
                 int portNumber = 0;
                 OracleServerDB od = new OracleServerDB();
                 od.ReadOracleServerAppDetails(ref ipAddress, ref portNumber);
-                tcpclnt.SendTimeout = 3000;
-                tcpclnt.ReceiveTimeout = 9000;
+                tcpclnt.SendTimeout = 5000;
+                tcpclnt.ReceiveTimeout = 120000;
                 listLogs.Add("Going to connect to Oracle at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                 tcpclnt.Connect(ipAddress, portNumber);
 
@@ -212,7 +221,7 @@ namespace OracleTCPServer
 
             string dataWritten = System.Text.Encoding.ASCII.GetString(buffer, 0, buffer.Length);
             listLogs.Add("Data written to Oracle APP                        " + dataWritten);
-
+            //Thread.Sleep(3000);
             int k = stm.Read(byteResponse, 0, byteResponse.Length);
             listLogs.Add("Data read from Oracle APP at                      " + DateTime.Now.ToString("hh:mm:ss tt"));
             dataWritten = System.Text.Encoding.ASCII.GetString(byteResponse, 0, k);
