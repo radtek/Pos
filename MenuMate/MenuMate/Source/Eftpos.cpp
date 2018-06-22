@@ -311,3 +311,7 @@ void TEftPos::UpdateEFTPOSLogs(bool status)
 {
 }
 //---------------------------------------------------------------------------
+void TEftPos::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
+{
+}
+//---------------------------------------------------------------------------

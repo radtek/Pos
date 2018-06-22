@@ -144,6 +144,7 @@ class TEftPos
     virtual bool IsCashOutSupported();
     virtual void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
     virtual void UpdateEFTPOSLogs(bool status);
+    virtual void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
 };
 
 extern TEftPos *EftPos;

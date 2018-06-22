@@ -796,4 +796,23 @@ AnsiString TEftposAdyen::GetLogFileName()
     return fileName;
 }
 //------------------------------------------------------------------------------
-
+void TEftposAdyen::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
+{
+    try
+    {
+        if(invoiceNumber != NULL && invoiceNumber != "")
+        {
+            AnsiString fileName = GetLogFileName();
+            std::auto_ptr<TStringList> List(new TStringList);
+            if (FileExists(fileName) )
+              List->LoadFromFile(fileName);
+            List->Insert((List->Count-1),"Invoice Number is:- " + invoiceNumber);
+            List->SaveToFile(fileName );
+        }
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//------------------------------------------------------------------------------

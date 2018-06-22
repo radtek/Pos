@@ -60,5 +60,6 @@ public:
         void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
         void UpdateEFTPOSLogs(bool status);
         AnsiString GetLogFileName();
+        void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
 };
 #endif

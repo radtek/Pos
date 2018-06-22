@@ -3354,13 +3354,18 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
             else
             {
                 PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-            }           
+            }
       }
+
     }
    else
    {
        TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
        PaymentTransaction.InvoiceNumber = Order->DelayedInvoiceNumber;
+   }
+   if(PaymentTransaction.InvoiceNumber != "")
+   {
+      UpdateEftposLogsForInvoice(PaymentTransaction);
    }
 }
 
@@ -6777,3 +6782,30 @@ void TListPaymentSystem::PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosRe
 		// so all following transactions ha eftpos receipt attached
 		LastReceipt->Printouts->Add(Printout);
 }
+//----------------------------------------------------------------------------
+void TListPaymentSystem::UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction)
+{
+    try
+    {
+      if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->Enabled)
+      {
+          for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+          {
+            TPayment *payment = paymentTransaction.PaymentGet(i);
+            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+                if(payment->GetPayTendered() != 0)
+                {
+                   EftPos->UpdateEFTPOSLogsForInvoiceNumber(paymentTransaction.InvoiceNumber);
+                   break;
+                }
+            }
+          }
+      }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
