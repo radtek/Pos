@@ -241,14 +241,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 49
           Width = 433
-          Height = 700
+          Height = 730
           Anchors = [akLeft]
           Caption = 'P.O.S Options'
           ParentBackground = False
           TabOrder = 5
           DesignSize = (
             433
-            700)
+            730)
           object Label4: TLabel
             Left = 16
             Top = 150
@@ -607,6 +607,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Float Withdrawal From Cash'
             TabOrder = 24
             OnClick = cbFloatWithdrawFromCashClick
+          end
+          object cbCompanyDetailOnReprintReceipt: TCheckBox
+            Left = 8
+            Top = 689
+            Width = 412
+            Height = 25
+            Anchors = [akLeft]
+            Caption = 'Enable Company Detail on Reprint Receipt'
+            TabOrder = 25
+            OnClick = cbCompanyDetailOnReprintReceiptClick
           end
         end
         object GroupBox5: TGroupBox

@@ -609,7 +609,7 @@ void TManagerReceipt::Get(TStringList *Lines)
 		 else
 		 {
             if((!IsFirstOccurance)  && ((int)Line[j]>32) &&(TGlobalSettings::Instance().ReprintReceiptLabel != "")
-                && IsStartOfReceiptInfo(Lines))
+                && IsStartOfReceiptInfo(Lines) && TGlobalSettings::Instance().ReprintReceiptLabel.Trim().Length() != 0)
              {
                  InsertReprintLabel(Lines,IsFirstOccurance);
              }
@@ -631,6 +631,8 @@ void TManagerReceipt::Get(TStringList *Lines)
 	  }
 	  if (TrimmedLine != "")
           Lines->Add(TrimmedLine);
+
+
    }
    catch(Exception & E)
    {
@@ -825,7 +827,7 @@ void TManagerReceipt::Print()
         if(proceed)
         {
             Receipt->Position = 0;
-            PrintDuplicateReceipt(Receipt);
+            PrintDuplicateReceipt(Receipt,true);
             TMallExportUpdateAdaptor exportUpdateAdaptor;
             exportUpdateAdaptor.UpdateExportTableOnReprint(ReceiptValue, &DBTransaction);
 
@@ -874,72 +876,100 @@ bool TManagerReceipt::CanReprintReceipt(Database::TDBTransaction &DBTransaction,
     return retValue;
 }
 //------------------------------------------------------------------------------
-void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
+void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool ReprintReceiptWithCompanydetails)
 {
     try
     {
-        if(TGlobalSettings::Instance().ReprintReceiptLabel.Trim().Length() == 0)
-        {
-            TPrintout *Printout = new TPrintout;
-            Printout->Printer = TComms::Instance().ReceiptPrinter;
-            Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
-            delete Printout;
-        }
-        else
-        {
-            std::auto_ptr <TStringList> StringReceipt(new TStringList);
-            Get(StringReceipt.get());
-            TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
-            TempReceipt->JobType = pjReceiptReceipt;
-            TPrintout *Printout1 = new TPrintout;
-            Printout1->PrintFormat->PrintGraphic();
-            Printout1->Printer = TComms::Instance().ReceiptPrinter;
-            TempReceipt->Printouts->Add(Printout1);
+		std::auto_ptr <TStringList> StringReceipt(new TStringList);
+		Get(StringReceipt.get());
 
-            for(int i = 0; i < StringReceipt->Count; i++)
+		TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
+		TempReceipt->JobType = pjReceiptReceipt;
+		TPrintout *Printout1 = new TPrintout;
+        Printout1->PrintFormat->PrintGraphic();
+		Printout1->Printer = TComms::Instance().ReceiptPrinter;
+		TempReceipt->Printouts->Add(Printout1);
+
+		for(int i = 0; i < StringReceipt->Count; i++)
+		{
+		   Printout1->PrintFormat->Line->ColCount = 1;
+		   if(StringReceipt->Strings[i].Trim() != TGlobalSettings::Instance().ReprintReceiptLabel.Trim())
+		   {
+				Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+		   }
+		   else
+		   {
+			  if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+				Printout1->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+			  else
+				Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+		   }
+		   Printout1->PrintFormat->Line->Columns[0]->Width = Printout1->PrintFormat->Width;
+		   Printout1->PrintFormat->Line->Columns[0]->Text = StringReceipt->Strings[i];
+
+		   Printout1->PrintFormat->AddLine();
+		}
+        AnsiString Endline = "-------------------------------------------" ;
+
+        if(TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt && ReprintReceiptWithCompanydetails
+                                        && TGlobalSettings::Instance().CompanydetailsSaved.Trim().Length()!= 0)
+        {
+
+            Printout1->PrintFormat->Line->Columns[0]->Text = Endline;
+            Printout1->PrintFormat->AddLine();
+            UnicodeString data = "Sold to:" ;
+            Printout1->PrintFormat->Line->Columns[0]->Text = data;
+            Printout1->PrintFormat->AddLine();
+            UnicodeString data2 = TGlobalSettings::Instance().CompanydetailsSaved;
+            int widthprinter = Printout1->PrintFormat->Width ;
+            int datacount = data2.Length();
+            UnicodeString tempData = "";
+            UnicodeString truncatedData = "";
+            int dataAdded = 0;
+            truncatedData =  data2;
+            for(int i = 0; i < data2.Length();)
             {
-               Printout1->PrintFormat->Line->ColCount = 1;
-               if(StringReceipt->Strings[i].Trim() != TGlobalSettings::Instance().ReprintReceiptLabel.Trim())
-               {
-                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-               }
-               else
-               {
-                  if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
-                    Printout1->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
-                  else
-                    Printout1->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-               }
-               Printout1->PrintFormat->Line->Columns[0]->Width = Printout1->PrintFormat->Width;
-               Printout1->PrintFormat->Line->Columns[0]->Text = StringReceipt->Strings[i];
-               Printout1->PrintFormat->AddLine();
+                if(truncatedData.Pos("\n"))
+                {
+                    tempData = truncatedData.SubString(0,truncatedData.Pos("\n"));
+                }
+                else
+                {
+                    tempData = truncatedData;
+                }
+                if(tempData.Length() >= widthprinter)
+                {
+                    int storedValue = 0;
+                    for(int j = 0; j < tempData.Length();)
+                    {
+                        Printout1->PrintFormat->Line->Columns[0]->Text = tempData.SubString(storedValue+1,widthprinter);
+                        Printout1->PrintFormat->AddLine();
+                        dataAdded += tempData.SubString(storedValue+1,widthprinter).Length();
+                        storedValue += widthprinter;
+                        j += storedValue;
+                    }
+                }
+                else
+                {
+                    bool skipAdding = false;
+                    if(tempData.Length() == 1 && (tempData.Pos("\n") || tempData.Pos("\r")))
+                       skipAdding = true;
+                    if(!skipAdding)
+                    {
+                        Printout1->PrintFormat->Line->Columns[0]->Text = tempData;
+                        Printout1->PrintFormat->AddLine();
+                    }
+                    dataAdded += tempData.Length();
+                }
+                truncatedData = data2.SubString(dataAdded,data2.Length()-dataAdded+1);
+                i = dataAdded;
             }
-            Printout1->PrintFormat->PartialCut();
-        ///////////////////////////////////////////////////////////////////
-
-//	  TSectionInstructStorage Template;
-//	  TPtrSectionInstructStorage TemplateSection;
-//             Database::TDBTransaction DBTransaction(DBControl);
-//             DBTransaction.StartTransaction();
-//      std::auto_ptr<TReceipt>Receipt1(new TReceipt());
-//	  Receipt1->LoadTemplate(DBTransaction, Printout1->Printer.PhysicalPrinterKey, Template);
-//
-//	  TSectionInstructStorage::iterator itInstruction = Template.begin();
-//      bool isCutAvailable = false;
-//	  while (itInstruction != Template.end())
-//	  {
-//		 if(itInstruction->Cut)
-//         {
-//            isCutAvailable = true;
-//            break;
-//         }
-//         advance(itInstruction, 1);
-//	  }
-//      if(isCutAvailable)
-//         Printout1->PrintFormat->PartialCut();
-        ///////////////////////////////////////////////////////////////////
-            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+             Printout1->PrintFormat->Line->Columns[0]->Text = Endline;
+             Printout1->PrintFormat->AddLine();
         }
+		Printout1->PrintFormat->PartialCut();
+
+		TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
     }
     catch(Exception &Exc)
     {

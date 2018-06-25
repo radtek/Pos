@@ -90,10 +90,9 @@ BarcodeSynchronizationItems BarcodeService::GetSyncItems(Menu::TMenusInfo& menus
 				while (menuLoader.GetNextItem(&itemInfo))
 				{
 					Menu::TItemSizeInfo itemSizeInfo;
-
 					while (menuLoader.GetNextItemSize(&itemSizeInfo))
 					{
-						if (itemSizeInfo.Barcode != NULL && itemSizeInfo.Barcode.Trim() != "" && itemSizeInfo.Recipes.size() == 1)
+                        	if (itemSizeInfo.Barcode != NULL && itemSizeInfo.Barcode != WideString("") && itemSizeInfo.Recipes.size() == 1)
 						{
 							Menu::TSizeRecipeInfo& recipe = *itemSizeInfo.Recipes.begin();
 

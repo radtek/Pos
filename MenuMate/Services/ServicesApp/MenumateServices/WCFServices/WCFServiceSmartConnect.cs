@@ -35,7 +35,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("====================Pairing=========================================================");
                 string requesturl = SmartConnectConstraints.PairingBaseAddress + "/" + param.PairingCode;
-
+                stringList.Add("URL is:                     " + requesturl);
                 IDictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("POSRegisterID", param.PosRegisterId);
                 parameters.Add("POSRegisterName", param.PosRegisterName);
@@ -50,7 +50,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In pairing  SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 1, short.MaxValue);
                 ServiceLogger.LogException("Exception in Pairing", ex);
-                stringList.Add("Exception in pairing ");
+                stringList.Add("Exception in pairing " + ex.Message);
             }
             finally
             {
@@ -76,7 +76,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Logon SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 1, short.MaxValue);
                 ServiceLogger.LogException("Exception in Logon", ex);
-                stringList.Add("Exception in Logon ");
+                stringList.Add("Exception in Logon " + ex.Message);
             }
             finally
             {
@@ -102,6 +102,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In SettlementInquiry SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 2, short.MaxValue);
                 ServiceLogger.LogException("Exception in SettlementInquiry", ex);
+                stringList.Add("Exception in SettlementInquiry " + ex.Message);
             }
             finally
             {
@@ -127,7 +128,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In SettlementCutover SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 3, short.MaxValue);
                 ServiceLogger.LogException("Exception in SettlementCutover", ex);
-                stringList.Add("Exception in  SettlementCutover: ");
+                stringList.Add("Exception in  SettlementCutover: " + ex.Message);
             }
             finally
             {
@@ -154,7 +155,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Purchase SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
                 ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                stringList.Add("Exception in  Purchase: " + ex.Message);
             }
             finally
             {
@@ -182,7 +183,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In PurchasePlusCash SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 5, short.MaxValue);
                 ServiceLogger.LogException("Exception in PurchasePlusCash", ex);
-                stringList.Add("Exception in  PurchasePlusCash: ");
+                stringList.Add("Exception in  PurchasePlusCash: " + ex.Message);
             }
             finally
             {
@@ -211,7 +212,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In CashOutOnly SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 6, short.MaxValue);
                 ServiceLogger.LogException("Exception in CashOutOnly", ex);
-                stringList.Add("Exception in  CashOutOnly: ");
+                stringList.Add("Exception in  CashOutOnly: " + ex.Message);
             }
             finally
             {
@@ -238,7 +239,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Refund SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 7, short.MaxValue);
                 ServiceLogger.LogException("Exception in Refund", ex);
-                stringList.Add("Exception in  Refund: ");
+                stringList.Add("Exception in  Refund: " + ex.Message);
             }
             finally
             {
@@ -265,7 +266,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Authorise SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 8, short.MaxValue);
                 ServiceLogger.LogException("Exception in Authorise", ex);
-                stringList.Add("Exception in  Authorise: ");
+                stringList.Add("Exception in  Authorise: " + ex.Message);
             }
             finally
             {
@@ -292,7 +293,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Finalise SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 9, short.MaxValue);
                 ServiceLogger.LogException("Exception in Finalise", ex);
-                stringList.Add("Exception in  Finalise: ");
+                stringList.Add("Exception in  Finalise: " + ex.Message);
             }
             finally
             {
@@ -318,7 +319,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In GetTransactionResult SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 10, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetTransactionResult", ex);
-                stringList.Add("Exception in  GetTransactionResult: ");
+                stringList.Add("Exception in  GetTransactionResult: " + ex.Message);
             }
             finally
             {
@@ -344,7 +345,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In ReprintLastReceipt SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 11, short.MaxValue);
                 ServiceLogger.LogException("Exception in ReprintLastReceipt", ex);
-                stringList.Add("Exception in  ReprintLastReceipt: ");
+                stringList.Add("Exception in  ReprintLastReceipt: " + ex.Message);
             }
             finally
             {
@@ -370,7 +371,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In GetTerminalStatus SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 12, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetTerminalStatus", ex);
-                stringList.Add("Exception in  GetTerminalStatus: ");
+                stringList.Add("Exception in  GetTerminalStatus: " + ex.Message);
             }
             finally
             {
@@ -395,7 +396,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In TerminalReadCard SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 13, short.MaxValue);
                 ServiceLogger.LogException("Exception in TerminalReadCard", ex);
-                stringList.Add("Exception in  GetTerminalStatus: ");
+                stringList.Add("Exception in  GetTerminalStatus: " + ex.Message);
             }
             finally
             {
@@ -414,7 +415,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In PrintReceipt SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in PrintReceipt", ex);
-                stringList.Add("Exception in  PrintReceipt: ");
+                stringList.Add("Exception in  PrintReceipt: " + ex.Message);
             }
             finally
             {
@@ -441,7 +442,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In PurchaseWithQRCode SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
                 ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                stringList.Add("Exception in  Purchase: " + ex.Message);
             }
             finally
             {
@@ -468,7 +469,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In PurchaseWithQRCode SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 4, short.MaxValue);
                 ServiceLogger.LogException("Exception in Purchase", ex);
-                stringList.Add("Exception in  Purchase: ");
+                stringList.Add("Exception in  Purchase: " + ex.Message);
             }
             finally
             {
@@ -495,7 +496,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Refund SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 7, short.MaxValue);
                 ServiceLogger.LogException("Exception in Refund", ex);
-                stringList.Add("Exception in  Refund: ");
+                stringList.Add("Exception in  Refund: " + ex.Message);
             }
             finally
             {
@@ -532,7 +533,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
-                stringList.Add("Exception in GetPutOrPostData()");
+                stringList.Add("Exception in GetPutOrPostData()    " + ex.Message);
             }            
             finally
             {
@@ -578,7 +579,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In GetPutOrPostData SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in GetPutOrPostData", ex);
-                stringList.Add("Exception in PutOrPostResponse()");
+                stringList.Add("Exception in PutOrPostResponse()   " + ex.Message);
             }
             finally
             {
@@ -623,7 +624,7 @@ namespace MenumateServices.WCFServices
             {
                 EventLog.WriteEntry("In Deserialize Response SmartConnect", ex.Message + "Trace" + ex.StackTrace, EventLogEntryType.Error, 14, short.MaxValue);
                 ServiceLogger.LogException("Exception in Deserialize Response", ex);
-                stringList.Add("Exception in DeSerializeResponse()");
+                stringList.Add("Exception in DeSerializeResponse() " + ex.Message);
             }
             finally
             {

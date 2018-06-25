@@ -22,6 +22,8 @@ object frmBillGroup: TfrmBillGroup
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 23
   object pnlButtons: TPanel
@@ -322,7 +324,7 @@ object frmBillGroup: TfrmBillGroup
       object lbeMembership: TLabel
         Left = 8
         Top = 8
-        Width = 307
+        Width = 4
         Height = 19
         Align = alTop
         Color = clGreen
@@ -335,7 +337,6 @@ object frmBillGroup: TfrmBillGroup
         ParentFont = False
         Visible = False
         WordWrap = True
-        ExplicitWidth = 4
       end
       object Panel2: TPanel
         Left = 8

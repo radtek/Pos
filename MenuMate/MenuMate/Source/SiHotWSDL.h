@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (30/04/2018 10:40:11 p.m. - - $Rev: 25127 $)
+// (29/05/2018 6:10:50 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -459,6 +459,8 @@ private:
   bool            FPaymentList_Specified;
   int             FPortNumber;
   bool            FPortNumber_Specified;
+  UnicodeString   FRoomNumber;
+  bool            FRoomNumber_Specified;
   UnicodeString   FShift;
   bool            FShift_Specified;
   UnicodeString   FTime;
@@ -511,6 +513,10 @@ private:
   {  FPortNumber = _prop_val; FPortNumber_Specified = true;  }
   bool __fastcall PortNumber_Specified(int Index)
   {  return FPortNumber_Specified;  } 
+  void __fastcall SetRoomNumber(int Index, UnicodeString _prop_val)
+  {  FRoomNumber = _prop_val; FRoomNumber_Specified = true;  }
+  bool __fastcall RoomNumber_Specified(int Index)
+  {  return FRoomNumber_Specified;  } 
   void __fastcall SetShift(int Index, UnicodeString _prop_val)
   {  FShift = _prop_val; FShift_Specified = true;  }
   bool __fastcall Shift_Specified(int Index)
@@ -542,6 +548,7 @@ __published:
   __property UnicodeString   LinkText = { index=(IS_OPTN|IS_NLBL), read=FLinkText, write=SetLinkText, stored = LinkText_Specified };
   __property ArrayOfSiHotPayment PaymentList = { index=(IS_OPTN|IS_NLBL), read=FPaymentList, write=SetPaymentList, stored = PaymentList_Specified };
   __property int        PortNumber = { index=(IS_OPTN), read=FPortNumber, write=SetPortNumber, stored = PortNumber_Specified };
+  __property UnicodeString RoomNumber = { index=(IS_OPTN|IS_NLBL), read=FRoomNumber, write=SetRoomNumber, stored = RoomNumber_Specified };
   __property UnicodeString      Shift = { index=(IS_OPTN|IS_NLBL), read=FShift, write=SetShift, stored = Shift_Specified };
   __property UnicodeString       Time = { index=(IS_OPTN|IS_NLBL), read=FTime, write=SetTime, stored = Time_Specified };
   __property UnicodeString      Total = { index=(IS_OPTN|IS_NLBL), read=FTotal, write=SetTotal, stored = Total_Specified };
@@ -867,7 +874,7 @@ typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebSer
 _di_ISiHotIntegrationWebService GetISiHotIntegrationWebService(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__SiHotWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__SiHotWSDL;

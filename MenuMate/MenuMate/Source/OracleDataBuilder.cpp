@@ -7,6 +7,7 @@
 #include "OracleManagerDB.h"
 #include "DBThirdPartyCodes.h"
 #include "ManagerOraclePMS.h"
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -188,6 +189,10 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         bool isNotRoomPaymentType = false;
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
         paymentMethod = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
+        if(paymentMethod == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
+        {
+           paymentMethod = DoRequiredInsertion(payment, paymentsMap);
+        }
         if(payment->GetPaymentAttribute(ePayTypePoints))
             paymentMethod = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
         if(payment->GetPaymentAttribute(ePayTypeCredit))
@@ -343,7 +348,7 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction1.Rollback();
-        MessageBox(E.Message,"Exception in creating XML",MB_OK);
+//        MessageBox(E.Message,"Exception in creating XML",MB_OK);
 	}
     return postRequest;
 }
@@ -1168,4 +1173,49 @@ AnsiString TOracleDataBuilder::GetPMSDefaultCode(std::map<int,TPMSPaymentType> p
     return value;
 }
 //----------------------------------------------------------------------------
-
+AnsiString TOracleDataBuilder::DoRequiredInsertion(TPayment *payment, std::map<int,TPMSPaymentType> &paymentsMap)
+{
+   AnsiString retValue = "";
+   try
+   {
+       AnsiString defaultPayCode = GetPMSDefaultCode(paymentsMap);
+       AddPaymentToPMSPaymentTypes(payment,defaultPayCode);
+       GetPMSPaymentType(paymentsMap);
+       retValue = GetPMSPaymentCode(payment,paymentsMap);
+   }
+   catch(Exception &Exc)
+   {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+   }
+   return retValue;
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = " INSERT INTO PMSPAYMENTSCONFIG "
+                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                 " PMS_PAYTYPE_CATEGORY ,IS_ELECTRONICPAYMENT) VALUES"
+                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                 " :PMS_PAYTYPE_CATEGORY ,:IS_ELECTRONICPAYMENT)";
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger =
+                                 TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+        InsertQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------
