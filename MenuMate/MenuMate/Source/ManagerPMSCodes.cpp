@@ -6,7 +6,7 @@
 #include "ManagerPMSCodes.h"
 #include "MMLogging.h"
 #include "MMMessageBox.h"
-
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -371,7 +371,8 @@ void TManagerPMSCodes::InsertIntoPMSPaymentsConfig(Database::TDBTransaction &DBT
                  " PMS_PAYTYPE_CATEGORY ," +field+ "IS_ELECTRONICPAYMENT) VALUES"
                  " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
                  " :PMS_PAYTYPE_CATEGORY ,"+ param +":IS_ELECTRONICPAYMENT)";
-      InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger           = GetPMSPayTypeIDFromGenerator(DBTransaction);
+      InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger           = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+      //GetPMSPayTypeIDFromGenerator(DBTransaction);
       InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString          = pmsPayment.PMSPayTypeName;
       InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString          = pmsPayment.PMSPayTypeCode;
       InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsString      = pmsPayment.PMSPayTypeCategory;

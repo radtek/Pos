@@ -124,6 +124,8 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
 {
     std::vector<TFiscalPaymentDetails> PaymentList;
     double tabCredit = 0, totalPaymentCollected = 0;
+    bool isCashPaymentExecuted = false;
+
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
     {
         TPayment *SubPayment = paymentTransaction.PaymentGet(i);
@@ -132,7 +134,7 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
 
         if(SubPayment->GetPaymentAttribute(ePayTypeCredit) && (double)SubPayment->GetPayTendered() != 0.0 && !paymentTransaction.Orders->Count)
         {
-            tabCredit = (double)SubPayment->GetPayTendered();
+            tabCredit = (double)(SubPayment->GetPayTendered());
             if(tabCredit < 0)
                continue;
             else
@@ -155,17 +157,38 @@ void TFiscalPrinterAdapter::PrepartePaymnetInfo(TPaymentTransaction paymentTrans
             AddedToList = true;
             tipAmount += (double)SubPayment->TipAmount;
         }
+
         if(AddedToList)
         {
             TFiscalPaymentDetails paymentDetails;
-            double subTotal =  (double)RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            double subTotal = 0;
+            subTotal = (double)RoundToNearest((SubPayment->GetPayTendered()- SubPayment->GetChange() - SubPayment->GetCashOut()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+
+            if(SubPayment->GetPaymentAttribute(ePayTypeCash))
+            {
+                TPayment* newPaymentType = paymentTransaction.PaymentFindByProperty(ePayTypeElectronicTransaction);
+                if(!isCashPaymentExecuted && newPaymentType != NULL)
+                {
+                    subTotal = (double)RoundToNearest((SubPayment->GetPayTendered() - SubPayment->GetChange() + newPaymentType->GetCashOut()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+                    isCashPaymentExecuted = true;
+                }
+                else
+                {
+                    subTotal = (double)RoundToNearest((SubPayment->GetPayTendered() - SubPayment->GetChange()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+                }
+            }
+            else
+            {
+                subTotal = (double)RoundToNearest((SubPayment->GetPayTendered()- SubPayment->GetChange()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+            }
+            //MessageBox(subTotal,"subTotal",MB_OK);
             totalPaymentCollected += subTotal;
             paymentDetails.Amount = subTotal;
             paymentDetails.Description = SubPayment->Name;
             paymentDetails.Billno = paymentTransaction.InvoiceNumber;
             paymentDetails.TipAmount = tipAmount;
             paymentDetails.PaymentSurcharge = surcharge;
-            paymentDetails.Change = SubPayment->GetChange() - SubPayment->GetCashOut();
+           // paymentDetails.Change = SubPayment->GetChange() - SubPayment->GetCashOut();
             if(IsTipAppliedFromPOS)
                 paymentDetails.TipAppliedFromPOS = "1";
             else

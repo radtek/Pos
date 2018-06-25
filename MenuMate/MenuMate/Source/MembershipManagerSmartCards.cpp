@@ -979,6 +979,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 {
 	try
 	{
+        TGlobalSettings::Instance().EmailCapturedForLoyaltyOperation = "";
 		ManagerSmartCards->OnCardUpdated.Sleep();
 		try
 		{
@@ -996,6 +997,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+    TGlobalSettings::Instance().EmailCapturedForLoyaltyOperation = "";
 }
 
 void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sender)
@@ -1117,6 +1119,8 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
             SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
             SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            if(SmartCardContact.Name == "")
+                SmartCardContact.Name = TDBContacts::GetContactName(DBTransaction, SmartCardContact.ContactKey);
             TDBContacts::GetDiscountDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
@@ -1213,6 +1217,7 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             if(SmartCardContact.EMail == "" || SmartCardContact.EMail == NULL)
             {
                SmartCardContact.EMail = GetActivationEmailFromUser();
+               TGlobalSettings::Instance().EmailCapturedForLoyaltyOperation = SmartCardContact.EMail;
             }
             if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
             {
@@ -1348,6 +1353,10 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             // Update the Card with Held Points Transactions.
             // This will trigger a card update when the card events system is woken up again.
             TPointsTransactionContainer PointsTransactions;
+            if(SmartCardContact.Surname == "")
+                SmartCardContact.Surname = TDBContacts::GetLastNameForLocalCard(DBTransaction,SmartCardContact.ContactKey);
+            if(SmartCardContact.Name == "")
+                SmartCardContact.Name = TDBContacts::GetContactName(DBTransaction, SmartCardContact.ContactKey);
             GetValidPointsTransactions(DBTransaction, SmartCardContact.ContactKey, PointsTransactions);
             SmartCardContact.Points.Add(PointsTransactions);
             if (PointsTransactions.size() != 0 && SavePointsTransactionsToSmartCard(SmartCardContact.Points,""))
@@ -1404,7 +1413,10 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 	AnsiString DbUUID = TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.SiteID);
     TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
     SmartCardContact.Points = Points;
-
+    if(TGlobalSettings::Instance().EmailCapturedForLoyaltyOperation != "" && SmartCardContact.EMail == "")
+    {
+       SmartCardContact.EMail = TGlobalSettings::Instance().EmailCapturedForLoyaltyOperation;
+    }
 	if(SmartCardContact.CloudUUID.Length() == 0 && TGlobalSettings::Instance().LoyaltyMateEnabled)
 	{
        AnsiString message = "For Loyaltymate, you will need to update your ";
@@ -2293,7 +2305,7 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
     {
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
-        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership))
+        if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership) && !ManagerSmartCards->CardInserted)
         MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
         DBTransaction.Commit();
     }
@@ -3152,20 +3164,20 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
-   Database::TDBTransaction DBTransaction1(DBControl);
-   DBTransaction1.StartTransaction();
-   if(triggeredForCard)
-   {
-
-      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
-         MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
-   }
-   else
-   {
-      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
-          MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
-   }
-   DBTransaction1.Commit();
+//   Database::TDBTransaction DBTransaction1(DBControl);
+//   DBTransaction1.StartTransaction();
+//   if(triggeredForCard)
+//   {
+//
+//      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
+//         MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+//   }
+//   else
+//   {
+//      if(TManagerVariable::Instance().GetBool(DBTransaction1,vmSmartCardMembership))
+//          MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+//   }
+//   DBTransaction1.Commit();
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)
