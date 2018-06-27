@@ -4604,6 +4604,11 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
         cbIntegratedEftposPaymentSense->Checked             = false;
         eftposSettingCount++;
     }
+    else
+    {
+        tbtnSmartLinkIp->Enabled                             = true;
+        tbtnSmartLinkIp->Caption                             = "PaymentSense Details";
+    }
 
     if(eftposSettingCount == 11) //if any new setting made then incremet 10 by 1.
         EnableOtherEFTPOS();
