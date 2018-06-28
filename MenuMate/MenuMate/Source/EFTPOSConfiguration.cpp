@@ -26,7 +26,7 @@ __fastcall TfrmEFTPOSConfig::TfrmEFTPOSConfig(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbOKMouseClick(TObject *Sender)
 {
-    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    if(TGlobalSettings::Instance().EnableEftPosAdyen || TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
         EnableEFTPOSTerminal();
     }

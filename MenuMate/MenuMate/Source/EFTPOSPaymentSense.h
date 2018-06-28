@@ -25,6 +25,7 @@ class TEftPosPaymentSense : public TEftPos
         bool IsTransfactionFinished(TransactionDataResponse* response );
         UnicodeString lastNotification;
         TransactionDataResponse*  WaitAndGetResponse(TransactionDataResponse *response);
+        TransactionDataResponse* ProcessTransactionRecovery(Currency amtPurchase, UnicodeString refNumber);
 public:
         TEftPosPaymentSense();
         ~TEftPosPaymentSense();

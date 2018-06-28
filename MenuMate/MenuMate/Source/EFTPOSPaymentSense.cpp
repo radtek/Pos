@@ -126,7 +126,7 @@ void TEftPosPaymentSense::ProcessEftPos(eEFTTransactionType TxnType,Currency Amt
                         wcfResponse = DoTransaction(AmtPurchase, "REFUND");
                         break;
                     case TransactionType_INQUIRY :
-                        wcfResponse = DoTransaction(1, "DUPLICATE");
+                        wcfResponse = ProcessTransactionRecovery(AmtPurchase, TxnRef);
                       break;
                }
 
@@ -229,7 +229,7 @@ void __fastcall TEftPosPaymentSense::DoSettlementCutover()
 void _fastcall TEftPosPaymentSense::ReprintReceipt()
 {
     try
-    {
+    {      MessageBox("Reprint","2",MB_OK);
         CoInitialize(NULL);
         DoTransaction(1, "DUPLICATE");
     }
@@ -279,7 +279,7 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
 }
 //------------------------------------------------------------------------------
 TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase, UnicodeString transactionType)
-{
+{    MessageBox("DoTransaction","2",MB_OK);
     TransactionDataResponse* response = new TransactionDataResponse();
     try
     {
@@ -554,3 +554,29 @@ TransactionDataResponse*  TEftPosPaymentSense::WaitAndGetResponse(TransactionDat
     return response;
 }
 //-------------------------------------------------------------------------------------------
+TransactionDataResponse* TEftPosPaymentSense::ProcessTransactionRecovery(Currency amtPurchase, UnicodeString refNumber)
+{
+    TransactionDataResponse* response = new TransactionDataResponse();
+    try
+    {
+        TransactionRequest * request  = new TransactionRequest();
+        request->currency = CurrencyString;
+        request->amount = int(amtPurchase*100);
+        authorizationDetails->URL = TGlobalSettings::Instance().EFTPosURL + "/pac/terminals/" + TGlobalSettings::Instance().EftPosTerminalId + "/transactions";
+        
+        if(refNumber.Trim() != "")
+        {
+            authorizationDetails->URL = authorizationDetails->URL + "/" + refNumber;
+            response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
+            response = WaitAndGetResponse(response);
+        }
+        MessageBox("2","2",MB_OK);
+        delete request;
+        request = NULL;
+    }
+    catch( Exception& E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
+    }
+    return response;
+}
