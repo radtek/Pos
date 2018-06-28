@@ -137,6 +137,8 @@ namespace PaymentSenseIntegration
                         stringList.Add("Response is succesfull and is :-                                      " + result);
                         postedResponse = JsonConvert.DeserializeObject<PostRequestResponse>(result);
                         stringList.Add("Response Deserialized.");
+                        EFTPOSRecoveryLog(postedResponse.RequestId);
+                        stringList.Add("Request ID is: " + postedResponse.RequestId);
                     }
                     else
                     {
@@ -255,6 +257,7 @@ namespace PaymentSenseIntegration
                         {
                             ConvertInToFinalValue(ref transactionData);
                             ArrangeAndAssignReceipts(ref transactionData);
+                            DeleteRecoveryFile();
                         }
                     }
                 }
@@ -584,6 +587,69 @@ namespace PaymentSenseIntegration
         {
             WriteToFile(stringList);
             stringList.Clear();
+        }
+
+        private void EFTPOSRecoveryLog(string requestId)
+        {
+            try
+            {
+                stringList.Add("====================Logging Reference iD in recovery file.=========================================================");
+                string path = System.IO.Path.GetDirectoryName(
+                          System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+                stringList.Add("Reference(request) id is :    " + requestId);
+                string location = Path.GetDirectoryName(path);
+
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string fileName = Path.Combine(location, "EFTPOSRefNumber.bin");
+
+                using (BinaryWriter binWriter = new BinaryWriter(File.Open(fileName, FileMode.Create)))
+                {
+                    binWriter.Write(requestId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Making EFTPOSRecoveryLog" + ex.Message);
+                stringList.Add("Exception in logging reference (request) id  :    " + ex.Message);
+            }
+        }
+
+        private void DeleteRecoveryFile()
+        {
+            try
+            {
+                stringList.Add("====================Deleting  Reference iD from recovery file.=========================================================");
+                string path = System.IO.Path.GetDirectoryName(
+                          System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.GetDirectoryName(path);
+
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+
+                string fileName = Path.Combine(location, "EFTPOSRefNumber.bin");
+                
+                if(File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Deleting EFTPOSRecoveryLog" + ex.Message);
+                stringList.Add("Exception in Deleting Recovery File  :    " + ex.Message);
+            }
         }
     }
 }

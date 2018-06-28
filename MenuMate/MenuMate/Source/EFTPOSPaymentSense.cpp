@@ -279,7 +279,7 @@ std::vector<AnsiString> TEftPosPaymentSense::GetAllTerminals()
 }
 //------------------------------------------------------------------------------
 TransactionDataResponse* TEftPosPaymentSense::DoTransaction(Currency amtPurchase, UnicodeString transactionType)
-{    MessageBox("DoTransaction","2",MB_OK);
+{
     TransactionDataResponse* response = new TransactionDataResponse();
     try
     {
@@ -569,8 +569,12 @@ TransactionDataResponse* TEftPosPaymentSense::ProcessTransactionRecovery(Currenc
             authorizationDetails->URL = authorizationDetails->URL + "/" + refNumber;
             response = paymentSenseClient->GetResponseForRequestedId(authorizationDetails);
             response = WaitAndGetResponse(response);
+            if(response->TransactionResult.UpperCase().Pos("CANCELLED") != 0)
+            {
+                response->TransactionResult = "SUCCESSFUL";
+                response->AmountBase = "0";
+            }
         }
-        MessageBox("2","2",MB_OK);
         delete request;
         request = NULL;
     }
