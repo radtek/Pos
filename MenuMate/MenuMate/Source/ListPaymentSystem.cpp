@@ -786,6 +786,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
+            if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
 			reprintEftposReceipt = true;
 			isRecovering = true;
 		}
@@ -847,6 +848,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		transactionRecovery.ClearRecoveryInfo();
         SetCashDrawerStatus(PaymentTransaction);
+
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);

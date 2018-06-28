@@ -229,7 +229,7 @@ void __fastcall TEftPosPaymentSense::DoSettlementCutover()
 void _fastcall TEftPosPaymentSense::ReprintReceipt()
 {
     try
-    {      MessageBox("Reprint","2",MB_OK);
+    {     
         CoInitialize(NULL);
         DoTransaction(1, "DUPLICATE");
     }
@@ -238,6 +238,7 @@ void _fastcall TEftPosPaymentSense::ReprintReceipt()
         TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,E.Message);
     }
 }
+
 //----------------------------------------------------------------------------
 void _fastcall TEftPosPaymentSense::ReprintZedReport()
 {
