@@ -20,6 +20,7 @@ namespace OracleTCPServer.Utility
             var convertedString = streamReader.ReadToEnd();
             streamReader.Close();
             string strValue = convertedString.Substring(convertedString.IndexOf("<LinkDesc"),convertedString.Length - convertedString.IndexOf("LinkDesc"));
+            //string strValue = convertedString.Substring(convertedString.IndexOf("Lin"))
             return convertedString;
         }
     }
