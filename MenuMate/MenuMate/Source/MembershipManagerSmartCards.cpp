@@ -2210,18 +2210,20 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
 	{
        if(!getattributkey &&  gettingUIdCount )
        {
-       
-        dialogResultSuccessful = true;
-        SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
-        SmartCardContact.EMail           = loyaltyMateOperationDialogBox->Info.EMail;
-        if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
-        {
-           SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+            dialogResultSuccessful = true;
+            SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
+            SmartCardContact.EMail           = loyaltyMateOperationDialogBox->Info.EMail;
+            if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
+            {
+               SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+            }
+            if(SmartCardContact.SiteID == 0)
+            {
+               SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
+            }
         }
         else
         {
-
-
             dialogResultSuccessful = true;
             //download complete, copy the values across and display the member information
             SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
@@ -2271,7 +2273,7 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
 
 bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo)
 {
-	bool result = false;
+    bool result = false;
 	bool running = false;
 
 	// initiate loyaltymate member create thread and create member
@@ -3269,7 +3271,9 @@ bool TManagerMembershipSmartCards::GetUIdCount(AnsiString uid)
         if(IBInternalQuery->RecordCount)
         {
             if(IBInternalQuery->FieldByName("NUMBER")->AsInteger > 0)
-            	 retVal = true;
+            {
+              retVal = true;
+            }
         }
         transaction.Commit();
 	}
@@ -3281,7 +3285,3 @@ bool TManagerMembershipSmartCards::GetUIdCount(AnsiString uid)
 	}
    return retVal;
 }
-
-
-
-
