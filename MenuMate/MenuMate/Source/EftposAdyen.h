@@ -57,5 +57,9 @@ public:
         void __fastcall DoLogOut();
         AnsiString GetRefNumber();
         bool IsCashOutSupported();
+        void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
+        void UpdateEFTPOSLogs(bool status);
+        AnsiString GetLogFileName();
+        void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
 };
 #endif

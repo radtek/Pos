@@ -42,7 +42,7 @@ enum ePANSource
   PANSource_Manual = 1,
   PANSource_CardReader = 2,
 };
-
+enum AdyenTriggerLocation {eBootForAdyen = 1,eUIForAdyen };
 class TEftPosTransaction
 {
 public:
@@ -142,6 +142,9 @@ class TEftPos
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool IsCashOutSupported();
+    virtual void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
+    virtual void UpdateEFTPOSLogs(bool status);
+    virtual void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
 };
 
 extern TEftPos *EftPos;
