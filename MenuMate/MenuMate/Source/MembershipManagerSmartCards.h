@@ -109,6 +109,8 @@ private:
     bool HasCard(Database::TDBTransaction &DBTransaction,int contactKey);
     void ValidateCardExistance(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
     int ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
+    bool IsDuplicated(TMMContactInfo contactInfo);
+    bool IsEmailLiveForDiffMember(TMMContactInfo contactInfo);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
 

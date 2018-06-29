@@ -2186,9 +2186,6 @@ AnsiString TManagerMembershipSmartCards::GetActivationEmailFromUser()
 bool TManagerMembershipSmartCards::runMemberDownloadThread(TSyndCode CurrentSyndicateCode,TMMContactInfo &SmartCardContact,
 bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
 {
-    bool getattributkey = GetAttributeId(SmartCardContact.ContactKey);
-    bool  gettingUIdCount   =  GetUIdCount(SmartCardContact.CloudUUID);
-
 	bool replacePointsFromCloud = true;
 	TLoyaltyMateDownloadMemberThread* loyaltyMemberDownloadThread = new TLoyaltyMateDownloadMemberThread(CurrentSyndicateCode,replacePointsFromCloud);
 	loyaltyMemberDownloadThread->FreeOnTerminate = true;
@@ -2208,7 +2205,7 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
     bool dialogResultSuccessful = loyaltyMateOperationDialogBox->ShowModal() == mrOk;
 	if(dialogResultSuccessful)
 	{
-       if(!getattributkey &&  gettingUIdCount )
+       if(IsDuplicated(SmartCardContact))
        {
             dialogResultSuccessful = true;
             SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
@@ -2896,23 +2893,19 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
 
        if ((!TGlobalSettings::Instance().IsPOSOffline && !memberNotExist))
        {
-
            MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
            if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
            {
-                bool AttributekeyExist = TDBContacts::CheckAttributeKey(DBTransaction,UserInfo.ContactKey);
-                bool  gettingMemberUIdCount   =  GetUIdCount(UserInfo.CloudUUID);
                 UnicodeString  MemberEmailId = TDBContacts::GetEmailIdOfMember(DBTransaction,UserInfo.ContactKey);
                 int contactKey = TDBContacts::CheckUUID(DBTransaction,UserInfo.CloudUUID);
-                if(AttributekeyExist && contactKey || !AttributekeyExist && !gettingMemberUIdCount )
-                {
 
+                if(!IsDuplicated(UserInfo))
+                {
                   MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
                 }
                 else
                 {
                      AnsiString fullName;
-
                     fullName = TDBContacts::GetContactSurnameName(DBTransaction,contactKey);
                     if (MessageBox("This Email  " "'"  +  MemberEmailId +  "'"  "  already associated with "  +  fullName +
                               " Do you wish to create a membership for " +  UserInfo.Name + " " + UserInfo.Surname + " at loyaltymate","INFO" ,MB_YESNO + MB_ICONQUESTION) == ID_YES)
@@ -3241,7 +3234,7 @@ bool TManagerMembershipSmartCards::GetAttributeId(int contactkey)
 		IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount)
         {
-            	 retVal = true;
+         	 retVal = true;
         }
         transaction.Commit();
 	}
@@ -3258,10 +3251,10 @@ bool TManagerMembershipSmartCards::GetAttributeId(int contactkey)
 bool TManagerMembershipSmartCards::GetUIdCount(AnsiString uid)
 {
     bool retVal = false;
+    Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+    transaction.StartTransaction();
 	try
 	{
-        Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
-        transaction.StartTransaction();
 		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
 
 		IBInternalQuery->Close();
@@ -3280,8 +3273,55 @@ bool TManagerMembershipSmartCards::GetUIdCount(AnsiString uid)
 	catch(Exception &Err)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
-     //   transaction.Rollback();
+        transaction.Rollback();
 		throw;
 	}
    return retVal;
 }
+//-----------------------------------------------------------------------------
+bool TManagerMembershipSmartCards::IsDuplicated(TMMContactInfo contactInfo)
+{
+    bool retValue = false;
+    bool checkAttributePresent = GetAttributeId(contactInfo.ContactKey);
+    bool isLive = IsEmailLiveForDiffMember(contactInfo);
+    retValue = !checkAttributePresent && isLive;
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TManagerMembershipSmartCards::IsEmailLiveForDiffMember(TMMContactInfo contactInfo)
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *ContactsQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        ContactsQuery->Close();
+        ContactsQuery->SQL->Text ="SELECT CONTACTS_KEY FROM CONTACTS WHERE EMAIL = :EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY";
+        ContactsQuery->ParamByName("EMAIL")->AsString = contactInfo.EMail;
+        ContactsQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactInfo.ContactKey;
+        ContactsQuery->ExecQuery();
+
+        for (; !ContactsQuery->Eof; ContactsQuery->Next())
+        {
+            TIBSQL *AttributesQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            AttributesQuery->Close();
+            AttributesQuery->SQL->Text ="SELECT ATTRIB_KEY FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY = :CONTACTS_KEY";
+            AttributesQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactsQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            AttributesQuery->ExecQuery();
+            if(AttributesQuery->RecordCount)
+            {
+                retValue = true;
+                break;
+            }
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+   		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        DBTransaction.Rollback();
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
