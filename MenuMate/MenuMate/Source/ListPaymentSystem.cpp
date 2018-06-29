@@ -786,6 +786,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
+            if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
 			reprintEftposReceipt = true;
 			isRecovering = true;
 		}
@@ -847,6 +848,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		transactionRecovery.ClearRecoveryInfo();
         SetCashDrawerStatus(PaymentTransaction);
+
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
@@ -1319,8 +1321,16 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
-                                   if(FinalAmount != (Pay + CashOut))
+                                   Currency tipAmount = 0;
+                                   if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
                                    {
+                                        CashOut = StrToCurr(EftTrans->CashOutAmount);
+                                        tipAmount = StrToCurr(EftTrans->TipAmount);
+                                        if(CashOut != tipAmount)
+                                            tipAmount = 0;
+                                   }
+                                   if(FinalAmount != (Pay + CashOut + tipAmount))
+                                   {     
                                         if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
@@ -1329,6 +1339,11 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                         else if(TGlobalSettings::Instance().EnableEftPosAdyen)
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                        }
+                                        else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            Payment->ExternalCashOut = StrToCurr(EftTrans->CashOutAmount);
                                         }
                                         else
                                         {
@@ -1351,6 +1366,12 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                     if(TGlobalSettings::Instance().EnableEftPosAdyen)
                                     {
                                         messageEftPos = "Transaction Cancelled/Timed-Out.\rPlease ensure Card Terminal is not holding any transaction";
+                                    }
+                                    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                    {
+                                        if(EftTrans->ResultText == "")
+                                            EftTrans->ResultText = "Failed.";
+                                        messageEftPos = "Transaction " + EftTrans->ResultText;
                                     }
                                     else
                                     {

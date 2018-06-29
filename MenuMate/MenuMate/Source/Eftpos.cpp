@@ -207,6 +207,7 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
     TimeOut = false;
     TipAmount = "";
     SurchargeAmount = "";
+    CashOutAmount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()
@@ -315,3 +316,8 @@ void TEftPos::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
 {
 }
 //---------------------------------------------------------------------------
+std::vector<AnsiString> TEftPos::GetAllTerminals()
+{
+    std::vector<AnsiString> terminalList;
+    return terminalList;
+}

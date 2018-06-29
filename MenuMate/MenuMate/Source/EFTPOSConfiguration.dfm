@@ -3,7 +3,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
   Top = 0
   BorderIcons = []
   Caption = 'EFTPOS Details'
-  ClientHeight = 308
+  ClientHeight = 365
   ClientWidth = 417
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -18,13 +18,13 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     Left = 8
     Top = 8
     Width = 281
-    Height = 292
+    Height = 349
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
     DesignSize = (
       281
-      292)
+      349)
     object tbEFTPOSURL: TTouchBtn
       Left = 8
       Top = 8
@@ -81,7 +81,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
     end
     object GroupBox1: TGroupBox
       Left = 8
-      Top = 210
+      Top = 270
       Width = 266
       Height = 75
       Anchors = [akLeft]
@@ -124,12 +124,30 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
         OnClick = cbCardHolderCopyMouseClick
       end
     end
+    object tbEftPosTerminalID: TTouchBtn
+      Left = 8
+      Top = 207
+      Width = 266
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'EFTPOS Terminal ID'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbEftPosTerminalIDMouseClick
+    end
   end
   object SidePanel: TPanel
     Left = 295
     Top = 8
     Width = 114
-    Height = 292
+    Height = 349
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

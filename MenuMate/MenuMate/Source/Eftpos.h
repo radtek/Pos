@@ -18,6 +18,7 @@ enum eEFTPOSType
   eTEftPosICELink,
   eTEftPosDPS,
   eTEftPosCadmusCronos,
+  eTEftPosPaymentSense
 };
 
 enum TEftPosEvent {ePrintReceiptEvent,eChequeVerifyEvent,
@@ -59,6 +60,7 @@ public:
     bool TimeOut;
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
+    AnsiString CashOutAmount;
 };
 
 class TListEftPosTransContainer : public TList
@@ -145,6 +147,7 @@ class TEftPos
     virtual void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
     virtual void UpdateEFTPOSLogs(bool status);
     virtual void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
+    virtual std::vector<AnsiString> GetAllTerminals();
 };
 
 extern TEftPos *EftPos;

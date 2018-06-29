@@ -3394,6 +3394,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmPrintCardHolderReceipt,"Print Customer Receipt", "This setting will Prints CardHolder receipt", vmg3rdPartyInterface, true);
         SetVarBool(DBTransaction,vmPrintMerchantReceipt,"Print Merchant Receipt", "This setting will  Print Merchant receipt", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmEnableEftPosPaymentSense, "Enable Payment Sense Integration", "Tells whether payment sense eftpos is enabled.\r"
+         "Default is False", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

@@ -1795,7 +1795,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         {
             if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
             {
-                if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+                if(!TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().EnableEftPosPaymentSense)
                 {
                     if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
                                         ffNumber, CurrencyDecimals) +
@@ -1813,7 +1813,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 else
                 {
                     MessageBox(AnsiString("Amount entered i.e. " + CurrencyString+ " " +CurrToStrF(wrkPayAmount,ffNumber, CurrencyDecimals) +
-                                    " is more than due amount. Adyen Integrated EFTPOS does not support this feature.").c_str(), "Info",
+                                    " is more than due amount. This Integrated EFTPOS does not support this feature.").c_str(), "Info",
                                 MB_OK + MB_ICONINFORMATION);
                     Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }

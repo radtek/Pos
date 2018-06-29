@@ -179,7 +179,8 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     {
        TotalOwing  =   Transaction.RequestPartialPayment;
        isSplitPayment = true;
-       if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosAdyen)  && PaymentTip > 0)
+       if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosPaymentSense || TGlobalSettings::Instance().EnableEftPosAdyen
+                TGlobalSettings::Instance().EnableEftPosSmartConnect || )&& PaymentTip > 0)
             TotalOwing  += PaymentTip;
     }
     else
@@ -193,10 +194,12 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
         }
        TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints + PaymentTip + SurchargeByEFTPOS);
 
-       if(TGlobalSettings::Instance().EnableEftPosSmartConnect && (PaymentTip > 0 || SurchargeByEFTPOS > 0) && PaymentCashOut > 0)
+       if((TGlobalSettings::Instance().EnableEftPosSmartConnect || TGlobalSettings::Instance().EnableEftPosPaymentSense) &&
+                    (PaymentTip > 0 || SurchargeByEFTPOS > 0) && PaymentCashOut > 0)    //remove the cashout amount because it will be added later
             TotalOwing  +=  RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
     }
     PaymentDue = TotalOwing - PaymentAmount;
+
     if(!Transaction.CreditTransaction)
     {
         PaymentDiscountsGSTContent = 0;
@@ -243,8 +246,8 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
     GrandTotalGSTContent = ProductGSTContent + PaymentSurchargesGSTContent + PaymentDiscountsGSTContent;
     Round();
 
-    if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosAdyen)&& PaymentTip > 0 &&
-                (Transaction.Type == eTransPartialPayment || Transaction.Type == eTransSplitPayment) &&
+    if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosPaymentSense || TGlobalSettings::Instance().EnableEftPosSmartConnect || TGlobalSettings::Instance().EnableEftPosAdyen)
+    && PaymentTip > 0 && (Transaction.Type == eTransPartialPayment || Transaction.Type == eTransSplitPayment) &&
                     Transaction.RequestPartialPayment > 0 && TotalAdjustment == 0)
     {
             GrandTotal  -= PaymentTip;

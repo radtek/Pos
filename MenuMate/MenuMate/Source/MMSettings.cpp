@@ -428,6 +428,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmAdyenRecoveryTransactionIsRefund, false);
         TGlobalSettings::Instance().PrintCardHolderReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintCardHolderReceipt, true);
         TGlobalSettings::Instance().PrintMerchantReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintMerchantReceipt, false);
+        TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
+        TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

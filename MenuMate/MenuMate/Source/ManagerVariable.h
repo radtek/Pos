@@ -53,7 +53,7 @@ enum vmVariables
    vmEnableAARewardsReminder,vmAutoAddWebMembers,vmAutoAcceptWebOrders,vmReservationsAddress,vmReservationsEnabled,
    vmFloorPlanTransparentTables,vmFloorPlanTableColour,vmFloorPlanTextColour,vmLastSelectedFloorPlanLocationID,
    vmExternalMembershipDiscountCode,vmExternalMembershipPointsCode,vmExternalMembershipSystemCode, vmEnableDPSTipping,vmEnableEftPosSmartPay,vmEftPosSmartPayIp,
-   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,vmIsSmartConnectQRTransaction,
+   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,vmIsSmartConnectQRTransaction, vmEnableEftPosPaymentSense, vmEftPosTerminalId,
    // Connections  ----------------------------------------------------------------
    vmPMSIPAddress = 2100, vmPMSTCPPort, vmPMSPOSID, vmPMSPaymentCategory, vmPMSItemCategory, vmPMSPointsCategory, vmPMSCreditCategory,
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,

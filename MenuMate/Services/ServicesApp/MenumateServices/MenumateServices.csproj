@@ -114,7 +114,8 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -193,6 +194,7 @@
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
+    <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
     <Compile Include="MenumateServiceAdyenIntegration.cs">
@@ -307,6 +309,12 @@
     <Compile Include="MenumateServiceWebMate.Designer.cs">
       <DependentUpon>MenumateServiceWebMate.cs</DependentUpon>
     </Compile>
+    <Compile Include="MenumateServicePaymentSense.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServicePaymentSense.Designer.cs">
+      <DependentUpon>MenumateServicePaymentSense.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -332,6 +340,7 @@
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServicePaymentSense.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\IWCFSmartConnect.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
@@ -343,6 +352,7 @@
     <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
+    <Compile Include="WCFServices\WCFServicePaymentSense.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\WCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
@@ -354,7 +364,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="publickey.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -390,6 +402,10 @@
     <ProjectReference Include="..\MenumateUtils\MenumateUtils.csproj">
       <Project>{37B0F64A-677E-4AD0-8C04-252BF7A5D3AE}</Project>
       <Name>MenumateUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PaymentSenseIntegration\PaymentSenseIntegration.csproj">
+      <Project>{A623C2CE-7E9A-4A72-81DA-7DB377333670}</Project>
+      <Name>PaymentSenseIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\PocketVoucherIntegration\PocketVoucherIntegration.csproj">
       <Project>{FDC94DD6-180E-4E83-9D28-091BDDFC13DE}</Project>

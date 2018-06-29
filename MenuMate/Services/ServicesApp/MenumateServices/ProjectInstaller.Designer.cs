@@ -41,6 +41,7 @@ namespace MenumateServices
             this.serviceInstallerWalletPayments = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartConnect = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerAdyenIntegration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerPaymentSense = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -120,6 +121,13 @@ namespace MenumateServices
             this.serviceInstallerAdyenIntegration.ServiceName = "MenumateServiceAdyenIntegration";
             this.serviceInstallerAdyenIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
+            // serviceInstallerPaymentSense
+            // 
+            this.serviceInstallerPaymentSense.Description = "Menumate Payment Sense Server";
+            this.serviceInstallerPaymentSense.DisplayName = "Menumate PaymentSense";
+            this.serviceInstallerPaymentSense.ServiceName = "MenumateServicePaymentSense";
+            this.serviceInstallerPaymentSense.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
@@ -133,7 +141,8 @@ namespace MenumateServices
             this.serviceInstallerSiHotIntegration,
             this.serviceInstallerWalletPayments,
             this.serviceInstallerSmartConnect,
-            this.serviceInstallerAdyenIntegration});
+            this.serviceInstallerAdyenIntegration,
+            this.serviceInstallerPaymentSense});
 
         }
 
@@ -180,5 +189,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerWalletPayments;
         private ServiceInstaller serviceInstallerSmartConnect;
         private ServiceInstaller serviceInstallerAdyenIntegration;
+        private ServiceInstaller serviceInstallerPaymentSense;
     }
 }
