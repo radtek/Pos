@@ -1100,6 +1100,7 @@ void TDBContacts::GetContactNameList(Database::TDBTransaction &DBTransaction, st
 		 {
 					ContactGroup ContactData;
         		ContactData.Name = IBInternalQuery->FieldByName("NAME")->AsString;
+
                 	ContactData.Key  = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
                 	vectorMembers.push_back(ContactData);
 		 }
@@ -1827,5 +1828,119 @@ UnicodeString TDBContacts::GetLastNameForLocalCard(Database::TDBTransaction &DBT
        return IBInternalQuery->FieldByName("LAST_NAME")->AsString;
    else
        return "";
+}
+
+
+
+
+//-------------------------------------------------------------------------------------------
+bool TDBContacts::CheckAttributeKey(Database::TDBTransaction &DBTransaction, int inContactKey)
+{
+   bool RetVal = false;
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT ATTRIB_KEY FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY=:CONTACTS_KEY";
+     // IBInternalQuery->SQL->Text ="Select count(Email) From CONTACTS WHERE CONTACTS_KEY=:CONTACTS_KEY" ;
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+      IBInternalQuery->ExecQuery();
+	  if (IBInternalQuery->RecordCount)
+	  {
+       // MessageBox(IBInternalQuery->RecordCount, "memberNotExist", MB_OK + MB_ICONERROR);
+		 RetVal = true;
+	  }
+
+      }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return RetVal;
+}
+
+//------------------------------------------------------------------------------------------------
+int TDBContacts::CheckUUID(Database::TDBTransaction &DBTransaction, AnsiString uid)
+{
+   int retValue = 0;
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT COUNT(UUID), CONTACTS_KEY FROM LOYALTYATTRIBUTES WHERE UUID = :UUID  GROUP BY CONTACTS_KEY ";
+     // IBInternalQuery->SQL->Text ="Select count(Email) From CONTACTS WHERE CONTACTS_KEY=:CONTACTS_KEY" ;
+      IBInternalQuery->ParamByName("UUID")->AsString = uid;
+      IBInternalQuery->ExecQuery();
+	  if (IBInternalQuery->RecordCount)
+	  {
+       // MessageBox(IBInternalQuery->RecordCount, "memberNotExist", MB_OK + MB_ICONERROR);
+		 retValue = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+	  }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return retValue;
+}
+
+//---------------------------------------------------------------------------------
+UnicodeString TDBContacts::GetContactSurnameName(Database::TDBTransaction &DBTransaction, int ContactKey)
+{
+	UnicodeString RetVal = "";
+   try
+   {
+	  Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	  DBTransaction.RegisterQuery(IBInternalQuery);
+
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT NAME , LAST_NAME FROM CONTACTS WHERE CONTACTS_KEY = :CONTACTS_KEY";
+	  IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
+	  IBInternalQuery->ExecQuery();
+
+      if (IBInternalQuery->RecordCount)
+      {
+             if(IBInternalQuery->FieldByName("NAME")->AsString != NULL && IBInternalQuery->FieldByName("NAME")->AsString != "")
+                 RetVal = IBInternalQuery->FieldByName("NAME")->AsString;
+
+             if(RetVal != "")
+                 RetVal += " ";
+
+             if(IBInternalQuery->FieldByName("LAST_NAME")->AsString != NULL && IBInternalQuery->FieldByName("LAST_NAME")->AsString != "")
+                 RetVal += IBInternalQuery->FieldByName("LAST_NAME")->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+
+   }
+   return RetVal;
+}
+//--------------------------------------------------------------------------------------------------------------
+UnicodeString TDBContacts::GetEmailIdOfMember(Database::TDBTransaction &DBTransaction,int contactKey)
+{
+   UnicodeString result = "";
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT EMAIL FROM CONTACTS WHERE CONTACTS_KEY=:CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+	  IBInternalQuery->ExecQuery();
+
+      if(!IBInternalQuery->Eof)
+      {
+        result = IBInternalQuery->Fields[0]->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return result;
 }
 
