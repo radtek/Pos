@@ -318,72 +318,6 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		bool EftPosRegiestered = TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
         bool IsSyncroEftPosEnabled = false;
 
-        if(EftPosRegiestered)
-        {
-            if (TGlobalSettings::Instance().EnableEftPosDPS)
-            {
-                EftPos = new TEftPosMMDPS();
-                EftPos->Initialise();
-            }
-            else if(TGlobalSettings::Instance().EnableEftPosANZ)
-            {
-                EftPos = new TEftPosANZ();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosCadmus)
-            {
-                EftPos = new TEftPosCadmus();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosCadmusCronos)
-            {
-                EftPos = new TEftPosCadmusCronos();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosIngenico)
-            {
-                EftPos = new TEftPosIngenico();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosIceLink)
-            {
-                EftPos = new TEftPosIceLink();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosSmartPay)
-            {
-                EftPos = new TEftPosSmartLink();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosSmartConnect)
-            {
-                EftPos = new TEftPosSmartConnect();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosAdyen)
-            {
-                EftPos = new TEftposAdyen();
-                EftPos->Initialise();
-            }
-            else if (TGlobalSettings::Instance().EnableEftPosPaymentSense)
-            {
-                EftPos = new TEftPosPaymentSense();
-                EftPos->Initialise();
-            }
-            else
-            {
-                IsSyncroEftPosEnabled = true;
-            }
-        }
-		else
-		{
-            IsSyncroEftPosEnabled = true;
-		}
-
-        if(IsSyncroEftPosEnabled)
-        {
-            EftPos = new TEftPosSyncro();
-			EftPos->Initialise();
 		if(EftPosRegiestered)
 		{
 			if (TGlobalSettings::Instance().EnableEftPosDPS)
@@ -444,11 +378,13 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		else
 		{
 			IsSyncroEftPosEnabled = true;
-		}        if(IsSyncroEftPosEnabled)
+		}
+        if(IsSyncroEftPosEnabled)
         {
             EftPos = new TEftPosSyncro();
 			EftPos->Initialise();
-        }		TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
+        }
+        TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
 		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
 		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
 		{   	

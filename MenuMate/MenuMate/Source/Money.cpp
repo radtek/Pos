@@ -180,7 +180,7 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
        TotalOwing  =   Transaction.RequestPartialPayment;
        isSplitPayment = true;
        if((TGlobalSettings::Instance().EnableEftPosDPS || TGlobalSettings::Instance().EnableEftPosPaymentSense || TGlobalSettings::Instance().EnableEftPosAdyen
-                TGlobalSettings::Instance().EnableEftPosSmartConnect || )&& PaymentTip > 0)
+             ||  TGlobalSettings::Instance().EnableEftPosSmartConnect )&& PaymentTip > 0)
             TotalOwing  += PaymentTip;
     }
     else
