@@ -2218,60 +2218,52 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
         {
            SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
         }
-        if(SmartCardContact.SiteID == 0)
-        {
-           SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
-        }
-
-        }
         else
         {
 
 
-        dialogResultSuccessful = true;
-		//download complete, copy the values across and display the member information
-		SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
-	 	SmartCardContact.Phone          = loyaltyMateOperationDialogBox->Info.Phone;
-	 	SmartCardContact.Mobile          = loyaltyMateOperationDialogBox->Info.Mobile;
-		SmartCardContact.EMail           = loyaltyMateOperationDialogBox->Info.EMail;
-		SmartCardContact.Name            = loyaltyMateOperationDialogBox->Info.Name;
-		SmartCardContact.Surname         = loyaltyMateOperationDialogBox->Info.Surname;
-		SmartCardContact.MailingAddress         = loyaltyMateOperationDialogBox->Info.MailingAddress;
-        SmartCardContact.LocationAddress         = loyaltyMateOperationDialogBox->Info.LocationAddress;
-		SmartCardContact.Title         = loyaltyMateOperationDialogBox->Info.Title;
-		SmartCardContact.ActivationToken = loyaltyMateOperationDialogBox->Info.ActivationToken;
-		SmartCardContact.DateOfBirth     = loyaltyMateOperationDialogBox->Info.DateOfBirth;
-		SmartCardContact.LastVisit       = loyaltyMateOperationDialogBox->Info.LastVisit;
-		SmartCardContact.TierLevel       = loyaltyMateOperationDialogBox->Info.TierLevel;
-		SmartCardContact.LastBirthdayProcessed       = loyaltyMateOperationDialogBox->Info.LastBirthdayProcessed;
-		SmartCardContact.MemberType       = loyaltyMateOperationDialogBox->Info.MemberType;
-		SmartCardContact.ActivationDate       = loyaltyMateOperationDialogBox->Info.ActivationDate;
-        SmartCardContact.PreviousYearPoint       = loyaltyMateOperationDialogBox->Info.PreviousYearPoint;
-        SmartCardContact.CurrentYearPoint       = loyaltyMateOperationDialogBox->Info.CurrentYearPoint;
-        SmartCardContact.AvailableBDPoint       = loyaltyMateOperationDialogBox->Info.AvailableBDPoint;
-        SmartCardContact.AvailableFVPoint       = loyaltyMateOperationDialogBox->Info.AvailableFVPoint;
-        SmartCardContact.MemberCode       = loyaltyMateOperationDialogBox->Info.MemberCode;
-        if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
-        {
-           SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
-        }
-        if(SmartCardContact.SiteID == 0)
-        {
-           SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
-        }
-        SmartCardContact.LastModified  = loyaltyMateOperationDialogBox->Info.LastModified;
-        SmartCardContact.IsFirstVisitRewarded  = loyaltyMateOperationDialogBox->Info.IsFirstVisitRewarded;
-        SmartCardContact.MemberCode  = loyaltyMateOperationDialogBox->Info.MemberCode;
-        SmartCardContact.Points = loyaltyMateOperationDialogBox->Info.Points;
-        TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
-        SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
-        SmartCardContact.HasTransactions = loyaltyMateOperationDialogBox->Info.HasTransactions;
-
+            dialogResultSuccessful = true;
+            //download complete, copy the values across and display the member information
+            SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
+            SmartCardContact.Phone          = loyaltyMateOperationDialogBox->Info.Phone;
+            SmartCardContact.Mobile          = loyaltyMateOperationDialogBox->Info.Mobile;
+            SmartCardContact.EMail           = loyaltyMateOperationDialogBox->Info.EMail;
+            SmartCardContact.Name            = loyaltyMateOperationDialogBox->Info.Name;
+            SmartCardContact.Surname         = loyaltyMateOperationDialogBox->Info.Surname;
+            SmartCardContact.MailingAddress         = loyaltyMateOperationDialogBox->Info.MailingAddress;
+            SmartCardContact.LocationAddress         = loyaltyMateOperationDialogBox->Info.LocationAddress;
+            SmartCardContact.Title         = loyaltyMateOperationDialogBox->Info.Title;
+            SmartCardContact.ActivationToken = loyaltyMateOperationDialogBox->Info.ActivationToken;
+            SmartCardContact.DateOfBirth     = loyaltyMateOperationDialogBox->Info.DateOfBirth;
+            SmartCardContact.LastVisit       = loyaltyMateOperationDialogBox->Info.LastVisit;
+            SmartCardContact.TierLevel       = loyaltyMateOperationDialogBox->Info.TierLevel;
+            SmartCardContact.LastBirthdayProcessed       = loyaltyMateOperationDialogBox->Info.LastBirthdayProcessed;
+            SmartCardContact.MemberType       = loyaltyMateOperationDialogBox->Info.MemberType;
+            SmartCardContact.ActivationDate       = loyaltyMateOperationDialogBox->Info.ActivationDate;
+            SmartCardContact.PreviousYearPoint       = loyaltyMateOperationDialogBox->Info.PreviousYearPoint;
+            SmartCardContact.CurrentYearPoint       = loyaltyMateOperationDialogBox->Info.CurrentYearPoint;
+            SmartCardContact.AvailableBDPoint       = loyaltyMateOperationDialogBox->Info.AvailableBDPoint;
+            SmartCardContact.AvailableFVPoint       = loyaltyMateOperationDialogBox->Info.AvailableFVPoint;
+            SmartCardContact.MemberCode       = loyaltyMateOperationDialogBox->Info.MemberCode;
+            if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
+            {
+               SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+            }
+            if(SmartCardContact.SiteID == 0)
+            {
+               SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
+            }
+            SmartCardContact.LastModified  = loyaltyMateOperationDialogBox->Info.LastModified;
+            SmartCardContact.IsFirstVisitRewarded  = loyaltyMateOperationDialogBox->Info.IsFirstVisitRewarded;
+            SmartCardContact.MemberCode  = loyaltyMateOperationDialogBox->Info.MemberCode;
+            SmartCardContact.Points = loyaltyMateOperationDialogBox->Info.Points;
+            TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
+            SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
+            SmartCardContact.HasTransactions = loyaltyMateOperationDialogBox->Info.HasTransactions;
         }
 	}
     else
     {
-
       memberNotExist = loyaltyMateOperationDialogBox->BarcodeMemberNotExist;
     }
 	return dialogResultSuccessful;
@@ -3271,11 +3263,12 @@ bool TManagerMembershipSmartCards::GetUIdCount(AnsiString uid)
 		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
 
 		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text ="SELECT count(UUID) FROM LOYALTYATTRIBUTES WHERE UUID=:UUID";
-	   IBInternalQuery->ParamByName("UUID")->AsString = uid;
+		IBInternalQuery->SQL->Text ="SELECT COUNT(UUID) NUMBER FROM LOYALTYATTRIBUTES WHERE UUID=:UUID";
+	    IBInternalQuery->ParamByName("UUID")->AsString = uid;
 		IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount)
         {
+            if(IBInternalQuery->FieldByName("NUMBER")->AsInteger > 0)
             	 retVal = true;
         }
         transaction.Commit();
