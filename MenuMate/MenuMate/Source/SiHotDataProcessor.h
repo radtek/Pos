@@ -6,7 +6,8 @@
 #include "DeviceRealTerminal.h"
 #include "DBOrder.h"
 #include "SiHotInterface.h"
-#include "SiHotDataObjects.h"
+//#include "SiHotDataObjects.h"
+//#include "ManagerPMSCodes.h"
 //---------------------------------------------------------------------------
 
 class TSiHotDataProcessor
@@ -34,5 +35,10 @@ class TSiHotDataProcessor
        void AddServiceChargeAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
        void AddPaymentMethods(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
        void ReadCurrentRoundingSettingForVat();
+       void GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap);
+       AnsiString GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap);
+       AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
+       void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
+       AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
 };
 #endif

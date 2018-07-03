@@ -53,6 +53,7 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
+                    stringList.Add("TCP Client created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     int clientTimeOut = timeOut + 1000;
                     tc.ReceiveTimeout = clientTimeOut;
                     if (myUri.Port != -1)
@@ -60,6 +61,7 @@ namespace SiHotIntegration
                     else
                         portNumber = IsSecured ? 443 : 80;
                     tc.Connect(host, portNumber);
+                    stringList.Add("Trying to connect At Time:-               " + DateTime.Now.ToString("hh:mm:ss tt"));
                     if (tc.Connected)
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
@@ -127,6 +129,7 @@ namespace SiHotIntegration
                 stringList.Add("exception Message:                       " + ex.Message);
                 stringList.Add("exception Date:-                         " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("exception Time:-                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                roomDetails.IsSuccessful = false;
             }
             finally
             {
@@ -134,7 +137,7 @@ namespace SiHotIntegration
             }
             return roomDetails;
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount , int timeOut)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount, int timeOut)
         {
             List<string> stringList = new List<string>();
             RoomChargeResponse response = new RoomChargeResponse();
@@ -155,18 +158,29 @@ namespace SiHotIntegration
                 IsSecured = uri.Contains("https:");
                 using (var tc = new TcpClient())
                 {
+                    stringList.Add("TCP Client created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     int clientTimeOut = timeOut + 1000;
                     tc.ReceiveTimeout = clientTimeOut;
                     if (myUri.Port != -1)
                         portNumber = myUri.Port;
                     else
                         portNumber = IsSecured ? 443 : 80;
+                    stringList.Add("Trying to connect At Time:-               " + DateTime.Now.ToString("hh:mm:ss tt"));
                     tc.Connect(host, portNumber);
                     if (tc.Connected)
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
                         GetDetailsList(roomChargeDetails, stringList);
+                        // to clear existing data if any
+                        if (tc.Available > 0)
+                        {
+                            stringList.Add("Found existing data " + tc.Available);
+                            Stream old = tc.GetStream();
+                            byte[] oldBytes = new byte[2000];
+                            int l = old.Read(oldBytes, 0, oldBytes.Length);
+                            stringList.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
+                        }
                         using (var ns = tc.GetStream())
                         {
                             ns.ReadTimeout = timeOut;
@@ -236,6 +250,7 @@ namespace SiHotIntegration
             }
             finally
             {
+                stringList.Add("Posting Details for room number:           " + roomChargeDetails.RoomNumber);
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Post Status:                              " + responseText);
@@ -333,7 +348,7 @@ namespace SiHotIntegration
                 {
                     if(i > 0)
                         paymentNames += "                                          ";
-                    paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Amount;
+                    paymentNames += roomChargeDetails.PaymentList[i].Description + " " + roomChargeDetails.PaymentList[i].Type +" " + roomChargeDetails.PaymentList[i].Amount;
                     paymentNames += "\r\n";
                 }
                 stringList.Add("Payments:                                 " + paymentNames);

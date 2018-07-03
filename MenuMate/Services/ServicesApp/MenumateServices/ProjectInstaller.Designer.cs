@@ -40,6 +40,8 @@ namespace MenumateServices
             this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWalletPayments = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSmartConnect = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerAdyenIntegration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerPaymentSense = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -112,6 +114,20 @@ namespace MenumateServices
             this.serviceInstallerSmartConnect.ServiceName = "MenumateServiceSmartConnect";
             this.serviceInstallerSmartConnect.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
+            // serviceInstallerAdyenIntegration
+            // 
+            this.serviceInstallerAdyenIntegration.Description = "Menumate Adyen Integration Sevice";
+            this.serviceInstallerAdyenIntegration.DisplayName = "Menumate Adyen Integration Sevice";
+            this.serviceInstallerAdyenIntegration.ServiceName = "MenumateServiceAdyenIntegration";
+            this.serviceInstallerAdyenIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
+            // serviceInstallerPaymentSense
+            // 
+            this.serviceInstallerPaymentSense.Description = "Menumate Payment Sense Server";
+            this.serviceInstallerPaymentSense.DisplayName = "Menumate PaymentSense";
+            this.serviceInstallerPaymentSense.ServiceName = "MenumateServicePaymentSense";
+            this.serviceInstallerPaymentSense.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
@@ -124,7 +140,9 @@ namespace MenumateServices
             this.serviceInstallerSalesForceIntegration,
             this.serviceInstallerSiHotIntegration,
             this.serviceInstallerWalletPayments,
-            this.serviceInstallerSmartConnect});
+            this.serviceInstallerSmartConnect,
+            this.serviceInstallerAdyenIntegration,
+            this.serviceInstallerPaymentSense});
 
         }
 
@@ -170,5 +188,7 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerSiHotIntegration;
         private ServiceInstaller serviceInstallerWalletPayments;
         private ServiceInstaller serviceInstallerSmartConnect;
+        private ServiceInstaller serviceInstallerAdyenIntegration;
+        private ServiceInstaller serviceInstallerPaymentSense;
     }
 }

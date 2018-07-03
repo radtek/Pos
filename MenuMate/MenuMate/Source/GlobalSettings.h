@@ -517,8 +517,20 @@ public:
     UnicodeString SurchargeGLCode;
     bool EnableEftPosSmartConnect;
     UnicodeString SmartConnectPairingCode;
+    bool EnableEftPosAdyen;
+    UnicodeString EFTPosAPIKey;
+    UnicodeString EFTPosDeviceID;
+    UnicodeString EFTPosURL;
     int PMSTimeOut;
     bool IsSmartConnectQRTransaction;
+    bool AdyenRecoveryTransactionIsRefund;
+    bool EnableCompanyDetailOnReprintReceipt;
+    UnicodeString CompanydetailsSaved;
+    bool PrintCardHolderReceipt;
+    bool PrintMerchantReceipt;
+    UnicodeString EmailCapturedForLoyaltyOperation;
+    bool EnableEftPosPaymentSense;
+    UnicodeString EftPosTerminalId;
 };
 
 #endif

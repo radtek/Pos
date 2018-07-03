@@ -72,6 +72,7 @@
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
 #include "FiscalPrinterAdapter.h"
+#include "ManagerPMSCodes.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -375,7 +376,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -418,6 +420,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, false,true);
 		}
 		else
 		{
@@ -451,7 +454,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
-               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               Payment.Name = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
             else
             {
@@ -492,6 +496,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
+            SetPMSPaymentType(DBTransaction,PaymentKey, Payment, true,true);
 		}
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
@@ -781,6 +786,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
+            if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
 			reprintEftposReceipt = true;
 			isRecovering = true;
 		}
@@ -842,6 +848,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
 		transactionRecovery.ClearRecoveryInfo();
         SetCashDrawerStatus(PaymentTransaction);
+
 		if ( reprintEftposReceipt )
 		EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
@@ -1134,6 +1141,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 		else
 		{
 			EftPos->LastEftPosReceipt->Clear();
+            EftPos->SecondEftPosReceipt->Clear();
 			// Store All OrderKeys;
 			if (Payment->ReferenceNumber == "")
 			{
@@ -1280,7 +1288,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-
 					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
 
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))
@@ -1314,12 +1321,29 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
-                                   if(FinalAmount != (Pay + CashOut))
+                                   Currency tipAmount = 0;
+                                   if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
                                    {
+                                        CashOut = StrToCurr(EftTrans->CashOutAmount);
+                                        tipAmount = StrToCurr(EftTrans->TipAmount);
+                                        if(CashOut != tipAmount)
+                                            tipAmount = 0;
+                                   }
+                                   if(FinalAmount != (Pay + CashOut + tipAmount))
+                                   {     
                                         if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
                                         {
                                             Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
                                             Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                        }
+                                        else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                        }
+                                        else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                        {
+                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            Payment->ExternalCashOut = StrToCurr(EftTrans->CashOutAmount);
                                         }
                                         else
                                         {
@@ -1338,8 +1362,31 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                  if((EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
                                     ||  EftTrans->TimeOut)
                                  {
-                                    if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    AnsiString messageEftPos = "";
+                                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.\rPlease ensure Card Terminal is not holding any transaction";
+                                    }
+                                    else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+                                    {
+                                        if(EftTrans->ResultText == "")
+                                            EftTrans->ResultText = "Failed.";
+                                        messageEftPos = "Transaction " + EftTrans->ResultText;
+                                    }
+                                    else
+                                    {
+                                        messageEftPos = "Transaction Cancelled/Timed-Out.";
+                                    }
+
+                                    if(MessageBox(messageEftPos, "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                    {
+                                       if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                                       {
+                                           EftPos->DelTransactionEvent(Payment->ReferenceNumber);
+                                           Payment->ReferenceNumber = EftPos->GetRefNumber();
+                                       }
                                        TransRetriveElectronicResult(PaymentTransaction, Payment);
+                                    }
                                  }
                                  else
                                  {
@@ -1397,14 +1444,14 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
-			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-			{
-				TPayment *Payment = PaymentTransaction.PaymentGet(i);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Reset();
-				}
-			}
+//			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+//			{
+//				TPayment *Payment = PaymentTransaction.PaymentGet(i);
+//				if (Payment->Result != eAccepted)
+//				{
+//					Payment->Reset();
+//				}
+//			}
 		}
 		else
 		{
@@ -1576,8 +1623,6 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
-        bool canContinue = true;
-
         //Check if mall type is dean and deluca
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
         {
@@ -1591,22 +1636,17 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
                 if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
                 {
                     std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
-                    canContinue = (innerit == outerit->second.end());
+                    bool canContinue = (innerit == outerit->second.end());
+
+                    if(!canContinue)
+                        InsertMezzanineSales(PaymentTransaction);
                 }
             }
         }
-
-        if(canContinue)
-        {
-            //Instantiation is happenning in a factory based on the active mall in database
-            TMallExport* mall = TMallFactory::GetMallType();
-            mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-            delete mall;
-        }
-        else
-        {
-            InsertMezzanineSales(PaymentTransaction);
-        }
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
+        delete mall;
     }
 }
 
@@ -3271,38 +3311,13 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 
 	Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt, TComms::Instance().ReceiptPrinter);
 
-	if (RequestEFTPOSReceipt && EftPos->LastEftPosReceipt->Count > 0)
+	if (RequestEFTPOSReceipt )
 	{
-		TPrintout *Printout = new TPrintout();
-		if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
-		{
-			TPrinterPhysical DefaultScreenPrinter;
-			DefaultScreenPrinter.NormalCharPerLine = 40;
-			DefaultScreenPrinter.BoldCharPerLine = 40;
-			Printout->Printer = DefaultScreenPrinter;
-		}
-		else
-		{
-			Printout->Printer = TComms::Instance().ReceiptPrinter;
-		}
+        if(EftPos->LastEftPosReceipt->Count > 0)
+		    PrintEFTPOSReceipt(EftPos->LastEftPosReceipt);
 
-		Printout->PrintFormat->Line->FontInfo.Reset();
-		Printout->PrintFormat->Line->ColCount = 1;
-		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-		Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
-		Printout->PrintFormat->AddLine();
-		Printout->PrintFormat->NewLine();
-
-		for (int i = 0; i < EftPos->LastEftPosReceipt->Count; i++)
-		{
-			Printout->PrintFormat->Line->Columns[0]->Text = EftPos->LastEftPosReceipt->Strings[i];
-			Printout->PrintFormat->AddLine();
-		}
-		Printout->PrintFormat->PartialCut();
-		// TODO : The last efpos receipt isnt cleared is the next transaction has no eftpos.
-		// so all following transactions ha eftpos receipt attached
-		LastReceipt->Printouts->Add(Printout);
+//         if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->SecondEftPosReceipt->Count > 0)
+//		    PrintEFTPOSReceipt(EftPos->SecondEftPosReceipt);
 	}
 	std::auto_ptr <TStringList> StringReceipt(new TStringList);
 	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
@@ -3360,13 +3375,18 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
             else
             {
                 PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-            }           
+            }
       }
+
     }
    else
    {
        TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
        PaymentTransaction.InvoiceNumber = Order->DelayedInvoiceNumber;
+   }
+   if(PaymentTransaction.InvoiceNumber != "")
+   {
+      UpdateEftposLogsForInvoice(PaymentTransaction);
    }
 }
 
@@ -3674,11 +3694,10 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        if(!PhoenixHSOk)
+            ResetPayments(PaymentTransaction);
 	}
-    else if(TGlobalSettings::Instance().PMSType == SiHot &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "")
+    else if(IsSiHotConfigured())
     {
             /*
                SiHot could be enabled but is not. Hence we need to try making it
@@ -3724,7 +3743,9 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             if(!PhoenixHSOk || !isOracleEnabled)
             {
                 if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                {
                       PhoenixHSOk = true;
+                }
                 else
                 {
                   PhoenixHSOk = false;
@@ -3743,6 +3764,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData(fiscalData, eFiscalNormalReceipt);
         FiscalTransaction = dataUtility->AnalyzeResponse(response, eFiscalNormalReceipt);
     }
+
     if(!FiscalTransaction)
         return RetVal;
 
@@ -3867,6 +3889,10 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
                            TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
                            EftPos->AcquirerRefSmartConnect.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
+                        else if(TGlobalSettings::Instance().EnableEftPosAdyen &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefAdyen.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefAdyen;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}
@@ -6578,6 +6604,14 @@ bool TListPaymentSystem::TryToEnableSiHot()
     return retValue;
 }
 //--------------------------------------------------------------------------
+bool TListPaymentSystem::IsSiHotConfigured()
+{
+    return (TGlobalSettings::Instance().PMSType == SiHot &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "");
+}
+//--------------------------------------------------------------------------
 bool TListPaymentSystem::IsOracleConfigured()
 {
     return (TGlobalSettings::Instance().PMSType == Oracle &&
@@ -6591,17 +6625,19 @@ bool TListPaymentSystem::IsOracleConfigured()
 //---------------------------------------------------------------------------
 void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
 {
-  for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
-  {
-      TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-      if(payment->GetPay() != 0)
-      {
-        payment->SetPay(0);
-        payment->SetAdjustment(0);
-        payment->SetCashOut(0);
-        payment->Result = eFailed;
-      }
-  }
+    for(int paymentIndex = 0; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
+    {
+        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+        //if(payment->GetPay() != 0)
+        if(payment->Result != eAccepted)
+        {
+//            payment->SetPay(0);
+//            payment->SetAdjustment(0);
+//            payment->SetCashOut(0);
+//            payment->Result = eFailed;
+            payment->Reset();
+        }
+    }
 }
 //------------------------------------------------------------------------------------------
 void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
@@ -6616,7 +6652,9 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         // Only print the first TPrintout as the EFTPOS job does not need duplication.
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
-
+     if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
+        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
     if (TGlobalSettings::Instance().DuplicateReceipts)
     {
         if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
@@ -6706,3 +6744,89 @@ bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransact
     return retVal;
 }
 //--------------------------------------------------------------------------------------
+void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType)
+{
+    //contains tip as property only  this is required to not insert & update such payment type as it is present as separate entity under PMS config
+    if(payment.GetPaymentAttribute(ePayTypeCustomSurcharge) && payment.GetPropertyString().Trim().Length() == 3)
+        return;
+
+    TPMSPaymentType pmsPayment;
+    pmsPayment.PMSPayTypeName       = payment.Name;
+    pmsPayment.PMSPayTypeCode       = "";
+    pmsPayment.PMSPayTypeCategory   = eMMCategory;
+    pmsPayment.PMSMMPayTypeLink     = paymentKey;
+    if(payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
+        pmsPayment.isElectronicPayment   = true;
+    else
+        pmsPayment.isElectronicPayment   = false;
+
+    std::auto_ptr<TManagerPMSCodes> managerPMSCodes(new TManagerPMSCodes());
+    managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPayment,isNewPayment, isMMPayType);
+}
+//--------------------------------------------------------------------------------------
+void TListPaymentSystem::PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt)
+{
+        TPrintout *Printout = new TPrintout();
+		if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
+		{
+			TPrinterPhysical DefaultScreenPrinter;
+			DefaultScreenPrinter.NormalCharPerLine = 40;
+			DefaultScreenPrinter.BoldCharPerLine = 40;
+			Printout->Printer = DefaultScreenPrinter;
+		}
+		else
+		{
+			Printout->Printer = TComms::Instance().ReceiptPrinter;
+		}
+
+		Printout->PrintFormat->Line->FontInfo.Reset();
+		Printout->PrintFormat->Line->ColCount = 1;
+		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+
+        if(!TGlobalSettings::Instance().EnableEftPosAdyen)
+		    Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        else
+           Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+
+		Printout->PrintFormat->Line->Columns[0]->Text = Printout->PrintFormat->DocumentName;
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->NewLine();
+
+		for (int i = 0; i < eftPosReceipt->Count; i++)
+		{
+			Printout->PrintFormat->Line->Columns[0]->Text = eftPosReceipt->Strings[i];
+			Printout->PrintFormat->AddLine();
+		}
+
+		Printout->PrintFormat->PartialCut();
+		// TODO : The last efpos receipt isnt cleared is the next transaction has no eftpos.
+		// so all following transactions ha eftpos receipt attached
+		LastReceipt->Printouts->Add(Printout);
+}
+//----------------------------------------------------------------------------
+void TListPaymentSystem::UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction)
+{
+    try
+    {
+      if(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->Enabled)
+      {
+          for(int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+          {
+            TPayment *payment = paymentTransaction.PaymentGet(i);
+            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+                if(payment->GetPayTendered() != 0)
+                {
+                   EftPos->UpdateEFTPOSLogsForInvoiceNumber(paymentTransaction.InvoiceNumber);
+                   break;
+                }
+            }
+          }
+      }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------

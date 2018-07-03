@@ -103,6 +103,7 @@ TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge,
         roomChargeDetails->LinkText = "";
         roomChargeDetails->Shift = "";
         roomChargeDetails->Time = "";
+        roomChargeDetails->RoomNumber =  _roomCharge.RoomNumber;
         ArrayOfSiHotService arrayofSiHotServices;
         ArrayOfSiHotPayment arrayofSiHotPayments;
         for(std::vector<TSiHotService>::iterator i = _roomCharge.SiHotServices.begin();

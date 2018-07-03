@@ -17,6 +17,7 @@
 #include "DBDenominations.h"
 #include "ServingTime.h"
 #include "GlobalSettings.h"
+#include "StringTools.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -98,6 +99,13 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
             pnlLabel->Caption = "Serving Times";
             break;
         }
+        case ePMSPaymentType:
+        {
+            managerPMSCodes = new TManagerPMSCodes();
+            managerPMSCodes->PMSPaymentTypeMap.clear();
+            pnlLabel->Caption = "PMS Payment Types";
+            break;
+        }
     }
 
 	this->Caption = pnlLabel->Caption;
@@ -121,8 +129,16 @@ void __fastcall TfrmMessageMaintenance::FormResize(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::ShowMessages()
 {
+    if(MessageType != ePMSPaymentType)
+    {
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
+    }
+    else
+    {
+    sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 2 / 3;
+    sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
+    }
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
     switch(MessageType)
@@ -156,6 +172,13 @@ void TfrmMessageMaintenance::ShowMessages()
         LoadServingDetails(DBTransaction);
         break;
       }
+      case ePMSPaymentType:
+      {
+        sgDisplay->Cols[0]->Add("PMS Payment Type");
+        sgDisplay->Cols[1]->Add("PMS Code");
+        LoadPMSPaymentTypes(DBTransaction);
+        break;
+      }
       default:
       {
          ManagerMessage->LoadMessages(DBTransaction,sgDisplay,MessageType);
@@ -164,9 +187,16 @@ void TfrmMessageMaintenance::ShowMessages()
 
     }
 	DBTransaction.Commit();
+    if(MessageType != ePMSPaymentType)
+    {
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
-
+    }
+    else
+    {
+    sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 2 / 3;
+    sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
@@ -193,6 +223,11 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
         case eServingTimes:
         {
             AddServingTime(Sender);
+            break;
+        }
+        case ePMSPaymentType:
+        {
+            AddPMSPaymentType(Sender);
             break;
         }
         default:
@@ -336,6 +371,11 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
                 int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
                 UpdateMealDetails(DBTransaction,key);
             }
+            else if(MessageType == ePMSPaymentType)
+            {
+                int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
+                UpdatePMSPaymentType(DBTransaction,key);
+            }
 			else
 			{
 				TManagerInterface *Manager = NULL;
@@ -413,46 +453,58 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
     {
         MessageBox("There is nothing to delete.", "Warning", MB_ICONWARNING + MB_OK);
     }
-    else if(MessageBox("Are you sure wish to delete this Option?", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
+    else
 	{
+        bool canProceed = true;
         AnsiString val = (int)sgDisplay->Objects[0][sgDisplay->Row];
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
-
-		if(MessageType == ePatronTypes)
-		{
-			TManagerPatron::Instance().Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
-		}
-        else if(MessageType == eRevenueCodes)
+        if(MessageType == ePMSPaymentType)
         {
-            managerPMSCodes->DeleteRevenueCode(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            canProceed = ValidatePMSPayTypeDeletion(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
         }
-        else if(MessageType == eServingTimes)
+        if( canProceed && (MessageBox("Are you sure wish to delete this Option?", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK))
         {
-            managerPMSCodes->DeleteMealDetails(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
-        }
-		else
-		{
-			TManagerInterface *Manager = NULL;
-			if (MessageType == eRunProgram)
-			{
-				Manager = ManagerRun;
-			}
-			else
-			{
-				Manager = ManagerMessage;
-			}
-            if(MessageType == eCashDenomination)
+            if(MessageType == ePatronTypes)
             {
-              TDBDenominations::DeleteDenominations(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                TManagerPatron::Instance().Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            }
+            else if(MessageType == eRevenueCodes)
+            {
+                managerPMSCodes->DeleteRevenueCode(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            }
+            else if(MessageType == eServingTimes)
+            {
+                managerPMSCodes->DeleteMealDetails(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            }
+            else if(MessageType == ePMSPaymentType)
+            {
+                //ValidatePMSPayTypeDeletion(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                managerPMSCodes->DeletePMSPaymentType(DBTransaction, (int)sgDisplay->Objects[0][sgDisplay->Row]);
             }
             else
             {
-              Manager->Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
-            }
+                TManagerInterface *Manager = NULL;
+                if (MessageType == eRunProgram)
+                {
+                    Manager = ManagerRun;
+                }
+                else
+                {
+                    Manager = ManagerMessage;
+                }
+                if(MessageType == eCashDenomination)
+                {
+                  TDBDenominations::DeleteDenominations(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                }
+                else
+                {
+                  Manager->Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                }
 
-		}
-		DBTransaction.Commit();		
+            }
+        }
+		DBTransaction.Commit();
 	}
 	ShowMessages();
 }
@@ -1008,6 +1060,224 @@ void TfrmMessageMaintenance::UpdateMealDetails(Database::TDBTransaction &DBTrans
     else if(frmTouchNumpad->INTResult == 0)
     {
         MessageBox("Meal code should be more than 0","WARNING",MB_ICONWARNING + MB_OK);
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::LoadPMSPaymentTypes(Database::TDBTransaction &DBTransaction)
+{
+    try
+    {
+        sgDisplay->Cols[0]->Clear();
+        sgDisplay->Cols[1]->Clear();
+        sgDisplay->Cols[0]->Add("PMS Payment Type");
+        sgDisplay->Cols[1]->Add("PMS Code");
+        managerPMSCodes->GetPMSPaymentTypeDetails(DBTransaction,sgDisplay,managerPMSCodes->PMSPaymentTypeMap);
+    }
+    catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message,"Exception in LoadPMSPaymentTypes",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmMessageMaintenance::ValidatePMSPayTypeDeletion(Database::TDBTransaction &DBTransaction, int key)
+{
+    bool canDelete = true;
+    try
+    {
+        std::map<int, TPMSPaymentType>::iterator it = managerPMSCodes->PMSPaymentTypeMap.begin();
+        for(; it != managerPMSCodes->PMSPaymentTypeMap.end(); ++it)
+        {
+            if(it->first == key)
+            {
+                if(it->second.PMSPayTypeCategory == eExternalCategory)
+                {
+                    //Eligible for deletion
+                    canDelete = true;
+                }
+                else
+                {
+                    if(it->second.PMSPayTypeCategory == eDefaultCategory)
+                        MessageBox("Default Payment Category can not be deleted","Info",MB_OK + MB_ICONINFORMATION);
+                    if(it->second.PMSPayTypeCategory == eMMCategory)
+                        MessageBox("Menumate Payment Type can not be deleted","Info",MB_OK + MB_ICONINFORMATION);
+                    canDelete = false;
+                }
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message,"Exception in ValidatePMSPayTypeDeletion",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return canDelete;
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::UpdatePMSPaymentType(Database::TDBTransaction &DBTransaction, int key)
+{
+    try
+    {
+        std::map<int, TPMSPaymentType>::iterator it = managerPMSCodes->PMSPaymentTypeMap.begin();
+        bool isNameEditable = false;
+        for(;it != managerPMSCodes->PMSPaymentTypeMap.end(); ++it)
+        {
+            if(it->first == key)
+            {
+               if(it->second.PMSPayTypeCategory == eExternalCategory)
+               {
+                  isNameEditable = true;
+                  break;
+               }
+            }
+        }
+        std::auto_ptr <TfrmTouchKeyboard> frmKeyBoard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        if(isNameEditable)
+        {
+            frmKeyBoard->Caption = "Enter PMS Payment Type";
+            frmKeyBoard->AllowCarriageReturn = false;
+            frmKeyBoard->StartWithShiftDown = true;
+            frmKeyBoard->KeyboardText = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeName;
+            frmKeyBoard->MaxLength = 50;
+        }
+        if ((!isNameEditable) || (frmKeyBoard->ShowModal() == mrOk && frmKeyBoard->KeyboardText.Trim() != ""))
+        {
+            bool forUpdate = true;
+            if(IsNotDuplicatePMSPayName(frmKeyBoard->KeyboardText.Trim(),forUpdate,key))
+            {
+                Database::TDBTransaction DBTransaction(DBControl);
+                DBTransaction.StartTransaction();
+                try
+                {
+                    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+                    frmTouchKeyboard->MaxLength = 10;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = true;
+                    frmTouchKeyboard->KeyboardText = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCode;
+                    frmTouchKeyboard->Caption = "Enter PMS Code";
+
+                    if(frmTouchKeyboard->ShowModal() == mrOk )
+                    {
+                        TPMSPaymentType codeDetails;
+                        codeDetails.PMSPayTypeID = key;
+                        if(isNameEditable)
+                            codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                        else
+                            codeDetails.PMSPayTypeName = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeName;
+                        codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
+                        codeDetails.PMSPayTypeCategory = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCategory;
+                        codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                        codeDetails.isElectronicPayment = managerPMSCodes->PMSPaymentTypeMap[key].isElectronicPayment;
+                        managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                        managerPMSCodes->UpdatePMSPaymentType(DBTransaction,codeDetails);
+                    }
+                    DBTransaction.Commit();
+                }
+                catch(Exception &Ex)
+                {
+                    DBTransaction.Rollback();
+                    TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+                }
+                ShowMessages();
+            }
+            else
+            {
+                MessageBox("Please Select a different PMS payment name. This name already exists.",
+                            "WARNING",MB_ICONWARNING + MB_OK);
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmMessageMaintenance::IsNotDuplicatePMSPayName(AnsiString name, bool forUpdate, int key)
+{
+    bool isNotDuplicate = true;
+    std::map<int, TPMSPaymentType>::iterator it = managerPMSCodes->PMSPaymentTypeMap.begin();
+    for(; it != managerPMSCodes->PMSPaymentTypeMap.end(); ++it)
+    {
+       if(TStringTools::Instance()->UpperCaseWithNoSpace(it->second.PMSPayTypeName) ==
+          TStringTools::Instance()->UpperCaseWithNoSpace(name))
+       {
+          if(!forUpdate)
+          {
+              isNotDuplicate = false;
+              break;
+          }
+          else
+          {
+             if(key != it->first)
+             {
+                  isNotDuplicate = false;
+                  break;
+             }
+          }
+       }
+    }
+    return isNotDuplicate;
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::AddPMSPaymentType(TObject *Sender)
+{
+    try
+    {
+        std::auto_ptr <TfrmTouchKeyboard> frmKeyBoard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmKeyBoard->Caption = "Enter PMS Payment Type";
+        frmKeyBoard->AllowCarriageReturn = false;
+        frmKeyBoard->StartWithShiftDown = true;
+        frmKeyBoard->KeyboardText = "";
+        frmKeyBoard->MaxLength = 50;
+        if(frmKeyBoard->ShowModal() == mrOk && frmKeyBoard->KeyboardText.Trim() != "")
+        {
+            bool forUpdate = false;
+            if(IsNotDuplicatePMSPayName(frmKeyBoard->KeyboardText.Trim(),forUpdate,0))
+            {
+                Database::TDBTransaction DBTransaction(DBControl);
+                DBTransaction.StartTransaction();
+                try
+                {
+                    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+                    frmTouchKeyboard->MaxLength = 10;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = true;
+                    frmTouchKeyboard->KeyboardText = "";
+                    frmTouchKeyboard->Caption = "Enter PMS Code";
+
+                    if(frmTouchKeyboard->ShowModal() == mrOk )
+                    {
+                        TPMSPaymentType codeDetails;
+                        codeDetails.PMSPayTypeID = 0;
+                        codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                        codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
+                        codeDetails.PMSPayTypeCategory = eExternalCategory;
+                        //codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                        codeDetails.isElectronicPayment = false;
+                       // managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                        managerPMSCodes->SetPMSPaymentType(DBTransaction,codeDetails,true,false);
+                    }
+                    DBTransaction.Commit();
+                }
+                catch(Exception &Ex)
+                {
+                    MessageBox(Ex.Message,"Exception in AddPMSPaymentType1",MB_OK);
+                    TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+                }
+                ShowMessages();
+            }
+            else
+            {
+                MessageBox("Please Select a different PMS payment name. This name already exists.",
+                            "WARNING",MB_ICONWARNING + MB_OK);
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message,"Exception in AddPMSPaymentType2",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
 //---------------------------------------------------------------------------

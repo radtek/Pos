@@ -409,3 +409,8 @@ void TEftPosSmartConnect:: IsQRCodeTransaction(eEFTTransactionType TxnType)
 	TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsSmartConnectQRTransaction,TGlobalSettings::Instance().IsSmartConnectQRTransaction);
 	dbTransaction.Commit();
 }
+//--------------------------------------------------------------------------------------
+bool TEftPosSmartConnect::IsCashOutSupported()
+{
+    return true;
+}

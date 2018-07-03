@@ -392,6 +392,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
          else
             TGlobalSettings::Instance().mallInfo.MallId = 0;
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
+        TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmCompanyDetails, false);
         TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
         TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
         TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");
@@ -417,8 +418,18 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().OracleInterfaceIPAddress = TManagerVariable::Instance().GetStr(DBTransaction, vmOracleInterfaceIPAddress, "");
         TGlobalSettings::Instance().EnableEftPosSmartConnect = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosSmartConnect, false);
         TGlobalSettings::Instance().SmartConnectPairingCode = TManagerVariable::Instance().GetStr(DBTransaction, vmSmartConnectPairingCode, "");
+
+        TGlobalSettings::Instance().EnableEftPosAdyen = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosAdyen, false);
+        TGlobalSettings::Instance().EFTPosAPIKey = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosAPIKey, "");
+        TGlobalSettings::Instance().EFTPosDeviceID = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosDeviceID, "");
+        TGlobalSettings::Instance().EFTPosURL = TManagerVariable::Instance().GetStr(DBTransaction, vmEFTPosURL, "");
         TGlobalSettings::Instance().PMSTimeOut = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSTimeOut, 3);
         TGlobalSettings::Instance().IsSmartConnectQRTransaction = TManagerVariable::Instance().GetBool(DBTransaction, vmIsSmartConnectQRTransaction, false);
+        TGlobalSettings::Instance().AdyenRecoveryTransactionIsRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmAdyenRecoveryTransactionIsRefund, false);
+        TGlobalSettings::Instance().PrintCardHolderReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintCardHolderReceipt, true);
+        TGlobalSettings::Instance().PrintMerchantReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintMerchantReceipt, false);
+        TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
+        TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

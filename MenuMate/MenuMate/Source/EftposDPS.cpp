@@ -550,3 +550,9 @@ void TEftPosMMDPS::PopulateTippableCardTypes()
 	TippableCardTypes.push_back("Amex");
 	TippableCardTypes.push_back("MasterCard");
 }
+//--------------------------------------------------------------------------
+bool TEftPosMMDPS::IsCashOutSupported()
+{
+    return true;
+}
+//--------------------------------------------------------------------------

@@ -15,7 +15,7 @@ bool TPMSHelper::LoadRevenueCodes(std::map<int,TRevenueCodeDetails> &RevenueCode
 {
     bool retValue = false;
     RevenueCodesMap.clear();
-  
+
     TIBSQL* queryRevenue = GetRevenueCodesQuery(DBTransaction);
     for(;!queryRevenue->Eof;queryRevenue->Next())
     {
@@ -57,9 +57,16 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
             IBInternalQuery->ParamByName("SIZE_NAME")->AsString = ic->Size;
             IBInternalQuery->ExecQuery();
             if(IBInternalQuery->RecordCount)
-                ic->RevenueCode = IBInternalQuery->FieldByName("REVENUECODE")->AsInteger;
+            {
+                if(IBInternalQuery->FieldByName("REVENUECODE")->AsInteger != NULL)
+                    ic->RevenueCode = IBInternalQuery->FieldByName("REVENUECODE")->AsInteger;
+                else
+                    ic->RevenueCode = 0;
+            }
             else
+            {
                 ic->RevenueCode = 0;
+            }
         }
         transaction.Commit();
     }
@@ -70,3 +77,4 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
     }
 }
 //----------------------------------------------------------------------------
+

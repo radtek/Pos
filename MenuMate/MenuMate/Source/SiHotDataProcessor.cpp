@@ -6,9 +6,8 @@
 #include "SiHotDataProcessor.h"
 #include "Math.h"
 #include "MMMessageBox.h"
-
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
-
 #pragma package(smart_init)
 
 TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)
@@ -32,6 +31,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     double discountValue          = 0.0;
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber     = _paymentTransaction.Phoenix.AccountNumber;
+    _roomCharge.RoomNumber        = _paymentTransaction.Phoenix.RoomNumber;
 
     if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
     {
@@ -40,6 +40,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
         _paymentTransaction.Phoenix.RoomNumber    = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         _paymentTransaction.Phoenix.AccountNumber = _roomCharge.AccountNumber;
         _paymentTransaction.SalesType             = eRoomSale;
+        _roomCharge.RoomNumber                    = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
 
         for (int i = 0; i < _paymentTransaction.Orders->Count; i++)
         {
@@ -582,6 +583,91 @@ void TSiHotDataProcessor::ReadCurrentRoundingSettingForVat()
     }
 }
 //----------------------------------------------------------------------------
+void TSiHotDataProcessor::GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    paymentMap.clear();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG";
+        SelectQuery->ExecQuery();
+        for(;!SelectQuery->Eof;SelectQuery->Next())
+        {
+           TPMSPaymentType pmsPayment;
+           pmsPayment.PMSPayTypeID                  = SelectQuery->FieldByName("PMS_PAYTYPE_ID")->AsInteger;
+           pmsPayment.PMSPayTypeName                = SelectQuery->FieldByName("PMS_PAYTYPE_NAME")->AsString;
+           pmsPayment.PMSPayTypeCode                = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+           pmsPayment.PMSPayTypeCategory            = SelectQuery->FieldByName("PMS_PAYTYPE_CATEGORY")->AsInteger;
+           pmsPayment.PMSMMPayTypeLink              = SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger == NULL ? 0 : SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger;
+           pmsPayment.isElectronicPayment           = SelectQuery->FieldByName("IS_ELECTRONICPAYMENT")->AsString == "T" ? true : false;
+           paymentMap[pmsPayment.PMSPayTypeID]
+                                                    = pmsPayment;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//----------------------------------------------------------------------------
+AnsiString TSiHotDataProcessor::GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(!payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+        {
+            if(it->second.PMSPayTypeName == payment->Name)
+            {
+                value = it->second.PMSPayTypeCode;
+                break;
+            }
+        }
+        else
+        {
+            if(payment->CardType != "")
+            {
+                if(it->second.PMSPayTypeName == payment->CardType)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
+            }
+            else
+            {
+                if(it->second.PMSPayTypeName == payment->Name)
+                {
+                    value = it->second.PMSPayTypeCode;
+                    break;
+                }
+            }
+        }
+    }
+    return value;
+}
+//----------------------------------------------------------------------------
+AnsiString TSiHotDataProcessor::GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap)
+{
+    AnsiString value = "";
+    std::map<int,TPMSPaymentType>::iterator it = paymentsMap.begin();
+
+    for(;it != paymentsMap.end(); ++it)
+    {
+        if(it->second.PMSPayTypeCategory == eDefaultCategory)
+        {
+            value = it->second.PMSPayTypeCode;
+            break;
+        }
+    }
+    return value;
+}
+//----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction)
 {
     double surcharge = 0.0;
@@ -589,6 +675,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     double cashOutStore = 0.0;
     double tip = 0.0;
     UnicodeString cashType = "";
+    std::map<int,TPMSPaymentType> paymentsMap;
+    GetPMSPaymentType(paymentsMap);
     for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
     {
         TSiHotPayments siHotPayment;
@@ -603,15 +691,21 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         }
         if(payment->GetPaymentAttribute(ePayTypeCash))
         {
-            cashType = payment->PaymentThirdPartyID;
+            cashType = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
         }
 
         if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->GetPaymentAttribute(ePayTypeRoomInterface)))
         {
             tip += (double)payment->TipAmount;
-            siHotPayment.Type       = payment->PaymentThirdPartyID;
+            siHotPayment.Type       = GetPMSPaymentCode(payment,paymentsMap);//payment->PaymentThirdPartyID;
+            if(siHotPayment.Type == "" && payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && payment->CardType != "")
+            {
+               siHotPayment.Type = DoRequiredInsertion(payment, paymentsMap);
+            }
             if(siHotPayment.Type    == "")
-                siHotPayment.Type   = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+            {
+                siHotPayment.Type   = GetPMSDefaultCode(paymentsMap);//TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+            }
             if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type    = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
             if(payment->GetPaymentAttribute(ePayTypeCredit) && (double)payment->GetPayTendered() < 0.0)
@@ -749,4 +843,49 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     return retValue;
 }
 //----------------------------------------------------------------------------
-
+AnsiString TSiHotDataProcessor::DoRequiredInsertion(TPayment *payment, std::map<int,TPMSPaymentType> &paymentsMap)
+{
+   AnsiString retValue = "";
+   try
+   {
+       AnsiString defaultPayCode = GetPMSDefaultCode(paymentsMap);
+       AddPaymentToPMSPaymentTypes(payment,defaultPayCode);
+       GetPMSPaymentType(paymentsMap);
+       retValue = GetPMSPaymentCode(payment,paymentsMap);
+   }
+   catch(Exception &Exc)
+   {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+   }
+   return retValue;
+}
+//----------------------------------------------------------------------------
+void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = " INSERT INTO PMSPAYMENTSCONFIG "
+                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                 " PMS_PAYTYPE_CATEGORY ,IS_ELECTRONICPAYMENT) VALUES"
+                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                 " :PMS_PAYTYPE_CATEGORY ,:IS_ELECTRONICPAYMENT)";
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger =
+                                 TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+        InsertQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------

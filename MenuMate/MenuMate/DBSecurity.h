@@ -28,7 +28,7 @@ public:
     static void  SavePMSGuestDetails(TPaymentTransaction &paymentTransaction, TItemMinorComplete *Order, int tableNo = 0, int seatNo = 0);
     
 private:
-    static bool CheckWhetherGuestRecordExists(Database::TDBTransaction &DBTransaction, int securityRef, UnicodeString roomNumber, int seatNo,
-                                                UnicodeString accNo);
+    static bool CheckWhetherGuestRecordExists(Database::TDBTransaction &dBTransaction, int securityRef, //, UnicodeString roomNumber, UnicodeString accNo,
+                                int seatNo, int tableNo);
 };
 #endif

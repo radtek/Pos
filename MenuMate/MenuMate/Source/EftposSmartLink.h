@@ -43,6 +43,7 @@ public:
         void __fastcall DoLogon();
         void __fastcall ReprintReceipt();
         AnsiString GetRefNumber();
+        bool IsCashOutSupported();
 };
 
 

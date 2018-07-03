@@ -74,6 +74,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\UnzDLL.dll; DestDir: {app}; Flags: ign
 Source: {#GetEnv('BASEDIR')}\Static Files\ZipDll.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dbexpint.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\windowsxp-kb4019276-x86-embedded-enu_3822fc1692076429a7dc051b00213d5e1240ce3d.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.tlb; DestDir: {app}; Flags: ignoreversion
@@ -333,8 +334,10 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\PocketVoucherIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\MYOB.AccountRight.SDK.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AdyenIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\WalletPaymets.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SmartConnectIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\PaymentSenseIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 
 ; Menumate Customer Display
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe";   DestDir: "{app}\Customer Display" ; Flags:ignoreversion;

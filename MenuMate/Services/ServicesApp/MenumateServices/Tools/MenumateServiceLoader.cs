@@ -50,6 +50,8 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.SiHotIntegration);
             AddService(serviceList, MenumateServicesIdentifier.WalletPayments);
             AddService(serviceList, MenumateServicesIdentifier.SmartConnect);
+            AddService(serviceList, MenumateServicesIdentifier.AdyenIntegration);
+            AddService(serviceList, MenumateServicesIdentifier.PaymentSense);
             if (serviceList.Count == 0)
             {
                 ServiceLogger.Log(@"No Menumate Services to be loaded.");
@@ -161,6 +163,10 @@ namespace MenumateServices
                     return new MenumateServiceWalletPayments();
                 case MenumateServicesIdentifier.SmartConnect:
                     return new MenumateServiceSmartConnect();
+                case MenumateServicesIdentifier.AdyenIntegration:
+                    return new MenumateServiceAdyenIntegration();
+                case MenumateServicesIdentifier.PaymentSense:
+                    return new MenumateServicePaymentSense();
                 default: throw new Exception(String.Format("Unknown Service: {0}", serviceIdentifier));
             }
         }

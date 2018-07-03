@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{71986902-F877-4F9E-A692-15D2FC3DC65E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AdyenIntegration</RootNamespace>
+    <AssemblyName>AdyenIntegration</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.4.4.12\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AdyenIntegrationController.cs" />
+    <Compile Include="Domain\AcquirerTransactionID.cs" />
+    <Compile Include="Domain\AllowedProduct.cs" />
+    <Compile Include="Domain\AmountsReq.cs" />
+    <Compile Include="Domain\AmountsResp.cs" />
+    <Compile Include="Domain\AreaSize.cs" />
+    <Compile Include="Domain\CapturedSignature.cs" />
+    <Compile Include="Domain\CardData.cs" />
+    <Compile Include="Domain\CheckData.cs" />
+    <Compile Include="Domain\Common\ResourceDetails.cs" />
+    <Compile Include="Domain\Constants\Constants.cs" />
+    <Compile Include="Domain\ConvertedAmount.cs" />
+    <Compile Include="Domain\CurrencyConversion.cs" />
+    <Compile Include="Domain\CustomerOrder.cs" />
+    <Compile Include="Domain\Diagnosis\DiagnosisRequest.cs" />
+    <Compile Include="Domain\Diagnosis\DiagnosisResponse.cs" />
+    <Compile Include="Domain\Diagnosis\EventNotification.cs" />
+    <Compile Include="Domain\Diagnosis\POIStatus.cs" />
+    <Compile Include="Domain\GeographicCoordinates.cs" />
+    <Compile Include="Domain\Geolocation.cs" />
+    <Compile Include="Domain\Instalment.cs" />
+    <Compile Include="Domain\LoginLogOut\LoginRequest.cs" />
+    <Compile Include="Domain\LoginLogOut\LoginResponse.cs" />
+    <Compile Include="Domain\LoginLogOut\LogoutRequest.cs" />
+    <Compile Include="Domain\LoginLogOut\LogoutResponse.cs" />
+    <Compile Include="Domain\LoginLogOut\POISoftware.cs" />
+    <Compile Include="Domain\MobileData.cs" />
+    <Compile Include="Domain\OutputContent.cs" />
+    <Compile Include="Domain\OutputText.cs" />
+    <Compile Include="Domain\PaymentAcquirerData.cs" />
+    <Compile Include="Domain\PaymentInstrumentData.cs" />
+    <Compile Include="Domain\PaymentReceipt.cs" />
+    <Compile Include="Domain\PaymentResponse.cs" />
+    <Compile Include="Domain\PaymentResult.cs" />
+    <Compile Include="Domain\PaymentToken.cs" />
+    <Compile Include="Domain\POIData.cs" />
+    <Compile Include="Domain\LoginLogOut\POISystemData.cs" />
+    <Compile Include="Domain\PredefinedContent.cs" />
+    <Compile Include="Domain\RequestEnvelop\Envelop.cs" />
+    <Compile Include="Domain\Common\MessageHeader.cs" />
+    <Compile Include="Domain\OriginalPOITransaction.cs" />
+    <Compile Include="Domain\PaymentData.cs" />
+    <Compile Include="Domain\PaymentRequest.cs" />
+    <Compile Include="Domain\PaymentTransaction.cs" />
+    <Compile Include="Domain\POITransactionID.cs" />
+    <Compile Include="Domain\Response.cs" />
+    <Compile Include="Domain\ResponseEnvelop\ResponseEnvelop.cs" />
+    <Compile Include="Domain\ResponseEnvelop\SaleToPOIResponse.cs" />
+    <Compile Include="Domain\ReversalRequest.cs" />
+    <Compile Include="Domain\SaleData.cs" />
+    <Compile Include="Domain\SaleProfile.cs" />
+    <Compile Include="Domain\SalesSoftware.cs" />
+    <Compile Include="Domain\SaleTerminalData.cs" />
+    <Compile Include="Domain\SaleToIssuerData.cs" />
+    <Compile Include="Domain\RequestEnvelop\SaleToPOIRequest.cs" />
+    <Compile Include="Domain\SaleTransactionID.cs" />
+    <Compile Include="Domain\SensitiveCardData.cs" />
+    <Compile Include="Domain\SensitiveMobileData.cs" />
+    <Compile Include="Domain\StoredValueAccountID.cs" />
+    <Compile Include="Domain\TrackData.cs" />
+    <Compile Include="Domain\TransactionStatus\MessageReference.cs" />
+    <Compile Include="Domain\TransactionStatus\RepeatedMessageResponse.cs" />
+    <Compile Include="Domain\TransactionStatus\RepeatedResponseMessageBody.cs" />
+    <Compile Include="Domain\TransactionStatus\TransactionStatusRequest.cs" />
+    <Compile Include="Domain\TransactionStatus\TransactionStatusResponse.cs" />
+    <Compile Include="Domain\UTMCoordinates.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\ServiceLogger.cs" />
+    <Compile Include="Utility\FormatReciepts.cs" />
+    <Compile Include="Utility\JSonUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

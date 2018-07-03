@@ -18,6 +18,7 @@ enum eEFTPOSType
   eTEftPosICELink,
   eTEftPosDPS,
   eTEftPosCadmusCronos,
+  eTEftPosPaymentSense
 };
 
 enum TEftPosEvent {ePrintReceiptEvent,eChequeVerifyEvent,
@@ -42,7 +43,7 @@ enum ePANSource
   PANSource_Manual = 1,
   PANSource_CardReader = 2,
 };
-
+enum AdyenTriggerLocation {eBootForAdyen = 1,eUIForAdyen };
 class TEftPosTransaction
 {
 public:
@@ -59,6 +60,7 @@ public:
     bool TimeOut;
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
+    AnsiString CashOutAmount;
 };
 
 class TListEftPosTransContainer : public TList
@@ -87,7 +89,8 @@ class TEftPos
 		TListEftPosTransContainer *EftPosTransContainer;
 	public:
 	__property bool Enabled  = { read=GetEnabled, write=SetEnabled };
-	std::auto_ptr<TStringList> LastEftPosReceipt;	
+	std::auto_ptr<TStringList> LastEftPosReceipt;
+    std::auto_ptr<TStringList> SecondEftPosReceipt;
 	eEFTPOSType EFTPOSType;
    TEftPos();
    ~TEftPos();
@@ -118,6 +121,7 @@ class TEftPos
 	AnsiString WaitingOnReferenceNumber;
     AnsiString AcquirerRefSmartPay;
     AnsiString AcquirerRefSmartConnect;
+    AnsiString AcquirerRefAdyen;
 	int ChequeAccountMaxLength;
 	int ChequeBranchMaxLength;
 	int ChequeSerialMaxLength;
@@ -139,6 +143,11 @@ class TEftPos
 	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
+    virtual bool IsCashOutSupported();
+    virtual void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
+    virtual void UpdateEFTPOSLogs(bool status);
+    virtual void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
+    virtual std::vector<AnsiString> GetAllTerminals();
 };
 
 extern TEftPos *EftPos;

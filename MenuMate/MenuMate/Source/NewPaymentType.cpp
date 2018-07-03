@@ -381,6 +381,11 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
       EnableOrCheckQRCodeButton(Payment.GetPaymentAttribute(ePayTypeSmartConnectQR), TGlobalSettings::Instance().EnableEftPosSmartConnect);
    }
    cbreservationmaster->Enabled = cbCSVPaymentType->Checked;
+   if(TGlobalSettings::Instance().EnableEftPosPaymentSense && Payment.GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+   {
+        cbCheckSig->Enabled = false;
+        cbCheckSig->Checked = false;
+   }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
@@ -429,16 +434,23 @@ void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
            {
                 if(!frmPaymentMaintenance->IsPaymentExist(DBTransaction, frmTouchKeyboard->KeyboardText.UpperCase()))
                 {
-                    if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
+                      if(!frmPaymentMaintenance->PaymentExistsInPMS(DBTransaction, frmTouchKeyboard->KeyboardText.UpperCase()))
                       {
-                         MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
-                         frmTouchKeyboard->KeyboardText = "Credit Card";
+                          if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
+                          {
+                             MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
+                             frmTouchKeyboard->KeyboardText = "Credit Card";
+                          }
+                          btnName->Caption = frmTouchKeyboard->KeyboardText;
                       }
-                      btnName->Caption = frmTouchKeyboard->KeyboardText;
+                      else
+                      {
+                        MessageBox("This Payment Name already exists under PMS Payment Types.", "Error", MB_OK);
+                      }
                 }
                 else
                 {
-                    MessageBox("This Payment Name already Exist", "Error", MB_OK);
+                    MessageBox("This Payment Name already exists.", "Error", MB_OK);
                 }
            }
            DBTransaction.Commit();

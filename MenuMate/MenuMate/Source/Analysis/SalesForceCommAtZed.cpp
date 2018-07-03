@@ -209,7 +209,16 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
 
         TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypePocketVoucher);
         TDeviceRealTerminal::Instance().PaymentSystem->SetPaymentAttribute(DBTransaction,PaymentKey,ePayTypeDispPVMsg);
+        /// Insert Payment Type to PMS type also
+        TPMSPaymentType pmsPayment;
+        pmsPayment.PMSPayTypeName       = "Pocket Voucher";
+        pmsPayment.PMSPayTypeCode       = "";
+        pmsPayment.PMSPayTypeCategory   = eMMCategory;
+        pmsPayment.PMSMMPayTypeLink     = PaymentKey;
+        pmsPayment.isElectronicPayment   = false;
 
+        std::auto_ptr<TManagerPMSCodes> managerPMSCodes(new TManagerPMSCodes());
+        managerPMSCodes->SetPMSPaymentType(DBTransaction,pmsPayment,true, true);
 
         if(TDeviceRealTerminal::Instance().PocketVouchers->URL != Url)
         {

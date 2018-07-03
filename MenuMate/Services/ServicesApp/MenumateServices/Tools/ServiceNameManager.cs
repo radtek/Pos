@@ -48,6 +48,8 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
                 case MenumateServicesIdentifier.WalletPayments: return "MenumateServiceWalletPayments";
                 case MenumateServicesIdentifier.SmartConnect: return "MenumateServiceSmartConnect";
+                case MenumateServicesIdentifier.AdyenIntegration: return "AdyenIntegrationWebService";
+                case MenumateServicesIdentifier.PaymentSense: return "MenumateServicePaymentSense";
                 default: return @"";
             }
         }
@@ -72,6 +74,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
                 case MenumateServicesIdentifier.SmartConnect: return "Menumate Smart Connect";
+                case MenumateServicesIdentifier.PaymentSense: return "Menumate Payment Sense";
                 default: return @"";
             }
         }
@@ -96,6 +99,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
                 case MenumateServicesIdentifier.SmartConnect: return "Menumate SmartConnect Server";
+                case MenumateServicesIdentifier.PaymentSense: return "Menumate PaymentSense Server";
                 default: return @"";
             }
         }

@@ -2,7 +2,8 @@
 
 #ifndef ManagerOraclePMSH
 #define ManagerOraclePMSH
-#include "BasePMS.h"
+//#include "BasePMS.h"
+#include "DeviceRealterminal.h"
 #include "OracleDataBuilder.h"
 //---------------------------------------------------------------------------
 

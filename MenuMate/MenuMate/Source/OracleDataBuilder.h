@@ -58,5 +58,10 @@ class TOracleDataBuilder
         void GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
         std::vector<TPayment> PaymentLoad(Database::TDBTransaction &DBTransaction);
         double SUrcharge;
+        void GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap);
+        AnsiString GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap);
+        AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
+       void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
+       AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
 };
 #endif

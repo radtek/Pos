@@ -3178,6 +3178,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "If this setting is on float withdraw will happen from cash"
                  "Default is False.",
                   vmgPOS, false);
+         SetVarBool(DBTransaction, vmCompanyDetails, "Company details ",
+                 "If this setting is on company details will be printed on Reprint receipt "
+                 "Default is False.",
+                  vmgPOS, false);
         SetVarStr( DBTransaction, vmCashWithdrawal, "Cash Withdrawal GLCode",
                 "Cash Withdrawal GLCode."
                 "Default is null",
@@ -3382,12 +3386,17 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		vmgPOS,
 		0);
         SetVarStr(DBTransaction, vmOracleInterfaceIPAddress, "Oracle Interface IP Address",  "Oracle Interface IP Address", vmgPOS, "");
-        SetVarInt(DBTransaction,
-		vmPMSTimeOut,
-		"PMS Time Out",
-		"PMS Time Out",
-		vmgPOS,
-		3);
+        SetVarBool(DBTransaction,vmEnableEftPosAdyen,"Use Adyen EFTPOS", "This setting will set EFTPOS to Adyen", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmEFTPosAPIKey,  "API Key", "API Key for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosDeviceID,  "Device ID", "Device ID for EFTPOS Cloud", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmEFTPosURL,  "API URL", "API URL for EFTPOS CLoud", vmg3rdPartyInterface, "");
+        SetVarInt(DBTransaction, vmPMSTimeOut, "PMS Time Out", "PMS Time Out", vmgPOS, 3);
+        SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmPrintCardHolderReceipt,"Print Customer Receipt", "This setting will Prints CardHolder receipt", vmg3rdPartyInterface, true);
+        SetVarBool(DBTransaction,vmPrintMerchantReceipt,"Print Merchant Receipt", "This setting will  Print Merchant receipt", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmEnableEftPosPaymentSense, "Enable Payment Sense Integration", "Tells whether payment sense eftpos is enabled.\r"
+         "Default is False", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

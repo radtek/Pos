@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OracleTCPServer.Utility;
 
 namespace OracleTCPServer
 {
@@ -26,7 +27,6 @@ namespace OracleTCPServer
                 string address= "";
                 GetListnerDetails(ref port, ref address);
                 IPAddress localAddr = IPAddress.Parse(address);
-
                 server = new TcpListener(localAddr, port);
 
                 listLogs.Add("IP Address for listener                           " + address);
@@ -82,37 +82,10 @@ namespace OracleTCPServer
         private static byte[] SendRequestToOracle(byte[] buffer)
         {
             byte[] byteReponse = new byte[2000];
-            tcpclnt.SendTimeout = 3000;
-            tcpclnt.ReceiveTimeout = 5000;
+            
             try
             {
-                // to clear existing data if any
-                if (tcpclnt.Available > 0)
-                {
-                    listLogs.Add("Found existing data " + tcpclnt.Available);
-                    Stream old = tcpclnt.GetStream();
-                    byte[] oldBytes = new byte[2000];
-                    int l = old.Read(oldBytes, 0, oldBytes.Length);
-                    listLogs.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
-                }
-                ///////////////////////////////////////
-                Stream stm = tcpclnt.GetStream();
-                byte[] STX = new byte[] { 0x02 };
-                byte[] ETX = new byte[] { 0x03 };
-                listLogs.Add("Writing back to Oracle APP at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
-                stm.Write(STX, 0, 1);
-                stm.Write(buffer, 0, buffer.Length);
-                stm.Write(ETX, 0, 1);
-
-                string dataWritten = System.Text.Encoding.ASCII.GetString(buffer, 0, buffer.Length);
-                listLogs.Add("Data written to Oracle APP                        " + dataWritten);
-
-                int k = stm.Read(byteReponse, 0, byteReponse.Length);
-                listLogs.Add("Data read from Oracle APP at                      " + DateTime.Now.ToString("hh:mm:ss tt"));
-                dataWritten = System.Text.Encoding.ASCII.GetString(byteReponse, 0, k);
-                byteReponse = System.Text.Encoding.ASCII.GetBytes(dataWritten);
-                listLogs.Add("Data read from Oracle APP                         " + dataWritten);
-                listLogs.Add("Time                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                byteReponse = PostToOracle(buffer);
             }
             catch (Exception ex)
             {
@@ -120,9 +93,68 @@ namespace OracleTCPServer
                 listLogs.Add("Time of Exception                                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                 string value = "";
                 byteReponse = System.Text.Encoding.ASCII.GetBytes(value);
+                listLogs.Add("************Re-establishing the connection with Oracle as no response was receieved*************");
+                RestartOracleConnection();
             }
             MakeLogs(listLogs);
             listLogs.Clear();
+            return byteReponse;
+        }
+        private static void RestartOracleConnection()
+        {
+            listLogs.Add("Entered method RestartOracleConnection at            " + DateTime.Now.ToString("hh:mm:ss tt"));
+            if (tcpclnt.Connected)
+            {
+                tcpclnt.Close();
+                listLogs.Add("Existing connection closed at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            try
+            {
+                listLogs.Add("Closing explicitely                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                tcpclnt.Close();
+                listLogs.Add("Closed explicitely                                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            catch (Exception ex)
+            {
+                listLogs.Add("Exception in closing explicitly at                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            Thread.Sleep(14000);
+            if (InitializeClient())
+            {
+                SendLinkDescription();
+            }
+            MakeLogs(listLogs);
+            listLogs.Clear();
+        }
+        private static void SendLinkDescription()
+        {
+            PostLinkDescription();
+        }
+        private static string GetVersionNumber()
+        {
+            string retValue = "";
+            OracleServerDB od = new OracleServerDB();
+            retValue = od.GetVersionNumber();
+            return retValue;
+        }
+        private static byte[] PostLinkDescription()
+        {
+            string data = "<LinkDescription Date=\"" + DateTime.Now.ToString("yyMMdd") + "\"" + " Time=\"" + DateTime.Now.ToString("HHmmss") + "\"" +
+                           " VerNum=\"" + GetVersionNumber() + "\"" + " />";
+            byte[] buffer = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] byteReponse = new byte[2000];
+
+            try
+            {
+                PostToOracle(buffer);
+            }
+            catch (Exception ex)
+            {
+                listLogs.Add("Exception in Communication with Oracle App during Reconnection        " + ex.Message);
+                listLogs.Add("Time of Exception                                                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                string value = "";
+                byteReponse = System.Text.Encoding.ASCII.GetBytes(value);
+            }
             return byteReponse;
         }
         private static bool InitializeClient()
@@ -134,6 +166,9 @@ namespace OracleTCPServer
                 int portNumber = 0;
                 OracleServerDB od = new OracleServerDB();
                 od.ReadOracleServerAppDetails(ref ipAddress, ref portNumber);
+                tcpclnt.SendTimeout = 5000;
+                tcpclnt.ReceiveTimeout = 120000;
+                listLogs.Add("Going to connect to Oracle at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                 tcpclnt.Connect(ipAddress, portNumber);
 
                 listLogs.Add("IP Address for Oracle APP                         " + ipAddress);
@@ -162,6 +197,39 @@ namespace OracleTCPServer
         {
             LogsUtility logs = new LogsUtility();
             logs.WriteToLogFile(listLogs);
+        }
+        private static byte[] PostToOracle(byte[] buffer)
+        {
+            byte[] byteResponse = new byte[2000];
+
+            if (tcpclnt.Available > 0)
+            {
+                listLogs.Add("Found existing data " + tcpclnt.Available);
+                Stream old = tcpclnt.GetStream();
+                byte[] oldBytes = new byte[2000];
+                int l = old.Read(oldBytes, 0, oldBytes.Length);
+                listLogs.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
+            }
+            
+            Stream stm = tcpclnt.GetStream();
+            byte[] STX = new byte[] { 0x02 };
+            byte[] ETX = new byte[] { 0x03 };
+            listLogs.Add("Writing back to Oracle APP at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+            stm.Write(STX, 0, 1);
+            stm.Write(buffer, 0, buffer.Length);
+            stm.Write(ETX, 0, 1);
+
+            string dataWritten = System.Text.Encoding.ASCII.GetString(buffer, 0, buffer.Length);
+            listLogs.Add("Data written to Oracle APP                        " + dataWritten);
+            //Thread.Sleep(3000);
+            int k = stm.Read(byteResponse, 0, byteResponse.Length);
+            listLogs.Add("Data read from Oracle APP at                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+            dataWritten = System.Text.Encoding.ASCII.GetString(byteResponse, 0, k);
+            byteResponse = System.Text.Encoding.ASCII.GetBytes(dataWritten);
+            listLogs.Add("Data read from Oracle APP                         " + dataWritten);
+            listLogs.Add("Time                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+
+            return byteResponse; 
         }
     }
 }

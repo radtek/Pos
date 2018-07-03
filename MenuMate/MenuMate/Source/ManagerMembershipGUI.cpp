@@ -262,7 +262,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
    return Result;
 }
 
-TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMContactInfo & Info)
+TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMContactInfo & Info, bool donotUseEmail)
 {
     TModalResult Result = mrCancel;
 
@@ -300,16 +300,17 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
 					   frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
 					   ManagerDiscount->GetDiscountList( DBTransaction, frmEditCustomer->DiscountList.get(), discountFilter);
                        frmEditCustomer->Editing = true;
+                       if(donotUseEmail)
+                          Info.EMail = "";
                        frmEditCustomer->Info = Info;
                        frmEditCustomer->MemberType = Info.MemberType;
                        AnsiString ProxCard = Info.ProxStr;
                        TModalResult Result = frmEditCustomer->ShowModal();
 
-                        if (Result == mrOk)
+                       if (Result == mrOk)
                         {
-                            Info = frmEditCustomer->Info;
-
-                            if(frmEditCustomer->IsProxCardChange &&
+                           Info = frmEditCustomer->Info;
+                               if(frmEditCustomer->IsProxCardChange &&
                                TGlobalSettings::Instance().LoyaltyMateEnabled &&
                                TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(Info.CloudUUID))
                             {

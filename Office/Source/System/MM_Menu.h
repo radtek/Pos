@@ -450,7 +450,7 @@ public:
 	int			Setmenu_Mask;
 	bool		Available_As_Standard;
 	bool		No_Recipe;
-	AnsiString	Barcode;
+	WideString	Barcode;
 	int			Mem_Sale_Count;
 	double		Mem_Discount_Percent;
 	int			Loc_Sale_Count;

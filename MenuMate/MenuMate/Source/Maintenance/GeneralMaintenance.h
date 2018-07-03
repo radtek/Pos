@@ -331,8 +331,10 @@ __published:	// IDE-managed Components
         TCheckBox *cbSplitBillByMenuType;
         TCheckBox *cbShowCashDrawerCount;
         TCheckBox *cbShowReprintDetails;
-
+        TCheckBox *cbIntegratedEftposAdyen;
         TCheckBox *cbIntegratedEftposSmartConnect;
+        TCheckBox *cbCompanyDetailOnReprintReceipt;
+        TCheckBox *cbIntegratedEftposPaymentSense;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -571,6 +573,9 @@ __published:	// IDE-managed Components
         void __fastcall cbShowCashDrawerCountClick(TObject *Sender);
         void __fastcall cbShowReprintDetailsClick(TObject *Sender);
         void __fastcall cbIntegratedEftposSmartConnectClick(TObject *Sender);
+        void __fastcall cbIntegratedEftposAdyenClick(TObject *Sender);
+        void __fastcall cbCompanyDetailOnReprintReceiptClick(TObject *Sender);
+        void __fastcall cbIntegratedEftposPaymentSenseClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP
@@ -593,6 +598,11 @@ private:
         bool isBIRSettingTicked;
         void CheckSettingsOfZed();
         bool IsEligibleForTrue();
+        void CustomizeCloudEFTPOS();
+        void DisableOtherEFTPOS();
+        void EnableOtherEFTPOS();
+        void EnableOrDisableEFTPOS(bool value);
+        void SaveEFTPOSSettings();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();

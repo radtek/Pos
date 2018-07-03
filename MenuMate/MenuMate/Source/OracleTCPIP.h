@@ -17,7 +17,7 @@
 
 // 1000 = 1 sec
 #define _CONNECT_TIME_OUT 3000
-#define _READ_TIME_OUT    10000
+#define _READ_TIME_OUT    122000
 
 #define _RESPONSE_BUFFER_SIZE 10249886756453434
 //---------------------------------------------------------------------------
@@ -50,5 +50,7 @@ class TOracleTCPIP
         bool RetryMakingConnection();
         AnsiString GetFileName();
         void LogWaitStatus(std::auto_ptr<TStringList> waitLogs);
+        AnsiString PostToOracle(AnsiString inData, std::auto_ptr<TStringList> &List);
 };
 #endif
+

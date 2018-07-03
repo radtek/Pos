@@ -22,6 +22,7 @@ TMMTransactionRecovery::TMMTransactionRecovery()
 	RecoveryFilePayments 		= ExtractFilePath(Application->ExeName) + "EFTPOSPayments.bin";
 	RecoveryFileOrders 			= ExtractFilePath(Application->ExeName) + "EFTPOSOrders.bin";
 	RecoveryFileOrders 			= ExtractFilePath(Application->ExeName) + "EFTPOSOrderItems.bin";
+    RecoveryEFTPOSRefNumber     = ExtractFilePath(Application->ExeName) + "EFTPOSRefNumber.bin";
 }
 //---------------------------------------------------------------------------
 
@@ -72,7 +73,6 @@ void TMMTransactionRecovery::ProcessTransactionRecovery()
 							RecoverTransaction.Type = eTransEFTPOSRecovery;
 							MessageBox("Recovering Incomplete Transaction", "EFTPOS Recovery", MB_OK + MB_ICONINFORMATION);
 						}
-
 						paymentSystem->ProcessTransaction( RecoverTransaction, isRecovery );
 					}
 
@@ -190,6 +190,10 @@ void TMMTransactionRecovery::ClearRecoveryInfo()
 		if (FileExists(RecoveryFileOrders))
 		{
 			DeleteFile(RecoveryFileOrders);
+		}
+        if (FileExists(RecoveryEFTPOSRefNumber))
+		{
+			DeleteFile(RecoveryEFTPOSRefNumber);
 		}
 	}
 }
@@ -339,6 +343,19 @@ void TMMTransactionRecovery::loadPaymentTypesInfoFromFile( TPaymentTransaction &
         Payment->NameOveride = PaymentTypesCsv.Cells[14][i];
         Payment->Note = PaymentTypesCsv.Cells[15][i];
         Payment->ReferenceNumber = PaymentTypesCsv.Cells[16][i];
+        if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        {
+            TCsv refernceCSV;
+            refernceCSV.LoadFromFile(RecoveryEFTPOSRefNumber);
+            if(Payment->ReferenceNumber.Trim() != "")
+            {
+                Payment->ReferenceNumber = refernceCSV.Cells[0][0];
+                if(Payment->ReferenceNumber.Pos("$") == 1)
+                {
+                    Payment->ReferenceNumber = Payment->ReferenceNumber.SubString(2,Payment->ReferenceNumber.Length()-1);
+                }
+            }
+        }
 
         PaymentTransaction.PaymentAdd(Payment);
     }

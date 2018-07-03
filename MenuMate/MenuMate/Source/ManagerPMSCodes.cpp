@@ -6,7 +6,7 @@
 #include "ManagerPMSCodes.h"
 #include "MMLogging.h"
 #include "MMMessageBox.h"
-
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -336,6 +336,204 @@ void TManagerPMSCodes::EditMeal(Database::TDBTransaction &DBTransaction,TTimeSlo
     UpdateQuery->ParamByName("STARTTIME")->AsDateTime = slots.StartTime;
     UpdateQuery->ParamByName("ENDTIME")->AsDateTime = slots.EndTime;
     UpdateQuery->ExecQuery();
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPayment, bool isNewPaymentType, bool isMMPayType)
+{
+    if(isNewPaymentType)
+    {
+        InsertIntoPMSPaymentsConfig(DBTransaction,pmsPayment,isMMPayType);// Insert Query
+    }
+    else
+    {
+        //UpdatePMSPaymentType(DBTransaction,pmsPayment);// Update Query
+        UpdatePMSPaymentConfig(DBTransaction,pmsPayment);
+    }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::InsertIntoPMSPaymentsConfig(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPayment, bool isMMPayType)
+{
+    UnicodeString field = "";
+    UnicodeString param = "";
+    if(isMMPayType)
+    {
+        field = "PMS_MM_PAYTYPELINK, ";
+        param = ":PMS_MM_PAYTYPELINK, ";
+    }
+    try
+    {
+
+      TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      InsertQuery->Close();
+      InsertQuery->SQL->Text =
+                 " INSERT INTO PMSPAYMENTSCONFIG "
+                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                 " PMS_PAYTYPE_CATEGORY ," +field+ "IS_ELECTRONICPAYMENT) VALUES"
+                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                 " :PMS_PAYTYPE_CATEGORY ,"+ param +":IS_ELECTRONICPAYMENT)";
+      InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger           = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+      //GetPMSPayTypeIDFromGenerator(DBTransaction);
+      InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString          = pmsPayment.PMSPayTypeName;
+      InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString          = pmsPayment.PMSPayTypeCode;
+      InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsString      = pmsPayment.PMSPayTypeCategory;
+      if(isMMPayType)
+          InsertQuery->ParamByName("PMS_MM_PAYTYPELINK")->AsInteger     = pmsPayment.PMSMMPayTypeLink;
+      InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString       = pmsPayment.isElectronicPayment ? "T" : "F";
+      InsertQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+int TManagerPMSCodes::GetPMSPayTypeIDFromGenerator(Database::TDBTransaction &DBTransaction)
+{
+    int key = 0;
+    TIBSQL *GenQuery =  DBTransaction.Query(DBTransaction.AddQuery());
+    GenQuery->Close();
+    GenQuery->SQL->Text = "SELECT GEN_ID(GEN_PMSPAYTYPEID, 1) FROM RDB$DATABASE";
+    GenQuery->ExecQuery();
+    key = GenQuery->Fields[0]->AsInteger;
+    return key;
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::UpdatePMSPaymentConfig(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPayment)
+{
+    try
+    {
+        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        UpdateQuery->SQL->Text =
+                   " UPDATE PMSPAYMENTSCONFIG "
+                   " SET"
+                   " PMS_PAYTYPE_NAME               = :PMS_PAYTYPE_NAME, "
+                   " PMS_PAYTYPE_CATEGORY           = :PMS_PAYTYPE_CATEGORY, "
+                   " IS_ELECTRONICPAYMENT           = :IS_ELECTRONICPAYMENT  "
+                   " WHERE  PMS_MM_PAYTYPELINK      = :PMS_MM_PAYTYPELINK ";
+
+        UpdateQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = pmsPayment.PMSPayTypeName;
+        UpdateQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsString = pmsPayment.PMSPayTypeCategory;
+        if(pmsPayment.isElectronicPayment)
+            UpdateQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+        else
+            UpdateQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "F";
+        UpdateQuery->ParamByName("PMS_MM_PAYTYPELINK")->AsInteger = pmsPayment.PMSMMPayTypeLink;
+        UpdateQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::GetPMSPaymentTypeDetails(Database::TDBTransaction &DBTransaction,TStringGrid * StringGrid,std::map<int,
+                                                                             TPMSPaymentType> &PMSPaymentTypeMap)
+{
+    GetPMSPaymentTypeFromDB(DBTransaction,PMSPaymentTypeMap);
+    PopulatePaymenyTypeToGrid(PMSPaymentTypeMap,StringGrid);
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::GetPMSPaymentTypeFromDB(Database::TDBTransaction &DBTransaction,std::map<int, TPMSPaymentType> &PMSPaymentTypeMap)
+{
+    try
+    {
+        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text =
+                   " SELECT * FROM  PMSPAYMENTSCONFIG ORDER BY PMS_PAYTYPE_CATEGORY";
+        SelectQuery->ExecQuery();
+        PMSPaymentTypeMap.clear();
+        for(; !SelectQuery->Eof; SelectQuery->Next())
+        {
+           TPMSPaymentType pmsPayment;
+           pmsPayment.PMSPayTypeID                  = SelectQuery->FieldByName("PMS_PAYTYPE_ID")->AsInteger;
+           pmsPayment.PMSPayTypeName                = SelectQuery->FieldByName("PMS_PAYTYPE_NAME")->AsString;
+           pmsPayment.PMSPayTypeCode                = SelectQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+           pmsPayment.PMSPayTypeCategory            = SelectQuery->FieldByName("PMS_PAYTYPE_CATEGORY")->AsInteger;
+           pmsPayment.PMSMMPayTypeLink              = SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger == NULL ? 0 : SelectQuery->FieldByName("PMS_MM_PAYTYPELINK")->AsInteger;
+           pmsPayment.isElectronicPayment           = SelectQuery->FieldByName("IS_ELECTRONICPAYMENT")->AsString == "T" ? true : false;
+           PMSPaymentTypeMap[pmsPayment.PMSPayTypeID]
+                                                    = pmsPayment;
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::PopulatePaymenyTypeToGrid(std::map<int, TPMSPaymentType> PMSPaymentTypeMap,TStringGrid * StringGrid)
+{
+    try
+    {
+       if(PMSPaymentTypeMap.size() < 2)
+       {
+           StringGrid->RowCount = 2;
+       }
+       else
+       {
+            StringGrid->RowCount = PMSPaymentTypeMap.size() + 1;
+       }
+        std::map<int,TPMSPaymentType>::iterator it;
+        int i = 0;
+        int Index = 0;
+        for(std::map <int,TPMSPaymentType>::iterator iter = PMSPaymentTypeMap.begin(); iter != PMSPaymentTypeMap.end(); ++iter)
+        {
+            AnsiString value = "";
+            Index = StringGrid->Cols[0]->Add(iter->second.PMSPayTypeName);
+            StringGrid->Cols[0]->Objects[Index] = (TObject*)iter->first;
+            value = iter->second.PMSPayTypeCode;
+            Index = StringGrid->Cols[1]->Add(value);
+            StringGrid->Cols[1]->Objects[Index] = (TObject*)iter->first;
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::DeletePMSPaymentType(Database::TDBTransaction &DBTransaction,int key)
+{
+    try
+    {
+        TIBSQL *DeleteQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        DeleteQuery->SQL->Text =
+                   " DELETE FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_ID = :PMS_PAYTYPE_ID";
+        DeleteQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger = key;
+        DeleteQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TManagerPMSCodes::UpdatePMSPaymentType(Database::TDBTransaction &DBTransaction,TPMSPaymentType pmsPaymentType)
+{
+    try
+    {
+        TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        UpdateQuery->SQL->Text =
+                   " UPDATE PMSPAYMENTSCONFIG "
+                   " SET "
+                   " PMS_PAYTYPE_NAME       = :PMS_PAYTYPE_NAME, "
+                   " PMS_PAYTYPE_CODE       = :PMS_PAYTYPE_CODE "
+                   " WHERE PMS_PAYTYPE_ID   = :PMS_PAYTYPE_ID2";
+
+        UpdateQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = pmsPaymentType.PMSPayTypeName;
+        UpdateQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = pmsPaymentType.PMSPayTypeCode;
+        UpdateQuery->ParamByName("PMS_PAYTYPE_ID2")->AsInteger = pmsPaymentType.PMSPayTypeID;
+        UpdateQuery->ExecQuery();
+        if(pmsPaymentType.PMSPayTypeCategory == 0)
+        {
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPaymentCategory,pmsPaymentType.PMSPayTypeCode);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
 }
 //----------------------------------------------------------------------------
 
