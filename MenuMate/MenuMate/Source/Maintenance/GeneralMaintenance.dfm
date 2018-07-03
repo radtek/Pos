@@ -2351,16 +2351,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 75
           Width = 505
-          Height = 314
+          Height = 324
           Anchors = [akLeft]
           Caption = 'Integrated EFTPOS'
           TabOrder = 0
           DesignSize = (
             505
-            314)
+            324)
           object cbIntegratedEftposANZ: TCheckBox
             Left = 8
-            Top = 30
+            Top = 23
             Width = 273
             Height = 20
             Anchors = [akLeft]
@@ -2370,7 +2370,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposSyncro: TCheckBox
             Left = 8
-            Top = 55
+            Top = 47
             Width = 273
             Height = 20
             Anchors = [akLeft]
@@ -2380,7 +2380,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposIngenico: TCheckBox
             Left = 8
-            Top = 80
+            Top = 71
             Width = 321
             Height = 20
             Anchors = [akLeft]
@@ -2390,7 +2390,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposCadmus: TCheckBox
             Left = 8
-            Top = 105
+            Top = 95
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2400,7 +2400,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbICELink: TCheckBox
             Left = 8
-            Top = 155
+            Top = 143
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2410,7 +2410,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposDPS: TCheckBox
             Left = 8
-            Top = 180
+            Top = 167
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2420,7 +2420,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposSmartPay: TCheckBox
             Left = 8
-            Top = 205
+            Top = 191
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2430,7 +2430,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbEnableDPSTipping: TCheckBox
             Left = 8
-            Top = 230
+            Top = 215
             Width = 251
             Height = 20
             Anchors = [akLeft]
@@ -2440,7 +2440,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposSmartConnect: TCheckBox
             Left = 8
-            Top = 255
+            Top = 238
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2450,7 +2450,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbCadmusCronos: TCheckBox
             Left = 8
-            Top = 130
+            Top = 119
             Width = 257
             Height = 20
             Anchors = [akLeft]
@@ -2460,13 +2460,23 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbIntegratedEftposAdyen: TCheckBox
             Left = 8
-            Top = 280
+            Top = 262
             Width = 257
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS Adyen'
-            TabOrder = 6
+            TabOrder = 11
             OnClick = cbIntegratedEftposAdyenClick
+          end
+          object cbIntegratedEftposPaymentSense: TCheckBox
+            Left = 8
+            Top = 286
+            Width = 257
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'EFTPOS Payment Sense'
+            TabOrder = 6
+            OnClick = cbIntegratedEftposPaymentSenseClick
           end
         end
         object Panel11: TPanel
@@ -2488,8 +2498,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox13: TGroupBox
           Left = 8
-          Top = 400
-          Width = 497
+          Top = 412
+          Width = 505
           Height = 125
           Anchors = [akLeft]
           Caption = 'EFTPOS Serial Port ( Cadmus Keylink and ICE Link Only )'
@@ -2557,7 +2567,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object cbDuplicateEftPos: TCheckBox
           Left = 10
-          Top = 536
+          Top = 546
           Width = 289
           Height = 20
           Anchors = [akLeft]
@@ -2567,8 +2577,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object smartLinkGroupBox: TGroupBox
           Left = 8
-          Top = 562
-          Width = 497
+          Top = 578
+          Width = 505
           Height = 93
           Caption = 'EFTPOS Network Configuration'
           TabOrder = 5
@@ -2594,8 +2604,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox20: TGroupBox
           Left = 8
-          Top = 664
-          Width = 497
+          Top = 680
+          Width = 505
           Height = 80
           Anchors = [akLeft]
           Caption = 'AA Rewards '

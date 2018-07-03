@@ -26,7 +26,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to Get Terminal Status");
+                stringList.Add("********Request to Get Terminal Status********");
                 var webRequest = CreateWebRequest(details);
                 response = PostRequest(envelop, webRequest, RequestType.ePingTerminal);
             }
@@ -44,7 +44,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to Login");
+                stringList.Add("********Request to Login********");
                 var webRequest = CreateWebRequest(details);
                 envelop.SaleToPOIRequest.LoginRequest.DateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
                 response = PostRequest(envelop, webRequest, RequestType.eLoginToSystem);
@@ -64,7 +64,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to Logout");
+                stringList.Add("********Request to Logout********");
                 var webRequest = CreateWebRequest(details);
                 response = PostRequest(envelop, webRequest, RequestType.eLogoutSystem);
             }
@@ -82,7 +82,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to Purchase");
+                stringList.Add("********Request to Purchase********");
                 var webRequest = CreateWebRequest(details);
                 envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
                 response = PostRequest(envelop, webRequest, RequestType.eProcessSale);
@@ -101,7 +101,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to Refund");
+                stringList.Add("********Request to Refund********");
                 var webRequest = CreateWebRequest(details);
                 envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
                 response = PostRequest(envelop, webRequest, RequestType.eProcessRefund);
@@ -119,7 +119,7 @@ namespace AdyenIntegration
             SaleToPOIResponse response = null;
             try
             {
-                stringList.Add("Request to GetTransaction Status");
+                stringList.Add("********Request for status of last transaction********");
                 var webRequest = CreateWebRequest(details);
                 //envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
                 response = PostRequest(envelop, webRequest, RequestType.eTransactionStatus);
@@ -143,7 +143,7 @@ namespace AdyenIntegration
             httpWebRequest.Headers.Add("Accept-Charset", "UTF-8");
             httpWebRequest.Headers.Add("Cache-Control", "no-cache");
             httpWebRequest.Timeout = 180000;
-            stringList.Add("Web Request Created at :-                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+            stringList.Add("Web Request Created at :-                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
             return httpWebRequest;
         }
 
@@ -153,44 +153,57 @@ namespace AdyenIntegration
             {
                 ResponseEnvelop responseEnvelop = new ResponseEnvelop();
                 var requestData = JSonUtility.Serialize<Envelop>(envelop);
+                LogDetailsOfRequest(envelop, requestType);
                 stringList.Add("JSon Data prepared at:-                                         " + DateTime.Now.ToString("hh:mm:ss tt"));
-                stringList.Add("JSon Data is :-                                        " + requestData);
+                stringList.Add("");
+                stringList.Add("JSon Data for Request is :-                                     " + requestData);
+                stringList.Add("");
                 using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                 {
                     streamWriter.Write(requestData);
                     streamWriter.Flush();
                     streamWriter.Close();
                 }
-                stringList.Add("Data written to stream at :-                                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Data written to connection stream at :-                         " + DateTime.Now.ToString("hh:mm:ss tt"));
                 var encoding = Encoding.ASCII;
-                stringList.Add("Asking for response at :-                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Asking for response at :-                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 var webResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                stringList.Add("Data received at :-                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Response received at :-                                         " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (var reader = new StreamReader(webResponse.GetResponseStream(), encoding))
                 {
                     var responseText = reader.ReadToEnd();
-                    stringList.Add("Data received is :-                                              " + responseText);
+                    stringList.Add("");
+                    stringList.Add("Response received is :-                                         " + responseText);
+                    stringList.Add("");
                     responseEnvelop = JSonUtility.Deserialize<ResponseEnvelop>(responseText);
-                    stringList.Add("Data deserialized at :-                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    stringList.Add("Response deserialized at :-                                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                     if (responseEnvelop != null)
                     {
                         if (requestType != RequestType.eTransactionStatus)
                         {
                             if (CanReceiptsBePresent(requestType, responseEnvelop))
                             {
-                                stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count());
-                                ArrangeAndAssignReceipts(responseEnvelop, responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt, false);
+                                LogResponseFromAdyen(responseEnvelop, requestType);
+                                stringList.Add("Receipts Found & count is                                       " +
+                                               responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count());
+                                ArrangeAndAssignReceipts(responseEnvelop,
+                                    responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt, false);
 
                             }
+                            else
+                                stringList.Add("No Receipt received for the transaction in response");
                         }
                         else if (requestType == RequestType.eTransactionStatus)
                         {
                             if (CanReceiptsBePresentInEnquiry(requestType, responseEnvelop))
                             {
-                                stringList.Add("Receipts Found & count is                                       " + responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count());
+                                LogResponseFromAdyen(responseEnvelop, requestType);
+                                stringList.Add("Receipts Found & count is                                        " + responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count());
                                 ArrangeAndAssignReceipts(responseEnvelop,responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt, true);
 
                             }
+                            else
+                                stringList.Add("No Receipt received for the transaction in response");
                         }
                     }
                 }
@@ -202,6 +215,147 @@ namespace AdyenIntegration
                 stringList.Add("Exception is :-                                                  " + ex.Message);
                 ServiceLogger.Log("Exception in PostRequest   " +  ex.Message);
                 throw;
+            }
+        }
+
+        private void LogResponseFromAdyen(ResponseEnvelop envelop, RequestType requestType)
+        {
+            try
+            {
+                switch (requestType)
+                {
+                    case RequestType.eProcessSale:
+                        {
+                            if (envelop != null && envelop.SaleToPOIResponse != null)
+                            {
+                                if (envelop.SaleToPOIResponse.PaymentResponse.PaymentResult != null)
+                                {
+                                    stringList.Add("");
+                                    stringList.Add("Card Type Used                                                  "
+                                        + envelop.SaleToPOIResponse.PaymentResponse.PaymentResult.PaymentInstrumentData.CardData.PaymentBrand);
+                                    stringList.Add("Merchant Id                                                     "
+                                        + envelop.SaleToPOIResponse.PaymentResponse.PaymentResult.PaymentAcquirerData.MerchantID);
+                                    stringList.Add("Authorized Amount                                               "
+                                        + envelop.SaleToPOIResponse.PaymentResponse.PaymentResult.AmountsResp.AuthorizedAmount.ToString());
+                                    if (
+                                        Math.Abs(
+                                            envelop.SaleToPOIResponse.PaymentResponse.PaymentResult.AmountsResp
+                                                .TipAmount) > 0.00)
+                                        stringList.Add("Tip Amount                                                      "
+                                                       +
+                                                       envelop.SaleToPOIResponse.PaymentResponse.PaymentResult
+                                                           .AmountsResp.TipAmount.ToString());
+
+                                    stringList.Add("Result is                                                       "
+                                        + envelop.SaleToPOIResponse.PaymentResponse.Response.Result);
+                                    stringList.Add("");
+                                }
+                            }
+                            break;
+                        }
+                    case RequestType.eProcessRefund:
+                        {
+                            if (envelop != null && envelop.SaleToPOIResponse != null)
+                            {
+                                if (envelop.SaleToPOIResponse.PaymentResponse.PaymentResult != null)
+                                {
+                                    stringList.Add("");
+                                    stringList.Add("Card Type Used                                                  "
+                                                   +
+                                                   envelop.SaleToPOIResponse.PaymentResponse.PaymentResult
+                                                       .PaymentInstrumentData.CardData.PaymentBrand);
+                                    stringList.Add("Merchant Id                                                     "
+                                                   +
+                                                   envelop.SaleToPOIResponse.PaymentResponse.PaymentResult
+                                                       .PaymentAcquirerData.MerchantID);
+                                    stringList.Add("Merchant Id                                                     "
+                                                   +
+                                                   envelop.SaleToPOIResponse.PaymentResponse.PaymentResult
+                                                       .PaymentAcquirerData.MerchantID);
+                                    stringList.Add("Authorized Amount                                               "
+                                                   +
+                                                   envelop.SaleToPOIResponse.PaymentResponse.PaymentResult.AmountsResp
+                                                       .AuthorizedAmount.ToString());
+                                    stringList.Add("Result is                                                       "
+                                                   + envelop.SaleToPOIResponse.PaymentResponse.Response.Result);
+                                    stringList.Add("");
+                                }
+                            }
+                            break;
+                        }
+                    case RequestType.eTransactionStatus:
+                        {
+                            if (envelop != null && envelop.SaleToPOIResponse.TransactionStatusResponse != null)
+                            {
+                                if (envelop.SaleToPOIResponse.TransactionStatusResponse.Response != null)
+                                {
+                                    stringList.Add("Result of Inquiry Transaction                                   "
+                                        + envelop.SaleToPOIResponse.TransactionStatusResponse.Response.Result);
+                                    if (envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse != null &&
+                                        envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse
+                                            .RepeatedResponseMessageBody != null &&
+                                        envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse
+                                            .RepeatedResponseMessageBody.PaymentResponse != null)
+                                    {
+                                        stringList.Add("Result of transaction for which inquiry was made                "
+                                                       + envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.Response.Result);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception in getting readable details out of response");
+            }
+        }
+
+        private void LogDetailsOfRequest(Envelop envelop, RequestType requestType)
+        {
+            switch (requestType)
+            {
+                case RequestType.eProcessSale:
+                {
+                        stringList.Add("");
+                        stringList.Add("RequestedAmount is                                              " 
+                            + envelop.SaleToPOIRequest.PaymentRequest.PaymentTransaction.AmountsReq.RequestedAmount.ToString());
+                        stringList.Add("ServiceID is                                                    "
+                            + envelop.SaleToPOIRequest.MessageHeader.ServiceID);
+                        stringList.Add("TransactionID is                                                "
+                            + envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TransactionID);
+                        stringList.Add("Terminal is                                                     "
+                            + envelop.SaleToPOIRequest.MessageHeader.SaleID);
+                        stringList.Add("");
+                        break;
+                }
+                case RequestType.eProcessRefund:
+                {
+                        stringList.Add("");
+                        stringList.Add("RequestedAmount is                                              "
+                            + envelop.SaleToPOIRequest.PaymentRequest.PaymentTransaction.AmountsReq.RequestedAmount.ToString());
+                        stringList.Add("ServiceID is                                                    "
+                            + envelop.SaleToPOIRequest.MessageHeader.ServiceID);
+                        stringList.Add("TransactionID is                                                "
+                            + envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TransactionID);
+                        stringList.Add("Terminal is                                                     "
+                            + envelop.SaleToPOIRequest.MessageHeader.SaleID);
+                        stringList.Add("");
+                        break;
+                }
+                case RequestType.eTransactionStatus:
+                {
+                        stringList.Add("");
+                        stringList.Add("ServiceID is                                                    "
+                            + envelop.SaleToPOIRequest.MessageHeader.ServiceID);
+                        stringList.Add("Terminal is                                                     "
+                            + envelop.SaleToPOIRequest.MessageHeader.SaleID);
+                        stringList.Add("Inquiry for ServiceID                                           "
+                            + envelop.SaleToPOIRequest.TransactionStatusRequest.MessageReference.ServiceID);
+                        stringList.Add("");
+                    break;
+                }
             }
         }
 
@@ -251,7 +405,7 @@ namespace AdyenIntegration
                 List<string> receipts = new List<string>();
                 FormatReciepts format = new FormatReciepts();
                 receipts = format.FormatReceipt(receiptArray.OutputContent.OutputText.ToList());
-                stringList.Add("Receipt Extracted :-                                                  ");
+                stringList.Add("Receipt Extracted                                                     ");
                 return receipts;
             }
             catch (Exception ex)
@@ -268,22 +422,39 @@ namespace AdyenIntegration
             bool retValue = false;
             if ((requestType == RequestType.eProcessSale) || (requestType == RequestType.eProcessRefund))
             {
-                if (envelop.SaleToPOIResponse.PaymentResponse != null)
+                if (envelop.SaleToPOIResponse != null)
                 {
-                    if (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt != null)
+                    if (envelop.SaleToPOIResponse.PaymentResponse != null)
                     {
-                        retValue = (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0);
-                    }
+                        if (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt != null)
+                        {
+                            retValue = (envelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count() > 0);
+                        }
+                    } 
                 }
             }
             return retValue;
         }
         private bool CanReceiptsBePresentInEnquiry(RequestType requestType, ResponseEnvelop envelop)
         {
-            if (envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt != null)
-                return true;
-            else
-                return false;
+            bool retValue = false;
+            if (envelop.SaleToPOIResponse != null)
+            {
+                if (envelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody
+                    .PaymentResponse.PaymentReceipt != null)
+                {
+                    stringList.Add("");
+                    stringList.Add("Transaction Inquired for was successful.");
+                    retValue = true;
+                }
+                else
+                {
+                    stringList.Add("");
+                    stringList.Add("Transaction Inquired for was unsuccessful.");
+                    retValue = false;
+                }  
+            }
+            return retValue;
         }
         private void WriteToFile(List<string> list)
         {

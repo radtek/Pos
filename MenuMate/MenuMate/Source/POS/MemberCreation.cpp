@@ -32,6 +32,8 @@
 __fastcall TfrmMemberCreation::TfrmMemberCreation(TComponent* Owner, TMMContactInfo &info)
     : TForm(Owner),Info(info)
 {
+   if(Info.EMail == "")
+     Info.Clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -213,9 +215,6 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
 {
-  //FormResize(NULL);
-  if(Info.EMail == "")
-     Info.Clear();
   bool lmEnabled = TGlobalSettings::Instance().LoyaltyMateEnabled;
 //  gbLoyaltyMateActivation->Visible = lmEnabled && Info.MemberType < 2;
 //  if (lmEnabled && Info.MemberType < 2)

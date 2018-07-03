@@ -20,19 +20,27 @@
 #include "TouchControls.h"
 
 //---------------------------------------------------------------------------
+enum ZEDMode{ePOSZED,eEFTPOSZED};
 class TCurrentZed
 {
 private:
 	int ZedKey;
 	int Max();
 	int Min();
+    int GetPOSMax(Database::TDBTransaction &DBTransaction);
+    int GetEFTPOSMax(Database::TDBTransaction &DBTransaction);
+    int GetPOSMin(Database::TDBTransaction &DBTransaction);
+    int GetEFTPOSMin(Database::TDBTransaction &DBTransaction);
+    bool GetPOSZed(Database::TDBTransaction &DBTransaction);
+    bool GetEFTPOSZed(Database::TDBTransaction &DBTransaction);
 	Database::TDBControl &DBControl;
+    ZEDMode ZedMode;
 public:
 	TDateTime TimeFilter;
 	bool TerminalFilter;
 
 	TMemoryStream *CurrentZed;
-	__fastcall TCurrentZed(Database::TDBControl &inDBControl);
+	__fastcall TCurrentZed(Database::TDBControl &inDBControl,ZEDMode inMode);
 	virtual __fastcall ~TCurrentZed();
 	bool Get();
 	bool Prior();
@@ -86,6 +94,7 @@ private:
     bool EnableEmail;  //MM-4104
     void __fastcall EmailSettingCheck(); // MM-4104
      TMemoryStream* FormattedZed(TMemoryStream *ZedToArchive);
+    ZEDMode SelectZedMode;
 
 public:
     __fastcall TfrmSelectZed(TComponent* Owner,Database::TDBControl &inDBControl);
@@ -94,6 +103,7 @@ public:
 	void ClearReceiptArchive();
    __property TDateTime CurrentDate = { read = FSelectedDate ,write = SetCurrentDate};
    virtual __fastcall ~TfrmSelectZed();
+   void Initialize(ZEDMode inMode);
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

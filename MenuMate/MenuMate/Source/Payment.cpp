@@ -68,6 +68,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     CSVString = "";
     SmartConnectQREnabled = false;
     EFTPOSSurcharge = 0;
+    ExternalCashOut = 0;
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -122,6 +123,7 @@ void TPayment:: operator = (const TPayment & Data)
     WalletQrCode = Data.WalletQrCode;
     SmartConnectQREnabled = Data.SmartConnectQREnabled;
     EFTPOSSurcharge = Data.EFTPOSSurcharge;
+    ExternalCashOut = Data.ExternalCashOut;
 }
 
 void TPayment::Reset()
@@ -145,6 +147,7 @@ void TPayment::Reset()
    WalletQrCode = "";
    SmartConnectQREnabled = false;
    EFTPOSSurcharge = 0;
+   ExternalCashOut = 0;
 }
 
 void TPayment::Failed()
@@ -162,11 +165,12 @@ void TPayment::Failed()
    ExternalReferenceNumber = "";
    TipAmount = 0;
    EFTPOSSurcharge = 0;
+   ExternalCashOut = 0;
 }
 
 void __fastcall TPayment::SetPay(Currency value)
 {
-   if (FPay != value)
+   if (FPay != value || TGlobalSettings::Instance().EnableEftPosPaymentSense)
    {
 	  FPay = value;
 
@@ -220,7 +224,10 @@ Currency __fastcall TPayment::GetRefundPointsValue()
 
 Currency __fastcall TPayment::GetCashOut()
 {
-   return FCashOut;
+    if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        return FCashOut;
+    else
+        return ExternalCashOut;
 }
 
 Currency __fastcall TPayment::GetPayTotal()
@@ -405,7 +412,10 @@ Currency __fastcall TPayment::GetPayCashOutTotal()
 Currency __fastcall TPayment::GetCashOutTotal()
 {
    // Total Paid by this Payment Type.
-   return FCashOutRounding + FCashOut;
+   if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
+        return FCashOutRounding + FCashOut;
+    else
+        return FCashOutRounding + ExternalCashOut;
 }
 
 Currency __fastcall TPayment::GetChange()

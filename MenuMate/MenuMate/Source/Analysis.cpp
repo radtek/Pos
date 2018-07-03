@@ -4368,6 +4368,7 @@ void __fastcall TfrmAnalysis::btnReprintZClick(void)
    try
     {
         TfrmSelectZed *frmSelectZed = new TfrmSelectZed(this, TDeviceRealTerminal::Instance().DBControl);
+        frmSelectZed->Initialize(ePOSZED);
 		frmSelectZed->ShowModal();
         delete frmSelectZed;
 	}

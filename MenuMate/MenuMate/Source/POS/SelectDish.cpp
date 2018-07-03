@@ -15084,18 +15084,21 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
     bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
-
-	if (info.Valid())
+    if(memberExist)
+     {
+     if (info.Valid())
      {
         TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
 		ApplyMembership(DBTransaction, info);
-	}
+     }
+     }
 
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
 {
+
      eMemberSource MemberSource = emsManual;
      TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Info, MemberSource);
 
@@ -15110,11 +15113,14 @@ void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, T
             TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
             bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
 
-            if (Info.Valid())
+            if(memberExist)
+             {
+             if (Info.Valid())
              {
                 TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
                 ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
                 ApplyMembership(DBTransaction, Info);
+                }
              }
          }
      }
