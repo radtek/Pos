@@ -15,13 +15,13 @@ namespace MenumateServices.WCFServices
         public SiHotIntegrationWebService()
         {
         }
-        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut)
+        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut, string apiKey)
         {
             RoomDetails roomDetails = new RoomDetails();
             try
             {
                 SiHotCommunicationController siCommController = new SiHotCommunicationController();
-                roomDetails = siCommController.GetRoomDetails(roomRequest,timeOut);
+                roomDetails = siCommController.GetRoomDetails(roomRequest, timeOut, apiKey);
                 return roomDetails;
             }
             catch (Exception ex)
@@ -31,7 +31,7 @@ namespace MenumateServices.WCFServices
             return roomDetails;
 
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut, string apiKey)
         {
             int retryCount = 1;
             bool retryPosting = true;
@@ -42,7 +42,7 @@ namespace MenumateServices.WCFServices
                 {
                     roomChargeReponse = new RoomChargeResponse();
                     SiHotCommunicationController siCommController = new SiHotCommunicationController();
-                    roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails,retryCount,timeOut);
+                    roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails, retryCount, timeOut, apiKey);
                     if (!roomChargeReponse.IsSuccessful &&
                         (roomChargeReponse.Response == "" || roomChargeReponse.Response == null || 
                         roomChargeReponse.Response == siCommController.connectFailedMessage || roomChargeReponse.Response == siCommController.siHotUnavailable) && 

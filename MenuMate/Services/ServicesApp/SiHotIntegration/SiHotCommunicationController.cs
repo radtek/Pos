@@ -20,7 +20,7 @@ namespace SiHotIntegration
         public readonly string siHotUnavailable = "SiHot is not available at the moment.";
         public SiHotCommunicationController()
         {
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3 | (SecurityProtocolType)3072; 
         }
 
         public string URIRoomRequest(string ipAddress, int portNumber)
@@ -35,7 +35,7 @@ namespace SiHotIntegration
         {
             return ipAddress + @"/paymenttype" + @"/";
         }
-        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut)
+        public RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut, string apiKey)
         {
             RoomDetails roomDetails = new RoomDetails();
             List<string> stringList = new List<string>();
@@ -71,7 +71,7 @@ namespace SiHotIntegration
                             ns.ReadTimeout = timeOut;
                             List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
                             var bytes = GetRoomByteArray(detailsList);
-                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
+                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length, apiKey);
                             strHttpRequest += System.Text.Encoding.UTF8.GetString(bytes).Trim();
                             PrepareRoomRquestLogs(stringList, detailsList);
                             if (IsSecured)
@@ -137,7 +137,7 @@ namespace SiHotIntegration
             }
             return roomDetails;
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount, int timeOut)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount, int timeOut, string apiKey)
         {
             List<string> stringList = new List<string>();
             RoomChargeResponse response = new RoomChargeResponse();
@@ -186,7 +186,7 @@ namespace SiHotIntegration
                             ns.ReadTimeout = timeOut;
                             List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
                             byte[] bytes = bytesList.ToArray<byte>();
-                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length);
+                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length, apiKey);
                             strHttpRequest += System.Text.Encoding.UTF8.GetString(bytes).Trim();
                             if (IsSecured)
                             {
@@ -410,12 +410,13 @@ namespace SiHotIntegration
                 ServiceLogger.Log("Exception in Making File" + ex.Message);
             }
         }
-        private string GetHttpRequest(Uri inUri, int dataLength)
+        private string GetHttpRequest(Uri inUri, int dataLength, string apiKey)
         {
             return @"POST " + inUri.LocalPath + " HTTP/1.1" + Environment.NewLine +
                                                 "Time-out: 5000" + Environment.NewLine +
                                                 "Content-Type: text/plain" + Environment.NewLine +
                                                 "Host: " + inUri.Host + Environment.NewLine +
+                                                "X-API-KEY:" + apiKey + Environment.NewLine +
                                                 "Content-Length: " + dataLength + Environment.NewLine
                                                 + Environment.NewLine;
         }
