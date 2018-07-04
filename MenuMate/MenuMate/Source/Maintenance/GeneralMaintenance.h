@@ -332,9 +332,9 @@ __published:	// IDE-managed Components
         TCheckBox *cbShowCashDrawerCount;
         TCheckBox *cbShowReprintDetails;
         TCheckBox *cbIntegratedEftposAdyen;
-
         TCheckBox *cbIntegratedEftposSmartConnect;
         TCheckBox *cbCompanyDetailOnReprintReceipt;
+        TCheckBox *cbIntegratedEftposPaymentSense;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -575,6 +575,7 @@ __published:	// IDE-managed Components
         void __fastcall cbIntegratedEftposSmartConnectClick(TObject *Sender);
         void __fastcall cbIntegratedEftposAdyenClick(TObject *Sender);
         void __fastcall cbCompanyDetailOnReprintReceiptClick(TObject *Sender);
+        void __fastcall cbIntegratedEftposPaymentSenseClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

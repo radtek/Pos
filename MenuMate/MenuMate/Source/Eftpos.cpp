@@ -207,6 +207,7 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
     TimeOut = false;
     TipAmount = "";
     SurchargeAmount = "";
+    CashOutAmount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()
@@ -303,3 +304,20 @@ bool TEftPos::IsCashOutSupported()
     return true;
 }
 //--------------------------------------------------------------------------
+void TEftPos::LogEFTPOSEnabling(AdyenTriggerLocation triggerType)
+{
+}
+//---------------------------------------------------------------------------
+void TEftPos::UpdateEFTPOSLogs(bool status)
+{
+}
+//---------------------------------------------------------------------------
+void TEftPos::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
+{
+}
+//---------------------------------------------------------------------------
+std::vector<AnsiString> TEftPos::GetAllTerminals()
+{
+    std::vector<AnsiString> terminalList;
+    return terminalList;
+}

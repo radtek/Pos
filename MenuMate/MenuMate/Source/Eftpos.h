@@ -18,6 +18,7 @@ enum eEFTPOSType
   eTEftPosICELink,
   eTEftPosDPS,
   eTEftPosCadmusCronos,
+  eTEftPosPaymentSense
 };
 
 enum TEftPosEvent {ePrintReceiptEvent,eChequeVerifyEvent,
@@ -42,7 +43,7 @@ enum ePANSource
   PANSource_Manual = 1,
   PANSource_CardReader = 2,
 };
-
+enum AdyenTriggerLocation {eBootForAdyen = 1,eUIForAdyen };
 class TEftPosTransaction
 {
 public:
@@ -59,6 +60,7 @@ public:
     bool TimeOut;
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
+    AnsiString CashOutAmount;
 };
 
 class TListEftPosTransContainer : public TList
@@ -142,6 +144,10 @@ class TEftPos
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool IsCashOutSupported();
+    virtual void LogEFTPOSEnabling(AdyenTriggerLocation triggerType);
+    virtual void UpdateEFTPOSLogs(bool status);
+    virtual void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
+    virtual std::vector<AnsiString> GetAllTerminals();
 };
 
 extern TEftPos *EftPos;

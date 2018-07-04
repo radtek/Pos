@@ -119,19 +119,38 @@ Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction
         Currency calctaxexempt;
         Currency servicecharge;
         Currency quantity;
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = " And DA.TERMINAL_NAME = :TERMINAL_NAME ";
+
+        }
 
         TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *qr1 = DBTransaction.Query(DBTransaction.AddQuery());
 
-        qr->SQL->Text = "SELECT DA.ARCHIVE_KEY, DA.PRICE, DA.QTY "
-                        "FROM DAYARCHIVE DA "
-                        "LEFT JOIN DAYARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+
+
+       qr->SQL->Text = "SELECT DA.ARCHIVE_KEY, DA.PRICE, DA.QTY "
+                       "FROM DAYARCHIVE DA "
+                       "LEFT JOIN DAYARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                         "WHERE DA.ARCHIVE_KEY NOT IN ( "
-                            "SELECT ARCHIVE_KEY "
-                            "FROM DAYARCORDERTAXES "
-                            "WHERE (TAX_TYPE = 0 OR TAX_TYPE = 5) and TAX_VALUE <>0 "
-                        ") "
-                        "GROUP BY 1,2,3 ";
+                           "SELECT ARCHIVE_KEY "
+                           "FROM DAYARCORDERTAXES "
+                           "WHERE (TAX_TYPE = 0 OR TAX_TYPE = 5) and TAX_VALUE <>0 "
+                      ") "
+                        + terminalNamePredicate +
+                       "GROUP BY 1,2,3 ";
+
+
+      if(!TGlobalSettings::Instance().EnableDepositBagNum)
+      {
+            qr->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+
+      }
+
+
+
         qr->ExecQuery();
 
         while(!qr->Eof)
@@ -169,7 +188,6 @@ Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction
     }
     return TaxExemptTotal;
 }
-
 Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
     Currency servicecharge;

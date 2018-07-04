@@ -434,5 +434,7 @@ TGlobalSettings::TGlobalSettings()
     CompanydetailsSaved = "";
     PrintMerchantReceipt = false;
     EmailCapturedForLoyaltyOperation = "";
+    EnableEftPosPaymentSense = false;
+    EftPosTerminalId = "";
 }
 

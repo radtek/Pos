@@ -114,11 +114,6 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
         try
         {
             outResponse = PostToOracle(inData,List);
-//            MessageBox(List->Count,"Count of list",MB_OK);
-//            for(int index = 0; index < List->Count; index)
-//            {
-//                MessageBox(List->operator [](index),index,MB_OK);
-//            }
             if(outResponse.Trim().Length() == 0)
             {
                 Disconnect();
@@ -140,11 +135,6 @@ AnsiString TOracleTCPIP::SendAndFetch(AnsiString inData)
           UnsetPostingFlag();
           outResponse = "Connection Failed";
     }
-//            MessageBox(List->Count,"Count of list before making log file",MB_OK);
-//            for(int index = 0; index < List->Count; index)
-//            {
-//                MessageBox(List->operator [](index),index,MB_OK);
-//            }
     MakeOracleLogFile(List,fileName);
     Disconnect();
     return outResponse;
@@ -349,11 +339,9 @@ void TOracleTCPIP::sendData( AnsiString inData )
 	char   *buffer = new char[maxBufferSize];
 
 	// Send Data
-//    tcpClient->IOHandler->Write( CreateSTX(), 1 );
     __int32 bufferSize = ( remainedDataSize >= maxBufferSize ) ? maxBufferSize : remainedDataSize;
     data.copy( buffer, bufferSize, itPos );
     tcpClient->IOHandler->Write( CreateByteArray( buffer, bufferSize), bufferSize );
-//    tcpClient->IOHandler->Write( CreateETX(), 1 );
 	delete[] buffer;
 }
 //---------------------------------------------------------------------------
