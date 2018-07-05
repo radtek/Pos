@@ -48,6 +48,9 @@ namespace SiHotIntegration
             try
             {
                 string uri = URIRoomRequest(roomRequest.IPAddress, roomRequest.PortNumber);
+                stringList.Add("Url Used:-                                " + uri);
+                stringList.Add("ApiKey Used:-                             " + apiKey);
+                stringList.Add("TimeOut used:-                            " + timeOut.ToString() + " milliseconds");
                 Uri myUri = new Uri(uri);
                 var host = Dns.GetHostAddresses(myUri.Host)[0];
                 IsSecured = uri.Contains("https:");
@@ -153,6 +156,9 @@ namespace SiHotIntegration
             try
             {
                 string uri = URIRoomChargePost(roomChargeDetails.IPAddress, roomChargeDetails.PortNumber);
+                stringList.Add("Url Used:-                                " + uri);
+                stringList.Add("ApiKey Used:-                             " + apiKey);
+                stringList.Add("TimeOut used:-                            " + timeOut.ToString() + " milliseconds");
                 Uri myUri = new Uri(uri);
                 var host = Dns.GetHostAddresses(myUri.Host)[0];
                 IsSecured = uri.Contains("https:");
