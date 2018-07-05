@@ -24,17 +24,22 @@
 // ---------------------------------------------------------------------------
 __fastcall TfrmSelectZed::TfrmSelectZed(TComponent* Owner, Database::TDBControl &inDBControl) : TZForm(Owner), DBControl(inDBControl)
 {
-   Zed = new TCurrentZed(DBControl);
-   Zed->Last();
-   CurrentDate = Date();
-   calZed->Date = CurrentDate;
+
 }
 
 __fastcall TfrmSelectZed::~TfrmSelectZed()
 {
    delete Zed;
 }
-
+//----------------------------------------------------------------------------
+void TfrmSelectZed::Initialize(ZEDMode inMode)
+{
+   SelectZedMode = inMode;
+   Zed = new TCurrentZed(DBControl,SelectZedMode);
+   Zed->Last();
+   CurrentDate = Date();
+   calZed->Date = CurrentDate;
+}
 // ---------------------------------------------------------------------------
 void TfrmSelectZed::Execute()
 {
@@ -50,7 +55,6 @@ void TfrmSelectZed::Execute()
 	  ShowModal();
    }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmSelectZed::ShowReceipt()
 {
@@ -131,9 +135,7 @@ void TfrmSelectZed::ShowReceipt()
 
    memReceipt->Lines->Assign(Lines.get());
 }
-
 // ---------------------------------------------------------------------------
-
 bool TfrmSelectZed::ReceiptsExist()
 {
    bool ReceiptsExist = false;
@@ -147,13 +149,12 @@ bool TfrmSelectZed::ReceiptsExist()
    IBInternalQuery->ExecQuery();
    if (!IBInternalQuery->Fields[0]->IsNull)
    {
-	  ReceiptsExist = true;
+      ReceiptsExist = true;
    }
    DBTransaction.Commit();
    return ReceiptsExist;
 }
-
-// ---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::btnPrintClick(TObject *Sender)
 {
    if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
@@ -244,21 +245,17 @@ void __fastcall TfrmSelectZed::btnPrevClick(TObject *Sender)
 	  btnPrev->Color = clMaroon;
    }
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::btnCloseClick(TObject *Sender)
 {
    Close();
 }
-
-// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::calZedClick(TObject *Sender)
 {
    CurrentDate = calZed->Date;
 }
 // ---------------------------------------------------------------------------
-
 void TfrmSelectZed::SetCurrentDate(TDateTime SelectedDate)
 {
    FSelectedDate = SelectedDate;
@@ -281,7 +278,7 @@ void TfrmSelectZed::SetCurrentDate(TDateTime SelectedDate)
 	  btnPrev->Color = clMaroon;
    }
 }
-
+//-----------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::sbAllClick(TObject *Sender)
 {
    Zed->TerminalFilter = sbThisTerminal->Down;
@@ -303,7 +300,6 @@ void __fastcall TfrmSelectZed::sbAllClick(TObject *Sender)
    }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmSelectZed::btnBillDownMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
    memReceipt->Perform(WM_VSCROLL, SB_LINEDOWN, 0);
@@ -315,43 +311,33 @@ void __fastcall TfrmSelectZed::btnBillUpMouseDown(TObject *Sender, TMouseButton 
    memReceipt->Perform(WM_VSCROLL, SB_LINEUP, 0);
 }
 // ---------------------------------------------------------------------------
-
-__fastcall TCurrentZed::TCurrentZed(Database::TDBControl &inDBControl) : DBControl(inDBControl)
+__fastcall TCurrentZed::TCurrentZed(Database::TDBControl &inDBControl, ZEDMode inMode) : DBControl(inDBControl)
 {
+   ZedMode = inMode;
    CurrentZed = new TMemoryStream;
    TimeFilter = Date();
    TerminalFilter = true;
    Last();
 }
-
 // ---------------------------------------------------------------------------
 __fastcall TCurrentZed::~TCurrentZed()
 {
    delete CurrentZed;
 }
-
+//-----------------------------------------------------------------------------
 AnsiString  terminalName="";  //MM-4104
 TDateTime date_time;
-
+//-----------------------------------------------------------------------------
 bool TCurrentZed::Get()
 {
    try
    {
 	  Database::TDBTransaction DBTransaction(DBControl);
 	  DBTransaction.StartTransaction();
-	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	  IBInternalQuery->Close();
-	  IBInternalQuery->SQL->Text = "SELECT REPORT, TERMINAL_NAME, TIME_STAMP FROM ZEDS WHERE Z_KEY = :Z_KEY";
-	  IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
-	  IBInternalQuery->ExecQuery();
-
-	  CurrentZed->Clear();
-	  IBInternalQuery->FieldByName("REPORT")->SaveToStream(CurrentZed);
-      terminalName = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
-      date_time = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-
-	  CurrentZed->Position = 0;
+      if(ZedMode == ePOSZED)
+        GetPOSZed(DBTransaction);
+      else
+        GetEFTPOSZed(DBTransaction);
 	  DBTransaction.Commit();
    }
    catch(Exception & E)
@@ -361,11 +347,46 @@ bool TCurrentZed::Get()
    }
    return true;
 }
+//-----------------------------------------------------------------------------
+bool TCurrentZed::GetPOSZed(Database::TDBTransaction &DBTransaction)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-// ---------------------------------------------------------------------------
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT REPORT, TERMINAL_NAME, TIME_STAMP FROM ZEDS WHERE Z_KEY = :Z_KEY";
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+    IBInternalQuery->ExecQuery();
 
+    CurrentZed->Clear();
+    IBInternalQuery->FieldByName("REPORT")->SaveToStream(CurrentZed);
+    terminalName = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+    date_time = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+
+    CurrentZed->Position = 0;
+    return true;
+}
+//-----------------------------------------------------------------------------
+bool TCurrentZed::GetEFTPOSZed(Database::TDBTransaction &DBTransaction)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT ZED_RECEIPT, POS_TERMINALNAME, TIME_STAMP FROM EFTPOSZED WHERE EFTPOS_ZED_ID = :EFTPOS_ZED_ID";
+    IBInternalQuery->ParamByName("EFTPOS_ZED_ID")->AsInteger = ZedKey;
+    IBInternalQuery->ExecQuery();
+
+    CurrentZed->Clear();
+    IBInternalQuery->FieldByName("ZED_RECEIPT")->SaveToStream(CurrentZed);
+    terminalName = IBInternalQuery->FieldByName("POS_TERMINALNAME")->AsString;
+    date_time = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+
+    CurrentZed->Position = 0;
+    return true;
+}
+//-----------------------------------------------------------------------------
 bool TCurrentZed::Next()
 {
+//   MessageBox("TCurrentZed::Next()","",MB_OK);
    int MaxKey = Max();
    if (ZedKey + 1 <= MaxKey)
    {
@@ -374,16 +395,17 @@ bool TCurrentZed::Next()
    Get();
    return ZedKey == MaxKey;
 }
-
+//-----------------------------------------------------------------------------
 int TCurrentZed::Count()
 {
    int MaxKey = Max();
    int MinKey = Min();
    return(MaxKey - MinKey) + 1;
 }
-
+//-----------------------------------------------------------------------------
 bool TCurrentZed::Prior()
 {
+//   MessageBox("TCurrentZed::Prior()","",MB_OK);
    int MinKey = Min();
    if (ZedKey - 1 >= MinKey)
    {
@@ -392,29 +414,47 @@ bool TCurrentZed::Prior()
    Get();
    return ZedKey == MinKey;
 }
-
+//-----------------------------------------------------------------------------
 bool TCurrentZed::Last()
 {
    ZedKey = Max();
    Get();
    return(ZedKey != -1);
 }
-
+//-----------------------------------------------------------------------------
 bool TCurrentZed::First()
 {
    ZedKey = Min();
    Get();
    return(ZedKey != -1);
 }
-
-
+//-----------------------------------------------------------------------------
 int TCurrentZed::Max()
 {
    int RetVal = -1;
 
    Database::TDBTransaction DBTransaction(DBControl);
    DBTransaction.StartTransaction();
-   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+   try
+   {
+        if(ZedMode == ePOSZED)
+            RetVal = GetPOSMax(DBTransaction);
+        else
+            RetVal = GetEFTPOSMax(DBTransaction);
+        DBTransaction.Commit();
+   }
+   catch(Exception &Ex)
+   {
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        DBTransaction.Rollback();
+   }
+   return RetVal;
+}
+//-----------------------------------------------------------------------------
+int TCurrentZed::GetPOSMax(Database::TDBTransaction &DBTransaction)
+{
+    int RetVal = -1;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
    AnsiString SQLWhereText;
    if (TerminalFilter)
@@ -440,46 +480,126 @@ int TCurrentZed::Max()
    {
 	  RetVal = IBInternalQuery->Fields[0]->AsInteger;
    }
-   DBTransaction.Commit();
    return RetVal;
 }
+//-----------------------------------------------------------------------------
+int TCurrentZed::GetEFTPOSMax(Database::TDBTransaction &DBTransaction)
+{
+    int RetVal = -1;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
+    AnsiString SQLWhereText;
+    if (TerminalFilter)
+    {
+      SQLWhereText += " WHERE POS_TERMINALNAME = :POS_TERMINALNAME " "AND TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+    else
+    {
+      SQLWhereText += " WHERE TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT MAX(EFTPOS_ZED_ID) FROM EFTPOSZED" + SQLWhereText;
+    if (TerminalFilter)
+    {
+      IBInternalQuery->ParamByName("POS_TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+
+    }
+    IBInternalQuery->ParamByName("TimeStampAfter")->AsDateTime = TimeFilter;
+    IBInternalQuery->ParamByName("TimeStampBefore")->AsDateTime = TimeFilter + 1;
+    IBInternalQuery->ExecQuery();
+    if (!IBInternalQuery->Fields[0]->IsNull)
+    {
+      RetVal = IBInternalQuery->Fields[0]->AsInteger;
+    }
+    return RetVal;
+}
+//-----------------------------------------------------------------------------
 int TCurrentZed::Min()
 {
-   int RetVal = -1;
+    int RetVal = -1;
 
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-   AnsiString SQLWhereText;
-   if (TerminalFilter)
-   {
-	  SQLWhereText += " WHERE TERMINAL_NAME = :TERMINAL_NAME " "AND TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
-   }
-   else
-   {
-	  SQLWhereText += " WHERE TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
-   }
-
-   IBInternalQuery->Close();
-   IBInternalQuery->SQL->Text = "SELECT MIN(Z_KEY) FROM ZEDS" + SQLWhereText;
-   if (TerminalFilter)
-   {
-	  IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
-   }
-   IBInternalQuery->ParamByName("TimeStampAfter")->AsDateTime = TimeFilter;
-   IBInternalQuery->ParamByName("TimeStampBefore")->AsDateTime = TimeFilter + 1;
-   IBInternalQuery->ExecQuery();
-   if (!IBInternalQuery->Fields[0]->IsNull)
-   {
-	  RetVal = IBInternalQuery->Fields[0]->AsInteger;
-   }
-   DBTransaction.Commit();
-   return RetVal;
-
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        if(ZedMode == ePOSZED)
+            RetVal = GetPOSMin(DBTransaction);
+        else
+            RetVal = GetEFTPOSMin(DBTransaction);
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message,"Exception in Min()",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,Ex.Message);
+        DBTransaction.Rollback();
+    }
+    return RetVal;
 }
+//------------------------------------------------------------------------------
+int TCurrentZed::GetPOSMin(Database::TDBTransaction &DBTransaction)
+{
+    int RetVal = -1;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
+    AnsiString SQLWhereText;
+    if (TerminalFilter)
+    {
+      SQLWhereText += " WHERE TERMINAL_NAME = :TERMINAL_NAME " "AND TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+    else
+    {
+      SQLWhereText += " WHERE TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT MIN(Z_KEY) FROM ZEDS" + SQLWhereText;
+    if (TerminalFilter)
+    {
+      IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+    }
+    IBInternalQuery->ParamByName("TimeStampAfter")->AsDateTime = TimeFilter;
+    IBInternalQuery->ParamByName("TimeStampBefore")->AsDateTime = TimeFilter + 1;
+    IBInternalQuery->ExecQuery();
+    if (!IBInternalQuery->Fields[0]->IsNull)
+    {
+      RetVal = IBInternalQuery->Fields[0]->AsInteger;
+    }
+    return RetVal;
+}
+//------------------------------------------------------------------------------
+int TCurrentZed::GetEFTPOSMin(Database::TDBTransaction &DBTransaction)
+{
+    int RetVal = -1;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+    AnsiString SQLWhereText;
+    if (TerminalFilter)
+    {
+      SQLWhereText += " WHERE POS_TERMINALNAME = :POS_TERMINALNAME " "AND TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+    else
+    {
+      SQLWhereText += " WHERE TIME_STAMP > :TimeStampAfter AND TIME_STAMP < :TimeStampBefore;";
+    }
+
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT MIN(EFTPOS_ZED_ID) FROM EFTPOSZED" + SQLWhereText;
+    if (TerminalFilter)
+    {
+      IBInternalQuery->ParamByName("POS_TERMINALNAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+    }
+    IBInternalQuery->ParamByName("TimeStampAfter")->AsDateTime = TimeFilter;
+    IBInternalQuery->ParamByName("TimeStampBefore")->AsDateTime = TimeFilter + 1;
+    IBInternalQuery->ExecQuery();
+    if (!IBInternalQuery->Fields[0]->IsNull)
+    {
+      RetVal = IBInternalQuery->Fields[0]->AsInteger;
+    }
+    return RetVal;
+}
+//------------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::FormResize(TObject *Sender)
 {
    if (Tag != Screen->Width)
@@ -497,18 +617,16 @@ void __fastcall TfrmSelectZed::FormResize(TObject *Sender)
    Top = (Screen->Height - Height) / 2;
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmSelectZed::FormShow(TObject *Sender)
 {
     FormResize(this);
-   	if(TGlobalSettings::Instance().EnableDontClearZedData)
+   	if(TGlobalSettings::Instance().EnableDontClearZedData || SelectZedMode == eEFTPOSZED)
 	{
         btnSendEmail->Visible = false;
 	}
    FormResize(this);
    EnableEmail = false;   //MM-4104
 }
-// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::btnSendEmailClick(TObject *Sender)
 {
@@ -534,6 +652,7 @@ void __fastcall TfrmSelectZed::btnSendEmailClick(TObject *Sender)
       Zed->CurrentZed->Clear();
     }
 }
+//-----------------------------------------------------------------------------
 void __fastcall TfrmSelectZed::EmailSettingCheck()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -560,8 +679,7 @@ void __fastcall TfrmSelectZed::EmailSettingCheck()
 	//::::::::::::::::::::::::::::::::::::::::::::::::
 
 }
-
-
+//-----------------------------------------------------------------------------
 TMemoryStream* TfrmSelectZed::FormattedZed(TMemoryStream *ZedToArchive)
 	{
 
@@ -595,4 +713,4 @@ TMemoryStream* TfrmSelectZed::FormattedZed(TMemoryStream *ZedToArchive)
 
 
      }
-
+//-----------------------------------------------------------------------------

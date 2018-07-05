@@ -529,6 +529,8 @@ public:
     bool PrintCardHolderReceipt;
     bool PrintMerchantReceipt;
     UnicodeString EmailCapturedForLoyaltyOperation;
+    bool EnableEftPosPaymentSense;
+    UnicodeString EftPosTerminalId;
 };
 
 #endif

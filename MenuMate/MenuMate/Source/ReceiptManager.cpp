@@ -886,6 +886,7 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool
 		TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
 		TempReceipt->JobType = pjReceiptReceipt;
 		TPrintout *Printout1 = new TPrintout;
+        Printout1->PrintFormat->PrintGraphic();
 		Printout1->Printer = TComms::Instance().ReceiptPrinter;
 		TempReceipt->Printouts->Add(Printout1);
 

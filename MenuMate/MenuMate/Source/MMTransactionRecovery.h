@@ -26,6 +26,7 @@ class TMMTransactionRecovery
 		AnsiString RecoveryFileOrders;
 		AnsiString RecoveryFilePaymentSystem;
 		AnsiString RecoveryFileSecurity;
+        AnsiString RecoveryEFTPOSRefNumber;
 
 	private:
 		bool isInvoicePaymentTransaction( TPaymentTransaction &transaction );

@@ -17,7 +17,7 @@ class TManagerMembershipGUI : public TManagerMembershipSmartCards
 	  TMMContactInfo &destination,
 	  const bool triggered_by_preloaded_card);
 
-	TModalResult EditMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info);
+	TModalResult EditMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info, bool donotUseEmail = false);
 
    // Used for Select Members Screen.
 	eMemberSearchType DefaultSearchType;
