@@ -72,6 +72,11 @@ void TApplyParser::upgrade6_51Tables()
 {
     update6_51Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_52Tables()
+{
+    update6_52Tables();
+}
 //::::::::::::::::::::::::Version 6.40:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_40Tables()
 {
@@ -1712,6 +1717,11 @@ void TApplyParser::update6_51Tables()
    Create6_51Generators(_dbControl);
    Create6_51Tables(_dbControl);
 }
+//-----------------------------------------------------------------
+void TApplyParser::update6_52Tables()
+{
+   AlterTable6_52MallExport(_dbControl);
+}
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_49Generator(TDBControl* const inDBControl)
 {
@@ -2089,5 +2099,24 @@ void TApplyParser::Create6_51Tables(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_52MallExport(TDBControl* const inDBControl)
+{
+    if (!fieldExists( "ARCMALLEXPORTHOURLY", "Z_KEY", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORTHOURLY  "
+        "ADD Z_KEY INTEGER ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "ARCMALLEXPORT", "Z_KEY", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORT  "
+        "ADD Z_KEY INTEGER ; ",
+		inDBControl);
+	}
+}
+
 }
 //------------------------------------------------------------------------------

@@ -2355,9 +2355,21 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     Csv.SaveToFile(ExportFile);
                 }
 
-                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
+                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7)
                 {   zedLogsList->Add("updating zed table for mall");
                     UpdateArcMallExport(DBTransaction);
+                }
+                else
+                {
+
+                   if(TGlobalSettings::Instance().MallIndex ==7)
+                   {
+                       if(!DuplicateEntryInTable)
+                       {
+                         zedLogsList->Add("updating zed table for mall");
+                         UpdateArcMallExport(DBTransaction);
+                       }
+                   }
                 }
 
 		}
@@ -2795,17 +2807,6 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
-    if(!TDeviceRealTerminal::Instance().OpenDatabases())
-    {
-        MessageBox("Till not closed at this time. \r"
-           "Please write down and report the following message to your service provider. \r\r ", "Error",
-            MB_OK + MB_ICONERROR);
-		zedLogsList->Clear();
-		zedLogsList->Add("Error while opening Database.");
-        zedLogsList->Add("Till not closed at this time. Please write down and report the following message to your service provider.");
-        MakeZEDLogFile(zedLogsList);
-        return;
-    }
     zedLogsList->Clear();
     zedLogsList->Add("-----------------------------Zed report button clicked.--------------------------------------------------------------" );
     zedLogsList->Add("ZED starts at: " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
@@ -2859,7 +2860,22 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 	else
 	{
 		bool UpdateingStock = false;
+        if(TGlobalSettings::Instance().MallIndex == 7)
+        {
+            TIBSQL *IBSelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBSelectQuery->Close();
+            IBSelectQuery->SQL->Text = "SELECT A.ME_HOURLY_KEY "
+                                          "FROM MALLEXPORT_HOURLY A";
 
+            IBSelectQuery->ExecQuery();
+
+            if(!IBSelectQuery->RecordCount)
+            {
+                MessageBox("Zed Cannot be Processed as there is No Sales Data","",MB_OK) ;
+                return;
+            }
+
+        }
 		std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
 		Processing->Message = "Please Wait...";
 		Processing->Show();
@@ -3195,6 +3211,11 @@ Zed:
 			if(CompleteZed)
 			{
                 UpdateMallExportDetails();
+                if(TGlobalSettings::Instance().MallIndex == 7 )
+                {
+                    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
+                    MEM->IMallManager->ZExport();
+                }
 
                 //Method for mall Design According to newly pattern
 
@@ -4348,6 +4369,7 @@ void __fastcall TfrmAnalysis::FormShow(TObject *Sender)
 	FormResize(Sender);
 
     CheckCANCELITEMS_KEY = false;
+    DuplicateEntryInTable = false;
 
 }
 // ---------------------------------------------------------------------------
@@ -4364,7 +4386,6 @@ void __fastcall TfrmAnalysis::btnReprintZClick(void)
    try
     {
         TfrmSelectZed *frmSelectZed = new TfrmSelectZed(this, TDeviceRealTerminal::Instance().DBControl);
-        frmSelectZed->Initialize(ePOSZED);
 		frmSelectZed->ShowModal();
         delete frmSelectZed;
 	}
@@ -7648,7 +7669,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             "ARCMALLEXPORT.ENDING_OR, ARCMALLEXPORT.LOCTAXEXEMPTDLY_SALES, ARCMALLEXPORT.FINEDINECUST_COUNT, ARCMALLEXPORT.TENDERSURCHARGES, ARCMALLEXPORT.NONVAT_SALES, "
             "ARCMALLEXPORT.CHECK_SALES, ARCMALLEXPORT.EPAY_SALES, ARCMALLEXPORT.NO_SALES, ARCMALLEXPORT.PREVEODCOUNTER, ARCMALLEXPORT.CURRENTEODCOUNTER, "
             "ARCMALLEXPORT.DISCOUNT_COUNT, ARCMALLEXPORT.CARD_SALES, ARCMALLEXPORT.OTHER_SALES, ARCMALLEXPORT.SALESTYPE_FOOD, ARCMALLEXPORT.SALESTYPE_NONFOOD, "
-            "ARCMALLEXPORT.SALESTYPE_GROCERIES, ARCMALLEXPORT.SALESTYPE_MEDICINES, ARCMALLEXPORT.SALESTYPE_OTHERS ) "
+            "ARCMALLEXPORT.SALESTYPE_GROCERIES, ARCMALLEXPORT.SALESTYPE_MEDICINES, ARCMALLEXPORT.SALESTYPE_OTHERS,ARCMALLEXPORT.Z_KEY ) "
 			"VALUES "
             "( "
             ":ARCMALLEXPORT_KEY, "
@@ -7672,7 +7693,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             ":ENDING_OR, :LOCTAXEXEMPTDLY_SALES, :FINEDINECUST_COUNT, :TENDERSURCHARGES, :NONVAT_SALES, "
             ":CHECK_SALES, :EPAY_SALES, :NO_SALES, :PREVEODCOUNTER, :CURRENTEODCOUNTER, "
             ":DISCOUNT_COUNT, :CARD_SALES, :OTHER_SALES, :SALESTYPE_FOOD, :SALESTYPE_NONFOOD, "
-            ":SALESTYPE_GROCERIES, :SALESTYPE_MEDICINES, :SALESTYPE_OTHERS);";
+            ":SALESTYPE_GROCERIES, :SALESTYPE_MEDICINES, :SALESTYPE_OTHERS, :Z_KEY);";
 
             IBArcMallExport->ParamByName("ARCMALLEXPORT_KEY")->AsString = ArcMallKey;
             IBArcMallExport->ParamByName("MALLCODE")->AsString = MALLCODE;
@@ -7779,6 +7800,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             IBArcMallExport->ParamByName("SALESTYPE_GROCERIES")->AsCurrency = SALESTYPE_GROCERIES;
             IBArcMallExport->ParamByName("SALESTYPE_MEDICINES")->AsCurrency = SALESTYPE_MEDICINES;
             IBArcMallExport->ParamByName("SALESTYPE_OTHERS")->AsCurrency = SALESTYPE_OTHERS;
+            IBArcMallExport->ParamByName("Z_KEY")->AsInteger = 0;
 			IBArcMallExport->ExecQuery();
 
             // For ARCMALLEXPORTHOURLY
@@ -7802,14 +7824,15 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                 "ARCMALLEXPORTHOURLY.VAT_SALES, ARCMALLEXPORTHOURLY.TOTALDISCOUNT, ARCMALLEXPORTHOURLY.SCHARGE_AMOUNT, "
                 "ARCMALLEXPORTHOURLY.REFUND_COUNT, ARCMALLEXPORTHOURLY.REFUND_AMOUNT, ARCMALLEXPORTHOURLY.VOID_COUNT, "
                 "ARCMALLEXPORTHOURLY.VOID_AMOUNT, ARCMALLEXPORTHOURLY.SCDISCOUNT_AMOUNT, ARCMALLEXPORTHOURLY.MALLCODE, "
-                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT ) "
+                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT,ARCMALLEXPORTHOURLY.Z_KEY ) "
 		    	"VALUES "
                 "( "
                 ":AME_HOURLY_KEY, "
                 ":TERMINAL_NAME, :TENANT_NAME, :DATE_VALUE, :TIME_VALUE, :AMOUNT_VALUE, :TRANSACTION_COUNT, "
                 ":VAT_SALES, :TOTALDISCOUNT, :SCHARGE_AMOUNT, :REFUND_COUNT, :REFUND_AMOUNT, "
                 ":VOID_COUNT, :VOID_AMOUNT, :SCDISCOUNT_AMOUNT, :MALLCODE, :PATRON_COUNT, "
-                ":MINUTE_VALUE, :SCDISCOUNT_COUNT );";
+                ":MINUTE_VALUE, :SCDISCOUNT_COUNT, :Z_KEY );";
+
 
 				for (int i = 1; i < IBMallExportHourly->FieldCount; i++)
 				{
@@ -7854,6 +7877,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                     }
 				}
 				IBArcMallExportHourly->ParamByName("AME_HOURLY_KEY")->AsInteger = ArcMallHourKey;
+                IBArcMallExportHourly->ParamByName("Z_KEY")->AsInteger = 0;
                 IBArcMallExportHourly->ExecQuery();
                 IBMallExportHourly->Next();
             }
@@ -8516,7 +8540,9 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
             for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
             {
                 UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString, zedKey);
+                DuplicateEntryInTable = true;
             }
+            DuplicateEntryInTable = false;
         }
         else
         UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName, zedKey);
@@ -8671,15 +8697,18 @@ void TfrmAnalysis::UpdateMallExportDetails()
     try
     {
         // For Mall Export
-        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
+        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7 )
         {
             std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
             MEM->IMallManager->ZExport();
         }
         else
         {
-            TGlobalSettings::Instance().ZCount += 1;
-            SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+            if(TGlobalSettings::Instance().MallIndex != 7)
+            {
+                TGlobalSettings::Instance().ZCount += 1;
+                SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+            }
         }
         TMallExportUpdateAdaptor exportUpdateAdaptor;
         TMallExportHourlyUpdate exportHourlyUpdate;
@@ -8689,6 +8718,10 @@ void TfrmAnalysis::UpdateMallExportDetails()
         exportHourlyUpdate.ResetHourlyExportTablesOnZed();
         exportTransactionUpdate.ResetTransactionExportTablesOnZed();
         exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
+        if(TGlobalSettings::Instance().MallIndex == 7)
+        {
+            UpdateZKeyInArcMallExportForMegaWorld();
+        }
         zedLogsList->Add("updating .UpdateMallExportDetails");
     }
     catch(Exception & E)
@@ -9103,7 +9136,7 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
        zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
 }
-
+//-------------------------------------------------------------------------------
 void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
 {
     std::list<TMallExportSettings> ::iterator itUISettings;
@@ -9142,3 +9175,49 @@ void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
     TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
+//-------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
+{
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS ";
+        IBInternalQuery->ExecQuery();
+        int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORTHOURLY SET ARCMALLEXPORTHOURLY.Z_KEY = :Z_KEY "
+                                     "WHERE ARCMALLEXPORTHOURLY.Z_KEY  =:Z_VALUE ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("Z_VALUE")->AsInteger = 0;
+
+        IBInternalQuery->ExecQuery();
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORT SET ARCMALLEXPORT.Z_KEY = :Z_KEY "
+                                     "WHERE ARCMALLEXPORT.Z_KEY  =:Z_VALUE ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("Z_VALUE")->AsInteger = 0;
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+
+}
+
