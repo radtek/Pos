@@ -1333,8 +1333,10 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                    {     
                                         if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
                                         {
-                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
-                                            Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                            if(EftTrans->TipAmount != "")
+                                                Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            if(EftTrans->SurchargeAmount != "")
+                                                Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
                                         }
                                         else if(TGlobalSettings::Instance().EnableEftPosAdyen)
                                         {

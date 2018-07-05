@@ -4859,7 +4859,6 @@ void TPrintSection::PrintTotalEx(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Text = ItemName;
 	pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
 	pPrinter->AddLine();
-	}
 }
 
 void TPrintSection::PrintGrandTotal(TReqPrintJob *pj)
