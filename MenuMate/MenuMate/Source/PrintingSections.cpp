@@ -4859,6 +4859,31 @@ void TPrintSection::PrintTotalEx(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Text = ItemName;
 	pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
 	pPrinter->AddLine();
+
+    for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
+	{
+		TPayment *SubPayment = PrintJob->Transaction->PaymentGet(i);
+        AnsiString paymentName = SubPayment->Name;
+        AnsiString cardType = SubPayment->CardType;
+        if(cardType != NULL && cardType != "")
+           paymentName = cardType;
+
+        if(SubPayment->TipAmount != 0)
+        {
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
+
+        if(SubPayment->EFTPOSSurcharge != 0)
+        {
+            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
+	}
 }
 
 void TPrintSection::PrintGrandTotal(TReqPrintJob *pj)
@@ -6609,22 +6634,6 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 				CurrencyDecimals));
 			}
 		}
-
-       if(SubPayment->TipAmount != 0)
-        {
-            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
-            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
-            ffNumber,
-            CurrencyDecimals));
-        }
-
-        if(SubPayment->EFTPOSSurcharge != 0)
-        {
-            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
-            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
-            ffNumber,
-            CurrencyDecimals));
-        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)
