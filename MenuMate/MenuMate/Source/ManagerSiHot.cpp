@@ -17,17 +17,18 @@
 //---------------------------------------------------------------------------
 TManagerSiHot::TManagerSiHot() : TBasePMS()
 {
-	TCPPort = 0;
-	TCPIPAddress = "";
-	POSID = 0;
-	DefaultPaymentCategory = "";
-	DefaultItemCategory = "";
-	PointsCategory = "";
-	CreditCategory = "";
-	LastTransactionRef = "";
-	RoundingCategory = "";
-	Enabled = false;
-	Registered = false;
+	TCPPort                 = 0;
+	TCPIPAddress            = "";
+	POSID                   = 0;
+	DefaultPaymentCategory  = "";
+	DefaultItemCategory     = "";
+	PointsCategory          = "";
+	CreditCategory          = "";
+	LastTransactionRef      = "";
+	RoundingCategory        = "";
+    ApiKey                  = "";
+	Enabled                 = false;
+	Registered              = false;
 }
 //---------------------------------------------------------------------------
 TManagerSiHot::~TManagerSiHot()
@@ -68,23 +69,24 @@ void TManagerSiHot::Initialise()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-	TCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
-	TCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
-	POSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
+	TCPPort                     = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
+	TCPIPAddress                = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
+	POSID                       = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
 
-	DefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
-	DefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
-	CreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
-	PointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
-	DefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
-	DefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
-	RoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
-    TipAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSTipAccount);
-    ExpensesAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSExpensesAccount);
-    ServiceChargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSServiceChargeAccount);
-    RoundingAccountSiHot = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
-    DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
-    RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
+	DefaultPaymentCategory      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
+	DefaultItemCategory         = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
+	CreditCategory              = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
+	PointsCategory              = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
+	DefaultTransactionAccount   = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
+	DefaultSurchargeAccount     = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
+	RoundingCategory            = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
+    TipAccount                  = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSTipAccount);
+    ExpensesAccount             = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSExpensesAccount);
+    ServiceChargeAccount        = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSServiceChargeAccount);
+    RoundingAccountSiHot        = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSRoundingAccountSiHot);
+    DefaultAccountNumber        = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
+    RoundingAccountNumber       = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
+    ApiKey                      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSAPIKey);
     RevenueCodesMap.clear();
     UnsetPostingFlag();
 
@@ -95,13 +97,7 @@ void TManagerSiHot::Initialise()
         //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
         if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
         {
-            if(DefaultItemCategory.Trim() != "")
-                Enabled = GetRoundingandDefaultAccount();
-            else
-            {
-                MessageBox("Api-Key is required for set up of SiHot.","Warning",MB_OK + MB_ICONINFORMATION);
-                Enabled = false;
-            }
+            Enabled = GetRoundingandDefaultAccount();
         }
         else
         {
@@ -124,7 +120,7 @@ bool TManagerSiHot::GetRoundingandDefaultAccount()
 {
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
-    retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort, DefaultItemCategory);
+    retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort, ApiKey);
     UpdateSiHotLogs(retValue);
     if(!retValue)
         MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
@@ -169,7 +165,7 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,DefaultItemCategory);
+    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,ApiKey);
     Processing->Close();
     if(roomResponse.IsSuccessful)
     {
@@ -235,7 +231,7 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
-            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,DefaultItemCategory);
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,ApiKey);
             if(roomResponse.IsSuccessful)
                 retValue = true;
             else
@@ -266,7 +262,7 @@ bool TManagerSiHot::GetDefaultAccount(UnicodeString processMessage)
 {
     bool retValue = false;
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
-    retValue = siHotDataProcessor->GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0,DefaultItemCategory);
+    retValue = siHotDataProcessor->GetDefaultAccount(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,0,ApiKey);
     UpdateSiHotLogs(retValue);
     return retValue;
 }
@@ -275,7 +271,7 @@ TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 {
      // Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-     return siHotInterface->SendRoomRequest(_roomRequest,TGlobalSettings::Instance().PMSTimeOut,DefaultItemCategory);
+     return siHotInterface->SendRoomRequest(_roomRequest,TGlobalSettings::Instance().PMSTimeOut,ApiKey);
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int StaffID)

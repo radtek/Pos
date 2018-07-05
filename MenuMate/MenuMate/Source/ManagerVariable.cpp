@@ -3394,6 +3394,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmAdyenRecoveryTransactionIsRefund,"Last Transaction was refund", "Tells the nature of last transaction", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmPrintCardHolderReceipt,"Print Customer Receipt", "This setting will Prints CardHolder receipt", vmg3rdPartyInterface, true);
         SetVarBool(DBTransaction,vmPrintMerchantReceipt,"Print Merchant Receipt", "This setting will  Print Merchant receipt", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmPMSAPIKey,  "PMS API KEY", "This API Key can be used for PMS integration is provided", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

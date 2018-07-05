@@ -412,13 +412,16 @@ namespace SiHotIntegration
         }
         private string GetHttpRequest(Uri inUri, int dataLength, string apiKey)
         {
-            return @"POST " + inUri.LocalPath + " HTTP/1.1" + Environment.NewLine +
+            string value = @"POST " + inUri.LocalPath + " HTTP/1.1" + Environment.NewLine +
                                                 "Time-out: 5000" + Environment.NewLine +
                                                 "Content-Type: text/plain" + Environment.NewLine +
-                                                "Host: " + inUri.Host + Environment.NewLine +
-                                                "X-API-KEY:" + apiKey + Environment.NewLine +
-                                                "Content-Length: " + dataLength + Environment.NewLine
-                                                + Environment.NewLine;
+                                                "Host: " + inUri.Host + Environment.NewLine;
+            if (apiKey.Trim() != "")
+                value += "X-API-KEY:" + apiKey + Environment.NewLine;
+
+            value += "Content-Length: " + dataLength + Environment.NewLine + Environment.NewLine;
+
+            return value;
         }
         private static bool ValidateServerCertificate(object sender,X509Certificate certificate,X509Chain chain,
                                                       SslPolicyErrors sslPolicyErrors)
