@@ -5474,7 +5474,11 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 //------------------------------------------------------------------------------
 TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 {
-	TMMProcessingState State(Screen->ActiveForm, "Processing Bill", "Processing Bill");
+    UnicodeString message = "Processing Bill";
+    if(TGlobalSettings::Instance().EnableEftPosAdyen && !_isSmartCardPresent())
+        message = "Waiting For Adyen EFTPOS";
+
+	TMMProcessingState State(Screen->ActiveForm, message, "Processing Bill");
 
 	if (_isSmartCardPresent())
 	{
