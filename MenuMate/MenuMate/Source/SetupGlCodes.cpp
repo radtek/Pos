@@ -166,7 +166,7 @@ void __fastcall TfrmSetupGlCodes::btnCashVarianceMouseClick(TObject *Sender)
 
  void __fastcall TfrmSetupGlCodes::btnGiftCardClick(TObject *Sender)
 {
-   ShowKeyBoard("Enter GL Code for Cash Variance",GiftCardGLCode);
+   ShowKeyBoard("Enter GL Code for Gift Card",GiftCardGLCode);
    btnGiftCard->Caption ="Gift Card \r" + GiftCardGLCode;
 }
 
