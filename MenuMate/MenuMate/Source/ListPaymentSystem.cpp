@@ -73,6 +73,7 @@
 #include "ManagerOraclePMS.h"
 #include "FiscalPrinterAdapter.h"
 #include "ManagerPMSCodes.h"
+#include "SaveLogs.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -980,6 +981,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
                resetPaymentControlForms();
             }
         }
+        TStringList* logList = new TStringList();
+        logList->Add("Payment reset() called ");
+        TSaveLogs::RecordFiscalLogs(logList);
+
 		Reset(PaymentTransaction);
         if(!IsClippSale)
         {
@@ -988,6 +993,8 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		OnAfterTransactionComplete.Occured();
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+        delete logList;
+        logList = NULL;
 	}
 	catch(Exception & E)
 	{
@@ -997,6 +1004,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 
+        TStringList* logList = new TStringList();
+        logList->Add("Exception in  ProcessTransaction()");
+        TSaveLogs::RecordFiscalLogs(logList);
+        delete logList;
+        logList = NULL;
+
 		throw;
 	}
 	Busy = false;
@@ -1005,6 +1018,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
     {
         TManagerPanasonic::Instance()->TriggerTransactionSync();
     }
+    TStringList* logList = new TStringList();
+    logList->Add("ProcessTransaction() Executed.");
+    TSaveLogs::RecordFiscalLogs(logList);
+    delete logList;
+    logList = NULL;
+
 	return PaymentComplete;
 }
 
@@ -1047,13 +1066,36 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
         ReceiptPrint(PaymentTransaction, RequestEFTPOSReceipt, frmControlTransaction->UserOption == eCloseandPrint);
     }
 
+    TStringList* logList = new TStringList();
+    logList->Add("Calling FormatSpendChit()");
+    TSaveLogs::RecordFiscalLogs(logList);
 	FormatSpendChit(PaymentTransaction);
+
+    logList->Clear();
+    logList->Add("Calling ProcessSecurity()");
+    TSaveLogs::RecordFiscalLogs(logList);
 	ProcessSecurity(PaymentTransaction);
+
+    logList->Clear();
+    logList->Add("Calling SaveToFileCSV()");
+    TSaveLogs::RecordFiscalLogs(logList);
 	SaveToFileCSV(PaymentTransaction);
+
+    logList->Clear();
+    logList->Add("Calling RemoveTabs()");
+    TSaveLogs::RecordFiscalLogs(logList);
 	RemoveTabs(PaymentTransaction); // Remove any empty Tabs.
+
+    logList->Clear();
+    logList->Add("Calling ProcessSecurity()");
+    TSaveLogs::RecordFiscalLogs(logList);
 
 	if (PaymentTransaction.Membership.Applied())
 	{
+        logList->Clear();
+        logList->Add("Inside PaymentTransaction.Membership.Applied() if block");
+        TSaveLogs::RecordFiscalLogs(logList);
+
 		TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->TransactionClosed(
 		PaymentTransaction.DBTransaction,
 		PaymentTransaction.Membership.Member);
@@ -1074,6 +1116,9 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
+    logList->Clear();
+    logList->Add("End of PerformPostTransactionOperations()");
+    TSaveLogs::RecordFiscalLogs(logList);
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
@@ -3576,36 +3621,53 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 {
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
     {
-//        if((IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptDiscountSales || TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
-//                 || (TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)) || CloseAndPrint)
-//        if(CloseAndPrint ||
-//            ( IsAnyDiscountApplied(PaymentTransaction) && (Receipt->AlwaysPrintReceiptTenderedSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) || (Receipt->AlwaysPrintReceiptCashSales && TGlobalSettings::Instance().PrintSignatureWithDiscountSales))
-//            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)) &&
-//                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction))))
+        TStringList* logList = new TStringList();
+        logList->Add("----------------------------------------------New BILL-------------------------------------------");
+        logList->Add("Use Italy Fiscal Printer setting is true.");
+        logList->Add("Logs For invoice number: "  + PaymentTransaction.InvoiceNumber);
+        logList->Add("time is: " + Now().CurrentDate().FormatString("YYYYMMDDhhmm"));
+
         if(CloseAndPrint ||
             ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
 																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
 																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
-
-
             || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
                         TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
         {
             PrintReceipt(RequestEFTPOSReceipt);
+            logList->Add("Print to normal receipt printer has been sent.");
         }
+
+        logList->Add("Calling Fiscal Printer class for sending data to fiscal printer.");
+        TSaveLogs::RecordFiscalLogs(logList);
+
         std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
         UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
+
+        logList->Clear();
+        logList->Add("Response Message received in ListPaymentSystem is: " + responseMessage);
+        TSaveLogs::RecordFiscalLogs(logList);
         if(responseMessage.Pos("OK") == 0)
         {
             MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
+            logList->Clear();
+            logList->Add("Printing To Fiscal Printer Failed: ");
+            TSaveLogs::RecordFiscalLogs(logList);
             for(int i = 0; i < LastReceipt->Printouts->Count; i++)
             {
                ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
             }
             if(LastReceipt->Printouts->Count)
+            {
+                logList->Clear();
+                logList->Add("Call to Print receipt Function after printing failed to fiscal.");
                 PrintReceipt(RequestEFTPOSReceipt);
-        } 
-
+                logList->Add("Control returned after calling Print receipt Function in ReceiptPrint() function.");
+                TSaveLogs::RecordFiscalLogs(logList);
+            }
+        }
+        delete logList;
+        logList = NULL;
     }
     else
     {
@@ -6830,3 +6892,4 @@ void TListPaymentSystem::UpdateEftposLogsForInvoice(TPaymentTransaction paymentT
     }
 }
 //----------------------------------------------------------------------------
+

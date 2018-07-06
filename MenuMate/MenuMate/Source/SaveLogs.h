@@ -8,7 +8,9 @@
 //---------------------------------------------------------------------------
 class TSaveLogs
 {
+private:
+    static void WriteLogsToFile(AnsiString directoryName, AnsiString fileName, TStringList *List);
 public:
-    void WriteLogsToFile(AnsiString directoryName, AnsiString fileName, TStringList *List);
+    static void RecordFiscalLogs(TStringList* logList);
 };
 #endif
