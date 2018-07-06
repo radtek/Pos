@@ -2795,6 +2795,17 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    if(!TDeviceRealTerminal::Instance().OpenDatabases())
+    {
+        MessageBox("Till not closed at this time. \r"
+           "Please write down and report the following message to your service provider. \r\r ", "Error",
+            MB_OK + MB_ICONERROR);
+		zedLogsList->Clear();
+		zedLogsList->Add("Error while opening Database.");
+        zedLogsList->Add("Till not closed at this time. Please write down and report the following message to your service provider.");
+        MakeZEDLogFile(zedLogsList);
+        return;
+    }
     zedLogsList->Clear();
     zedLogsList->Add("-----------------------------Zed report button clicked.--------------------------------------------------------------" );
     zedLogsList->Add("ZED starts at: " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
