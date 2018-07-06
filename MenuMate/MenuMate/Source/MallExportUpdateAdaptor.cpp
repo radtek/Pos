@@ -749,11 +749,6 @@ int TMallExportUpdateAdaptor::extractTotalCancelledCount()
 Currency TMallExportUpdateAdaptor::extractTotalRegularDiscount()
 {
     Currency result = getRegularDiscountGroupsTotal();
-
-    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
-    {
-        result += extractDisabilityDiscount();
-    }
     return result;
 }
 //---------------------------------------------------------------------------
@@ -830,6 +825,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
     }
     else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
+        result += extractDisabilityDiscount();
         result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
     }
 
@@ -841,6 +837,10 @@ int TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscountCount()
 {
     int result = 0;
     result = getDiscountGroupCountPerTransaction(SCD_DISCOUNT_GROUP);
+    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+    {
+        result += getDiscountGroupCountPerTransaction(PWD_DISCOUNT_GROUP);
+    }
     return result;
 }
 //---------------------------------------------------------------------------
