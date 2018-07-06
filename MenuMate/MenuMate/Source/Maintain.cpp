@@ -3635,7 +3635,8 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->CashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
   frmSetupGlCodes->CashVariance = TGlobalSettings::Instance().CashVarianceGLCode;
   frmSetupGlCodes->SurchargeGLCode = TGlobalSettings::Instance().SurchargeGLCode;
-  if(frmSetupGlCodes->ShowModal() == mrOk)
+  frmSetupGlCodes->GiftCardGLCode =  TGlobalSettings::Instance().GiftCardGLCode;
+   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
         TGlobalSettings::Instance().PointsSpentGLCode = frmSetupGlCodes->PointsSpent;
@@ -3650,6 +3651,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().CashWithdrawalGLCode = frmSetupGlCodes->CashWithdrawal;
         TGlobalSettings::Instance().CashVarianceGLCode = frmSetupGlCodes->CashVariance;
         TGlobalSettings::Instance().SurchargeGLCode = frmSetupGlCodes->SurchargeGLCode;
+        TGlobalSettings::Instance().GiftCardGLCode =  frmSetupGlCodes->GiftCardGLCode;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3665,6 +3667,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashWithdrawal, TGlobalSettings::Instance().CashWithdrawalGLCode);
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashVariance, TGlobalSettings::Instance().CashVarianceGLCode);
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmSurchargeGLCode, TGlobalSettings::Instance().SurchargeGLCode);
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmGiftCardGLCode, TGlobalSettings::Instance().GiftCardGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;

@@ -361,6 +361,7 @@ TGlobalSettings::TGlobalSettings()
     IsXeroEnabled = false;
     IsMYOBEnabled = false;
     SurchargeGLCode= "";
+    GiftCardGLCode = "";
 
     // MallExport Additional Settings
     ConsolidateReportPaths = "";

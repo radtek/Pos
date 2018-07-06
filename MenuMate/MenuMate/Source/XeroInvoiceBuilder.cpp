@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------z
 
 #pragma hdrstop
 
@@ -306,6 +306,18 @@ void TXeroInvoiceBuilder::CompressItemForInvoice(TXeroInvoice *FXeroInvoice,TPay
            }
     }
 
+     if(inPaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber != NULL &&
+     inPaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber !="")
+     {
+      NodeItem GiftVoucherNodeItem;
+      AnsiString totalAmountStr =  inPaymentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount;
+      GiftVoucherNodeItem.ItemCode = TGlobalSettings::Instance().GiftCardGLCode;
+      GiftVoucherNodeItem.ItemName = "Gift Voucher";
+      GiftVoucherNodeItem.UnitAmount = totalAmountStr;
+      GiftVoucherNodeItem.TaxAmount = "0.0000";
+      GiftVoucherNodeItem.Qty = "1.0000";
+      AddItemToCollection(GiftVoucherNodeItem, nodeItems);
+    }
     //Add Item To XML
    AddItemToInvoiceXML(FXeroInvoice , nodeItems) ;
 }
