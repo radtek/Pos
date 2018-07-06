@@ -1333,8 +1333,10 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                    {     
                                         if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
                                         {
-                                            Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
-                                            Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
+                                            if(EftTrans->TipAmount != "")
+                                                Payment->TipAmount = StrToCurr(EftTrans->TipAmount);
+                                            if(EftTrans->SurchargeAmount != "")
+                                                Payment->EFTPOSSurcharge = StrToCurr(EftTrans->SurchargeAmount);
                                         }
                                         else if(TGlobalSettings::Instance().EnableEftPosAdyen)
                                         {
@@ -5474,7 +5476,11 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 //------------------------------------------------------------------------------
 TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 {
-	TMMProcessingState State(Screen->ActiveForm, "Processing Bill", "Processing Bill");
+    UnicodeString message = "Processing Bill";
+    if(TGlobalSettings::Instance().EnableEftPosAdyen && !_isSmartCardPresent())
+        message = "Waiting For Adyen EFTPOS";
+
+	TMMProcessingState State(Screen->ActiveForm, message, "Processing Bill");
 
 	if (_isSmartCardPresent())
 	{
