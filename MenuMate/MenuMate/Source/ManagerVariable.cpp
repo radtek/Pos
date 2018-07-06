@@ -2983,6 +2983,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Surcharge GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+      SetVarStr( DBTransaction, vmGiftCardGLCode, "GiftCard GL Code",
+                    "Gift GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,

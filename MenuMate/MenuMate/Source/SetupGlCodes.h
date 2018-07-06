@@ -31,6 +31,7 @@ __published:	// IDE-managed Components
     TTouchBtn *btnCashWidthwral;
     TTouchBtn *btnCashVariance;
     TTouchBtn *btnDiscountAndSurcharge;
+    TTouchBtn *btnGiftCard;
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall btnPointPurchasedMouseClick(TObject *Sender);
@@ -47,6 +48,7 @@ __published:	// IDE-managed Components
     void __fastcall btnCashWidthwralMouseClick(TObject *Sender);
     void __fastcall btnCashVarianceMouseClick(TObject *Sender);
     void __fastcall btnDiscountSurchargeClick(TObject *Sender);
+    void __fastcall btnGiftCardClick(TObject *Sender);
 
 private:	// User declarations
    void ShowKeyBoard(AnsiString KeyBoardCaption,AnsiString& KeyBoardText);
@@ -65,6 +67,7 @@ public:		// User declarations
     AnsiString CashWithdrawal;
     AnsiString CashVariance;
     AnsiString SurchargeGLCode;
+    AnsiString GiftCardGLCode;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmSetupGlCodes *frmSetupGlCodes;

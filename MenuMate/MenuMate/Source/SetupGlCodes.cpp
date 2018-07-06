@@ -79,6 +79,7 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
   btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
   btnDiscountAndSurcharge->Caption = "Payment Surcharge \r" + SurchargeGLCode;
+  btnGiftCard->Caption = "Gift Card \r" + GiftCardGLCode;
   if(TGlobalSettings::Instance().FloatWithdrawFromCash)
   {
       btnCashWidthwral->Enabled = true;
@@ -161,5 +162,17 @@ void __fastcall TfrmSetupGlCodes::btnCashVarianceMouseClick(TObject *Sender)
   ShowKeyBoard("Enter GL Code for Cash Variance",CashVariance);
   btnCashVariance->Caption = "Cash Variance \r" + CashVariance;
 }
+//---------------------------------------------------------------------------
+
+ void __fastcall TfrmSetupGlCodes::btnGiftCardClick(TObject *Sender)
+{
+   ShowKeyBoard("Enter GL Code for Cash Variance",GiftCardGLCode);
+   btnGiftCard->Caption ="Gift Card \r" + GiftCardGLCode;
+}
+
+
+//---------------------------------------------------------------------------
+
+
 //---------------------------------------------------------------------------
 
