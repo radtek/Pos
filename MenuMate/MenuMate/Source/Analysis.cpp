@@ -3448,6 +3448,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         double floatAmount = 0;
         double PurchasedPoints = 0;
         double PurchasedVoucher = 0;
+        double PurchasedGiftCard = 0;
         double TipAmount = 0;
         double tip = 0.0;
         double SurchargeAmount=0;
@@ -3507,7 +3508,8 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
             AddInvoiceItem(XeroInvoiceDetail,"Tab Deposit/Credit Received", -1 * TabCreditReceived,tabCreditReceivedGLCode,0);
         }
 
-        GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+        GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay, PurchasedGiftCard);
+        
         if(PurchasedPoints != 0)
         {
           catTotal += PurchasedPoints;
@@ -3517,6 +3519,12 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         {
           catTotal += PurchasedVoucher;
           AddInvoiceItem(XeroInvoiceDetail,"Voucher Purchased", PurchasedVoucher,TGlobalSettings::Instance().VoucherPurchasedGLCode,0);
+        }
+		
+		if(PurchasedGiftCard != 0)
+        {
+          catTotal += PurchasedGiftCard;
+          AddInvoiceItem(XeroInvoiceDetail,"Gift Card Purchased", PurchasedGiftCard,TGlobalSettings::Instance().GiftCardGLCode,0);
         }
 
         bool addFloatAdjustmentToPayments = false;
@@ -3830,6 +3838,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           double floatAmount = 0;
           double PurchasedPoints = 0;
           double PurchasedVoucher = 0;
+          double PurchasedGiftCard = 0;
           double TipAmount = 0;
           UnicodeString AccountCode = "";
 
@@ -3954,7 +3963,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
              AddMYOBInvoiceItem(MYOBInvoiceDetail,tabCreditReceivedGLCode,"Tab Deposit/Credit Received", -1 * RoundTo((TabCreditReceived),-2),0.0,jobCode,"ZeroTax");
           }
 
-          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay, PurchasedGiftCard);
           if(RoundTo((PurchasedPoints),-2) != 0.00)
            {
               catTotal += PurchasedPoints;
@@ -4149,7 +4158,7 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
 }
 
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
-                                 TDateTime startTime,TDateTime endTime)
+                                 TDateTime startTime,TDateTime endTime, double &purchasedGiftCard)
 {
     UnicodeString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
@@ -4185,14 +4194,15 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                 if(ptrPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
                  {
                     IBInternalQuery->Close();
-                    IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal from "
+                    IBInternalQuery->SQL->Text =    "select CAST(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal, F.PAY_TYPE from "
                                                     "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
                                                     "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                                     "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
                                                     "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " ) e "
                                                     "left join "
-                                                    "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
-                                                    "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
+                                                    "(select c.ARCBILL_KEY,c.SUBTOTAL, c.PAY_TYPE PAY_TYPE from DAYARCSURCHARGE c where "
+                                                    "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY "
+                                                    "WHERE F.PAY_TYPE = :PAYTYPE  GROUP BY 2 ";
                     IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
                     IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
                     IBInternalQuery->ParamByName("PAYTYPE")->AsString = ptrPayment->Name;
@@ -4201,9 +4211,15 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                         IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
                     }
                     IBInternalQuery->ExecQuery();
-                    if(!IBInternalQuery->Eof)
+
+                    if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled &&
+                        !IBInternalQuery->Eof && IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Gift Card" )
                     {
-                      PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
+                        purchasedGiftCard += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
+                    }
+                    else if(!IBInternalQuery->Eof)
+                    {
+                        PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
                     }
                  }
             }
