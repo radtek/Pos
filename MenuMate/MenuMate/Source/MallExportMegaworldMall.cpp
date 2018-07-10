@@ -521,6 +521,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime &DateFie
         int SecondMaxZedKey;
         TDateTime DateValueForSecondMaxZed ;
         GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+        GetOldAndNewGrandTotal(MaxZedKey,oldgrandtotal,Newgrandtotal);
         IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
 
         if(!BreakConSolidateDateForCurrentDate)
@@ -539,12 +540,6 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime &DateFie
 
             if(!query->Eof)
             {
-
-                oldgrandtotal = query->FieldByName("OLD_GRANDTOTAL")->AsCurrency;
-
-
-                Newgrandtotal = query->FieldByName("NEW_GRANDTOTAL")->AsCurrency;
-
 
                 grosssales += query->FieldByName("GROSS_SALES")->AsCurrency;
 
@@ -1140,7 +1135,27 @@ void TMallExportMegaworldMall::GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzed,
     SecondMaxZedQuery->Close();
     DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------
+void TMallExportMegaworldMall::GetOldAndNewGrandTotal(int maxzed, Currency &oldgrandtotal , Currency &newgrandtotal)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* IBQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
+    IBQuery->Close();
+
+    IBQuery->SQL->Text =  "SELECT a.OLD_GRANDTOTAL,a.NEW_GRANDTOTAL "
+                        "FROM ARCMALLEXPORT a "
+                        "WHERE a.Z_KEY = :MaxZed ";
+
+    IBQuery->ParamByName("MaxZed")->AsInteger = maxzed;
+
+    IBQuery->ExecQuery();
+    oldgrandtotal = IBQuery->Fields[0]->AsCurrency;
+    newgrandtotal = IBQuery->Fields[1]->AsCurrency;
+
+    DBTransaction.Commit();
+}
 
 //---------------------------------------------------------------------------
 UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZed(TDateTime &DateValue)

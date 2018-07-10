@@ -61,6 +61,7 @@ public:
 
 
     void GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzedkey,int &maxzedkey2) ;
+    void GetOldAndNewGrandTotal(int maxzedkey,Currency &oldgrandtotal,Currency &NewGrandTotal) ;
     bool CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate,int &Maxzedkey,int &Maxzedkey2);
 
     UnicodeString GetFirstDateValueForMaxZed(TDateTime &DateValue);
