@@ -4126,7 +4126,6 @@ void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Star
     for( ; !query->Eof; query->Next())
     {
         Zedkey = query->Fields[0]->AsInteger;
-   //     MessageBox(Zedkey,"1Zedkey",MB_OK);
         CheckFirstSaleOfEachZed(Zedkey,Startdate,EndDate,Datevalue,isBreakConsolidated) ;
 
     }
@@ -4353,7 +4352,6 @@ void TfrmMallExportRegenerateReport::PrepareDateForHourly(int Zedkey,TDateTime S
                 DataToWrite.push_back(OutputValue.t_str());
                }
                 AmountSum += itrHourlyData->Amount_Value;
-                MessageBox(AmountSum,"AmountSum",MB_OK) ;
                 TransactionSum += itrHourlyData->Transaction_Count;
                 PatronSum += itrHourlyData->Patron_Count;
              }

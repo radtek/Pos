@@ -81,6 +81,13 @@ TExportResponse TMallExportMegaworldMall::ZExport()
         PrepareDiscounts(datevalue);
         TMallExportDataManager::ExportFile(OutputManager, DataToWrite, MallPathFileName);
 
+        setExportResponse(
+           true,               // Succesful = false
+           emrExportSuccesful, // Result = emrExportSuccesful
+           "",                 // Message
+           "",                 // Description
+           result );
+
     }
 
     catch( Exception& exc )
@@ -387,7 +394,8 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime &DateFi
     UnicodeString OutputValue = "";
     TDateTime CurrentdateTime = Now();
     UnicodeString CurrentdateTimeFormat = CurrentdateTime.FormatString("mm/dd/yyyy");
-
+    try
+    {
         OutputValue = "01" + TenantName + "\n" +
                       "02" + TerminalNum + "\n" +
                       "03" + DateValue + "\n";
@@ -423,6 +431,27 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime &DateFi
                       "09" + TransactionSum + "\n" +
                       "10" + PatronSum;
         DataToWrite.push_back(OutputValue.t_str());
+
+        setExportResponse(
+               true,               // Succesful = false
+               emrExportSuccesful, // Result = emrExportSuccesful
+               "",                 // Message
+               "",                 // Description
+               result );
+
+    }
+
+    catch(Exception &ex)
+    {
+        setExportResponse(
+           false,           // Succesful = false
+           emrExportFailed, // Result = emrExportFailed
+           "",              // Message
+           "",              // Description
+           result );
+    }
+
+    return result;
 
 }
 //---------------------------------------------------------------------------
