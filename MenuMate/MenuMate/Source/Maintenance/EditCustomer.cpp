@@ -884,7 +884,7 @@ void TfrmEditCustomer::DisplayCustomerDataFromPointers()
     edEmail->Text = *CustomerInfoPointers[2];
     edMobile->Text = *CustomerInfoPointers[3];
     reLocationAddress->Text = RemoveLineBreaks(*CustomerInfoPointers[4]);
-    reAddress->Text = RemoveLineBreaks(*CustomerInfoPointers[5]);
+    //reAddress->Text = RemoveLineBreaks(*CustomerInfoPointers[5]);
     edMemberNumber->Text = *CustomerInfoPointers[6];
     edKnownas->Text =  *CustomerInfoPointers[7];
     edSex->Text = *CustomerInfoPointers[8];
@@ -931,7 +931,7 @@ void __fastcall TfrmEditCustomer::TouchKeyboard1Click(TObject *Sender, char Char
   }
   else if(Char == '\r')
   {
-    ValidateTextBox();
+      ValidateTextBox();
   }
   TextBoxValue(Char);
   if(Char != '\t')
@@ -964,12 +964,12 @@ void TfrmEditCustomer::ChangeTextBoxFocus()
    }
    else if(reLocationAddress->Focused())
    {
-     reAddress->SetFocus();
+     //reAddress->SetFocus();
    }
-   else if(reAddress->Focused())
-   {
-     edMemberNumber->SetFocus();
-   }
+//   else if(reAddress->Focused())
+//   {
+//     edMemberNumber->SetFocus();
+//   }
    else if(edMemberNumber->Focused())
    {
      edKnownas->SetFocus();
@@ -1030,10 +1030,6 @@ void TfrmEditCustomer::RichTextBoxValue(char valueChar)
   if(reLocationAddress->Focused())
   {
     PopulateRichTextBox(valueChar, reLocationAddress);
-  }
-  else if(reAddress->Focused())
-  {
-     PopulateRichTextBox(valueChar, reAddress);
   }
   UpdateSmartCardSpace();
 }
@@ -1109,10 +1105,6 @@ void TfrmEditCustomer::ValidateTextBox()
     {
        reLocationAddress->SetFocus();
     }
-    else if(reAddress->Text == "")
-    {
-       reAddress->SetFocus();
-    }
     else if(edMemberNumber->Text == "")
     {
        edMemberNumber->SetFocus();
@@ -1163,7 +1155,7 @@ void TfrmEditCustomer::SaveData()
     Info.EMail = edEmail->Text;
     Info.Mobile = edMobile->Text;
     Info.LocationAddress = reLocationAddress->Text;
-    Info.MailingAddress = reAddress->Text;
+    Info.MailingAddress = "";//reAddress->Text;
     Info.MembershipNumber = edMemberNumber->Text;
     Info.Alias = edKnownas->Text;
     Info.Sex = edSex->Text;
