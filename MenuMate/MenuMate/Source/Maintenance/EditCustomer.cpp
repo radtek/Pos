@@ -965,6 +965,7 @@ void TfrmEditCustomer::ChangeTextBoxFocus()
    else if(reLocationAddress->Focused())
    {
      //reAddress->SetFocus();
+     edMemberNumber->SetFocus();
    }
 //   else if(reAddress->Focused())
 //   {
@@ -982,10 +983,11 @@ void TfrmEditCustomer::ChangeTextBoxFocus()
    {
      edNote->SetFocus();
    }
-//   else if(edNote->Focused())
-//   {
+   else if(edNote->Focused())
+   {
 //      DateTimePicker1->SetFocus();
-//   }
+      edFirstName->SetFocus();
+   }
    else
    {
       edFirstName->SetFocus();
