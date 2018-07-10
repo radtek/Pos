@@ -436,5 +436,6 @@ TGlobalSettings::TGlobalSettings()
     EmailCapturedForLoyaltyOperation = "";
     EnableEftPosPaymentSense = false;
     EftPosTerminalId = "";
+    DynamicTimeForConsolidateZed =0;
 }
 

@@ -531,6 +531,7 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
+    TDateTime DynamicTimeForConsolidateZed;
 };
 
 #endif

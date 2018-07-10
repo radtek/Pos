@@ -1281,3 +1281,9 @@ void TfrmMessageMaintenance::AddPMSPaymentType(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMessageMaintenance::sgDisplayClick(TObject *Sender)
+{
+
+}
+//---------------------------------------------------------------------------
+

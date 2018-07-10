@@ -41,6 +41,7 @@ __published:	// IDE-managed Components
     TDateTimePicker *FromDateTimePicker;
     TDateTimePicker *ToDateTimePicker;
     TSaveDialog *SaveDialog1;
+    TLabel *Label1;
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall btnGenerateMouseClick(TObject *Sender);
     void __fastcall btnSavePDFMouseClick(TObject *Sender);
@@ -68,6 +69,8 @@ public:		// User declarations
 	void Execute();
     bool IsConsolidatedZed;
     bool CheckDateRangeForConolidatedZed();
+    void FromStartDateTimePicker();
+      TDateTime DateTime;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

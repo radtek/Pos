@@ -40,6 +40,7 @@ __published:	// IDE-managed Components
     void __fastcall sgDisplayDrawCell(TObject *Sender, int ACol, int ARow, TRect &Rect,
           TGridDrawState State);
     void __fastcall sgDisplaySelectCell(TObject *Sender, int ACol, int ARow, bool &CanSelect);
+    void __fastcall sgDisplayClick(TObject *Sender);
 
 
 protected:

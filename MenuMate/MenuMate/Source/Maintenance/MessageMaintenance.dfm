@@ -77,6 +77,7 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
         ScrollBars = ssVertical
         TabOrder = 1
+        OnClick = sgDisplayClick
         OnDrawCell = sgDisplayDrawCell
         OnSelectCell = sgDisplaySelectCell
         ColWidths = (
