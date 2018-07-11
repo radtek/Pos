@@ -93,21 +93,18 @@ void TfrmEJournal::Execute()
 
      std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
      frmServingTime->Caption = "From Date: " + FromDateTimePicker->Date.FormatString("DD/MM/YYYY");
-     TDateTime DateTime;
-     string a;
+    
+    
      frmServingTime->btnCancel->Visible = false;
      frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
      frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
      frmServingTime->ShowModal() ;
      FromDateTimePicker->Time = frmServingTime->Time1;
-     lblfromdatetime->Caption =  FromDateTimePicker->Date;
-     if(lblfromdatetime->Caption.Pos("a.m.") == 0 && lblfromdatetime->Caption.Pos("p.m.") == 0)
-     {
+     lblfromdatetime->Caption = FromDateTimePicker->Date.FormatString("DD/MM/YYYY hh:nn am/pm");
 
-       UnicodeString strValue = lblfromdatetime->Caption;
-        strValue += " 00:00:00 a.m.";
-        lblfromdatetime->Caption = strValue;
-     }
+
+
+
 
  }
 
@@ -122,6 +119,12 @@ void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
     }
     if(FromDateTimePicker->Date > Now())
     {
+        if(IsConsolidatedZed)
+         {
+         FromDateTimePicker->Time = Now();
+
+         lblfromdatetime->Caption  = Now().FormatString("DD/MM/YYYY hh:nn am/pm" );
+         }
        MessageBox("From Date can not be more than today's date", "Error", MB_OK + MB_ICONERROR);
        FromDateTimePicker->Date = Now();
 
@@ -138,14 +141,7 @@ void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
      frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
      frmServingTime->ShowModal() ;
      ToDateTimePicker->Time = frmServingTime->Time1;
-     lbltodatetime->Caption =  ToDateTimePicker->Date;
-     if(lbltodatetime->Caption.Pos("a.m.") == 0 && lbltodatetime->Caption.Pos("p.m.") == 0)
-     {
-        UnicodeString strValue = lbltodatetime->Caption;
-        strValue += " 00:00:00 a.m.";
-        lbltodatetime->Caption = strValue;
-     }
-
+     lbltodatetime->Caption =  ToDateTimePicker->Date.FormatString("DD/MM/YYYY hh:nn am/pm");
 }
 //---------------------------------------------------------------------------
 
@@ -159,9 +155,13 @@ void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 
      if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
      {
+        if(IsConsolidatedZed)
+        {
+            ToDateTimePicker->Time= Now();
+            lbltodatetime->Caption = Now().FormatString("DD/MM/YYYY hh:nn am/pm" );
+        }
        MessageBox("To Date Cannot Be More Than Today's Date", "Error", MB_OK + MB_ICONERROR);
        ToDateTimePicker->Date = Now();
-
      }
 }
 //---------------------------------------------------------------------------
@@ -292,6 +292,8 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
     {
       
        Caption = "Consolidated Zed";
+       lblfromdatetime->Caption = Now().DateString() + " " + "00:00" + " " + "a.m.";
+       lbltodatetime->Caption = Now().DateString() + " "  + "23:59" + " " + "p.m.";
     }
     else
     {
