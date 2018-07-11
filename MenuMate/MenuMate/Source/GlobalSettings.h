@@ -532,6 +532,7 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
+
 };
 
 #endif

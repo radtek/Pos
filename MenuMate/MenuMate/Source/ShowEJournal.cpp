@@ -6,7 +6,7 @@
 #include "ShowEJournal.h"
 #include "ReceiptManager.h"
 #include "Processing.h"
-
+#include "ServingTime.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -30,15 +30,17 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
-      if(!IsConsolidatedZed)
-      {
+       if(!IsConsolidatedZed)
+       {
           std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
           EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+
           ExtractEJournalReport(type);
       }
       else
       {
           ExtractEJournalReport(eConsolidatedZed);
+
       }
    }
    else
@@ -85,26 +87,82 @@ void TfrmEJournal::Execute()
     memReceipt->Clear();
     ShowModal();
 }
+ //-----------------------------------------------------------------------
+ void TfrmEJournal ::FromStartDateTimePicker()
+ {
+
+     std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
+     frmServingTime->Caption = "From Date: " + FromDateTimePicker->Date.FormatString("DD/MM/YYYY");
+    
+    
+     frmServingTime->btnCancel->Visible = false;
+     frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
+     frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
+     frmServingTime->ShowModal() ;
+     FromDateTimePicker->Time = frmServingTime->Time1;
+     lblfromdatetime->Caption = FromDateTimePicker->Date.FormatString("DD/MM/YYYY hh:nn am/pm");
+
+
+
+
+
+ }
 
 //---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
 {
 
+   if(IsConsolidatedZed)
+    {
+
+      FromStartDateTimePicker();
+    }
     if(FromDateTimePicker->Date > Now())
     {
+        if(IsConsolidatedZed)
+         {
+         FromDateTimePicker->Time = Now();
+
+         lblfromdatetime->Caption  = Now().FormatString("DD/MM/YYYY hh:nn am/pm" );
+         }
        MessageBox("From Date can not be more than today's date", "Error", MB_OK + MB_ICONERROR);
        FromDateTimePicker->Date = Now();
+
     }
+}
+//-------------------------------------------------------------------------
+ void TfrmEJournal ::ToStartDateTimePicker()
+{
+
+     std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
+     frmServingTime->Caption = "To Date: " + ToDateTimePicker->DateTime.FormatString("DD/MM/YYYY");
+     frmServingTime->btnCancel->Visible = false;
+     frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
+     frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
+     frmServingTime->ShowModal() ;
+     ToDateTimePicker->Time = frmServingTime->Time1;
+     lbltodatetime->Caption =  ToDateTimePicker->Date.FormatString("DD/MM/YYYY hh:nn am/pm");
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 {
-    if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
-    {
+
+     if(IsConsolidatedZed)
+     {
+      ToStartDateTimePicker();
+     }
+
+     if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
+     {
+        if(IsConsolidatedZed)
+        {
+            ToDateTimePicker->Time= Now();
+            lbltodatetime->Caption = Now().FormatString("DD/MM/YYYY hh:nn am/pm" );
+        }
        MessageBox("To Date Cannot Be More Than Today's Date", "Error", MB_OK + MB_ICONERROR);
        ToDateTimePicker->Date = Now();
-    }
+     }
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::PopulateReport(TMemoryStream *Receipt)
@@ -232,7 +290,10 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 {
     if(IsConsolidatedZed)
     {
+      
        Caption = "Consolidated Zed";
+       lblfromdatetime->Caption = Now().DateString() + " " + "00:00" + " " + "a.m.";
+       lbltodatetime->Caption = Now().DateString() + " "  + "23:59" + " " + "p.m.";
     }
     else
     {

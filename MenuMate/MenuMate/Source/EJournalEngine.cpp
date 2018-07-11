@@ -80,6 +80,8 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
 
 void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
+
+
     AnsiString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {

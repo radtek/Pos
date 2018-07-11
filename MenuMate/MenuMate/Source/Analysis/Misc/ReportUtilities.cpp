@@ -1111,7 +1111,7 @@ void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, b
         }
         else
         {
-
+          
          qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
                                 " from ARCBILL a "
                                 " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
@@ -1554,6 +1554,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
                 groupGrandTotal -= (currentFloat + currentSkimsTotal - cashWithdrawl);
             }
         }
+
 
         return groupGrandTotal;
     }
