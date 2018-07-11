@@ -107,7 +107,7 @@ object frmEJournal: TfrmEJournal
       RepeatDelay = 25
     end
     object memReceipt: TMemo
-      Left = 8
+      Left = 11
       Top = 8
       Width = 409
       Height = 681
@@ -166,8 +166,8 @@ object frmEJournal: TfrmEJournal
     object GroupBoxFilter: TGroupBox
       Left = 423
       Top = 96
-      Width = 154
-      Height = 273
+      Width = 161
+      Height = 289
       Caption = 'Filter'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -190,23 +190,21 @@ object frmEJournal: TfrmEJournal
         Height = 16
         Caption = 'From Date'
       end
-      object lblTodate: TLabel
-        Left = 3
-        Top = 165
-        Width = 44
-        Height = 16
-        Caption = 'Label2'
-      end
-      object LblFromDate: TLabel
+      object lblfromdatetime: TLabel
         Left = 3
         Top = 82
-        Width = 44
+        Width = 4
         Height = 16
-        Caption = 'Label1'
+      end
+      object lbltodatetime: TLabel
+        Left = 3
+        Top = 165
+        Width = 4
+        Height = 16
       end
       object btnGenerate: TTouchBtn
         Left = 3
-        Top = 196
+        Top = 212
         Width = 146
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
@@ -227,8 +225,8 @@ object frmEJournal: TfrmEJournal
         Top = 52
         Width = 146
         Height = 24
-        Date = 1233.000000000000000000
-        Time = 1233.000000000000000000
+        Date = 42711.000000000000000000
+        Time = 42711.000000000000000000
         TabOrder = 1
         OnCloseUp = FromDateTimePickerCloseUp
       end

@@ -1111,7 +1111,7 @@ void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, b
         }
         else
         {
-           MessageBox("Hello","Hi",MB_OK);
+          
          qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
                                 " from ARCBILL a "
                                 " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
@@ -1476,9 +1476,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
         ibInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
-        MessageBox(startTime,"startTime",MB_OK);
         ibInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
-         MessageBox(endTime,"endTime",MB_OK);
         ibInternalQuery->ExecQuery();
 
         for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
@@ -1557,7 +1555,6 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             }
         }
 
-          MessageBox(groupGrandTotal,"groupGrandTotal",MB_OK);
 
         return groupGrandTotal;
     }

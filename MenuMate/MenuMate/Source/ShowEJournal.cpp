@@ -30,16 +30,17 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
-      if(!IsConsolidatedZed)
-      {
+       if(!IsConsolidatedZed)
+       {
           std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
           EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+
           ExtractEJournalReport(type);
       }
       else
       {
           ExtractEJournalReport(eConsolidatedZed);
-       //   MessageBox("eConsolidatedZed","eConsolidatedZed",MB_OK);
+
       }
    }
    else
@@ -86,71 +87,82 @@ void TfrmEJournal::Execute()
     memReceipt->Clear();
     ShowModal();
 }
-
-//----------------------------------------------------------
-Void TfrmEJournal ::FromStartDateTimePicker()
-{
+ //-----------------------------------------------------------------------
+ void TfrmEJournal ::FromStartDateTimePicker()
+ {
 
      std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
-     frmServingTime->Caption = "From Serving Time";
-
-     TTimeSlots slots;
-     TDateTime DateTime;
-     string a;
-     frmServingTime->btnCancel->Visible = false;
-     frmServingTime->ShowModal() ;
-     slots.StartTime = frmServingTime->Time1;
-
-     MessageBox(slots.StartTime,"12345startTime",MB_OK);
-     DateTime =  FromDateTimePicker->Date  + slots.StartTime ;    //19.05.2017, 11:05:53.000
-     //Label1->Visible = false;
-     Label1->Caption =  DateTime;
-}
-
-//---------------------------------------------------------------------------
-void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
-{
-     std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
-     frmServingTime->Caption = "From Serving Time";
-
-     TTimeSlots slots;
+     frmServingTime->Caption = "From Date: " + FromDateTimePicker->Date.FormatString("DD/MM/YYYY");
      TDateTime DateTime;
      string a;
      frmServingTime->btnCancel->Visible = false;
      frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
      frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
      frmServingTime->ShowModal() ;
-     slots.StartTime = frmServingTime->Time1;
+     FromDateTimePicker->Time = frmServingTime->Time1;
+     lblfromdatetime->Caption =  FromDateTimePicker->Date;
+     if(lblfromdatetime->Caption.Pos("a.m.") == 0 && lblfromdatetime->Caption.Pos("p.m.") == 0)
+     {
 
-     MessageBox(slots.StartTime,"12345startTime",MB_OK);
-     DateTime =  FromDateTimePicker->Date  + slots.StartTime ;    //19.05.2017, 11:05:53.000
-     AnsiString str = TimeToStr(DateTime);
-     Label1->Visible = false;
-     Label1->Caption =  DateTime;
+       UnicodeString strValue = lblfromdatetime->Caption;
+        strValue += " 00:00:00 a.m.";
+        lblfromdatetime->Caption = strValue;
+     }
 
-     MessageBox(DateTime,"DateTime",MB_OK);
+ }
 
-    if(IsConsolidatedZed)
+//---------------------------------------------------------------------------
+void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
+{
+
+   if(IsConsolidatedZed)
     {
-       FromStartDateTimePicker();
+
+      FromStartDateTimePicker();
     }
     if(FromDateTimePicker->Date > Now())
     {
        MessageBox("From Date can not be more than today's date", "Error", MB_OK + MB_ICONERROR);
        FromDateTimePicker->Date = Now();
-      // MessageBox(FromDateTimePicker->Date,"ToDateTimePicker->Date",MB_OK);
+
     }
+}
+//-------------------------------------------------------------------------
+ void TfrmEJournal ::ToStartDateTimePicker()
+{
+
+     std::auto_ptr<TfrmServingTime> frmServingTime(TfrmServingTime::Create<TfrmServingTime>(this));
+     frmServingTime->Caption = "To Date: " + ToDateTimePicker->DateTime.FormatString("DD/MM/YYYY");
+     frmServingTime->btnCancel->Visible = false;
+     frmServingTime->Left = (Screen->Width - frmServingTime->Width) / 2;
+     frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
+     frmServingTime->ShowModal() ;
+     ToDateTimePicker->Time = frmServingTime->Time1;
+     lbltodatetime->Caption =  ToDateTimePicker->Date;
+     if(lbltodatetime->Caption.Pos("a.m.") == 0 && lbltodatetime->Caption.Pos("p.m.") == 0)
+     {
+        UnicodeString strValue = lbltodatetime->Caption;
+        strValue += " 00:00:00 a.m.";
+        lbltodatetime->Caption = strValue;
+     }
+
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 {
-    if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
-    {
+
+     if(IsConsolidatedZed)
+     {
+      ToStartDateTimePicker();
+     }
+
+     if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
+     {
        MessageBox("To Date Cannot Be More Than Today's Date", "Error", MB_OK + MB_ICONERROR);
        ToDateTimePicker->Date = Now();
-       MessageBox(ToDateTimePicker->Date,"ToDateTimePicker->Date",MB_OK);
-    }
+
+     }
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::PopulateReport(TMemoryStream *Receipt)
@@ -278,7 +290,7 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 {
     if(IsConsolidatedZed)
     {
-       Label1->Visible = false;
+      
        Caption = "Consolidated Zed";
     }
     else

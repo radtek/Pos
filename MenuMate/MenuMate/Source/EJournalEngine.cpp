@@ -81,7 +81,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
 void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
 
-    MessageBox("GetZed","Error",MB_OK);
+
     AnsiString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
