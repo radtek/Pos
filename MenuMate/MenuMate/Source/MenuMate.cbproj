@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -3499,6 +3499,11 @@
 				<DependentOn>EFTPOSPaymentSense.h</DependentOn>
 				<BuildOrder>798</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="ShowEJournal.cpp">
+				<Form>frmEJournal</Form>
+				<DependentOn>ShowEJournal.h</DependentOn>
+				<BuildOrder>799</BuildOrder>
+			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="CaptNamePhone.dfm"/>
 			<FormResources Include="TierLevels.dfm"/>
@@ -3631,6 +3636,7 @@
 			<FormResources Include="POS\TaxRemoval.dfm"/>
 			<FormResources Include="Maintenance\WalletConfiguration.dfm"/>
 			<FormResources Include="Analysis.dfm"/>
+			<FormResources Include="ShowEJournal.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
