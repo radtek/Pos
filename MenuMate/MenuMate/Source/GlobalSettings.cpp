@@ -437,5 +437,6 @@ TGlobalSettings::TGlobalSettings()
     EmailCapturedForLoyaltyOperation = "";
     EnableEftPosPaymentSense = false;
     EftPosTerminalId = "";
+    RestartServiceAtZED = false;
 }
 
