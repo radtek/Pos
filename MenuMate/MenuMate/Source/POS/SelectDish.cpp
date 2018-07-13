@@ -1818,6 +1818,13 @@ void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 {
+    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+    {
+        TGlobalSettings::Instance().GiftCard_Megaworld = 0;
+        TGlobalSettings::Instance().GiftCard_MegaworldForDaily = 0;
+        TGlobalSettings::Instance().CheckSaleMegaworld =0;
+        TGlobalSettings::Instance().CheckSaleMegaworldForDaily = 0;
+    }
 	if (CurrentTender != 0)
 	{
 		CurrentTender = 0;

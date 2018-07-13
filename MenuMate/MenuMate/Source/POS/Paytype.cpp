@@ -1704,6 +1704,53 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
+       if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+       {
+           if(Payment->Name == "sourabh123")
+           {
+              std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+              frmTouchNumpad->Caption = "Enter Total Amount For GiftCard";
+              frmTouchNumpad->btnSurcharge->Caption = "Ok";
+              frmTouchNumpad->btnDiscount->Visible = false;
+              frmTouchNumpad->btnSurcharge->Visible = true;
+              frmTouchNumpad->Mode = pmCurrency;
+              frmTouchNumpad->CURInitial = 0;
+              if (frmTouchNumpad->ShowModal() == mrOk)
+              {
+
+                TGlobalSettings::Instance().GiftCard_Megaworld = frmTouchNumpad->CURResult  ;
+                TGlobalSettings::Instance().GiftCard_MegaworldForDaily = frmTouchNumpad->CURResult  ;
+
+              }
+
+           }
+
+           else if(Payment->Name == "sourabhcheck")
+           {
+              std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+              frmTouchNumpad->Caption = "Enter Total Amount For Cheque";
+              frmTouchNumpad->btnSurcharge->Caption = "Ok";
+              frmTouchNumpad->btnDiscount->Visible = false;
+              frmTouchNumpad->btnSurcharge->Visible = true;
+              frmTouchNumpad->Mode = pmCurrency;
+              frmTouchNumpad->CURInitial = 0;
+              if (frmTouchNumpad->ShowModal() == mrOk)
+              {
+                TGlobalSettings::Instance().CheckSaleMegaworld = frmTouchNumpad->CURResult  ;
+                TGlobalSettings::Instance().CheckSaleMegaworldForDaily = frmTouchNumpad->CURResult  ;
+
+              }
+
+           }
+           else
+           {
+               TGlobalSettings::Instance().GiftCard_Megaworld = 0;
+               TGlobalSettings::Instance().GiftCard_MegaworldForDaily = 0;
+               TGlobalSettings::Instance().CheckSaleMegaworld =0;
+               TGlobalSettings::Instance().CheckSaleMegaworldForDaily = 0;
+
+           }
+       }
         GetPaymentNote(Payment);
         Payment->Result = eProcessing;
 

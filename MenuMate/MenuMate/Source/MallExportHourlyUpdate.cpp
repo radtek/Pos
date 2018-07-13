@@ -44,6 +44,24 @@ TExportUpdateResponse TMallExportHourlyUpdate::UpdateHourlyExportTablesOnTransac
 
         // save to database mall export hourly
         Commit();
+
+        if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+        {
+          if(TGlobalSettings::Instance().GiftCard_Megaworld !=0)
+          {
+            UpdateGiftCardValue();
+            UpdateGiftCardValueInAmountValue();
+            TGlobalSettings::Instance().GiftCard_Megaworld =0;
+          }
+
+          if(TGlobalSettings::Instance().CheckSaleMegaworld !=0)
+          {
+            UpdateCheckSalesValue();
+            UpdateCheckSaleValueInAmountValue();
+            TGlobalSettings::Instance().CheckSaleMegaworld =0;
+          }
+
+        }
     }
     catch( Exception &ex )
     {
@@ -118,6 +136,7 @@ void TMallExportHourlyUpdate::clearHourlyExportFieldValues()
     refundCount = 0;
     voidCount = 0;
     patronCount = 0;
+    MallExportHourlyKey = 0;
 }
 //---------------------------------------------------------------------------
 
@@ -151,8 +170,8 @@ void TMallExportHourlyUpdate::setHourlyExportFieldValuesOnTransaction()
 
 void TMallExportHourlyUpdate::Commit()
 {
-    AnsiString Retval = "";
-
+//    AnsiString Retval = "";
+    int Retval = 0;
 	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
 	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
 
@@ -160,31 +179,40 @@ void TMallExportHourlyUpdate::Commit()
 	Transaction.StartTransaction();
 	Query->ExecQuery();
 	Retval = Query->Fields[0]->AsInteger;
+    MallExportHourlyKey = Retval;
 	Transaction.Commit();
 	Query->Close();
-
     Query->SQL->Text = "INSERT INTO MALLEXPORT_HOURLY (" "ME_HOURLY_KEY, " "TERMINAL_NAME, "
                        "TENANT_NAME, " "DATE_VALUE, " "TIME_VALUE, " "AMOUNT_VALUE, " "TRANSACTION_COUNT, "
                        "VAT_SALES, " "TOTALDISCOUNT, " "SCHARGE_AMOUNT, " "REFUND_COUNT, " "REFUND_AMOUNT, "
                        "VOID_COUNT, " "VOID_AMOUNT, " "SCDISCOUNT_AMOUNT, " "MALLCODE, " "PATRON_COUNT, "
-                       "MINUTE_VALUE, " "SCDISCOUNT_COUNT ) "
+                       "MINUTE_VALUE, " "SCDISCOUNT_COUNT, " "GIFT_CARD, " "CHECK_SALES ) "
                        "" "VALUES ("
                        ":ME_HOURLY_KEY, " ":TERMINAL_NAME, " ":TENANT_NAME, " ":DATE_VALUE, " ":TIME_VALUE, "
                        ":AMOUNT_VALUE, " ":TRANSACTION_COUNT, "
                        ":VAT_SALES, " ":TOTALDISCOUNT, " ":SCHARGE_AMOUNT, " ":REFUND_COUNT, " ":REFUND_AMOUNT, "
                        ":VOID_COUNT, " ":VOID_AMOUNT, " ":SCDISCOUNT_AMOUNT, " ":MALLCODE, " ":PATRON_COUNT, "
-                       ":MINUTE_VALUE, " ":SCDISCOUNT_COUNT ) ";
+                       ":MINUTE_VALUE, " ":SCDISCOUNT_COUNT, " ":GIFT_CARD, " ":CHECK_SALES ) ";
+
 	Transaction.StartTransaction();
-    Query->ParamByName("ME_HOURLY_KEY")->AsString = Retval;
+    Query->ParamByName("ME_HOURLY_KEY")->AsInteger = Retval;
+
+  //   Query->ParamByName("ME_HOURLY_KEY")->AsString = Retval;
     Query->ParamByName("TERMINAL_NAME")->AsString = terminalNumber;
+
     Query->ParamByName("TENANT_NAME")->AsString = mallCode;
+
     Query->ParamByName("DATE_VALUE")->AsString = dateValue;
+
     Query->ParamByName("TIME_VALUE")->AsString = timeValue;
+
     Query->ParamByName("AMOUNT_VALUE")->AsCurrency = salesValue;
+
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
         Query->ParamByName("TRANSACTION_COUNT")->AsInteger = ReceiptNumber.Pos("RV") == 0 ? transactionCount : 0;
     else
         Query->ParamByName("TRANSACTION_COUNT")->AsInteger = transactionCount;
+
     Query->ParamByName("VAT_SALES")->AsCurrency = totalSalesTax;
     Query->ParamByName("TOTALDISCOUNT")->AsCurrency = totalDiscount;
     Query->ParamByName("SCHARGE_AMOUNT")->AsCurrency = servchargeAmount;
@@ -197,6 +225,9 @@ void TMallExportHourlyUpdate::Commit()
     Query->ParamByName("PATRON_COUNT")->AsString = patronCount;
     Query->ParamByName("MINUTE_VALUE")->AsString = minuteValue;
     Query->ParamByName("SCDISCOUNT_COUNT")->AsInteger = scdiscountCount;
+    Query->ParamByName("GIFT_CARD")->AsCurrency = 0;
+    Query->ParamByName("CHECK_SALES")->AsCurrency = 0;
+
 	Query->ExecQuery();
 
 	Transaction.Commit();
@@ -990,5 +1021,70 @@ bool TMallExportHourlyUpdate::PerformedLastZed()
     return flag;
 }
 //---------------------------------------------------------------------------
+void TMallExportHourlyUpdate::UpdateGiftCardValue()
+{
+
+  	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
+	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
+    Query->SQL->Text = "UPDATE MALLEXPORT_HOURLY SET MALLEXPORT_HOURLY.GIFT_CARD = :GIFT_CARD WHERE MALLEXPORT_HOURLY.ME_HOURLY_KEY = :EXISTING_KEY ";
+	Transaction.StartTransaction();
+
+    Query->ParamByName("GIFT_CARD")->AsCurrency = TGlobalSettings::Instance().GiftCard_Megaworld;
+     Query->ParamByName("EXISTING_KEY")->AsInteger = MallExportHourlyKey;
+	Query->ExecQuery();
+	Transaction.Commit();
+	Query->Close();
+
+
+}
+//---------------------------------------------------------------------------
+void TMallExportHourlyUpdate::UpdateCheckSalesValue()
+{
+
+  	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
+	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
+    Query->SQL->Text = "UPDATE MALLEXPORT_HOURLY SET MALLEXPORT_HOURLY.CHECK_SALES = :CHECK_SALES WHERE MALLEXPORT_HOURLY.ME_HOURLY_KEY = :EXISTING_KEY ";
+	Transaction.StartTransaction();
+
+    Query->ParamByName("CHECK_SALES")->AsCurrency = TGlobalSettings::Instance().CheckSaleMegaworld;
+     Query->ParamByName("EXISTING_KEY")->AsInteger = MallExportHourlyKey;
+	Query->ExecQuery();
+	Transaction.Commit();
+	Query->Close();
+
+
+}
+//---------------------------------------------------------------------------
+void TMallExportHourlyUpdate::UpdateGiftCardValueInAmountValue()
+{
+
+  	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
+	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
+    Query->SQL->Text = "UPDATE MALLEXPORT_HOURLY SET MALLEXPORT_HOURLY.AMOUNT_VALUE = :AMOUNT_VALUE WHERE MALLEXPORT_HOURLY.ME_HOURLY_KEY = :EXISTING_KEY ";
+	Transaction.StartTransaction();
+
+    Query->ParamByName("AMOUNT_VALUE")->AsCurrency = TGlobalSettings::Instance().GiftCard_Megaworld;
+    Query->ParamByName("EXISTING_KEY")->AsInteger = MallExportHourlyKey;
+	Query->ExecQuery();
+	Transaction.Commit();
+	Query->Close();
+
+}
+//---------------------------------------------------------------------------
+void TMallExportHourlyUpdate::UpdateCheckSaleValueInAmountValue()
+{
+
+  	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
+	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
+    Query->SQL->Text = "UPDATE MALLEXPORT_HOURLY SET MALLEXPORT_HOURLY.AMOUNT_VALUE = :AMOUNT_VALUE WHERE MALLEXPORT_HOURLY.ME_HOURLY_KEY = :EXISTING_KEY ";
+	Transaction.StartTransaction();
+
+    Query->ParamByName("AMOUNT_VALUE")->AsCurrency = TGlobalSettings::Instance().CheckSaleMegaworld;
+    Query->ParamByName("EXISTING_KEY")->AsInteger = MallExportHourlyKey;
+	Query->ExecQuery();
+	Transaction.Commit();
+	Query->Close();
+
+}
 
 #pragma package(smart_init)

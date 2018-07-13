@@ -2116,6 +2116,41 @@ void TApplyParser::AlterTable6_52MallExport(TDBControl* const inDBControl)
         "ADD Z_KEY INTEGER ; ",
 		inDBControl);
 	}
+
+     if (!fieldExists( "MALLEXPORT_HOURLY", "Gift_Card", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALLEXPORT_HOURLY  "
+        "ADD Gift_Card Numeric(15,4) ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "MALLEXPORT_HOURLY", "Check_Sales", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE MALLEXPORT_HOURLY  "
+        "ADD Check_Sales Numeric(15,4) ; ",
+		inDBControl);
+	}
+
+
+    if (!fieldExists( "ARCMALLEXPORTHOURLY", "Gift_Card", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORTHOURLY  "
+        "ADD Gift_Card Numeric(15,4) ; ",
+		inDBControl);
+	}
+
+    if (!fieldExists( "ARCMALLEXPORTHOURLY", "Check_Sales", _dbControl ) )
+	{
+        executeQuery (
+        "ALTER TABLE ARCMALLEXPORTHOURLY  "
+        "ADD Check_Sales Numeric(15,4) ; ",
+		inDBControl);
+	}
+
+
 }
 
 }

@@ -2355,21 +2355,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     Csv.SaveToFile(ExportFile);
                 }
 
-                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7)
-                {   zedLogsList->Add("updating zed table for mall");
-                    UpdateArcMallExport(DBTransaction);
-                }
-                else
+                if((TGlobalSettings::Instance().MallIndex == 7 && !DuplicateEntryInTable) ||
+                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
                 {
-
-                   if(TGlobalSettings::Instance().MallIndex ==7)
-                   {
-                       if(!DuplicateEntryInTable)
-                       {
-                         zedLogsList->Add("updating zed table for mall");
-                         UpdateArcMallExport(DBTransaction);
-                       }
-                   }
+                    zedLogsList->Add("updating zed table for mall");
+                    UpdateArcMallExport(DBTransaction);
                 }
 
 		}
@@ -7824,14 +7814,14 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                 "ARCMALLEXPORTHOURLY.VAT_SALES, ARCMALLEXPORTHOURLY.TOTALDISCOUNT, ARCMALLEXPORTHOURLY.SCHARGE_AMOUNT, "
                 "ARCMALLEXPORTHOURLY.REFUND_COUNT, ARCMALLEXPORTHOURLY.REFUND_AMOUNT, ARCMALLEXPORTHOURLY.VOID_COUNT, "
                 "ARCMALLEXPORTHOURLY.VOID_AMOUNT, ARCMALLEXPORTHOURLY.SCDISCOUNT_AMOUNT, ARCMALLEXPORTHOURLY.MALLCODE, "
-                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT,ARCMALLEXPORTHOURLY.Z_KEY ) "
+                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT,ARCMALLEXPORTHOURLY.Z_KEY,ARCMALLEXPORTHOURLY.GIFT_CARD,ARCMALLEXPORTHOURLY.CHECK_SALES ) "
 		    	"VALUES "
                 "( "
                 ":AME_HOURLY_KEY, "
                 ":TERMINAL_NAME, :TENANT_NAME, :DATE_VALUE, :TIME_VALUE, :AMOUNT_VALUE, :TRANSACTION_COUNT, "
                 ":VAT_SALES, :TOTALDISCOUNT, :SCHARGE_AMOUNT, :REFUND_COUNT, :REFUND_AMOUNT, "
                 ":VOID_COUNT, :VOID_AMOUNT, :SCDISCOUNT_AMOUNT, :MALLCODE, :PATRON_COUNT, "
-                ":MINUTE_VALUE, :SCDISCOUNT_COUNT, :Z_KEY );";
+                ":MINUTE_VALUE, :SCDISCOUNT_COUNT, :Z_KEY, :Gift_Card, :Check_Sales );";
 
 
 				for (int i = 1; i < IBMallExportHourly->FieldCount; i++)

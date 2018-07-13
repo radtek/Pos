@@ -391,6 +391,8 @@ class TMallExportUpdateAdaptor
         Currency totalSalesTypeGroceries;
         Currency totalSalesTypeMedicines;
         Currency totalSalesTypeOthers;
+        Currency GiftCardSaleMegaworld;
+        Currency CheckSaleMegaworld;
 
     public:
         TMallExportUpdateAdaptor();
