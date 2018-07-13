@@ -437,5 +437,10 @@ TGlobalSettings::TGlobalSettings()
     EmailCapturedForLoyaltyOperation = "";
     EnableEftPosPaymentSense = false;
     EftPosTerminalId = "";
+    GiftCard_Megaworld = 0;
+    CheckSaleMegaworld = 0;
+    GiftCard_MegaworldForDaily = 0;
+    CheckSaleMegaworldForDaily = 0;
+
 }
 

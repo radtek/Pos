@@ -31,6 +31,24 @@
 #include "MM_DBCore.h"
 #include <Buttons.hpp>
 //---------------------------------------------------------------------------
+
+struct TMegaworldRegenerateDiscount
+{
+    UnicodeString Discount_Name;
+    UnicodeString Description;
+    Currency Discount_Value;
+};
+
+struct TMegaworldRegenerateHourlyData
+{
+    UnicodeString Time_Value;
+    Currency Amount_Value;
+    int Transaction_Count;
+    int Patron_Count;
+
+};
+
+
 class TfrmMallExportRegenerateReport : public TZForm
 {
 	friend TZForm;
@@ -88,9 +106,42 @@ private:	// User declarations
     void WriteInToFileForFourthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
     void WriteInToFileForFifthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
     void WriteInToFileForSixthCode(Database::TDBTransaction *dbTransaction, int day , int month , int year);
+    void ResetValues();
     void LoadFileToFTP();
     int day, month, year;
     AnsiString terminal_Name;
+   Currency oldgrossSale;
+   Currency oldgrandtotal ;
+   Currency Newgrandtotal;
+   Currency vatexemptSales;
+   Currency ScdAmount ;
+   Currency RegdiscountAmount;
+   Currency RefundAmount ;
+   Currency VatSales ;
+   Currency SchargeAmount;
+   Currency DailySales ;
+   Currency CashSales ;
+   Currency CardSales ;
+   Currency OtherSales ;
+   Currency VoidAmount ;
+   Currency salestype_food ;
+   Currency salestype_Nonfood ;
+   Currency salestype_Groceries ;
+   Currency salestype_Medicines ;
+   Currency salestype_others ;
+
+   int FineDineCustCount ;
+   int EodCounter ;
+   int TransactionCount;
+
+   int batchId;
+   Currency AmountValue ;
+   int transactioncount ;
+   int Patroncountvalue;
+   TMegaworldRegenerateHourlyData SaveHourlyData;
+
+
+
 
 public:		// User declarations
     __fastcall TfrmMallExportRegenerateReport(TComponent* Owner);
@@ -107,6 +158,7 @@ public:		// User declarations
     UnicodeString DataQuery;
     UnicodeString SetYear;
     UnicodeString OutputValue;
+   
 
     TMallExportDataManager* dataManager;
     TMallExportAlphalandMall* alphalandExport;
@@ -143,10 +195,24 @@ public:		// User declarations
                                 int &TransactionTotal, UnicodeString &Amount);
 
     // For Megaworld
-    int GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
+    int GetHourlyDataMegaWorld(UnicodeString &TerminalName, UnicodeString &TenantName,
                                 UnicodeString &DateValue, UnicodeString &TimeValue,
-                                int &TransactionTotal, UnicodeString &Amount, int &PatronCount);
-
+                                int &TransactionTotal, UnicodeString &Amount, int &PatronCount,int Zedkey);
+    void GetTotalZedCorrespondingDate(TDateTime Startdate,TDateTime EndDate,UnicodeString Datevalue) ;
+    void GetListOfDatesBetwSdateEndDate(TDateTime Startdate,TDateTime EndDate) ;
+    void CheckFirstSaleOfEachZed(int Zedkey,TDateTime StartDate,TDateTime EndDate,UnicodeString Datevalue) ;
+    void PrepareDateForHourly(int zed ,TDateTime StartDate);
+    void PrepareDateForDaily(int zed ,UnicodeString FileDate);
+    void PrepareDataForDiscount(int zed ,UnicodeString FileDate);
+    void CreateFilename(UnicodeString mode, UnicodeString MallPath, UnicodeString LocalPath,
+                                   UnicodeString &LocalPathFileName, UnicodeString &MallPathFileName,TDateTime &DateValueInHourlyFile);
+    UnicodeString RemoveDecimalValue(UnicodeString amountValue);
+    UnicodeString FixDecimalPlaces(Currency AmountTotal);
+    void GetExportInfo(UnicodeString &MallPath, UnicodeString &TenantID,
+                                  UnicodeString &TerminalNo,
+                                  UnicodeString &MonthValue, UnicodeString &DayValue,
+                                  TDateTime DateValue);
+     UnicodeString CheckDir(UnicodeString Path);
     // For Shangrila
     UnicodeString GetHourlyFormat(UnicodeString TenantName, UnicodeString DateValue, UnicodeString TimeValue,
                                                         UnicodeString AmountValue, UnicodeString TaxValue, UnicodeString AdjValue, UnicodeString SChargeValue,
@@ -305,6 +371,11 @@ public:		// User declarations
     int StartM;
     int EndM;
     bool isAllTerminalsSelected;
+
+    std::map<pair<UnicodeString,UnicodeString>, Currency> StoreAllValue;
+    std::vector<TMegaworldRegenerateDiscount> AvailableDiscountName;
+    std::vector<TMegaworldRegenerateHourlyData> HourlyDataStorage;
+    std::map <UnicodeString,UnicodeString> HourlyoneStageData;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMallExportRegenerateReport *frmMallExportRegenerateReport;

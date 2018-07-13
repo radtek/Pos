@@ -35,13 +35,11 @@ AnsiString TMallExportMegaworldMall::CreateFileURI( AnsiString inBaseURL )
 }
 //---------------------------------------------------------------------------
 
-// Delete this method if not needed
 TExportResponse TMallExportMegaworldMall::ZExport()
 {
     TExportResponse result;
 
     //::::::::::::::::::::::::::::::::::::::
-
     try
     {
         UnicodeString LocalPath = BasePath + "\\MegaworldMall\\";
@@ -50,98 +48,38 @@ TExportResponse TMallExportMegaworldMall::ZExport()
         UnicodeString MallPathFileName = "";
         UnicodeString TerminalNo = TGlobalSettings::Instance().TerminalNo;
         UnicodeString TenantNo = TGlobalSettings::Instance().TenantNo;
-        TDateTime DateValue = CheckLastZed();
-        UnicodeString LastZD = TGlobalSettings::Instance().LastZedDate;
-        UnicodeString DateVal = DateValue.FormatString("mm/dd/yy");
-        TDateTime Yesterday = Now() - 1.0;
-        Touchcontrols::TGridButton *gridBtn = frmMain->tgridMenu->Buttons[0][0];
+        TDateTime datevalue;
+        TDateTime CurrentDateValue ;
+        CurrentDateValue = Now();
+        UnicodeString CurrentDateValueFormat =CurrentDateValue.FormatString("mm/dd/yyyy");
+       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZed(datevalue) ;
+       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZed(datevalue) ;
+       if(DateForMaxZed == DateForSecondMaxZed)
+       {
 
-        unsigned short Hour = 0;
-        unsigned short Minutes = 0;
-        unsigned short Seconds = 0;
-        unsigned short dummy = 0;
+         TGlobalSettings::Instance().BatchNo += 1;
+       }
 
-        Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
+       else
+       {
+         TGlobalSettings::Instance().BatchNo = 1;
+         datevalue = CurrentDateValue;
 
-        TGlobalSettings::Instance().ZCount += 1;
-        SaveIntVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+       }
 
-        if(Hour < 6 || gridBtn->Enabled == false)
-        {
-            LastZD = Yesterday.FormatString("mm/dd/yy");
-        }
-
-        if(TGlobalSettings::Instance().LastZedDate == "")
-        {
-            TGlobalSettings::Instance().BatchNo = 1;
-        }
-        else if(DateVal.Compare(LastZD) != 0)
-        {
-            TGlobalSettings::Instance().BatchNo = 1;
-        }
-        else
-        {
-            TGlobalSettings::Instance().BatchNo += 1;
-        }
         SaveIntVariable(vmBatchNo, TGlobalSettings::Instance().BatchNo);
 
-        // Zed Report Generation
-        // Mall Path
-        DataQuery = getMegaworldQuery();
-        InputManager->ReadFromDB(DataQuery,DataRead);
-        CreateFilename("S", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-        CreateOutputFormatZed(DataRead, DataToWrite, MallPathFileName);
+        CreateFilename("H", MallPath, LocalPath, LocalPathFileName, MallPathFileName,datevalue);
+        PrepareDateForHourly(datevalue);
         TMallExportDataManager::ExportFile(OutputManager, DataToWrite, MallPathFileName);
-        // Local Path
-//        InputManager->ReadFromDB(DataQuery,DataRead);
-//        CreateFilename("S", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-//        CreateOutputFormatZed(DataRead, DataToWrite, LocalPathFileName);
-//        TMallExportDataManager::ExportFile(OutputManager, DataToWrite, LocalPathFileName);
 
-
-        // Hourly Report Gereration
-        // Mall Path
-        CreateFilename("H", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-        CreateOutputFormatHourly(DataRead, DataToWrite, MallPathFileName);
+        CreateFilename("S", MallPath, LocalPath, LocalPathFileName, MallPathFileName,datevalue);
+        PrepareDateForDaily(datevalue);
         TMallExportDataManager::ExportFile(OutputManager, DataToWrite, MallPathFileName);
-        // Local Path
-//        CreateFilename("H", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-//        CreateOutputFormatHourly(DataRead, DataToWrite, LocalPathFileName);
-//        TMallExportDataManager::ExportFile(OutputManager, DataToWrite, LocalPathFileName);
 
-        // Discount Report Gereration
-        // Mall Path
-        CreateFilename("D", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-        CreateOutputFormatDiscount(DataRead, DataToWrite, MallPathFileName);
+        CreateFilename("D", MallPath, LocalPath, LocalPathFileName, MallPathFileName,datevalue);
+        PrepareDiscounts(datevalue);
         TMallExportDataManager::ExportFile(OutputManager, DataToWrite, MallPathFileName);
-        // Local Path
-//        CreateFilename("D", MallPath, LocalPath, LocalPathFileName, MallPathFileName);
-//        CreateOutputFormatDiscount(DataRead, DataToWrite, LocalPathFileName);
-//        TMallExportDataManager::ExportFile(OutputManager, DataToWrite, LocalPathFileName);
-
-        if(gridBtn->Enabled == false)
-        {
-            frmMain->EnablePOSBtn(true);
-            TGlobalSettings::Instance().LastZedDate = Yesterday.FormatString("mm/dd/yy");
-            SaveStrVariable(vmLastZedDate, TGlobalSettings::Instance().LastZedDate);
-            TGlobalSettings::Instance().LastTransactionDate = Yesterday.FormatString("mm/dd/yy");
-            SaveStrVariable(vmLastTransactionDate, TGlobalSettings::Instance().LastTransactionDate);
-        }
-        else
-        {
-            if(Hour < 6)
-            {
-                TGlobalSettings::Instance().LastZedDate = Yesterday.FormatString("mm/dd/yy");
-                TGlobalSettings::Instance().LastTransactionDate = Yesterday.FormatString("mm/dd/yy");
-            }
-            else
-            {
-                TGlobalSettings::Instance().LastZedDate = Now().FormatString("mm/dd/yy");
-                TGlobalSettings::Instance().LastTransactionDate = Now().FormatString("mm/dd/yy");
-            }
-            SaveStrVariable(vmLastZedDate, TGlobalSettings::Instance().LastZedDate);
-            SaveStrVariable(vmLastTransactionDate, TGlobalSettings::Instance().LastTransactionDate);
-        }
 
         setExportResponse(
            true,               // Succesful = false
@@ -149,7 +87,9 @@ TExportResponse TMallExportMegaworldMall::ZExport()
            "",                 // Message
            "",                 // Description
            result );
+
     }
+
     catch( Exception& exc )
     {
         setExportResponse(
@@ -165,14 +105,10 @@ TExportResponse TMallExportMegaworldMall::ZExport()
 }
 //---------------------------------------------------------------------------
 
-//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-// PROTECTED METHODS
-
 // Virtual methods
 void TMallExportMegaworldMall::initTimingExportResponse( TExportResponse& outResponse )
 {
     // TODO: Initiate the response for Ayala
-
     setExportResponse(
        false,               // Succesful = false
        emrExportNotDoneYet, // Result = emrExportNotDoneYet
@@ -213,21 +149,10 @@ TExportResponse TMallExportMegaworldMall::TransactionExport()
 
     return result;
 }
+
 //---------------------------------------------------------------------------
-
-// This function is for getting query from the DB Table for ZED
-UnicodeString TMallExportMegaworldMall::getMegaworldQuery()
-{
-    UnicodeString MegaworldQuery = "";
-
-    MegaworldQuery = "SELECT * FROM MEGAWORLD_MALLVIEW";
-
-    return MegaworldQuery;
-}
-//---------------------------------------------------------------------------
-
 TExportResponse TMallExportMegaworldMall::CreateFilename(UnicodeString mode, UnicodeString MallPath, UnicodeString LocalPath,
-                                                         UnicodeString &LocalPathFileName, UnicodeString &MallPathFileName)
+                                                         UnicodeString &LocalPathFileName, UnicodeString &MallPathFileName,TDateTime &DateValue)
 {
     TExportResponse result;
 
@@ -238,15 +163,12 @@ TExportResponse TMallExportMegaworldMall::CreateFilename(UnicodeString mode, Uni
         UnicodeString TenantID = "";
         UnicodeString MonthValue = "";
         UnicodeString DayValue = "";
-        TDateTime DateValue = CheckLastZed();
+        TExportResponse result;
 
         GetExportInfo(MallPath, TenantID, TerminalNo, BatchNo, MonthValue, DayValue, DateValue);
-
         MallPath = CheckDir(MallPath);
-//        LocalPath = CheckDir(LocalPath);
-
         MallPathFileName = MallPath + mode + TenantID + TerminalNo + BatchNo + "." + MonthValue + DayValue;
-//        LocalPathFileName = LocalPath + mode + TenantID + TerminalNo + BatchNo + "." + MonthValue + DayValue;
+
 
         setExportResponse(
            true,               // Succesful = false
@@ -267,6 +189,7 @@ TExportResponse TMallExportMegaworldMall::CreateFilename(UnicodeString mode, Uni
 
     return result;
 }
+
 //---------------------------------------------------------------------------
 
 UnicodeString TMallExportMegaworldMall::CheckDir(UnicodeString Path)
@@ -281,8 +204,6 @@ UnicodeString TMallExportMegaworldMall::CheckDir(UnicodeString Path)
     return Path;
 }
 //---------------------------------------------------------------------------
-
-// This function is for saving the integer global variable
 void TMallExportMegaworldMall::SaveIntVariable(vmVariables vmVar, int CompName)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -296,8 +217,6 @@ void TMallExportMegaworldMall::SaveIntVariable(vmVariables vmVar, int CompName)
     DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
-// This Function is for saving each string component into the DB for every function call
 void TMallExportMegaworldMall::SaveStrVariable(vmVariables vmVar, UnicodeString CompName)
 {
  		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -309,367 +228,6 @@ void TMallExportMegaworldMall::SaveStrVariable(vmVariables vmVar, UnicodeString 
 	    }
         TManagerVariable::Instance().SetProfileStr(DBTransaction, GlobalProfileKey, vmVar, CompName);
         DBTransaction.Commit();
-}
-//---------------------------------------------------------------------------
-
-TExportResponse TMallExportMegaworldMall::CreateOutputFormatZed(std::map<UnicodeString, UnicodeString> DataRead,
-                                                                std::vector<UnicodeString> &DataToWrite, UnicodeString MallPathFileName)
-{
-    int i = 0;
-    int RowNum = 0;
-    UnicodeString ItemNo = "";
-    std::ostringstream StreamIntToStr;
-    std::string StringIntVal = "";
-    UnicodeString OutputValue = "";
-    UnicodeString SalesTypeID = "";
-    UnicodeString DataAmount = "";
-    UnicodeString FinalValue = "";
-    UnicodeString Format = "\n";
-    TDateTime DateValue = CheckLastZed();
-
-    unsigned short Hour = 0;
-    unsigned short Minutes = 0;
-    unsigned short Seconds = 0;
-    unsigned short dummy = 0;
-
-    Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
-
-    Touchcontrols::TGridButton *gridBtn = frmMain->tgridMenu->Buttons[0][0];
-
-    std::map<UnicodeString, UnicodeString>::iterator it;
-    std::vector<UnicodeString> AvailableSalesType;
-    DataToWrite.clear();
-
-    TExportResponse result;
-
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-        TIBSQL* query1 = DBTransaction.Query(DBTransaction.AddQuery());
-        query->Close();
-
-        query->SQL->Text = "SELECT STIR.SALES_TYPE_KEY FROM SALES_TYPE_ITEMS_RELATION STIR "
-                           "GROUP BY STIR.SALES_TYPE_KEY";
-        query->ExecQuery();
-
-        while(!query->Eof)
-        {
-	    	int SalesTypeDB = query->FieldByName("SALES_TYPE_KEY")->AsInteger;
-            query1->Close();
-            query1->SQL->Text = "SELECT ST.SALES_TYPE_NAME FROM SALES_TYPE ST WHERE ST.SALES_TYPE_KEY = :SALES_KEY";
-	    	query1->ParamByName("SALES_KEY")->AsInteger = SalesTypeDB;
-            query1->ExecQuery();
-            UnicodeString SalesTypeValue = "SalesType" + query1->FieldByName("SALES_TYPE_NAME")->AsString;
-            AvailableSalesType.push_back(SalesTypeValue.t_str());
-            query->Next();
-        }
-        DBTransaction.Commit();
-
-
-        for(i=0;i<DataRead.size();i++)
-        {
-            switch(i)
-            {
-                case 0:
-                    it = DataRead.find("TenantNo");
-                    break;
-                case 1:
-                    it = DataRead.find("TerminalNo");
-                    break;
-                case 2:
-                    it = DataRead.find("TransactionDate");
-                    break;
-                case 3:
-                    it = DataRead.find("GrandTotalOld");
-                    break;
-                case 4:
-                    it = DataRead.find("GrandTotal");
-                    break;
-                case 5:
-                    it = DataRead.find("TotalGrossSale");
-                    break;
-                case 6:
-                    it = DataRead.find("TaxExemptSales");
-                    break;
-                case 7:
-                    it = DataRead.find("TotalSeniorCitizenDiscount");
-                    break;
-                case 8:
-                    it = DataRead.find("TotalRegularDiscount");
-                    break;
-                case 9:
-                    it = DataRead.find("TotalRefund");
-                    break;
-                case 10:
-                    it = DataRead.find("TotalSaleTax");
-                    break;
-                case 11:
-                    it = DataRead.find("TotalServiceCharge");
-                    break;
-                case 12:
-                    it = DataRead.find("DailySales");
-                    break;
-                case 13:
-                    it = DataRead.find("CashSales");
-                    break;
-                case 14:
-                    it = DataRead.find("CardSales");
-                    break;
-                case 15:
-                    it = DataRead.find("OtherSales");
-                    break;
-                case 16:
-                    it = DataRead.find("TotalCancelled");
-                    break;
-                case 17:
-                    it = DataRead.find("FineDiningCustomerCount");
-                    break;
-                case 18:
-                    it = DataRead.find("CurrentEODCounter");
-                    break;
-                case 19:
-                    it = DataRead.find("TransactionCount");
-                    break;
-                case 20:
-                    it = DataRead.find("SalesTypeFood");
-                    SalesTypeID = "01";
-                    break;
-                case 21:
-                    it = DataRead.find("SalesTypeNon-Food");
-                    SalesTypeID = "02";
-                    break;
-                case 22:
-                    it = DataRead.find("SalesTypeGroceries");
-                    SalesTypeID = "03";
-                    break;
-                case 23:
-                    it = DataRead.find("SalesTypeMedicines");
-                    SalesTypeID = "04";
-                    break;
-                case 24:
-                    it = DataRead.find("SalesTypeOthers");
-                    SalesTypeID = "05";
-                    break;
-                default:
-                    break;
-            }
-
-            RowNum = i+1;
-            StreamIntToStr << RowNum;
-            StringIntVal = StreamIntToStr.str();
-            StreamIntToStr.str("");
-            StreamIntToStr.clear();
-            ItemNo = StringIntVal.c_str();
-            if(ItemNo.Length() == 1)
-            {
-                ItemNo = "0" + ItemNo;
-            }
-
-            if((i >= 3 && i <= 16) || (i >= 20 && i <= 24))
-            {
-                Currency value = 0;
-                DataAmount = (it->second);
-                value = StrToCurr(DataAmount);
-                DataAmount = FixDecimalPlaces(value);
-                // Remove if decimal value should be shown
-//                FinalValue = DataAmount;
-                FinalValue = RemoveDecimalValue(DataAmount);
-            }
-            else
-            {
-                FinalValue = (it->second);
-            }
-
-            if(i == 2)
-            {
-                TDateTime Yesterday = Now() - 1;
-                if(Hour < 6 || gridBtn->Enabled == false)
-                {
-                    OutputValue = ItemNo + DateValue.FormatString("mmddyyyy") + Format;
-                }
-                else
-                {
-                    OutputValue = ItemNo + Now().FormatString("mmddyyyy") + Format;
-                }
-                // Uncomment if date should be based on the MallExportTable
-//                TDateTime DateonDB = StrToDateTime(it->second);
-//                UnicodeString DateToData = DateonDB.FormatString("mmddyyyy");
-//                OutputValue = ItemNo + DateToData + Format;
-            }
-            else if(i >= 20)
-            {
-                for(int j=0; j<AvailableSalesType.size();j++)
-                {
-                    if(AvailableSalesType.at(j).t_str() == (it->first))
-                    {
-                        OutputValue = "21" + SalesTypeID + Format;
-                        DataToWrite.push_back(OutputValue.t_str());
-                        OutputValue = "22" + FinalValue;
-                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
-                        DataToWrite.push_back(OutputValue.t_str());
-                    }
-                }
-            }
-            else
-            {
-                OutputValue = ItemNo + FinalValue + Format;
-            }
-            FinalValue = "";
-
-            if(i < 20)
-            {
-                DataToWrite.push_back(OutputValue.t_str());
-            }
-        }
-
-        setExportResponse(
-           true,               // Succesful = false
-           emrExportSuccesful, // Result = emrExportSuccesful
-           "",                 // Message
-           "",                 // Description
-           result );
-    }
-    catch(Exception &ex)
-    {
-        setExportResponse(
-           false,           // Succesful = false
-           emrExportFailed, // Result = emrExportFailed
-           "",              // Message
-           "",              // Description
-           result );
-    }
-
-    return result;
-}
-//---------------------------------------------------------------------------
-
-// This method creates the hourly data for hourly export file
-TExportResponse TMallExportMegaworldMall::CreateOutputFormatHourly(std::map<UnicodeString, UnicodeString> DataRead,
-                                                                   std::vector<UnicodeString> &DataToWrite, UnicodeString MallPathFileName)
-{
-    UnicodeString OutputValue = "";
-    UnicodeString TerminalNum = TGlobalSettings::Instance().TerminalNo;
-    UnicodeString TenantName = TGlobalSettings::Instance().TenantNo;
-    UnicodeString DateValue = Now().FormatString("mmddyyyy");
-    Currency AmountSum = 0;
-    int TransactionTotal = 0;
-    int TransactionSum = 0;
-    int PatronCount = 0;
-    int PatronSum = 0;
-    UnicodeString Amount = "";
-    UnicodeString TotalValue = "";
-
-    unsigned short Hour = 0;
-    unsigned short Minutes = 0;
-    unsigned short Seconds = 0;
-    unsigned short dummy = 0;
-
-    Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
-
-    Touchcontrols::TGridButton *gridBtn = frmMain->tgridMenu->Buttons[0][0];
-
-    DataToWrite.clear();
-
-    TExportResponse result;
-
-    try
-    {
-        if(Hour < 6 || gridBtn->Enabled == false)
-        {
-            TDateTime DateTemp = CheckLastZed();
-            DateValue = DateTemp.FormatString("mmddyyyy");
-        }
-
-        OutputValue = "01" + TenantName + "\n" +
-                      "02" + TerminalNum + "\n" +
-                      "03" + DateValue + "\n";
-        DataToWrite.push_back(OutputValue.t_str());
-
-        for(int i=0;i<24;i++)
-        {
-            UnicodeString Time = i;
-            Time = (Time.Length() == 1) ? "0" + Time : Time;
-
-            GetHourlyData(TerminalNum, TenantName, DateValue, Time, TransactionTotal, Amount, PatronCount);
-
-            if(TransactionTotal == 0)
-            {
-                continue;
-            }
-            else
-            {
-                UnicodeString TempAmount = "";
-//                TempAmount = Amount;
-                // Remove if decimal value should be shown
-                TempAmount = RemoveDecimalValue(Amount);
-                OutputValue = "04" + Time + "\n" +
-                              "05" + TempAmount + "\n" +
-                              "06" + TransactionTotal + "\n" +
-                              "07" + PatronCount + "\n";
-                DataToWrite.push_back(OutputValue.t_str());
-            }
-            AmountSum += StrToCurr(Amount);
-            TransactionSum += TransactionTotal;
-            PatronSum += PatronCount;
-        }
-        TotalValue = FixDecimalPlaces(AmountSum);
-        // Remove if decimal value should be shown
-        TotalValue = RemoveDecimalValue(TotalValue);
-        OutputValue = "08" + TotalValue + "\n" +
-                      "09" + TransactionSum + "\n" +
-                      "10" + PatronSum;
-        DataToWrite.push_back(OutputValue.t_str());
-
-        setExportResponse(
-           true,               // Succesful = false
-           emrExportSuccesful, // Result = emrExportSuccesful
-           "",                 // Message
-           "",                 // Description
-           result );
-    }
-    catch(Exception &ex)
-    {
-        setExportResponse(
-           false,           // Succesful = false
-           emrExportFailed, // Result = emrExportFailed
-           "",              // Message
-           "",              // Description
-           result );
-    }
-
-    return result;
-}
-//---------------------------------------------------------------------------
-
-// This method will generate the data for hourly export file
-int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
-                                                      UnicodeString &DateValue, UnicodeString &TimeValue,
-                                                      int &TransactionTotal, UnicodeString &Amount, int &PatronCount)
-{
-    Currency AmountValue = 0;
-
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-
-    query->SQL->Text = "SELECT SUM(AMOUNT_VALUE) AS AMOUNTSUM, SUM(TRANSACTION_COUNT) as TRANSSUM, SUM(PATRON_COUNT) AS PATRONSUM FROM MALLEXPORT_HOURLY "
-                       "WHERE TIME_VALUE=:TIMEVALUE AND TERMINAL_NAME=:TERMINALNAME";
-    DBTransaction.StartTransaction();
-    query->ParamByName("TIMEVALUE")->AsString = TimeValue;
-    query->ParamByName("TERMINALNAME")->AsString = TerminalName;
-    query->ExecQuery();
-
-    AmountValue = RoundToNearest(query->FieldByName("AMOUNTSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-    TransactionTotal = RoundToNearest(query->FieldByName("TRANSSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-    PatronCount = query->FieldByName("PATRONSUM")->AsInteger;
-
-    Amount = FixDecimalPlaces(AmountValue);
-
-    DBTransaction.Commit();
-    query->Close();
-
-    return TransactionTotal;
 }
 //---------------------------------------------------------------------------
 
@@ -688,145 +246,8 @@ UnicodeString TMallExportMegaworldMall::RemoveDecimalValue(UnicodeString amountV
     }
     return result;
 }
-//---------------------------------------------------------------------------
 
-TExportResponse TMallExportMegaworldMall::CreateOutputFormatDiscount(std::map<UnicodeString, UnicodeString> DataRead,
-                                                                     std::vector<UnicodeString> &DataToWrite, UnicodeString MallPathFileName)
-{
-    int i = 0;
-    TDateTime Check = CheckLastZed();
-    UnicodeString OutputValue = "";
-    UnicodeString DateVal = Check.FormatString("mm/dd/yyyy");
-    UnicodeString HourVal = TGlobalSettings::Instance().LastZedTime;
-    UnicodeString DiscountName = "";
-    UnicodeString DiscountDesc = "";
-    UnicodeString DiscountTotal = "";
-    UnicodeString Format = ",";
-    Currency DiscountValue = 0;
-    TDateTime Today = StrToDateTime(DateVal) + StrToTime(HourVal);
-
-    DataToWrite.clear();
-
-    TGlobalSettings::Instance().LastZedTime = Now().FormatString("hh:nn:ss");
-    SaveStrVariable(vmLastZedTime, TGlobalSettings::Instance().LastZedTime);
-
-    TExportResponse result;
-
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-
-        query->SQL->Text = "SELECT ARCORDERDISCOUNTS.NAME, ARCORDERDISCOUNTS.DESCRIPTION, SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) AS DISC_VAL FROM ARCORDERDISCOUNTS INNER JOIN "
-                           "ARCHIVE ON ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY WHERE "
-                           "ARCHIVE.TIME_STAMP >= :START_DATE GROUP BY ARCORDERDISCOUNTS.NAME, ARCORDERDISCOUNTS.DESCRIPTION";
-        DBTransaction.StartTransaction();
-        query->ParamByName("START_DATE")->AsDateTime = Today;
-        query->ExecQuery();
-
-        while(!query->Eof)
-        {
-            DiscountName = query->FieldByName("NAME")->AsString;
-            DiscountDesc = query->FieldByName("DESCRIPTION")->AsString;
-            DiscountValue = fabs(query->FieldByName("DISC_VAL")->AsCurrency);
-
-            DiscountTotal = FixDecimalPlaces(DiscountValue);
-            // Remove if decimal value should be shown
-//            DiscountTotal = RemoveDecimalValue(DiscountValue);
-
-            OutputValue = DiscountName + Format + DiscountDesc + Format + DiscountTotal + "\n";
-            DataToWrite.push_back(OutputValue.t_str());
-            query->Next();
-        }
-        DBTransaction.Commit();
-
-        setExportResponse(
-           true,               // Succesful = false
-           emrExportSuccesful, // Result = emrExportSuccesful
-           "",                 // Message
-           "",                 // Description
-           result );
-    }
-    catch(Exception &ex)
-    {
-        setExportResponse(
-           false,           // Succesful = false
-           emrExportFailed, // Result = emrExportFailed
-           "",              // Message
-           "",              // Description
-           result );
-    }
-
-    return result;
-}
-//---------------------------------------------------------------------------
-
-// Checking of previous file will happen in 00:00 AM if the POS will not be exited
-void TMallExportMegaworldMall::SetZedTimer()
-{
-    unsigned short Hour = 0;
-    unsigned short Minutes = 0;
-    unsigned short Seconds = 0;
-    unsigned short dummy = 0;
-
-    Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
-
-    if(Hour < 6)
-    {
-        zedcheckTimer->Interval = ((3540000 - (Minutes*60000)) + (59000 - (Seconds*1000)));
-    }
-    else
-    {
-        zedcheckTimer->Interval = ((86400000 - (Hour*3600000)) + (3540000 - (Minutes*60000)) + (59000 - (Seconds*1000)));
-    }
-}
-//---------------------------------------------------------------------------
-
-// Call from MallExporTIMall
-void TMallExportMegaworldMall::CheckPreviousEODFile()
-{
-    UnicodeString CheckDate = Now().FormatString("mm/dd/yy");
-    UnicodeString CurrentDate = Now().FormatString("mm/dd/yyyy");
-    TDateTime Check = CheckLastZed();
-    UnicodeString DateFormat = Check.FormatString("mm/dd/yyyy");
-    bool ZReportStatus = false;
-
-    unsigned short Hour = 0;
-    unsigned short Minutes = 0;
-    unsigned short Seconds = 0;
-    unsigned short dummy = 0;
-
-    Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
-
-    // Checking of previous file will happen in 00:00 AM if the POS will not be exited
-    if(Hour < 6)
-    {
-        zedcheckTimer->Interval = ((3540000 - (Minutes*60000)) + (59000 - (Seconds*1000)));
-    }
-    else
-    {
-        zedcheckTimer->Interval = ((86400000 - (Hour*3600000)) + (3540000 - (Minutes*60000)) + (59000 - (Seconds*1000)));
-    }
-
-    if(DateFormat.Compare(CurrentDate) != 0)
-    {
-        ZReportStatus = false;
-    }
-    else
-    {
-        ZReportStatus = true;
-    }
-
-    if(Check < Now() && Hour >= 6)
-    {
-        if( (!ZReportStatus) && (TGlobalSettings::Instance().FirstMallDate.Compare(CheckDate) != 0))
-        {
-            frmMain->ZForced();
-        }
-    }
-}
-//---------------------------------------------------------------------------
-
+//--------------------------------------------------------------------------
 TExportResponse TMallExportMegaworldMall::GetExportInfo(UnicodeString &MallPath, UnicodeString &TenantID,
                                                         UnicodeString &TerminalNo, UnicodeString &BatchNo,
                                                         UnicodeString &MonthValue, UnicodeString &DayValue,
@@ -845,7 +266,6 @@ TExportResponse TMallExportMegaworldMall::GetExportInfo(UnicodeString &MallPath,
 
         Month = StrToInt(CheckMonth);
 
-        // TenantName format is the first 4 Character of the Tenant Name
         for(int i=0;i<TenantNo.Length();i++)
         {
             if(i<4)
@@ -854,7 +274,6 @@ TExportResponse TMallExportMegaworldMall::GetExportInfo(UnicodeString &MallPath,
             }
         }
 
-        // Teminal number must be at least 2 digit
         if (TerminalNo.Length() == 1)
         {
             TerminalNo = "0" + TerminalNo;
@@ -909,56 +328,6 @@ TExportResponse TMallExportMegaworldMall::GetExportInfo(UnicodeString &MallPath,
 }
 //---------------------------------------------------------------------------
 
-// This method checks if the prev zed report was not yet generated
-// and returns the correspondent datetime
-TDateTime TMallExportMegaworldMall::CheckLastZed()
-{
-    TDateTime result;
-    UnicodeString Value = "";
-    UnicodeString OutValue = "";
-    UnicodeString Month = "";
-    UnicodeString Day = "";
-    UnicodeString Year = "";
-    std::string ValueSTR = "";
-
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-
-    query->SQL->Text = "SELECT FIRST 1 * FROM MALLEXPORT_HOURLY";
-    DBTransaction.StartTransaction();
-    query->ExecQuery();
-
-    if(!query->Eof)
-    {
-        Value = query->FieldByName("DATE_VALUE")->AsString;
-        ValueSTR = Value.t_str();
-
-        for(int i=0;i<Value.Length();i++)
-        {
-            if(i<4)
-            {
-                Year = Year + ValueSTR[i];
-            }
-            else if(i==4 || i==5)
-            {
-                Month = Month + ValueSTR[i];
-            }
-            else
-            {
-                Day = Day + ValueSTR[i];
-            }
-        }
-        OutValue = Month + "/" + Day + "/" + Year;
-        result = StrToDateTime(OutValue);
-    }
-    else
-    {
-        result = Now();
-    }
-    DBTransaction.Commit();
-
-    return result;
-}
 //---------------------------------------------------------------------------
 
 // This method fixes the decimal point of a currency value
@@ -1006,4 +375,989 @@ UnicodeString TMallExportMegaworldMall::FixDecimalPlaces(Currency AmountTotal)
 
     return result;
 }
+
+
 //---------------------------------------------------------------------------
+TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime DateFieldInHourlyData)
+{
+    TExportResponse result;
+    UnicodeString TerminalNum = TGlobalSettings::Instance().TerminalNo;
+    UnicodeString TenantName = TGlobalSettings::Instance().TenantNo;
+    UnicodeString DateValue = DateFieldInHourlyData.FormatString("mmddyyyy");
+    Currency AmountSum = 0;
+    int TransactionTotal = 0;
+    int TransactionSum = 0;
+    int PatronCount = 0;
+    int PatronSum = 0;
+    UnicodeString Amount = "";
+    UnicodeString TotalValue = "";
+    UnicodeString OutputValue = "";
+    TDateTime CurrentdateTime = Now();
+    UnicodeString CurrentdateTimeFormat = CurrentdateTime.FormatString("mm/dd/yyyy");
+    try
+    {
+        OutputValue = "01" + TenantName + "\n" +
+                      "02" + TerminalNum + "\n" +
+                      "03" + DateValue + "\n";
+        DataToWrite.push_back(OutputValue.t_str());
+        for(int i=0;i<24;i++)
+        {
+            UnicodeString Time = i;
+            Time = (Time.Length() == 1) ? "0" + Time : Time;
+
+            GetHourlyData(TerminalNum, TenantName, DateValue, Time, TransactionTotal, Amount, PatronCount);
+
+            if(TransactionTotal == 0)
+            {
+                continue;
+            }
+            else
+            {
+                UnicodeString TempAmount = "";
+                TempAmount = RemoveDecimalValue(Amount);
+                OutputValue = "04" + Time + "\n" +
+                              "05" + TempAmount + "\n" +
+                              "06" + TransactionTotal + "\n" +
+                              "07" + PatronCount + "\n";
+                DataToWrite.push_back(OutputValue.t_str());
+            }
+            AmountSum += StrToCurr(Amount);
+            TransactionSum += TransactionTotal;
+            PatronSum += PatronCount;
+        }
+        TotalValue = FixDecimalPlaces(AmountSum);
+        TotalValue = RemoveDecimalValue(TotalValue);
+        OutputValue = "08" + TotalValue + "\n" +
+                      "09" + TransactionSum + "\n" +
+                      "10" + PatronSum;
+        DataToWrite.push_back(OutputValue.t_str());
+
+        setExportResponse(
+               true,               // Succesful = false
+               emrExportSuccesful, // Result = emrExportSuccesful
+               "",                 // Message
+               "",                 // Description
+               result );
+
+    }
+
+    catch(Exception &ex)
+    {
+        setExportResponse(
+           false,           // Succesful = false
+           emrExportFailed, // Result = emrExportFailed
+           "",              // Message
+           "",              // Description
+           result );
+    }
+
+    return result;
+
+}
+//---------------------------------------------------------------------------
+TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime DateFieldInDailyData)
+{
+
+    UnicodeString Format = "\n";
+    UnicodeString SalesTypeID = "";
+    UnicodeString TenantID = "";
+    UnicodeString FOOD = "SalesTypeFood";
+    UnicodeString NONFOOD = "SalesTypeNon-Food";
+    UnicodeString GROCERIES = "SalesTypeGroceries";
+    UnicodeString MEDICINES = "SalesTypeMedicines";
+    UnicodeString OTHERS = "SalesTypeOthers";
+    UnicodeString tempTenant = "";
+    UnicodeString tempTerminal = "";
+    std::string TenantNameSTR;
+    TExportResponse result;
+    std::vector<UnicodeString> AvailableSalesType;
+    DataToWrite.clear();
+    try
+    {
+        bool BreakConSolidateDateForCurrentDate = false;
+        Currency oldgrandtotal = 0;
+        Currency Newgrandtotal = 0;
+        Currency grosssales = 0;
+        Currency vatexemptSales=0;
+        Currency ScdAmount = 0;
+        Currency RegdiscountAmount = 0;
+        Currency RefundAmount = 0;
+        Currency VatSales = 0;
+        Currency SchargeAmount = 0;
+        Currency DailySales = 0;
+        Currency CashSales = 0;
+        Currency CardSales = 0;
+        Currency OtherSales = 0;
+        Currency VoidAmount = 0;
+        Currency salestype_food = 0;
+        Currency salestype_Nonfood = 0;
+        Currency salestype_Groceries = 0;
+        Currency salestype_Medicines = 0;
+        Currency salestype_others = 0;
+
+        int FineDineCustCount = 0;
+        int EodCounter = 0;
+        int TransactionCount = 0;
+
+
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL* query0 = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL* query1 = DBTransaction.Query(DBTransaction.AddQuery());
+
+
+        UnicodeString TerminalNum = TGlobalSettings::Instance().TerminalNo;
+        UnicodeString TenantName = TGlobalSettings::Instance().TenantNo;
+        UnicodeString DateValue = DateFieldInDailyData.FormatString("mmddyyyy");
+
+        OutputValue = "01" + TenantName + "\n" +
+                      "02" + TerminalNum + "\n" +
+                      "03" + DateValue + "\n";
+        DataToWrite.push_back(OutputValue.t_str());
+
+
+        int MaxZedKey;
+        int SecondMaxZedKey;
+        TDateTime DateValueForSecondMaxZed ;
+        GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+        GetOldAndNewGrandTotal(MaxZedKey,oldgrandtotal,Newgrandtotal);
+        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
+
+        if(!BreakConSolidateDateForCurrentDate)
+        {
+            for(int i = 0;i<TGlobalSettings::Instance().BatchNo;i++)
+            {
+               query->Close();
+
+               query->SQL->Text = "SELECT  *  FROM ARCMALLEXPORT A "
+                                  "WHERE A.Z_KEY > :MIN_ZED And A.Z_KEY <= :MAX_ZED ";
+
+               query->ParamByName("MIN_ZED")->AsInteger = MaxZedKey-i-1;
+               query->ParamByName("MAX_ZED")->AsInteger = MaxZedKey-i;
+
+               query->ExecQuery();
+
+            if(!query->Eof)
+            {
+
+                grosssales += query->FieldByName("GROSS_SALES")->AsCurrency;
+
+                vatexemptSales += query->FieldByName("VATEXEMPT_SALES")->AsCurrency;
+
+
+                ScdAmount += query->FieldByName("SCDISCOUNT_AMOUNT")->AsCurrency;
+
+
+                RegdiscountAmount += query->FieldByName("REGDISCOUNT_AMOUNT")->AsCurrency;
+
+
+                RefundAmount += query->FieldByName("REFUND_AMOUNT")->AsCurrency;
+
+
+                VatSales += query->FieldByName("VAT_SALES")->AsCurrency;
+
+
+                SchargeAmount += query->FieldByName("SCHARGE_AMOUNT")->AsCurrency;
+
+
+                DailySales += query->FieldByName("DAILY_SALES")->AsCurrency;
+
+                CashSales += query->FieldByName("CASH_SALES")->AsCurrency;
+
+
+                CardSales += query->FieldByName("CARD_SALES")->AsCurrency;
+
+
+                OtherSales += query->FieldByName("OTHER_SALES")->AsCurrency;
+
+
+                VoidAmount += query->FieldByName("VOID_AMOUNT")->AsCurrency;
+
+                FineDineCustCount += query->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+
+
+                EodCounter += query->FieldByName("CURRENTEODCOUNTER")->AsInteger;
+
+                TransactionCount += query->FieldByName("TRANSACTION_COUNT")->AsInteger;
+
+                salestype_food += query->FieldByName("SALESTYPE_FOOD")->AsCurrency;
+                salestype_Nonfood += query->FieldByName("SALESTYPE_NONFOOD")->AsCurrency;
+                salestype_Groceries += query->FieldByName("SALESTYPE_GROCERIES")->AsCurrency;
+                salestype_Medicines += query->FieldByName("SALESTYPE_MEDICINES")->AsCurrency;
+                salestype_others += query->FieldByName("SALESTYPE_OTHERS")->AsCurrency;
+
+               }
+
+              }
+              OLD_GRANDTOTAL = oldgrandtotal;
+              OutputValue = "04" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(OLD_GRANDTOTAL, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              NEW_GRANDTOTAL = Newgrandtotal;
+              OutputValue = "05" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(NEW_GRANDTOTAL, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              GROSS_SALES = grosssales ;
+              OutputValue = "06" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(GROSS_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              VATEXEMPT_SALES = vatexemptSales ;
+              OutputValue = "07" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VATEXEMPT_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              SCDISCOUNT_AMOUNT = ScdAmount;
+              OutputValue = "08" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SCDISCOUNT_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              REGDISCOUNT_AMOUNT = RegdiscountAmount;
+              OutputValue = "09" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(REGDISCOUNT_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              REFUND_AMOUNT = RefundAmount ;
+              OutputValue = "10" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(REFUND_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              VAT_SALES = VatSales;
+              OutputValue = "11" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VAT_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              SCHARGE_AMOUNT =SchargeAmount;
+              OutputValue = "12" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SCHARGE_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              DAILY_SALES = DailySales ;
+              OutputValue = "13" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(DAILY_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              CASH_SALES = CashSales ;
+              OutputValue = "14" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(CASH_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              CARD_SALES = CardSales;
+              OutputValue = "15" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(CARD_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              OTHER_SALES = OtherSales;
+              OutputValue = "16" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(OTHER_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              VOID_AMOUNT = VoidAmount;
+              OutputValue = "17" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VOID_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              FINEDINECUST_COUNT = FineDineCustCount;
+              OutputValue = "18" + IntToStr(FINEDINECUST_COUNT) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              CURRENTEODCOUNTER = EodCounter;
+              OutputValue = "19" + IntToStr(CURRENTEODCOUNTER) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+              TRANSACTION_COUNT = TransactionCount ;
+              OutputValue = "20" + IntToStr(TRANSACTION_COUNT) + Format;
+              DataToWrite.push_back(OutputValue.t_str());
+
+
+               query0->Close();
+               query0->SQL->Text = "SELECT STIR.SALES_TYPE_KEY FROM SALES_TYPE_ITEMS_RELATION STIR "
+                                    "GROUP BY STIR.SALES_TYPE_KEY";
+               query0->ExecQuery();
+
+                while(!query0->Eof)
+                {
+                    int SalesTypeDB = query0->FieldByName("SALES_TYPE_KEY")->AsInteger;
+                    query1->Close();
+                    query1->SQL->Text = "SELECT ST.SALES_TYPE_NAME FROM SALES_TYPE ST WHERE ST.SALES_TYPE_KEY = :SALES_KEY";
+                    query1->ParamByName("SALES_KEY")->AsInteger = SalesTypeDB;
+                    query1->ExecQuery();
+                    UnicodeString SalesTypeValue = "SalesType" + query1->FieldByName("SALES_TYPE_NAME")->AsString;
+                    AvailableSalesType.push_back(SalesTypeValue.t_str());
+                    query0->Next();
+                }
+                DBTransaction.Commit();
+
+                for(int j=0; j<AvailableSalesType.size();j++)
+                {
+                    if(AvailableSalesType.at(j) == FOOD)
+                    {
+                        OutputValue = "2101" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        SALESTYPE_FOOD = salestype_food;
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_FOOD, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                    else if(AvailableSalesType.at(j) == NONFOOD)
+                    {
+                        OutputValue = "2102" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        SALESTYPE_NONFOOD = salestype_Nonfood;
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_NONFOOD, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+
+                    }
+                    else if(AvailableSalesType.at(j) == GROCERIES)
+                    {
+                        OutputValue = "2103" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        SALESTYPE_GROCERIES = salestype_Groceries;
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_GROCERIES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+
+                    }
+                    else if(AvailableSalesType.at(j) == MEDICINES)
+                    {
+                        OutputValue = "2104" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        SALESTYPE_MEDICINES = salestype_Medicines;
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_MEDICINES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+
+                    }
+                    else if(AvailableSalesType.at(j) == OTHERS)
+                    {
+                        OutputValue = "2105" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        SALESTYPE_OTHERS = salestype_others;
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_OTHERS, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+
+                    }
+                }
+
+
+        }
+        else
+        {
+            query->Close();
+
+            query->SQL->Text = "SELECT  *  FROM ARCMALLEXPORT a "
+                               "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) FROM ARCMALLEXPORT a) ";
+
+
+            query->ExecQuery();
+
+            if(!query->Eof)
+            {
+
+                OLD_GRANDTOTAL = query->FieldByName("OLD_GRANDTOTAL")->AsCurrency;
+                OutputValue = "04" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(OLD_GRANDTOTAL, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                NEW_GRANDTOTAL = query->FieldByName("NEW_GRANDTOTAL")->AsCurrency;
+                OutputValue = "05" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(NEW_GRANDTOTAL, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                GROSS_SALES = query->FieldByName("GROSS_SALES")->AsCurrency;
+                OutputValue = "06" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(GROSS_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                VATEXEMPT_SALES = query->FieldByName("VATEXEMPT_SALES")->AsCurrency;
+                OutputValue = "07" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VATEXEMPT_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                SCDISCOUNT_AMOUNT = query->FieldByName("SCDISCOUNT_AMOUNT")->AsCurrency;
+                OutputValue = "08" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SCDISCOUNT_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                REGDISCOUNT_AMOUNT = query->FieldByName("REGDISCOUNT_AMOUNT")->AsCurrency;
+                OutputValue = "09" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(REGDISCOUNT_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                REFUND_AMOUNT = query->FieldByName("REFUND_AMOUNT")->AsCurrency;
+                OutputValue = "10" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(REFUND_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                VAT_SALES = query->FieldByName("VAT_SALES")->AsCurrency;
+                OutputValue = "11" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VAT_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                SCHARGE_AMOUNT = query->FieldByName("SCHARGE_AMOUNT")->AsCurrency;
+                OutputValue = "12" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SCHARGE_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                DAILY_SALES = query->FieldByName("DAILY_SALES")->AsCurrency;
+                OutputValue = "13" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(DAILY_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                CASH_SALES = query->FieldByName("CASH_SALES")->AsCurrency;
+                OutputValue = "14" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(CASH_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                CARD_SALES = query->FieldByName("CARD_SALES")->AsCurrency;
+                OutputValue = "15" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(CARD_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                OTHER_SALES = query->FieldByName("OTHER_SALES")->AsCurrency;
+                OutputValue = "16" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(OTHER_SALES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                VOID_AMOUNT = query->FieldByName("VOID_AMOUNT")->AsCurrency;
+                OutputValue = "17" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(VOID_AMOUNT, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2)) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                FINEDINECUST_COUNT = query->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+                OutputValue = "18" + IntToStr(FINEDINECUST_COUNT) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                CURRENTEODCOUNTER = query->FieldByName("CURRENTEODCOUNTER")->AsInteger;
+                OutputValue = "19" + IntToStr(CURRENTEODCOUNTER) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                TRANSACTION_COUNT = query->FieldByName("TRANSACTION_COUNT")->AsInteger;
+                OutputValue = "20" + IntToStr(TRANSACTION_COUNT) + Format;
+                DataToWrite.push_back(OutputValue.t_str());
+
+                SALESTYPE_FOOD = query->FieldByName("SALESTYPE_FOOD")->AsCurrency;
+                SALESTYPE_NONFOOD = query->FieldByName("SALESTYPE_NONFOOD")->AsCurrency;
+                SALESTYPE_GROCERIES = query->FieldByName("SALESTYPE_GROCERIES")->AsCurrency;
+                SALESTYPE_MEDICINES = query->FieldByName("SALESTYPE_MEDICINES")->AsCurrency;
+                SALESTYPE_OTHERS = query->FieldByName("SALESTYPE_OTHERS")->AsCurrency;
+
+                query0->Close();
+                query0->SQL->Text = "SELECT STIR.SALES_TYPE_KEY FROM SALES_TYPE_ITEMS_RELATION STIR "
+                                    "GROUP BY STIR.SALES_TYPE_KEY";
+                query0->ExecQuery();
+                while(!query0->Eof)
+                {
+                    int SalesTypeDB = query0->FieldByName("SALES_TYPE_KEY")->AsInteger;
+                    query1->Close();
+                    query1->SQL->Text = "SELECT ST.SALES_TYPE_NAME FROM SALES_TYPE ST WHERE ST.SALES_TYPE_KEY = :SALES_KEY";
+                    query1->ParamByName("SALES_KEY")->AsInteger = SalesTypeDB;
+                    query1->ExecQuery();
+                    UnicodeString SalesTypeValue = "SalesType" + query1->FieldByName("SALES_TYPE_NAME")->AsString;
+                    AvailableSalesType.push_back(SalesTypeValue.t_str());
+                    query0->Next();
+                }
+                DBTransaction.Commit();
+
+                for(int j=0; j<AvailableSalesType.size();j++)
+                {
+                    if(AvailableSalesType.at(j) == FOOD)
+                    {
+                        OutputValue = "2101" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_FOOD, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                    else if(AvailableSalesType.at(j) == NONFOOD)
+                    {
+                        OutputValue = "2102" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_NONFOOD, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                    else if(AvailableSalesType.at(j) == GROCERIES)
+                    {
+                        OutputValue = "2103" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_GROCERIES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                    else if(AvailableSalesType.at(j) == MEDICINES)
+                    {
+                        OutputValue = "2104" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_MEDICINES, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                    else if(AvailableSalesType.at(j) == OTHERS)
+                    {
+                        OutputValue = "2105" + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                        OutputValue = "22" + megaworldExport->RemoveDecimalValue(CurrToStrF((RoundToNearest(SALESTYPE_OTHERS, 0.01, TGlobalSettings::Instance().MidPointRoundsDown)), ffFixed, 2));
+                        OutputValue = (AvailableSalesType.size() == (j+1)) ? OutputValue : OutputValue + Format;
+                        DataToWrite.push_back(OutputValue.t_str());
+                    }
+                }
+
+               }
+        }
+        setExportResponse(
+               true,               // Succesful = false
+               emrExportSuccesful, // Result = emrExportSuccesful
+               "",                 // Message
+               "",                 // Description
+               result );
+    }
+    catch(Exception &ex)
+    {
+        setExportResponse(
+           false,           // Succesful = false
+           emrExportFailed, // Result = emrExportFailed
+           "",              // Message
+           "",              // Description
+           result );
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------
+TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime DateFieldInDailyData)
+{
+
+        TMegaworldDiscount Discounted_data;
+        int MaxZedKey;
+        int SecondMaxZedKey;
+        TDateTime DateValueForSecondMaxZed ;
+        UnicodeString DiscountName = "";
+        UnicodeString DiscountDesc = "";
+        Currency DiscountTotal = 0;
+        UnicodeString discountname = "";
+        UnicodeString discountdesc = "";
+        Currency discounttotal = 0;
+        UnicodeString Format = ",";
+        Currency DiscountValue = 0;
+        UnicodeString OutputValue = "";
+        TExportResponse result;
+
+        std::map<pair<UnicodeString,UnicodeString>, Currency> StoreAllValue;
+        std::map<pair<UnicodeString,UnicodeString>, Currency>::iterator itrmap;
+        StoreAllValue.clear();
+
+        std::vector<TMegaworldDiscount> AvailableDiscountName;
+        std::vector<TMegaworldDiscount>::iterator itr;
+        AvailableDiscountName.clear() ;
+        DataToWrite.clear();
+
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+
+        GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+        bool BreakConSolidateDateForCurrentDate;
+        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
+
+        try
+        {
+
+            if(!BreakConSolidateDateForCurrentDate)
+            {
+
+                for(int i = 0;i<TGlobalSettings::Instance().BatchNo;i++)
+                {
+                   query->Close();
+
+                   query->SQL->Text =  "SELECT A.NAME,A.DESCRIPTION,SUM(A.DISCOUNTED_VALUE) AS DISC_VAL "
+                                        "FROM ARCORDERDISCOUNTS A inner join ARCHIVE B on "
+                                        "A.ARCHIVE_KEY = B.ARCHIVE_KEY inner join ARCBILL C on "
+                                        "C.ARCBILL_KEY = B.ARCBILL_KEY "
+                                        "WHERE C.Z_KEY > :MIN_ZED And C.Z_KEY <= :MAX_ZED "
+                                        "GROUP BY A.NAME,A.DESCRIPTION ";
+
+                   query->ParamByName("MIN_ZED")->AsInteger = MaxZedKey-i-1;
+                   query->ParamByName("MAX_ZED")->AsInteger = MaxZedKey-i;
+                   query->ExecQuery();
+                   while(!query->Eof)
+                   {
+
+                       DiscountName = query->FieldByName("NAME")->AsString;
+
+                       DiscountDesc = query->FieldByName("DESCRIPTION")->AsString;
+
+                       DiscountTotal = fabs(query->FieldByName("DISC_VAL")->AsCurrency);
+
+                        Discounted_data.Discount_Name = query->FieldByName("NAME")->AsString;
+
+                        Discounted_data.Description = query->FieldByName("DESCRIPTION")->AsString;
+
+                        Discounted_data.Discount_Value = fabs(query->FieldByName("DISC_VAL")->AsCurrency);
+
+
+
+                       if(AvailableDiscountName.size() == 0)
+                       {
+
+
+                         AvailableDiscountName.push_back(Discounted_data);
+                       }
+                       else
+                       {
+
+                         bool isAdded = false;
+                          for (itr = AvailableDiscountName.begin(); itr!=AvailableDiscountName.end(); itr++)
+                          {
+
+                             if(itr->Discount_Name == DiscountName && itr->Description == DiscountDesc)
+                             {
+
+
+                                itr->Discount_Value += DiscountTotal;
+                                DiscountTotal = itr->Discount_Value;
+
+                               isAdded = true;
+                               break;
+                             }
+                          }
+                          if(!isAdded)
+                          {
+
+                                 AvailableDiscountName.push_back(Discounted_data);
+
+                          }
+
+
+                       }
+                       query->Next();
+
+                      StoreAllValue[make_pair(DiscountName,DiscountDesc)] = DiscountTotal;
+                   }
+
+             }
+             for (itrmap = StoreAllValue.begin(); itrmap!=StoreAllValue.end(); itrmap++)
+             {
+                DiscountName = (itrmap->first).first;
+                DiscountDesc = (itrmap->first).second;
+                DiscountTotal = itrmap->second;
+
+                OutputValue= DiscountName + Format + DiscountDesc + Format + DiscountTotal + "\n";
+                DataToWrite.push_back(OutputValue.t_str());
+
+             }
+
+            }
+            else
+            {
+                  query->Close();
+
+                  query->SQL->Text =  "SELECT A.NAME,A.DESCRIPTION,SUM(A.DISCOUNTED_VALUE) AS DISC_VAL "
+                                        "FROM ARCORDERDISCOUNTS A inner join ARCHIVE B on "
+                                        "A.ARCHIVE_KEY = B.ARCHIVE_KEY inner join ARCBILL C on "
+                                        "C.ARCBILL_KEY = B.ARCBILL_KEY "
+                                        "WHERE C.Z_KEY = :MAX_ZED "
+                                        "GROUP BY A.NAME,A.DESCRIPTION ";
+
+                   query->ParamByName("MAX_ZED")->AsInteger = MaxZedKey;
+
+
+                   query->ExecQuery();
+                   DiscountName = query->FieldByName("NAME")->AsString;
+
+                   while(!query->Eof)
+                   {
+
+                    DiscountName = query->FieldByName("NAME")->AsString;
+                    DiscountDesc = query->FieldByName("DESCRIPTION")->AsString;
+                    DiscountValue = fabs(query->FieldByName("DISC_VAL")->AsCurrency);
+                    DiscountTotal = FixDecimalPlaces(DiscountValue);
+
+                    OutputValue= DiscountName + Format + DiscountDesc + Format + DiscountTotal + "\n";
+                    DataToWrite.push_back(OutputValue.t_str());
+                    query->Next();
+                    }
+
+            }
+            DBTransaction.Commit();
+            setExportResponse(
+               true,               // Succesful = false
+               emrExportSuccesful, // Result = emrExportSuccesful
+               "",                 // Message
+               "",                 // Description
+               result );
+        }
+        catch(Exception &ex)
+        {
+            setExportResponse(
+               false,           // Succesful = false
+               emrExportFailed, // Result = emrExportFailed
+               "",              // Message
+               "",              // Description
+               result );
+        }
+        return result;
+}
+//---------------------------------------------------------------------------
+
+bool TMallExportMegaworldMall::CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate)
+{
+
+       TDateTime DateValue;
+       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZed(DateValue) ;
+       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZed(DateValue) ;
+       IsBreakConSolidateDateForCurrentDate = false;
+       if(DateForMaxZed == DateForSecondMaxZed)
+       {
+
+        IsBreakConSolidateDateForCurrentDate = false;
+       }
+
+       else
+       {
+
+        IsBreakConSolidateDateForCurrentDate = true;
+       }
+
+}
+
+//---------------------------------------------------------------------------
+void TMallExportMegaworldMall::GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzed, int &maxzed2)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* MaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL* SecondMaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    MaxZedQuery->Close();
+
+    MaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) Z_KEY "
+                        "FROM ARCMALLEXPORTHOURLY a " ;
+
+    MaxZedQuery->ExecQuery();
+
+    for ( ; !MaxZedQuery->Eof; MaxZedQuery->Next())
+    {
+        maxzed = MaxZedQuery->Fields[0]->AsInteger;
+    }
+
+    MaxZedQuery->Close();
+
+    SecondMaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORTHOURLY a "
+                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORTHOURLY a) ";
+
+    SecondMaxZedQuery->ExecQuery();
+
+    for ( ; !SecondMaxZedQuery->Eof; SecondMaxZedQuery->Next())
+    {
+        maxzed2 = SecondMaxZedQuery->Fields[0]->AsInteger;
+    }
+
+    SecondMaxZedQuery->Close();
+    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void TMallExportMegaworldMall::GetOldAndNewGrandTotal(int maxzed, Currency &oldgrandtotal , Currency &newgrandtotal)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* IBQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+    IBQuery->Close();
+
+    IBQuery->SQL->Text =  "SELECT a.OLD_GRANDTOTAL,a.NEW_GRANDTOTAL "
+                        "FROM ARCMALLEXPORT a "
+                        "WHERE a.Z_KEY = :MaxZed ";
+
+    IBQuery->ParamByName("MaxZed")->AsInteger = maxzed;
+
+    IBQuery->ExecQuery();
+    oldgrandtotal = IBQuery->Fields[0]->AsCurrency;
+    newgrandtotal = IBQuery->Fields[1]->AsCurrency;
+
+    DBTransaction.Commit();
+}
+
+//---------------------------------------------------------------------------
+UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZed(TDateTime &DateValue)
+{
+    UnicodeString FirstSaleDateForSecondMaxZed = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->Close();
+
+    query->SQL->Text =  "SELECT FIRST 1 a.DATE_VALUE "
+                        "FROM ARCMALLEXPORTHOURLY a "
+                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORTHOURLY a "
+                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORTHOURLY a)) "
+                        "ORDER BY a.AME_HOURLY_KEY ";
+    query->ExecQuery();
+    DateValue = query->Fields[0]->AsDate;
+    FirstSaleDateForSecondMaxZed = DateValue.FormatString("mm/dd/yyyy");
+    DBTransaction.Commit();
+
+    return FirstSaleDateForSecondMaxZed;
+}
+//---------------------------------------------------------------------------
+UnicodeString TMallExportMegaworldMall::GetFirstDateValueForMaxZed(TDateTime &DateValue)
+{
+    UnicodeString FirstSaleDateForMaxZed = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->Close();
+
+    query->SQL->Text =  "SELECT FIRST 1 a.DATE_VALUE "
+                        "FROM ARCMALLEXPORTHOURLY a "
+                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORTHOURLY a) "
+                        "ORDER BY a.AME_HOURLY_KEY ";
+    query->ExecQuery();
+    DateValue = query->Fields[0]->AsDate;
+    FirstSaleDateForMaxZed = DateValue.FormatString("mm/dd/yyyy");
+    DBTransaction.Commit();
+
+    return FirstSaleDateForMaxZed;
+
+}
+//---------------------------------------------------------------------------
+int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
+                                                      UnicodeString &DateValue, UnicodeString &TimeValue,
+                                                      int &TransactionTotal, UnicodeString &Amount, int &PatronCount)
+{
+    Currency AmountValue = 0;
+    int transactioncount = 0;
+    int Patroncount = 0;
+    TDateTime Currentime = Now();
+    UnicodeString PresentDateTime = Currentime.FormatString("mmddyyyy");
+    bool BreakConSolidateDateForCurrentDate = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    int MaxZedKey;
+    int SecondMaxZedKey;
+    TDateTime DateValueForSecondMaxZed ;
+    GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+    CompareMaxZedFirstDateAndSecondMaxLastDate(BreakConSolidateDateForCurrentDate);
+
+    if(!BreakConSolidateDateForCurrentDate)
+    {
+      for(int i = 0;i<TGlobalSettings::Instance().BatchNo;i++)
+      {
+          query->Close();
+          query->SQL->Text = "SELECT SUM(AMOUNT_VALUE) AS AMOUNTSUM, SUM(TRANSACTION_COUNT) as TRANSSUM, SUM(PATRON_COUNT) AS PATRONSUM FROM ARCMALLEXPORTHOURLY A "
+                           "WHERE A.TIME_VALUE=:TIMEVALUE AND A.Z_KEY > :MIN_ZED And A.Z_KEY <= :MAX_ZED ";
+
+
+           query->ParamByName("TIMEVALUE")->AsString = TimeValue;
+           query->ParamByName("MIN_ZED")->AsInteger = MaxZedKey-i-1;
+           query->ParamByName("MAX_ZED")->AsInteger = MaxZedKey-i;
+
+          query->ExecQuery();
+
+
+          transactioncount += query->FieldByName("TRANSSUM")->AsInteger;
+          AmountValue += RoundToNearest(query->FieldByName("AMOUNTSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+          Patroncount += query->FieldByName("PATRONSUM")->AsInteger;
+
+      }
+
+    }
+    else
+    {
+             query->Close();
+
+              query->SQL->Text = "SELECT SUM(AMOUNT_VALUE) AS AMOUNTSUM, SUM(TRANSACTION_COUNT) as TRANSSUM, SUM(PATRON_COUNT) AS PATRONSUM FROM ARCMALLEXPORTHOURLY A "
+                       "WHERE A.TIME_VALUE=:TIMEVALUE AND A.Z_KEY = :MAX_ZED ";
+
+
+              query->ParamByName("TIMEVALUE")->AsString = TimeValue;
+              query->ParamByName("MAX_ZED")->AsInteger = MaxZedKey;
+
+
+              query->ExecQuery();
+              AmountValue = RoundToNearest(query->FieldByName("AMOUNTSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+              transactioncount = query->FieldByName("TRANSSUM")->AsInteger;
+
+              Patroncount = query->FieldByName("PATRONSUM")->AsInteger;
+
+    }
+
+    Amount = FixDecimalPlaces(AmountValue);
+    TransactionTotal= transactioncount;
+    PatronCount=Patroncount ;
+    DBTransaction.Commit();
+    query->Close();
+
+    return TransactionTotal;
+
+}
+//---------------------------------------------------------------------------
+bool TMallExportMegaworldMall::IsConsolidatedOrNotForDaily(bool &IsConSolidatedDataReset)
+{
+       TDateTime DateValue;
+       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZedForDaily(DateValue) ;
+       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZedForDaily(DateValue) ;
+       if(DateForMaxZed == DateForSecondMaxZed)
+       {
+
+        IsConSolidatedDataReset = false;
+       }
+
+       else
+       {
+        IsConSolidatedDataReset = true;
+       }
+}
+
+//---------------------------------------------------------------------------
+UnicodeString TMallExportMegaworldMall::GetFirstDateValueForMaxZedForDaily(TDateTime &DateValue)
+{
+    UnicodeString Beginning_Invoice = "";
+    UnicodeString FirstSaleDateForMaxZed = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->Close();
+
+    query->SQL->Text =  "SELECT a.BEGINNING_INVOICE "
+                        "FROM ARCMALLEXPORT a "
+                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORT a) ";
+    query->ExecQuery();
+    Beginning_Invoice = query->Fields[0]->AsString;
+
+    query->Close();
+
+    query->SQL->Text =  "SELECT a.TIME_STAMP "
+                        "FROM ARCBILL a "
+                        "WHERE a.INVOICE_NUMBER = :Invoice_number ";
+
+    query->ParamByName("Invoice_number")->AsString = Beginning_Invoice ;
+    query->ExecQuery();
+    DateValue = query->Fields[0]->AsDate;
+    FirstSaleDateForMaxZed = DateValue.FormatString("mm/dd/yyyy");
+    DBTransaction.Commit();
+
+    return FirstSaleDateForMaxZed;
+
+}
+
+//---------------------------------------------------------------------------
+UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZedForDaily(TDateTime &DateValue)
+{
+    UnicodeString Beginning_Invoice = "";
+    UnicodeString FirstSaleDateForSecondMaxZed = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->Close();
+
+    query->SQL->Text =  "SELECT a.BEGINNING_INVOICE "
+                        "FROM ARCMALLEXPORT a "
+                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORT a "
+                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
+                        "FROM ARCMALLEXPORT a)) ";
+   query->ExecQuery();
+   Beginning_Invoice = query->Fields[0]->AsString;
+
+    query->Close();
+
+    query->SQL->Text =  "SELECT a.TIME_STAMP "
+                        "FROM ARCBILL a "
+                        "WHERE a.INVOICE_NUMBER = :Invoice_number ";
+
+    query->ParamByName("Invoice_number")->AsString = Beginning_Invoice ;
+    query->ExecQuery();
+    DateValue = query->Fields[0]->AsDate;
+    FirstSaleDateForSecondMaxZed = DateValue.FormatString("mm/dd/yyyy");
+    DBTransaction.Commit();
+
+    return FirstSaleDateForSecondMaxZed;
+}
+//---------------------------------------------------------------------------
+
+
