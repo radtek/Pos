@@ -3987,10 +3987,9 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
    DBTransaction.StartTransaction();
    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    UnicodeString DateValue = "";
-    TDateTime tempdatevalue;
-     bool IsBreakConsolidated = false;
-     ResetValues();
+   UnicodeString DateValue = "";
+   TDateTime tempdatevalue;
+   ResetValues();
    UnicodeString Day_StartDate = Startdate.FormatString("dd");
 
    UnicodeString Month_StartDate = Startdate.FormatString("mm");
@@ -4046,7 +4045,7 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
           {
             tempdatevalue = query->Fields[0]->AsDate;
             DateValue = tempdatevalue.FormatString("mm/dd/yyyy");
-            GetTotalZedCorrespondingDate(SDate,EDate,DateValue,IsBreakConsolidated);
+            GetTotalZedCorrespondingDate(SDate,EDate,DateValue);
             ResetValues();
           }
            if(query->RecordCount != 0)
@@ -4055,7 +4054,7 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
            }
 }
 
-void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Startdate,TDateTime EndDate,UnicodeString Datevalue,bool &isBreakConsolidated)
+void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Startdate,TDateTime EndDate,UnicodeString Datevalue)
 {
     int Count = 0;
     int Zedkey ;
@@ -4071,7 +4070,6 @@ void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Star
       HourlyDataStorage.push_back(SaveHourlyData) ;
 
     }
-    std::vector<TMegaworldRegenerateHourlyData>::iterator itrHourlyData;
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
    DBTransaction.StartTransaction();
    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
@@ -4126,13 +4124,12 @@ void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Star
     for( ; !query->Eof; query->Next())
     {
         Zedkey = query->Fields[0]->AsInteger;
-        CheckFirstSaleOfEachZed(Zedkey,Startdate,EndDate,Datevalue,isBreakConsolidated) ;
-
+        CheckFirstSaleOfEachZed(Zedkey,Startdate,EndDate,Datevalue) ;
     }
 
 }
 
-void TfrmMallExportRegenerateReport::CheckFirstSaleOfEachZed(int Zedkey ,TDateTime Startdate,TDateTime EndDate, UnicodeString datevalue,bool isBreakConsolidated)
+void TfrmMallExportRegenerateReport::CheckFirstSaleOfEachZed(int Zedkey ,TDateTime Startdate,TDateTime EndDate, UnicodeString datevalue)
 {
    UnicodeString MallPath = edLocationPath->Text;
    UnicodeString LocalPathFileName = "";
@@ -4202,7 +4199,8 @@ void TfrmMallExportRegenerateReport::PrepareDataForDiscount(int Zedkey,UnicodeSt
         Currency DiscountValue = 0;
         UnicodeString OutputValue = "";
         TExportResponse result;
-
+        std::vector<TMegaworldRegenerateDiscount>::iterator itrRegenerate;
+        std::map<pair<UnicodeString,UnicodeString>, Currency>::iterator itrmapRegenerate;
         DataToWrite.clear();
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
@@ -4290,6 +4288,7 @@ void TfrmMallExportRegenerateReport::PrepareDateForHourly(int Zedkey,TDateTime S
     UnicodeString TenantName = TGlobalSettings::Instance().TenantNo;
     UnicodeString DateValue = Startdate.FormatString("mmddyyyy");
     std::vector<TMegaworldRegenerateHourlyData>::iterator itrHourlyData;
+    std::map<UnicodeString,UnicodeString>::iterator itrHourlyoneStageData;
     Currency AmountSum = 0;
     int TransactionTotal = 0;
     int TransactionSum = 0;
@@ -4445,7 +4444,7 @@ void TfrmMallExportRegenerateReport::PrepareDateForDaily(int Zedkey,UnicodeStrin
                 SchargeAmount +=SCHARGE_AMOUNT;
                 SCHARGE_AMOUNT = SchargeAmount;
 
-                DailySales = query->FieldByName("DAILY_SALES")->AsCurrency;
+                DAILY_SALES = query->FieldByName("DAILY_SALES")->AsCurrency;
                 DailySales +=DAILY_SALES;
                 DAILY_SALES = DailySales;
 

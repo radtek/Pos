@@ -378,7 +378,7 @@ UnicodeString TMallExportMegaworldMall::FixDecimalPlaces(Currency AmountTotal)
 
 
 //---------------------------------------------------------------------------
-TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime &DateFieldInHourlyData)
+TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime DateFieldInHourlyData)
 {
     TExportResponse result;
     UnicodeString TerminalNum = TGlobalSettings::Instance().TerminalNo;
@@ -455,7 +455,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForHourly(TDateTime &DateFi
 
 }
 //---------------------------------------------------------------------------
-TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime &DateFieldInDailyData)
+TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime DateFieldInDailyData)
 {
 
     UnicodeString Format = "\n";
@@ -522,7 +522,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime &DateFie
         TDateTime DateValueForSecondMaxZed ;
         GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
         GetOldAndNewGrandTotal(MaxZedKey,oldgrandtotal,Newgrandtotal);
-        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
+        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
 
         if(!BreakConSolidateDateForCurrentDate)
         {
@@ -903,7 +903,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime &DateFie
 }
 
 //---------------------------------------------------------------------------
-TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime &DateFieldInDailyData)
+TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime DateFieldInDailyData)
 {
 
         TMegaworldDiscount Discounted_data;
@@ -936,7 +936,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime &DateFieldI
 
         GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
         bool BreakConSolidateDateForCurrentDate;
-        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
+        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
 
         try
         {
@@ -1078,7 +1078,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime &DateFieldI
 }
 //---------------------------------------------------------------------------
 
-bool TMallExportMegaworldMall::CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate,int &MaximumZed , int &SecondMaximumZed)
+bool TMallExportMegaworldMall::CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate)
 {
 
        TDateTime DateValue;
@@ -1220,7 +1220,7 @@ int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, Unicode
     int SecondMaxZedKey;
     TDateTime DateValueForSecondMaxZed ;
     GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
-    CompareMaxZedFirstDateAndSecondMaxLastDate(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
+    CompareMaxZedFirstDateAndSecondMaxLastDate(BreakConSolidateDateForCurrentDate);
 
     if(!BreakConSolidateDateForCurrentDate)
     {
@@ -1275,9 +1275,8 @@ int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, Unicode
 
 }
 //---------------------------------------------------------------------------
-bool TMallExportMegaworldMall::IsConsolidatedOrNotForDaily(bool &IsConSolidatedDataReset,int &MaximumZed , int &SecondMaximumZed)
+bool TMallExportMegaworldMall::IsConsolidatedOrNotForDaily(bool &IsConSolidatedDataReset)
 {
-
        TDateTime DateValue;
        UnicodeString DateForMaxZed = GetFirstDateValueForMaxZedForDaily(DateValue) ;
        UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZedForDaily(DateValue) ;
@@ -1291,7 +1290,6 @@ bool TMallExportMegaworldMall::IsConsolidatedOrNotForDaily(bool &IsConSolidatedD
        {
         IsConSolidatedDataReset = true;
        }
-
 }
 
 //---------------------------------------------------------------------------
@@ -1299,7 +1297,6 @@ UnicodeString TMallExportMegaworldMall::GetFirstDateValueForMaxZedForDaily(TDate
 {
     UnicodeString Beginning_Invoice = "";
     UnicodeString FirstSaleDateForMaxZed = "";
-   // TDateTime DateValue ;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());

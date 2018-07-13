@@ -195,14 +195,12 @@ public:		// User declarations
                                 int &TransactionTotal, UnicodeString &Amount);
 
     // For Megaworld
-    std::vector<UnicodeString> AvailableDates;
-    std::vector<UnicodeString>::iterator itr;
     int GetHourlyDataMegaWorld(UnicodeString &TerminalName, UnicodeString &TenantName,
                                 UnicodeString &DateValue, UnicodeString &TimeValue,
                                 int &TransactionTotal, UnicodeString &Amount, int &PatronCount,int Zedkey);
-    void GetTotalZedCorrespondingDate(TDateTime Startdate,TDateTime EndDate,UnicodeString Datevalue,bool &Isconsolidatebreakpoint) ;
-     void GetListOfDatesBetwSdateEndDate(TDateTime Startdate,TDateTime EndDate) ;
-    void CheckFirstSaleOfEachZed(int Zedkey,TDateTime StartDate,TDateTime EndDate,UnicodeString Datevalue,bool IsConsolidated) ;
+    void GetTotalZedCorrespondingDate(TDateTime Startdate,TDateTime EndDate,UnicodeString Datevalue) ;
+    void GetListOfDatesBetwSdateEndDate(TDateTime Startdate,TDateTime EndDate) ;
+    void CheckFirstSaleOfEachZed(int Zedkey,TDateTime StartDate,TDateTime EndDate,UnicodeString Datevalue) ;
     void PrepareDateForHourly(int zed ,TDateTime StartDate);
     void PrepareDateForDaily(int zed ,UnicodeString FileDate);
     void PrepareDataForDiscount(int zed ,UnicodeString FileDate);
@@ -374,25 +372,10 @@ public:		// User declarations
     int EndM;
     bool isAllTerminalsSelected;
 
-     std::map<pair<UnicodeString,UnicodeString>, Currency> StoreAllValue;
-     std::map<pair<UnicodeString,UnicodeString>, Currency>::iterator itrmapRegenerate;
-
-     std::vector<TMegaworldRegenerateDiscount> AvailableDiscountName;
-     std::vector<TMegaworldRegenerateDiscount>::iterator itrRegenerate;
-
-     std::vector<TMegaworldRegenerateHourlyData> HourlyDataStorage;
-
-
-     std::map <UnicodeString,UnicodeString> HourlyoneStageData;
-     std::map<UnicodeString,UnicodeString>::iterator itrHourlyoneStageData;
-
-
-
-
-
-
-
-
+    std::map<pair<UnicodeString,UnicodeString>, Currency> StoreAllValue;
+    std::vector<TMegaworldRegenerateDiscount> AvailableDiscountName;
+    std::vector<TMegaworldRegenerateHourlyData> HourlyDataStorage;
+    std::map <UnicodeString,UnicodeString> HourlyoneStageData;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMallExportRegenerateReport *frmMallExportRegenerateReport;

@@ -54,19 +54,18 @@ public:
                       UnicodeString &DateValue, UnicodeString &TimeValue,
                       int &TransactionTotal, UnicodeString &Amount, int &PatronCount);
 
-
-    TExportResponse PrepareDateForHourly(TDateTime &DateValueInHourlyFile);
-    TExportResponse PrepareDateForDaily(TDateTime &DateValueInHourlyFile);
-    TExportResponse PrepareDiscounts(TDateTime &DateValueInHourlyFile);
+    TExportResponse PrepareDateForHourly(TDateTime DateValueInHourlyFile);
+    TExportResponse PrepareDateForDaily(TDateTime DateValueInHourlyFile);
+    TExportResponse PrepareDiscounts(TDateTime DateValueInHourlyFile);
 
 
     void GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzedkey,int &maxzedkey2) ;
     void GetOldAndNewGrandTotal(int maxzedkey,Currency &oldgrandtotal,Currency &NewGrandTotal) ;
-    bool CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate,int &Maxzedkey,int &Maxzedkey2);
+    bool CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate);
 
     UnicodeString GetFirstDateValueForMaxZed(TDateTime &DateValue);
     UnicodeString GetFirstDateValueForSecondMaxZed(TDateTime &DateValue);
-    bool IsConsolidatedOrNotForDaily(bool &CheckIsConSolidated,int &Maxzedkey,int &Maxzedkey2);
+    bool IsConsolidatedOrNotForDaily(bool &CheckIsConSolidated);
     UnicodeString GetFirstDateValueForMaxZedForDaily(TDateTime &DateValue);
     UnicodeString GetFirstDateValueForSecondMaxZedForDaily(TDateTime &DateValue);
 
