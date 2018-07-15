@@ -296,24 +296,16 @@ void TfrmMallExportRegenerateReport::InitializeTimeSet(TDateTime &SDate, TDateTi
    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
    {
      StartHour ="00";
-     StartMin = "01";
+     StartMin = "00";
      EndHour = "23";
      EndMin = "59";
-     UnicodeString StartHM = StartHour + ":" + StartMin + ":00";
-     UnicodeString EndHM = EndHour + ":" + EndMin + ":00";
-     SDate = StartDate + StrToTime(StartHM);
-     EDate = EndDate + StrToTime(EndHM);
-
    }
-   else
-   {
     UnicodeString StartHM = StartHour + ":" + StartMin + ":00";
     UnicodeString EndHM = EndHour + ":" + EndMin + ":00";
 
     SDate = StartDate + StrToTime(StartHM);
     EDate = EndDate + StrToTime(EndHM);
 
-   }
 }
 //---------------------------------------------------------------------------
 
@@ -3989,23 +3981,7 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
    UnicodeString DateValue = "";
    TDateTime tempdatevalue;
-   ResetValues();
-   UnicodeString Day_StartDate = Startdate.FormatString("dd");
-
-   UnicodeString Month_StartDate = Startdate.FormatString("mm");
-
-
-   UnicodeString Year_StartDate = Startdate.FormatString("yyyy");
-
-
-   UnicodeString Day_EndDate = EndDate.FormatString("dd");
-
-
-   UnicodeString Month_EndDate = EndDate.FormatString("mm");
-
-
-   UnicodeString Year_EndDate = EndDate.FormatString("yyyy");
-
+   ResetVariablesForConsolidatedMegaworld();
    query->Close();
 
 
@@ -4020,18 +3996,18 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
                              "GROUP BY 1 ";
 
 
-           query->ParamByName("day_startday")->AsString = Day_StartDate;
+           query->ParamByName("day_startday")->AsString = Startdate.FormatString("dd");
 
-           query->ParamByName("month_startday")->AsString =Month_StartDate;
+           query->ParamByName("month_startday")->AsString =Startdate.FormatString("mm");
 
-           query->ParamByName("year_startday")->AsString =Year_StartDate;
+           query->ParamByName("year_startday")->AsString =Startdate.FormatString("yyyy");
 
 
-           query->ParamByName("day_endDay")->AsString =Day_EndDate;
+           query->ParamByName("day_endDay")->AsString =EndDate.FormatString("dd");
 
-           query->ParamByName("month_endDay")->AsString =Month_EndDate;
+           query->ParamByName("month_endDay")->AsString =EndDate.FormatString("mm");
 
-           query->ParamByName("year_endyear")->AsString =Year_EndDate;
+           query->ParamByName("year_endyear")->AsString =EndDate.FormatString("yyyy");
 
 
           query->ExecQuery();
@@ -4046,7 +4022,7 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
             tempdatevalue = query->Fields[0]->AsDate;
             DateValue = tempdatevalue.FormatString("mm/dd/yyyy");
             GetTotalZedCorrespondingDate(SDate,EDate,DateValue);
-            ResetValues();
+            ResetVariablesForConsolidatedMegaworld();
           }
            if(query->RecordCount != 0)
            {
@@ -4831,9 +4807,8 @@ UnicodeString TfrmMallExportRegenerateReport::CheckDir(UnicodeString Path)
     return Path;
 }
 
-void TfrmMallExportRegenerateReport::ResetValues()
+void TfrmMallExportRegenerateReport::ResetVariablesForConsolidatedMegaworld()
 {
-
     oldgrandtotal = 0;
     Newgrandtotal = 0;
     oldgrossSale = 0;

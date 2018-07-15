@@ -106,7 +106,7 @@ private:	// User declarations
     void WriteInToFileForFourthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
     void WriteInToFileForFifthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
     void WriteInToFileForSixthCode(Database::TDBTransaction *dbTransaction, int day , int month , int year);
-    void ResetValues();
+    void ResetVariablesForConsolidatedMegaworld();
     void LoadFileToFTP();
     int day, month, year;
     AnsiString terminal_Name;

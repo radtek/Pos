@@ -2356,7 +2356,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                 }
 
                 if((TGlobalSettings::Instance().MallIndex == 7 && !DuplicateEntryInTable) ||
-                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
+                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7))
                 {
                     zedLogsList->Add("updating zed table for mall");
                     UpdateArcMallExport(DBTransaction);
@@ -2872,7 +2872,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 
             if(!IBSelectQuery->RecordCount)
             {
-                MessageBox("Zed Cannot be Processed as there is No Sales Data","",MB_OK) ;
+                MessageBox("Zed Cannot be Processed as there is No Sales Data ", "Zed Processing",MB_OK + MB_ICONERROR);
                 return;
             }
 
@@ -3212,11 +3212,6 @@ Zed:
 			if(CompleteZed)
 			{
                 UpdateMallExportDetails();
-                if(TGlobalSettings::Instance().MallIndex == 7 )
-                {
-                    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-                    MEM->IMallManager->ZExport();
-                }
 
                 //Method for mall Design According to newly pattern
 
@@ -8715,18 +8710,20 @@ void TfrmAnalysis::UpdateMallExportDetails()
     try
     {
         // For Mall Export
-        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7 )
+        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 )
         {
-            std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-            MEM->IMallManager->ZExport();
+           if(TGlobalSettings::Instance().MallIndex == 7)
+           {
+            	UpdateZKeyInArcMallExportForMegaWorld();
+           }
+           std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
+           MEM->IMallManager->ZExport();
         }
         else
         {
-            if(TGlobalSettings::Instance().MallIndex != 7)
-            {
-                TGlobalSettings::Instance().ZCount += 1;
-                SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
-            }
+            TGlobalSettings::Instance().ZCount += 1;
+            SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+
         }
         TMallExportUpdateAdaptor exportUpdateAdaptor;
         TMallExportHourlyUpdate exportHourlyUpdate;
@@ -8736,10 +8733,7 @@ void TfrmAnalysis::UpdateMallExportDetails()
         exportHourlyUpdate.ResetHourlyExportTablesOnZed();
         exportTransactionUpdate.ResetTransactionExportTablesOnZed();
         exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
-        if(TGlobalSettings::Instance().MallIndex == 7)
-        {
-            UpdateZKeyInArcMallExportForMegaWorld();
-        }
+
         zedLogsList->Add("updating .UpdateMallExportDetails");
     }
     catch(Exception & E)

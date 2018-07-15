@@ -104,11 +104,7 @@ private:
     // Utility methods
     void flatternOrdersList();
     AnsiString ReceiptNumber;
-    int MallExportHourlyKey;
-    void UpdateGiftCardValue();
-    void UpdateCheckSalesValue();
-    void UpdateGiftCardValueInAmountValue();
-     void UpdateCheckSaleValueInAmountValue();
+
 
 };
 #endif

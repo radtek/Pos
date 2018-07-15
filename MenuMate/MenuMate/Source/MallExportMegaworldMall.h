@@ -59,15 +59,10 @@ public:
     TExportResponse PrepareDiscounts(TDateTime DateValueInHourlyFile);
 
 
-    void GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzedkey,int &maxzedkey2) ;
+    void GetMaxZedKeyAndSecondMaxZedKey(int &maxzedkey,int &maxzedkey2) ;
     void GetOldAndNewGrandTotal(int maxzedkey,Currency &oldgrandtotal,Currency &NewGrandTotal) ;
-    bool CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate);
-
-    UnicodeString GetFirstDateValueForMaxZed(TDateTime &DateValue);
-    UnicodeString GetFirstDateValueForSecondMaxZed(TDateTime &DateValue);
-    bool IsConsolidatedOrNotForDaily(bool &CheckIsConSolidated);
-    UnicodeString GetFirstDateValueForMaxZedForDaily(TDateTime &DateValue);
-    UnicodeString GetFirstDateValueForSecondMaxZedForDaily(TDateTime &DateValue);
+    bool IsConsolidatedOrNot(bool &IsBreakConSolidateDateForCurrentDate, int MaxZed, int SecondMaxZed);
+    void GetFirstDateValueForMaxZedAndSecondMaxZed(TDateTime &DateValue ,UnicodeString &MaxZedDate , UnicodeString &SecondMaxZedDate,int maxzed,int SecondMaxZed);
 
     TMallExportMegaworldMall* megaworldExport;
     UnicodeString OutputValue;

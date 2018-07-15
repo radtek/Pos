@@ -38,7 +38,6 @@ AnsiString TMallExportMegaworldMall::CreateFileURI( AnsiString inBaseURL )
 TExportResponse TMallExportMegaworldMall::ZExport()
 {
     TExportResponse result;
-
     //::::::::::::::::::::::::::::::::::::::
     try
     {
@@ -48,24 +47,29 @@ TExportResponse TMallExportMegaworldMall::ZExport()
         UnicodeString MallPathFileName = "";
         UnicodeString TerminalNo = TGlobalSettings::Instance().TerminalNo;
         UnicodeString TenantNo = TGlobalSettings::Instance().TenantNo;
+        UnicodeString DateForMaxZed = "";
+        UnicodeString DateForSecondMaxZed = "";
         TDateTime datevalue;
         TDateTime CurrentDateValue ;
         CurrentDateValue = Now();
+        int MaxZed = 0;
+        int SecondMaxZed = 0;
+        bool BreakConSolidateDateForCurrentDate = true;
+        GetMaxZedKeyAndSecondMaxZedKey(MaxZed ,SecondMaxZed);
         UnicodeString CurrentDateValueFormat =CurrentDateValue.FormatString("mm/dd/yyyy");
-       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZed(datevalue) ;
-       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZed(datevalue) ;
-       if(DateForMaxZed == DateForSecondMaxZed)
-       {
+        GetFirstDateValueForMaxZedAndSecondMaxZed(datevalue,DateForMaxZed,DateForSecondMaxZed,MaxZed,SecondMaxZed);
+        IsConsolidatedOrNot(BreakConSolidateDateForCurrentDate,MaxZed,SecondMaxZed);
 
-         TGlobalSettings::Instance().BatchNo += 1;
-       }
+        if(!BreakConSolidateDateForCurrentDate)
+        {
+          TGlobalSettings::Instance().BatchNo += 1;
 
-       else
-       {
-         TGlobalSettings::Instance().BatchNo = 1;
-         datevalue = CurrentDateValue;
-
-       }
+        }
+        else
+        {
+          TGlobalSettings::Instance().BatchNo = 1;
+           datevalue = CurrentDateValue;
+        }
 
         SaveIntVariable(vmBatchNo, TGlobalSettings::Instance().BatchNo);
 
@@ -474,7 +478,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime DateFiel
     DataToWrite.clear();
     try
     {
-        bool BreakConSolidateDateForCurrentDate = false;
+        bool BreakConSolidateDateForCurrentDate = true;
         Currency oldgrandtotal = 0;
         Currency Newgrandtotal = 0;
         Currency grosssales = 0;
@@ -520,9 +524,9 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime DateFiel
         int MaxZedKey;
         int SecondMaxZedKey;
         TDateTime DateValueForSecondMaxZed ;
-        GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+        GetMaxZedKeyAndSecondMaxZedKey(MaxZedKey ,SecondMaxZedKey);
         GetOldAndNewGrandTotal(MaxZedKey,oldgrandtotal,Newgrandtotal);
-        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
+        IsConsolidatedOrNot(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
 
         if(!BreakConSolidateDateForCurrentDate)
         {
@@ -934,10 +938,9 @@ TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime DateFieldIn
         DBTransaction.StartTransaction();
         TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
+        GetMaxZedKeyAndSecondMaxZedKey(MaxZedKey ,SecondMaxZedKey);
         bool BreakConSolidateDateForCurrentDate;
-        IsConsolidatedOrNotForDaily(BreakConSolidateDateForCurrentDate);
-
+        IsConsolidatedOrNot(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
         try
         {
 
@@ -1078,34 +1081,28 @@ TExportResponse TMallExportMegaworldMall::PrepareDiscounts(TDateTime DateFieldIn
 }
 //---------------------------------------------------------------------------
 
-bool TMallExportMegaworldMall::CompareMaxZedFirstDateAndSecondMaxLastDate(bool &IsBreakConSolidateDateForCurrentDate)
+bool TMallExportMegaworldMall::IsConsolidatedOrNot(bool &IsBreakConSolidateDateForCurrentDate , int MaxZedKey ,int SecondMaxZed)
 {
-
        TDateTime DateValue;
-       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZed(DateValue) ;
-       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZed(DateValue) ;
-       IsBreakConSolidateDateForCurrentDate = false;
+       UnicodeString DateForMaxZed = "";
+       UnicodeString DateForSecondMaxZed = "";
+       GetFirstDateValueForMaxZedAndSecondMaxZed(DateValue,DateForMaxZed,DateForSecondMaxZed,MaxZedKey,SecondMaxZed) ;
        if(DateForMaxZed == DateForSecondMaxZed)
        {
-
         IsBreakConSolidateDateForCurrentDate = false;
        }
-
        else
        {
 
         IsBreakConSolidateDateForCurrentDate = true;
        }
-
 }
-
 //---------------------------------------------------------------------------
-void TMallExportMegaworldMall::GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzed, int &maxzed2)
+void TMallExportMegaworldMall::GetMaxZedKeyAndSecondMaxZedKey(int &maxzed, int &maxzed2)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL* MaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    TIBSQL* SecondMaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
     MaxZedQuery->Close();
 
     MaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) Z_KEY "
@@ -1113,26 +1110,20 @@ void TMallExportMegaworldMall::GetMaxZedKeyAndSecondMaxZedForHOurly(int &maxzed,
 
     MaxZedQuery->ExecQuery();
 
-    for ( ; !MaxZedQuery->Eof; MaxZedQuery->Next())
-    {
-        maxzed = MaxZedQuery->Fields[0]->AsInteger;
-    }
+    maxzed = MaxZedQuery->Fields[0]->AsInteger;
 
     MaxZedQuery->Close();
 
-    SecondMaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) "
+    MaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) "
                         "FROM ARCMALLEXPORTHOURLY a "
-                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORTHOURLY a) ";
+                        "WHERE a.Z_KEY < :Max_Zed_Key ";
 
-    SecondMaxZedQuery->ExecQuery();
+    MaxZedQuery->ParamByName("Max_Zed_Key")->AsInteger = maxzed;
+    MaxZedQuery->ExecQuery();
 
-    for ( ; !SecondMaxZedQuery->Eof; SecondMaxZedQuery->Next())
-    {
-        maxzed2 = SecondMaxZedQuery->Fields[0]->AsInteger;
-    }
+    maxzed2 = MaxZedQuery->Fields[0]->AsInteger;
 
-    SecondMaxZedQuery->Close();
+    MaxZedQuery->Close();
     DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
@@ -1151,16 +1142,18 @@ void TMallExportMegaworldMall::GetOldAndNewGrandTotal(int maxzed, Currency &oldg
     IBQuery->ParamByName("MaxZed")->AsInteger = maxzed;
 
     IBQuery->ExecQuery();
-    oldgrandtotal = IBQuery->Fields[0]->AsCurrency;
-    newgrandtotal = IBQuery->Fields[1]->AsCurrency;
+    if(IBQuery->RecordCount)
+    {
+        oldgrandtotal = IBQuery->Fields[0]->AsCurrency;
+        newgrandtotal = IBQuery->Fields[1]->AsCurrency;
+    }
 
     DBTransaction.Commit();
 }
-
 //---------------------------------------------------------------------------
-UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZed(TDateTime &DateValue)
+
+void TMallExportMegaworldMall::GetFirstDateValueForMaxZedAndSecondMaxZed(TDateTime &DateValue, UnicodeString &MaxZedDate,UnicodeString &MinZedDate,int MaxZedKey,int MinZedKey)
 {
-    UnicodeString FirstSaleDateForSecondMaxZed = "";
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
@@ -1168,38 +1161,29 @@ UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZed(TDateTi
 
     query->SQL->Text =  "SELECT FIRST 1 a.DATE_VALUE "
                         "FROM ARCMALLEXPORTHOURLY a "
-                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORTHOURLY a "
-                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORTHOURLY a)) "
+                        "WHERE a.Z_KEY = :Max_Zed "
                         "ORDER BY a.AME_HOURLY_KEY ";
-    query->ExecQuery();
-    DateValue = query->Fields[0]->AsDate;
-    FirstSaleDateForSecondMaxZed = DateValue.FormatString("mm/dd/yyyy");
-    DBTransaction.Commit();
 
-    return FirstSaleDateForSecondMaxZed;
-}
-//---------------------------------------------------------------------------
-UnicodeString TMallExportMegaworldMall::GetFirstDateValueForMaxZed(TDateTime &DateValue)
-{
-    UnicodeString FirstSaleDateForMaxZed = "";
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->ParamByName("Max_Zed")->AsInteger = MaxZedKey;
+    query->ExecQuery();
+
+    DateValue = query->Fields[0]->AsDate;
+    MaxZedDate = DateValue.FormatString("mm/dd/yyyy");
+
     query->Close();
 
     query->SQL->Text =  "SELECT FIRST 1 a.DATE_VALUE "
                         "FROM ARCMALLEXPORTHOURLY a "
-                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORTHOURLY a) "
+                        "WHERE a.Z_KEY = :Second_Max_Zed "
                         "ORDER BY a.AME_HOURLY_KEY ";
-    query->ExecQuery();
-    DateValue = query->Fields[0]->AsDate;
-    FirstSaleDateForMaxZed = DateValue.FormatString("mm/dd/yyyy");
-    DBTransaction.Commit();
 
-    return FirstSaleDateForMaxZed;
+    query->ParamByName("Second_Max_Zed")->AsInteger = MinZedKey;
+    query->ExecQuery();
+
+    DateValue = query->Fields[0]->AsDate;
+    MinZedDate = DateValue.FormatString("mm/dd/yyyy");
+
+    DBTransaction.Commit();
 
 }
 //---------------------------------------------------------------------------
@@ -1218,9 +1202,9 @@ int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, Unicode
     TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
     int MaxZedKey;
     int SecondMaxZedKey;
-    TDateTime DateValueForSecondMaxZed ;
-    GetMaxZedKeyAndSecondMaxZedForHOurly(MaxZedKey ,SecondMaxZedKey);
-    CompareMaxZedFirstDateAndSecondMaxLastDate(BreakConSolidateDateForCurrentDate);
+    TDateTime DateValueForHourly ;
+    GetMaxZedKeyAndSecondMaxZedKey(MaxZedKey ,SecondMaxZedKey);
+    IsConsolidatedOrNot(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
 
     if(!BreakConSolidateDateForCurrentDate)
     {
@@ -1274,90 +1258,8 @@ int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, Unicode
     return TransactionTotal;
 
 }
-//---------------------------------------------------------------------------
-bool TMallExportMegaworldMall::IsConsolidatedOrNotForDaily(bool &IsConSolidatedDataReset)
-{
-       TDateTime DateValue;
-       UnicodeString DateForMaxZed = GetFirstDateValueForMaxZedForDaily(DateValue) ;
-       UnicodeString DateForSecondMaxZed = GetFirstDateValueForSecondMaxZedForDaily(DateValue) ;
-       if(DateForMaxZed == DateForSecondMaxZed)
-       {
-
-        IsConSolidatedDataReset = false;
-       }
-
-       else
-       {
-        IsConSolidatedDataReset = true;
-       }
-}
 
 //---------------------------------------------------------------------------
-UnicodeString TMallExportMegaworldMall::GetFirstDateValueForMaxZedForDaily(TDateTime &DateValue)
-{
-    UnicodeString Beginning_Invoice = "";
-    UnicodeString FirstSaleDateForMaxZed = "";
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    query->Close();
 
-    query->SQL->Text =  "SELECT a.BEGINNING_INVOICE "
-                        "FROM ARCMALLEXPORT a "
-                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORT a) ";
-    query->ExecQuery();
-    Beginning_Invoice = query->Fields[0]->AsString;
-
-    query->Close();
-
-    query->SQL->Text =  "SELECT a.TIME_STAMP "
-                        "FROM ARCBILL a "
-                        "WHERE a.INVOICE_NUMBER = :Invoice_number ";
-
-    query->ParamByName("Invoice_number")->AsString = Beginning_Invoice ;
-    query->ExecQuery();
-    DateValue = query->Fields[0]->AsDate;
-    FirstSaleDateForMaxZed = DateValue.FormatString("mm/dd/yyyy");
-    DBTransaction.Commit();
-
-    return FirstSaleDateForMaxZed;
-
-}
-
-//---------------------------------------------------------------------------
-UnicodeString TMallExportMegaworldMall::GetFirstDateValueForSecondMaxZedForDaily(TDateTime &DateValue)
-{
-    UnicodeString Beginning_Invoice = "";
-    UnicodeString FirstSaleDateForSecondMaxZed = "";
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    query->Close();
-
-    query->SQL->Text =  "SELECT a.BEGINNING_INVOICE "
-                        "FROM ARCMALLEXPORT a "
-                        "WHERE a.Z_KEY = (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORT a "
-                        "WHERE a.Z_KEY < (SELECT MAX(a.Z_KEY) "
-                        "FROM ARCMALLEXPORT a)) ";
-   query->ExecQuery();
-   Beginning_Invoice = query->Fields[0]->AsString;
-
-    query->Close();
-
-    query->SQL->Text =  "SELECT a.TIME_STAMP "
-                        "FROM ARCBILL a "
-                        "WHERE a.INVOICE_NUMBER = :Invoice_number ";
-
-    query->ParamByName("Invoice_number")->AsString = Beginning_Invoice ;
-    query->ExecQuery();
-    DateValue = query->Fields[0]->AsDate;
-    FirstSaleDateForSecondMaxZed = DateValue.FormatString("mm/dd/yyyy");
-    DBTransaction.Commit();
-
-    return FirstSaleDateForSecondMaxZed;
-}
-//---------------------------------------------------------------------------
 
 

@@ -1706,7 +1706,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     {
        if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
        {
-           if(Payment->Name == "sourabh123")
+           if(Payment->Name == "DefaultGC")
            {
               std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
               frmTouchNumpad->Caption = "Enter Total Amount For GiftCard";
@@ -1725,7 +1725,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
            }
 
-           else if(Payment->Name == "sourabhcheck")
+           else if(Payment->Name == "DefaultCheck")
            {
               std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
               frmTouchNumpad->Caption = "Enter Total Amount For Cheque";
