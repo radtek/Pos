@@ -360,8 +360,9 @@ namespace FiscalLibraries
                     else
                         fiscalprinter.FiscalReceiptType = FiscalReceiptType.Refund;
                 }
+                 
                 stringList.Add("receipt type " + Saletype);
-
+                stringList.Add("Invoice Number is  " + InvoiceNumber);
                 stringList.Add("Before beginning fiscal receipt ");
 
                 fiscalprinter.BeginFiscalReceipt(true);
@@ -539,17 +540,25 @@ namespace FiscalLibraries
                         OpenCashDrawer();
                         stringList.Add("After opening cashdrawer fundction. ");
                     }
+                    printResponseString = "NOk";
                     stringList.Add("End of print receipt function. ");
                     WriteToFile(stringList);
                     stringList.Clear();
                 }
                 catch (Exception Ex)
                 {
-                    //stringList.Clear();
+                    //stringList.Clear();                    
                     stringList.Add("catch block of First Try block" + Ex.Message);
                     stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
+                    stringList.Add("printResponseString is: " + printResponseString);
                     WriteToFile(stringList);
                     stringList.Clear();
+                    if (printResponseString == "NOk")
+                    {
+                        printResponseString = "OK";
+                        return printResponseString;
+                    }
+                    
                     //fiscalprinter.ResetPrinter();
                     fiscalprinter.Close();
                     throw;
@@ -569,6 +578,11 @@ namespace FiscalLibraries
             }
             catch (Exception Ex)
             {
+                if (printResponseString == "NOk")
+                {
+                    printResponseString = "OK";
+                    return printResponseString;
+                }
                 printResponseString = Ex.Message;
                 stringList.Add("catch block of second Try block" + Ex.Message);
                 stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
