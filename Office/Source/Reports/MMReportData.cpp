@@ -6013,9 +6013,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
                    " left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
                    " where "
                    " ab.invoice_number  = :in "
-                   // "left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
-                   // "left join ARCBILL ab on ab.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY   "
-                    "Group By "
+                   "Group By "
                     "1,2) c on c.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
 
            " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
