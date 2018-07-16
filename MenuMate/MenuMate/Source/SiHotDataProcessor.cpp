@@ -769,7 +769,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     }
 }
 //----------------------------------------------------------------------------
-bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort)
+bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort, AnsiString apiKey)
 {
     bool retValue = false;
     std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
@@ -779,7 +779,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut) ;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut,apiKey) ;
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")
@@ -810,7 +810,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     return retValue;
 }
 //----------------------------------------------------------------------------
-bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiString tcpPort)
+bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiString tcpPort,AnsiString apiKey)
 {
     bool retValue = false;
     std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
@@ -820,7 +820,7 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut);
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut,apiKey);
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")

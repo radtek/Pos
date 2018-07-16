@@ -403,6 +403,7 @@ public:
     UnicodeString ServiceChargeGLCode;
     UnicodeString ServiceChargeTaxGLCode;
     UnicodeString RoundingGLCode;
+    UnicodeString GiftCardGLCode;
     bool RefundingItems;
     bool GiftCardOnly;
 
@@ -531,6 +532,7 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
+
 };
 
 #endif

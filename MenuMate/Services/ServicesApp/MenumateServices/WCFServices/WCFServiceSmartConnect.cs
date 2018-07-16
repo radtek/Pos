@@ -613,8 +613,12 @@ namespace MenumateServices.WCFServices
 
                     if ((deSerializeResponse.Data != null && deSerializeResponse.Data.TransactionResult.ToUpper() == "OK-ACCEPTED") || (deSerializeResponse.Result != null && deSerializeResponse.Result.ToLower() == "success"))
                     {
-                        if(deSerializeResponse.Data != null)
+                        if (deSerializeResponse.Data != null)
+                        {
                             deSerializeResponse.Data.AmountTotal = Convert.ToString(Convert.ToDouble(deSerializeResponse.Data.AmountTotal) / 100);
+                            deSerializeResponse.Data.AmountTip = Convert.ToString(Convert.ToDouble(deSerializeResponse.Data.AmountTip) / 100);
+                            deSerializeResponse.Data.AmountSurcharge = Convert.ToString(Convert.ToDouble(deSerializeResponse.Data.AmountSurcharge) / 100);
+                        }
                         deSerializeResponse.ResponseSuccessful = true;
                     }
                 }

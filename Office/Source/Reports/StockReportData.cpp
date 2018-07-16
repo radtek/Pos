@@ -1800,12 +1800,13 @@ void TdmStockReportData::SetupStocktake(int StocktakeKey, bool HideOnHand, bool 
 			"(Stock.Deleted = 'F' Or Stock.Deleted Is Null) And "
 			"StockLocation.Stocktake_Key = :Stocktake_Key "
 		"Group By "
-			"StockLocation.Location,"
-			"StockCategory.Sort_Order,"
-			"StockCategory.Stock_Category,"
-			"StockGroup.Stock_Group,"
-			"StockGroup.Sort_Order,"
-			"Stock.Code,";
+            "StockCategory.Stock_Category,"
+             "StockCategory.Sort_Order, "
+             	"StockGroup.Stock_Group,"
+                	"StockGroup.Sort_Order,"
+			     "StockLocation.Location,"
+                  "Stock.Code,";
+
 	if (false == HideBarcodes)
 	{
 		qrStocktake->SQL->Text = qrStocktake->SQL->Text +
@@ -1816,10 +1817,16 @@ void TdmStockReportData::SetupStocktake(int StocktakeKey, bool HideOnHand, bool 
 			"Stock.Stocktake_Unit,"
 			"StockLocation.On_Hand "
 		"Order By "
+               "StockCategory.Sort_Order, "
+              "StockGroup.Sort_Order,"
 			"StockLocation.Location, "
             "upper(StockCategory.Stock_Category)asc, "
             "upper(StockGroup.Stock_Group)asc, "
             "upper(Stock.Description)asc ";
+
+
+
+
 
 	qrStocktake->ParamByName("Stocktake_Key")->AsString = StocktakeKey;
 }

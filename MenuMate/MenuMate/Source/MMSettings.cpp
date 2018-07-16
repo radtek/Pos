@@ -350,6 +350,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().SetTextFontSizeOnCustomerDisplay = TManagerVariable::Instance().GetBool(DBTransaction, vmSetTextFontSize, false);
         TGlobalSettings::Instance().CustomerDisplayFontSize = TManagerVariable::Instance().GetStr(DBTransaction, vmSetCustomerDisplayFontSize, "");
         TGlobalSettings::Instance().WeightLimit = TManagerVariable::Instance().GetNum(DBTransaction, vmWeightLimit, 0.000);
+         TGlobalSettings::Instance().GiftCardGLCode =  TManagerVariable::Instance().GetStr(DBTransaction, vmGiftCardGLCode, "");
+
         //add
         TGlobalSettings::Instance().ShowScreenToSelectItemForPoint = TManagerVariable::Instance().GetBool(DBTransaction, vmShowScreenToSelectItemForPoint, false);
         TGlobalSettings::Instance().PontsSpentCountedAsRevenue = TManagerVariable::Instance().GetBool(DBTransaction, vmPontsSpentCountedAsRevenue, false);

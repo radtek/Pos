@@ -272,6 +272,25 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnDiscountSurchargeClick
     end
+    object btnGiftCard: TTouchBtn
+      Left = 359
+      Top = 464
+      Width = 300
+      Height = 60
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindow
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Gift Card'
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnGiftCardClick
+    end
   end
   object Panel2: TPanel
     Left = 690

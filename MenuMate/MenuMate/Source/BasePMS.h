@@ -36,6 +36,7 @@ class TBasePMS
         AnsiString DefaultAccountNumber;
         AnsiString RoundingAccountNumber;
         AnsiString RevenueCentre;
+        AnsiString ApiKey;
 
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;

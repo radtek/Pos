@@ -2983,6 +2983,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Surcharge GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+      SetVarStr( DBTransaction, vmGiftCardGLCode, "GiftCard GL Code",
+                    "Gift GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,
@@ -3397,6 +3401,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmEnableEftPosPaymentSense, "Enable Payment Sense Integration", "Tells whether payment sense eftpos is enabled.\r"
          "Default is False", vmg3rdPartyInterface, false);
         SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmPMSAPIKey,  "PMS API KEY", "This API Key can be used for PMS integration is provided", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

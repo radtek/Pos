@@ -3490,7 +3490,7 @@ void TPrintSection::PrintTwoLinesItemTotal(TReqPrintJob *PrintJob)     // print 
 			ItemName = InitialOrder->Item;
 		}
 
-        
+
         if(InitialOrder->OrderType == CanceledOrder)
         {
             pPrinter->Line->Columns[0]->Text = "!!!! CANCEL ORDERS !!!!";
@@ -4859,6 +4859,31 @@ void TPrintSection::PrintTotalEx(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Text = ItemName;
 	pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
 	pPrinter->AddLine();
+
+    for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
+	{
+		TPayment *SubPayment = PrintJob->Transaction->PaymentGet(i);
+        AnsiString paymentName = SubPayment->Name;
+        AnsiString cardType = SubPayment->CardType;
+        if(cardType != NULL && cardType != "")
+           paymentName = cardType;
+
+        if(SubPayment->TipAmount != 0)
+        {
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
+
+        if(SubPayment->EFTPOSSurcharge != 0)
+        {
+            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
+	}
 }
 
 void TPrintSection::PrintGrandTotal(TReqPrintJob *pj)
@@ -6609,22 +6634,6 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 				CurrencyDecimals));
 			}
 		}
-
-       if(SubPayment->TipAmount != 0)
-        {
-            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
-            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
-            ffNumber,
-            CurrencyDecimals));
-        }
-
-        if(SubPayment->EFTPOSSurcharge != 0)
-        {
-            pPrinter->Add(paymentName + " Surcharge " + "|" + CurrToStrF(
-            RoundToNearest(SubPayment->EFTPOSSurcharge, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
-            ffNumber,
-            CurrencyDecimals));
-        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)
@@ -8401,7 +8410,7 @@ TDocketFormat &inFormat)
 				// Ok the next order does not match this one so write out this ones
 				// Seat Information, Yes its a real pain being retrospective....
 				TItemComplete *PrevOrder = (TItemComplete*)(Orders->Items[CurrentIndex - 1]);
-               
+
                 if(((SubOrdersCompare(InitialOrder->SubOrders, CurrentOrder->SubOrders) != 0) ||
                             (OptionsCompare(InitialOrder->OptionsSelected, CurrentOrder->OptionsSelected) != 0))
                                 && (InitialOrder->Size == CurrentOrder->Size))
@@ -8568,7 +8577,7 @@ TDocketFormat &inFormat)
             {
                 optionQuantity += CurrentOrder->GetQty();
             }
-                              
+
 			// Needed to sence seat name change.   Current Index is incremented so the
 			// next reference to it is already pointing to the next seat.
 			unsigned int OldTabKey = CurrentOrder->TabKey;
@@ -9320,3 +9329,4 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
     }
     return retVal;
 }
+

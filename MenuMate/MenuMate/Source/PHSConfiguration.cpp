@@ -146,7 +146,10 @@ void TfrmPHSConfiguration::UpdateGUI()
     {
         tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
     }
-    tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    if(PMSType != siHot)
+        tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    else
+        tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
     // enable default transaction count button for sihot also
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
 
@@ -162,7 +165,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = false;
-        tbItemDefCat->Enabled = false;
+        tbItemDefCat->Enabled = true;
         tbOracleInterfaceIP->Enabled = false;
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
@@ -309,14 +312,35 @@ void __fastcall TfrmPHSConfiguration::tbItemDefCatClick(TObject *Sender)
 		frmTouchKeyboard->AllowCarriageReturn = false;
 		frmTouchKeyboard->StartWithShiftDown = false;
 		frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
-		frmTouchKeyboard->Caption = "Enter the default Category Number for Menu Items.";
+        if(PMSType != siHot)
+        {
+    		frmTouchKeyboard->Caption = "Enter the default Category Number for Menu Items.";
+            frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+        }
+        else
+        {
+            frmTouchKeyboard->Caption = "Enter the API-KEY.";
+            frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ApiKey;
+        }
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory = frmTouchKeyboard->KeyboardText;
-			tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+            if(PMSType != siHot)
+            {
+                TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory = frmTouchKeyboard->KeyboardText;
+    			tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+            }
+            else
+            {
+                TDeviceRealTerminal::Instance().BasePMS->ApiKey = frmTouchKeyboard->KeyboardText.Trim();
+                tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
+            }
 			Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction1.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSItemCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory);
+            if(PMSType != siHot)
+    			TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSItemCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory);
+            else
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSAPIKey,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
 			DBTransaction1.Commit();
 		}
 	}

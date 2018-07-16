@@ -17,8 +17,8 @@ class TSiHotDataProcessor
        void CreateRoomChargePost(TPaymentTransaction &_paymentTransaction, TRoomCharge &_roomCharge);
        void PrepareRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,TRoomResponse);
        int GetTransNumber();
-       bool GetDefaultAccount(AnsiString TCPIPAddress,AnsiString TCPPort);
-       bool GetRoundingAccounting(AnsiString TCPIPAddress,AnsiString TCPPort);
+       bool GetDefaultAccount(AnsiString TCPIPAddress,AnsiString TCPPort, AnsiString apiKey);
+       bool GetRoundingAccounting(AnsiString TCPIPAddress,AnsiString TCPPort, AnsiString apiKey);
        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
        void AddRoundingAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
     private:

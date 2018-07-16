@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (29/05/2018 6:10:50 p.m. - - $Rev: 25127 $)
+// (4/07/2018 1:04:10 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -117,5 +117,5 @@ static void RegTypes()
 }
 #pragma startup RegTypes 32
 
-};     // NS__SiHotWSDL
+};     // NS__
 
