@@ -48,7 +48,7 @@ object frmEJournal: TfrmEJournal
     end
     object btnSaveAsPDF: TTouchBtn
       Left = 423
-      Top = 394
+      Top = 418
       Width = 153
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -107,7 +107,7 @@ object frmEJournal: TfrmEJournal
       RepeatDelay = 25
     end
     object memReceipt: TMemo
-      Left = 8
+      Left = 11
       Top = 8
       Width = 409
       Height = 681
@@ -147,7 +147,7 @@ object frmEJournal: TfrmEJournal
     end
     object btnClosePrint: TTouchBtn
       Left = 423
-      Top = 530
+      Top = 498
       Width = 153
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -165,9 +165,9 @@ object frmEJournal: TfrmEJournal
     end
     object GroupBoxFilter: TGroupBox
       Left = 423
-      Top = 111
-      Width = 154
-      Height = 226
+      Top = 96
+      Width = 161
+      Height = 289
       Caption = 'Filter'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -178,7 +178,7 @@ object frmEJournal: TfrmEJournal
       TabOrder = 6
       object LabelToDate: TLabel
         Left = 3
-        Top = 82
+        Top = 113
         Width = 50
         Height = 16
         Caption = 'To Date'
@@ -190,9 +190,21 @@ object frmEJournal: TfrmEJournal
         Height = 16
         Caption = 'From Date'
       end
+      object lblfromdatetime: TLabel
+        Left = 3
+        Top = 82
+        Width = 4
+        Height = 16
+      end
+      object lbltodatetime: TLabel
+        Left = 3
+        Top = 165
+        Width = 4
+        Height = 16
+      end
       object btnGenerate: TTouchBtn
         Left = 3
-        Top = 146
+        Top = 212
         Width = 146
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
@@ -220,7 +232,7 @@ object frmEJournal: TfrmEJournal
       end
       object ToDateTimePicker: TDateTimePicker
         Left = 3
-        Top = 104
+        Top = 135
         Width = 146
         Height = 24
         Date = 42711.999988425930000000
