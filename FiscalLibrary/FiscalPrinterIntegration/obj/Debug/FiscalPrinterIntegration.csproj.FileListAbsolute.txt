@@ -46,3 +46,13 @@ C:\Users\Administrator\Desktop\FiscalLibrary\FiscalLibrary\FiscalPrinterIntegrat
 C:\Users\Administrator\Desktop\FiscalLibrary\FiscalLibrary\FiscalPrinterIntegration\obj\Debug\FiscalPrinterIntegration.dll
 C:\Users\Administrator\Desktop\FiscalLibrary\FiscalLibrary\FiscalPrinterIntegration\obj\Debug\FiscalPrinterIntegration.pdb
 C:\Users\Administrator\Desktop\FiscalLibrary\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalPrinterIntegration.tlb
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalPrinterIntegration.dll
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalPrinterIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalPrinterIntegration.tlb
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\Microsoft.PointOfService.dll
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\NLog.dll
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\NLog.pdb
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\NLog.xml
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\obj\Debug\FiscalPrinterIntegration.dll
+C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\obj\Debug\FiscalPrinterIntegration.pdb
