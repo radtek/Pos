@@ -3627,7 +3627,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
         logList->Add("----------------------------------------------New BILL-------------------------------------------");
         logList->Add("Use Italy Fiscal Printer setting is true.");
         logList->Add("Logs For invoice number: "  + PaymentTransaction.InvoiceNumber);
-        logList->Add("time is: " + Now().CurrentDate().FormatString("YYYYMMDDhhmm"));
+        logList->Add("time is: " + Now().FormatString("hh:nn:ss am/pm"));
 
         if(CloseAndPrint ||
             ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
