@@ -8714,7 +8714,20 @@ void TfrmAnalysis::UpdateMallExportDetails()
         {
            if(TGlobalSettings::Instance().MallIndex == 7)
            {
-            	UpdateZKeyInArcMallExportForMegaWorld();
+               int Zed_Key = UpdateZKeyInArcMallExportForMegaWorld();
+               bool IsValueGreaterThanZero = CheckValueExistInOtherSalesField(Zed_Key);
+               if(IsValueGreaterThanZero)
+               {
+                 bool Food_Type = false;
+                 bool NonFood_Type = false;
+                 bool Groceries_Type = false;
+                 bool Medicines_Type = false;
+                 bool Other_Type = false;
+                 int Count = GetCountForSalesTypeValue(Zed_Key,Food_Type,NonFood_Type,Groceries_Type,Medicines_Type,Other_Type) ;
+                 Currency Amount_Total = GetTotalSalesAmountFromArcMallExport(Zed_Key);
+                 Currency Divisible_Amount = Amount_Total/Count;
+                 UpdateSaleTypeValueInArcMallExport(Zed_Key,Divisible_Amount,Food_Type,NonFood_Type,Groceries_Type,Medicines_Type,Other_Type)  ;
+               }
            }
            std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
            MEM->IMallManager->ZExport();
@@ -9188,9 +9201,9 @@ void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
     }
 }
 //-------------------------------------------------------------------------------
-void TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
+int TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
 {
-
+    int ZedKey = 0;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
@@ -9201,7 +9214,7 @@ void TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS ";
         IBInternalQuery->ExecQuery();
-        int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+        ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORTHOURLY SET ARCMALLEXPORTHOURLY.Z_KEY = :Z_KEY "
@@ -9230,6 +9243,235 @@ void TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 
+    return ZedKey;
+
 
 }
+
+//-------------------------------------------------------------------------------
+bool TfrmAnalysis::CheckValueExistInOtherSalesField(int Zed_key)
+{
+    Currency GiftCard_Vale = 0;
+    Currency Check_Value = 0;
+    bool IsValueNotZeroInGC_CheckSales = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  "SELECT COALESCE(SUM(a.GIFT_CARD),0)GIFT_CARD,COALESCE(SUM(a.CHECK_SALES),0)CHECK_SALES  "
+                                      "FROM ARCMALLEXPORTHOURLY a "
+                                      "WHERE a.Z_KEY = :Zed_Value ";
+
+        IBInternalQuery->ParamByName("Zed_Value")->AsInteger = Zed_key;
+        IBInternalQuery->ExecQuery();
+
+        GiftCard_Vale = IBInternalQuery->FieldByName("GIFT_CARD")->AsCurrency;
+        Check_Value = IBInternalQuery->FieldByName("CHECK_SALES")->AsCurrency;
+
+        if(GiftCard_Vale>0)
+        {
+          IsValueNotZeroInGC_CheckSales = true;
+        }
+        else if(Check_Value>0)
+        {
+          IsValueNotZeroInGC_CheckSales = true;
+        }
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+    return IsValueNotZeroInGC_CheckSales;
+}
+//-------------------------------------------------------------------------------
+int TfrmAnalysis::GetCountForSalesTypeValue(int Zed_key,bool &Foodtype,bool &NonFoodType, bool &GroceriesType, bool &MedicinesType ,bool &OtherType)
+{
+    int count = 0;
+    Currency Salestype_food = 0;
+    Currency Salestype_nonfood = 0;
+    Currency Salestype_groceries = 0;
+    Currency Salestype_medicines = 0;
+    Currency Salestype_others = 0;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  "SELECT a.SALESTYPE_FOOD,a.SALESTYPE_NONFOOD,a.SALESTYPE_GROCERIES,a.SALESTYPE_MEDICINES,a.SALESTYPE_OTHERS "
+                                      "FROM ARCMALLEXPORT a "
+                                      "WHERE a.Z_KEY = :Zed_Value ";
+
+        IBInternalQuery->ParamByName("Zed_Value")->AsInteger = Zed_key;
+        IBInternalQuery->ExecQuery();
+
+        Salestype_food = IBInternalQuery->FieldByName("SALESTYPE_FOOD")->AsCurrency;
+        if(Salestype_food > 0)
+        {
+          Foodtype = true;
+          count++;
+        }
+        Salestype_nonfood = IBInternalQuery->FieldByName("SALESTYPE_NONFOOD")->AsCurrency;
+        if(Salestype_nonfood > 0)
+        {
+          NonFoodType = true;
+          count++;
+        }
+        Salestype_groceries = IBInternalQuery->FieldByName("SALESTYPE_GROCERIES")->AsCurrency;
+        if(Salestype_groceries > 0)
+        {
+          GroceriesType = true;
+          count++;
+        }
+        Salestype_medicines = IBInternalQuery->FieldByName("SALESTYPE_MEDICINES")->AsCurrency;
+        if(Salestype_medicines > 0)
+        {
+          MedicinesType = true;
+          count++;
+        }
+        Salestype_others = IBInternalQuery->FieldByName("SALESTYPE_OTHERS")->AsCurrency;
+        if(Salestype_others > 0)
+        {
+             OtherType = true;
+             count++;
+
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+    return count;
+}
+//-------------------------------------------------------------------------------
+Currency TfrmAnalysis::GetTotalSalesAmountFromArcMallExport(int Zed_key)
+{
+    Currency Cashsales = 0;
+    Currency othersales = 0;
+    Currency cardsales = 0;
+    Currency voidamount = 0;
+    Currency TotalAmount = 0;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  "SELECT a.CASH_SALES , a.OTHER_SALES ,a.CARD_SALES,a.VOID_AMOUNT "
+                                      "FROM ARCMALLEXPORT a "
+                                      "WHERE a.Z_KEY = :Zed_Value ";
+
+        IBInternalQuery->ParamByName("Zed_Value")->AsInteger = Zed_key;
+        IBInternalQuery->ExecQuery();
+
+        Cashsales = IBInternalQuery->FieldByName("CASH_SALES")->AsCurrency;
+        othersales = IBInternalQuery->FieldByName("OTHER_SALES")->AsCurrency;
+        cardsales = IBInternalQuery->FieldByName("CARD_SALES")->AsCurrency;
+        voidamount = IBInternalQuery->FieldByName("VOID_AMOUNT")->AsCurrency;
+
+        TotalAmount = Cashsales + othersales + cardsales + voidamount;
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+    return TotalAmount;
+}
+//-------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateSaleTypeValueInArcMallExport(int Zed_key,Currency DivisibleAmount,bool Foodtype,bool NonFoodType, bool GroceriesType, bool MedicinesType ,bool OtherType)
+{
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORT SET ARCMALLEXPORT.SALESTYPE_FOOD = :SALESTYPEFOOD, "
+                                     "ARCMALLEXPORT.SALESTYPE_NONFOOD = :SALESTYPENONFOOD, "
+                                     "ARCMALLEXPORT.SALESTYPE_GROCERIES = :SALESTYPEGROCERIES, "
+                                     "ARCMALLEXPORT.SALESTYPE_MEDICINES = :SALESTYPEMEDICINES, "
+                                     "ARCMALLEXPORT.SALESTYPE_OTHERS = :SALESTYPEOTHERS "
+                                     "WHERE ARCMALLEXPORT.Z_KEY  =:Z_VALUE ";
+
+        if(Foodtype)
+        {
+          IBInternalQuery->ParamByName("SALESTYPEFOOD")->AsCurrency = DivisibleAmount;
+        }
+        else
+        {
+         IBInternalQuery->ParamByName("SALESTYPEFOOD")->AsCurrency = 0;
+        }
+
+        if(NonFoodType)
+        {
+          IBInternalQuery->ParamByName("SALESTYPENONFOOD")->AsCurrency = DivisibleAmount;
+        }
+        else
+        {
+         IBInternalQuery->ParamByName("SALESTYPENONFOOD")->AsCurrency = 0;
+        }
+        if(GroceriesType)
+        {
+          IBInternalQuery->ParamByName("SALESTYPEGROCERIES")->AsCurrency = DivisibleAmount;
+        }
+        else
+        {
+         IBInternalQuery->ParamByName("SALESTYPEGROCERIES")->AsCurrency = 0;
+        }
+        if(MedicinesType)
+        {
+          IBInternalQuery->ParamByName("SALESTYPEMEDICINES")->AsCurrency = DivisibleAmount;
+        }
+        else
+        {
+         IBInternalQuery->ParamByName("SALESTYPEMEDICINES")->AsCurrency = 0;
+        }
+        if(OtherType)
+        {
+          IBInternalQuery->ParamByName("SALESTYPEOTHERS")->AsCurrency = DivisibleAmount;
+        }
+        else
+        {
+         IBInternalQuery->ParamByName("SALESTYPEOTHERS")->AsCurrency = 0;
+        }
+        IBInternalQuery->ParamByName("Z_VALUE")->AsInteger = Zed_key;
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+}
+
+//-------------------------------------------------------------------------------
+
+
+
 

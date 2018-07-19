@@ -63,7 +63,12 @@ public:
     void GetOldAndNewGrandTotal(int maxzedkey,Currency &oldgrandtotal,Currency &NewGrandTotal) ;
     bool IsConsolidatedOrNot(bool &IsBreakConSolidateDateForCurrentDate, int MaxZed, int SecondMaxZed);
     void GetFirstDateValueForMaxZedAndSecondMaxZed(TDateTime &DateValue ,UnicodeString &MaxZedDate , UnicodeString &SecondMaxZedDate,int maxzed,int SecondMaxZed);
-
+    int GetCurrentControlNumber(int MaxZed) ;
+    int IsFirstZedPerformed() ;
+    void GetMinimumAndMaxDateForCurrentZed(TDateTime DateValue, int &Zedkey) ;
+    void CheckDistinctDateInSameZed(bool &IsDistinctDatePresentForSameZed , TDateTime &DateValue, int Zedkey );
+    void GetFirstDateFromArcMallExportTable(int MaxZed, TDateTime &MaxDateForMaxZed) ;
+    bool CheckIsDateValuePresentInHourlyTable(int MaxZed,TDateTime MaxDateForMaxZed) ;
     TMallExportMegaworldMall* megaworldExport;
     UnicodeString OutputValue;
     UnicodeString TENANT_NAME;

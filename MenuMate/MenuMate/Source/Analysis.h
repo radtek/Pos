@@ -232,8 +232,12 @@ private:	// User declarations
     void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
     void MakeZEDLogFile(TStringList *List);
     void UpdateStallCodeForEviaMall(int fieldindex);
-    void UpdateZKeyInArcMallExportForMegaWorld();
+    int UpdateZKeyInArcMallExportForMegaWorld();
     bool DuplicateEntryInTable;
+    bool CheckValueExistInOtherSalesField(int Zed_key);
+    int GetCountForSalesTypeValue(int Zed_key,bool &Foodtype,bool &NonFoodType, bool &GroceriesType, bool &MedicinesType ,bool &OtherType) ;
+    Currency GetTotalSalesAmountFromArcMallExport(int Zed_key);
+    void UpdateSaleTypeValueInArcMallExport(int Zed_key,Currency DivisibleAmount,bool Foodtype,bool NonFoodType, bool GroceriesType, bool MedicinesType ,bool OtherType) ;
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

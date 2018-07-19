@@ -3986,7 +3986,7 @@ void TfrmMallExportRegenerateReport::GetListOfDatesBetwSdateEndDate(TDateTime St
 
 
           query->SQL->Text = "SELECT CAST(a.DATE_VALUE AS date)Date_value "
-                             "FROM ARCMALLEXPORT a "
+                             "FROM ARCMALLEXPORTHOURLY a "
                              "WHERE extract(DAY from (a.DATE_VALUE)) >= :day_startday "
                              "AND extract(MONTH from (a.DATE_VALUE)) >= :month_startday "
                              "AND extract(YEAR from (a.DATE_VALUE)) >= :year_startday "
@@ -4071,7 +4071,7 @@ void TfrmMallExportRegenerateReport::GetTotalZedCorrespondingDate(TDateTime Star
 
 
           query->SQL->Text = "SELECT a.Z_KEY "
-                             "FROM ARCMALLEXPORT a "
+                             "FROM ARCMALLEXPORTHOURLY a "
                              "WHERE extract(DAY from (a.DATE_VALUE)) >= :day_startday "
                              "AND extract(MONTH from (a.DATE_VALUE)) >= :month_startday "
                              "AND extract(YEAR from (a.DATE_VALUE)) >= :year_startday "
@@ -4447,10 +4447,7 @@ void TfrmMallExportRegenerateReport::PrepareDateForDaily(int Zedkey,UnicodeStrin
                 FINEDINECUST_COUNT = FineDineCustCount;
 
 
-                CURRENTEODCOUNTER = query->FieldByName("CURRENTEODCOUNTER")->AsInteger;
-                EodCounter +=CURRENTEODCOUNTER;
-                CURRENTEODCOUNTER = EodCounter;
-
+                CURRENTEODCOUNTER = query->FieldByName("EODNEW")->AsInteger;
 
                 TRANSACTION_COUNT = query->FieldByName("TRANSACTION_COUNT")->AsInteger;
                 TransactionCount +=TRANSACTION_COUNT;
