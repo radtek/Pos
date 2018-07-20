@@ -9,6 +9,7 @@
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
 #include "Main.h"
+#include "DbMegaworldMall.h"
 #include <sstream>
 #include <dirent.h>
 
@@ -71,8 +72,8 @@ TExportResponse TMallExportMegaworldMall::ZExport()
           TDateTime MinimumDateForSameZed;
           int Zed_Key = 0;
           TGlobalSettings::Instance().BatchNo = 1;
-          GetMinimumAndMaxDateForCurrentZed(CurrentDateValue,Zed_Key);
-          CheckDistinctDateInSameZed(IsDistinctDatePresent, MinimumDateForSameZed,Zed_Key);
+          TDbMegaWorldMall::GetMinimumAndMaxDateForCurrentZed(CurrentDateValue,Zed_Key);
+          TDbMegaWorldMall::CheckDistinctDateInSameZed(IsDistinctDatePresent, MinimumDateForSameZed,Zed_Key);
           if(IsDistinctDatePresent)
           {
            datevalue = MinimumDateForSameZed;
@@ -80,8 +81,8 @@ TExportResponse TMallExportMegaworldMall::ZExport()
           else
           {
              TDateTime MaxDateForMaxZed;
-             GetFirstDateFromArcMallExportTable(MaxZed,MaxDateForMaxZed);
-             bool IsDateValueMatched = CheckIsDateValuePresentInHourlyTable(MaxZed,MaxDateForMaxZed);
+             TDbMegaWorldMall::GetFirstDateFromArcMallExportTable(MaxZed,MaxDateForMaxZed);
+             bool IsDateValueMatched = TDbMegaWorldMall::CheckIsDateValuePresentInHourlyTable(MaxZed,MaxDateForMaxZed);
              if(!IsDateValueMatched)
              {
                datevalue = Now()-1;;
@@ -548,7 +549,7 @@ TExportResponse TMallExportMegaworldMall::PrepareDateForDaily(TDateTime DateFiel
         TDateTime DateValueForSecondMaxZed ;
         GetMaxZedKeyAndSecondMaxZedKey(MaxZedKey ,SecondMaxZedKey);
         GetOldAndNewGrandTotal(MaxZedKey,oldgrandtotal,Newgrandtotal);
-        EodCounter = GetCurrentControlNumber(MaxZedKey);
+        EodCounter = TDbMegaWorldMall::GetCurrentControlNumber(MaxZedKey);
         IsConsolidatedOrNot(BreakConSolidateDateForCurrentDate,MaxZedKey,SecondMaxZedKey);
 
         if(!BreakConSolidateDateForCurrentDate)
@@ -1281,212 +1282,4 @@ int TMallExportMegaworldMall::GetHourlyData(UnicodeString &TerminalName, Unicode
 }
 
 //---------------------------------------------------------------------------
-int TMallExportMegaworldMall::GetCurrentControlNumber(int maxzed )
-{
-    int CurrentZedNumber  = 0;
-    try
-    {
 
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL* IBQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-        IBQuery->Close();
-
-        IBQuery->SQL->Text =  "SELECT a.EODNEW "
-                            "FROM ARCMALLEXPORT a "
-                            "WHERE a.Z_KEY = :MaxZed ";
-
-        IBQuery->ParamByName("MaxZed")->AsInteger = maxzed;
-
-        IBQuery->ExecQuery();
-        if(IBQuery->RecordCount)
-        {
-            CurrentZedNumber = IBQuery->Fields[0]->AsInteger;
-        }
-
-        DBTransaction.Commit();
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-
-    return CurrentZedNumber;
-}
-
-//---------------------------------------------------------------------------
-void TMallExportMegaworldMall::GetMinimumAndMaxDateForCurrentZed(TDateTime CurrentDatevalue, int &Zedkey)
-{
-   try
-   {
-       int Count = 0;
-       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-       DBTransaction.StartTransaction();
-       TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-       query->Close();
-
-
-              query->SQL->Text = "SELECT MAX(a.Z_KEY)Z_KEY "
-                                 "FROM ARCMALLEXPORTHOURLY a "
-                                 "WHERE extract(DAY from (a.DATE_VALUE)) = :day_startday "
-                                 "AND extract(MONTH from (a.DATE_VALUE)) = :month_startday "
-                                 "AND extract(YEAR from (a.DATE_VALUE))  = :year_startday ";
-
-
-               query->ParamByName("day_startday")->AsString = CurrentDatevalue.FormatString("dd");
-
-               query->ParamByName("month_startday")->AsString = CurrentDatevalue.FormatString("mm");
-
-               query->ParamByName("year_startday")->AsString =CurrentDatevalue.FormatString("yyyy");
-
-               query->ExecQuery();
-
-        if(query->RecordCount)
-        {
-            Zedkey = query->Fields[0]->AsInteger;
-        }
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-
-}
-//---------------------------------------------------------------------------
-void TMallExportMegaworldMall::CheckDistinctDateInSameZed(bool &IsDistinctDatePresentForSameZed, TDateTime &Min_Temp_DateValue,int Zedkey)
-{
-   try
-   {
-       TDateTime Max_tempdatevalue;
-       UnicodeString Max_DateValue = "";
-       UnicodeString Min_DateValue = "";
-       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-       DBTransaction.StartTransaction();
-       TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-       query->Close();
-
-
-       query->SQL->Text = "SELECT MAX(a.DATE_VALUE) "
-                          "FROM ARCMALLEXPORTHOURLY a "
-                          "WHERE a.Z_KEY = :ZED_KEY ";
-
-       query->ParamByName("ZED_KEY")->AsInteger = Zedkey;
-
-       query->ExecQuery();
-
-        if(query->RecordCount)
-        {
-            Max_tempdatevalue = query->Fields[0]->AsDate;
-            Max_DateValue = Max_tempdatevalue.FormatString("mm/dd/yyyy");
-        }
-
-        query->Close();
-
-        query->SQL->Text = "SELECT MIN(a.DATE_VALUE) "
-                          "FROM ARCMALLEXPORTHOURLY a "
-                          "WHERE a.Z_KEY = :ZED_KEY ";
-
-        query->ParamByName("ZED_KEY")->AsInteger = Zedkey;
-
-        query->ExecQuery();
-
-        if(query->RecordCount)
-        {
-            Min_Temp_DateValue = query->Fields[0]->AsDate;
-            Min_DateValue = Min_Temp_DateValue.FormatString("mm/dd/yyyy");
-        }
-        if(Max_DateValue != Min_DateValue )
-        {
-          IsDistinctDatePresentForSameZed = true;
-        }
-
-        else
-        {
-          IsDistinctDatePresentForSameZed = false;
-        }
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-
-}
-
-//---------------------------------------------------------------------------
-void TMallExportMegaworldMall::GetFirstDateFromArcMallExportTable(int Max_Zed_Key ,TDateTime &Max_datevalue)
-{
-   try
-   {
-       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-       DBTransaction.StartTransaction();
-       TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-       query->Close();
-
-
-       query->SQL->Text =  "SELECT CAST(MAX(a.DATE_VALUE) AS date)DATE_VALUE "
-                           "FROM ARCMALLEXPORT a "
-                           "WHERE a.Z_KEY = :Max_Zed_Key ";
-
-       query->ParamByName("Max_Zed_Key")->AsInteger = Max_Zed_Key ;
-
-       query->ExecQuery();
-        if(query->RecordCount)
-        {
-            Max_datevalue = query->Fields[0]->AsDate;
-        }
-
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-
-}
-
-//---------------------------------------------------------------------------
-bool TMallExportMegaworldMall::CheckIsDateValuePresentInHourlyTable(int Max_Zed_Key ,TDateTime Max_datevalue )
-{
-   UnicodeString max_date_Arcmallexport = "";
-   UnicodeString Date_ArcMallExport_Hourly = "";
-   max_date_Arcmallexport = Max_datevalue.FormatString("mm/dd/yyyy");
-   bool CheckDatePresent = false;
-   try
-   {
-       TDateTime Hourly_datevalue;
-       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-       DBTransaction.StartTransaction();
-       TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-       query->Close();
-
-
-       query->SQL->Text =  "SELECT CAST(a.DATE_VALUE AS date)Date_value "
-                           "FROM ARCMALLEXPORTHOURLY a "
-                           "WHERE a.Z_KEY = :Max_Zed_Key "
-                           "GROUP BY 1 ";
-
-      query->ParamByName("Max_Zed_Key")->AsInteger = Max_Zed_Key ;
-      query->ExecQuery();
-      if(query->RecordCount)
-      {
-
-         Hourly_datevalue = query->Fields[0]->AsDate;
-         Date_ArcMallExport_Hourly = Hourly_datevalue.FormatString("mm/dd/yyyy");
-         if(max_date_Arcmallexport == Date_ArcMallExport_Hourly)
-         {
-           CheckDatePresent = true;
-         }
-         else
-         {
-           CheckDatePresent = false;
-         }
-      }
-
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-
-    return CheckDatePresent;
-}

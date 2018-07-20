@@ -3504,6 +3504,10 @@
 				<DependentOn>ShowEJournal.h</DependentOn>
 				<BuildOrder>799</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="DbMegaworldMall.cpp">
+				<DependentOn>DbMegaworldMall.h</DependentOn>
+				<BuildOrder>800</BuildOrder>
+			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="CaptNamePhone.dfm"/>
 			<FormResources Include="TierLevels.dfm"/>
