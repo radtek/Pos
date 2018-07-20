@@ -135,7 +135,7 @@ Currency TDbMegaWorldMall::GetTotalSalesAmountFromArcMallExport(int Zed_key)
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =  "SELECT a.CASH_SALES , a.OTHER_SALES ,a.CARD_SALES,a.VOID_AMOUNT "
+        IBInternalQuery->SQL->Text =  "SELECT a.CASH_SALES , a.OTHER_SALES ,a.CARD_SALES "
                                       "FROM ARCMALLEXPORT a "
                                       "WHERE a.Z_KEY = :Zed_Value ";
 
@@ -145,9 +145,9 @@ Currency TDbMegaWorldMall::GetTotalSalesAmountFromArcMallExport(int Zed_key)
         Cashsales = IBInternalQuery->FieldByName("CASH_SALES")->AsCurrency;
         othersales = IBInternalQuery->FieldByName("OTHER_SALES")->AsCurrency;
         cardsales = IBInternalQuery->FieldByName("CARD_SALES")->AsCurrency;
-        voidamount = IBInternalQuery->FieldByName("VOID_AMOUNT")->AsCurrency;
 
-        TotalAmount = Cashsales + othersales + cardsales + voidamount;
+
+        TotalAmount = Cashsales + othersales + cardsales;
         DBTransaction.Commit();
     }
     catch(Exception & E)
