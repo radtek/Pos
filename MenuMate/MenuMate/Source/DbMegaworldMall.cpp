@@ -126,7 +126,6 @@ Currency TDbMegaWorldMall::GetTotalSalesAmountFromArcMallExport(int Zed_key)
     Currency Cashsales = 0;
     Currency othersales = 0;
     Currency cardsales = 0;
-    Currency voidamount = 0;
     Currency TotalAmount = 0;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
