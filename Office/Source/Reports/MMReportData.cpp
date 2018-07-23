@@ -5436,7 +5436,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-       " CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number else '' END voucher_number,"
+       " CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number  WHEN paymentPercent.PROPERTIES <> '-5-' THEN qpa.voucher_number else '' END voucher_number,"
             " CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type) = 'EFTPOS' )THEN ABS(coalesce(aChange.CASHOUT,0))  "
             " WHEN (UPPER(paymentPercent.pay_type) = 'CASH' ) THEN (coalesce(aChange.CASHOUT,0)) "
             "  ELSE 0 END change_recv,   "

@@ -2135,10 +2135,8 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
 
-				if (SubPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
-				{
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
-				}
+
 
                 //checking clipp paytype
                 if( payTypeName == "Clipp")

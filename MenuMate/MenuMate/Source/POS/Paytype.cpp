@@ -1884,6 +1884,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 Payment->SysNameOveride = Payment->Name;
             }
         }
+         else if(wrkPayAmount != 0)
+        {
+          Payment->ReferenceNumber = voucherNumber;
+        }
 
         if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypePocketVoucher))
         {
@@ -2769,7 +2773,9 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 		else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 		{
 
-           AnsiString voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+
+             voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+             Payment->ReferenceNumber = voucherNumber;
            if(voucherNumber == "")
            {
                 Payment->Reset();
