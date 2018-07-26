@@ -532,7 +532,7 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
-
+    bool RestartServiceAtZED;
 };
 
 #endif

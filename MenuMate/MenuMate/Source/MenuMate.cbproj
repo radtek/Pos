@@ -3233,6 +3233,11 @@
 				<DependentOn>Analysis\ReportBuilders\ConsolidatedEndOfDayReportBuilder.h</DependentOn>
 				<BuildOrder>741</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="ShowEJournal.cpp">
+				<Form>frmEJournal</Form>
+				<DependentOn>ShowEJournal.h</DependentOn>
+				<BuildOrder>721</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="Money.cpp">
 				<DependentOn>Money.h</DependentOn>
 				<BuildOrder>703</BuildOrder>
@@ -3499,10 +3504,9 @@
 				<DependentOn>EFTPOSPaymentSense.h</DependentOn>
 				<BuildOrder>798</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ShowEJournal.cpp">
-				<Form>frmEJournal</Form>
-				<DependentOn>ShowEJournal.h</DependentOn>
-				<BuildOrder>799</BuildOrder>
+			<CppCompile Include="ServicesManager.cpp">
+				<DependentOn>ServicesManager.h</DependentOn>
+				<BuildOrder>800</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="CaptNamePhone.dfm"/>
@@ -3628,6 +3632,7 @@
 			<FormResources Include="ComboForm.dfm"/>
 			<FormResources Include="SelectDateAndTime.dfm"/>
 			<FormResources Include="CaptureCustomerDetails.dfm"/>
+			<FormResources Include="ShowEJournal.dfm"/>
 			<FormResources Include="RegenerateMallReport.dfm"/>
 			<FormResources Include="SetUpPosPlus.dfm"/>
 			<FormResources Include="EftPosDialogs.dfm"/>
@@ -3636,7 +3641,6 @@
 			<FormResources Include="POS\TaxRemoval.dfm"/>
 			<FormResources Include="Maintenance\WalletConfiguration.dfm"/>
 			<FormResources Include="Analysis.dfm"/>
-			<FormResources Include="ShowEJournal.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -63,6 +63,7 @@
 #include <dirent.h>
 
 #include <Math.hpp>
+#include "ServicesManager.h"
 // ---------------------------------------------------------------------------
 #pragma comment(lib, "wininet")
 #pragma package(smart_init)
@@ -2795,6 +2796,10 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    bool canGoBeyond = RestartFireBirdService();
+    if(!canGoBeyond)
+       return;
+
     if(!TDeviceRealTerminal::Instance().OpenDatabases())
     {
         MessageBox("Till not closed at this time. \r"
@@ -9158,3 +9163,25 @@ void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
     TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
+// ------------------------------------------------------------------------------
+bool TfrmAnalysis::RestartFireBirdService()
+{
+    if(!TGlobalSettings::Instance().RestartServiceAtZED)
+        return true;
+
+    bool retValue = false;
+    TMMProcessingState State(Screen->ActiveForm, "Please Wait...", "Please Wait");
+    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+    try
+    {
+        std::auto_ptr<TServicesManager> servicesManager(new TServicesManager());
+        retValue = servicesManager->RestartService("FirebirdGuardianDefaultInstance");
+    }
+    catch(Exception &Ex)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+    }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
+    return retValue;
+}
+// ------------------------------------------------------------------------------
