@@ -12,11 +12,11 @@ namespace AdyenIntegration.Domain
         public string ProtectedCardData { get; set; }
         [DataMember]
         public CardData CardData { get; set; }
-        [DataMember]
-        public CheckData CheckData { get; set; }
-        [DataMember]
-        public MobileData MobileData { get; set; }
-        [DataMember]
-        public StoredValueAccountID StoredValueAccountID { get; set; }
+        //[DataMember]
+        //public CheckData CheckData { get; set; }
+        //[DataMember]
+        //public MobileData MobileData { get; set; }
+        //[DataMember]
+        //public StoredValueAccountID StoredValueAccountID { get; set; }
     }
 }

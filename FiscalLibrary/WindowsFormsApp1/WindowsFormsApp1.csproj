@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>WindowsFormsApp1</RootNamespace>
     <AssemblyName>WindowsFormsApp1</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -50,12 +50,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FiscalIntegration">
-      <HintPath>..\ClassLibrary1\bin\x86\Debug\FiscalIntegration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.PointOfService, Version=1.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="FiscalIntegration, Version=1.0.0.1, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Windows\assembly\GAC_MSIL\Microsoft.PointOfService\1.11.0.0__31bf3856ad364e35\Microsoft.PointOfService.dll</HintPath>
+      <HintPath>..\ClassLibrary1\bin\x86\Debug\FiscalIntegration.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
