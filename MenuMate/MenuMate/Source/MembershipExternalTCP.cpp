@@ -102,7 +102,7 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 				Packet.SetRepeatTranaction(RetryCount != 0);
 				Packet.Build();
 				AnsiString Data = Packet.SerializeOut();
-
+                makeLogFile(Data);
 				AnsiString Length = "0000000000";
 				int Size = 0;
 				Size = Data.Length() -1;
@@ -191,19 +191,25 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 //---------------------------------------------------------------------------
 void TMembershipGeneralLedgerTCP::makeLogFile(AnsiString str)
 {
-     AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoLogs.txt" ;
-
-    std::auto_ptr<TStringList> List(new TStringList);
-    if (FileExists(fileName) )
+    try
     {
-      List->LoadFromFile(fileName);
+        AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoLogs.txt" ;
+
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+        {
+          List->LoadFromFile(fileName);
+        }
+
+
+        List->Add("Response:- "+ str +  "\n");
+
+
+        List->SaveToFile(fileName );
     }
-
-
-    List->Add("Response:- "+ str +  "\n");
-
-
-    List->SaveToFile(fileName );
+    catch(Exception &Ex)
+    {
+    }
 }
 //---------------------------------------------------------------------------
 

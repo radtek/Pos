@@ -102,7 +102,8 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 
 				if(ThirdPartyCode != UN_CODED)
 				{
-					Categories[ThirdPartyCode] += Payment->GetPayTendered();
+					Categories[ThirdPartyCode] += RoundToNearest(Payment->GetPayTendered(),0.01,
+                                                    TGlobalSettings::Instance().MidPointRoundsDown);
 					TotalRounding += Payment->GetRoundingTotal();
 				}
 			}
@@ -141,7 +142,8 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 
 			if(PaymentTransaction.Money.Change != 0 && !PaymentTransaction.CreditTransaction && !isCashOut)
 			{
-				Categories[CashAccountNumber] -= PaymentTransaction.Money.Change;
+				Categories[CashAccountNumber] -=  RoundToNearest(PaymentTransaction.Money.Change,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+                //PaymentTransaction.Money.Change;
 			}
 
 			// Write out Payments to cover the "Cash Out" portion of the
