@@ -221,7 +221,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsEftPos
+    ActivePage = tsPointOfSale
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -833,7 +833,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Height = 70
           Anchors = [akLeft]
           Caption = 'E Journal'
-          TabOrder = 7
+          TabOrder = 9
           DesignSize = (
             401
             70)
@@ -856,6 +856,28 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Do not include X Report'
             TabOrder = 0
             OnClick = cbExcludeXReportClick
+          end
+        end
+        object GroupBoxResourceManagement: TGroupBox
+          Left = 447
+          Top = 684
+          Width = 401
+          Height = 50
+          Anchors = [akLeft]
+          Caption = 'Resource Management'
+          TabOrder = 7
+          DesignSize = (
+            401
+            50)
+          object cbRestartService: TCheckBox
+            Left = 8
+            Top = 21
+            Width = 250
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'Restart Service at ZED'
+            TabOrder = 0
+            OnClick = cbRestartServiceAtZedClick
           end
         end
         object gbItemBilling: TGroupBox

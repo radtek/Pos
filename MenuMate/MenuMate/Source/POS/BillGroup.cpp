@@ -50,6 +50,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "PMSHelper.h"
 #include "SCDPatronUtility.h"
+#include "SaveLogs.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -860,6 +861,11 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 {
+    TStringList* logList = new TStringList();
+    logList->Add("-----------------------btnBillTableMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
@@ -936,6 +942,9 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 		{
 			MessageBox("No Seats to bill!", "Error", MB_OK + MB_ICONERROR);
 		}
+        logList->Add("Transaction Commit of  btnBillTableMouseClick()");
+        TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
 		DBTransaction.Commit();
 		ResetForm();
 	}
@@ -945,11 +954,22 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 		MessageBox("Unable to process this bill.\r" "Please report the following message to your service provider :\r\r" + E.Message +
 			"\r\rPlease check this Table is not in use.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+
+        logList->Add("Transaction Rollback of  btnBillTableMouseClick()");
+        TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 {
+     TStringList* logList = new TStringList();
+     logList->Add("-----------------------btnBillSelectedMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     TGlobalSettings::Instance().IsThorBillSelected = true;
     TMMTabType type;
     int noOfTabs = 0;
@@ -1147,6 +1167,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 				}
 
                     DBTransaction.Commit();
+                    logList->Add("Transaction commit in btnBillSelectedMouseClick() ");
+                    TSaveLogs::RecordFiscalLogs(logList);
+                    logList->Clear();
 
                     if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (!sendCloseTabMessage) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
                     {
@@ -1167,6 +1190,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 catch(Exception & E)
                 {
                     DBTransaction.Rollback();
+                    logList->Add("Transaction rollback in btnBillSelectedMouseClick() ");
+                    TSaveLogs::RecordFiscalLogs(logList);
+                    logList->Clear();
                     throw;
                 }
             }
@@ -1179,6 +1205,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
     TGlobalSettings::Instance().IsThorBillSelected = false;
+
+    delete logList;
+    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
@@ -1189,6 +1218,11 @@ void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 {
+     TStringList* logList = new TStringList();
+     logList->Add("-----------------------btnPartialPaymentMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     std::set <__int64> SplitItemKeySet;
     int SplitItemKey = 0;
 	try
@@ -1260,6 +1294,12 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
 
 				DBTransaction.Commit();
+                logList->Clear();
+                 logList->Add("Transaction commit of btnPartialPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
+
+
                 SplitItemKeySet.insert(SplitItemKey);
                 if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
                 {
@@ -1289,11 +1329,22 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        logList->Clear();
+         logList->Add("Exception caught in btnPartialPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 {
+     TStringList* logList = new TStringList();
+     logList->Add("-----------------------btnSplitPaymentMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
 	try
 	{
 		if (SelectedItems.empty())
@@ -1373,6 +1424,9 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 
 				DBTransaction.Commit();
 				ResetForm();
+                logList->Add("-Transaction commit in btnSplitPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 
                 //If tab is clipp tab than send the detail
                 if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
@@ -1432,7 +1486,13 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+
+        logList->Add("-Exception in btnSplitPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void TfrmBillGroup::RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys)
