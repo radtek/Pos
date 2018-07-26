@@ -8,8 +8,8 @@ namespace AdyenIntegration.Domain
     {
         [DataMember]
         public string OutputFormat { get; set; }
-        [DataMember]
-        public PredefinedContent PredefinedContent { get; set; }
+        //[DataMember]
+        //public PredefinedContent PredefinedContent { get; set; }
         [DataMember]
         public OutputText[] OutputText { get; set; }
     }
