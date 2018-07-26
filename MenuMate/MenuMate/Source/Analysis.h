@@ -233,6 +233,9 @@ private:	// User declarations
     void MakeZEDLogFile(TStringList *List);
     void UpdateStallCodeForEviaMall(int fieldindex);
     bool RestartFireBirdService();
+    int UpdateZKeyInArcMallExportForMegaWorld();
+    bool DuplicateEntryInTable;
+
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

@@ -152,7 +152,6 @@ void TMallExportHourlyUpdate::setHourlyExportFieldValuesOnTransaction()
 void TMallExportHourlyUpdate::Commit()
 {
     AnsiString Retval = "";
-
 	Database::TDBTransaction Transaction(TDeviceRealTerminal::Instance().DBControl);
 	TIBSQL *Query = Transaction.Query(Transaction.AddQuery());
 
@@ -162,29 +161,63 @@ void TMallExportHourlyUpdate::Commit()
 	Retval = Query->Fields[0]->AsInteger;
 	Transaction.Commit();
 	Query->Close();
-
     Query->SQL->Text = "INSERT INTO MALLEXPORT_HOURLY (" "ME_HOURLY_KEY, " "TERMINAL_NAME, "
                        "TENANT_NAME, " "DATE_VALUE, " "TIME_VALUE, " "AMOUNT_VALUE, " "TRANSACTION_COUNT, "
                        "VAT_SALES, " "TOTALDISCOUNT, " "SCHARGE_AMOUNT, " "REFUND_COUNT, " "REFUND_AMOUNT, "
                        "VOID_COUNT, " "VOID_AMOUNT, " "SCDISCOUNT_AMOUNT, " "MALLCODE, " "PATRON_COUNT, "
-                       "MINUTE_VALUE, " "SCDISCOUNT_COUNT ) "
+                       "MINUTE_VALUE, " "SCDISCOUNT_COUNT, " "GIFT_CARD, " "CHECK_SALES ) "
                        "" "VALUES ("
                        ":ME_HOURLY_KEY, " ":TERMINAL_NAME, " ":TENANT_NAME, " ":DATE_VALUE, " ":TIME_VALUE, "
                        ":AMOUNT_VALUE, " ":TRANSACTION_COUNT, "
                        ":VAT_SALES, " ":TOTALDISCOUNT, " ":SCHARGE_AMOUNT, " ":REFUND_COUNT, " ":REFUND_AMOUNT, "
                        ":VOID_COUNT, " ":VOID_AMOUNT, " ":SCDISCOUNT_AMOUNT, " ":MALLCODE, " ":PATRON_COUNT, "
-                       ":MINUTE_VALUE, " ":SCDISCOUNT_COUNT ) ";
+                       ":MINUTE_VALUE, " ":SCDISCOUNT_COUNT, " ":GIFT_CARD, " ":CHECK_SALES ) ";
+
 	Transaction.StartTransaction();
+
     Query->ParamByName("ME_HOURLY_KEY")->AsString = Retval;
     Query->ParamByName("TERMINAL_NAME")->AsString = terminalNumber;
+
     Query->ParamByName("TENANT_NAME")->AsString = mallCode;
+
     Query->ParamByName("DATE_VALUE")->AsString = dateValue;
+
     Query->ParamByName("TIME_VALUE")->AsString = timeValue;
-    Query->ParamByName("AMOUNT_VALUE")->AsCurrency = salesValue;
+
+     if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+     {
+        if(TGlobalSettings::Instance().GiftCard_Megaworld !=0)
+        {
+           Query->ParamByName("AMOUNT_VALUE")->AsCurrency = TGlobalSettings::Instance().GiftCard_Megaworld;
+           Query->ParamByName("GIFT_CARD")->AsCurrency = TGlobalSettings::Instance().GiftCard_Megaworld;
+           Query->ParamByName("CHECK_SALES")->AsCurrency =0;
+        }
+        else if(TGlobalSettings::Instance().CheckSaleMegaworld !=0)
+        {
+          Query->ParamByName("AMOUNT_VALUE")->AsCurrency = TGlobalSettings::Instance().CheckSaleMegaworld;
+          Query->ParamByName("CHECK_SALES")->AsCurrency = TGlobalSettings::Instance().CheckSaleMegaworld;
+          Query->ParamByName("GIFT_CARD")->AsCurrency =0;
+        }
+        else
+        {
+         Query->ParamByName("AMOUNT_VALUE")->AsCurrency = salesValue;
+         Query->ParamByName("GIFT_CARD")->AsCurrency =0;
+         Query->ParamByName("CHECK_SALES")->AsCurrency =0;
+        }
+
+     }
+    else
+    {
+       Query->ParamByName("AMOUNT_VALUE")->AsCurrency = salesValue;
+       Query->ParamByName("GIFT_CARD")->AsCurrency =0;
+       Query->ParamByName("CHECK_SALES")->AsCurrency =0;
+    }
+
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
         Query->ParamByName("TRANSACTION_COUNT")->AsInteger = ReceiptNumber.Pos("RV") == 0 ? transactionCount : 0;
     else
         Query->ParamByName("TRANSACTION_COUNT")->AsInteger = transactionCount;
+
     Query->ParamByName("VAT_SALES")->AsCurrency = totalSalesTax;
     Query->ParamByName("TOTALDISCOUNT")->AsCurrency = totalDiscount;
     Query->ParamByName("SCHARGE_AMOUNT")->AsCurrency = servchargeAmount;
@@ -197,10 +230,14 @@ void TMallExportHourlyUpdate::Commit()
     Query->ParamByName("PATRON_COUNT")->AsString = patronCount;
     Query->ParamByName("MINUTE_VALUE")->AsString = minuteValue;
     Query->ParamByName("SCDISCOUNT_COUNT")->AsInteger = scdiscountCount;
+
 	Query->ExecQuery();
 
 	Transaction.Commit();
 	Query->Close();
+
+    TGlobalSettings::Instance().GiftCard_Megaworld =0;
+    TGlobalSettings::Instance().CheckSaleMegaworld =0;
 }
 //---------------------------------------------------------------------------
 
@@ -374,13 +411,7 @@ AnsiString TMallExportHourlyUpdate::extractDate()
 
     if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
-        unsigned short Hour = 0;
-        unsigned short Minutes = 0;
-        unsigned short Seconds = 0;
-        unsigned short dummy = 0;
-
-        Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
-        result = (Hour < 6) ? Yesterday.FormatString("yyyymmdd") : Now().FormatString("yyyymmdd");
+        result = Now().FormatString("yyyymmdd");
     }
     else
     {
@@ -989,6 +1020,8 @@ bool TMallExportHourlyUpdate::PerformedLastZed()
 
     return flag;
 }
+
 //---------------------------------------------------------------------------
+
 
 #pragma package(smart_init)
