@@ -3442,6 +3442,7 @@ int previousOptionGroup )
 void __fastcall TfrmMenuEdit::tvMenuChange(TObject *Sender,
 TTreeNode *Node)
 {
+    btnSizesEdit->Enabled = true;
 	PageControl4->ActivePage = tsProperties;
 	RefreshMenuDetails();
 }
@@ -5218,7 +5219,7 @@ void __fastcall TfrmMenuEdit::btnAddSizeClick(TObject *Sender)
 			int Index = InsertSize(NewGlassName);
 			RefreshMenuDetails();
 			lbAvailableSizes->ItemIndex = UpdateSizeItem(NewGlassName);
-
+			btnSizesEdit->Enabled = true;
 		}
 	}
 }
@@ -13969,5 +13970,59 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
             StrToInt(cbRevenueGroupCode->Items->Strings[cbRevenueGroupCode->ItemIndex].SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
 	}
 }
-//---------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------
+ void __fastcall TfrmMenuEdit::lbAvailableSizesClick(TObject *Sender)
+ {
+
+
+        bool ItemSizeExists = false;
+        btnSizesEdit->Enabled = true;
+        TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+        AnsiString OldSizeName = lbAvailableSizes->Items->Strings[lbAvailableSizes->ItemIndex];
+        for (int i =FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+		 {
+			TTreeNode *CourseNode = MenuNode->Item[i];
+			for (int j=0; j<CourseNode->Count; j++)
+			{
+				TTreeNode *ItemNode = CourseNode->Item[j];
+				for (int k=0; k<ItemNode->Count; k++)
+				{
+					TTreeNode *ItemSizeNode = ItemNode->Item[k];
+					TEditorNode *ItemSizeData = (TEditorNode *)ItemSizeNode->Data;
+					if (ItemSizeData->NodeType == ITEM_SIZE_NODE)
+					{
+						if (ItemSizeData->LongDescription == OldSizeName)
+						{
+							ItemSizeExists = true;
+                            break;
+						}
+					}
+                   	if (ItemSizeExists) break;
+				}
+               	if (ItemSizeExists) break;
+			}
+
+		}
+        if (ItemSizeExists)
+		{
+			Application->MessageBox("An item size is already assigned to items and can't be edited.", "Error",
+			MB_OK + MB_ICONERROR);
+            btnSizesEdit->Enabled = false;
+
+
+		}
+        else
+        {
+
+         btnSizesEdit->Enabled = true;
+
+        }
+
+ }
+ //-------------------------------------------------------------------------------------------------------
+
+
+
+
 

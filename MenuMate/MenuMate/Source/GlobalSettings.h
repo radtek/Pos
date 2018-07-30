@@ -532,7 +532,11 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
-
+    bool RestartServiceAtZED;
+    Currency GiftCard_Megaworld;
+    Currency CheckSaleMegaworld;
+    Currency GiftCard_MegaworldForDaily;
+    Currency CheckSaleMegaworldForDaily;
 };
 
 #endif

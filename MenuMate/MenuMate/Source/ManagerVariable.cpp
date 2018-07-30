@@ -3402,6 +3402,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
          "Default is False", vmg3rdPartyInterface, false);
         SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmPMSAPIKey,  "PMS API KEY", "This API Key can be used for PMS integration is provided", vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction,vmRestartServiceAtZED,"Restart Service", "This setting will restart service at ZED", vmgPOS, false);
+        //vmRestartServiceAtZED
 	}
 	catch(Exception &E)
 	{

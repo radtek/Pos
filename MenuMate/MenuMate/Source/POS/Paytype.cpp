@@ -1704,6 +1704,43 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
+      if(Payment->Name == "GC" || Payment->Name == "Check")
+      {
+	    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        if(Payment->Name == "GC" )
+            frmTouchNumpad->Caption = "Enter Total Amount For GiftCard";
+
+        else if(Payment->Name == "Check")
+            frmTouchNumpad->Caption = "Enter Total Amount For Cheque";
+
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->Mode = pmCurrency;
+        frmTouchNumpad->CURInitial = 0;
+	    if (frmTouchNumpad->ShowModal() == mrOk)
+    	{
+            if(frmTouchNumpad->CURResult < CurrentTransaction.Money.RoundedPaymentDue)
+            {
+              MessageBox("Please Enter Value Greater or Equal to Bill Amount","",MB_OK) ;
+              return;
+            }
+		    else
+		    {
+                if(Payment->Name == "GC" )
+                {
+                    TGlobalSettings::Instance().GiftCard_Megaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().GiftCard_MegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+                else if(Payment->Name == "Check")
+                {
+                    TGlobalSettings::Instance().CheckSaleMegaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().CheckSaleMegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+		    }
+	    }
+      }
+
         GetPaymentNote(Payment);
         Payment->Result = eProcessing;
 

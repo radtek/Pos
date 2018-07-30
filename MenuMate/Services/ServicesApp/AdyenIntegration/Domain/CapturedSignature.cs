@@ -8,7 +8,7 @@ namespace AdyenIntegration.Domain
     {
         [DataMember]
         public AreaSize AreaSize { get; set; }
-        [DataMember]
-        public string SignaturePoint { get; set; }
+        //[DataMember]
+        //public SignaturePoint[] SignaturePoint { get; set; }
     }
 }
