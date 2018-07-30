@@ -728,6 +728,8 @@ class TfrmMenuEdit : public TForm
 	void __fastcall btnSyncRevenueCodeCourseClick(TObject *Sender);
 	void __fastcall btnSyncRevenueCodeMenuClick(TObject *Sender);
     void __fastcall cbRevenueGroupCodeSelect(TObject *Sender);
+    void __fastcall lbAvailableSizesClick(TObject *Sender);
+  
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);

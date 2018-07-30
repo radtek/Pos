@@ -6008,10 +6008,12 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
                     "union all "
                     "Select ab.INVOICE_NUMBER, "
                     "case when (c.name is null) then 'Non-member transaction'else (c.name ||' '|| c.LAST_NAME) end billed_to "
-                    "From ARCHIVE "
-                    "left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
-                    "left join ARCBILL ab on ab.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY   "
-                    "Group By "
+                    "From ARCBILL ab "
+                    "left join ARCHIVE on ARCHIVE.ARCBILL_KEY = ab.ARCBILL_KEY "
+                   " left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
+                   " where "
+                   " ab.invoice_number  = :in "
+                   "Group By "
                     "1,2) c on c.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
 
            " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
@@ -6020,7 +6022,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
 		"Where "
-        
+
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and  "
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 			"ArcBill.Invoice_Number = :in and "
@@ -6037,6 +6039,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 
 		"Order By "
 			"4 Asc;";
+
 	qrBillPayments->ParamByName("in")->AsString = InvoiceNumber;
 
 	qrBillDetails->Close();
@@ -6080,6 +6083,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "
 			"Archive.ArcBill_Key = :ArcBill_Key And "
 			"Security.Security_Event = 'Ordered By' "
+
 		"Union All "
 
 		"Select "
@@ -6111,8 +6115,17 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'and "
 			"ArcSurcharge.ArcBill_Key = :ArcBill_Key And "
 			"Security.Security_Event = 'Billed By' "
+            "group by "
+	   	    "Item_Name,"
+	   	    "Price,"
+	   	   "Security.Time_Stamp,"
+	   	   "Security.Security_Ref,"
+	   	   "Security_Event,"
+           "Contacts.Name,"
+	   	   " Discount,"
+	      " DiscPrice "
 
-		"Order By "
+      "Order By "
 			"4,"
 			"2,"
 			"1,"

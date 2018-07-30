@@ -1704,6 +1704,43 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
+      if(Payment->Name == "GC" || Payment->Name == "Check")
+      {
+	    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        if(Payment->Name == "GC" )
+            frmTouchNumpad->Caption = "Enter Total Amount For GiftCard";
+
+        else if(Payment->Name == "Check")
+            frmTouchNumpad->Caption = "Enter Total Amount For Cheque";
+
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->Mode = pmCurrency;
+        frmTouchNumpad->CURInitial = 0;
+	    if (frmTouchNumpad->ShowModal() == mrOk)
+    	{
+            if(frmTouchNumpad->CURResult < CurrentTransaction.Money.RoundedPaymentDue)
+            {
+              MessageBox("Please Enter Value Greater or Equal to Bill Amount","",MB_OK) ;
+              return;
+            }
+		    else
+		    {
+                if(Payment->Name == "GC" )
+                {
+                    TGlobalSettings::Instance().GiftCard_Megaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().GiftCard_MegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+                else if(Payment->Name == "Check")
+                {
+                    TGlobalSettings::Instance().CheckSaleMegaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().CheckSaleMegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+		    }
+	    }
+      }
+
         GetPaymentNote(Payment);
         Payment->Result = eProcessing;
 
@@ -3254,55 +3291,7 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				while (frmMessage->TextResult == "");
 			}
 			Note = frmMessage->TextResult;
-
-			bool WriteOffStock;
-			if (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?",
-						MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON1) == IDYES)
-			{
-				WriteOffStock = false; // picked yes so reverse stock
-			}
-			else
-			{
-				WriteOffStock = true; // No so stock was tiped down drain do not reverse.
-			}
-
-			// Add Security.
-			if (CurrentTransaction.Orders != NULL)
-			{
-				for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
-				{
-					TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-					int n = Order->GetQty();
-					Order->Credit(WriteOffStock);
-					TSecurityReference *SecRef = new TSecurityReference;
-					SecRef->UserKey = TempUserInfo.ContactKey;
-                    //Following if is used for differentiating between refund and writeoff in Menumate
-                    if(WriteOffStock == true)
-                    {        SecRef->Event=   SecurityTypes[secWriteOff];
-
-                    }
-                    else
-                    {         SecRef->Event = SecurityTypes[secCredit];
-                    }
-
-					SecRef->From = "";
-					SecRef->To = "";
-					SecRef->Note = Note;
-					SecRef->TimeStamp = Now();
-					Order->Security->SecurityAdd(SecRef);
-
-					for (int i = 0; i < Order->SubOrders->Count; i++)
-					{
-						TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
-						TSecurityReference *SecRefSubOrderCopy = new TSecurityReference;
-						SecRefSubOrderCopy->SecRefCopy(SecRef);
-						SubOrder->Security->SecurityAdd(SecRefSubOrderCopy);
-						SubOrder->Credit(WriteOffStock);
-					}
-				}
-			}
-
-			if (MessageBox("Do you want to inform the chef?","Inform chef?",MB_YESNO | MB_ICONQUESTION)== IDYES)
+            if (MessageBox("Do you wish to send a refund notice to the Chef?","Inform chef?",MB_YESNO | MB_ICONQUESTION)== IDYES)
             {
 
 				/*
@@ -3342,6 +3331,60 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				if (req->Header.Error != proA_Ok)
 				ShowMessage(req->Header.ErrorMsg);
 			}
+			bool WriteOffStock;
+			if (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?",
+						MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON1) == IDYES)
+			{
+				WriteOffStock = false; // picked yes so reverse stock
+
+			}
+			else
+			{
+
+				WriteOffStock = true; // No so stock was tiped down drain do not reverse.
+			}
+
+			// Add Security.
+			if (CurrentTransaction.Orders != NULL)
+			{
+				for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+				{
+					TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+					int n = Order->GetQty();
+					Order->Credit(WriteOffStock);
+					TSecurityReference *SecRef = new TSecurityReference;
+					SecRef->UserKey = TempUserInfo.ContactKey;
+                    //Following if is used for differentiating between refund and writeoff in Menumate
+                    if(WriteOffStock == true)
+                    {
+
+                    SecRef->Event=   SecurityTypes[secWriteOff];
+
+
+                    }
+                    else
+                    {         SecRef->Event = SecurityTypes[secCredit];
+
+                    }
+
+					SecRef->From = "";
+					SecRef->To = "";
+					SecRef->Note = Note;
+					SecRef->TimeStamp = Now();
+					Order->Security->SecurityAdd(SecRef);
+
+					for (int i = 0; i < Order->SubOrders->Count; i++)
+					{
+						TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
+						TSecurityReference *SecRefSubOrderCopy = new TSecurityReference;
+						SecRefSubOrderCopy->SecRefCopy(SecRef);
+						SubOrder->Security->SecurityAdd(SecRefSubOrderCopy);
+						SubOrder->Credit(WriteOffStock);
+					}
+				}
+			}
+
+
 
 			// setting the quantity to what it was before after printing to kitchen because the CurrentTransaction is used to generate receipts and affects zed as well.
 			if (CurrentTransaction.Orders != NULL)
