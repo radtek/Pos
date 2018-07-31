@@ -34,10 +34,9 @@ namespace Chefmate.UI.Views
             this.Loaded += SummaryView_Loaded;
             WindowWidth = Screen.PrimaryScreen.Bounds.Width * .8;
             _skipCount = 0;
-           // Orders = new ObservableCollection<Order>();
             ItemList = new List<string>();
             this.DataContext = this;
-           
+
         }
         public bool CanLoadMoreOrders
         {
@@ -66,15 +65,6 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("WindowWidth");
             }
         }
-        //public ObservableCollection<Item> SelectedOrderItems
-        //{
-        //    get { return _selectedOrderItems; }
-        //    set
-        //    {
-        //        _selectedOrderItems = value;
-        //        OnPropertyChanged("SelectedOrderItems");
-        //    }
-        //}
         public bool ModalResult { get; set; }
         public string StatusText
         {
@@ -89,18 +79,6 @@ namespace Chefmate.UI.Views
         public ICommand CloseCommand { get; set; }
         public ICommand LoadCommand { get; set; }
 
-        //private void SelectedOrderChangedHandler()
-        //{
-        //    if (_selectedOrder != null)
-        //    {
-        //        this.IsEnabled = false;
-        //        StatusText = "Loading Items......";
-        //        var order = DbOrder.GetOrder(_selectedOrder.OrderKey, 0, true);
-        //        SelectedOrderItems = order.Items;
-        //        this.IsEnabled = true;
-        //        StatusText = "";
-        //    }
-        //}
         private void AutoUpdateCommandHandler(object sender)
         {
             LoadOrdersCommandHandler(sender);
@@ -116,23 +94,15 @@ namespace Chefmate.UI.Views
             StatusText = "Loading Orders......";
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
-                //bool canLoadMoreOrders = false;
                 ItemList = DbOrder.GetAccumulatedItems(ChefmateController.Instance.CurrenTerminal.TerminalId);
-            ;
-              McDataGrid.ItemsSource = ItemList;
-
-                //McDataGrid.Columns.ce
-            
-                //CanLoadMoreOrders = canLoadMoreOrders;
-                //_skipCount += ChefmateController.Instance.CurrentSettings.RecallCount;
-                //Orders.AddRange(orders);
+                ;
+                McDataGrid.ItemsSource = ItemList;
                 this.IsEnabled = true;
-                StatusText = "";  //ItemList
-            // McDataGrid.ItemsSource = LoadCollectionData();
-               
+                StatusText = "";
+
             }));
         }
-       
+
         private void SummaryView_Loaded(object sender, RoutedEventArgs e)
         {
             LoadOrdersCommandHandler(sender);
@@ -158,6 +128,6 @@ namespace Chefmate.UI.Views
         private void AutoRefreshTimer_Tick(object sender, EventArgs e)
         {
             LoadOrdersCommandHandler(sender);
-        }        
-    }    
+        }
+    }
 }

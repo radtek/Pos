@@ -314,10 +314,8 @@ namespace Chefmate.Database.DbModels
                                                                     INNER JOIN ITEMS B
                                                                     ON A.ITEM_KEY = B.ITEM_KEY
                                                                     LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
-                                                                    WHERE A.TERMINAL_KEY = 1 AND ORDER_ITEM_STATUS <> 3  
-                                
+                                                                    WHERE A.TERMINAL_KEY = 1 AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
                                     UNION ALL 
-
                                     SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME FROM ORDERITEMS A
                                                                     INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
                                                                     INNER JOIN SIDES ON OD.SIDE_KEY = SIDES.SIDE_KEY
