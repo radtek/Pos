@@ -314,6 +314,21 @@ namespace Chefmate.UI.Views
             }
             OrderContainer.Focus();
         }
+
+        private void Summary(object sender, RoutedEventArgs e)
+        {//todo
+            //SummaryView
+            SummaryView summaryOrderView = new SummaryView
+            {
+                ShowInTaskbar = false
+            };
+            summaryOrderView.ShowDialog();
+            //if (summaryOrderView.ModalResult && summaryOrderView.SelectedOrder != null)
+            //{
+            //    ChefmateController.Instance.AddAccumulatdrder(summaryOrderView.SelectedOrder);
+            //}
+            OrderContainer.Focus();
+        }
         #endregion
 
         #region Navigations

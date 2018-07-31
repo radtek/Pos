@@ -466,6 +466,26 @@ namespace Chefmate.Infrastructure.Controller
         }
         #endregion
 
+       #region Accumulated Order
+      /*   public void AddAccumulatdrder(Order inOrder)
+        {
+            lock (_syncRoot)
+            {
+                var order = DbOrder.GetOrder(inOrder.OrderKey, 0, true);
+                AnalyticalData.CurrentOrdersCount++;
+                AnalyticalData.CurrentItems += order.Items.Count;
+                TimeSpan recalledOrderMakeTime = order.BumpTime - order.ArrivalTime;
+                AnalyticalData.TotalMakeTime = new TimeSpan(AnalyticalData.TotalMakeTime.Ticks - recalledOrderMakeTime.Ticks);
+                foreach (var item in order.Items)
+                {
+                    DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, CurrenTerminal.TerminalId);
+                }
+                TotalOrders.Add(order);
+                PublishAddOrder(order);
+            }
+        }*/
+        #endregion
+
         #region Terminal
         public bool LoadTerminal(string terminalName)
         {
