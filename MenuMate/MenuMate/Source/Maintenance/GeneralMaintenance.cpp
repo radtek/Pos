@@ -457,6 +457,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 //    cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     //cbIntegratedEftposAdyen->Checked = TGlobalSettings::Instance().EnableEftPosAdyen;
     cbCompanyDetailOnReprintReceipt->Checked = TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt;
+    cbRestartService->Checked = TGlobalSettings::Instance().RestartServiceAtZED;
     CustomizeCloudEFTPOS();
     DisableOtherEFTPOS();
     FormResize(this);
@@ -4712,5 +4713,14 @@ void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposPaymentSenseClick(TObje
     if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         MessageBox("Please provide PaymentSense Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
     CustomizeCloudEFTPOS();
+}
+//----------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbRestartServiceAtZedClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+    TGlobalSettings::Instance().RestartServiceAtZED = cbRestartService->Checked;
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmRestartServiceAtZED, TGlobalSettings::Instance().RestartServiceAtZED);
+    DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------

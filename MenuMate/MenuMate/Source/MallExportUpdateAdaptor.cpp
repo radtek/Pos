@@ -284,6 +284,8 @@ void TMallExportUpdateAdaptor::clearExportFieldValues()
     localTaxExemptDailySales  =   0;
     fineDiningCustomerCount   =   0;
     tenderSurcharges          =   0;
+    GiftCardSaleMegaworld    =    0;
+    CheckSaleMegaworld       =    0;
 
     // SM Accreditation
     departmentSum              =   0;
@@ -598,7 +600,8 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
     Currency result = 0;
     Currency grossPrice = 0;
     Currency SalesTax = 0;
-
+    bool IsGiftCardSales=false;
+    bool IsCheckSales = false;
     TItemMinorComplete* order;
     std::vector<TItemMinorComplete*>::iterator it = flatternedOrdersList.begin();
 
@@ -644,17 +647,69 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
         }
         else
         {
-            grossPrice = order->BillCalcResult.GrossPrice;
+           if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+           {
+               if(TGlobalSettings::Instance().GiftCard_MegaworldForDaily !=0)
+               {
+                 IsGiftCardSales = true;
+                 grossPrice = TGlobalSettings::Instance().GiftCard_MegaworldForDaily;
+               }
+               else if(TGlobalSettings::Instance().CheckSaleMegaworldForDaily !=0)
+               {
+                 IsCheckSales = true;
+                 grossPrice = TGlobalSettings::Instance().CheckSaleMegaworldForDaily;
+               }
+               else
+               {
+                 grossPrice = order->BillCalcResult.GrossPrice;
+               }
+           }
+           else
+           {
+              grossPrice = order->BillCalcResult.GrossPrice;
+           }
+
         }
-        result += grossPrice;
+        if(IsGiftCardSales)
+        {
+            result = grossPrice;
+        }
+        else if(IsCheckSales)
+        {
+           result = grossPrice;
+        }
+        else
+        {
+           result += grossPrice;
+        }
+
     }
 
     if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
-        result = RoundToNearest(extractDailySales(),0.01,TGlobalSettings::Instance().MidPointRoundsDown) +
+        if(IsGiftCardSales)
+        {
+          result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+          GiftCardSaleMegaworld = result;
+          TGlobalSettings::Instance().GiftCard_MegaworldForDaily =0 ;
+          TGlobalSettings::Instance().CheckSaleMegaworldForDaily =0 ;
+        }
+        else if(IsCheckSales)
+        {
+          result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+          CheckSaleMegaworld = result;
+          TGlobalSettings::Instance().GiftCard_MegaworldForDaily =0 ;
+          TGlobalSettings::Instance().CheckSaleMegaworldForDaily =0 ;
+
+        }
+        else
+        {
+         result = RoundToNearest(extractDailySales(),0.01,TGlobalSettings::Instance().MidPointRoundsDown) +
                  RoundToNearest(extractTotalSeniorCitizensDiscount(),0.01,TGlobalSettings::Instance().MidPointRoundsDown) +
                  RoundToNearest(extractTotalRegularDiscount(),0.01,TGlobalSettings::Instance().MidPointRoundsDown) +
                  RoundToNearest(extractTotalRefund(),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+        }
+
     }
     else if(TGlobalSettings::Instance().MallIndex == SHANGRILAMALL)
     {
@@ -749,11 +804,6 @@ int TMallExportUpdateAdaptor::extractTotalCancelledCount()
 Currency TMallExportUpdateAdaptor::extractTotalRegularDiscount()
 {
     Currency result = getRegularDiscountGroupsTotal();
-
-    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
-    {
-        result += extractDisabilityDiscount();
-    }
     return result;
 }
 //---------------------------------------------------------------------------
@@ -830,6 +880,7 @@ Currency TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscount()
     }
     else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
     {
+        result += extractDisabilityDiscount();
         result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
     }
 
@@ -841,6 +892,10 @@ int TMallExportUpdateAdaptor::extractTotalSeniorCitizensDiscountCount()
 {
     int result = 0;
     result = getDiscountGroupCountPerTransaction(SCD_DISCOUNT_GROUP);
+    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+    {
+        result += getDiscountGroupCountPerTransaction(PWD_DISCOUNT_GROUP);
+    }
     return result;
 }
 //---------------------------------------------------------------------------
@@ -1334,7 +1389,23 @@ Currency TMallExportUpdateAdaptor::extractCashSales()
 
 Currency TMallExportUpdateAdaptor::extractGiftChequeSales()
 {
-    Currency result = getPaymentGroupTotal( GIFT_PAYMENT_GROUP );
+    Currency result = 0;
+    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+    {
+        if(GiftCardSaleMegaworld!=0)
+        {
+          result = GiftCardSaleMegaworld;
+        }
+        else
+        {
+          result = getPaymentGroupTotal( GIFT_PAYMENT_GROUP );
+        }
+    }
+    else
+    {
+      result = getPaymentGroupTotal( GIFT_PAYMENT_GROUP );
+    }
+
     return result;
 }
 //---------------------------------------------------------------------------
@@ -1882,7 +1953,22 @@ Currency TMallExportUpdateAdaptor::extractTotalNonVatSales()
 Currency TMallExportUpdateAdaptor::extractTotalCheckSales()
 {
     Currency result = 0;
-    result = getPaymentGroupTotal( CHECK_PAYMENT_GROUP );
+    if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL)
+    {
+        if(CheckSaleMegaworld!=0)
+        {
+          result = CheckSaleMegaworld;
+        }
+        else
+        {
+          result = getPaymentGroupTotal( CHECK_PAYMENT_GROUP );
+        }
+    }
+    else
+    {
+        result = getPaymentGroupTotal( CHECK_PAYMENT_GROUP );
+    }
+
     return result;
 }
 //---------------------------------------------------------------------------
@@ -3212,9 +3298,46 @@ Currency TMallExportUpdateAdaptor::getDailySales()
             result -= SalesTax;
         }
     }
-    else if((TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL || TGlobalSettings::Instance().MallIndex == SHANGRILAMALL))
+    else if(TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL )
     {
-        for (int i = 0; i < paymentTransaction->PaymentsCount(); i++)
+        if(GiftCardSaleMegaworld!=0 || CheckSaleMegaworld!=0)
+        {
+
+            result += GiftCardSaleMegaworld + CheckSaleMegaworld ;
+        }
+        else
+        {
+            for (int i = 0; i < paymentTransaction->PaymentsCount(); i++)
+            {
+                payment = paymentTransaction->PaymentGet(i);
+                groupName = payment->GetFirstAssignedGroup().Name;
+                payGroupName = GIFT_PAYMENT_GROUP;
+
+                if( groupName == payGroupName)
+                {
+                    Surcharge += payment->GetSurcharge();
+                }
+            }
+
+            for( ; it != flatternedOrdersList.end(); it++ )
+            {
+                order = *it;
+
+                result += order->BillCalcResult.FinalPrice;
+    //            result -= order->BillCalcResult.ServiceCharge.Value;
+                if(TGlobalSettings::Instance().MallIndex == SHANGRILAMALL)
+                {
+                    result -= order->BillCalcResult.ServiceCharge.Value;
+                    result -= order->BillCalcResult.ServiceCharge.TaxValue;
+                }
+            }
+            result += Surcharge;
+
+        }
+    }
+    else if(TGlobalSettings::Instance().MallIndex == SHANGRILAMALL)
+    {
+       for (int i = 0; i < paymentTransaction->PaymentsCount(); i++)
         {
             payment = paymentTransaction->PaymentGet(i);
             groupName = payment->GetFirstAssignedGroup().Name;

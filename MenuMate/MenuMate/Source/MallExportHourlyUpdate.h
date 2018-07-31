@@ -104,5 +104,7 @@ private:
     // Utility methods
     void flatternOrdersList();
     AnsiString ReceiptNumber;
+
+
 };
 #endif
