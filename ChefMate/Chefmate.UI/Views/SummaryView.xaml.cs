@@ -27,6 +27,7 @@ namespace Chefmate.UI.Views
         public SummaryView()
         {
             InitializeComponent();
+            Initialize();
             AutoUpdateCommand = new DelegateCommand(AutoUpdateCommandHandler);
             CloseCommand = new DelegateCommand(CloseCommandHandler);
             LoadCommand = new DelegateCommand(LoadOrdersCommandHandler);
@@ -75,9 +76,25 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("StatusText");
             }
         }
+        
+        #region Commands
         public ICommand AutoUpdateCommand { get; set; }
         public ICommand CloseCommand { get; set; }
-        public ICommand LoadCommand { get; set; }
+        public ICommand LoadCommand { get; set; }        
+        public ICommand NavigateForwardCommand { get; set; }
+        public ICommand NavigateBackwardCommand { get; set; }
+        public ICommand NavigateLeftCommand { get; set; }
+        public ICommand NavigateRightCommand { get; set; }
+
+        #endregion
+
+        private void Initialize()
+        {
+            NavigateBackwardCommand = new DelegateCommand(Backward);
+            NavigateForwardCommand = new DelegateCommand(Forward);
+            NavigateLeftCommand = new DelegateCommand(ScrollToLeft);
+            NavigateRightCommand = new DelegateCommand(ScrollToRight);
+        }
 
         private void AutoUpdateCommandHandler(object sender)
         {
@@ -96,7 +113,10 @@ namespace Chefmate.UI.Views
             {
                 ItemList = DbOrder.GetAccumulatedItems(ChefmateController.Instance.CurrenTerminal.TerminalId);
                 ;
-                McDataGrid.ItemsSource = ItemList;
+                ItemSummaryList.ItemsSource = ItemList;
+                ItemSummaryList.Height = OuterGrid.Height / .9;
+                 
+               
                 this.IsEnabled = true;
                 StatusText = "";
 
@@ -129,5 +149,51 @@ namespace Chefmate.UI.Views
         {
             LoadOrdersCommandHandler(sender);
         }
+    
+            #region Navigations
+        private void Backward(object sender)
+        {
+            //ParentScroller.PageLeft();
+            //var position = ParentScroller.HorizontalOffset;
+            //var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0;
+            ////ParentScroller.ScrollToHorizontalOffset(offset);
+            //UpdateNavigationButtonDisplay(offset);
+        }
+        private void Forward(object sender)
+        {
+            //ParentScroller.PageRight();
+            //var position = ParentScroller.HorizontalOffset;
+            //var offset = position + OrderWidth * ChefmateController.Instance.PageColumns;
+            ////ParentScroller.ScrollToHorizontalOffset(offset);
+            //UpdateNavigationButtonDisplay(offset);
+
+        }
+        private void ScrollToRight(object obj)
+        {
+            //ParentScroller.ScrollToRightEnd();
+            //double index = Math.Floor(_cordX / (OrderWidth * ChefmateController.Instance.PageColumns)) + 1;
+            //UpdateNavigationButtonDisplay(index * ChefmateController.Instance.PageColumns * OrderWidth);
+        }
+        private void ScrollToLeft(object obj)
+        {
+            //ParentScroller.ScrollToLeftEnd();
+            //UpdateNavigationButtonDisplay(0);
+        }
+        private void UpdateNavigationButtonDisplay(double offset = 0)
+        {
+            //Set Backward navigation Status
+            //var backwardEnabled = offset > 0;
+            //BackwardNavigationButton.IsEnabled = backwardEnabled;
+            //LeftNavigationButton.IsEnabled = backwardEnabled;
+
+            ////Set forward navigation Status
+            //var forwardEnabled = offset + (this.ActualWidth + 10) < _cordX + _orderWidth;
+            //ForwardNavigationButton.IsEnabled = forwardEnabled;
+            //RightNavigationButton.IsEnabled = forwardEnabled;
+
+            //OrderContainer.Focus();
+        }
+        #endregion
+
     }
 }
