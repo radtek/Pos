@@ -23,27 +23,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height=".1*"/>
             <RowDefinition Height=".9*"/>
-        </Grid.RowDefinitions>
-        <!--<Grid Grid.Row="0" Grid.Column="0" Margin="10,5,10,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-        </Grid>
-        <Grid Grid.Row="0" Grid.Column="1" Margin="10,5,10,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-        </Grid>-->
-        <!--<Grid Grid.Row="0" Background="#F09422">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".75*"/>
-                <ColumnDefinition Width=".25*" />
-            </Grid.ColumnDefinitions>            
-        </Grid>-->
+        </Grid.RowDefinitions>        
         <Grid Grid.Row="0" Grid.Column="0" Background="#F09422" >
             <Label FontSize="24"   Content="Items Summary" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
         </Grid>
@@ -78,11 +58,11 @@
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
 
-            <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+            <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden" >
 
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Vertical" Height="850">
+                        <WrapPanel Orientation="Vertical"  Height="{Binding Converter={StaticResource   percentageConverter}, ElementName=ItemSummaryList, Path=ActualHeight, ConverterParameter=.99}">
                         </WrapPanel>
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>

@@ -137,8 +137,7 @@ namespace Chefmate.UI.Views
                 ItemList = DbOrder.GetAccumulatedItems(ChefmateController.Instance.CurrenTerminal.TerminalId);
                 ;
                 ItemSummaryList.ItemsSource = ItemList;
-                ItemSummaryList.Height = OuterGrid.Height / .9;
-                ItemSummaryList.Width = this.Width  ;
+               // ItemSummaryList.Height = OuterGrid.Height / .9;
                
                 this.IsEnabled = true;
                 StatusText = "";
