@@ -11,12 +11,35 @@ using Chefmate.Database.DbModels;
 using Chefmate.Infrastructure.Controller;
 using System.Collections.Generic;
 using System.Windows.Threading;
+using System.Windows.Data;
 
 namespace Chefmate.UI.Views
 {
     /// <summary>
     /// Interaction logic for SummaryView.xaml
     /// </summary>
+    /// 
+
+    public class PercentageConverter : IValueConverter
+    {
+        public object Convert(object value,
+            Type targetType,
+            object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return System.Convert.ToDouble(value) *
+                   System.Convert.ToDouble(parameter);
+        }
+
+        public object ConvertBack(object value,
+            Type targetType,
+            object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class SummaryView : Window, INotifyPropertyChanged
     {
         private List<string> _itemList;
@@ -115,7 +138,7 @@ namespace Chefmate.UI.Views
                 ;
                 ItemSummaryList.ItemsSource = ItemList;
                 ItemSummaryList.Height = OuterGrid.Height / .9;
-                 
+                ItemSummaryList.Width = this.Width  ;
                
                 this.IsEnabled = true;
                 StatusText = "";
@@ -150,9 +173,11 @@ namespace Chefmate.UI.Views
             LoadOrdersCommandHandler(sender);
         }
     
-            #region Navigations
+        #region Navigations
         private void Backward(object sender)
         {
+            
+            
             //ParentScroller.PageLeft();
             //var position = ParentScroller.HorizontalOffset;
             //var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0;
@@ -161,6 +186,7 @@ namespace Chefmate.UI.Views
         }
         private void Forward(object sender)
         {
+            //this.ItemSummaryList.ScrollIntoView(78);
             //ParentScroller.PageRight();
             //var position = ParentScroller.HorizontalOffset;
             //var offset = position + OrderWidth * ChefmateController.Instance.PageColumns;

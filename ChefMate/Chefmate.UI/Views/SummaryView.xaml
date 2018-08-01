@@ -1,12 +1,17 @@
 ﻿<Window x:Class="Chefmate.UI.Views.SummaryView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{Binding WindowWidth}" WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize"
-        BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico" FontFamily="Tahoma">
+        xmlns:local="clr-namespace:Chefmate.UI.Views"
+    
+
+    BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico" FontFamily="Tahoma">
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
+                <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>                
             </ResourceDictionary.MergedDictionaries>
+            <local:PercentageConverter x:Key="percentageConverter" />            
         </ResourceDictionary>
     </Window.Resources>
 
@@ -53,7 +58,6 @@
                 <ColumnDefinition Width=".20*"/>
             </Grid.ColumnDefinitions>
             <Button Style="{StaticResource FunctionButtonStyle}"  Command="{Binding AutoUpdateCommand}" Grid.Column="0" Content="Update UI" Background="#FFF09422" />
-            <!--<Button Style="{StaticResource FunctionButtonStyle}" Margin="5" Grid.Column="0"  Background="#FFF09422" Command="{Binding AutoUpdateCommand}">Update UI </Button>-->
             <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="1" Command="{Binding NavigateLeftCommand}"
                         Name="LeftNavigationButton">
                 <Path Data="M 0 0 L 0 40 L5 40 L 5 20 L 40 40 L 40 0 L 5 20 L 5 0  Z"/>
@@ -71,17 +75,10 @@
                 <Path Data="M 0 0 L 0 40 L 35 20 L 35 40 L 40 40 L 40 0 L 35 0 L 35 20 Z"/>
             </Button>
             <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="5" Background="#FFF09422"  Command="{Binding CloseCommand}">Close</Button>
-            <!--<Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="5" Click="CloseCommand" Content="Exit" Background="#FFF09422"/>-->
-            <!--</Grid>-->
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
 
-            <!--<Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>-->
-
-            <ListBox Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
 
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -91,7 +88,7 @@
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate >
-                        <StackPanel Name="S1" Orientation="Vertical"  Width="350">
+                        <StackPanel Name="S1" Orientation="Vertical" Width="{Binding Converter={StaticResource   percentageConverter}, ElementName=ItemSummaryList, Path=ActualWidth, ConverterParameter=0.25}">
                             <Border CornerRadius="1" BorderThickness="2" BorderBrush="#C4D3C4" Background="#C4D3C4" Margin="2">
                                 <Label FontSize="22" Content="{Binding Path=DataContext, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center">
                                 </Label>
@@ -136,4 +133,5 @@
             <Button Margin="5" Command="{Binding CloseCommand}">Close</Button>
         </StackPanel>-->
     </Grid>
+
 </Window>
