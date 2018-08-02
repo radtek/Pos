@@ -2104,9 +2104,9 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                 TotalCount += ptrPatronTypes->Count;
             }
 
-            if(TotalCount == 0)
+            if(TotalCount == 0 && !PaymentTransaction.CreditTransaction)
             {
-            TotalCount = 1;
+                TotalCount = 1;
 
             }
 
