@@ -17,8 +17,8 @@
 
     <Grid Name="OuterGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".70*"/>
-            <ColumnDefinition Width=".3*"/>
+            <ColumnDefinition Width=".60*"/>
+            <ColumnDefinition Width=".4*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height=".1*"/>

@@ -315,12 +315,13 @@ namespace Chefmate.Database.DbModels
                                                                     ON A.ITEM_KEY = B.ITEM_KEY
                                                                     LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
                                                                     WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
+                                                                    GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME
                                     UNION ALL 
                                     SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME FROM ORDERITEMS A
                                                                     INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
                                                                     INNER JOIN SIDES ON OD.SIDE_KEY = SIDES.SIDE_KEY
                                                                     WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND A.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS  
-                                                                    ) AccumulatedQuery                                
+                                                                    GROUP BY OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME) AccumulatedQuery                                
                                 GROUP BY AccumulatedQuery.ITEM_NAME";    
            
             var queryParameters = new List<QueryParameter>();
