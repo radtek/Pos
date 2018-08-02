@@ -459,7 +459,7 @@ namespace Chefmate.Infrastructure.Controller
                 foreach (var item in order.Items)
                 {
                     DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, CurrenTerminal.TerminalId);
-                    //DbOrderItem.UpdateOrderItemStatus(item.OrderItemKey, OrderStatus.Normal); //if you want recall order on summary screen then uncomment it.
+                    DbOrderItem.UpdateOrderItemStatus(item.OrderItemKey, OrderStatus.Normal); //if you want recall order on summary screen then uncomment it.
                 }
                 TotalOrders.Add(order);
                 PublishAddOrder(order);
