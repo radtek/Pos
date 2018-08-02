@@ -20,13 +20,10 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<ILINK_GenerateDRC>true</ILINK_GenerateDRC>
-			<DynamicRTL>true</DynamicRTL>
-			<ILINK_KeepOutputFiles>true</ILINK_KeepOutputFiles>
-			<ILINK_DisplayTime>true</ILINK_DisplayTime>
-			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
 			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
-			<ILINK_HeapReserveSize>0x00800000</ILINK_HeapReserveSize>
+			<ILINK_HeapReserveSize>0x30000000</ILINK_HeapReserveSize>
 			<BCC_wpar>false</BCC_wpar>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
 			<BCC_MonitorGlobalAndStackData>true</BCC_MonitorGlobalAndStackData>
@@ -34,12 +31,8 @@
 			<BCC_MonitorThis>true</BCC_MonitorThis>
 			<Defines>DB_NET_Logging;$(Defines)</Defines>
 			<BCC_CodeView4DebugInfo>true</BCC_CodeView4DebugInfo>
-			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
-			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
 			<BRCC_Verbose>true</BRCC_Verbose>
 			<ILINK_SelectedWarnings>false</ILINK_SelectedWarnings>
-			<ILINK_ReplaceResources>true</ILINK_ReplaceResources>
-			<ILINK_Verbose>true</ILINK_Verbose>
 			<ILINK_AllWarnings>true</ILINK_AllWarnings>
 			<LinkPackageStatics>rtl.lib;vcl.lib;dbrtl.lib;vcldb.lib;bdertl.lib;vclx.lib;vclsmp.lib;bcbsmp.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dbexpress.lib;CPortLibCB6.lib;vcldbx.lib;dbxcds.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;inet.lib;inetdb.lib;xmlrtl.lib;DPSEftpos.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;Eft2000_Syncro.lib;PC_Eftpos_Ingenico_CSDEFT.lib;CadmusCronos.lib;vclimg.lib;PC_Eftpos_ANZ.lib;vclactnband.lib;unidac140.lib;dac140.lib</LinkPackageStatics>
 			<IncludePath>C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\;FiscalPrinter\;ReportExport\;HavanaReport\;PanasonicIntegration\;CSV Export\;ProductSearch\;Analysis\;..\..\..\Shared-Source\ClippIntegration\;C:\Documents and Settings\Administrator\Desktop\;Casino Security Screen\;Cashdraw\;Analysis\ReportSectionStrategies\;Analysis\ReportSections\;Analysis\ReportSectionDisplayTraits\;Analysis\Reports\;Analysis\ReportBuilders\;Analysis\Factories\;Analysis\Misc\;Customer Display\Server\;C:\Documents and Settings\Administrator\Desktop\Accumulated Zed\Current COde\;BillCalculator\;..\..\..\Office\Source\TaxProfile\;..\..\..\Shared-Source\Managers\Database\TaxProfile\;..\..\..\Shared-Source\Managers\Database\Generator\;..\..\..\Shared-Source\Managers\Database\PaymentTypes\;Deals\;..\..\..\Shared-Source\Loyalty_Mate\;..\..\..\Shared-Source\System\Utilities\Strings\;product-count-down\;Micros\;Chefmate\;..\..\..\Shared-Source\;item_management\;ProxyMate\Server\SMInterProcessComm\;ProxyMate\Server\SharedMemory\;ProxyMate\Server\ProxyMateManager\;ProxyMate\Server\MMProxy\;ProxyMate\Server\MessageReceiver\;ProxyMate\Server\Connectors\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\ProxyMateManager\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MessageReceiver\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SharedMemory\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SMInterProcessComm\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\Connectors\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MMProxy\;..\..\..\..\5.7_Trunk\MenuMate\MenuMate\Source\SmartCards\;..\..\..\..\5.2\MenuMate\MenuMate\Source\;..\;..\..\;Test\;..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;POS\;..\..\Registration\Source\;DeskTop\;..\..\..\Shared-Source\Registry\;SmartCards\;Maintenance\;..\..\..\Shared-Source\Touch Utils\;..\..\..\Shared-Source\System\Core\;..\..\Version\;Comms\;..\..\Components BCB6\Eftpos\;IBLogs\;..\..\..\Shared-Source\Stock\;..\..\Components BCB6\porttalk\;Security\;..\..\ChefMate\Source\;..\..\..\Shared-Source\tinyXML\;..\..\SimpleTCP\;..\..\..\Shared-Source\TZForm\;..\..\..\Shared-Source\System\;..\..\..\Shared-Source;..\..\..\Shared-Source\Registry;..\..\..\Shared-Source\Touch Utils;..\..\..\Shared-Source\System\Core;..\..\..\Shared-Source\System;Comms;..\..\Version;..\..\SimpleTCP;..\..\..\Shared-Source\TZForm;..\..\Components BCB6\porttalk;Security;SmartCards;..\..\..\Shared-Source\tinyXML;..\..\ChefMate\Source;POS;..\..\Registration\Source;DeskTop;Maintenance;..\..\Components BCB6\Eftpos;IBLogs;..\..\..\Shared-Source\TouchButtons;..\..\..\Shared-Source\Stock;$(IncludePath)</IncludePath>
@@ -3818,7 +3811,7 @@
 						<Parameters Name="RemoteParams"/>
 						<Parameters Name="UseRemoteLauncher">False</Parameters>
 						<Parameters Name="Debug Symbols Search Path"/>
-						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadAllSymbols">False</Parameters>
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<Compiler>

@@ -42,3 +42,25 @@ void TSaveLogs::RecordFiscalLogs(TStringList* logList)
         TSaveLogs::WriteLogsToFile(path, fileName, logList);
     }
 }
+//----------------------------------------------------------------------------
+void TSaveLogs::RecordCasinoLogs(TStringList* logList)
+{
+    try
+    {
+        AnsiString directoryName = "";
+        AnsiString fileName = "";
+        directoryName = ExtractFilePath(Application->ExeName) + "/Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        directoryName = directoryName + "/Casino Logs";
+        if (!DirectoryExists(directoryName))
+            CreateDir(directoryName);
+        AnsiString name = "CasinoLogs " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+        TSaveLogs::WriteLogsToFile(directoryName, name, logList);
+    }
+    catch(Exception &Ex)
+    {
+
+    }
+}
+//----------------------------------------------------------------------------

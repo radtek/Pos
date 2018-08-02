@@ -856,22 +856,25 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         bool onlyearns = TGlobalSettings::Instance().SystemRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
 		if (PaymentComplete)
 		{
-        /*    for ( int i = 0 ; i <  PaymentTransaction.PaymentsCount(); i++ )
-            {
-                TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Write Shivashu:");
-			    TPayment *Payment = PaymentTransaction.PaymentGet(i);
-
-                if(Payment->GetPay() != 0 || Payment->GetAdjustment() != 0)
-                {
-                    MessageBox(Payment->GetPayTendered(),"Payment->GetPayTendered()",MB_OK);
-                    MessageBox(Payment->GetRoundingTotal(),"Payment->GetRoundingTotal()",MB_OK);
-                    __int64 Value1 = RoundToNearest(Payment->GetPayTendered(), 0.1, true).Val / 100;
-                    MessageBox(Value1,"Value1",MB_OK);
-                    __int64 Value2 = RoundToNearest(Payment->GetRoundingTotal(), 0.1, true).Val / 100;
-                    MessageBox(Value2,"Value2",MB_OK);
-                }
-            }
-            MessageBox(PaymentTransaction.Money.Change,"PaymentTransaction.Money.Change",MB_OK);*/
+//            for ( int i = 0 ; i <  PaymentTransaction.PaymentsCount(); i++ )
+//            {
+//
+//			    TPayment *Payment = PaymentTransaction.PaymentGet(i);
+//
+//                if(Payment->GetPay() != 0 || Payment->GetAdjustment() != 0)
+//                {
+//                    MessageBox(Payment->GetPayTendered(),"Payment->GetPayTendered()",MB_OK);
+////                    MessageBox(Payment->GetRoundingTotal(),"Payment->GetRoundingTotal()",MB_OK);
+//                    __int64 Value1 = RoundToNearest(Payment->GetPayTendered(), 0.1, true).Val / 100;
+//                    MessageBox(Value1,"Value1",MB_OK);
+//                    __int64 Value2 = RoundToNearest(Payment->GetPayTendered(), 0.1, false).Val / 100;
+//                    MessageBox(Value2,"Value2",MB_OK);
+//                    int UN_CODED = -1;
+//                    int ThirdPartyCode = StrToIntDef(Payment->PaymentThirdPartyID,UN_CODED);
+////                    MessageBox(ThirdPartyCode,"ThirdPartyCode",MB_OK);
+//                }
+//            }
+//            MessageBox(PaymentTransaction.Money.Change,"PaymentTransaction.Money.Change",MB_OK);
             if(TGlobalSettings::Instance().IsDrinkCommandEnabled)
              {
                 PaymentTransaction.Membership.Member.Points.getPointsBalance();
@@ -3852,7 +3855,8 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     if(!PocketVoucher)
 	   return RetVal;
 
-	if(TDeviceRealTerminal::Instance().ManagerGeneralLedger->EnabledFor(PaymentTransaction))
+//	if(TDeviceRealTerminal::Instance().ManagerGeneralLedger->EnabledFor(PaymentTransaction))
+    if(true)
 	{
 		GeneralLedgerMate = TDeviceRealTerminal::Instance().ManagerGeneralLedger->ProcessTransaction(PaymentTransaction);
 		if(GeneralLedgerMate)

@@ -7,6 +7,8 @@
 
 #include <DateUtils.hpp>
 #include <system.hpp>
+#include "SaveLogs.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -90,8 +92,17 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 {
 	bool Retry = false;
 	int RetryCount = 0;
+    AnsiString count = RetryCount;
+    std::auto_ptr<TStringList> logsList(new TStringList());
+    logsList->Add("Going for Sending request at                                   " + Now().FormatString("hh:nn:ss am/pm"));
    do
 	{
+        logsList->Add("Retry count is                                                 " + count);
+                Packet.SetRepeatTranaction(RetryCount != 0);
+				Packet.Build();
+        AnsiString DataDummy = Packet.SerializeOut();
+        //MessageBox(DataDummy,"Dummy",MB_OK);
+        logsList->Add("Data was                                                       " + DataDummy);
 		std::auto_ptr<TIdTCPClient> fTCPClient(new TIdTCPClient(NULL));
 		Retry = false;
 		try
@@ -102,7 +113,6 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 				Packet.SetRepeatTranaction(RetryCount != 0);
 				Packet.Build();
 				AnsiString Data = Packet.SerializeOut();
-                makeLogFile(Data);
 				AnsiString Length = "0000000000";
 				int Size = 0;
 				Size = Data.Length() -1;
@@ -111,6 +121,7 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 
 				if(!fTCPClient->Connected())
 				{
+                    logsList->Add("TCP client is not connected");
 					fTCPClient->Host = HostAddress;
 					fTCPClient->Port = Port;
 					fTCPClient->BoundPort = 0;
@@ -121,9 +132,12 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 
 				if(fTCPClient->Connected())
 				{
+                    logsList->Add("TCP client is connected.");
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Write :" + Data);
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Write Length :" + IntToStr(Data.Length()));
 					fTCPClient->IOHandler->WriteLn(Data);
+                    logsList->Add("Data written at                                                " + Now().FormatString("hh:nn:ss am/pm"));
+                    logsList->Add("Data was                                                       " + Data);
 					Data = "";
 
                    TByteDynArray Incomming;
@@ -142,13 +156,14 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
                         fTCPClient->IOHandler->ReadBytes(Incomming, -1, false);
                         Data = AnsiString((char *)&Incomming[0],Incomming.Length);
                    }
-                    AnsiString Data2 = "-------------------" + Now().FormatString("yyyy-mm-dd - hh-nn-ss") + "-------------";
-                    Data2 = Data2 + Data;
+                    logsList->Add("Data received at                                               " + Now().FormatString("hh:nn:ss am/pm"));
+                    logsList->Add("Data was                                                       " + Data);
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read : " + Data);
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,"Read Length :" + IntToStr(Data.Length()));
 
 					if(Data == "")
 					{
+                        logsList->Add("Result status is failed because no data was received");
 						Packet.Result = eMSFailed;
 						Packet.ResultText = "IntaMate Server Failed To Respond.";
 						TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,Packet.ResultText);
@@ -159,10 +174,11 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 						Packet.Result = eMSAccepted;
 						Packet.SerializeIn(Data);
 					}
-                    makeLogFile(Data2);
+//                    makeLogFile(Data2);
 				}
 				else
 				{
+                    logsList->Add("Result status is failed because no connection was made");
 					Packet.Result = eMSFailed;
 					Packet.ResultText = "Failed To Connect to Server.";
 					TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,Packet.ResultText);
@@ -172,11 +188,14 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 			{
 				Packet.Result = eMSFailed;
 				Packet.ResultText = "Invalid Server Host Address :" + HostAddress;
+                logsList->Add("Invalid Server Host Address :" + HostAddress);
 				TManagerLogs::Instance().Add(__FUNC__,MEMBERSHIPINTERFACELOG,Packet.ResultText);
 			}
 		}
 		catch(Exception &E)
 		{
+            logsList->Add("Exception occured at                                           " + Now().FormatString("hh:nn:ss am/pm"));
+            logsList->Add("Exception was                                                  " + E.Message);
 			Retry = true;
 			RetryCount++;
 			Packet.Result = eMSFailed;
@@ -185,31 +204,38 @@ void TMembershipGeneralLedgerTCP::SendAndFetch(TMSXMLBase &Packet, AnsiString Ho
 			TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Packet.ResultText);
 			::Sleep(ExceptSleepTime);
 		}
+        RecordLogs(logsList);
+        logsList->Clear();
 	}
 	while(Retry == true && RetryCount < defaultRetryCount);
 }
 //---------------------------------------------------------------------------
-void TMembershipGeneralLedgerTCP::makeLogFile(AnsiString str)
+//void TMembershipGeneralLedgerTCP::makeLogFile(AnsiString str)
+//{
+//    try
+//    {
+//        AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoLogs.txt" ;
+//
+//        std::auto_ptr<TStringList> List(new TStringList);
+//        if (FileExists(fileName) )
+//        {
+//          List->LoadFromFile(fileName);
+//        }
+//
+//
+//        List->Add("Response:- "+ str +  "\n");
+//
+//
+//        List->SaveToFile(fileName );
+//    }
+//    catch(Exception &Ex)
+//    {
+//    }
+//}
+//---------------------------------------------------------------------------
+void TMembershipGeneralLedgerTCP::RecordLogs(std::auto_ptr<TStringList> logsList)
 {
-    try
-    {
-        AnsiString fileName = ExtractFilePath(Application->ExeName) + "CasinoLogs.txt" ;
-
-        std::auto_ptr<TStringList> List(new TStringList);
-        if (FileExists(fileName) )
-        {
-          List->LoadFromFile(fileName);
-        }
-
-
-        List->Add("Response:- "+ str +  "\n");
-
-
-        List->SaveToFile(fileName );
-    }
-    catch(Exception &Ex)
-    {
-    }
+    TSaveLogs::RecordCasinoLogs(logsList.get());
 }
 //---------------------------------------------------------------------------
 

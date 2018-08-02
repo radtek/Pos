@@ -9,6 +9,7 @@
 #include "DBThirdPartyCodes.h"
 #include "ReferenceManager.h"
 #include "DeviceRealTerminal.h"
+#include "SaveLogs.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -55,7 +56,11 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 
 /* Info for requests */
 	bool RetVal = false;
-	if ( EnabledFor(PaymentTransaction))
+    std::auto_ptr<TStringList> logsList(new TStringList());
+    logsList->Add("Going to compile data for request                              " + Now().FormatString("hh:nn:ss am/pm"));
+
+	//if ( EnabledFor(PaymentTransaction))
+    if(true)
 	{
 
 		AnsiString product_name = TDeviceRealTerminal::Instance().ID.Product.t_str();
@@ -88,10 +93,13 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 			if(Payment->GetPay() != 0 || Payment->GetAdjustment() != 0)
 			{
 				int ThirdPartyCode = StrToIntDef(Payment->PaymentThirdPartyID,UN_CODED);
-
+                AnsiString value = ThirdPartyCode;
+                logsList->Add("Payment used has name                                          " + Payment->Name);
+                logsList->Add("ThirdPartyCode extracted from payment as                       " + value);
 				/* points types should be ignored as they are handled though the membership system? */
 				if(Payment->GetPaymentAttribute(ePayTypePoints))
 				{
+                   logsList->Add("Payment used is of type points                               ");
                    if(Payment->Name == "Comp")
                       ThirdPartyCode = CompPointsCode;
                    else if(Payment->Name == "Dining")
@@ -99,18 +107,24 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
                    else
                       ThirdPartyCode = PointsCode;
 				}
-
+                logsList->Add("ThirdPartyCode is                                              " + (AnsiString)ThirdPartyCode);
 				if(ThirdPartyCode != UN_CODED)
 				{
-					Categories[ThirdPartyCode] += RoundToNearest(Payment->GetPayTendered(),0.01,
-                                                    TGlobalSettings::Instance().MidPointRoundsDown);
+                    logsList->Add("ThirdPartyCode is not equal to UN_CODED");
+                    Currency paymentValue = Payment->GetPayTendered();
+//                    RoundToNearest(Payment->GetPayTendered(),0.01,
+//                                                    TGlobalSettings::Instance().MidPointRoundsDown);
+					Categories[ThirdPartyCode] += paymentValue;
+                    logsList->Add("Payment Value is                                               " + paymentValue);
 					TotalRounding += Payment->GetRoundingTotal();
+                    logsList->Add("TotalRounding is                                               " + TotalRounding);
 				}
 			}
 		}
 
 		if(TotalRounding != 0)
 		{
+            logsList->Add("RoundingCode is                                                " + RoundingCode);
 			Categories[RoundingCode] += TotalRounding;
 		}
 
@@ -120,6 +134,7 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 		if(PaymentCashAcc != NULL && PaymentCashAcc->PaymentThirdPartyID != "")
 		{
 			CashAccountNumber = StrToIntDef(PaymentCashAcc->PaymentThirdPartyID,UN_CODED);
+            logsList->Add("CashAccountNumber is                                           " + CashAccountNumber);
 		}
 
 		if(CashAccountNumber != UN_CODED)
@@ -133,7 +148,9 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 					// Fake an 'EFTPOS' Payement of the same amout as cash out to cover the cash out 'purchase'
 					if(Payment != PaymentCashAcc)
 					{
-						Categories[CashAccountNumber] += -Payment->GetCashOutTotal();
+                        Currency cashOut = Payment->GetCashOutTotal();
+						Categories[CashAccountNumber] += -cashOut;
+                        logsList->Add("cashOut is                                                     " + cashOut);
                         isCashOut = true;
 					}
 				}
@@ -142,7 +159,10 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 
 			if(PaymentTransaction.Money.Change != 0 && !PaymentTransaction.CreditTransaction && !isCashOut)
 			{
-				Categories[CashAccountNumber] -=  RoundToNearest(PaymentTransaction.Money.Change,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+                Currency change = PaymentTransaction.Money.Change;
+                //RoundToNearest(PaymentTransaction.Money.Change,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+				Categories[CashAccountNumber] -=  change;
+                logsList->Add("change is                                                      " + change);
                 //PaymentTransaction.Money.Change;
 			}
 
@@ -154,7 +174,9 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
         if(PaymentTransaction.Money.Discount != 0)
         {
             // Discounts are a Negitive so post the positive number.
-        	Categories[DefaultDiscountCode] -= PaymentTransaction.Money.Discount;
+            Currency discount = PaymentTransaction.Money.Discount;
+        	Categories[DefaultDiscountCode] -= discount;
+            logsList->Add("discount is                                                    " + discount);
         }
 
         if(Categories.size() > 0)
@@ -168,34 +190,52 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
             Transaction->SetTerminalName("MenuMate");
             Transaction->SetCard(Card);
             TCategoryCurrency::const_iterator Cats = Categories.begin();
+            logsList->Add("Going to iterate Categories and assign them to Transaction");
             for (; Cats != Categories.end(); Cats++)
             {
                 __int64 Value = RoundToNearest(Cats->second, 0.01, false).Val / 100;
+                //__int64 Value = Cats->second.Val / 100;
+                AnsiString valueStr = Value;
+                AnsiString index = Cats->first;
+                logsList->Add("value is                                                       " + valueStr);
+                logsList->Add("for                                                            " + index);
                 Transaction->AddPayment(Cats->first,Value);
             }
+            logsList->Add("Sending for Process at                                         " + Now().FormatString("hh:nn:ss am/pm"));
+            TSaveLogs::RecordCasinoLogs(logsList.get());
+            logsList->Clear();
             MembershipGeneralLedgerTCP->Process(
                 TGlobalSettings::Instance().MembershipDatabaseIP,
                 TGlobalSettings::Instance().MembershipDatabasePort,
                 *Transaction.get());
             if (!Transaction->Result == eMSAccepted)
             {
-                RetVal = false;
-                throw Exception("MCI Error processing transaction " + Transaction->ResultText);
+                logsList->Add("Transaction status is not Accepted                             ");
+                logsList->Add("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                TSaveLogs::RecordCasinoLogs(logsList.get());
+                //RetVal = false;
+                RetVal = true;
+                //throw Exception("MCI Error processing transaction " + Transaction->ResultText);
             }
             else
             {
                 RetVal = true;
+                logsList->Add("Transaction status is Accepted                                         ");
             }
     	}
         else
         {
             RetVal = true;
+            logsList->Add("Transaction status is Accepted as category size is 0                       ");
         }
 	}
 	else
 	{
 		RetVal = true;
+        logsList->Add("Transaction status is Accepted as not enabled                       ");
 	}
+    logsList->Add("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    TSaveLogs::RecordCasinoLogs(logsList.get());
 	return RetVal;
 }
 
