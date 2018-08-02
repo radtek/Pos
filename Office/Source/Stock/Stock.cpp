@@ -324,14 +324,14 @@ void TfrmStock::LoadTree()
 				false);
 			}
 		}
-		if (!Registered)
+		/*if (!Registered)
 		{
 			if (StockItemCount > MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
 			{
 				ShowRegWarning = true;
 				break;
 			}
-		}
+		}*/
 		if (!qrStockList->FieldByName("Stock_Key")->IsNull)
 		{
 			if ((qrStockList->FieldByName("Group_Deleted")->AsString == "F" || qrStockList->FieldByName("Group_Deleted")->IsNull) &&
@@ -362,21 +362,21 @@ void TfrmStock::LoadTree()
 				false);
 
 				StockItemCount++;
-				if (!Registered)
+			/*	if (!Registered)
 				{
 					if (StockItemCount > MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
 					{
 						ShowRegWarning = true;
 						break;
 					}
-				}
+				}*/
 			}
 		}
 	}
-	if (ShowRegWarning)
+	/*if (ShowRegWarning)
 	{
 		Application->MessageBox(AnsiString("You are limited to " + IntToStr(MAX_STOCK_ITEMS_IN_EVALUATION_MODE) + " items in the evaluation version.").c_str(), "Error", MB_ICONERROR + MB_OK);
-	}
+	}*/
 	Transaction->Commit();
 	tvStock->Items->EndUpdate();
 	tvStock->OnChange = tvStockChange;
@@ -450,14 +450,7 @@ void TfrmStock::LoadTreeforStockRequest()
 					false);
 				}
 			}
-			if (!Registered)
-			{
-				if (StockItemCount > MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
-				{
-					ShowRegWarning = true;
-					break;
-				}
-			}
+
 			if (!qrStockRequestLocation->FieldByName("Stock_Key")->IsNull)
 			{
 				if ((qrStockRequestLocation->FieldByName("Group_Deleted")->AsString == "F" || qrStockRequestLocation->FieldByName("Group_Deleted")->IsNull) &&
@@ -488,22 +481,12 @@ void TfrmStock::LoadTreeforStockRequest()
 					false);
 
 					StockItemCount++;
-					if (!Registered)
-					{
-						if (StockItemCount > MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
-						{
-							ShowRegWarning = true;
-							break;
-						}
-					}
+
 				}
 			}
 		}
 	}
-	if (ShowRegWarning)
-	{
-		Application->MessageBox(AnsiString("You are limited to " + IntToStr(MAX_STOCK_ITEMS_IN_EVALUATION_MODE) + " items in the evaluation version.").c_str(), "Error", MB_ICONERROR + MB_OK);
-	}
+
 	Transaction->Commit();
 	tvStock->Items->EndUpdate();
 	tvStock->OnChange = tvStockChange;
@@ -572,20 +555,10 @@ void TfrmStock::RefreshDeletedBin()
 					true);
 
 					StockItemCount++;
-					if (!Registered)
-					{
-						if (StockItemCount > MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
-						{
-							ShowRegWarning = true;
-							break;
-						}
-					}
+			
 				}
 			}
-			if (ShowRegWarning)
-			{
-				Application->MessageBox(AnsiString("You are limited to " + IntToStr(MAX_STOCK_ITEMS_IN_EVALUATION_MODE) + " items in the evaluation version.").c_str(), "Error", MB_ICONERROR + MB_OK);
-			}
+
 			if (Transaction->InTransaction) Transaction->Commit();
 			tvStock->Items->EndUpdate();
 			tvStock->OnChange = tvStockChange;
@@ -1996,14 +1969,7 @@ bool TfrmStock::FindStockGroup(AnsiString Text)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStock::miNewStockItemClick(TObject *Sender)
 {
-	if (!Registered)
-	{
-		if (GetStockItemCount() >= MAX_STOCK_ITEMS_IN_EVALUATION_MODE)
-		{
-			Application->MessageBox(AnsiString("You are limited to " + IntToStr(MAX_STOCK_ITEMS_IN_EVALUATION_MODE) + " items in the evaluation version.").c_str(), "Error", MB_ICONERROR + MB_OK);
-			return;
-		}
-	}
+  
 	AnsiString CurrentItemUnit, CurrentGLCode;
 	if (tvStock->Selected && ((TStockNodeData *)tvStock->Selected->Data)->Type == snStockItem)
 	{
