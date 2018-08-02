@@ -12,6 +12,8 @@ using Chefmate.Infrastructure.Controller;
 using System.Collections.Generic;
 using System.Windows.Threading;
 using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Controls;
 
 namespace Chefmate.UI.Views
 {
@@ -99,11 +101,11 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("StatusText");
             }
         }
-        
+
         #region Commands
         public ICommand AutoUpdateCommand { get; set; }
         public ICommand CloseCommand { get; set; }
-        public ICommand LoadCommand { get; set; }        
+        public ICommand LoadCommand { get; set; }
         public ICommand NavigateForwardCommand { get; set; }
         public ICommand NavigateBackwardCommand { get; set; }
         public ICommand NavigateLeftCommand { get; set; }
@@ -137,8 +139,6 @@ namespace Chefmate.UI.Views
                 ItemList = DbOrder.GetAccumulatedItems(ChefmateController.Instance.CurrenTerminal.TerminalId);
                 ;
                 ItemSummaryList.ItemsSource = ItemList;
-               // ItemSummaryList.Height = OuterGrid.Height / .9;
-               
                 this.IsEnabled = true;
                 StatusText = "";
 
@@ -171,54 +171,57 @@ namespace Chefmate.UI.Views
         {
             LoadOrdersCommandHandler(sender);
         }
-    
+
         #region Navigations
+        public static T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+        {
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+
+                if (child != null && child is T)
+                {
+                    return (T)child;
+                }
+                else
+                {
+                    T childOfChild = FindVisualChild<T>(child);
+
+                    if (childOfChild != null) return childOfChild;
+                }
+            }
+
+            return null;
+        }
         private void Backward(object sender)
         {
-            
-            
-            //ParentScroller.PageLeft();
-            //var position = ParentScroller.HorizontalOffset;
-            //var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0;
-            ////ParentScroller.ScrollToHorizontalOffset(offset);
-            //UpdateNavigationButtonDisplay(offset);
+            var scroller = FindVisualChild<ScrollViewer>(ItemSummaryList);
+            ItemOffset = System.Windows.SystemParameters.PrimaryScreenWidth;
+            scroller.ScrollToHorizontalOffset(scroller.HorizontalOffset - ItemOffset);
         }
+        double ItemOffset = 0;
         private void Forward(object sender)
         {
-            //this.ItemSummaryList.ScrollIntoView(78);
-            //ParentScroller.PageRight();
-            //var position = ParentScroller.HorizontalOffset;
-            //var offset = position + OrderWidth * ChefmateController.Instance.PageColumns;
-            ////ParentScroller.ScrollToHorizontalOffset(offset);
-            //UpdateNavigationButtonDisplay(offset);
+
+
+            var scroller = FindVisualChild<ScrollViewer>(ItemSummaryList);
+            ItemOffset = System.Windows.SystemParameters.PrimaryScreenWidth;
+            scroller.ScrollToHorizontalOffset(scroller.HorizontalOffset + ItemOffset);
 
         }
         private void ScrollToRight(object obj)
         {
-            //ParentScroller.ScrollToRightEnd();
-            //double index = Math.Floor(_cordX / (OrderWidth * ChefmateController.Instance.PageColumns)) + 1;
-            //UpdateNavigationButtonDisplay(index * ChefmateController.Instance.PageColumns * OrderWidth);
+            var scroller = FindVisualChild<ScrollViewer>(ItemSummaryList);
+            scroller.ScrollToHorizontalOffset(double.MaxValue);
         }
         private void ScrollToLeft(object obj)
         {
-            //ParentScroller.ScrollToLeftEnd();
-            //UpdateNavigationButtonDisplay(0);
-        }
-        private void UpdateNavigationButtonDisplay(double offset = 0)
-        {
-            //Set Backward navigation Status
-            //var backwardEnabled = offset > 0;
-            //BackwardNavigationButton.IsEnabled = backwardEnabled;
-            //LeftNavigationButton.IsEnabled = backwardEnabled;
-
-            ////Set forward navigation Status
-            //var forwardEnabled = offset + (this.ActualWidth + 10) < _cordX + _orderWidth;
-            //ForwardNavigationButton.IsEnabled = forwardEnabled;
-            //RightNavigationButton.IsEnabled = forwardEnabled;
-
-            //OrderContainer.Focus();
+            var scroller = FindVisualChild<ScrollViewer>(ItemSummaryList);
+            scroller.ScrollToHorizontalOffset(-double.MaxValue);
         }
         #endregion
+
 
     }
 }

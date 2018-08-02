@@ -50,15 +50,15 @@
                         Name="ForwardNavigationButton">
                 <Path Data="M 0 0 L 0 40 L 40 20 Z"/>
             </Button>
-            <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="4" Command="{Binding NavigateRightCommand}"
+            <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="4" Command="{Binding NavigateRightCommand}"  
                         Name="RightNavigationButton">
                 <Path Data="M 0 0 L 0 40 L 35 20 L 35 40 L 40 40 L 40 0 L 35 0 L 35 20 Z"/>
             </Button>
             <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="5" Background="#FFF09422"  Command="{Binding CloseCommand}">Close</Button>
         </Grid>
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
-
-            <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden" >
+            
+                <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
 
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -68,15 +68,18 @@
                 </ListBox.ItemsPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate >
-                        <StackPanel Name="S1" Orientation="Vertical" Width="{Binding Converter={StaticResource   percentageConverter}, ElementName=ItemSummaryList, Path=ActualWidth, ConverterParameter=0.25}">
+                     
+                            <StackPanel Name="S1" Orientation="Vertical" Width="{Binding Converter={StaticResource   percentageConverter}, ElementName=ItemSummaryList, Path=ActualWidth, ConverterParameter=0.5}">
                             <Border CornerRadius="1" BorderThickness="2" BorderBrush="#C4D3C4" Background="#C4D3C4" Margin="2">
-                                <Label FontSize="22" Content="{Binding Path=DataContext, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center">
+                                <Label FontSize="34" Content="{Binding Path=DataContext, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center">
                                 </Label>
                             </Border>
-                        </StackPanel>
+                            </StackPanel>
+                    
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            
             <!--<DataGrid Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}"
                           Width= "500" HorizontalAlignment="Left" Margin="12,21,0,0" 
                 Name="McDataGrid" VerticalAlignment="Top" RowHeight="30" ColumnWidth="100" 
