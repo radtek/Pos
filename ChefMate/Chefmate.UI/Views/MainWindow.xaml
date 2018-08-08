@@ -63,8 +63,10 @@
                     <ColumnDefinition Width=".10*"/>
                     <ColumnDefinition Width=".12*"/>
                 </Grid.ColumnDefinitions>
-                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsRecallEnabled}" Grid.Column="0" Click="Recall" Content="Recall"/>
-                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsSummaryEnabled}" Grid.Column="1" Click="Summary" Content="Summary"/>
+                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsRecallEnabled}" Grid.Column="0"   Click="Recall" Content="Recall"/>
+                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsSummaryEnabled}" Grid.Column="1" Click="Summary">
+                    <TextBlock  TextAlignment="Center" TextWrapping="Wrap">Summary View</TextBlock>
+                </Button>
                 <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="2" Click="Setting" Content="Settings"/>
                 <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="3" Command="{Binding NavigateLeftCommand}"
                         Name="LeftNavigationButton">
