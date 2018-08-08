@@ -1703,10 +1703,13 @@ void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &P
     {
         int identificationNumber = 0;
 
-        if(PaymentTransaction.Orders->Count > 0)
+       if(PaymentTransaction.Orders->Count > 0)
         {
            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
-           identificationNumber = item->OrderIdentificationNo;
+          if(item->OrderIdentificationNo == 0)
+               return;
+           else
+               identificationNumber = item->OrderIdentificationNo;
         }
 
 		TIBSQL *IBInternalQueryFirst = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
@@ -2095,10 +2098,18 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		std::vector <TPatronType> ::iterator ptrPatronTypes;
         if(!MakePatronCountZero)
         {
+
             for (ptrPatronTypes = PaymentTransaction.Patrons.begin(); ptrPatronTypes != PaymentTransaction.Patrons.end(); ptrPatronTypes++)
             {
                 TotalCount += ptrPatronTypes->Count;
             }
+
+            if(TotalCount == 0 && !PaymentTransaction.CreditTransaction)
+            {
+                TotalCount = 1;
+
+            }
+
         }
         else
         {
@@ -2180,10 +2191,8 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
 
-				if (SubPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
-				{
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
-				}
+
 
                 //checking clipp paytype
                 if( payTypeName == "Clipp")

@@ -172,6 +172,7 @@ private:	// User declarations
     void RestructureBillForPatrons();
     bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
     void ApplyDiscount(TDiscount Discount);
+    AnsiString voucherNumber;
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

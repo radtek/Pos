@@ -3284,6 +3284,7 @@ object frmMenuEdit: TfrmMenuEdit
                   ItemHeight = 13
                   ParentFont = False
                   TabOrder = 0
+                  OnClick = lbAvailableSizesClick
                 end
                 object btnAddSize: TBitBtn
                   Left = 248

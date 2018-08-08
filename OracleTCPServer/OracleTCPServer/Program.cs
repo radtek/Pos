@@ -40,7 +40,7 @@ namespace OracleTCPServer
                 // Buffer for reading data
                 Byte[] bytes = new Byte[2000];
                 String data = null;
-
+                bool canCloseConnection = false;
                 // Enter the listening loop.
                 while (true)
                 {
@@ -49,7 +49,7 @@ namespace OracleTCPServer
                     Thread.Sleep(1000);
                     NetworkStream stream = client.GetStream();
                     int countBytes;
-
+                    canCloseConnection = true;
                     while ((countBytes = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
                         listLogs.Add("Count of bytes received                           " + countBytes);
@@ -58,14 +58,26 @@ namespace OracleTCPServer
                         listLogs.Add("Data Received from Client                         " + data);
                         listLogs.Add("Time of reception                                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                         byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
-                        byte[] responseBytes = SendRequestToOracle(msg);
-                        string responseString = System.Text.Encoding.ASCII.GetString(responseBytes, 0, responseBytes.Length);
-                        listLogs.Add("Writing back to client at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
-                        stream.Write(responseBytes, 0, responseBytes.Length);
-                        listLogs.Add("Data sent to Client                               " + responseString);
+                        try
+                        {
+                            byte[] responseBytes = SendRequestToOracle(msg);
+                            string responseString = System.Text.Encoding.ASCII.GetString(responseBytes, 0, responseBytes.Length);
+                            listLogs.Add("Writing back to client at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                            stream.Write(responseBytes, 0, responseBytes.Length);
+                            listLogs.Add("Data sent to Client                               " + responseString);
+                        }
+                        catch (Exception ex)
+                        {
+                            canCloseConnection = false;
+                            break;
+                        }
                     }
-                    client.Close();
-                    listLogs.Add("Connection from MM client is closed at            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    if (canCloseConnection)
+                    {
+                        listLogs.Add("going to close Connection from MM client at       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        client.Close();
+                        listLogs.Add("Connection from MM client is closed at            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    }
                     MakeLogs(listLogs);
                     listLogs.Clear();
                 }
