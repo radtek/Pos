@@ -278,7 +278,7 @@
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="2"/>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Chefmate Header"/>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="1" Content="Order Header"/>
-                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="2" Content="Order Summary"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="2" Content="Item Summary"/>
                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
                         <Grid>
                             <Grid.RowDefinitions>
