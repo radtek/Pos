@@ -68,6 +68,7 @@ namespace ChefMate.Database.Parser
             _versionNumbers.Add("1.1");
             _versionNumbers.Add("1.2");
             _versionNumbers.Add("1.3");
+            _versionNumbers.Add("1.4");
         }
 
         private void SendStatus(string inStatus)

@@ -63,6 +63,7 @@
     <Compile Include="Parser\ChefmateParserVersion1_1.cs" />
     <Compile Include="Parser\ChefmateParserVersion1_2.cs" />
     <Compile Include="Parser\ChefmateParserVersion1_3.cs" />
+    <Compile Include="Parser\ChefmateParserVersion1_4.cs" />
     <Compile Include="Parser\ParserFactory.cs" />
     <Compile Include="Parser\VersionParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

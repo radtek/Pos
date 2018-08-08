@@ -275,8 +275,10 @@
                     </Border>
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="0"/>
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="1"/>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="2"/>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Chefmate Header"/>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="1" Content="Order Header"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="2" Content="Order Summary"/>
                     <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -322,6 +324,29 @@
                             <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
                             <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.OrderFontFamily}" MinWidth="150"
                                    HorizontalAlignment="Left" />
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Font Size :</Label>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.ItemSummaryFontSize}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.ItemSummaryFontFamily}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Background :</Label>
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="1" SelectedColor="{Binding CurrentSettings.ItemSummaryBackgroundColor , Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+
                         </Grid>
                     </Border>
                 </Grid>

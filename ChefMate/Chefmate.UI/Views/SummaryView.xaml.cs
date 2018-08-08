@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Controls;
+using ChefMate.Database;
 
 namespace Chefmate.UI.Views
 {
@@ -35,13 +36,59 @@ namespace Chefmate.UI.Views
         }
     }
 
+    public class FontSizeConverter : IValueConverter
+    {
+
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryFontSize;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryFontSize;
+        }
+
+        #endregion
+    }
+
+    public class FontFamilyConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryFontFamily;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryFontFamily;
+        }
+    }
+
+    public class BackGroundColorConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryBackgroundColor;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return ChefmateController.Instance.CurrentSettings.ItemSummaryBackgroundColor;
+        }
+    }
+
     public partial class SummaryView : Window, INotifyPropertyChanged
     {
         private List<string> _itemList;
         private double _windowWidth;
         private string _statusText;
         private GuiStyles _guiStyles;
-        
+
         public SummaryView()
         {
             InitializeComponent();
@@ -54,7 +101,6 @@ namespace Chefmate.UI.Views
             WindowWidth = Screen.PrimaryScreen.Bounds.Width * .8;
             ItemList = new List<string>();
             this.DataContext = this;
-
         }
         public List<String> ItemList
         {
@@ -111,13 +157,20 @@ namespace Chefmate.UI.Views
             NavigateForwardCommand = new DelegateCommand(Forward);
             NavigateLeftCommand = new DelegateCommand(ScrollToLeft);
             NavigateRightCommand = new DelegateCommand(ScrollToRight);
-            GuiStyles = new GuiStyles();
+            LoadFontInfo();
+        }
 
+        private void LoadFontInfo()
+        {
+            GuiStyles = new GuiStyles();
             GuiStyles.AnalysisFontWeight = ChefmateController.Instance.CurrentSettings.AnalysisFontBold ? FontWeights.Bold : FontWeights.Normal;
             GuiStyles.AnalysisFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.AnalysisFontFamily);
             GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
             GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
             GuiStyles.AnalysisFontSize = ChefmateController.Instance.CurrentSettings.AnalysisFontSize;
+            GuiStyles.ItemSummaryFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.ItemSummaryFontFamily);
+            GuiStyles.ItemSummaryBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.ItemSummaryBackgroundColor));
+            GuiStyles.ItemSummaryFontSize = ChefmateController.Instance.CurrentSettings.ItemSummaryFontSize;
         }
 
         private void AutoUpdateCommandHandler(object sender)
