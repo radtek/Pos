@@ -23,9 +23,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height=".1*"/>
             <RowDefinition Height=".9*"/>
-        </Grid.RowDefinitions>        
-        <Grid Grid.Row="0" Grid.Column="0" Background="#F09422" >
-            <Label FontSize="24"   Content="Items Summary" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0"  Background="{Binding GuiStyles.HeaderBackGround}">
+            <Label Content="Items Summary" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding GuiStyles.HeaderForeGround}"
+                   FontSize="{Binding GuiStyles.AnalysisFontSize}" FontFamily="{Binding GuiStyles.AnalysisFontFamily}" FontWeight="{Binding GuiStyles.AnalysisFontWeight}"/>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch">
             <!--<Grid Grid.Column="1" HorizontalAlignment="Stretch">-->
@@ -37,7 +38,8 @@
                 <ColumnDefinition Width=".15*"/>
                 <ColumnDefinition Width=".20*"/>
             </Grid.ColumnDefinitions>
-            <Button Style="{StaticResource FunctionButtonStyle}"  Command="{Binding AutoUpdateCommand}" Grid.Column="0" Content="Update UI" Background="#FFF09422" />
+            <Button Style="{StaticResource FunctionButtonStyle}"  Command="{Binding AutoUpdateCommand}" Grid.Column="0" Content="Update UI" Background="{Binding GuiStyles.HeaderBackGround}" 
+                    FontSize="{Binding GuiStyles.AnalysisFontSize}" FontFamily="{Binding GuiStyles.AnalysisFontFamily}" FontWeight="{Binding GuiStyles.AnalysisFontWeight}"/>
             <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="1" Command="{Binding NavigateLeftCommand}"
                         Name="LeftNavigationButton">
                 <Path Data="M 0 0 L 0 40 L5 40 L 5 20 L 40 40 L 40 0 L 5 20 L 5 0  Z"/>
@@ -54,8 +56,10 @@
                         Name="RightNavigationButton">
                 <Path Data="M 0 0 L 0 40 L 35 20 L 35 40 L 40 40 L 40 0 L 35 0 L 35 20 Z"/>
             </Button>
-            <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="5" Background="#FFF09422"  Command="{Binding CloseCommand}">Close</Button>
+            <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="5" Background="{Binding GuiStyles.HeaderBackGround}"  Command="{Binding CloseCommand}"
+                    FontSize="{Binding GuiStyles.AnalysisFontSize}" FontFamily="{Binding GuiStyles.AnalysisFontFamily}" FontWeight="{Binding GuiStyles.AnalysisFontWeight}">Close</Button>
         </Grid>
+
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
             
                 <ListBox x:Name="ItemSummaryList"  ScrollViewer.HorizontalScrollBarVisibility="Hidden">

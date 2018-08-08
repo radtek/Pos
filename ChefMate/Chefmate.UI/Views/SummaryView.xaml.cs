@@ -40,8 +40,8 @@ namespace Chefmate.UI.Views
         private List<string> _itemList;
         private double _windowWidth;
         private string _statusText;
-        private int _skipCount;
-        private bool _canLoadMoreOrders;
+        private GuiStyles _guiStyles;
+        
         public SummaryView()
         {
             InitializeComponent();
@@ -52,19 +52,9 @@ namespace Chefmate.UI.Views
             SetTimer();
             this.Loaded += SummaryView_Loaded;
             WindowWidth = Screen.PrimaryScreen.Bounds.Width * .8;
-            _skipCount = 0;
             ItemList = new List<string>();
             this.DataContext = this;
 
-        }
-        public bool CanLoadMoreOrders
-        {
-            get { return _canLoadMoreOrders; }
-            set
-            {
-                _canLoadMoreOrders = value;
-                OnPropertyChanged("CanLoadMoreOrders");
-            }
         }
         public List<String> ItemList
         {
@@ -94,6 +84,15 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("StatusText");
             }
         }
+        public GuiStyles GuiStyles
+        {
+            get { return _guiStyles; }
+            set
+            {
+                _guiStyles = value;
+                OnPropertyChanged("GuiStyles");
+            }
+        }
 
         #region Commands
         public ICommand AutoUpdateCommand { get; set; }
@@ -112,6 +111,13 @@ namespace Chefmate.UI.Views
             NavigateForwardCommand = new DelegateCommand(Forward);
             NavigateLeftCommand = new DelegateCommand(ScrollToLeft);
             NavigateRightCommand = new DelegateCommand(ScrollToRight);
+            GuiStyles = new GuiStyles();
+
+            GuiStyles.AnalysisFontWeight = ChefmateController.Instance.CurrentSettings.AnalysisFontBold ? FontWeights.Bold : FontWeights.Normal;
+            GuiStyles.AnalysisFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.AnalysisFontFamily);
+            GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
+            GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
+            GuiStyles.AnalysisFontSize = ChefmateController.Instance.CurrentSettings.AnalysisFontSize;
         }
 
         private void AutoUpdateCommandHandler(object sender)
@@ -214,7 +220,6 @@ namespace Chefmate.UI.Views
             scroller.ScrollToHorizontalOffset(-double.MaxValue);
         }
         #endregion
-
 
     }
 }
