@@ -306,22 +306,28 @@ namespace Chefmate.Database.DbModels
         public static List<string> GetAccumulatedItems(int terminalKey)
         {
             var totalItems = new List<String>();
-            var queryString = @"SELECT Count(*) || ' x ' || AccumulatedQuery.ITEM_NAME ITEM_NAME
+            var queryString = @"SELECT Count(*) || ' x ' || AccumulatedQuery.ITEM_NAME ITEM_NAME 
                                 FROM
-                                    (SELECT A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME FROM ORDERITEMS A
-                                                                    INNER JOIN ITEMS B
-                                                                    ON A.ITEM_KEY = B.ITEM_KEY
-                                                                    LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
-                                                                    WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
-                                                                    AND ORDER_ITEM_STATUS <> @CANCEL_ITEM
-                                                                    GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME
+                                    (SELECT A.ORDERITEM_KEY, A.ITEM_KEY, 
+                                        (CASE WHEN (OPTIONS.OPTION_NAME <> '') THEN B.ITEM_NAME || ' - ' || OPTIONS.OPTION_NAME ELSE B.ITEM_NAME END) ITEM_NAME 
+                                                FROM ORDERITEMS A
+                                                INNER JOIN ITEMS B
+                                                ON A.ITEM_KEY = B.ITEM_KEY
+                                                LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
+                                                LEFT JOIN(SELECT A.ORDERITEM_KEY, MIN(A.OPTION_KEY) OPTION_KEY 
+                                                            FROM ORDERITEMOPTIONS a 
+                                                            GROUP BY 1) OIO ON A.ORDERITEM_KEY = OIO.ORDERITEM_KEY  
+                                                LEFT JOIN OPTIONS ON OIO.OPTION_KEY = OPTIONS.OPTION_KEY                                                
+                                                WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
+                                                AND ORDER_ITEM_STATUS <> @CANCEL_ITEM
+                                                GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME, OPTIONS.OPTION_NAME
                                     UNION ALL 
-                                    SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME FROM ORDERITEMS A
-                                                                    INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
-                                                                    INNER JOIN SIDES ON OD.SIDE_KEY = SIDES.SIDE_KEY
-                                                                    WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND A.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
-                                                                    AND ORDER_ITEM_STATUS <> @CANCEL_ITEM 
-                                                                    GROUP BY OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME) AccumulatedQuery                                
+                                    SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME ITEM_NAME FROM ORDERITEMS A
+                                                INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
+                                                INNER JOIN SIDES ON OD.SIDE_KEY = SIDES.SIDE_KEY
+                                                WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND A.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
+                                                AND ORDER_ITEM_STATUS <> @CANCEL_ITEM 
+                                                GROUP BY OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME) AccumulatedQuery                                
                                 GROUP BY AccumulatedQuery.ITEM_NAME";    
            
             var queryParameters = new List<QueryParameter>();

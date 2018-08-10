@@ -140,6 +140,7 @@ namespace Chefmate.UI.Views
             }
         }
 
+
         #region Commands
         public ICommand AutoUpdateCommand { get; set; }
         public ICommand CloseCommand { get; set; }
@@ -168,6 +169,7 @@ namespace Chefmate.UI.Views
             GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
             GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
             GuiStyles.AnalysisFontSize = ChefmateController.Instance.CurrentSettings.AnalysisFontSize;
+            //following are loaded bacause later this binding will be done without converter.
             GuiStyles.ItemSummaryFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.ItemSummaryFontFamily);
             GuiStyles.ItemSummaryBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.ItemSummaryBackgroundColor));
             GuiStyles.ItemSummaryFontSize = ChefmateController.Instance.CurrentSettings.ItemSummaryFontSize;
