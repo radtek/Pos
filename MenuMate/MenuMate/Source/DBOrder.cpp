@@ -1123,7 +1123,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "ROOM_NO, "
             "ACC_NO, "
             "FIRST_NAME, "
-            "LAST_NAME "
+            "LAST_NAME, "
+            "ONLINE_CHIT_NO, "
+            "ONLINE_CHIT_TYPE, "
+            "ONLINE_ORDER_ID "
           ") "
 			"VALUES "
 			"( "
@@ -1203,7 +1206,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":ROOM_NO, "
             ":ACC_NO, "
             ":FIRST_NAME, "
-            ":LAST_NAME "
+            ":LAST_NAME, "
+            ":ONLINE_CHIT_NO, "
+            ":ONLINE_CHIT_TYPE, "
+            ":ONLINE_ORDER_ID "
           	");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
@@ -1335,6 +1341,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			{
 				IBInternalQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
 			}
+
+            IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
+            IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+            IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+
 			IBInternalQuery->ExecQuery();
 
 			// Options
@@ -1529,7 +1540,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "ROOM_NO, "
                 "ACC_NO, "
                 "FIRST_NAME, "
-                "LAST_NAME "
+                "LAST_NAME, "
+                "ONLINE_CHIT_NO, "
+                "ONLINE_CHIT_TYPE, "
+                "ONLINE_ORDER_ID "
 		   	") "
 				"VALUES "
 				"( "
@@ -1609,7 +1623,10 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":ROOM_NO, "
                 ":ACC_NO, "
                 ":FIRST_NAME, "
-                ":LAST_NAME "
+                ":LAST_NAME, "
+                ":ONLINE_CHIT_NO, "
+                ":ONLINE_CHIT_TYPE, "
+                ":ONLINE_ORDER_ID "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1721,6 +1738,9 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                     IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
                 IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
                 IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
+                IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
+                IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
 
 				IBInternalQuery->ExecQuery();
 

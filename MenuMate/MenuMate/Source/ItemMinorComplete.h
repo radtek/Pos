@@ -337,6 +337,9 @@ class TItemMinorComplete : public TItemMinor
     UnicodeString LastName;
     int TabKey;
     UnicodeString SplitMessage;
+    int OnlineChitNo;
+    int OnlineChitType;
+    UnicodeString OnlineOrderId;
 
 private:
         bool is_being_returned_to_stock_;

@@ -2554,7 +2554,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				"DISCOUNT_WITHOUT_TAX,"
 				"TAX_ON_DISCOUNT,"
                 "PRICE_INCL, "
-                "PRICE_ADJUST "
+                "PRICE_ADJUST, "
+                "ONLINE_CHIT_NO, "
+                "ONLINE_CHIT_TYPE, "
+                "ONLINE_ORDER_ID "
 				")"
 				" VALUES "
 				"("
@@ -2604,7 +2607,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				":DISCOUNT_WITHOUT_TAX,"
 				":TAX_ON_DISCOUNT,"
                 ":PRICE_INCL, "
-                ":PRICE_ADJUST "
+                ":PRICE_ADJUST, "
+                ":ONLINE_CHIT_NO, "
+                ":ONLINE_CHIT_TYPE, "
+                ":ONLINE_ORDER_ID "
 				");";
 
                 IBInternalQuery->ParamByName("CHIT_NAME")->AsString = Order->ChitNumber.Name;
@@ -2671,26 +2677,26 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                   IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = Order->BillCalcResult.BasePrice;///Order->GetQty();
 
 
-            if(Order->TotalAdjustment()>0&&Order->BillCalcResult.DiscountWithoutTax<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.DiscountWithoutTax>0)
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*Order->BillCalcResult.DiscountWithoutTax;
-             }
-            else
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = Order->BillCalcResult.DiscountWithoutTax;
-            }
+                if(Order->TotalAdjustment()>0&&Order->BillCalcResult.DiscountWithoutTax<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.DiscountWithoutTax>0)
+                {
+                   IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*Order->BillCalcResult.DiscountWithoutTax;
+                }
+                else
+                {
+                   IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = Order->BillCalcResult.DiscountWithoutTax;
+                }
 
-            if(Order->TotalAdjustment()>0&&Order->BillCalcResult.TaxOnDiscount<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.TaxOnDiscount>0)
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* Order->BillCalcResult.TaxOnDiscount;
-            }
-            else
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = Order->BillCalcResult.TaxOnDiscount;
-            }
+                if(Order->TotalAdjustment()>0&&Order->BillCalcResult.TaxOnDiscount<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.TaxOnDiscount>0)
+                {
+                  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* Order->BillCalcResult.TaxOnDiscount;
+                }
+                else
+                {
+                  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = Order->BillCalcResult.TaxOnDiscount;
+                }
 
-            IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
-            IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
+                IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
+                IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
 
 
      			if (Order->ServingCourse.ServingCourseKey == 0)
@@ -2701,6 +2707,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				{
 					IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = Order->ServingCourse.ServingCourseKey;
 				}
+
+                IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
+                IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
 
 				IBInternalQuery->ExecQuery();
 				ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, MasterArchiveKey, Order);
@@ -2755,7 +2765,8 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 "PRICE_LEVEL0," "PRICE_LEVEL1," "SERVINGCOURSES_KEY, CHIT_NAME, CHIT_OPTION,"
                          "BASE_PRICE,"
                          "DISCOUNT_WITHOUT_TAX,"
-                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST )" " VALUES (" ":ARCHIVE_KEY," ":ARCBILL_KEY," ":TERMINAL_NAME,"
+                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_NO, ONLINE_CHIT_TYPE, ONLINE_ORDER_ID )"
+                         " VALUES (" ":ARCHIVE_KEY," ":ARCBILL_KEY," ":TERMINAL_NAME,"
 						 ":MENU_NAME," ":COURSE_NAME," ":ITEM_NAME," ":ITEM_CATEGORY," ":ITEM_SHORT_NAME," ":ITEM_ID," ":SIZE_NAME,"
 						 ":TABLE_NUMBER," ":TABLE_NAME," ":SEAT_NUMBER," ":SERVER_NAME," ":TAB_NAME," ":LOYALTY_NAME," ":ORDER_TYPE,"
 						 ":TIME_STAMP," ":TIME_STAMP_BILLED," ":ORDER_LOCATION," ":PRICE," ":COST," ":HAPPY_HOUR," ":NOTE," ":SECURITY_REF,"
@@ -2764,7 +2775,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 ":SERVINGCOURSES_KEY, :CHIT_NAME, :CHIT_OPTION, "
                          ":BASE_PRICE,"
                          ":DISCOUNT_WITHOUT_TAX,"
-                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST );";
+                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST, :ONLINE_CHIT_NO, :ONLINE_CHIT_TYPE, :ONLINE_ORDER_ID  );";
 
 					IBInternalQuery->ParamByName("CHIT_NAME")->AsString =
 					Order->ChitNumber.Name;
@@ -2838,25 +2849,25 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                     IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = CurrentSubOrder->BillCalcResult.BasePrice;//Order->GetQty();
 
                      if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.DiscountWithoutTax<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.DiscountWithoutTax>0)
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
-             }
-            else
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
-            }
+                    {
+                       IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
+                     }
+                    else
+                    {
+                       IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
+                    }
 
-            if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount>0)
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-            }
-            else
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-            }
+                    if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount>0)
+                    {
+                      IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* CurrentSubOrder->BillCalcResult.TaxOnDiscount;
+                    }
+                    else
+                    {
+                      IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
+                    }
 
-            IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
-            IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
+                    IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
+                    IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
 
                   //  IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
                   //  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
@@ -2871,7 +2882,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = CurrentSubOrder->ServingCourse.ServingCourseKey;
 					}
 
-					IBInternalQuery->ExecQuery();
+                    IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
+                    IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                    IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+                    IBInternalQuery->ExecQuery();
 
 					ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, SubArchiveKey, CurrentSubOrder);
 					ArchiveOrderTaxes(PaymentTransaction.DBTransaction, SubArchiveKey, CurrentSubOrder);

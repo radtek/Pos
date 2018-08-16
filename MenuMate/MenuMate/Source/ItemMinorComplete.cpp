@@ -227,6 +227,9 @@ TItemMinorComplete::TItemMinorComplete() {
     TabKey = 0;
     RoomNoStr = "";
     SplitMessage = "";
+    OnlineChitNo = 0;
+    OnlineChitType = 0;
+    OnlineOrderId = "";
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -289,6 +292,9 @@ TItemMinorComplete::TItemMinorComplete(
     TabKey = initializer.TabKey;
     RoomNoStr = initializer.RoomNoStr;
     SplitMessage = initializer.SplitMessage;
+    OnlineChitNo = initializer.OnlineChitNo;
+    OnlineChitType = initializer.OnlineChitType;
+    OnlineOrderId = initializer.OnlineOrderId;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -341,6 +347,9 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     TabKey = rhs.TabKey;
     RoomNoStr = rhs.RoomNoStr;
     SplitMessage = rhs.SplitMessage;
+    OnlineChitNo = rhs.OnlineChitNo;
+    OnlineChitType = rhs.OnlineChitType;
+    OnlineOrderId = rhs.OnlineOrderId;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -394,6 +403,9 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->TabKey = TabKey;
         RetItem->RoomNoStr = RoomNoStr;
         RetItem->SplitMessage = SplitMessage;
+        RetItem->OnlineChitNo = OnlineChitNo;
+        RetItem->OnlineChitType = OnlineChitType;
+        RetItem->OnlineOrderId = OnlineOrderId;
     }
 }
 
