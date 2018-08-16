@@ -103,7 +103,7 @@ public:
                          WideString& outKitchenName, WideString& outHandheldName, WideString& outReceiptName,
                          TColor& outColor, bool& outDisplaySizes, bool& outEnabled, bool& outItemOnlySide,
                          bool& outPrintUnderlined,  bool& outPrintBold, TColor& outPrintColor, __int32& outPrintFont,
-                         bool& outPrintDoubleWidth, bool& outPrintDoubleHeight );
+                         bool& outPrintDoubleWidth, bool& outPrintDoubleHeight, int &outItemIdentifier );
 
     __int32 RevenueCodesCount();
     __int32 RevenueCodeAtIndex( __int32 inIndex, __int32& code, WideString& codeDescription);
@@ -146,7 +146,7 @@ public:
 									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
-                                    Currency& outPriceForPoints,int &revenueCode);  // add price for points
+                                    Currency& outPriceForPoints,int &revenueCode, int &outItemSizeIdentifier);  // add price for points
 
     __int32 BCategoryCount(   __int32 inItemSizeHandle );
     __int32 BCategoryAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, WideString& outDescription );

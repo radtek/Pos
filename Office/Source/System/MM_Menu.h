@@ -32,6 +32,7 @@ const AnsiString MenuSQL =
 		"Item.Item_Key,"
 		"Item.Item_Name,"
 		"Item.Item_Kitchen_Name,"
+        "Item.ITEM_IDENTIFIER,"
 
 		"Item.Enabled,"
 		"Item.Button_Colour,"
@@ -430,14 +431,11 @@ class TItemSizeInfo : public TDBKey
 public:
     __int32     Item_Key;
     __int32     Size_Key;
-
 	int			Size_ID;
 	WideString	Size_Name;
 	WideString	Size_Kitchen_Name;
-
-   WideString  Size_Handheld_Name;
-   WideString  Size_Receipt_Name;
-
+    WideString  Size_Handheld_Name;
+    WideString  Size_Receipt_Name;
 	Currency	Price;
 	Currency MaxRetailPrice;
 	Currency	Special_Price;
@@ -460,31 +458,24 @@ public:
 	WideString	Category_Group_Name;
 	int			ThirdPartyCodes_Key;
 	WideString	Third_Party_Code;
-
     int         RevenueCode;
     AnsiString  RevenueCodeDescription;
-
     __int32     PLU;
-
-        bool HasServiceCharge;
-        bool IsTaxExempt;
-
-   double AvailableQuantity;
-   double DefaultQuantity;
-   double WarningQuantity;
-   bool DisableWhenCountReachesZero;
-
-   bool CanBePaidForUsingPoints;
-
-   int DefaultPatronCount;
-
-	std::vector<TSizeCategoryInfo> Categories;
-	std::vector<TSizeRecipeInfo>   Recipes;
-
-   std::set<__int32> TaxProfileKeys;
-   std::map<int,TItemSizePriceLevel> ItemSizePriceLevels;
-   Currency	PriceForPoints;
-   std::vector<TItemSizeTaxesPercentage> ItemSizeTaxPercent;
+    bool HasServiceCharge;
+    bool IsTaxExempt;
+    double AvailableQuantity;
+    double DefaultQuantity;
+    double WarningQuantity;
+    bool DisableWhenCountReachesZero;
+    bool CanBePaidForUsingPoints;
+    int DefaultPatronCount;
+    int ItemSizeIdentifier;
+    std::vector<TSizeCategoryInfo> Categories;
+    std::vector<TSizeRecipeInfo>   Recipes;
+    std::set<__int32> TaxProfileKeys;
+    std::map<int,TItemSizePriceLevel> ItemSizePriceLevels;
+    Currency	PriceForPoints;
+    std::vector<TItemSizeTaxesPercentage> ItemSizeTaxPercent;
 };
 //---------------------------------------------------------------------------
 class TItemSideInfo : public TDBKey
@@ -536,7 +527,6 @@ public:
 	WideString	Item_Kitchen_Name;
 	WideString	Item_Handheld_Name;
 	WideString	Item_Receipt_Name;
-
 	bool		Enabled;
 	TColor	Button_Colour;
 	int		Item_ID;
@@ -550,8 +540,8 @@ public:
 	int 		Print_Font;
 	bool 		Print_Double_Width;
 	bool 		Print_Double_Height;
-
-	std::vector<TItemSideInfo>   Sides;
+    int Itemidentifier;
+   std::vector<TItemSideInfo>   Sides;
    std::vector<TItemOptionInfo> ForcedOptions;
 };
 //---------------------------------------------------------------------------

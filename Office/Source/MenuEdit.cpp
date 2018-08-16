@@ -11400,6 +11400,7 @@ TList*            inForcedSideList )
 	itemData->PrinterOptions.PrintFont		    = inItemInfo->Print_Font;
 	itemData->PrinterOptions.PrintDoubleWidth  = inItemInfo->Print_Double_Width;
 	itemData->PrinterOptions.PrintDoubleHeight = inItemInfo->Print_Double_Height;
+    itemData->ItemIdentifier = inItemInfo->Itemidentifier;
 
 	if( inItemInfo->Enabled )
 		itemData->Enable();
@@ -11521,6 +11522,7 @@ TTreeNode *TfrmMenuEdit::AddMenuSize(TTreeNode *ItemNode, Menu::TItemSizeInfo *I
     ItemSizeData->CostForPoints = ItemSizeInfo->PriceForPoints;
     ItemSizeData->RevenueCode = ItemSizeInfo->RevenueCode;
     ItemSizeData->RevenueCodeDescription = ItemSizeInfo->RevenueCodeDescription;
+    ItemSizeData->ItemSizeIdentifier = ItemSizeInfo->ItemSizeIdentifier;
 
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeInfo->ItemSizePriceLevels.begin();
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeInfo->ItemSizePriceLevels.end();
@@ -12091,7 +12093,8 @@ bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandl
 			itemInfo.Print_Colour,
 			itemInfo.Print_Font,
 			itemInfo.Print_Double_Width,
-			itemInfo.Print_Double_Height );
+			itemInfo.Print_Double_Height,
+            itemInfo.Itemidentifier );
 
 			itemInfo.Item_Name = itemName;
 			itemInfo.Item_Kitchen_Name = itemKitchenName;
@@ -12260,7 +12263,8 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 			itemSizeInfo.CanBePaidForUsingPoints,
 			itemSizeInfo.DefaultPatronCount,
             itemSizeInfo.PriceForPoints,
-            itemSizeInfo.RevenueCode);
+            itemSizeInfo.RevenueCode,
+            itemSizeInfo.ItemSizeIdentifier);
             itemSizeInfo.RevenueCodeDescription = GetRevenueDecriptionFromCode(itemSizeInfo.RevenueCode);
 			itemSizeInfo.Third_Party_Code = GetThirdPartyCodeFromKeyFromFile(&thirdPartyCodes, itemSizeInfo.ThirdPartyCodes_Key);
 			itemSizeInfo.Size_Name = itemSizeName;
@@ -12649,7 +12653,8 @@ __int32 TfrmMenuEdit::SaveMenuCourseItem( TSaveMenu* inSaveMenu, __int32 inCours
 	inItemData->PrinterOptions.PrintColour,
 	inItemData->PrinterOptions.PrintFont,
 	inItemData->PrinterOptions.PrintDoubleWidth,
-	inItemData->PrinterOptions.PrintDoubleHeight
+	inItemData->PrinterOptions.PrintDoubleHeight,
+    inItemData->ItemIdentifier
 	);
 
 
@@ -12765,7 +12770,8 @@ __int32 TfrmMenuEdit::SaveMenuItemSize( TSaveMenu* inSaveMenu, __int32 inItemID,
 	inDCData->CanBePaidForUsingPoints,
 	inDCData->DefaultPatronCount,
 	inDCData->CostForPoints,
-    inDCData->RevenueCode);
+    inDCData->RevenueCode,
+    inDCData->ItemSizeIdentifier);
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuBreakdownCategories( TSaveMenu* inSaveMenu, __int32 inItemSizeID, TItemSizeNode* inDCData )
@@ -13226,8 +13232,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
             clRed,
             0,
             0,   //double width
-            0    //double height
-            );
+            0,    //double height
+            0);  //ItemId
 
 
         return result;
@@ -13284,7 +13290,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
                             0, //CanBePaidForUsingPoints
                             0,  //DefaultPatronCount
                             itemSize.itemSizePrice,        // Price for points
-                            0);
+                            0,
+                            0);    //itemsizeid
 
                     //save the item recipe
                      CsvSaveMenuItemSizeRecipes(     inSaveMenu, xmlitemSizeID, itemSize );
@@ -14021,8 +14028,32 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
 
  }
  //-------------------------------------------------------------------------------------------------------
-
-
-
-
-
+void __fastcall TfrmMenuEdit::btnGenItemIDClick(TObject *Sender)
+{
+    //-----------------------todo
+}
+//---------------------------------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnGenItemSizeIDClick(TObject *Sender)
+{
+    //-----------------------todo
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::ItemIdentifierChange(TObject *Sender)
+{
+    TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
+	if (CurrentNodeData->NodeType == ITEM_NODE)
+	{
+		TItemNode *ItemData		= (TItemNode *)CurrentNodeData;
+		ItemData->ItemIdentifier	= StrToInt(tntedItemIdentifier->Text);
+	}
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::ItemSizeIdentifierChange(TObject *Sender)
+{
+    TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
+	if (CurrentNodeData->NodeType == ITEM_SIZE_NODE)
+	{
+        TItemSizeNode   *dcData = (TItemSizeNode *)CurrentNodeData;
+        dcData->ItemSizeIdentifier = StrToInt(tntedItemSizeIdentifier->Text);
+	}
+}

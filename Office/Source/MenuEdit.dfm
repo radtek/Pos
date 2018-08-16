@@ -146,6 +146,24 @@ object frmMenuEdit: TfrmMenuEdit
                 TabOrder = 2
                 OnClick = btnEditMenuClick
               end
+              object btnGenItemID: TButton
+                Left = 210
+                Top = 128
+                Width = 121
+                Height = 25
+                Caption = 'Auto Gen Item ID'
+                TabOrder = 4
+                OnClick = btnGenItemIDClick
+              end
+              object btnGenItemSizeID: TButton
+                Left = 210
+                Top = 184
+                Width = 121
+                Height = 25
+                Caption = 'Auto Gen ItemSize Id'
+                TabOrder = 3
+                OnClick = btnGenItemSizeIDClick
+              end
               object chbAvailableOnPalm: TCheckBox
                 Left = 0
                 Top = 104
@@ -491,7 +509,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object lbeDrinkColour: TLabel
                     Left = 8
-                    Top = 128
+                    Top = 155
                     Width = 66
                     Height = 13
                     Caption = 'Button Colour'
@@ -530,7 +548,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object lblItemReceiptName: TLabel
                     Left = 8
-                    Top = 96
+                    Top = 124
                     Width = 66
                     Height = 13
                     Caption = 'Receipt Name'
@@ -541,6 +559,19 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Style = []
                     ParentFont = False
                     Visible = False
+                  end
+                  object lblItemIdentifier: TLabel
+                    Left = 8
+                    Top = 96
+                    Width = 69
+                    Height = 13
+                    Caption = 'Item Identifier'
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -11
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
                   end
                   object cbItemName: TComboBox
                     Left = 96
@@ -563,7 +594,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object cbItemEnable: TCheckBox
                     Left = 8
-                    Top = 232
+                    Top = 259
                     Width = 105
                     Height = 17
                     Caption = 'Available'
@@ -579,7 +610,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnItemColour: TTouchButton
                     Left = 8
-                    Top = 144
+                    Top = 171
                     Width = 145
                     Height = 73
                     Color = clWhite
@@ -599,7 +630,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnDeleteItem: TButton
                     Left = 224
-                    Top = 248
+                    Top = 275
                     Width = 97
                     Height = 25
                     Caption = 'Delete Item'
@@ -614,7 +645,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object chbItemOnlySide: TCheckBox
                     Left = 8
-                    Top = 256
+                    Top = 283
                     Width = 153
                     Height = 17
                     Caption = 'Only available as a side'
@@ -656,13 +687,24 @@ object frmMenuEdit: TfrmMenuEdit
                   object tntedItemReceiptName: TTntEdit
                     Tag = 1
                     Left = 96
+                    Top = 120
+                    Width = 225
+                    Height = 21
+                    Color = clInfoBk
+                    TabOrder = 8
+                    Visible = False
+                    OnChange = droidwareNameChange
+                  end
+                  object tntedItemIdentifier: TTntEdit
+                    Tag = 1
+                    Left = 96
                     Top = 92
                     Width = 225
                     Height = 21
                     Color = clInfoBk
+                    Enabled = False
                     TabOrder = 7
-                    Visible = False
-                    OnChange = droidwareNameChange
+                    OnChange = ItemIdentifierChange
                   end
                 end
                 object tsItemSizes: TTabSheet
@@ -1741,6 +1783,19 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Style = [fsBold]
                     ParentFont = False
                   end
+                  object lblItemSizeIdentifier: TLabel
+                    Left = 8
+                    Top = 300
+                    Width = 100
+                    Height = 14
+                    Caption = 'ItemSize Identifier'
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindowText
+                    Font.Height = -12
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    ParentFont = False
+                  end
                   object lbUnassigned: TListBox
                     Left = 0
                     Top = 24
@@ -1807,6 +1862,17 @@ object frmMenuEdit: TfrmMenuEdit
                     ParentFont = False
                     TabOrder = 4
                     OnClick = btnSyncTPClick
+                  end
+                  object tntedItemSizeIdentifier: TTntEdit
+                    Tag = 1
+                    Left = 125
+                    Top = 296
+                    Width = 100
+                    Height = 21
+                    Color = clInfoBk
+                    Enabled = False
+                    TabOrder = 5
+                    OnChange = ItemSizeIdentifierChange
                   end
                 end
                 object tsSizeCategories: TTabSheet

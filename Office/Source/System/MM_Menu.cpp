@@ -475,6 +475,7 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 				ItemInfo->Print_Font				= sqlMenu->FieldByName("Print_Font")->AsInteger;
 				ItemInfo->Print_Double_Width	= (sqlMenu->FieldByName("Print_Double_Width")->AsString == "T");
 				ItemInfo->Print_Double_Height	= (sqlMenu->FieldByName("Print_Double_Height")->AsString == "T");
+                ItemInfo->Itemidentifier	 = sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsInteger;
 
 				if (sqlMenu->FieldByName("View_Location")->AsInteger & lcPalm)
 				{
