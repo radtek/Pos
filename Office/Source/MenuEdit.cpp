@@ -13938,8 +13938,6 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
 //----------------------------------------------------------------------------------------
  void __fastcall TfrmMenuEdit::lbAvailableSizesClick(TObject *Sender)
  {
-
-
         bool ItemSizeExists = false;
         btnSizesEdit->Enabled = true;
         TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
@@ -13987,70 +13985,61 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
  //-------------------------------------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::btnGenItemIDClick(TObject *Sender)
 {
-   //  TTreeNode *CurrentTreeNode = tvMenu->Selected;
-  //	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
-  //	{
-		int ItemIdentifier = 20;//((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
-		if(ItemIdentifier)
-		{
-            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
-            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    AnsiString ItemIdentifier = "SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
             {
-                TTreeNode *CourseNode = MenuNode->Item[i];
-                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
-                {
-                    for (int j=0; j<CourseNode->Count; j++)
-                    {
-                        TTreeNode *ItemNode = CourseNode->Item[j];
+                TTreeNode *ItemNode = CourseNode->Item[j];
 
-                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
-                        {
-                            TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
-                            ItemData->ItemIdentifier = ItemIdentifier;
-                        }
-                    }
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+
+                    if(!ItemData->ItemIdentifier)
+                        ItemData->ItemIdentifier = GetItemIdentifier(ItemIdentifier);
                 }
             }
-            MenuEdited = true;
-		}
+        }
+        MenuEdited = true;
+    }
 }
 //---------------------------------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::btnGenItemSizeIDClick(TObject *Sender)
 {
-  //  TTreeNode *CurrentTreeNode = tvMenu->Selected;
-  //	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
-  //	{
-		int ItemSizeIdentifier = 30;//((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
-		if(ItemSizeIdentifier)
-		{
-            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
-            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    AnsiString ItemSizeIdentifier = "SELECT GEN_ID(GEN_ITEMSIZE_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
             {
-                TTreeNode *CourseNode = MenuNode->Item[i];
-                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
                 {
-                    for (int j=0; j<CourseNode->Count; j++)
+                    for (int k=0; k<ItemNode->Count; k++)
                     {
-                        TTreeNode *ItemNode = CourseNode->Item[j];
-
-                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
                         {
-                            for (int k=0; k<ItemNode->Count; k++)
-                            {
-                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
-                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
-                                {
-                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
 
-                                    ItemSizeData->ItemSizeIdentifier = ItemSizeIdentifier;
-                                }
-                            }
+                            if(!ItemSizeData->ItemSizeIdentifier)
+                                ItemSizeData->ItemSizeIdentifier = GetItemIdentifier(ItemSizeIdentifier);
                         }
                     }
                 }
             }
-            MenuEdited = true;
-		}
+        }
+        MenuEdited = true;
+    }
 }
 //-----------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::ItemIdentifierChange(TObject *Sender)
@@ -14073,4 +14062,20 @@ void __fastcall TfrmMenuEdit::ItemSizeIdentifierChange(TObject *Sender)
 	}
 }
 //----------------------------------------------------------------------------
+int TfrmMenuEdit::GetItemIdentifier(AnsiString genQuery)
+{
+    int ItemIdentifier = 0;
+    if (qrItemIdentifier->Database->Connected && !qrItemIdentifier->Transaction->InTransaction)
+    {
+        qrItemIdentifier->Transaction->StartTransaction();
+        qrItemIdentifier->Close();
+        qrItemIdentifier->SQL->Text = genQuery;
+        qrItemIdentifier->ExecQuery();
+        ItemIdentifier = qrItemIdentifier->Fields[0]->AsInteger;
+        qrItemIdentifier->Transaction->Commit();
+    }
+    return ItemIdentifier;
+}
+//---------------------------------------------------------------------------
+
 

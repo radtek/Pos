@@ -4971,4 +4971,15 @@ object frmMenuEdit: TfrmMenuEdit
     Left = 144
     Top = 296
   end
+  object qrItemIdentifier: TIBSQL
+    Database = dmMMData.dbMenuMate
+    ParamCheck = False
+    SQL.Strings = (
+      
+        #9'SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM                    R' +
+        'DB$DATABASE')
+    Transaction = MMTransaction
+    Left = 48
+    Top = 320
+  end
 end

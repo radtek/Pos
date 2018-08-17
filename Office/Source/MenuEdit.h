@@ -464,7 +464,8 @@ class TfrmMenuEdit : public TForm
     TButton *btnSyncRevenueCodeMenu;
     TLabel *Label3;
     TButton *btnGenItemID;
-    TButton *btnGenItemSizeID;    
+    TButton *btnGenItemSizeID;
+    TIBSQL *qrItemIdentifier;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -1020,6 +1021,7 @@ private:
     bool isItemPriceIncludeServiceCharge;
     std::map<int,AnsiString> revenueCodesMap;
     void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
+    int GetItemIdentifier(AnsiString genQuery);
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
