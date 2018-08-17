@@ -274,11 +274,11 @@ public:
 //**************************************************
 
 __fastcall TfrmMenuEdit::TfrmMenuEdit(TComponent* Owner)
-: TForm(Owner),
-frmPreview(new TfrmPreview(NULL)),
-new_menu_element_key_generator_(menu_key_generator_t::Instance()),
-itemsList(new TStringList),
-forcedSideList(new TList)
+                        : TForm(Owner),
+                            frmPreview(new TfrmPreview(NULL)),
+                            new_menu_element_key_generator_(menu_key_generator_t::Instance()),
+                            itemsList(new TStringList),
+                            forcedSideList(new TList)
 {
 	new_menu_element_key_generator_->Reset(-2, -1);
 
@@ -2502,6 +2502,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		}
 
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
+        tntedItemSizeIdentifier->Text = IntToStr(ItemSizeData->ItemSizeIdentifier);
         if(ItemSizeData->RevenueCode != 0)
         {
             cbRevenueGroupCode->Text = "";
@@ -2629,6 +2630,8 @@ void TfrmMenuEdit::RefreshItem(TItemNode *ItemData, bool isItemTranfer)
 	tntedKitchenName->Text			= ItemData->KitchenName;
 	tntedItemHandheldName->Text			= ItemData->HandheldName;
 	tntedItemReceiptName->Text			= ItemData->ReceiptName;
+    tntedItemIdentifier->Text =  IntToStr(ItemData->ItemIdentifier); 
+
 	try
 	{
 		cbItemEnable->OnClick		= NULL;                                         
@@ -11380,8 +11383,8 @@ TList*           inForcedSideList)
 //---------------------------------------------------------------------------
 
 TTreeNode* TfrmMenuEdit::CreateItemTreeNode( TTreeNode*        inCourseNode,
-Menu::TItemInfo*  inItemInfo,
-TList*            inForcedSideList )
+                        Menu::TItemInfo*  inItemInfo,
+                        TList*            inForcedSideList )
 {
 	TTreeNode *itemNode		  = ((TEditorNode *)inCourseNode->Data)->AddNode(ITEM_NODE, false);
 	//:::::::::::::::::::::::::::::::::::::::::::::
@@ -13782,52 +13785,6 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
     }
     return priceExcl;
 }
-
-/*
-void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
-{
-    int codeAlready = 0;
-	if (tvMenu->Selected)
-	{
-        if(cbRevenueGroupCode->Text.Length() > 0)
-        {
-            if (((TEditorNode *)tvMenu->Selected->Data)->NodeType == ITEM_SIZE_NODE)
-            {
-                TItemSizeNode *ItemSizeData = (TItemSizeNode *)tvMenu->Selected->Data;
-                if(codeAlready == 0 && ItemSizeData->RevenueCode)
-                {
-                    codeAlready = ItemSizeData->RevenueCode;
-                }
-                bool correctData = false;
-                for(int i = 0; i < cbRevenueGroupCode->Items->Count; i += 1)
-                {
-                    if(cbRevenueGroupCode->Items->Strings[i] == cbRevenueGroupCode->Text)
-                    {
-                        correctData = true;
-                        break;
-                    }
-                }
-                if(correctData)
-                {
-                    AnsiString stringVal = cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1);
-                    ItemSizeData->RevenueCode = StrToInt(cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
-                    //ItemSizeData->RevenueCodeDescription = revenueCodesMap[ItemSizeData->RevenueCode];
-                }
-                else
-                {
-                    Application->MessageBox("Please select Revenue Codes from drop down list only.", "Error", MB_OK + MB_ICONWARNING);
-                    AnsiString revenueCodeOld = "";
-                    revenueCodeOld = ItemSizeData->RevenueCode;
-                    revenueCodeOld += "(";
-                    revenueCodeOld += revenueCodesMap[codeAlready];
-                    revenueCodeOld += ")";
-                    cbRevenueGroupCode->Text = revenueCodeOld;
-                }
-            }
-        }
-	}
-}
-*/
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuRevenueCodes(TSaveMenu* inSaveMenu, TTreeNode* inMenuNode)
 {
@@ -14030,12 +13987,70 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
  //-------------------------------------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::btnGenItemIDClick(TObject *Sender)
 {
-    //-----------------------todo
+   //  TTreeNode *CurrentTreeNode = tvMenu->Selected;
+  //	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+  //	{
+		int ItemIdentifier = 20;//((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
+		if(ItemIdentifier)
+		{
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
+
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+                            ItemData->ItemIdentifier = ItemIdentifier;
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+		}
 }
 //---------------------------------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::btnGenItemSizeIDClick(TObject *Sender)
 {
-    //-----------------------todo
+  //  TTreeNode *CurrentTreeNode = tvMenu->Selected;
+  //	if (((TEditorNode *)CurrentTreeNode->Data)->NodeType == ITEM_SIZE_NODE)
+  //	{
+		int ItemSizeIdentifier = 30;//((TItemSizeNode *)CurrentTreeNode->Data)->ThirdPartyCode;
+		if(ItemSizeIdentifier)
+		{
+            TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+            for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+            {
+                TTreeNode *CourseNode = MenuNode->Item[i];
+                if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+                {
+                    for (int j=0; j<CourseNode->Count; j++)
+                    {
+                        TTreeNode *ItemNode = CourseNode->Item[j];
+
+                        if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                        {
+                            for (int k=0; k<ItemNode->Count; k++)
+                            {
+                                TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                                if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                                {
+                                    TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                                    ItemSizeData->ItemSizeIdentifier = ItemSizeIdentifier;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            MenuEdited = true;
+		}
 }
 //-----------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::ItemIdentifierChange(TObject *Sender)
@@ -14057,3 +14072,5 @@ void __fastcall TfrmMenuEdit::ItemSizeIdentifierChange(TObject *Sender)
         dcData->ItemSizeIdentifier = StrToInt(tntedItemSizeIdentifier->Text);
 	}
 }
+//----------------------------------------------------------------------------
+

@@ -1028,7 +1028,6 @@ public:		// User declarations
 	void Execute();
 
 	bool IterateOverMenuItems(TIterationAction &);
-
     //::::::::::::::::::::::::::::::::::::::::::
 	//   Create Xml From CSv
 	//::::::::::::::::::::::::::::::::::::::::::

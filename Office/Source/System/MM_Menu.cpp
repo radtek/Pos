@@ -475,7 +475,7 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 				ItemInfo->Print_Font				= sqlMenu->FieldByName("Print_Font")->AsInteger;
 				ItemInfo->Print_Double_Width	= (sqlMenu->FieldByName("Print_Double_Width")->AsString == "T");
 				ItemInfo->Print_Double_Height	= (sqlMenu->FieldByName("Print_Double_Height")->AsString == "T");
-                ItemInfo->Itemidentifier	 = sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsInteger;
+                ItemInfo->Itemidentifier	 =   sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsString != "" ? StrToInt(sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsString) : 0;
 
 				if (sqlMenu->FieldByName("View_Location")->AsInteger & lcPalm)
 				{
@@ -575,6 +575,7 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
             ItemSizeInfo->PLU = sqlMenu->FieldByName("PLU")->AsInteger;
             ItemSizeInfo->PriceForPoints = sqlMenu->FieldByName("PRICE_FOR_POINTS")->AsInteger;
             ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
+            ItemSizeInfo->ItemSizeIdentifier = sqlMenu->FieldByName("ITEMSIZE_IDENTIFIER")->AsString != "" ? StrToInt(sqlMenu->FieldByName("ITEMSIZE_IDENTIFIER")->AsString) : 0;
             ItemSizeInfo->RevenueCodeDescription = sqlMenu->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
 
 				ItemSizeInfo->Categories.clear();

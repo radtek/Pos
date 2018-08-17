@@ -90,6 +90,7 @@ const AnsiString MenuSQL =
       "ItemSize.PLU, "
       "ItemSize.PRICE_FOR_POINTS, " // add line for price for points..
       "ItemSize.REVENUECODE, "
+      "ItemSize.ITEMSIZE_IDENTIFIER, "
       "REVENUECODEDETAILS.REVENUECODE_DESCRIPTION,"
 
 		"ArcCategories.Category_Key,"

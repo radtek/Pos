@@ -926,6 +926,7 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
 	bool       printDoubleWidth;
 	bool       printDoubleHeight;
 	__int32    iao;
+    int    itemIdentifier;
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -933,7 +934,7 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
                                         inIndex, inCourseXMLHandle, itemKey, description, kitchenName,
                                         handheldName, receiptName, buttonColor, displaySizes, enabled,
                                         itemOnlySide, printUnderlined, printBold, printColor, printFont,
-                                        printDoubleWidth, printDoubleHeight );
+                                        printDoubleWidth, printDoubleHeight, itemIdentifier );
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -952,7 +953,7 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
                     inCourseKey, description.Trim(), kitchenName.Trim(),
                     buttonColor, displaySizes, enabled,
                     itemOnlySide, printUnderlined, printBold, printColor, printFont,
-                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim() );
+                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim(), itemIdentifier );
         }
         else
         {
@@ -960,7 +961,7 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
                     inCourseKey, description.Trim(), kitchenName.Trim(),
                     buttonColor, displaySizes, enabled,
                     itemOnlySide, printUnderlined, printBold, printColor, printFont,
-                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim() );
+                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim(), itemIdentifier );
         }
 
 		// This Item Map will be used in the Forced Sides section
@@ -1078,6 +1079,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
     __int32    taxProfileFKey;
    Currency    priceForPoints;
    int         revenueCode;
+   int itemSizeIdentifier;
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -1089,7 +1091,8 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
 														 setMenuMask, availableAsStandard, barcode, enabled, categoryFKey,
 														 category, thirdPartyCodeFKey, tareWeight, plu,
 														 availableQuantity, defaultQuantity, warningQuantity,
-														 disableWhenCountReachesZero, canBePaidForUsingPoints, default_patron_count, priceForPoints,revenueCode);
+														 disableWhenCountReachesZero, canBePaidForUsingPoints, default_patron_count,
+                                                         priceForPoints,revenueCode, itemSizeIdentifier);
     // Item Sizes are allways inserted as new.
     itemID = itemSizeKey;
 	sizeID = sizeFKey;
@@ -1118,7 +1121,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
                             categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                             availableQuantity, defaultQuantity, warningQuantity,
                             disableWhenCountReachesZero,
-                            canBePaidForUsingPoints, default_patron_count, priceForPoints,revenueCode, inDBTransaction );
+                            canBePaidForUsingPoints, default_patron_count, priceForPoints,revenueCode, itemSizeIdentifier, inDBTransaction );
         }
         else
         {
@@ -1131,7 +1134,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
                         categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                         availableQuantity, defaultQuantity, warningQuantity,
                         disableWhenCountReachesZero, canBePaidForUsingPoints,
-                        default_patron_count, priceForPoints,revenueCode, inDBTransaction );
+                        default_patron_count, priceForPoints,revenueCode, itemSizeIdentifier, inDBTransaction );
         }
 
 //			// ASEAN ++
@@ -2215,7 +2218,7 @@ __int32 TImportMenu::InsertItemInDB(
 						bool inEnabled, bool inItemOnlySide,
 						bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 						__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
-						__int32 inIAO, Database::TDBTransaction *inDBTransaction, WideString inHandheldName )
+						__int32 inIAO, Database::TDBTransaction *inDBTransaction, WideString inHandheldName, int inItemIdentifier )
 {
 	__int32 result = 0;
 
@@ -2236,7 +2239,7 @@ __int32 TImportMenu::InsertItemInDB(
 		InsertItemInDBWithKey(
             key, inCourseKey, inDescription, inKitchenName, inButtonColor, inDisplaySizes,
             inEnabled, inItemOnlySide, inPrintUnderlined, inPrintBold, inPrintColor,
-            inPrintFont, inPrintDoubleWidth, inPrintDoubleHeight, inIAO, inDBTransaction, inHandheldName );
+            inPrintFont, inPrintDoubleWidth, inPrintDoubleHeight, inIAO, inDBTransaction, inHandheldName, inItemIdentifier );
 
 		result = key;
 	}
@@ -2263,7 +2266,7 @@ void TImportMenu::InsertItemInDBWithKey(
                         bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
                         __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
                         __int32 inIAO,
-                        Database::TDBTransaction *inDBTransaction, WideString inHandheldName )
+                        Database::TDBTransaction *inDBTransaction, WideString inHandheldName, int inItemIdentifier )
 {
 	try
 	{
@@ -2272,11 +2275,11 @@ void TImportMenu::InsertItemInDBWithKey(
 										   "DISPLAY_SIZES, ENABLED, IAO, BUTTON_COLOUR, PRINT_CHIT, "
 										   "EXCLUSIVELY_AS_SIDE, ITEM_KITCHEN_NAME, PRINT_UNDERLINED, "
 										   "PRINT_BOLD, PRINT_COLOUR, PRINT_FONT, PRINT_DOUBLE_WIDTH, "
-										   "PRINT_DOUBLE_HEIGHT, HANDHELD_NAME ) "
+										   "PRINT_DOUBLE_HEIGHT, HANDHELD_NAME, ITEM_IDENTIFIER) "
 						"VALUES ( :key, :courseFKey, :itemID, :itemName, "
 								 ":displaySizes, :enabled, :iao, :buttonColor, :printChit, "
 								 ":onlySide,    :kitchenName, :printUnderlined, :printBold, "
-								 ":printColor,   :printFont, :printDoubleWidth, :printDoubleHeight, :handheldName ); ";
+								 ":printColor,   :printFont, :printDoubleWidth, :printDoubleHeight, :handheldName, :ITEM_IDENTIFIER ); ";
 
 		qr->ParamByName("key"              )->AsInteger = inKey;
 		qr->ParamByName("courseFKey"       )->AsInteger = inCourseKey;
@@ -2296,6 +2299,7 @@ void TImportMenu::InsertItemInDBWithKey(
 		qr->ParamByName("printDoubleWidth" )->AsString  = inPrintDoubleWidth  ? "T" : "F";
 		qr->ParamByName("printDoubleHeight")->AsString  = inPrintDoubleHeight ? "T" : "F";
         qr->ParamByName("handheldName"     )->AsString  = inHandheldName;
+        qr->ParamByName("ITEM_IDENTIFIER"     )->AsString  = IntToStr(inItemIdentifier);
 
 //PALM_ITEM_ID
 //ITEM_CATEGORy
@@ -2500,6 +2504,7 @@ __int32 TImportMenu::InsertItemSizeInDB(
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
                         int        inrevenueCode,
+                        int        itemSizeIdentifier,
 						Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -2529,7 +2534,7 @@ __int32 TImportMenu::InsertItemSizeInDB(
 			inMemberPurchaseCount, inLocationPurchaseCount, inCategoryKey, inTareWeight,
 			inHandheldName, inReceiptName, inPLU, inAvailableQuantity, inDefaultQuantity,
             inWarningQuantity, inDisableWhenCountReachesZero, inCanBePaidForUsingPoints,
-            inDefaultPatronCount, inPriceForPoints,inrevenueCode, inDBTransaction );
+            inDefaultPatronCount, inPriceForPoints,inrevenueCode, itemSizeIdentifier, inDBTransaction );
 
 		result = key;
 	}
@@ -2591,6 +2596,7 @@ void TImportMenu::InsertItemSizeInDBWithKey(
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
                         int        inrevenueCode,
+                        int        inItemSizeIdentifier,
 						Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -2607,14 +2613,14 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 											   "Loc_Discount_Percent, Mem_Sale_Count, Loc_Sale_Count, Category_Key, "
 											   "Tare_Weight, Handheld_Name, Receipt_Name, PLU, available_quantity, "
                                                "default_quantity, warning_quantity, disable_when_count_reaches_zero, "
-											   "can_be_paid_for_using_points, default_patron_count, PRICE_FOR_POINTS,REVENUECODE) "
+											   "can_be_paid_for_using_points, default_patron_count, PRICE_FOR_POINTS,REVENUECODE, ITEMSIZE_IDENTIFIER) "
 						"VALUES ( :key, :itemFKey, :sizeFKey, :itemID, :sizeID, :palmItemID, :palmSizeID, :sizeName, :price, :maxRetailPrice, "
 								 ":specialPrice, :cost, :isao, :free, :availableAsStandard, :noRecipe, :barcode, :setMenuMask, "
 								 ":enabled, :gstPercent, :costGSTPercent, :pointsPercent, :sizeKitchenName, :thirdPartyCodesKey, "
 								 ":memDiscountPercent, :locDiscountPercent, :memSaleCount, :locSaleCount, :categoryKey, "
 								 ":tareWeight, :handheldName, :receiptName, :plu, "
                                  ":available_quantity, :default_quantity, :warning_quantity, :disable_when_count_reaches_zero, "
-								 ":can_be_paid_for_using_points, :default_patron_count, :PRICE_FOR_POINTS, :REVENUECODE);";
+								 ":can_be_paid_for_using_points, :default_patron_count, :PRICE_FOR_POINTS, :REVENUECODE, :ITEMSIZE_IDENTIFIER);";
 
 		qr->ParamByName("key"                )->AsInteger = inKey;
 		qr->ParamByName("itemFKey"           )->AsInteger = inMasterItemKey;
@@ -2650,23 +2656,15 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 		qr->ParamByName("receiptName"        )->AsString  = inReceiptName;
 		qr->ParamByName("plu"                )->AsInteger = inPLU;
 
-        qr->ParamByName("can_be_paid_for_using_points")->AsInteger =
-          inCanBePaidForUsingPoints;
-        qr->ParamByName("available_quantity")->AsCurrency =
-          inAvailableQuantity;
-        qr->ParamByName("default_quantity")->AsCurrency =
-          inDefaultQuantity;
-        qr->ParamByName("warning_quantity")->AsCurrency =
-          inWarningQuantity;
-        qr->ParamByName("disable_when_count_reaches_zero")->AsInteger =
-          inDisableWhenCountReachesZero;
-        qr->ParamByName("default_patron_count")->AsInteger =
-          inDefaultPatronCount;
-        qr->ParamByName("PRICE_FOR_POINTS")->AsCurrency =
-          inPriceForPoints;
-        qr->ParamByName("REVENUECODE")->AsInteger =
-          inrevenueCode;
-
+        qr->ParamByName("can_be_paid_for_using_points")->AsInteger = inCanBePaidForUsingPoints;
+        qr->ParamByName("available_quantity")->AsCurrency = inAvailableQuantity;
+        qr->ParamByName("default_quantity")->AsCurrency =  inDefaultQuantity;
+        qr->ParamByName("warning_quantity")->AsCurrency = inWarningQuantity;
+        qr->ParamByName("disable_when_count_reaches_zero")->AsInteger = inDisableWhenCountReachesZero;
+        qr->ParamByName("default_patron_count")->AsInteger = inDefaultPatronCount;
+        qr->ParamByName("PRICE_FOR_POINTS")->AsCurrency = inPriceForPoints;
+        qr->ParamByName("REVENUECODE")->AsInteger = inrevenueCode;
+        qr->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(inItemSizeIdentifier);
 		qr->ExecQuery();
 
 	}
