@@ -237,6 +237,7 @@ private:
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
     bool SetUpOracle();
+    void EnableOnlineOrdering(Database::TDBTransaction &DBTransaction);
 public: // User declarations
 };
 #endif

@@ -1980,6 +1980,20 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
+    TVerticalSelection Item3;
+	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
+	Item3.Properties["Action"] = IntToStr(3);
+    if( TGlobalSettings::Instance().EnableOnlineOrdering )
+	{
+		Item3.Properties["Color"] = IntToStr(clGreen);
+	}
+	else
+	{
+		Item3.Properties["Color"] = IntToStr(clRed);
+	}
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
+
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
 	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -2045,6 +2059,10 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
             case 2 :
 			{
                ManageGiftCardValidations(DBTransaction);
+            }  break;
+            case 3 :
+			{
+               EnableOnlineOrdering(DBTransaction);
             }  break;
 		}
 	}
@@ -4189,3 +4207,47 @@ bool TfrmMaintain::SetUpOracle()
     return true;
 }
 //---------------------------------------------------------------------------
+void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item);
+
+    TVerticalSelection Item1;
+    Item1.Title = "Enable";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = IntToStr(clGreen);
+    Item1.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+    Item2.Title = "Disable";
+    Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = IntToStr(clRed);
+    Item2.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item2);
+
+    SelectionForm1->ShowModal();
+    TVerticalSelection SelectedItem1;
+    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+        switch(Action)
+        {
+        case 1 :
+            TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            break;
+        case 2 :
+            TGlobalSettings::Instance().EnableOnlineOrdering = false;
+            break;
+        }
+
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+    }
+}

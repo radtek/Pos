@@ -161,7 +161,7 @@ enum vmVariables
 
    // LoyaltyMate ------------------------------------------------------------
    vmLoyaltyMateEnabled, vmServiceURL, vmMemberActivationURL, vmEnableActivationTokenPrint, vmActivationTokenGreeting,vmUseTierLevels,
-   vmBirthdayBuffer,vmFirstVisitPoint, vmAllowMemberDetailscreen, vmMandatoryMembershipCard,vmGiftCardValidation,
+   vmBirthdayBuffer,vmFirstVisitPoint, vmAllowMemberDetailscreen, vmMandatoryMembershipCard,vmGiftCardValidation, vmEnableOnlineOrdering,
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,

@@ -2299,7 +2299,7 @@ void TImportMenu::InsertItemInDBWithKey(
 		qr->ParamByName("printDoubleWidth" )->AsString  = inPrintDoubleWidth  ? "T" : "F";
 		qr->ParamByName("printDoubleHeight")->AsString  = inPrintDoubleHeight ? "T" : "F";
         qr->ParamByName("handheldName"     )->AsString  = inHandheldName;
-        qr->ParamByName("ITEM_IDENTIFIER"     )->AsString  = IntToStr(inItemIdentifier);
+        qr->ParamByName("ITEM_IDENTIFIER"  )->AsString  = IntToStr(inItemIdentifier);
 
 //PALM_ITEM_ID
 //ITEM_CATEGORy

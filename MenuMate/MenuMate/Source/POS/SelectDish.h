@@ -496,6 +496,9 @@ private: // User declarations
     bool LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction);
     void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo,UnicodeString lastName = "");
     void GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat);
+    void SyncWithCloud();
+    void SyncTaxSetting();
+    void SyncMenu();
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);

@@ -537,6 +537,7 @@ public:
     Currency CheckSaleMegaworld;
     Currency GiftCard_MegaworldForDaily;
     Currency CheckSaleMegaworldForDaily;
+    bool EnableOnlineOrdering;
 };
 
 #endif

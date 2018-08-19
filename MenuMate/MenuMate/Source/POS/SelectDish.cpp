@@ -8135,7 +8135,7 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 			}break;
             case 15:
             {
-                DoCloundSync();
+                SyncWithCloud();//DoCloundSync();
 			}break;
             case 16:
             {
@@ -15436,16 +15436,60 @@ void TfrmSelectDish::SendPointValueToRunRate( TPaymentTransaction &inTransaction
 	}
 }
 //-----------------------------------------------------------------------------------------------------
-void TfrmSelectDish::DoCloundSync()
+void TfrmSelectDish::SyncWithCloud()
 {
-  if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+     if (TGlobalSettings::Instance().LoyaltyMateEnabled)
      {
-        TManagerCloudSync ManagerCloudSync;
-        ManagerCloudSync.SyncCompanyDetails();
-        ManageDiscounts();
-        TotalCosts();
-        RedrawSeatOrders();
-        HighlightSelectedItem();
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);;
+        Item.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "Sync With Cloud";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item1);
+
+        if(TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            TVerticalSelection Item2;
+            Item2.Title = "Sync Menu";
+            Item2.Properties["Action"] = IntToStr(2);
+            Item2.Properties["Color"] = IntToStr(clNavy);
+            Item2.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item2);
+
+            TVerticalSelection Item3;
+            Item3.Title = "Sync Tax Setting";
+            Item3.Properties["Action"] = IntToStr(3);
+            Item3.Properties["Color"] = IntToStr(clNavy);
+            Item3.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item3);
+        }
+
+        SelectionForm1->ShowModal();
+        TVerticalSelection SelectedItem1;
+        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+            switch(Action)
+            {
+            case 1 :
+                DoCloundSync();
+                break;
+            case 2 :
+                SyncMenu();
+                break;
+            case 3:
+                SyncTaxSetting();
+            }
+        }
      }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -16395,4 +16439,22 @@ void TfrmSelectDish::GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSea
     }
 }
 //--------------------------------------------------------------------------------
-
+void TfrmSelectDish::DoCloundSync()
+{
+    TManagerCloudSync ManagerCloudSync;
+    ManagerCloudSync.SyncCompanyDetails();
+    ManageDiscounts();
+    TotalCosts();
+    RedrawSeatOrders();
+    HighlightSelectedItem();
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncMenu()
+{
+    //todo
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncTaxSetting()
+{
+    //todo
+}
