@@ -161,7 +161,7 @@ enum vmVariables
 
    // LoyaltyMate ------------------------------------------------------------
    vmLoyaltyMateEnabled, vmServiceURL, vmMemberActivationURL, vmEnableActivationTokenPrint, vmActivationTokenGreeting,vmUseTierLevels,
-   vmBirthdayBuffer,vmFirstVisitPoint, vmAllowMemberDetailscreen, vmMandatoryMembershipCard,vmGiftCardValidation, vmEnableOnlineOrdering,
+   vmBirthdayBuffer,vmFirstVisitPoint, vmAllowMemberDetailscreen, vmMandatoryMembershipCard,vmGiftCardValidation,
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
@@ -225,7 +225,7 @@ enum vmVariables
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
-    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED
+    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED, vmEnableOnlineOrdering
 };
 
 // ---------------------------------------------------------------------------

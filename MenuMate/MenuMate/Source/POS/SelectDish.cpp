@@ -15450,7 +15450,7 @@ void TfrmSelectDish::SyncWithCloud()
         SelectionForm1->Items.push_back(Item);
 
         TVerticalSelection Item1;
-        Item1.Title = "Sync With Cloud";
+        Item1.Title = "Sync Member Info";
         Item1.Properties["Action"] = IntToStr(1);
         Item1.Properties["Color"] = IntToStr(clNavy);
         Item1.CloseSelection = true;
@@ -16451,7 +16451,75 @@ void TfrmSelectDish::DoCloundSync()
 //----------------------------------------------------------------------------------
 void TfrmSelectDish::SyncMenu()
 {
-    //todo
+//    bool SelectionRequired = false;
+//    	if (frmSelectCurrentMenu->ShowModal() == mrOk)
+//			{
+//				if (frmSelectCurrentMenu->SelectedMenuIndex != -1)
+//				{
+//					TDeviceRealTerminal::Instance().Menus->VisibleMenu = TDeviceRealTerminal::Instance().Menus->Current->MenuGet(frmSelectCurrentMenu->SelectedMenuIndex);
+//					if (TDeviceRealTerminal::Instance().Menus->VisibleMenu == NULL)
+//					{
+//						SelectionRequired = true;
+//					}
+//					else if (pnlItemModify->Visible && GetModifyOptionSelected() == eBTDSides)
+//					{
+//						RedrawItemSideCourses();
+//					}
+//				}
+//			}
+   // SelectNewMenus();
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	DBTransaction.StartTransaction();
+    //bool AskForLogin = false;
+	if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))
+	{
+		MessageBox("There are no menus to change to. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
+	}
+	else if (DeleteAllUnsentAndProceed(DBTransaction))
+	{
+		std::auto_ptr<TfrmSelectActiveMenus>frmSelectActiveMenus(TfrmSelectActiveMenus::Create(this, TDeviceRealTerminal::Instance().Menus, DBTransaction));
+		if (frmSelectActiveMenus->ShowModal() == mrOk)
+		{
+//			bool Broadcast = false;
+//			if (MessageBox("Do you wish all terminals to use this menu configuration?", "Update all terminals", MB_YESNO + MB_ICONQUESTION) == IDYES)
+//			{
+//				TMMContactInfo TempUserInfo;
+//				std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+//				TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckDisable);
+//				if (Result == lsAccepted)
+//				{
+//					Broadcast = true;
+//                    Refresh();
+//				}
+//				else if (Result == lsDenied)
+//				{
+//					MessageBox("You do not have access to change Menus system wide.", "Error", MB_OK + MB_ICONERROR);
+//				}
+//				else if (Result == lsPINIncorrect)
+//				{
+//					MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+//				}
+//			}
+//                        else
+//                         {
+//                           AskForLogin = true;
+//                         }
+			std::auto_ptr<TNetMessageMenuChanged>dbRequest(new TNetMessageMenuChanged);
+			for (int i = 0; i < frmSelectActiveMenus->pnlMenus->ControlCount; i++)
+			{
+				if (((TTouchBtn*)frmSelectActiveMenus->pnlMenus->Controls[i])->ButtonColor == clGreen)
+				{
+					dbRequest->Menu_Names[(((TTouchBtn*)frmSelectActiveMenus->pnlMenus->Controls[i])->Caption)] = eMenuAddReplace;
+				}
+			}
+		 	dbRequest->Broadcast = false;
+//			TDeviceRealTerminal::Instance().Menus->MenuChanged(DBTransaction, dbRequest.get());
+//			TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
+//			TDeviceRealTerminal::Instance().Menus->SetMenuList(DBTransaction, TDeviceRealTerminal::Instance().ID.DeviceKey);
+		}
+	}
+	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------
 void TfrmSelectDish::SyncTaxSetting()

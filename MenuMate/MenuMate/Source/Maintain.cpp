@@ -4240,7 +4240,7 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
         switch(Action)
         {
         case 1 :
-            TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            CanEnableOnlineOrdering();
             break;
         case 2 :
             TGlobalSettings::Instance().EnableOnlineOrdering = false;
@@ -4249,5 +4249,41 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
 
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
     }
 }
+//-----------------------------------------------------------------------------------------------
+bool TfrmMaintain::CanEnableOnlineOrdering()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY";
+        SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9635;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount == 0)
+        {
+            TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            TGlobalSettings::Instance().EnableOnlineOrdering = false;
+            MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+        }
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
+}
+//--------------------------------------------------------------------------------

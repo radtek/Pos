@@ -238,6 +238,7 @@ private:
     bool SetUpPhoenix();
     bool SetUpOracle();
     void EnableOnlineOrdering(Database::TDBTransaction &DBTransaction);
+    bool CanEnableOnlineOrdering();
 public: // User declarations
 };
 #endif
