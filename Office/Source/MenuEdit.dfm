@@ -171,6 +171,7 @@ object frmMenuEdit: TfrmMenuEdit
                 Height = 17
                 Caption = 'Menu Available On Palms'
                 TabOrder = 0
+                OnClick = chbAvailableOnPalmClick
                 OnKeyPress = chbAvailableOnPalmKeyPress
               end
             end

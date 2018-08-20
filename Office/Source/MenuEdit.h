@@ -740,6 +740,7 @@ class TfrmMenuEdit : public TForm
     void __fastcall btnGenItemSizeIDClick(TObject *Sender);
     void __fastcall ItemIdentifierChange(TObject *Sender);
     void __fastcall ItemSizeIdentifierChange(TObject *Sender);
+    void __fastcall chbAvailableOnPalmClick(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);
@@ -1022,6 +1023,7 @@ private:
     std::map<int,AnsiString> revenueCodesMap;
     void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
     int GetItemIdentifier(AnsiString genQuery);
+    void EnableOrDisableGenButtons();
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);

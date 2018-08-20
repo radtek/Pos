@@ -4244,12 +4244,11 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
             break;
         case 2 :
             TGlobalSettings::Instance().EnableOnlineOrdering = false;
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+            DBTransaction.Commit();
             break;
         }
-
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
-        DBTransaction.Commit();
     }
 }
 //-----------------------------------------------------------------------------------------------
