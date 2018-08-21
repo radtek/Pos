@@ -8,9 +8,10 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (23/09/2017 10:16:10 p.m. - - $Rev: 25127 $)
+// (20/08/2018 10:18:44 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -76,6 +77,14 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionInfo;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo;
 class SOAP_REMOTABLE_CLASS VoucherTransactionResponse;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo;
+class SOAP_REMOTABLE_CLASS SiteMenuInfo;
+class SOAP_REMOTABLE_CLASS MenuConsumableInfo;
+class SOAP_REMOTABLE_CLASS ApiCourseViewModel;
+class SOAP_REMOTABLE_CLASS SiteItemInfo;
+class SOAP_REMOTABLE_CLASS ItemSizeInfo;
+class SOAP_REMOTABLE_CLASS ItemSizeTaxProfileInfo;
+class SOAP_REMOTABLE_CLASS SideGroupInfo;
+class SOAP_REMOTABLE_CLASS ItemSideInfo;
 class SOAP_REMOTABLE_CLASS MemberInfo2;
 class SOAP_REMOTABLE_CLASS VoucherInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyMemberResponse2;
@@ -93,6 +102,14 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionInfo2;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo2;
 class SOAP_REMOTABLE_CLASS VoucherTransactionResponse2;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
+class SOAP_REMOTABLE_CLASS SiteMenuInfo2;
+class SOAP_REMOTABLE_CLASS MenuConsumableInfo2;
+class SOAP_REMOTABLE_CLASS ApiCourseViewModel2;
+class SOAP_REMOTABLE_CLASS SiteItemInfo2;
+class SOAP_REMOTABLE_CLASS ItemSizeInfo2;
+class SOAP_REMOTABLE_CLASS ItemSizeTaxProfileInfo2;
+class SOAP_REMOTABLE_CLASS SideGroupInfo2;
+class SOAP_REMOTABLE_CLASS ItemSideInfo2;
 
 enum class DiscountType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
@@ -151,6 +168,35 @@ class ProductPriority_TypeInfoHolder : public TObject {
 public:
 __published:
   __property ProductPriority __propType = { read=__instanceType };
+};
+
+enum class TaxProfileType   /* "http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum"[GblSmpl] */
+{
+  SalesTax, 
+  Purchasetax, 
+  ServiceCharge, 
+  LocalTax, 
+  ProfitTax
+};
+
+class TaxProfileType_TypeInfoHolder : public TObject {
+  TaxProfileType __instanceType;
+public:
+__published:
+  __property TaxProfileType __propType = { read=__instanceType };
+};
+
+enum class MenuType   /* "http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum"[GblSmpl] */
+{
+  Food, 
+  Beverage
+};
+
+class MenuType_TypeInfoHolder : public TObject {
+  MenuType __instanceType;
+public:
+__published:
+  __property MenuType __propType = { read=__instanceType };
 };
 
 enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblSmpl] */
@@ -1352,6 +1398,522 @@ __published:
 };
 
 
+typedef DynamicArray<MenuConsumableInfo*> ArrayOfMenuConsumableInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : SiteMenuInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SiteMenuInfo : public TRemotable {
+private:
+  __int64         FCompanyId;
+  bool            FCompanyId_Specified;
+  ArrayOfMenuConsumableInfo FMenuConsumables;
+  bool            FMenuConsumables_Specified;
+  __int64         FSiteId;
+  bool            FSiteId_Specified;
+  void __fastcall SetCompanyId(int Index, __int64 _prop_val)
+  {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
+  bool __fastcall CompanyId_Specified(int Index)
+  {  return FCompanyId_Specified;  } 
+  void __fastcall SetMenuConsumables(int Index, ArrayOfMenuConsumableInfo _prop_val)
+  {  FMenuConsumables = _prop_val; FMenuConsumables_Specified = true;  }
+  bool __fastcall MenuConsumables_Specified(int Index)
+  {  return FMenuConsumables_Specified;  } 
+  void __fastcall SetSiteId(int Index, __int64 _prop_val)
+  {  FSiteId = _prop_val; FSiteId_Specified = true;  }
+  bool __fastcall SiteId_Specified(int Index)
+  {  return FSiteId_Specified;  } 
+
+public:
+  __fastcall ~SiteMenuInfo();
+__published:
+  __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
+  __property ArrayOfMenuConsumableInfo MenuConsumables = { index=(IS_OPTN|IS_NLBL), read=FMenuConsumables, write=SetMenuConsumables, stored = MenuConsumables_Specified };
+  __property __int64        SiteId = { index=(IS_OPTN), read=FSiteId, write=SetSiteId, stored = SiteId_Specified };
+};
+
+
+typedef DynamicArray<ApiCourseViewModel*> ArrayOfApiCourseViewModel; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : MenuConsumableInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class MenuConsumableInfo : public TRemotable {
+private:
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  int             FIsPalmable;
+  bool            FIsPalmable_Specified;
+  __int64         FMenuId;
+  bool            FMenuId_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  ArrayOfApiCourseViewModel FSiteCourses;
+  bool            FSiteCourses_Specified;
+  MenuType        FType;
+  bool            FType_Specified;
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetIsPalmable(int Index, int _prop_val)
+  {  FIsPalmable = _prop_val; FIsPalmable_Specified = true;  }
+  bool __fastcall IsPalmable_Specified(int Index)
+  {  return FIsPalmable_Specified;  } 
+  void __fastcall SetMenuId(int Index, __int64 _prop_val)
+  {  FMenuId = _prop_val; FMenuId_Specified = true;  }
+  bool __fastcall MenuId_Specified(int Index)
+  {  return FMenuId_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetSiteCourses(int Index, ArrayOfApiCourseViewModel _prop_val)
+  {  FSiteCourses = _prop_val; FSiteCourses_Specified = true;  }
+  bool __fastcall SiteCourses_Specified(int Index)
+  {  return FSiteCourses_Specified;  } 
+  void __fastcall SetType(int Index, MenuType _prop_val)
+  {  FType = _prop_val; FType_Specified = true;  }
+  bool __fastcall Type_Specified(int Index)
+  {  return FType_Specified;  } 
+
+public:
+  __fastcall ~MenuConsumableInfo();
+__published:
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property int        IsPalmable = { index=(IS_OPTN), read=FIsPalmable, write=SetIsPalmable, stored = IsPalmable_Specified };
+  __property __int64        MenuId = { index=(IS_OPTN), read=FMenuId, write=SetMenuId, stored = MenuId_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property ArrayOfApiCourseViewModel SiteCourses = { index=(IS_OPTN|IS_NLBL), read=FSiteCourses, write=SetSiteCourses, stored = SiteCourses_Specified };
+  __property MenuType         Type = { index=(IS_OPTN), read=FType, write=SetType, stored = Type_Specified };
+};
+
+
+typedef DynamicArray<SiteItemInfo*> ArrayOfSiteItemInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : ApiCourseViewModel, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ApiCourseViewModel : public TRemotable {
+private:
+  __int64         FCourseId;
+  bool            FCourseId_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  ArrayOfSiteItemInfo FItems;
+  bool            FItems_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  UnicodeString   FServingCourseDescription;
+  bool            FServingCourseDescription_Specified;
+  UnicodeString   FServingCourseName;
+  bool            FServingCourseName_Specified;
+  void __fastcall SetCourseId(int Index, __int64 _prop_val)
+  {  FCourseId = _prop_val; FCourseId_Specified = true;  }
+  bool __fastcall CourseId_Specified(int Index)
+  {  return FCourseId_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetItems(int Index, ArrayOfSiteItemInfo _prop_val)
+  {  FItems = _prop_val; FItems_Specified = true;  }
+  bool __fastcall Items_Specified(int Index)
+  {  return FItems_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetServingCourseDescription(int Index, UnicodeString _prop_val)
+  {  FServingCourseDescription = _prop_val; FServingCourseDescription_Specified = true;  }
+  bool __fastcall ServingCourseDescription_Specified(int Index)
+  {  return FServingCourseDescription_Specified;  } 
+  void __fastcall SetServingCourseName(int Index, UnicodeString _prop_val)
+  {  FServingCourseName = _prop_val; FServingCourseName_Specified = true;  }
+  bool __fastcall ServingCourseName_Specified(int Index)
+  {  return FServingCourseName_Specified;  } 
+
+public:
+  __fastcall ~ApiCourseViewModel();
+__published:
+  __property __int64      CourseId = { index=(IS_OPTN), read=FCourseId, write=SetCourseId, stored = CourseId_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property ArrayOfSiteItemInfo      Items = { index=(IS_OPTN|IS_NLBL), read=FItems, write=SetItems, stored = Items_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property UnicodeString ServingCourseDescription = { index=(IS_OPTN|IS_NLBL), read=FServingCourseDescription, write=SetServingCourseDescription, stored = ServingCourseDescription_Specified };
+  __property UnicodeString ServingCourseName = { index=(IS_OPTN|IS_NLBL), read=FServingCourseName, write=SetServingCourseName, stored = ServingCourseName_Specified };
+};
+
+
+typedef DynamicArray<ItemSizeInfo*> ArrayOfItemSizeInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+typedef DynamicArray<SideGroupInfo*> ArrayOfSideGroupInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : SiteItemInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SiteItemInfo : public TRemotable {
+private:
+  __int64         FCompanyId;
+  bool            FCompanyId_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  ArrayOfItemSizeInfo FItemSizes;
+  bool            FItemSizes_Specified;
+  UnicodeString   FItemUniqueId;
+  bool            FItemUniqueId_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  bool            FOnlyAsSide;
+  bool            FOnlyAsSide_Specified;
+  ArrayOfSideGroupInfo FSideGroup;
+  bool            FSideGroup_Specified;
+  __int64         FSiteItemId;
+  bool            FSiteItemId_Specified;
+  void __fastcall SetCompanyId(int Index, __int64 _prop_val)
+  {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
+  bool __fastcall CompanyId_Specified(int Index)
+  {  return FCompanyId_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetItemSizes(int Index, ArrayOfItemSizeInfo _prop_val)
+  {  FItemSizes = _prop_val; FItemSizes_Specified = true;  }
+  bool __fastcall ItemSizes_Specified(int Index)
+  {  return FItemSizes_Specified;  } 
+  void __fastcall SetItemUniqueId(int Index, UnicodeString _prop_val)
+  {  FItemUniqueId = _prop_val; FItemUniqueId_Specified = true;  }
+  bool __fastcall ItemUniqueId_Specified(int Index)
+  {  return FItemUniqueId_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetOnlyAsSide(int Index, bool _prop_val)
+  {  FOnlyAsSide = _prop_val; FOnlyAsSide_Specified = true;  }
+  bool __fastcall OnlyAsSide_Specified(int Index)
+  {  return FOnlyAsSide_Specified;  } 
+  void __fastcall SetSideGroup(int Index, ArrayOfSideGroupInfo _prop_val)
+  {  FSideGroup = _prop_val; FSideGroup_Specified = true;  }
+  bool __fastcall SideGroup_Specified(int Index)
+  {  return FSideGroup_Specified;  } 
+  void __fastcall SetSiteItemId(int Index, __int64 _prop_val)
+  {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
+  bool __fastcall SiteItemId_Specified(int Index)
+  {  return FSiteItemId_Specified;  } 
+
+public:
+  __fastcall ~SiteItemInfo();
+__published:
+  __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property ArrayOfItemSizeInfo  ItemSizes = { index=(IS_OPTN|IS_NLBL), read=FItemSizes, write=SetItemSizes, stored = ItemSizes_Specified };
+  __property UnicodeString ItemUniqueId = { index=(IS_OPTN|IS_NLBL), read=FItemUniqueId, write=SetItemUniqueId, stored = ItemUniqueId_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property bool       OnlyAsSide = { index=(IS_OPTN), read=FOnlyAsSide, write=SetOnlyAsSide, stored = OnlyAsSide_Specified };
+  __property ArrayOfSideGroupInfo  SideGroup = { index=(IS_OPTN|IS_NLBL), read=FSideGroup, write=SetSideGroup, stored = SideGroup_Specified };
+  __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
+};
+
+
+typedef DynamicArray<ItemSizeTaxProfileInfo*> ArrayOfItemSizeTaxProfileInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : ItemSizeInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSizeInfo : public TRemotable {
+private:
+  bool            FCanBePaidUsingPoints;
+  bool            FCanBePaidUsingPoints_Specified;
+  int             FDefaultPatronCount;
+  bool            FDefaultPatronCount_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  bool            FIsFree;
+  bool            FIsFree_Specified;
+  bool            FIsWeighted;
+  bool            FIsWeighted_Specified;
+  __int64         FItemSizeId;
+  bool            FItemSizeId_Specified;
+  ArrayOfItemSizeTaxProfileInfo FItemSizeTaxProfiles;
+  bool            FItemSizeTaxProfiles_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  UnicodeString   FOrderingUniqueId;
+  bool            FOrderingUniqueId_Specified;
+  double          FPointsPercentage;
+  bool            FPointsPercentage_Specified;
+  double          FPointsPrice;
+  bool            FPointsPrice_Specified;
+  double          FPrice;
+  bool            FPrice_Specified;
+  UnicodeString   FThirdPartyId;
+  bool            FThirdPartyId_Specified;
+  void __fastcall SetCanBePaidUsingPoints(int Index, bool _prop_val)
+  {  FCanBePaidUsingPoints = _prop_val; FCanBePaidUsingPoints_Specified = true;  }
+  bool __fastcall CanBePaidUsingPoints_Specified(int Index)
+  {  return FCanBePaidUsingPoints_Specified;  } 
+  void __fastcall SetDefaultPatronCount(int Index, int _prop_val)
+  {  FDefaultPatronCount = _prop_val; FDefaultPatronCount_Specified = true;  }
+  bool __fastcall DefaultPatronCount_Specified(int Index)
+  {  return FDefaultPatronCount_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetIsFree(int Index, bool _prop_val)
+  {  FIsFree = _prop_val; FIsFree_Specified = true;  }
+  bool __fastcall IsFree_Specified(int Index)
+  {  return FIsFree_Specified;  } 
+  void __fastcall SetIsWeighted(int Index, bool _prop_val)
+  {  FIsWeighted = _prop_val; FIsWeighted_Specified = true;  }
+  bool __fastcall IsWeighted_Specified(int Index)
+  {  return FIsWeighted_Specified;  } 
+  void __fastcall SetItemSizeId(int Index, __int64 _prop_val)
+  {  FItemSizeId = _prop_val; FItemSizeId_Specified = true;  }
+  bool __fastcall ItemSizeId_Specified(int Index)
+  {  return FItemSizeId_Specified;  } 
+  void __fastcall SetItemSizeTaxProfiles(int Index, ArrayOfItemSizeTaxProfileInfo _prop_val)
+  {  FItemSizeTaxProfiles = _prop_val; FItemSizeTaxProfiles_Specified = true;  }
+  bool __fastcall ItemSizeTaxProfiles_Specified(int Index)
+  {  return FItemSizeTaxProfiles_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetOrderingUniqueId(int Index, UnicodeString _prop_val)
+  {  FOrderingUniqueId = _prop_val; FOrderingUniqueId_Specified = true;  }
+  bool __fastcall OrderingUniqueId_Specified(int Index)
+  {  return FOrderingUniqueId_Specified;  } 
+  void __fastcall SetPointsPercentage(int Index, double _prop_val)
+  {  FPointsPercentage = _prop_val; FPointsPercentage_Specified = true;  }
+  bool __fastcall PointsPercentage_Specified(int Index)
+  {  return FPointsPercentage_Specified;  } 
+  void __fastcall SetPointsPrice(int Index, double _prop_val)
+  {  FPointsPrice = _prop_val; FPointsPrice_Specified = true;  }
+  bool __fastcall PointsPrice_Specified(int Index)
+  {  return FPointsPrice_Specified;  } 
+  void __fastcall SetPrice(int Index, double _prop_val)
+  {  FPrice = _prop_val; FPrice_Specified = true;  }
+  bool __fastcall Price_Specified(int Index)
+  {  return FPrice_Specified;  } 
+  void __fastcall SetThirdPartyId(int Index, UnicodeString _prop_val)
+  {  FThirdPartyId = _prop_val; FThirdPartyId_Specified = true;  }
+  bool __fastcall ThirdPartyId_Specified(int Index)
+  {  return FThirdPartyId_Specified;  } 
+
+public:
+  __fastcall ~ItemSizeInfo();
+__published:
+  __property bool       CanBePaidUsingPoints = { index=(IS_OPTN), read=FCanBePaidUsingPoints, write=SetCanBePaidUsingPoints, stored = CanBePaidUsingPoints_Specified };
+  __property int        DefaultPatronCount = { index=(IS_OPTN), read=FDefaultPatronCount, write=SetDefaultPatronCount, stored = DefaultPatronCount_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property bool           IsFree = { index=(IS_OPTN), read=FIsFree, write=SetIsFree, stored = IsFree_Specified };
+  __property bool       IsWeighted = { index=(IS_OPTN), read=FIsWeighted, write=SetIsWeighted, stored = IsWeighted_Specified };
+  __property __int64    ItemSizeId = { index=(IS_OPTN), read=FItemSizeId, write=SetItemSizeId, stored = ItemSizeId_Specified };
+  __property ArrayOfItemSizeTaxProfileInfo ItemSizeTaxProfiles = { index=(IS_OPTN|IS_NLBL), read=FItemSizeTaxProfiles, write=SetItemSizeTaxProfiles, stored = ItemSizeTaxProfiles_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property UnicodeString OrderingUniqueId = { index=(IS_OPTN|IS_NLBL), read=FOrderingUniqueId, write=SetOrderingUniqueId, stored = OrderingUniqueId_Specified };
+  __property double     PointsPercentage = { index=(IS_OPTN), read=FPointsPercentage, write=SetPointsPercentage, stored = PointsPercentage_Specified };
+  __property double     PointsPrice = { index=(IS_OPTN), read=FPointsPrice, write=SetPointsPrice, stored = PointsPrice_Specified };
+  __property double          Price = { index=(IS_OPTN), read=FPrice, write=SetPrice, stored = Price_Specified };
+  __property UnicodeString ThirdPartyId = { index=(IS_OPTN|IS_NLBL), read=FThirdPartyId, write=SetThirdPartyId, stored = ThirdPartyId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ItemSizeTaxProfileInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSizeTaxProfileInfo : public TRemotable {
+private:
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  __int64         FItemSizeTaxProfileId;
+  bool            FItemSizeTaxProfileId_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  int             FPriority;
+  bool            FPriority_Specified;
+  double          FRate;
+  bool            FRate_Specified;
+  TaxProfileType  FType;
+  bool            FType_Specified;
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetItemSizeTaxProfileId(int Index, __int64 _prop_val)
+  {  FItemSizeTaxProfileId = _prop_val; FItemSizeTaxProfileId_Specified = true;  }
+  bool __fastcall ItemSizeTaxProfileId_Specified(int Index)
+  {  return FItemSizeTaxProfileId_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetPriority(int Index, int _prop_val)
+  {  FPriority = _prop_val; FPriority_Specified = true;  }
+  bool __fastcall Priority_Specified(int Index)
+  {  return FPriority_Specified;  } 
+  void __fastcall SetRate(int Index, double _prop_val)
+  {  FRate = _prop_val; FRate_Specified = true;  }
+  bool __fastcall Rate_Specified(int Index)
+  {  return FRate_Specified;  } 
+  void __fastcall SetType(int Index, TaxProfileType _prop_val)
+  {  FType = _prop_val; FType_Specified = true;  }
+  bool __fastcall Type_Specified(int Index)
+  {  return FType_Specified;  } 
+__published:
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property __int64    ItemSizeTaxProfileId = { index=(IS_OPTN), read=FItemSizeTaxProfileId, write=SetItemSizeTaxProfileId, stored = ItemSizeTaxProfileId_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property int          Priority = { index=(IS_OPTN), read=FPriority, write=SetPriority, stored = Priority_Specified };
+  __property double           Rate = { index=(IS_OPTN), read=FRate, write=SetRate, stored = Rate_Specified };
+  __property TaxProfileType       Type = { index=(IS_OPTN), read=FType, write=SetType, stored = Type_Specified };
+};
+
+
+typedef DynamicArray<ItemSideInfo*> ArrayOfItemSideInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : SideGroupInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SideGroupInfo : public TRemotable {
+private:
+  bool            FAllowSkip;
+  bool            FAllowSkip_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  ArrayOfItemSideInfo FItemSides;
+  bool            FItemSides_Specified;
+  int             FMaxSelect;
+  bool            FMaxSelect_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  __int64         FSideGroupId;
+  bool            FSideGroupId_Specified;
+  void __fastcall SetAllowSkip(int Index, bool _prop_val)
+  {  FAllowSkip = _prop_val; FAllowSkip_Specified = true;  }
+  bool __fastcall AllowSkip_Specified(int Index)
+  {  return FAllowSkip_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetItemSides(int Index, ArrayOfItemSideInfo _prop_val)
+  {  FItemSides = _prop_val; FItemSides_Specified = true;  }
+  bool __fastcall ItemSides_Specified(int Index)
+  {  return FItemSides_Specified;  } 
+  void __fastcall SetMaxSelect(int Index, int _prop_val)
+  {  FMaxSelect = _prop_val; FMaxSelect_Specified = true;  }
+  bool __fastcall MaxSelect_Specified(int Index)
+  {  return FMaxSelect_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetSideGroupId(int Index, __int64 _prop_val)
+  {  FSideGroupId = _prop_val; FSideGroupId_Specified = true;  }
+  bool __fastcall SideGroupId_Specified(int Index)
+  {  return FSideGroupId_Specified;  } 
+
+public:
+  __fastcall ~SideGroupInfo();
+__published:
+  __property bool        AllowSkip = { index=(IS_OPTN), read=FAllowSkip, write=SetAllowSkip, stored = AllowSkip_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property ArrayOfItemSideInfo  ItemSides = { index=(IS_OPTN|IS_NLBL), read=FItemSides, write=SetItemSides, stored = ItemSides_Specified };
+  __property int         MaxSelect = { index=(IS_OPTN), read=FMaxSelect, write=SetMaxSelect, stored = MaxSelect_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property __int64    SideGroupId = { index=(IS_OPTN), read=FSideGroupId, write=SetSideGroupId, stored = SideGroupId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ItemSideInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSideInfo : public TRemotable {
+private:
+  __int64         FCompanyId;
+  bool            FCompanyId_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  ArrayOfItemSizeInfo FItemSizes;
+  bool            FItemSizes_Specified;
+  UnicodeString   FItemUniqueId;
+  bool            FItemUniqueId_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  bool            FOnlyAsSide;
+  bool            FOnlyAsSide_Specified;
+  __int64         FSideGroupId;
+  bool            FSideGroupId_Specified;
+  __int64         FSiteItemId;
+  bool            FSiteItemId_Specified;
+  void __fastcall SetCompanyId(int Index, __int64 _prop_val)
+  {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
+  bool __fastcall CompanyId_Specified(int Index)
+  {  return FCompanyId_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
+  void __fastcall SetItemSizes(int Index, ArrayOfItemSizeInfo _prop_val)
+  {  FItemSizes = _prop_val; FItemSizes_Specified = true;  }
+  bool __fastcall ItemSizes_Specified(int Index)
+  {  return FItemSizes_Specified;  } 
+  void __fastcall SetItemUniqueId(int Index, UnicodeString _prop_val)
+  {  FItemUniqueId = _prop_val; FItemUniqueId_Specified = true;  }
+  bool __fastcall ItemUniqueId_Specified(int Index)
+  {  return FItemUniqueId_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetOnlyAsSide(int Index, bool _prop_val)
+  {  FOnlyAsSide = _prop_val; FOnlyAsSide_Specified = true;  }
+  bool __fastcall OnlyAsSide_Specified(int Index)
+  {  return FOnlyAsSide_Specified;  } 
+  void __fastcall SetSideGroupId(int Index, __int64 _prop_val)
+  {  FSideGroupId = _prop_val; FSideGroupId_Specified = true;  }
+  bool __fastcall SideGroupId_Specified(int Index)
+  {  return FSideGroupId_Specified;  } 
+  void __fastcall SetSiteItemId(int Index, __int64 _prop_val)
+  {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
+  bool __fastcall SiteItemId_Specified(int Index)
+  {  return FSiteItemId_Specified;  } 
+
+public:
+  __fastcall ~ItemSideInfo();
+__published:
+  __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property ArrayOfItemSizeInfo  ItemSizes = { index=(IS_OPTN|IS_NLBL), read=FItemSizes, write=SetItemSizes, stored = ItemSizes_Specified };
+  __property UnicodeString ItemUniqueId = { index=(IS_OPTN|IS_NLBL), read=FItemUniqueId, write=SetItemUniqueId, stored = ItemUniqueId_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property bool       OnlyAsSide = { index=(IS_OPTN), read=FOnlyAsSide, write=SetOnlyAsSide, stored = OnlyAsSide_Specified };
+  __property __int64    SideGroupId = { index=(IS_OPTN), read=FSideGroupId, write=SetSideGroupId, stored = SideGroupId_Specified };
+  __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
+};
+
+
 
 
 // ************************************************************************ //
@@ -1557,6 +2119,102 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : SiteMenuInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SiteMenuInfo2 : public SiteMenuInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : MenuConsumableInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class MenuConsumableInfo2 : public MenuConsumableInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ApiCourseViewModel, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ApiCourseViewModel2 : public ApiCourseViewModel {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : SiteItemInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SiteItemInfo2 : public SiteItemInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ItemSizeInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSizeInfo2 : public ItemSizeInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ItemSizeTaxProfileInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSizeTaxProfileInfo2 : public ItemSizeTaxProfileInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : SideGroupInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class SideGroupInfo2 : public SideGroupInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ItemSideInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ItemSideInfo2 : public ItemSideInfo {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IWCFServiceLoyaltyMate/%operationName%
@@ -1581,13 +2239,15 @@ public:
   virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
   virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0; 
   virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0; 
+  virtual bool            SyncMenu(const SiteMenuInfo* siteViewModel) = 0; 
+  virtual bool            SyncTaxSetting() = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS_LoyaltyMateWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS_LoyaltyMateWSDL;

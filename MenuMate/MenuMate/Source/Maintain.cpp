@@ -4239,15 +4239,14 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
         int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
         switch(Action)
         {
-        case 1 :
-            CanEnableOnlineOrdering();
-            break;
-        case 2 :
-            TGlobalSettings::Instance().EnableOnlineOrdering = false;
-            DBTransaction.StartTransaction();
-            TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
-            DBTransaction.Commit();
-            break;
+            case 1 :
+                CanEnableOnlineOrdering();
+                break;
+            case 2 :
+                TGlobalSettings::Instance().EnableOnlineOrdering = false;
+                DBTransaction.StartTransaction();
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+                DBTransaction.Commit();
         }
     }
 }

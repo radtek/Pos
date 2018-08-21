@@ -176,6 +176,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\Enum\MenuType.cs" />
+    <Compile Include="DTO\Enum\TaxProfileType.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyTierResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\PointsInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\CompanyInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\DiscountInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\DiscountUsageInfo.cs" />
@@ -188,6 +195,14 @@
     <Compile Include="DTO\LoyaltyMate\VoucherInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
+    <Compile Include="DTO\OnlineOrdering\CourseInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\ItemSideInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\ItemSizeInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\ItemSizeTaxProfileInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\MenuConsumableInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\SideGroupInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\SiteItemInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\SiteMenuInfo.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />

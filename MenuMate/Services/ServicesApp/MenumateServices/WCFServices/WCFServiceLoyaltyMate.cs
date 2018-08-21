@@ -164,5 +164,14 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
+        public bool SyncTaxSetting()
+        {
+            return true;
+        }
+
+        public bool SyncMenu(SiteMenuInfo siteViewModel)
+        {
+            return true;
+        }
     }
 }

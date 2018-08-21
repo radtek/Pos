@@ -8,9 +8,10 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (23/09/2017 10:16:10 p.m. - - $Rev: 25127 $)
+// (20/08/2018 10:18:44 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -135,6 +136,58 @@ __fastcall ReleasedVoucherInfo::~ReleasedVoucherInfo()
       delete FDiscountCodes[i];
 }
 
+__fastcall SiteMenuInfo::~SiteMenuInfo()
+{
+  for(int i=0; i<FMenuConsumables.Length; i++)
+    if (FMenuConsumables[i])
+      delete FMenuConsumables[i];
+}
+
+__fastcall MenuConsumableInfo::~MenuConsumableInfo()
+{
+  for(int i=0; i<FSiteCourses.Length; i++)
+    if (FSiteCourses[i])
+      delete FSiteCourses[i];
+}
+
+__fastcall ApiCourseViewModel::~ApiCourseViewModel()
+{
+  for(int i=0; i<FItems.Length; i++)
+    if (FItems[i])
+      delete FItems[i];
+}
+
+__fastcall SiteItemInfo::~SiteItemInfo()
+{
+  for(int i=0; i<FItemSizes.Length; i++)
+    if (FItemSizes[i])
+      delete FItemSizes[i];
+  for(int i=0; i<FSideGroup.Length; i++)
+    if (FSideGroup[i])
+      delete FSideGroup[i];
+}
+
+__fastcall ItemSizeInfo::~ItemSizeInfo()
+{
+  for(int i=0; i<FItemSizeTaxProfiles.Length; i++)
+    if (FItemSizeTaxProfiles[i])
+      delete FItemSizeTaxProfiles[i];
+}
+
+__fastcall SideGroupInfo::~SideGroupInfo()
+{
+  for(int i=0; i<FItemSides.Length; i++)
+    if (FItemSides[i])
+      delete FItemSides[i];
+}
+
+__fastcall ItemSideInfo::~ItemSideInfo()
+{
+  for(int i=0; i<FItemSizes.Length; i++)
+    if (FItemSizes[i])
+      delete FItemSizes[i];
+}
+
 // ************************************************************************ //
 // This routine registers the interfaces and types exposed by the WebService.
 // ************************************************************************ //
@@ -160,6 +213,12 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(DisplayOption_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"DisplayOption");
   /* ProductPriority */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(ProductPriority_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"ProductPriority");
+  /* TaxProfileType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(TaxProfileType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum", L"TaxProfileType");
+  /* MenuType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(MenuType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum", L"MenuType");
+  /* MenuType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(MenuType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum", L"MenuType");
   /* ArrayOfVoucherInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfVoucherInfo");
   /* MemberInfo */
@@ -204,6 +263,36 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo");
+  /* ArrayOfMenuConsumableInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfMenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfMenuConsumableInfo");
+  /* SiteMenuInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SiteMenuInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteMenuInfo");
+  /* ArrayOfApiCourseViewModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfApiCourseViewModel");
+  /* MenuConsumableInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(MenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"MenuConsumableInfo");
+  /* ArrayOfSiteItemInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSiteItemInfo");
+  /* ApiCourseViewModel */
+  RemClassRegistry()->RegisterXSClass(__classid(ApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ApiCourseViewModel");
+  /* ArrayOfItemSizeInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSizeInfo");
+  /* ArrayOfSideGroupInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSideGroupInfo");
+  /* SiteItemInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteItemInfo");
+  /* ArrayOfItemSizeTaxProfileInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSizeTaxProfileInfo");
+  /* ItemSizeInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSizeInfo");
+  /* ItemSizeTaxProfileInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSizeTaxProfileInfo");
+  /* ArrayOfItemSideInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSideInfo");
+  /* SideGroupInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SideGroupInfo");
+  /* ItemSideInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSideInfo");
   /* MemberInfo */
   RemClassRegistry()->RegisterXSClass(__classid(MemberInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"MemberInfo2", L"MemberInfo");
   /* VoucherInfo */
@@ -238,20 +327,52 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse2", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo2", L"ReleasedVoucherInfo");
+  /* SiteMenuInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SiteMenuInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteMenuInfo2", L"SiteMenuInfo");
+  /* MenuConsumableInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(MenuConsumableInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"MenuConsumableInfo2", L"MenuConsumableInfo");
+  /* ApiCourseViewModel */
+  RemClassRegistry()->RegisterXSClass(__classid(ApiCourseViewModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ApiCourseViewModel2", L"ApiCourseViewModel");
+  /* SiteItemInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SiteItemInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteItemInfo2", L"SiteItemInfo");
+  /* ItemSizeInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSizeInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSizeInfo2", L"ItemSizeInfo");
+  /* ItemSizeTaxProfileInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSizeTaxProfileInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSizeTaxProfileInfo2", L"ItemSizeTaxProfileInfo");
+  /* SideGroupInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(SideGroupInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SideGroupInfo2", L"SideGroupInfo");
+  /* ItemSideInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(ItemSideInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ItemSideInfo2", L"ItemSideInfo");
   /* DiscountType */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(DiscountType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"DiscountType");
-  /* ArrayOfVoucherInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfVoucherInfo");
-  /* ArrayOfDiscountInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountInfo");
-  /* ArrayOfDiscountUsageInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountUsageInfo");
-  /* ImplicationType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(ImplicationType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"ImplicationType");
-  /* ArrayOfTierLevelInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTierLevelInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfTierLevelInfo");
+  /* TaxProfileType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(TaxProfileType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum", L"TaxProfileType");
   /* LoyaltyResponseCode */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(LoyaltyResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyResponseCode");
+  /* ArrayOfTierLevelInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTierLevelInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfTierLevelInfo");
+  /* ArrayOfMenuConsumableInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfMenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfMenuConsumableInfo");
+  /* ArrayOfSiteItemInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSiteItemInfo");
+  /* ArrayOfItemSizeTaxProfileInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSizeTaxProfileInfo");
+  /* ArrayOfItemSideInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSideInfo");
+  /* ImplicationType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(ImplicationType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"ImplicationType");
+  /* ArrayOfDiscountInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountInfo");
+  /* ArrayOfApiCourseViewModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfApiCourseViewModel");
+  /* ArrayOfSideGroupInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSideGroupInfo");
+  /* ArrayOfVoucherInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfVoucherInfo");
+  /* ArrayOfItemSizeInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSizeInfo");
+  /* ArrayOfDiscountUsageInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountUsageInfo");
 }
 #pragma startup RegTypes 32
 

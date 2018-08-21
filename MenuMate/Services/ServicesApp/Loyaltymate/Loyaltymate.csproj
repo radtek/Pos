@@ -55,8 +55,10 @@
     <Compile Include="Enum\GiftCardVoucherTransactionType.cs" />
     <Compile Include="Enum\ImplicationType.cs" />
     <Compile Include="Enum\MemberType.cs" />
+    <Compile Include="Enum\MenuType.cs" />
     <Compile Include="Enum\PointType.cs" />
     <Compile Include="Enum\ProductPriority.cs" />
+    <Compile Include="Enum\TaxProfileType.cs" />
     <Compile Include="Exceptions\AuthenticationFailedException.cs" />
     <Compile Include="Exceptions\CustomException.cs" />
     <Compile Include="Exceptions\LoyaltymateOperationException.cs" />
@@ -77,8 +79,14 @@
     <Compile Include="Model\ApiVouchersUsageViewModel.cs" />
     <Compile Include="Model\ApiVoucherUsageRequestViewModel.cs" />
     <Compile Include="Model\ApiVoucherViewModel.cs" />
+    <Compile Include="Model\DomainObjectBase.cs" />
     <Compile Include="Model\GiftCardApiViewModel.cs" />
+    <Compile Include="Model\MembershipProfileViewModel.cs" />
+    <Compile Include="Model\MemberViewModel.cs" />
+    <Compile Include="Model\PointQuery.cs" />
+    <Compile Include="Model\PointsDetail.cs" />
     <Compile Include="Model\PointsTransactionViewModel.cs" />
+    <Compile Include="Model\TierLevelViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sevices\ILoyaltymateService.cs" />
     <Compile Include="Sevices\LoyaltymateService.cs" />
