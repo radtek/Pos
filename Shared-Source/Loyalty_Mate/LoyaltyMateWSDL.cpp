@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (21/08/2018 10:42:09 p.m. - - $Rev: 25127 $)
+// (21/08/2018 11:39:42 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -150,7 +150,7 @@ __fastcall MenuConsumableInfo::~MenuConsumableInfo()
       delete FSiteCourses[i];
 }
 
-__fastcall ApiCourseViewModel::~ApiCourseViewModel()
+__fastcall CourseInfo::~CourseInfo()
 {
   for(int i=0; i<FItems.Length; i++)
     if (FItems[i])
@@ -267,14 +267,14 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfMenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfMenuConsumableInfo");
   /* SiteMenuInfo */
   RemClassRegistry()->RegisterXSClass(__classid(SiteMenuInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteMenuInfo");
-  /* ArrayOfApiCourseViewModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfApiCourseViewModel");
+  /* ArrayOfCourseInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCourseInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfCourseInfo");
   /* MenuConsumableInfo */
   RemClassRegistry()->RegisterXSClass(__classid(MenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"MenuConsumableInfo");
   /* ArrayOfSiteItemInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSiteItemInfo");
-  /* ApiCourseViewModel */
-  RemClassRegistry()->RegisterXSClass(__classid(ApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ApiCourseViewModel");
+  /* CourseInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(CourseInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"CourseInfo");
   /* ArrayOfItemSizeInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfItemSizeInfo");
   /* ArrayOfSideGroupInfo */
@@ -331,8 +331,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SiteMenuInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteMenuInfo2", L"SiteMenuInfo");
   /* MenuConsumableInfo */
   RemClassRegistry()->RegisterXSClass(__classid(MenuConsumableInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"MenuConsumableInfo2", L"MenuConsumableInfo");
-  /* ApiCourseViewModel */
-  RemClassRegistry()->RegisterXSClass(__classid(ApiCourseViewModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ApiCourseViewModel2", L"ApiCourseViewModel");
+  /* CourseInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(CourseInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"CourseInfo2", L"CourseInfo");
   /* SiteItemInfo */
   RemClassRegistry()->RegisterXSClass(__classid(SiteItemInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"SiteItemInfo2", L"SiteItemInfo");
   /* ItemSizeInfo */
@@ -363,8 +363,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(ImplicationType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"ImplicationType");
   /* ArrayOfDiscountInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountInfo");
-  /* ArrayOfApiCourseViewModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfApiCourseViewModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfApiCourseViewModel");
+  /* ArrayOfCourseInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCourseInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfCourseInfo");
   /* ArrayOfSideGroupInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfSideGroupInfo");
   /* ArrayOfVoucherInfo */

@@ -21,6 +21,6 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public bool IsPalmable { get; set; }
         [DataMember]
-        public List<ApiCourseViewModel> SiteCourses { get; set; }
+        public List<CourseInfo> SiteCourses { get; set; }
     }
 }

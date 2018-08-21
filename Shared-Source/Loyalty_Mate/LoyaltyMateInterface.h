@@ -14,6 +14,7 @@
 #include "LoyaltyMateWSDL.h"
 #include "Discount.h"
 #include "LoyaltyMateUtilities.h"
+#include "OnlineOrderingAttributes.h"
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------
@@ -155,6 +156,8 @@ class TLoyaltyMateInterface
         void ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVoucherDetail& VoucherDetail);
         void ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail);
         void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
+        //for online ordering menu syncing.
+        bool SendMenu(TSiteMenuInfo menuInfo);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();

@@ -16479,6 +16479,14 @@ void TfrmSelectDish::SyncMenu()
         else
         {
             TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
+            TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+            bool retVal = LoyaltyMateInterface->SendMenu(menuInfo);
+
+            if(retVal)
+                MessageBox("Menu synced successfully.", "Error", MB_OK);
+            else
+                MessageBox("Menu Syncing failed.", "Error", MB_OK + MB_ICONERROR);
+
         }
         dBTransaction.Commit();
     }

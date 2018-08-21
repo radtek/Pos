@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (21/08/2018 10:42:09 p.m. - - $Rev: 25127 $)
+// (21/08/2018 11:39:42 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -39,7 +39,6 @@
 #if !defined(IS_REF)
 #define IS_REF 0x0080
 #endif
-
 
 
 namespace NS_LoyaltyMateWSDL {
@@ -80,7 +79,7 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionResponse;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo;
 class SOAP_REMOTABLE_CLASS SiteMenuInfo;
 class SOAP_REMOTABLE_CLASS MenuConsumableInfo;
-class SOAP_REMOTABLE_CLASS ApiCourseViewModel;
+class SOAP_REMOTABLE_CLASS CourseInfo;
 class SOAP_REMOTABLE_CLASS SiteItemInfo;
 class SOAP_REMOTABLE_CLASS ItemSizeInfo;
 class SOAP_REMOTABLE_CLASS ItemSizeTaxProfileInfo;
@@ -105,7 +104,7 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionResponse2;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
 class SOAP_REMOTABLE_CLASS SiteMenuInfo2;
 class SOAP_REMOTABLE_CLASS MenuConsumableInfo2;
-class SOAP_REMOTABLE_CLASS ApiCourseViewModel2;
+class SOAP_REMOTABLE_CLASS CourseInfo2;
 class SOAP_REMOTABLE_CLASS SiteItemInfo2;
 class SOAP_REMOTABLE_CLASS ItemSizeInfo2;
 class SOAP_REMOTABLE_CLASS ItemSizeTaxProfileInfo2;
@@ -1436,7 +1435,7 @@ __published:
 };
 
 
-typedef DynamicArray<ApiCourseViewModel*> ArrayOfApiCourseViewModel; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+typedef DynamicArray<CourseInfo*> ArrayOfCourseInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
 
 
 // ************************************************************************ //
@@ -1453,7 +1452,7 @@ private:
   bool            FMenuId_Specified;
   UnicodeString   FName;
   bool            FName_Specified;
-  ArrayOfApiCourseViewModel FSiteCourses;
+  ArrayOfCourseInfo FSiteCourses;
   bool            FSiteCourses_Specified;
   MenuType        FType;
   bool            FType_Specified;
@@ -1473,7 +1472,7 @@ private:
   {  FName = _prop_val; FName_Specified = true;  }
   bool __fastcall Name_Specified(int Index)
   {  return FName_Specified;  } 
-  void __fastcall SetSiteCourses(int Index, ArrayOfApiCourseViewModel _prop_val)
+  void __fastcall SetSiteCourses(int Index, ArrayOfCourseInfo _prop_val)
   {  FSiteCourses = _prop_val; FSiteCourses_Specified = true;  }
   bool __fastcall SiteCourses_Specified(int Index)
   {  return FSiteCourses_Specified;  } 
@@ -1489,7 +1488,7 @@ __published:
   __property bool       IsPalmable = { index=(IS_OPTN), read=FIsPalmable, write=SetIsPalmable, stored = IsPalmable_Specified };
   __property __int64        MenuId = { index=(IS_OPTN), read=FMenuId, write=SetMenuId, stored = MenuId_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
-  __property ArrayOfApiCourseViewModel SiteCourses = { index=(IS_OPTN|IS_NLBL), read=FSiteCourses, write=SetSiteCourses, stored = SiteCourses_Specified };
+  __property ArrayOfCourseInfo SiteCourses = { index=(IS_OPTN|IS_NLBL), read=FSiteCourses, write=SetSiteCourses, stored = SiteCourses_Specified };
   __property MenuType         Type = { index=(IS_OPTN), read=FType, write=SetType, stored = Type_Specified };
 };
 
@@ -1498,10 +1497,10 @@ typedef DynamicArray<SiteItemInfo*> ArrayOfSiteItemInfo; /* "http://schemas.data
 
 
 // ************************************************************************ //
-// XML       : ApiCourseViewModel, global, <complexType>
+// XML       : CourseInfo, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class ApiCourseViewModel : public TRemotable {
+class CourseInfo : public TRemotable {
 private:
   __int64         FCourseId;
   bool            FCourseId_Specified;
@@ -1541,7 +1540,7 @@ private:
   {  return FServingCourseName_Specified;  } 
 
 public:
-  __fastcall ~ApiCourseViewModel();
+  __fastcall ~CourseInfo();
 __published:
   __property __int64      CourseId = { index=(IS_OPTN), read=FCourseId, write=SetCourseId, stored = CourseId_Specified };
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
@@ -2146,10 +2145,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : ApiCourseViewModel, global, <element>
+// XML       : CourseInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class ApiCourseViewModel2 : public ApiCourseViewModel {
+class CourseInfo2 : public CourseInfo {
 private:
 __published:
 };

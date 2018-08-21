@@ -12,6 +12,7 @@
 #include "DBMenu.h"
 #include "Payment.h"
 #include <map>
+
 //---------------------------------------------------------------------------
 
 //TLoyaltyMateInterface* TLoyaltyMateInterface::instance = NULL;
@@ -1006,5 +1007,174 @@ RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
 
    return requestInfo;
 }
+
+
+bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
+{
+    bool reVal = false;
+    try
+    {
+        LoyaltyResponse *wcfResponse;
+        SiteMenuInfo *wcfInfo = new SiteMenuInfo();
+        wcfInfo->CompanyId = menuInfo.CompanyId;
+        wcfInfo->SiteId = menuInfo.SiteId;
+        if(!menuInfo.MenuConsumables.empty())
+        {
+            ArrayOfMenuConsumableInfo menuConsumableArray;
+            for(std::list<TMenuConsumableInfo>::iterator itMenuInfo = menuInfo.MenuConsumables.begin();
+                    itMenuInfo != menuInfo.MenuConsumables.end(); ++itMenuInfo)
+            {
+                MenuConsumableInfo* menuConsumableInfo = new MenuConsumableInfo;
+                menuConsumableInfo->Description = itMenuInfo->Description;
+                menuConsumableInfo->IsPalmable = itMenuInfo->IsPalmable;
+                menuConsumableInfo->MenuId = itMenuInfo->MenuId;
+                menuConsumableInfo->Name = itMenuInfo->Name;
+                menuConsumableInfo->Type = itMenuInfo->MenuType;
+
+                ArrayOfCourseInfo courseInfoArray;
+
+                for(std::list<TCourseInfo>::iterator itCourseInfo = itMenuInfo->SiteCourses.begin();
+                    itCourseInfo != itMenuInfo->SiteCourses.end(); ++itCourseInfo)
+                {
+                    CourseInfo* courseInfo = new CourseInfo;
+                    courseInfo->CourseId = itCourseInfo->CourseId;
+                    courseInfo->Description = itCourseInfo->Description;
+                    courseInfo->Name = itCourseInfo->Name;
+                    courseInfo->ServingCourseDescription = itCourseInfo->ServingCourseDescription;
+                    courseInfo->ServingCourseName = itCourseInfo->ServingCourseName;
+
+                    ArrayOfSiteItemInfo siteItemInfoArray;
+
+                    for(std::list<TSiteItemInfo>::iterator itSiteItemInfo = itCourseInfo->Items.begin();
+                        itSiteItemInfo != itCourseInfo->Items.end(); ++itSiteItemInfo)
+                    {
+                        SiteItemInfo* siteItemInfo = new SiteItemInfo;
+                        siteItemInfo->CompanyId = itSiteItemInfo->CompanyId;
+                        siteItemInfo->Description = itSiteItemInfo->Description;
+                        siteItemInfo->ItemUniqueId = itSiteItemInfo->ItemUniqueId;
+                        siteItemInfo->Name = itSiteItemInfo->Name;
+                        siteItemInfo->OnlyAsSide = itSiteItemInfo->OnlyAsSide;
+                        siteItemInfo->SiteItemId = itSiteItemInfo->SiteItemId;
+
+                        ArrayOfItemSizeInfo itemSizeInfoArray;
+
+                        for(std::list<TItemSizeInfo>::iterator itItemSizeInfo = itSiteItemInfo->ItemSizes.begin();
+                            itItemSizeInfo != itSiteItemInfo->ItemSizes.end(); ++itItemSizeInfo)
+                        {
+                            ItemSizeInfo* itemSizeInfo = new ItemSizeInfo;
+                            itemSizeInfo->CanBePaidUsingPoints = itItemSizeInfo->CanBePaidUsingPoints;
+                            itemSizeInfo->DefaultPatronCount = itItemSizeInfo->DefaultPatronCount;
+                            itemSizeInfo->Description = itItemSizeInfo->Description;
+                            itemSizeInfo->IsFree = itItemSizeInfo->IsFree;
+                            itemSizeInfo->IsWeighted = itItemSizeInfo->IsWeighted;
+                            itemSizeInfo->ItemSizeId = itItemSizeInfo->ItemSizeId;
+                            itemSizeInfo->Name = itItemSizeInfo->Name;
+                            itemSizeInfo->OrderingUniqueId = itItemSizeInfo->OrderingUniqueId;
+                            itemSizeInfo->PointsPercentage = itItemSizeInfo->PointsPercentage;
+                            itemSizeInfo->PointsPrice = itItemSizeInfo->PointsPrice;
+                            itemSizeInfo->Price = itItemSizeInfo->Price;
+                            itemSizeInfo->ThirdPartyId = itItemSizeInfo->ThirdPartyId;
+
+                            ArrayOfItemSizeTaxProfileInfo itemSizeTaxProfileInfo;
+
+                            for(std::list<TItemSizeTaxProfileInfo>::iterator itItemSizeTaxInfo = itItemSizeInfo->ItemSizeTaxProfiles.begin();
+                            itItemSizeTaxInfo != itItemSizeInfo->ItemSizeTaxProfiles.end(); ++itItemSizeTaxInfo)
+                            {
+                                ItemSizeTaxProfileInfo* itemSizeTaxInfo;
+                                itemSizeTaxInfo->Description = itItemSizeTaxInfo->Description;
+                                itemSizeTaxInfo->ItemSizeTaxProfileId = itItemSizeTaxInfo->ItemSizeTaxProfileId;
+                                itemSizeTaxInfo->Name = itItemSizeTaxInfo->Name;
+                                itemSizeTaxInfo->Priority = itItemSizeTaxInfo->Priority;
+                                itemSizeTaxInfo->Rate = itItemSizeTaxInfo->Rate;
+                                itemSizeTaxInfo->Type = itItemSizeTaxInfo->TaxProfileType;
+                                itemSizeTaxProfileInfo[itemSizeTaxProfileInfo.Length - 1] = itemSizeTaxInfo;
+                            }
+                            itemSizeInfoArray[itemSizeInfoArray.Length - 1] = itemSizeInfo;
+
+                        }
+
+                        ArrayOfSideGroupInfo itemSideGroupArray;
+
+                        for(std::list<TSideGroupInfo>::iterator itSideGroupInfo = itSiteItemInfo->SideGroup.begin();
+                            itSideGroupInfo != itSiteItemInfo->SideGroup.end(); ++itSideGroupInfo)
+                        {
+                            SideGroupInfo* sideGroupInfo = new SideGroupInfo;
+                            sideGroupInfo->AllowSkip = itSideGroupInfo->AllowSkip;
+                            sideGroupInfo->Description = itSideGroupInfo->Description;
+                            sideGroupInfo->MaxSelect = itSideGroupInfo->MaxSelect;
+                            sideGroupInfo->Name = itSideGroupInfo->Name;
+                            sideGroupInfo->SideGroupId = itSideGroupInfo->SideGroupId;
+
+                            ArrayOfItemSideInfo itemSideInfoArray;
+
+                            for(std::list<TItemSideInfo>::iterator itItemSideInfo = itSideGroupInfo->ItemSides.begin();
+                                itItemSideInfo != itSideGroupInfo->ItemSides.end(); ++itItemSideInfo)
+                            {
+                                ItemSideInfo* itemSideInfo = new ItemSideInfo;
+                                itemSideInfo->CompanyId = itItemSideInfo->CompanyId;
+                                itemSideInfo->Description = itItemSideInfo->Description;
+                                itemSideInfo->ItemUniqueId = itItemSideInfo->ItemUniqueId;
+                                itemSideInfo->Name = itItemSideInfo->Name;
+                                itemSideInfo->OnlyAsSide = itItemSideInfo->OnlyAsSide;
+                                itemSideInfo->SideGroupId = itItemSideInfo->SideGroupId;
+                                itemSideInfo->SiteItemId = itItemSideInfo->SiteItemId;
+
+                                ArrayOfItemSizeInfo itemSizeInfoArray;
+
+                                for(std::list<TItemSizeInfo>::iterator itItemSizeInfo = itItemSideInfo->ItemSizes.begin();
+                                    itItemSizeInfo != itItemSideInfo->ItemSizes.end(); ++itItemSizeInfo)
+                                {
+                                    ItemSizeInfo* itemSizeInfo = new ItemSizeInfo;
+                                    itemSizeInfo->CanBePaidUsingPoints = itItemSizeInfo->CanBePaidUsingPoints;
+                                    itemSizeInfo->DefaultPatronCount = itItemSizeInfo->DefaultPatronCount;
+                                    itemSizeInfo->Description = itItemSizeInfo->Description;
+                                    itemSizeInfo->IsFree = itItemSizeInfo->IsFree;
+                                    itemSizeInfo->IsWeighted = itItemSizeInfo->IsWeighted;
+                                    itemSizeInfo->ItemSizeId = itItemSizeInfo->ItemSizeId;
+                                    itemSizeInfo->Name = itItemSizeInfo->Name;
+                                    itemSizeInfo->OrderingUniqueId = itItemSizeInfo->OrderingUniqueId;
+                                    itemSizeInfo->PointsPercentage = itItemSizeInfo->PointsPercentage;
+                                    itemSizeInfo->PointsPrice = itItemSizeInfo->PointsPrice;
+                                    itemSizeInfo->Price = itItemSizeInfo->Price;
+                                    itemSizeInfo->ThirdPartyId = itItemSizeInfo->ThirdPartyId;
+
+                                    ArrayOfItemSizeTaxProfileInfo itemSizeTaxProfileInfo;
+
+                                    for(std::list<TItemSizeTaxProfileInfo>::iterator itItemSizeTaxInfo = itItemSizeInfo->ItemSizeTaxProfiles.begin();
+                                    itItemSizeTaxInfo != itItemSizeInfo->ItemSizeTaxProfiles.end(); ++itItemSizeTaxInfo)
+                                    {
+                                        ItemSizeTaxProfileInfo* itemSizeTaxInfo;
+                                        itemSizeTaxInfo->Description = itItemSizeTaxInfo->Description;
+                                        itemSizeTaxInfo->ItemSizeTaxProfileId = itItemSizeTaxInfo->ItemSizeTaxProfileId;
+                                        itemSizeTaxInfo->Name = itItemSizeTaxInfo->Name;
+                                        itemSizeTaxInfo->Priority = itItemSizeTaxInfo->Priority;
+                                        itemSizeTaxInfo->Rate = itItemSizeTaxInfo->Rate;
+                                        itemSizeTaxInfo->Type = itItemSizeTaxInfo->TaxProfileType;
+                                        itemSizeTaxProfileInfo[itemSizeTaxProfileInfo.Length - 1] = itemSizeTaxInfo;
+                                    }
+                                    itemSizeInfoArray[itemSizeInfoArray.Length - 1] = itemSizeInfo;
+                                }
+                                itemSideInfoArray[itemSideInfoArray.Length - 1] = itemSideInfo;
+                            }
+                            itemSideGroupArray[itemSideGroupArray.Length - 1] = sideGroupInfo;
+                        }
+                        siteItemInfoArray[siteItemInfoArray.Length - 1] = siteItemInfo;
+                    }
+                    courseInfoArray[courseInfoArray.Length - 1] = courseInfo;
+                }
+                menuConsumableArray[menuConsumableArray.Length - 1] = menuConsumableInfo;
+            }
+            wcfInfo->MenuConsumables = menuConsumableArray;
+        }
+        CoInitialize(NULL);
+        reVal = loyaltymateClient->SyncMenu(wcfInfo);
+    }
+    catch( Exception& exc )
+    {
+        return false;
+    }
+    return reVal;
+}
+
 
 #pragma package(smart_init)

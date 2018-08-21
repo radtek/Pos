@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace MenumateServices.DTO.LoyaltyMate
 {
     [DataContract]
-    public class ApiCourseViewModel
+    public class CourseInfo
     {
         [DataMember]
         public long CourseId { get; set; }

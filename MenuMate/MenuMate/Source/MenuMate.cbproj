@@ -3527,7 +3527,7 @@
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>804</BuildOrder>
+				<BuildOrder>805</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="CaptNamePhone.dfm"/>
