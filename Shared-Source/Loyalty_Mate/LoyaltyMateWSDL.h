@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (20/08/2018 10:18:44 p.m. - - $Rev: 25127 $)
+// (21/08/2018 10:42:09 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -39,6 +39,7 @@
 #if !defined(IS_REF)
 #define IS_REF 0x0080
 #endif
+
 
 
 namespace NS_LoyaltyMateWSDL {
@@ -1446,7 +1447,7 @@ class MenuConsumableInfo : public TRemotable {
 private:
   UnicodeString   FDescription;
   bool            FDescription_Specified;
-  int             FIsPalmable;
+  bool            FIsPalmable;
   bool            FIsPalmable_Specified;
   __int64         FMenuId;
   bool            FMenuId_Specified;
@@ -1460,7 +1461,7 @@ private:
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
   {  return FDescription_Specified;  } 
-  void __fastcall SetIsPalmable(int Index, int _prop_val)
+  void __fastcall SetIsPalmable(int Index, bool _prop_val)
   {  FIsPalmable = _prop_val; FIsPalmable_Specified = true;  }
   bool __fastcall IsPalmable_Specified(int Index)
   {  return FIsPalmable_Specified;  } 
@@ -1485,7 +1486,7 @@ public:
   __fastcall ~MenuConsumableInfo();
 __published:
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
-  __property int        IsPalmable = { index=(IS_OPTN), read=FIsPalmable, write=SetIsPalmable, stored = IsPalmable_Specified };
+  __property bool       IsPalmable = { index=(IS_OPTN), read=FIsPalmable, write=SetIsPalmable, stored = IsPalmable_Specified };
   __property __int64        MenuId = { index=(IS_OPTN), read=FMenuId, write=SetMenuId, stored = MenuId_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property ArrayOfApiCourseViewModel SiteCourses = { index=(IS_OPTN|IS_NLBL), read=FSiteCourses, write=SetSiteCourses, stored = SiteCourses_Specified };

@@ -3517,16 +3517,16 @@
 				<DependentOn>DbMegaworldMall.h</DependentOn>
 				<BuildOrder>802</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>802</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="OnlineOrdering\DBOnlineOrdeing.cpp">
 				<DependentOn>OnlineOrdering\DBOnlineOrdeing.h</DependentOn>
 				<BuildOrder>803</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="OnlineOrdering\OnlineOrderingAttributes.cpp">
 				<DependentOn>OnlineOrdering\OnlineOrderingAttributes.h</DependentOn>
+				<BuildOrder>804</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
+				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
 				<BuildOrder>804</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
