@@ -55,7 +55,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "OnlineOrderingAttributes.h"
 // ---------------------------------------------------------------------------
 #ifndef OrderOnHold
 #define OrderOnHold (OrderHeld && TGlobalSettings::Instance().EnableHoldSend)
@@ -499,13 +498,6 @@ private: // User declarations
     void SyncWithCloud();
     void SyncTaxSetting();
     void SyncMenu();
-    TSiteMenuInfo GetMenuInfo(Database::TDBTransaction &dbTransaction);
-    std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
-    std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);
-    std::list<TItemSizeInfo> GetItemSizeInfo(Database::TDBTransaction &dbTransaction, int itemSizeKey);
-    std::list<TItemSizeTaxProfileInfo> GetItemSizeTaxProfileInfo(Database::TDBTransaction &dbTransaction, int itemSizeKey);
-    std::list<TSideGroupInfo> GetSideGroupInfo(Database::TDBTransaction &dbTransaction, int masterItemKey);
-    std::list<TItemSideInfo> GetItemSideInfo(Database::TDBTransaction &dbTransaction, int masterKey, int groupNo);
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);
