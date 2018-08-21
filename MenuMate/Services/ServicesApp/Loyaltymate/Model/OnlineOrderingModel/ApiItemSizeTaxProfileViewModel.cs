@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using OnlineOrdering.Enum;
 
-namespace OnlineOrdering.Model
+namespace Loyaltymate.Model.OnlineOrderingModel
 {
     public class ApiItemSizeTaxProfileViewModel
     {

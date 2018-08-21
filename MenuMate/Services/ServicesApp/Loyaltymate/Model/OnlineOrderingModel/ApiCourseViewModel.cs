@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OnlineOrdering.Model
+namespace Loyaltymate.Model.OnlineOrderingModel
 {
     public class ApiCourseViewModel
     {

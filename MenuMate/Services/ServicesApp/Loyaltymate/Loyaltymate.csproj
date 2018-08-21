@@ -83,6 +83,14 @@
     <Compile Include="Model\GiftCardApiViewModel.cs" />
     <Compile Include="Model\MembershipProfileViewModel.cs" />
     <Compile Include="Model\MemberViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiCourseViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiItemSideViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiItemSizeTaxProfileViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiItemSizeViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiMenuConsumableViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiSideGroupViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiSiteItemViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\ApiSiteMenuViewModel.cs" />
     <Compile Include="Model\PointQuery.cs" />
     <Compile Include="Model\PointsDetail.cs" />
     <Compile Include="Model\PointsTransactionViewModel.cs" />

@@ -134,6 +134,7 @@
 #include "FiscalPrinterAdapter.h"
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
+#include "DBOnlineOrdeing.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -16477,7 +16478,7 @@ void TfrmSelectDish::SyncMenu()
         }
         else
         {
-            TSiteMenuInfo menuInfo = GetMenuInfo(dBTransaction);
+            TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
         }
         dBTransaction.Commit();
     }
