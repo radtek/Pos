@@ -59,7 +59,8 @@ std::list<TCourseInfo> TDBOnlineOrdering::GetCourseInfo(Database::TDBTransaction
         ibInternalQuery->SQL->Text =    "SELECT c.COURSE_KEY, c.COURSE_ID, c.COURSE_NAME,sc.SERVINGCOURSE_NAME "
                                         "FROM  COURSE c "
                                         "INNER JOIN SERVINGCOURSES sc on c.SERVINGCOURSES_KEY = sc.SERVINGCOURSES_KEY "
-                                        "WHERE c.MENU_KEY = :MENU_KEY";
+                                        "WHERE c.MENU_KEY = :MENU_KEY "
+                                        "GROUP BY c.COURSE_KEY, c.COURSE_ID, c.COURSE_NAME,sc.SERVINGCOURSE_NAME ";
         ibInternalQuery->ParamByName("MENU_KEY")->AsInteger = menuKey;
         ibInternalQuery->ExecQuery();
 
@@ -67,9 +68,9 @@ std::list<TCourseInfo> TDBOnlineOrdering::GetCourseInfo(Database::TDBTransaction
         {
             TCourseInfo courseInfo;
             courseInfo.CourseId = ibInternalQuery->FieldByName("COURSE_KEY")->AsInteger;
-            courseInfo.Name = ibInternalQuery->FieldByName("COURSE_NAME")->AsInteger;;
+            courseInfo.Name = ibInternalQuery->FieldByName("COURSE_NAME")->AsString;
             courseInfo.Description = courseInfo.Name;
-            courseInfo.ServingCourseName = ibInternalQuery->FieldByName("SERVINGCOURSE_NAME")->AsInteger;
+            courseInfo.ServingCourseName = ibInternalQuery->FieldByName("SERVINGCOURSE_NAME")->AsString;
             courseInfo.ServingCourseDescription = courseInfo.ServingCourseName;
             courseInfo.Items = GetItemInfo(dbTransaction, ibInternalQuery->FieldByName("COURSE_KEY")->AsInteger);
             courseList.push_back(courseInfo);
