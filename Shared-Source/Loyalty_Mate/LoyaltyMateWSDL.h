@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (21/08/2018 11:39:42 p.m. - - $Rev: 25127 $)
+// (22/08/2018 10:17:01 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -1454,6 +1454,8 @@ private:
   bool            FName_Specified;
   ArrayOfCourseInfo FSiteCourses;
   bool            FSiteCourses_Specified;
+  __int64         FSiteMenuCourseId;
+  bool            FSiteMenuCourseId_Specified;
   MenuType        FType;
   bool            FType_Specified;
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
@@ -1476,6 +1478,10 @@ private:
   {  FSiteCourses = _prop_val; FSiteCourses_Specified = true;  }
   bool __fastcall SiteCourses_Specified(int Index)
   {  return FSiteCourses_Specified;  } 
+  void __fastcall SetSiteMenuCourseId(int Index, __int64 _prop_val)
+  {  FSiteMenuCourseId = _prop_val; FSiteMenuCourseId_Specified = true;  }
+  bool __fastcall SiteMenuCourseId_Specified(int Index)
+  {  return FSiteMenuCourseId_Specified;  } 
   void __fastcall SetType(int Index, MenuType _prop_val)
   {  FType = _prop_val; FType_Specified = true;  }
   bool __fastcall Type_Specified(int Index)
@@ -1489,6 +1495,7 @@ __published:
   __property __int64        MenuId = { index=(IS_OPTN), read=FMenuId, write=SetMenuId, stored = MenuId_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property ArrayOfCourseInfo SiteCourses = { index=(IS_OPTN|IS_NLBL), read=FSiteCourses, write=SetSiteCourses, stored = SiteCourses_Specified };
+  __property __int64    SiteMenuCourseId = { index=(IS_OPTN), read=FSiteMenuCourseId, write=SetSiteMenuCourseId, stored = SiteMenuCourseId_Specified };
   __property MenuType         Type = { index=(IS_OPTN), read=FType, write=SetType, stored = Type_Specified };
 };
 
@@ -1514,6 +1521,8 @@ private:
   bool            FServingCourseDescription_Specified;
   UnicodeString   FServingCourseName;
   bool            FServingCourseName_Specified;
+  __int64         FSiteMenuCourseId;
+  bool            FSiteMenuCourseId_Specified;
   void __fastcall SetCourseId(int Index, __int64 _prop_val)
   {  FCourseId = _prop_val; FCourseId_Specified = true;  }
   bool __fastcall CourseId_Specified(int Index)
@@ -1538,6 +1547,10 @@ private:
   {  FServingCourseName = _prop_val; FServingCourseName_Specified = true;  }
   bool __fastcall ServingCourseName_Specified(int Index)
   {  return FServingCourseName_Specified;  } 
+  void __fastcall SetSiteMenuCourseId(int Index, __int64 _prop_val)
+  {  FSiteMenuCourseId = _prop_val; FSiteMenuCourseId_Specified = true;  }
+  bool __fastcall SiteMenuCourseId_Specified(int Index)
+  {  return FSiteMenuCourseId_Specified;  } 
 
 public:
   __fastcall ~CourseInfo();
@@ -1548,6 +1561,7 @@ __published:
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property UnicodeString ServingCourseDescription = { index=(IS_OPTN|IS_NLBL), read=FServingCourseDescription, write=SetServingCourseDescription, stored = ServingCourseDescription_Specified };
   __property UnicodeString ServingCourseName = { index=(IS_OPTN|IS_NLBL), read=FServingCourseName, write=SetServingCourseName, stored = ServingCourseName_Specified };
+  __property __int64    SiteMenuCourseId = { index=(IS_OPTN), read=FSiteMenuCourseId, write=SetSiteMenuCourseId, stored = SiteMenuCourseId_Specified };
 };
 
 
@@ -1577,6 +1591,8 @@ private:
   bool            FSideGroup_Specified;
   __int64         FSiteItemId;
   bool            FSiteItemId_Specified;
+  __int64         FSiteMenuCourseId;
+  bool            FSiteMenuCourseId_Specified;
   void __fastcall SetCompanyId(int Index, __int64 _prop_val)
   {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
   bool __fastcall CompanyId_Specified(int Index)
@@ -1609,6 +1625,10 @@ private:
   {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
   bool __fastcall SiteItemId_Specified(int Index)
   {  return FSiteItemId_Specified;  } 
+  void __fastcall SetSiteMenuCourseId(int Index, __int64 _prop_val)
+  {  FSiteMenuCourseId = _prop_val; FSiteMenuCourseId_Specified = true;  }
+  bool __fastcall SiteMenuCourseId_Specified(int Index)
+  {  return FSiteMenuCourseId_Specified;  } 
 
 public:
   __fastcall ~SiteItemInfo();
@@ -1621,6 +1641,7 @@ __published:
   __property bool       OnlyAsSide = { index=(IS_OPTN), read=FOnlyAsSide, write=SetOnlyAsSide, stored = OnlyAsSide_Specified };
   __property ArrayOfSideGroupInfo  SideGroup = { index=(IS_OPTN|IS_NLBL), read=FSideGroup, write=SetSideGroup, stored = SideGroup_Specified };
   __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
+  __property __int64    SiteMenuCourseId = { index=(IS_OPTN), read=FSiteMenuCourseId, write=SetSiteMenuCourseId, stored = SiteMenuCourseId_Specified };
 };
 
 
@@ -1657,6 +1678,8 @@ private:
   bool            FPointsPrice_Specified;
   double          FPrice;
   bool            FPrice_Specified;
+  __int64         FSiteItemId;
+  bool            FSiteItemId_Specified;
   UnicodeString   FThirdPartyId;
   bool            FThirdPartyId_Specified;
   void __fastcall SetCanBePaidUsingPoints(int Index, bool _prop_val)
@@ -1707,6 +1730,10 @@ private:
   {  FPrice = _prop_val; FPrice_Specified = true;  }
   bool __fastcall Price_Specified(int Index)
   {  return FPrice_Specified;  } 
+  void __fastcall SetSiteItemId(int Index, __int64 _prop_val)
+  {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
+  bool __fastcall SiteItemId_Specified(int Index)
+  {  return FSiteItemId_Specified;  } 
   void __fastcall SetThirdPartyId(int Index, UnicodeString _prop_val)
   {  FThirdPartyId = _prop_val; FThirdPartyId_Specified = true;  }
   bool __fastcall ThirdPartyId_Specified(int Index)
@@ -1727,6 +1754,7 @@ __published:
   __property double     PointsPercentage = { index=(IS_OPTN), read=FPointsPercentage, write=SetPointsPercentage, stored = PointsPercentage_Specified };
   __property double     PointsPrice = { index=(IS_OPTN), read=FPointsPrice, write=SetPointsPrice, stored = PointsPrice_Specified };
   __property double          Price = { index=(IS_OPTN), read=FPrice, write=SetPrice, stored = Price_Specified };
+  __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
   __property UnicodeString ThirdPartyId = { index=(IS_OPTN|IS_NLBL), read=FThirdPartyId, write=SetThirdPartyId, stored = ThirdPartyId_Specified };
 };
 
@@ -1749,6 +1777,8 @@ private:
   bool            FPriority_Specified;
   double          FRate;
   bool            FRate_Specified;
+  __int64         FTaxProfileId;
+  bool            FTaxProfileId_Specified;
   TaxProfileType  FType;
   bool            FType_Specified;
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
@@ -1771,6 +1801,10 @@ private:
   {  FRate = _prop_val; FRate_Specified = true;  }
   bool __fastcall Rate_Specified(int Index)
   {  return FRate_Specified;  } 
+  void __fastcall SetTaxProfileId(int Index, __int64 _prop_val)
+  {  FTaxProfileId = _prop_val; FTaxProfileId_Specified = true;  }
+  bool __fastcall TaxProfileId_Specified(int Index)
+  {  return FTaxProfileId_Specified;  } 
   void __fastcall SetType(int Index, TaxProfileType _prop_val)
   {  FType = _prop_val; FType_Specified = true;  }
   bool __fastcall Type_Specified(int Index)
@@ -1781,6 +1815,7 @@ __published:
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property int          Priority = { index=(IS_OPTN), read=FPriority, write=SetPriority, stored = Priority_Specified };
   __property double           Rate = { index=(IS_OPTN), read=FRate, write=SetRate, stored = Rate_Specified };
+  __property __int64    TaxProfileId = { index=(IS_OPTN), read=FTaxProfileId, write=SetTaxProfileId, stored = TaxProfileId_Specified };
   __property TaxProfileType       Type = { index=(IS_OPTN), read=FType, write=SetType, stored = Type_Specified };
 };
 
@@ -1806,6 +1841,8 @@ private:
   bool            FName_Specified;
   __int64         FSideGroupId;
   bool            FSideGroupId_Specified;
+  __int64         FSiteItemId;
+  bool            FSiteItemId_Specified;
   void __fastcall SetAllowSkip(int Index, bool _prop_val)
   {  FAllowSkip = _prop_val; FAllowSkip_Specified = true;  }
   bool __fastcall AllowSkip_Specified(int Index)
@@ -1830,6 +1867,10 @@ private:
   {  FSideGroupId = _prop_val; FSideGroupId_Specified = true;  }
   bool __fastcall SideGroupId_Specified(int Index)
   {  return FSideGroupId_Specified;  } 
+  void __fastcall SetSiteItemId(int Index, __int64 _prop_val)
+  {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
+  bool __fastcall SiteItemId_Specified(int Index)
+  {  return FSiteItemId_Specified;  } 
 
 public:
   __fastcall ~SideGroupInfo();
@@ -1840,6 +1881,7 @@ __published:
   __property int         MaxSelect = { index=(IS_OPTN), read=FMaxSelect, write=SetMaxSelect, stored = MaxSelect_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property __int64    SideGroupId = { index=(IS_OPTN), read=FSideGroupId, write=SetSideGroupId, stored = SideGroupId_Specified };
+  __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
 };
 
 
@@ -1851,8 +1893,6 @@ __published:
 // ************************************************************************ //
 class ItemSideInfo : public TRemotable {
 private:
-  __int64         FCompanyId;
-  bool            FCompanyId_Specified;
   UnicodeString   FDescription;
   bool            FDescription_Specified;
   ArrayOfItemSizeInfo FItemSizes;
@@ -1863,14 +1903,8 @@ private:
   bool            FName_Specified;
   bool            FOnlyAsSide;
   bool            FOnlyAsSide_Specified;
-  __int64         FSideGroupId;
-  bool            FSideGroupId_Specified;
   __int64         FSiteItemId;
   bool            FSiteItemId_Specified;
-  void __fastcall SetCompanyId(int Index, __int64 _prop_val)
-  {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
-  bool __fastcall CompanyId_Specified(int Index)
-  {  return FCompanyId_Specified;  } 
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
@@ -1891,10 +1925,6 @@ private:
   {  FOnlyAsSide = _prop_val; FOnlyAsSide_Specified = true;  }
   bool __fastcall OnlyAsSide_Specified(int Index)
   {  return FOnlyAsSide_Specified;  } 
-  void __fastcall SetSideGroupId(int Index, __int64 _prop_val)
-  {  FSideGroupId = _prop_val; FSideGroupId_Specified = true;  }
-  bool __fastcall SideGroupId_Specified(int Index)
-  {  return FSideGroupId_Specified;  } 
   void __fastcall SetSiteItemId(int Index, __int64 _prop_val)
   {  FSiteItemId = _prop_val; FSiteItemId_Specified = true;  }
   bool __fastcall SiteItemId_Specified(int Index)
@@ -1903,13 +1933,11 @@ private:
 public:
   __fastcall ~ItemSideInfo();
 __published:
-  __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
   __property ArrayOfItemSizeInfo  ItemSizes = { index=(IS_OPTN|IS_NLBL), read=FItemSizes, write=SetItemSizes, stored = ItemSizes_Specified };
   __property UnicodeString ItemUniqueId = { index=(IS_OPTN|IS_NLBL), read=FItemUniqueId, write=SetItemUniqueId, stored = ItemUniqueId_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property bool       OnlyAsSide = { index=(IS_OPTN), read=FOnlyAsSide, write=SetOnlyAsSide, stored = OnlyAsSide_Specified };
-  __property __int64    SideGroupId = { index=(IS_OPTN), read=FSideGroupId, write=SetSideGroupId, stored = SideGroupId_Specified };
   __property __int64    SiteItemId = { index=(IS_OPTN), read=FSiteItemId, write=SetSiteItemId, stored = SiteItemId_Specified };
 };
 

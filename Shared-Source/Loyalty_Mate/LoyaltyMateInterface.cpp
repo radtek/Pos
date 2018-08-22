@@ -1118,12 +1118,10 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
                                 itItemSideInfo != itSideGroupInfo->ItemSides.end(); ++itItemSideInfo)
                             {    MessageBox("8","8",MB_OK);
                                 ItemSideInfo* itemSideInfo = new ItemSideInfo;
-                                itemSideInfo->CompanyId = itItemSideInfo->CompanyId;
                                 itemSideInfo->Description = itItemSideInfo->Description;
                                 itemSideInfo->ItemUniqueId = itItemSideInfo->ItemUniqueId;
                                 itemSideInfo->Name = itItemSideInfo->Name;
                                 itemSideInfo->OnlyAsSide = itItemSideInfo->OnlyAsSide;
-                                itemSideInfo->SideGroupId = itItemSideInfo->SideGroupId;
                                 itemSideInfo->SiteItemId = itItemSideInfo->SiteItemId;
 
                                 ArrayOfItemSizeInfo itemSizeInfoArray;
