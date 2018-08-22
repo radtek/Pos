@@ -13,6 +13,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public long MenuId { get; set; }
         [DataMember]
+        public long SiteMenuCourseId { get; set; }
+        [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }

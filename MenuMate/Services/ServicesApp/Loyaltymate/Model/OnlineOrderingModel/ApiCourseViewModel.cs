@@ -8,6 +8,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel
     public class ApiCourseViewModel
     {
         public long CourseId { get; set; }
+        public long SiteMenuCourseId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ServingCourseName { get; set; }

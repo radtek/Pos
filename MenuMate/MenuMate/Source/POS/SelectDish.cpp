@@ -16486,7 +16486,6 @@ void TfrmSelectDish::SyncMenu()
                 MessageBox("Menu synced successfully.", "Error", MB_OK);
             else
                 MessageBox("Menu Syncing failed.", "Error", MB_OK + MB_ICONERROR);
-
         }
         dBTransaction.Commit();
     }

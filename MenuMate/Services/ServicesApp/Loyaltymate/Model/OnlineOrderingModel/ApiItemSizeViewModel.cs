@@ -8,6 +8,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel
     public class ApiItemSizeViewModel
     {
         public long ItemSizeId { get; set; }
+        public long SiteItemId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsWeighted { get; set; }

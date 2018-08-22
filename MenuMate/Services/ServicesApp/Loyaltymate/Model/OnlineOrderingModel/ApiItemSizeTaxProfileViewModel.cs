@@ -9,6 +9,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel
     public class ApiItemSizeTaxProfileViewModel
     {
         public long ItemSizeTaxProfileId { get; set; }
+        public long TaxProfileId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public double Rate { get; set; }

@@ -12,6 +12,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public long SideGroupId { get; set; }
         [DataMember]
+        public long SiteItemId { get; set; }
+        [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }

@@ -13,6 +13,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public long ItemSizeTaxProfileId { get; set; }
         [DataMember]
+        public long TaxProfileId { get; set; }
+        [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }

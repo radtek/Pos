@@ -226,13 +226,6 @@ class TLoyaltyMateInterface
         void CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction);
         void  DisableSyncSetting(Database::TDBTransaction &DBTransaction);
         RequestInfo* CreateRequest(AnsiString requestKey);
-        MenuConsumableInfo* CreateMenu(TMenuConsumableInfo menuConsumableInfo);
-        CourseInfo* CreateCourse(TCourseInfo courseInfo);
-        SiteItemInfo* CreateSiteItem(TSiteItemInfo siteItemInfo);
-        SideGroupInfo* CreateSideGroup(TSideGroupInfo sideGroupInfo);
-        ItemSideInfo* CreateItemSide(TItemSideInfo itemSideInfo);
-        ItemSizeInfo* CreateItemSize(TItemSizeInfo itemSize);
-        ItemSizeTaxProfileInfo* CreateItemSizeTax(TItemSizeTaxProfileInfo taxProfileInfo);
 };
 
 #endif

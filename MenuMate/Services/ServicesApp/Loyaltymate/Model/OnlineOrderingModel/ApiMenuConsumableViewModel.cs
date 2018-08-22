@@ -9,6 +9,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel
     public class ApiMenuConsumableViewModel
     {
         public long MenuId { get; set; }
+        public long SiteMenuCourseId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public MenuType Type { get; set; }

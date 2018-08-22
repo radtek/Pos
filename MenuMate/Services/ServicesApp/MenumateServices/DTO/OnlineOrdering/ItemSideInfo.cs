@@ -12,8 +12,6 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public long SiteItemId { get; set; }
         [DataMember]
-        public long SideGroupId { get; set; }
-        [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }
@@ -21,8 +19,6 @@ namespace MenumateServices.DTO.LoyaltyMate
         public string ItemUniqueId { get; set; }
         [DataMember]
         public bool OnlyAsSide { get; set; }
-        [DataMember]
-        public long CompanyId { get; set; }
         [DataMember]
         public List<ItemSizeInfo> ItemSizes { get; set; }
     }
