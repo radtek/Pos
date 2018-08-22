@@ -5,6 +5,7 @@
 
 #include "DBOnlineOrdeing.h"
 #include "MMLogging.h"
+#include "GlobalSettings.h"
 
 //---------------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ TSiteMenuInfo TDBOnlineOrdering::GetMenuInfo(Database::TDBTransaction &dbTransac
             ibInternalQuery->Next();
         }
         siteMenuInfo.CompanyId = 0;
-        siteMenuInfo.SiteId = 1;
+        siteMenuInfo.SiteId = TGlobalSettings::Instance().SiteID;
         siteMenuInfo.MenuConsumables = menuList;
     }
     catch(Exception &E)
