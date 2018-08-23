@@ -207,6 +207,7 @@
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
     <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />

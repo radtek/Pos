@@ -171,6 +171,14 @@ namespace MenumateServices.WCFServices
 
         public bool SyncMenu(SiteMenuInfo siteViewModel)
         {
+            try
+            {
+                LoyaltySite.Instance.SyncSiteMenu(siteViewModel);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
             return true;
         }
     }

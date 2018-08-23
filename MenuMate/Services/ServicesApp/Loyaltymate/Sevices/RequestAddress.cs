@@ -28,5 +28,7 @@
         
         public const string ReleaseVouchers = "api/VoucherApi/ReleaseVouchers";
 
+        public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
+
     }
 }

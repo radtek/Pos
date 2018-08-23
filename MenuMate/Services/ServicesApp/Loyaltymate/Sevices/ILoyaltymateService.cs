@@ -1,5 +1,6 @@
 ﻿using Loyaltymate.Model;
 using System.Collections.Generic;
+using Loyaltymate.Model.OnlineOrderingModel;
 
 namespace Loyaltymate.Sevices
 {
@@ -17,5 +18,6 @@ namespace Loyaltymate.Sevices
         ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel);
         List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction);
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);
+        bool SyncSiteMenu(ApiSiteMenuViewModel siteMenus);
     }
 }

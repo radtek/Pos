@@ -23,7 +23,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         InvalidPocketVoucher,
         TransactionFailed,
         GetGiftCardFailed,
-        GetPocketVoucherFailed
+        GetPocketVoucherFailed,
+        MenuSyncingFailed
     };
 
     [DataContract]

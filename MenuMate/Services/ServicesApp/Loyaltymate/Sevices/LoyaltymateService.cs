@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using Loyaltymate.Utility;
+using Loyaltymate.Model.OnlineOrderingModel;
 
 namespace Loyaltymate.Sevices
 {
@@ -351,5 +352,32 @@ namespace Loyaltymate.Sevices
                 throw new LoyaltymateOperationException("Not able to connect with server.");
             }
         }
+    
+        public bool SyncSiteMenu(ApiSiteMenuViewModel siteMenuViewModel)
+        {
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, null, null, WebRequestMethods.Http.Post, siteMenuViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+                return false;
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                    response = true;
+                }
+            }
+            return response;
+        }
+
     }
 }

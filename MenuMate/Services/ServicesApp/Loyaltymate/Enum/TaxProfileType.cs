@@ -10,7 +10,8 @@ namespace OnlineOrdering.Enum
         SalesTax = 0,
         Purchasetax,
         ServiceCharge,
-        LocalTax = 4,
+        ServiceChargeTax,
+        LocalTax,
         ProfitTax
     }
 }
