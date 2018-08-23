@@ -1010,13 +1010,12 @@ RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
    return requestInfo;
 }
 
-
+//this function is not breaked into multiple function due to unable to perform link errors.
 bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
 {
     bool reVal = false;
     try
     {
-        LoyaltyResponse *wcfResponse;
         SiteMenuInfo *wcfInfo = new SiteMenuInfo();
         wcfInfo->CompanyId = menuInfo.CompanyId;
         wcfInfo->SiteId = menuInfo.SiteId;
@@ -1095,8 +1094,13 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
                             itemSizeInfo->ItemSizeTaxProfiles = itemSizeTaxProfileInfo;
                             itemSizeInfoArray.Length = (itemSizeInfoArray.Length + 1);
                             itemSizeInfoArray[itemSizeInfoArray.Length - 1] = itemSizeInfo;
+//                              siteItemInfo->ItemSizes.Length = (siteItemInfo->ItemSizes.Length + 1);
+//                              MessageBox(itemSizeInfo->ThirdPartyId,"itemSizeInfo->ThirdPartyId 2 ",MB_OK);
+
+//                              siteItemInfo->ItemSizes[siteItemInfo->ItemSizes.Length - 1] = itemSizeInfo;
+//                              MessageBox(siteItemInfo->ItemSizes.Length,"siteItemInfo->ItemSizes.Length",MB_OK);
                         }
-                        //siteItemInfo->ItemSizes = itemSizeInfoArray;   todo this line is giving unable to perform link.
+                        siteItemInfo->ItemSizes = itemSizeInfoArray;   //todo this line is giving unable to perform link.
 
                         ArrayOfSideGroupInfo itemSideGroupArray;
 
@@ -1182,6 +1186,7 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
             }
             wcfInfo->MenuConsumables = menuConsumableArray;
         }
+
         CoInitialize(NULL);
         reVal = loyaltymateClient->SyncMenu(wcfInfo);
     }

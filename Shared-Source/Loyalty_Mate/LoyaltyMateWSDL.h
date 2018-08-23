@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (22/08/2018 10:17:01 p.m. - - $Rev: 25127 $)
+// (23/08/2018 9:07:09 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -22,7 +22,6 @@
 #include <XSBuiltIns.hpp>
 #include <winsock2.h>
 #include <SOAPHTTPClient.hpp>
-#include "GlobalSettings.h"
 
 #if !defined(SOAP_REMOTABLE_CLASS)
 #define SOAP_REMOTABLE_CLASS __declspec(delphiclass)

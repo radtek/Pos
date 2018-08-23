@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (22/08/2018 10:17:01 p.m. - - $Rev: 25127 $)
+// (23/08/2018 9:07:09 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -376,5 +376,5 @@ static void RegTypes()
 }
 #pragma startup RegTypes 32
 
-};     // NS_LoyaltyMateWSDL
+};     // NS__
 
