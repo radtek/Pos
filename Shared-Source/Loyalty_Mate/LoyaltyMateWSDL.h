@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
 // Encoding : utf-8
 // Version  : 1.0
-// (23/08/2018 9:07:09 p.m. - - $Rev: 25127 $)
+// (24/08/2018 6:37:32 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -174,6 +174,7 @@ enum class TaxProfileType   /* "http://schemas.datacontract.org/2004/07/OnlineOr
   SalesTax, 
   Purchasetax, 
   ServiceCharge, 
+  ServiceChargeTax, 
   LocalTax, 
   ProfitTax
 };
@@ -213,7 +214,8 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   InvalidPocketVoucher, 
   TransactionFailed, 
   GetGiftCardFailed, 
-  GetPocketVoucherFailed
+  GetPocketVoucherFailed, 
+  MenuSyncingFailed
 };
 
 class LoyaltyResponseCode_TypeInfoHolder : public TObject {
@@ -2266,7 +2268,7 @@ public:
   virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0; 
   virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0; 
   virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0; 
-  virtual bool            SyncMenu(const SiteMenuInfo* siteViewModel) = 0; 
+  virtual LoyaltyResponse* SyncMenu(const UnicodeString inSyndicateCode, const SiteMenuInfo* siteViewModel) = 0; 
   virtual bool            SyncTaxSetting() = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;

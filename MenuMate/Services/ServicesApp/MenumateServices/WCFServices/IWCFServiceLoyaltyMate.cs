@@ -48,7 +48,7 @@ namespace MenumateServices.WCFServices
         LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
 
         [OperationContract]
-        bool SyncMenu(SiteMenuInfo siteViewModel); //todo change return type to loyaltyresponse.
+        LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);  
 
         [OperationContract]
         bool SyncTaxSetting();

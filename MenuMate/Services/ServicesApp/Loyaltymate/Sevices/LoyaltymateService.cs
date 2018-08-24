@@ -352,15 +352,18 @@ namespace Loyaltymate.Sevices
                 throw new LoyaltymateOperationException("Not able to connect with server.");
             }
         }
-    
-        public bool SyncSiteMenu(ApiSiteMenuViewModel siteMenuViewModel)
+
+        public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel)
         {
             bool response = false;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, null, null, WebRequestMethods.Http.Post, siteMenuViewModel);
+            //List<ApiSiteMenuViewModel> response1 = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, inSyndicateCode, null, WebRequestMethods.Http.Post, siteMenuViewModel);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
+                //var responseStream = new StreamReader(webResponse.GetResponseStream());
+                //response1 = JsonUtility.Deserialize<List<ApiSiteMenuViewModel>>(responseStream.ReadToEnd());
             }
             catch (WebException we)
             {

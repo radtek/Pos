@@ -169,17 +169,17 @@ namespace MenumateServices.WCFServices
             return true;
         }
 
-        public bool SyncMenu(SiteMenuInfo siteViewModel)
+        public LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel)
         {
             try
             {
-                LoyaltySite.Instance.SyncSiteMenu(siteViewModel);
+                return LoyaltySite.Instance.SyncSiteMenu(inSyndicateCode, siteViewModel);
             }
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
             }
-            return true;
+            return null;
         }
     }
 }

@@ -18,6 +18,6 @@ namespace Loyaltymate.Sevices
         ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel);
         List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction);
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);
-        bool SyncSiteMenu(ApiSiteMenuViewModel siteMenus);
+        bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenus);
     }
 }

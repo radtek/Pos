@@ -40,12 +40,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         #region Public
 
 
-        public LoyaltyResponse SyncSiteMenu(SiteMenuInfo siteMenus)
+        public LoyaltyResponse SyncSiteMenu(string inSyndicateCode, SiteMenuInfo siteMenus)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.SyncSiteMenu(CreateSiteMenuViewModel(siteMenus));
+                var response = loyaltymateService.SyncSiteMenu(inSyndicateCode, CreateSiteMenuViewModel(siteMenus));
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -69,10 +69,13 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             var siteMenuViewModel = new ApiSiteMenuViewModel();
             siteMenuViewModel.CompanyId = siteMenuInfo.CompanyId;
             siteMenuViewModel.SiteId = siteMenuInfo.SiteId;
+            siteMenuViewModel.MenuConsumables = new List<ApiMenuConsumableViewModel>();
             foreach (var menu in siteMenuInfo.MenuConsumables)
             {
                 siteMenuViewModel.MenuConsumables.Add(CreateMenuConsumableViewModel(menu));
             }
+           // var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);
+            //var response = JsonUtility.Deserialize<ApiSiteMenuViewModel>(siteMenuViewModel);
             return siteMenuViewModel;
         }
 
@@ -85,6 +88,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             menuConsumableViewModel.MenuId = menuConsumableInfo.MenuId;
             menuConsumableViewModel.SiteMenuCourseId = menuConsumableInfo.SiteMenuCourseId;
             //menuConsumableViewModel.Type = menuConsumableInfo.Type;
+            menuConsumableViewModel.SiteCourses = new List<ApiCourseViewModel>();
             foreach (var siteCourse in menuConsumableInfo.SiteCourses)
             {
                 menuConsumableViewModel.SiteCourses.Add(CreateCourseViewModel(siteCourse));
@@ -101,6 +105,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             courseViewModel.ServingCourseDescription = courseInfo.ServingCourseDescription;
             courseViewModel.ServingCourseName = courseInfo.ServingCourseName;
             courseViewModel.SiteMenuCourseId = courseInfo.SiteMenuCourseId;
+            courseViewModel.Items = new List<ApiSiteItemViewModel>();
             foreach(var item in courseInfo.Items)
             {
                 courseViewModel.Items.Add(CreateItemSiteViewModel(item));
@@ -118,12 +123,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteItemViewModel.OnlyAsSide = siteItem.OnlyAsSide;
             siteItemViewModel.SiteItemId = siteItem.SiteItemId;
             siteItemViewModel.SiteMenuCourseId = siteItem.SiteMenuCourseId;
-
+            siteItemViewModel.ItemSizes = new List<ApiItemSizeViewModel>();
             foreach (var itemSize in siteItem.ItemSizes)
             {
                 siteItemViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
             }
-
+            siteItemViewModel.SideGroup = new List<ApiSideGroupViewModel>();
             foreach (var sideGroup in siteItem.SideGroup)
             {
                 siteItemViewModel.SideGroup.Add(CreateSideGroupViewModel(sideGroup));
@@ -140,6 +145,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             sideGroupViewModel.Name = sideGroupInfo.Name;
             sideGroupViewModel.SideGroupId = sideGroupInfo.SideGroupId;
             sideGroupViewModel.SiteItemId = sideGroupInfo.SiteItemId;
+            sideGroupViewModel.ItemSides = new List<ApiItemSideViewModel>();
             foreach(var itemSide in sideGroupInfo.ItemSides)
             {
                 sideGroupViewModel.ItemSides.Add(CreateItemSideViewModel(itemSide));
@@ -155,6 +161,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSideViewModel.Name = itemSideInfo.Name;
             itemSideViewModel.OnlyAsSide = itemSideInfo.OnlyAsSide;
             itemSideViewModel.SiteItemId = itemSideInfo.SiteItemId;
+            itemSideViewModel.ItemSizes = new List<ApiItemSizeViewModel>();
             foreach(var itemSize in itemSideInfo.ItemSizes)
             {
                 itemSideViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
@@ -178,12 +185,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSizeViewModel.Price = itemSize.Price;
             itemSizeViewModel.SiteItemId = itemSize.SiteItemId;
             itemSizeViewModel.ThirdPartyId = itemSize.ThirdPartyId;
-
+            itemSizeViewModel.ItemSizeTaxProfiles = new List<ApiItemSizeTaxProfileViewModel>();
             foreach (var taxProfile in itemSize.ItemSizeTaxProfiles)
             {
-                var itemSizeTaxProfileInfo = new ApiItemSizeTaxProfileViewModel();
-                itemSizeTaxProfileInfo = CreateItemSizeTaxProfileViewModel(taxProfile);
-                itemSizeViewModel.ItemSizeTaxProfiles.Add(itemSizeTaxProfileInfo);
+                itemSizeViewModel.ItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModel(taxProfile));
             }
 
             return itemSizeViewModel;
