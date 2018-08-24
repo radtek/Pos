@@ -87,7 +87,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             menuConsumableViewModel.IsPalmable = menuConsumableInfo.IsPalmable;
             menuConsumableViewModel.MenuId = menuConsumableInfo.MenuId;
             menuConsumableViewModel.SiteMenuCourseId = menuConsumableInfo.SiteMenuCourseId;
-            //menuConsumableViewModel.Type = menuConsumableInfo.Type;
+            menuConsumableViewModel.Type = (Loyaltymate.Enum.MenuType)menuConsumableInfo.Type;
             menuConsumableViewModel.SiteCourses = new List<ApiCourseViewModel>();
             foreach (var siteCourse in menuConsumableInfo.SiteCourses)
             {
@@ -203,7 +203,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSizeTaxProfileViewModel.Priority = taxProfile.Priority;
             itemSizeTaxProfileViewModel.Rate = taxProfile.Rate;
             itemSizeTaxProfileViewModel.TaxProfileId = taxProfile.TaxProfileId;
-            //itemSizeTaxProfileInfo.Type = taxProfile.Type;
+            itemSizeTaxProfileViewModel.Type = (Loyaltymate.Enum.TaxProfileType)taxProfile.Type;
 
             return itemSizeTaxProfileViewModel;
         }

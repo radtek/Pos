@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OnlineOrdering.Enum
+namespace Loyaltymate.Enum
 {
     public enum TaxProfileType
     {

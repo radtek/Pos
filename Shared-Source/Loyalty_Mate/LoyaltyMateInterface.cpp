@@ -1011,9 +1011,9 @@ RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
 }
 
 //this function is not breaked into multiple function due to unable to perform link errors.
-bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
-{
-    bool reVal = false;
+MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
+{    
+    LoyaltyResponse *wcfResponse;
     try
     {
         SiteMenuInfo *wcfInfo = new SiteMenuInfo();
@@ -1189,14 +1189,14 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
 
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
-        reVal = loyaltymateClient->SyncMenu(SyndicateCode, wcfInfo);
+        wcfResponse = loyaltymateClient->SyncMenu(SyndicateCode, wcfInfo);
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
-		throw;
+        return CreateExceptionFailedResponse( exc.Message );
     }
-    return reVal;
+
 }
 
 AnsiString TLoyaltyMateInterface::GetSyndCodeForOnlineOrdering()
