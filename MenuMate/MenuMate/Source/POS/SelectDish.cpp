@@ -16478,14 +16478,27 @@ void TfrmSelectDish::SyncMenu()
         }
         else
         {
+            AnsiString ErrorMessage;
             TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
             TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
-            bool retVal = LoyaltyMateInterface->SendMenu(menuInfo);
+            MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->SendMenu(menuInfo);
 
-            if(retVal)
-                MessageBox("Menu synced successfully.", "Error", MB_OK);
+            if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+            {
+                throw Exception("Authentication failed with Loyaltymate Service");
+            }
+            else if(createResponse.IsSuccesful)
+            {
+                MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            }
             else
-                MessageBox("Menu Syncing failed.", "Error", MB_OK + MB_ICONERROR);
+            {
+                if(createResponse.Description == "Failed to update menu to server.")
+                  ErrorMessage = "Failed to update menu to server.";
+                else
+                  ErrorMessage = "Failed to update menu to server.";
+                throw Exception(ErrorMessage);
+            }
         }
         dBTransaction.Commit();
     }

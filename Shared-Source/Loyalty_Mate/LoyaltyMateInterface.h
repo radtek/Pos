@@ -157,7 +157,7 @@ class TLoyaltyMateInterface
         void ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail);
         void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
         //for online ordering menu syncing.
-        bool SendMenu(TSiteMenuInfo menuInfo);
+        MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
