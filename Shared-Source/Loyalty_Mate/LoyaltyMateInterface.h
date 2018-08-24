@@ -226,6 +226,7 @@ class TLoyaltyMateInterface
         void CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction);
         void  DisableSyncSetting(Database::TDBTransaction &DBTransaction);
         RequestInfo* CreateRequest(AnsiString requestKey);
+        AnsiString GetSyndCodeForOnlineOrdering();
 };
 
 #endif

@@ -1188,7 +1188,8 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
         }
 
         CoInitialize(NULL);
-        reVal = loyaltymateClient->SyncMenu(wcfInfo);
+        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
+        reVal = loyaltymateClient->SyncMenu(SyndicateCode, wcfInfo);
     }
     catch( Exception& exc )
     {
@@ -1196,6 +1197,32 @@ bool TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
 		throw;
     }
     return reVal;
+}
+
+AnsiString TLoyaltyMateInterface::GetSyndCodeForOnlineOrdering()
+{
+    AnsiString syndicateCode = "";
+
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(dbTransaction);
+        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        syndicateCode = currentSyndicateCode.GetSyndCode();
+        dbTransaction.Commit();
+    }
+    catch( Exception& exc )
+    {
+        dbTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
+		throw;
+    }
+    return syndicateCode;
 }
 
 
