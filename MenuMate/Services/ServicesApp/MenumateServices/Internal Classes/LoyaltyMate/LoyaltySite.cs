@@ -7,6 +7,8 @@ using Loyaltymate.Model.OnlineOrderingModel;
 using Loyaltymate.Sevices;
 using MenumateServices.DTO.LoyaltyMate;
 using System.Net;
+using MenumateServices.DTO.OnlineOrdering;
+using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
 
 namespace MenumateServices.Internal_Classes.LoyaltyMate
 {
@@ -50,15 +52,36 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseNoError();
                 else
                     return CreateResponseError(
-                        "@Failed to update menu to server",
+                        "@Failed to update menu to server.",
                         "",
-                        LoyaltyResponseCode.UpdateMemberFailed);
+                        LoyaltyResponseCode.MenuSyncingFailed);
             }
             catch (Exception ex)
             {
                 return null;
             }
         }
+
+        public LoyaltyResponse SyncSiteTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
+        {
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                var response = loyaltymateService.SyncSiteTaxSettings(inSyndicateCode, CreateSiteTaxSettingsViewModel(siteTaxSettings));
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError(
+                        "@Failed to update tax settings to server.",
+                        "",
+                        LoyaltyResponseCode.TaxSettingSyncingFailed);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
 
         #endregion
 
@@ -207,6 +230,29 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
 
             return itemSizeTaxProfileViewModel;
         }
+
+        private ApiSiteTaxSettings CreateSiteTaxSettingsViewModel(SiteTaxSettingsinfo siteTaxSettingsInfo)
+        {
+            var siteTaxSettings = new ApiSiteTaxSettings();
+            siteTaxSettings.SiteId = siteTaxSettingsInfo.SiteId;
+            siteTaxSettings.SiteTaxSettings = new List<ApiTaxSettings>();
+            foreach(var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
+            {
+                siteTaxSettings.SiteTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));     
+            }
+
+            return siteTaxSettings;
+        }
+
+        private ApiTaxSettings CreateTaxSettingViewModel(TaxSettingsInfo taxSettingInfo)
+        {
+            var taxSetting = new ApiTaxSettings();
+            taxSetting.SettingType = (Loyaltymate.Enum.TaxSettingType)taxSettingInfo.SettingType;
+            taxSetting.Value = taxSettingInfo.Value;
+
+            return taxSetting;
+        }
+
 
         #endregion
 

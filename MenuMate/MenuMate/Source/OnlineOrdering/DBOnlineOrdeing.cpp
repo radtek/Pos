@@ -275,3 +275,63 @@ std::list<TItemSideInfo> TDBOnlineOrdering::GetItemSideInfo(Database::TDBTransac
     return itemSideList;
 }
 //------------------------------------------------------------------------------
+TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction &dbTransaction)
+{
+    TSiteTaxSettingsInfo siteTaxSettingsInfo;
+    try
+    {
+        std::list<TTaxSettingsInfo> SiteTaxSettings;
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT a.VARIABLES_KEY, COALESCE(a.INTEGER_VAL,0) INTEGER_VAL, a.NUMERIC_VAL "
+                                        "FROM VARSPROFILE a "
+                                        "WHERE a.VARIABLES_KEY IN (8000,8001,8002,8003, 8005,8007) "//8004,for service charge
+                                        "ORDER BY a.VARIABLES_KEY ";
+       // ibInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = menuKey;
+        ibInternalQuery->ExecQuery();
+
+        while (!ibInternalQuery->Eof)
+        {
+            TTaxSettingsInfo taxSettingInfo;
+            taxSettingInfo.Value = IntToStr(ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger);
+            switch(ibInternalQuery->FieldByName("VARIABLES_KEY")->AsInteger)
+            {
+                 case 8000:
+                     taxSettingInfo.SettingType = ItemPriceIncludeTax;
+                    break;
+                 case 8001:
+                     taxSettingInfo.SettingType = ItemPriceIncludeServiceCharge;
+                    break;
+                 case 8002:
+                     taxSettingInfo.SettingType = ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 0 ? CalculateTaxBeforeDiscount
+                                                        : CalculateTaxAfterDiscount;
+                    taxSettingInfo.Value = "1";
+                    break;
+                 case 8003:
+                     taxSettingInfo.SettingType = ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 0 ? CalculateScPreDiscountedPrice
+                                                        : ReCalculateScAfterDiscount;
+                     taxSettingInfo.Value = "1";
+                     break;
+                 case 8005:
+                     taxSettingInfo.SettingType = ApplyServiceChargeTax;
+                    break;
+                 case 8007:
+                     taxSettingInfo.SettingType = ServiceChargeTaxRate;
+                     taxSettingInfo.Value = CurrToStrF(ibInternalQuery->FieldByName("NUMERIC_VAL")->AsCurrency, ffCurrency, 2);
+                    break;
+                 default:
+                    break;
+            }
+            SiteTaxSettings.push_back(taxSettingInfo);
+            ibInternalQuery->Next();
+        }
+        siteTaxSettingsInfo.SiteTaxSettings = SiteTaxSettings;
+        siteTaxSettingsInfo.SiteId = TGlobalSettings::Instance().SiteID;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return siteTaxSettingsInfo;
+}

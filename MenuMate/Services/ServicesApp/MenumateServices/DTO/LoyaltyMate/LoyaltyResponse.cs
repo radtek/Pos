@@ -24,7 +24,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         TransactionFailed,
         GetGiftCardFailed,
         GetPocketVoucherFailed,
-        MenuSyncingFailed
+        MenuSyncingFailed,
+        TaxSettingSyncingFailed
     };
 
     [DataContract]

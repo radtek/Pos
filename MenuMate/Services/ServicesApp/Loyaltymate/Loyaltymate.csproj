@@ -59,6 +59,7 @@
     <Compile Include="Enum\PointType.cs" />
     <Compile Include="Enum\ProductPriority.cs" />
     <Compile Include="Enum\TaxProfileType.cs" />
+    <Compile Include="Enum\TaxSettingsType.cs" />
     <Compile Include="Exceptions\AuthenticationFailedException.cs" />
     <Compile Include="Exceptions\CustomException.cs" />
     <Compile Include="Exceptions\LoyaltymateOperationException.cs" />
@@ -83,14 +84,16 @@
     <Compile Include="Model\GiftCardApiViewModel.cs" />
     <Compile Include="Model\MembershipProfileViewModel.cs" />
     <Compile Include="Model\MemberViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiCourseViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiItemSideViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiItemSizeTaxProfileViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiItemSizeViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiMenuConsumableViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiSideGroupViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiSiteItemViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiCourseViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSideViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSizeTaxProfileViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSizeViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiMenuConsumableViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSideGroupViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteItemViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\TaxSettingModels\ApiSiteTaxSettings.cs" />
+    <Compile Include="Model\OnlineOrderingModel\TaxSettingModels\ApiTaxSettings.cs" />
     <Compile Include="Model\PointQuery.cs" />
     <Compile Include="Model\PointsDetail.cs" />
     <Compile Include="Model\PointsTransactionViewModel.cs" />
@@ -105,6 +108,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

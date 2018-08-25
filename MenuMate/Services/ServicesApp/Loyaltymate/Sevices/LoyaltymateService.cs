@@ -6,6 +6,7 @@ using System.Net;
 using System.IO;
 using Loyaltymate.Utility;
 using Loyaltymate.Model.OnlineOrderingModel;
+using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
 
 namespace Loyaltymate.Sevices
 {
@@ -364,6 +365,32 @@ namespace Loyaltymate.Sevices
                 webResponse = (HttpWebResponse)request.GetResponse();
                 //var responseStream = new StreamReader(webResponse.GetResponseStream());
                 //response1 = JsonUtility.Deserialize<List<ApiSiteMenuViewModel>>(responseStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+                return false;
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                    response = true;
+                }
+            }
+            return response;
+        }
+
+        public bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings)
+        {
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteTaxSettings, inSyndicateCode, null, WebRequestMethods.Http.Post, siteTaxSettings);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
             }
             catch (WebException we)
             {

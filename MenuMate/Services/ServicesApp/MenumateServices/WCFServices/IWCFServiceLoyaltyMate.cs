@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 
 using MenumateServices.DTO.LoyaltyMate;
+using MenumateServices.DTO.OnlineOrdering;
 
 namespace MenumateServices.WCFServices
 {
@@ -48,9 +49,9 @@ namespace MenumateServices.WCFServices
         LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
 
         [OperationContract]
-        LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);  
+        LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);
 
         [OperationContract]
-        bool SyncTaxSetting();
+        LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings);
     }
 }

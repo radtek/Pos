@@ -9,9 +9,11 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd6
+//  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (24/08/2018 6:37:32 p.m. - - $Rev: 25127 $)
+// (25/08/2018 12:05:46 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -109,6 +111,10 @@ class SOAP_REMOTABLE_CLASS ItemSizeInfo2;
 class SOAP_REMOTABLE_CLASS ItemSizeTaxProfileInfo2;
 class SOAP_REMOTABLE_CLASS SideGroupInfo2;
 class SOAP_REMOTABLE_CLASS ItemSideInfo2;
+class SOAP_REMOTABLE_CLASS SiteTaxSettingsinfo;
+class SOAP_REMOTABLE_CLASS TaxSettingsInfo;
+class SOAP_REMOTABLE_CLASS SiteTaxSettingsinfo2;
+class SOAP_REMOTABLE_CLASS TaxSettingsInfo2;
 
 enum class DiscountType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
 {
@@ -215,7 +221,8 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   TransactionFailed, 
   GetGiftCardFailed, 
   GetPocketVoucherFailed, 
-  MenuSyncingFailed
+  MenuSyncingFailed, 
+  TaxSettingSyncingFailed
 };
 
 class LoyaltyResponseCode_TypeInfoHolder : public TObject {
@@ -223,6 +230,25 @@ class LoyaltyResponseCode_TypeInfoHolder : public TObject {
 public:
 __published:
   __property LoyaltyResponseCode __propType = { read=__instanceType };
+};
+
+enum class TaxSettingType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
+{
+  ItemPriceIncludeTax, 
+  ItemPriceIncludeServiceCharge, 
+  CalculateTaxBeforeDiscount, 
+  CalculateTaxAfterDiscount, 
+  CalculateScPreDiscountedPrice, 
+  ReCalculateScAfterDiscount, 
+  ApplyServiceChargeTax, 
+  ServiceChargeTaxRate
+};
+
+class TaxSettingType_TypeInfoHolder : public TObject {
+  TaxSettingType __instanceType;
+public:
+__published:
+  __property TaxSettingType __propType = { read=__instanceType };
 };
 
 
@@ -2243,6 +2269,86 @@ __published:
 };
 
 
+typedef DynamicArray<TaxSettingsInfo*> ArrayOfTaxSettingsInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : SiteTaxSettingsinfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// ************************************************************************ //
+class SiteTaxSettingsinfo : public TRemotable {
+private:
+  __int64         FSiteId;
+  bool            FSiteId_Specified;
+  ArrayOfTaxSettingsInfo FSiteTaxSettings;
+  bool            FSiteTaxSettings_Specified;
+  void __fastcall SetSiteId(int Index, __int64 _prop_val)
+  {  FSiteId = _prop_val; FSiteId_Specified = true;  }
+  bool __fastcall SiteId_Specified(int Index)
+  {  return FSiteId_Specified;  } 
+  void __fastcall SetSiteTaxSettings(int Index, ArrayOfTaxSettingsInfo _prop_val)
+  {  FSiteTaxSettings = _prop_val; FSiteTaxSettings_Specified = true;  }
+  bool __fastcall SiteTaxSettings_Specified(int Index)
+  {  return FSiteTaxSettings_Specified;  } 
+
+public:
+  __fastcall ~SiteTaxSettingsinfo();
+__published:
+  __property __int64        SiteId = { index=(IS_OPTN), read=FSiteId, write=SetSiteId, stored = SiteId_Specified };
+  __property ArrayOfTaxSettingsInfo SiteTaxSettings = { index=(IS_OPTN|IS_NLBL), read=FSiteTaxSettings, write=SetSiteTaxSettings, stored = SiteTaxSettings_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TaxSettingsInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// ************************************************************************ //
+class TaxSettingsInfo : public TRemotable {
+private:
+  TaxSettingType  FSettingType;
+  bool            FSettingType_Specified;
+  UnicodeString   FValue;
+  bool            FValue_Specified;
+  void __fastcall SetSettingType(int Index, TaxSettingType _prop_val)
+  {  FSettingType = _prop_val; FSettingType_Specified = true;  }
+  bool __fastcall SettingType_Specified(int Index)
+  {  return FSettingType_Specified;  } 
+  void __fastcall SetValue(int Index, UnicodeString _prop_val)
+  {  FValue = _prop_val; FValue_Specified = true;  }
+  bool __fastcall Value_Specified(int Index)
+  {  return FValue_Specified;  } 
+__published:
+  __property TaxSettingType SettingType = { index=(IS_OPTN), read=FSettingType, write=SetSettingType, stored = SettingType_Specified };
+  __property UnicodeString      Value = { index=(IS_OPTN|IS_NLBL), read=FValue, write=SetValue, stored = Value_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : SiteTaxSettingsinfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// ************************************************************************ //
+class SiteTaxSettingsinfo2 : public SiteTaxSettingsinfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : TaxSettingsInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// ************************************************************************ //
+class TaxSettingsInfo2 : public TaxSettingsInfo {
+private:
+__published:
+};
+
+
 
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
@@ -2269,7 +2375,7 @@ public:
   virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0; 
   virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0; 
   virtual LoyaltyResponse* SyncMenu(const UnicodeString inSyndicateCode, const SiteMenuInfo* siteViewModel) = 0; 
-  virtual bool            SyncTaxSetting() = 0; 
+  virtual LoyaltyResponse* SyncTaxSettings(const UnicodeString inSyndicateCode, const SiteTaxSettingsinfo* siteTaxSettings) = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 

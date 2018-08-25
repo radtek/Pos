@@ -496,8 +496,11 @@ private: // User declarations
     void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo,UnicodeString lastName = "");
     void GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat);
     void SyncWithCloud();
+    //void SyncMenuAndTaxSettings(int syncType);
+    //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
+    void SyncSiteMenus();
     void SyncTaxSetting();
-    void SyncMenu();
+
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

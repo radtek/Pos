@@ -3,6 +3,7 @@ using System.Diagnostics;
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.LoyaltyMate;
 using MenumateServices.Internal_Classes.LoyaltyMate;
+using MenumateServices.DTO.OnlineOrdering;
 
 namespace MenumateServices.WCFServices
 {
@@ -164,9 +165,17 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
-        public bool SyncTaxSetting()
+        public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
         {
-            return true;
+            try
+            {
+                return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return null;
         }
 
         public LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel)

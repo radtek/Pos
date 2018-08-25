@@ -8,6 +8,10 @@
 
 enum eTaxProfileType{eSalesTax = 0, ePurchasetax, eServiceCharge, eServiceChargeTax, eLocalTax, eProfitTax };
 enum eMenuType{ Food = 1, Beverage};
+enum eTaxSettingType {ItemPriceIncludeTax = 3, ItemPriceIncludeServiceCharge, CalculateTaxBeforeDiscount, CalculateTaxAfterDiscount,
+                        CalculateScPreDiscountedPrice, ReCalculateScAfterDiscount, ApplyServiceChargeTax, ServiceChargeTaxRate};
+
+typedef int TMMTaxSettingType;
 
 struct TItemSizeTaxProfileInfo
 {
@@ -95,6 +99,18 @@ struct TSiteMenuInfo
      int CompanyId;
      int SiteId;
      std::list<TMenuConsumableInfo> MenuConsumables;
+};
+
+struct TTaxSettingsInfo
+{
+    TMMTaxSettingType SettingType;
+    AnsiString Value;
+};
+
+struct TSiteTaxSettingsInfo
+{
+    int SiteId;
+    std::list<TTaxSettingsInfo> SiteTaxSettings;
 };
 
 #endif

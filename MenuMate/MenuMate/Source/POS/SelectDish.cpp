@@ -15487,10 +15487,9 @@ void TfrmSelectDish::SyncWithCloud()
                     DoCloundSync();
                     break;
                 case 2 :
-                    SyncMenu();
-                    break;
                 case 3:
-                    SyncTaxSetting();
+                    DoCloundSync();
+                 //   SyncMenuAndTaxSettings(Action);
                 }
             }
          }
@@ -16466,7 +16465,7 @@ void TfrmSelectDish::DoCloundSync()
 	}
 }
 //----------------------------------------------------------------------------------
-void TfrmSelectDish::SyncMenu()
+void TfrmSelectDish::SyncSiteMenus()
 {
     try
     {
@@ -16480,8 +16479,8 @@ void TfrmSelectDish::SyncMenu()
         {
             AnsiString ErrorMessage;
             TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
-            TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
-            MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->SendMenu(menuInfo);
+            TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+            MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendMenu(menuInfo);
 
             if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
             {
@@ -16499,6 +16498,8 @@ void TfrmSelectDish::SyncMenu()
                   ErrorMessage = "Failed to update menu to server.";
                 throw Exception(ErrorMessage);
             }
+            delete loyaltyMateInterface;
+            loyaltyMateInterface = NULL;
         }
         dBTransaction.Commit();
     }
@@ -16511,16 +16512,40 @@ void TfrmSelectDish::SyncMenu()
 //----------------------------------------------------------------------------------
 void TfrmSelectDish::SyncTaxSetting()
 {
-
-
-//    }
-//    catch(Exception &E)
-//	{
-//		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//		throw;
-//	}
-
- //	DBTransaction.Commit();
+    try
+    {
+//        AnsiString ErrorMessage;
+//        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+//	    dBTransaction.StartTransaction();
+//        TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
+//
+//        TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+//        MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
+//
+//        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+//        {
+//            throw Exception("Authentication failed with Loyaltymate Service");
+//        }
+//        else if(createResponse.IsSuccesful)
+//        {
+//            MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+//        }
+//        else
+//        {
+//            if(createResponse.Description == "Failed to update menu to server.")
+//              ErrorMessage = "Failed to update menu to server.";
+//            else
+//              ErrorMessage = "Failed to update menu to server.";
+//            throw Exception(ErrorMessage);
+//        }
+//        delete loyaltyMateInterface;
+//        loyaltyMateInterface = NULL;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
 //------------------------------------------------------------------------------
 

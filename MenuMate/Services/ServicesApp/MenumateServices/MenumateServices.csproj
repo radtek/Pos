@@ -178,6 +178,7 @@
   <ItemGroup>
     <Compile Include="DTO\Enum\MenuType.cs" />
     <Compile Include="DTO\Enum\TaxProfileType.cs" />
+    <Compile Include="DTO\Enum\TaxSettingstype.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />
@@ -203,6 +204,8 @@
     <Compile Include="DTO\OnlineOrdering\SideGroupInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\SiteItemInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\SiteMenuInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\SiteTaxSettingsinfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\TaxSettingsInfo.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />

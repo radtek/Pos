@@ -11,6 +11,7 @@ class TDBOnlineOrdering
 {
 public:
     static TSiteMenuInfo GetMenuInfo(Database::TDBTransaction &dbTransaction);
+    static TSiteTaxSettingsInfo GetTaxSettings(Database::TDBTransaction &dbTransaction);
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);
