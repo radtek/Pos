@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MenumateServices.DTO.Enum
+namespace Loyaltymate.Enum
 {
-    public enum TaxSettingType
+    public enum SiteSettingType
     {
-        ItemPriceIncludeTax = 3,
+        PickUp = 1,
+        DineIn,
+        TakeAway,
+        ItemPriceIncludeTax,
         ItemPriceIncludeServiceCharge,
         CalculateTaxBeforeDiscount,
         CalculateTaxAfterDiscount,

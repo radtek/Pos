@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (25/08/2018 12:05:46 a.m. - - $Rev: 25127 $)
+// (28/08/2018 5:13:21 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -232,8 +232,11 @@ __published:
   __property LoyaltyResponseCode __propType = { read=__instanceType };
 };
 
-enum class TaxSettingType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
+enum class SiteSettingType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
 {
+  PickUp, 
+  DineIn, 
+  TakeAway, 
   ItemPriceIncludeTax, 
   ItemPriceIncludeServiceCharge, 
   CalculateTaxBeforeDiscount, 
@@ -244,11 +247,11 @@ enum class TaxSettingType   /* "http://schemas.datacontract.org/2004/07/Menumate
   ServiceChargeTaxRate
 };
 
-class TaxSettingType_TypeInfoHolder : public TObject {
-  TaxSettingType __instanceType;
+class SiteSettingType_TypeInfoHolder : public TObject {
+  SiteSettingType __instanceType;
 public:
 __published:
-  __property TaxSettingType __propType = { read=__instanceType };
+  __property SiteSettingType __propType = { read=__instanceType };
 };
 
 
@@ -2307,11 +2310,11 @@ __published:
 // ************************************************************************ //
 class TaxSettingsInfo : public TRemotable {
 private:
-  TaxSettingType  FSettingType;
+  SiteSettingType FSettingType;
   bool            FSettingType_Specified;
   UnicodeString   FValue;
   bool            FValue_Specified;
-  void __fastcall SetSettingType(int Index, TaxSettingType _prop_val)
+  void __fastcall SetSettingType(int Index, SiteSettingType _prop_val)
   {  FSettingType = _prop_val; FSettingType_Specified = true;  }
   bool __fastcall SettingType_Specified(int Index)
   {  return FSettingType_Specified;  } 
@@ -2320,7 +2323,7 @@ private:
   bool __fastcall Value_Specified(int Index)
   {  return FValue_Specified;  } 
 __published:
-  __property TaxSettingType SettingType = { index=(IS_OPTN), read=FSettingType, write=SetSettingType, stored = SettingType_Specified };
+  __property SiteSettingType SettingType = { index=(IS_OPTN), read=FSettingType, write=SetSettingType, stored = SettingType_Specified };
   __property UnicodeString      Value = { index=(IS_OPTN|IS_NLBL), read=FValue, write=SetValue, stored = Value_Specified };
 };
 

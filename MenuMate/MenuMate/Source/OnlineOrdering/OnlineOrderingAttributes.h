@@ -8,10 +8,10 @@
 
 enum eTaxProfileType{eSalesTax = 0, ePurchasetax, eServiceCharge, eServiceChargeTax, eLocalTax, eProfitTax };
 enum eMenuType{ Food = 1, Beverage};
-enum eTaxSettingType {ItemPriceIncludeTax = 3, ItemPriceIncludeServiceCharge, CalculateTaxBeforeDiscount, CalculateTaxAfterDiscount,
+enum eSettingType {PickUp = 1, DineIn, TakeAway,ItemPriceIncludeTax, ItemPriceIncludeServiceCharge, CalculateTaxBeforeDiscount, CalculateTaxAfterDiscount,
                         CalculateScPreDiscountedPrice, ReCalculateScAfterDiscount, ApplyServiceChargeTax, ServiceChargeTaxRate};
 
-typedef int TMMTaxSettingType;
+typedef int TMMSettingType;
 
 struct TItemSizeTaxProfileInfo
 {
@@ -103,7 +103,7 @@ struct TSiteMenuInfo
 
 struct TTaxSettingsInfo
 {
-    TMMTaxSettingType SettingType;
+    TMMSettingType SettingType;
     AnsiString Value;
 };
 

@@ -178,7 +178,7 @@
   <ItemGroup>
     <Compile Include="DTO\Enum\MenuType.cs" />
     <Compile Include="DTO\Enum\TaxProfileType.cs" />
-    <Compile Include="DTO\Enum\TaxSettingstype.cs" />
+    <Compile Include="DTO\Enum\SiteSettingType.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />

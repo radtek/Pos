@@ -16514,32 +16514,32 @@ void TfrmSelectDish::SyncTaxSetting()
 {
     try
     {
-//        AnsiString ErrorMessage;
-//        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-//	    dBTransaction.StartTransaction();
-//        TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
-//
-//        TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
-//        MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
-//
-//        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
-//        {
-//            throw Exception("Authentication failed with Loyaltymate Service");
-//        }
-//        else if(createResponse.IsSuccesful)
-//        {
-//            MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
-//        }
-//        else
-//        {
-//            if(createResponse.Description == "Failed to update menu to server.")
-//              ErrorMessage = "Failed to update menu to server.";
-//            else
-//              ErrorMessage = "Failed to update menu to server.";
-//            throw Exception(ErrorMessage);
-//        }
-//        delete loyaltyMateInterface;
-//        loyaltyMateInterface = NULL;
+        AnsiString ErrorMessage;
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+        TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
+
+        TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+        MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
+
+        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Loyaltymate Service");
+        }
+        else if(createResponse.IsSuccesful)
+        {
+            MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            if(createResponse.Description == "Failed to update menu to server.")
+              ErrorMessage = "Failed to update menu to server.";
+            else
+              ErrorMessage = "Failed to update menu to server.";
+            throw Exception(ErrorMessage);
+        }
+        delete loyaltyMateInterface;
+        loyaltyMateInterface = NULL;
     }
     catch(Exception &E)
 	{

@@ -1012,7 +1012,7 @@ RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
 
 //this function is not breaked into multiple function due to unable to perform link errors.
 MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
-{    
+{
     LoyaltyResponse *wcfResponse;
     try
     {
@@ -1199,6 +1199,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
 
 }
 
+
 AnsiString TLoyaltyMateInterface::GetSyndCodeForOnlineOrdering()
 {
     AnsiString syndicateCode = "";
@@ -1225,41 +1226,41 @@ AnsiString TLoyaltyMateInterface::GetSyndCodeForOnlineOrdering()
     return syndicateCode;
 }
 
-//MMLoyaltyServiceResponse TLoyaltyMateInterface::SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo)
-//{
-//    LoyaltyResponse *wcfResponse;
-//    try
-//    {
-//          SiteTaxSettingsinfo *wcfInfo = new SiteTaxSettingsinfo();
-////        wcfInfo->SiteId = taxSettingsInfo.SiteId;
-////
-////        if(!taxSettingsInfo.SiteTaxSettings.empty())
-////        {
-////            ArrayOfTaxSettingsInfo taxSettingsinfo;
-////
-////            for(std::list<TTaxSettingsInfo>::iterator itTaxSettingInfo = taxSettingsInfo.SiteTaxSettings.begin();
-////                    itTaxSettingInfo != taxSettingsInfo.SiteTaxSettings.end(); ++itTaxSettingInfo)
-////            {
-////                TaxSettingsInfo* taxSetting = new TaxSettingsInfo;
-////                taxSetting->SettingType = itTaxSettingInfo->SettingType;
-////                taxSetting->Value = itTaxSettingInfo->Value;
-////                taxSettingsinfo.Length = (taxSettingsinfo.Length + 1);
-////                taxSettingsinfo[taxSettingsinfo.Length - 1] = taxSetting;
-////            }
-////            wcfInfo->SiteTaxSettings = taxSettingsinfo;
-////        }
-//
-////        CoInitialize(NULL);
-////        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
-////        wcfResponse = loyaltymateClient->SyncTaxSettings(SyndicateCode, wcfInfo);
-////        delete wcfInfo;
-////        wcfInfo = NULL;
-//        return CreateMMResponse( wcfResponse );
-//    }
-//    catch( Exception& exc )
-//    {
-//        return CreateExceptionFailedResponse( exc.Message );
-//    }
-//}
+MMLoyaltyServiceResponse TLoyaltyMateInterface::SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo)
+{
+    LoyaltyResponse *wcfResponse;
+    try
+    {
+          SiteTaxSettingsinfo *wcfInfo = new SiteTaxSettingsinfo();
+        wcfInfo->SiteId = taxSettingsInfo.SiteId;
+
+        if(!taxSettingsInfo.SiteTaxSettings.empty())
+        {
+            ArrayOfTaxSettingsInfo taxSettingsinfo;
+
+            for(std::list<TTaxSettingsInfo>::iterator itTaxSettingInfo = taxSettingsInfo.SiteTaxSettings.begin();
+                    itTaxSettingInfo != taxSettingsInfo.SiteTaxSettings.end(); ++itTaxSettingInfo)
+            {
+                TaxSettingsInfo* taxSetting = new TaxSettingsInfo;
+                taxSetting->SettingType = itTaxSettingInfo->SettingType;
+                taxSetting->Value = itTaxSettingInfo->Value;
+                taxSettingsinfo.Length = (taxSettingsinfo.Length + 1);
+                taxSettingsinfo[taxSettingsinfo.Length - 1] = taxSetting;
+            }
+            wcfInfo->SiteTaxSettings = taxSettingsinfo;
+        }
+        CoInitialize(NULL);
+        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
+        wcfResponse = loyaltymateClient->SyncTaxSettings(SyndicateCode, wcfInfo);
+        delete wcfInfo;
+        wcfInfo = NULL;
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+
 
 #pragma package(smart_init)

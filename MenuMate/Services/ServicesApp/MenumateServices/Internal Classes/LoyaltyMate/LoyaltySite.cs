@@ -247,7 +247,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         private ApiTaxSettings CreateTaxSettingViewModel(TaxSettingsInfo taxSettingInfo)
         {
             var taxSetting = new ApiTaxSettings();
-            taxSetting.SettingType = (Loyaltymate.Enum.TaxSettingType)taxSettingInfo.SettingType;
+            taxSetting.SettingType = (Loyaltymate.Enum.SiteSettingType)taxSettingInfo.SettingType;
             taxSetting.Value = taxSettingInfo.Value;
 
             return taxSetting;
