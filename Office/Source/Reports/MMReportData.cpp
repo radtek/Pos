@@ -4445,7 +4445,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 	qrConsumption->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrConsumption->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
-}
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDateTime EndTime,TStrings *Terminals)
 {
