@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Loyaltymate.Enum;
 
 namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
 {
@@ -13,14 +14,14 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public string Location { get; set; }
         public double TotalAmount { get; set; }
         public int ContainerNumber { get; set; }
-        //public OrderContainerType ContainerType { get; set; }
+        public OrderContainerType ContainerType { get; set; }
         public string ContainerName { get; set; }
         public string OrderGuid { get; set; }
         public long MembershipProfileId { get; set; }
-        //public UserType UserType { get; set; }
+        public UserType UserType { get; set; }
         public string TerminalName { get; set; }
         public DateTime TransactionDate { get; set; }
         public List<ApiOrderItemViewModel> OrderItems { get; set; }
-        //public TransactionType TransactionType { get; set; }
+        public SiteSettingType TransactionType { get; set; }
     }
 }
