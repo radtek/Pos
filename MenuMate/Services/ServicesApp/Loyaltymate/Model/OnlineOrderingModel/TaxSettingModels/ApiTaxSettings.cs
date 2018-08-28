@@ -8,7 +8,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel
 {
     public class ApiTaxSettings
     {
-        public TaxSettingType SettingType { get; set; }
+        public SiteSettingType SettingType { get; set; }
         public string Value { get; set; }
     }
 }

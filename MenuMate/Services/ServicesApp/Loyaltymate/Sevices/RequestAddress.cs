@@ -30,5 +30,7 @@
 
         public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
 
+        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; //api needs to be changed.
+
     }
 }
