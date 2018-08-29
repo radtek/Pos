@@ -4894,7 +4894,8 @@ bool TfrmPaymentType::IsItemAssignToPrinter(TList *Orders)
            DBTransaction.StartTransaction();
            TItemComplete *Order = (TItemComplete*)Orders->Items[i];
            bool Categorykey =   IsCategoryAssignedToKitchenPrinter(DBTransaction, Order->Categories->FinancialCategoryKey);
-           bool Itemcoursekey = IsCourseAssignedToKitchenPrinter(DBTransaction, Order->Course_Key) ;
+           int coursekey = GettingCourseKey(DBTransaction, Order->ItemKey);
+           bool Itemcoursekey = IsCourseAssignedToKitchenPrinter(DBTransaction, coursekey) ;
            if(Itemcoursekey || Categorykey)
            {
                 InformToChef = true;
@@ -4937,10 +4938,36 @@ bool TfrmPaymentType::IsCourseAssignedToKitchenPrinter(Database::TDBTransaction 
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT * FROM PRNORDER WHERE COURSE_KEY=:COURSE_KEY";
+        IBInternalQuery->SQL->Text = "SELECT COURSE_KEY FROM PRNORDER WHERE COURSE_KEY=:COURSE_KEY";
         IBInternalQuery->ParamByName("COURSE_KEY")->AsInteger = coursekey;
         IBInternalQuery->ExecQuery();
         RetVal = IBInternalQuery->RecordCount;
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return RetVal;
+}
+
+//------------------------------------------------------------------------
+
+int TfrmPaymentType::GettingCourseKey(Database::TDBTransaction &DBTransaction, int Itemkey)
+{
+    int RetVal = 0 ;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT COURSE_KEY FROM ITEM WHERE ITEM_KEY=:ITEM_KEY";
+        IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Itemkey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+        RetVal = IBInternalQuery->FieldByName("COURSE_KEY")->AsInteger;
+        }
+
     }
 	catch(Exception &E)
 	{
