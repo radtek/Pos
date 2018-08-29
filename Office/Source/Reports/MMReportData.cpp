@@ -2563,7 +2563,8 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"DayArchive.Size_Name,"
 		  	"Sum(DayArchive.Qty) Item_Count,"
    			"Cast(Sum(DayArchive.Qty * DayArchive.PRICE_LEVEL0 ) + Sum(coalesce(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(coalesce(Discounts_.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)  as Numeric(17,4)) PriceExc,"   //salex excl
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE ) ) +  Sum(coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)    as Numeric(17,4)) PriceExc," //salex excl
+
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(Discounts_.DISCOUNT_WITHOUT_TAX,0) + COALESCE(Discounts_.TAX_ON_DISCOUNT,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
