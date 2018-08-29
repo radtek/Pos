@@ -12,7 +12,7 @@
 class TItemComplete : public TItemMinorComplete
 {
 	private :
-	   //	int Course_Key;           // Class/Course Table
+	   	int Course_Key;           // Class/Course Table
 		long Course_ID;            // Class/Course Table
 		long MasterContainer_ID;
 		int Customer_Key;
@@ -58,7 +58,6 @@ class TItemComplete : public TItemMinorComplete
     UnicodeString IdName;
     UnicodeString IdNumber;  //the variable here is following the name in database itself (get permission to use this one not creating the new one)
     TListOptionContainer *OptionsSelected;
-     int Course_Key;
     TItemComplete();
     virtual __fastcall ~TItemComplete();
 
