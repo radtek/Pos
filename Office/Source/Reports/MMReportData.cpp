@@ -5669,11 +5669,12 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
 	qrSkimming->Close();
     qrSkimming->SQL->Text =
             "Select "
-                "Refloat_Skim.Amount, "
+
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  -(Refloat_Skim.Amount)  else Refloat_Skim.Amount END) AS Amount , "
                 "Refloat_Skim.Staff, "
                 "Refloat_Skim.Terminal_Name, "
                 "Refloat_Skim.Time_Stamp, "
-                "Refloat_Skim.Transaction_type, "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal ' THEN  'Withdrawal From Cash'   else Transaction_type END) AS Transaction_type , "
                 "Refloat_Skim.Reasons, "
                 "zeds.initial_float, "
                 "zeds.Z_KEY "
@@ -5681,9 +5682,8 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
                 "Refloat_Skim.Time_Stamp >= :StartTime And "
-                "Refloat_Skim.Time_Stamp < :EndTime and "
-                "Refloat_Skim.REFLOAT_SKIM_KEY NOT IN( SELECT REFLOAT_SKIM_KEY FROM REFLOAT_SKIM WHERE (REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' AND REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
-                                                    "and Refloat_Skim.Time_Stamp >= :StartTime And Refloat_Skim.Time_Stamp < :EndTime) "
+                "Refloat_Skim.Time_Stamp < :EndTime "
+
             "Order by 3, 4;";
 
 
