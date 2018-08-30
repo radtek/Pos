@@ -5668,16 +5668,18 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
 {
 	qrSkimming->Close();
     qrSkimming->SQL->Text =
-            "Select "
+           
+  "Select "
 
-                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  -(Refloat_Skim.Amount)  else Refloat_Skim.Amount END) AS Amount , "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  -(Refloat_Skim.Amount)  else Refloat_Skim.Amount END) AS Amount, "
                 "Refloat_Skim.Staff, "
                 "Refloat_Skim.Terminal_Name, "
                 "Refloat_Skim.Time_Stamp, "
-                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal ' THEN  'Withdrawal From Cash'   else Transaction_type END) AS Transaction_type , "
-                "Refloat_Skim.Reasons, "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal ' THEN  'Withdrawal From Cash'   else Transaction_type END) AS Transaction_type, "
+                 "Refloat_Skim.Reasons, "
                 "zeds.initial_float, "
-                "zeds.Z_KEY "
+                "zeds.Z_KEY, "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  zeds.initial_float  else (Refloat_Skim.Amount + zeds.initial_float) END) AS FloatAmount   "
             "From "
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
@@ -5688,24 +5690,8 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
 
 
 	qrSkimming->ParamByName("StartTime")->AsDateTime	= StartTime;
-	qrSkimming->ParamByName("EndTime")->AsDateTime		= EndTime;
+	qrSkimming->ParamByName("EndTime")->AsDateTime		= EndTime;   
 
-
-
-
-
-
-/*
-
-	 while ( !qrSkimming->Eof )
-	 {
-
-    if(qrSkimming->FieldByName("Transaction_Type")->AsString == "Skim")
-        qrSkimming->FieldByName("Transaction_Type")->AsString = "Withdrawn";
-    else if(qrSkimming->FieldByName("Transaction_Type")->AsString == "Refloat")
-        qrSkimming->FieldByName("Transaction_Type")->AsString = "Deposit";
-     }
-  */
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupRefloat( TDateTime StartTime, TDateTime EndTime)
