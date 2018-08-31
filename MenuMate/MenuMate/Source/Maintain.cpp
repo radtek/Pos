@@ -72,7 +72,7 @@
 #include "FolderManager.h"
 
 #include "SetupGlCodes.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "SetUpPosPlus.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -3406,7 +3406,7 @@ void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 						TGlobalSettings::Instance().IsClippIntegrationEnabled = true;
                         TouchBtnClipInterface->ButtonColor = clGreen;
                         TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-                        TManagerClippIntegration::Instance();
+//                        TManagerClippIntegration::Instance();
 						break;
 					case 2 :
 						TGlobalSettings::Instance().IsClippIntegrationEnabled = false;

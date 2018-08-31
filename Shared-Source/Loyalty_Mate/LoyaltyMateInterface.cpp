@@ -1094,13 +1094,8 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
                             itemSizeInfo->ItemSizeTaxProfiles = itemSizeTaxProfileInfo;
                             itemSizeInfoArray.Length = (itemSizeInfoArray.Length + 1);
                             itemSizeInfoArray[itemSizeInfoArray.Length - 1] = itemSizeInfo;
-//                              siteItemInfo->ItemSizes.Length = (siteItemInfo->ItemSizes.Length + 1);
-//                              MessageBox(itemSizeInfo->ThirdPartyId,"itemSizeInfo->ThirdPartyId 2 ",MB_OK);
-
-//                              siteItemInfo->ItemSizes[siteItemInfo->ItemSizes.Length - 1] = itemSizeInfo;
-//                              MessageBox(siteItemInfo->ItemSizes.Length,"siteItemInfo->ItemSizes.Length",MB_OK);
                         }
-                        siteItemInfo->ItemSizes = itemSizeInfoArray;   //todo this line is giving unable to perform link.
+                        siteItemInfo->ItemSizes = itemSizeInfoArray;
 
                         ArrayOfSideGroupInfo itemSideGroupArray;
 
@@ -1186,17 +1181,15 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
             }
             wcfInfo->MenuConsumables = menuConsumableArray;
         }
-
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
         wcfResponse = loyaltymateClient->SyncMenu(SyndicateCode, wcfInfo);
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
-    {
+    {     
         return CreateExceptionFailedResponse( exc.Message );
     }
-
 }
 
 
@@ -1231,7 +1224,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendTaxSettings(TSiteTaxSettings
     LoyaltyResponse *wcfResponse;
     try
     {
-          SiteTaxSettingsinfo *wcfInfo = new SiteTaxSettingsinfo();
+        SiteTaxSettingsinfo *wcfInfo = new SiteTaxSettingsinfo();
         wcfInfo->SiteId = taxSettingsInfo.SiteId;
 
         if(!taxSettingsInfo.SiteTaxSettings.empty())
@@ -1257,7 +1250,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendTaxSettings(TSiteTaxSettings
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
-    {
+    {   
         return CreateExceptionFailedResponse( exc.Message );
     }
 }

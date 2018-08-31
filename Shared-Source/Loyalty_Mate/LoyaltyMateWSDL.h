@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (28/08/2018 5:13:21 p.m. - - $Rev: 25127 $)
+// (31/08/2018 1:53:08 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -2379,6 +2379,7 @@ public:
   virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0; 
   virtual LoyaltyResponse* SyncMenu(const UnicodeString inSyndicateCode, const SiteMenuInfo* siteViewModel) = 0; 
   virtual LoyaltyResponse* SyncTaxSettings(const UnicodeString inSyndicateCode, const SiteTaxSettingsinfo* siteTaxSettings) = 0; 
+  virtual void            GetOrdersFromWeb(const UnicodeString orders) = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 

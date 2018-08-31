@@ -38,8 +38,9 @@
 #include "Processing.h"
 #include <string>
 #include "DBSecurity.h"
-#include "DBClippTab.h"
-#include "ManagerClippIntegration.h"
+//#include "DBClippTab.h"
+//#include "ManagerClippIntegration.h"
+#include "DBTab.h"
 #include "SCDPWDChecker.h"
 #include "ManagerDiscount.h"
 
@@ -2200,7 +2201,7 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
         }break;
          case TabClipp:
         {
-            TDBClippTab::GetOpenClippTabs(DBTransaction, TabList.get(), TabType);
+            //TDBClippTab::GetOpenClippTabs(DBTransaction, TabList.get(), TabType);
             for (int i = 0; i < TabList->Count; i++)
             {
                 Item.Title = TabList->Strings[i];
@@ -4230,14 +4231,14 @@ void TfrmTransfer:: SendTabDetails(AnsiString source, AnsiString dest, int sourc
 //-----------------------------------------------------------------------
 void TfrmTransfer::SendClippTabDetails(int clippTabKey)
 {
-   TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
-   updateClippTab->SendTabDetails(clippTabKey);
+//   TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
+//   updateClippTab->SendTabDetails(clippTabKey);
 }
 //-----------------------------------------------------------------------
 void TfrmTransfer::CloseClippTab(int clippTabKey)
 {
-   TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
-   closeClippTab->CloseTab(clippTabKey);
+//   TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
+//   closeClippTab->CloseTab(clippTabKey);
 }
 //----------------------------------------------------------------------------
 bool TfrmTransfer::IsSourceDestinationSame()
@@ -4365,10 +4366,10 @@ void TfrmTransfer::SaveClipItemsInStructure(Database::TDBTransaction &DBTransact
 void TfrmTransfer::UpdateTabNameAndKey(Database::TDBTransaction &DBTransaction, int source_key, int dest_key)
 {
     //Get clipp customer Name
-    UnicodeString customerName = TDBClippTab::GetCustomerName(DBTransaction, source_key);
+    UnicodeString customerName = "";//TDBClippTab::GetCustomerName(DBTransaction, source_key);
 
     //update clipp Tab by table key to which it was transferred
-    TDBClippTab::UpdateClippTabTabKey(DBTransaction, source_key, dest_key);
+   //DBClippTab::UpdateClippTabTabKey(DBTransaction, source_key, dest_key);
 
     UnicodeString tabName =  "Clipp-" + customerName + "-" + dest_key;
 

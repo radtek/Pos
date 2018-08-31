@@ -121,7 +121,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "MessageManager.h"
 #include "ManagerEJournal.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "ManagerHappyHour.h"
 #include "ManagerDelayedPayment.h"
 #include "MallExportManager.h"
@@ -8805,8 +8805,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                     if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
                             && (!OrderContainer.Location["BillOff"]))
                     {   //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
                      }
 					ResetPOS();
 
@@ -8827,8 +8827,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                 if( (OrderContainer.Location["BillOff"] ) && (OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp ))
                 {
                         //close clipp tab
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
                 }
 
                 else if (OrderContainer.Location["BillOff"])
@@ -9307,12 +9307,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         logList->Add("Payment not completed for tbtnSelectTable(().");
                         TSaveLogs::RecordFiscalLogs(logList);
                     }
-                    if(type == TabClipp)
-                    {
-                        //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(TabKey);
-                    }
+//                    if(type == TabClipp)
+//                    {
+//                        //send clipp tab details
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(TabKey);
+//                    }
                     delete logList;
                     logList = NULL;
 
@@ -15487,9 +15487,11 @@ void TfrmSelectDish::SyncWithCloud()
                     DoCloundSync();
                     break;
                 case 2 :
+                    SyncSiteMenus();
+                    break;
                 case 3:
-                    DoCloundSync();
-                 //   SyncMenuAndTaxSettings(Action);
+                    SyncTaxSetting();
+                    break;
                 }
             }
          }
@@ -16477,11 +16479,13 @@ void TfrmSelectDish::SyncSiteMenus()
         }
         else
         {
+            TMMProcessingState State(Screen->ActiveForm, "Syncing Menu With cloud Please Wait...", "Syncing Menu");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
             AnsiString ErrorMessage;
             TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
             TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
             MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendMenu(menuInfo);
-
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
             if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
             {
                 throw Exception("Authentication failed with Loyaltymate Service");
@@ -16514,6 +16518,8 @@ void TfrmSelectDish::SyncTaxSetting()
 {
     try
     {
+        TMMProcessingState State(Screen->ActiveForm, "Syncing Tax Settings With cloud Please Wait...", "Syncing Tax Settings");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	    dBTransaction.StartTransaction();
@@ -16521,25 +16527,26 @@ void TfrmSelectDish::SyncTaxSetting()
 
         TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
         MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
-
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
             throw Exception("Authentication failed with Loyaltymate Service");
         }
         else if(createResponse.IsSuccesful)
         {
-            MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
         }
         else
         {
-            if(createResponse.Description == "Failed to update menu to server.")
-              ErrorMessage = "Failed to update menu to server.";
+            if(createResponse.Description == "Failed to update tax settings to server.")
+              ErrorMessage = "Failed to update tax settings to server.";
             else
-              ErrorMessage = "Failed to update menu to server.";
+              ErrorMessage = "Failed to update tax settings to server.";
             throw Exception(ErrorMessage);
         }
         delete loyaltyMateInterface;
         loyaltyMateInterface = NULL;
+        dBTransaction.Commit();
     }
     catch(Exception &E)
 	{

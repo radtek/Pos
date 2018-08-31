@@ -28,7 +28,7 @@
 #include "ListSecurityRefContainer.h"
 #include "ItemSizeCategory.h"
 #include "DBSecurity.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "DBTax.h"
 #include "TaxProfileDBAccessManager_MM.h"
 #include "TaxProfile.h"
@@ -888,12 +888,12 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
 						TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, 0);
 					}
 
-                    if(CurrentTabType == TabClipp)
-                    {
-                        //send clipp tab details back
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(SelectedTab);
-                    }
+//                    if(CurrentTabType == TabClipp)
+//                    {
+//                        //send clipp tab details back
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(SelectedTab);
+//                    }
 				}
 			}
 		}

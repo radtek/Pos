@@ -58,7 +58,6 @@ USEFORM("SetUpPosPlus.cpp", frmSetUpPosPlus);
 USEFORM("SelectDateAndTime.cpp", frmSelectDateTime);
 USEFORM("CaptureCustomerDetails.cpp", frmCaptureDiscountDetails);
 USEFORM("Maintenance\WalletConfiguration.cpp", frmWalletConfiguration);
-USEFORM("Analysis.cpp", frmAnalysis);
 USEFORM("RegenerateMallReport.cpp", frmRegenerateMallReport);
 USEFORM("EftPosDialogs.cpp", frmEftPos);
 USEFORM("POS\SelectCurrentMenu.cpp", frmSelectCurrentMenu);
@@ -146,6 +145,7 @@ USEFORM("MallExportResendReport.cpp", frmMallExportResendReport);
 USEFORM("ServingTime.cpp", frmServingTime);
 USEFORM("GuestList.cpp", Form2);
 USEFORM("EFTPOSConfiguration.cpp", frmEFTPOSConfig);
+USEFORM("Analysis.cpp", frmAnalysis);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 

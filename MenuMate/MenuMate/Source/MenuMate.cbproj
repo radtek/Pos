@@ -20,13 +20,14 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_IOChecking>false</DCC_IOChecking>
-			<BRCC_Verbose>true</BRCC_Verbose>
 			<ILINK_Verbose>true</ILINK_Verbose>
 			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
-			<ILINK_GenerateDRC>true</ILINK_GenerateDRC>
 			<ILINK_KeepOutputFiles>true</ILINK_KeepOutputFiles>
+			<ILINK_FastTLS>true</ILINK_FastTLS>
 			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<ILINK_GenerateDRC>true</ILINK_GenerateDRC>
+			<DCC_IOChecking>false</DCC_IOChecking>
+			<BRCC_Verbose>true</BRCC_Verbose>
 			<ILINK_HeapReserveSize>0x00800000</ILINK_HeapReserveSize>
 			<BCC_wpar>false</BCC_wpar>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
@@ -69,6 +70,7 @@
 			<OutputExt>exe</OutputExt>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<BRCC_Verbose>false</BRCC_Verbose>
 			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
 			<BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
 			<DCC_DcuOutput>Debug_Build</DCC_DcuOutput>
@@ -343,10 +345,6 @@
 			<CppCompile Include="MallExportCapitalandMall.cpp">
 				<DependentOn>MallExportCapitalandMall.h</DependentOn>
 				<BuildOrder>633</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ManagerClippIntegration.cpp">
-				<DependentOn>ManagerClippIntegration.h</DependentOn>
-				<BuildOrder>682</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Cashdraw\CashDrawFactory.cpp">
 				<DependentOn>Cashdraw\CashDrawFactory.h</DependentOn>
@@ -1259,11 +1257,6 @@
 				<DependentOn>ServicesManager.h</DependentOn>
 				<BuildOrder>800</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis.cpp">
-				<Form>frmAnalysis</Form>
-				<DependentOn>Analysis.h</DependentOn>
-				<BuildOrder>371</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategyForConsolidatedZed.cpp">
 				<DependentOn>Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategyForConsolidatedZed.h</DependentOn>
 				<BuildOrder>744</BuildOrder>
@@ -1626,10 +1619,6 @@
 				<BuildOrder>314</BuildOrder>
 				<DependentOn>ManagerNet.h</DependentOn>
 				<BuildOrder>188</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.h</DependentOn>
-				<BuildOrder>614</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DiscountGroupsAssignment.cpp">
 				<DependentOn>DiscountGroupsAssignment.h</DependentOn>
@@ -2594,10 +2583,6 @@
 				<DependentOn>Devices.h</DependentOn>
 				<BuildOrder>27</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.h</DependentOn>
-				<BuildOrder>673</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="..\..\SplitMoney.cpp">
 				<DependentOn>..\..\SplitMoney.h</DependentOn>
 				<BuildOrder>291</BuildOrder>
@@ -2737,10 +2722,6 @@
 				<DependentOn>POS\SplitPayment.h</DependentOn>
 				<BuildOrder>123</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationSendTabDetailsThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationSendTabDetailsThread.h</DependentOn>
-				<BuildOrder>676</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="DBActiveChit.cpp">
 				<DependentOn>DBActiveChit.h</DependentOn>
 				<BuildOrder>386</BuildOrder>
@@ -2789,10 +2770,6 @@
 			<CppCompile Include="Analysis\ReportBuilders\EndOfDayReportBuilder.cpp">
 				<DependentOn>Analysis\ReportBuilders\EndOfDayReportBuilder.h</DependentOn>
 				<BuildOrder>569</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DBClippTab.cpp">
-				<DependentOn>DBClippTab.h</DependentOn>
-				<BuildOrder>681</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="VerticalSelectUtilities.cpp">
 				<BuildOrder>404</BuildOrder>
@@ -2942,10 +2919,6 @@
 				<DependentOn>ManagerThirdParty.h</DependentOn>
 				<BuildOrder>182</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.h</DependentOn>
-				<BuildOrder>679</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ContainerOrders.cpp">
 				<BuildOrder>312</BuildOrder>
 			</CppCompile>
@@ -3008,10 +2981,6 @@
 				<Form>frmConfirmOrder</Form>
 				<DependentOn>POS\ConfirmOrd.h</DependentOn>
 				<BuildOrder>124</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.h</DependentOn>
-				<BuildOrder>671</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerDiscount.cpp">
 				<DependentOn>ManagerDiscount.h</DependentOn>
@@ -3087,10 +3056,6 @@
 				<DependentOn>EftposIceLink.h</DependentOn>
 				<BuildOrder>440</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.h</DependentOn>
-				<BuildOrder>677</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerHappyHour.cpp">
 				<DependentOn>ManagerHappyHour.h</DependentOn>
 				<BuildOrder>689</BuildOrder>
@@ -3111,10 +3076,6 @@
 				<Form>frmItemSettings</Form>
 				<DependentOn>POS\MenuManagerItemSettings.h</DependentOn>
 				<BuildOrder>463</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.h</DependentOn>
-				<BuildOrder>672</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Chefmate\ChefmateClientManager.cpp">
 				<DependentOn>Chefmate\ChefmateClientManager.h</DependentOn>
@@ -3239,10 +3200,6 @@
 				<DependentOn>SmartCardVer4API.h</DependentOn>
 				<BuildOrder>372</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.h</DependentOn>
-				<BuildOrder>680</BuildOrder>
-			</CppCompile>
 			<ResFiles Include="brush.res">
 				<BuildOrder>8</BuildOrder>
 				<BuildOrder>147</BuildOrder>
@@ -3250,10 +3207,6 @@
 			<CppCompile Include="PanasonicIntegration\PanasonicModels.cpp">
 				<DependentOn>PanasonicIntegration\PanasonicModels.h</DependentOn>
 				<BuildOrder>747</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.h</DependentOn>
-				<BuildOrder>675</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="NetMessageKillProc.cpp">
 				<BuildOrder>467</BuildOrder>
@@ -3350,14 +3303,6 @@
 			<CppCompile Include="Contact.cpp">
 				<DependentOn>Contact.h</DependentOn>
 				<BuildOrder>353</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.h</DependentOn>
-				<BuildOrder>674</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.h</DependentOn>
-				<BuildOrder>719</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportSalesTypeAssignment.cpp">
 				<DependentOn>MallExportSalesTypeAssignment.h</DependentOn>
@@ -3507,9 +3452,34 @@
 				<DependentOn>SaveLogs.h</DependentOn>
 				<BuildOrder>801</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="RunRateClient.cpp">
+				<DependentOn>RunRateClient.h</DependentOn>
+				<BuildOrder>801</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RunRateTcpStreamSenderSettings.cpp">
+				<DependentOn>RunRateTcpStreamSenderSettings.h</DependentOn>
+				<BuildOrder>802</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RunRateTcpStreamSender.cpp">
+				<DependentOn>RunRateTcpStreamSender.h</DependentOn>
+				<BuildOrder>803</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RunRateInterface.cpp">
+				<DependentOn>RunRateInterface.h</DependentOn>
+				<BuildOrder>804</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis.cpp">
+				<Form>frmAnalysis</Form>
+				<DependentOn>Analysis.h</DependentOn>
+				<BuildOrder>791</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.h</DependentOn>
+				<BuildOrder>792</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>801</BuildOrder>
+				<BuildOrder>793</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
 			<FormResources Include="GenericGroupAssignment.dfm"/>
@@ -3556,7 +3526,6 @@
 			<FormResources Include="SelectDateAndTime.dfm"/>
 			<FormResources Include="CaptureCustomerDetails.dfm"/>
 			<FormResources Include="Maintenance\WalletConfiguration.dfm"/>
-			<FormResources Include="Analysis.dfm"/>
 			<FormResources Include="RegenerateMallReport.dfm"/>
 			<FormResources Include="EftPosDialogs.dfm"/>
 			<FormResources Include="POS\SelectCurrentMenu.dfm"/>
@@ -3644,6 +3613,7 @@
 			<FormResources Include="ServingTime.dfm"/>
 			<FormResources Include="GuestList.dfm"/>
 			<FormResources Include="EFTPOSConfiguration.dfm"/>
+			<FormResources Include="Analysis.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

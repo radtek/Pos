@@ -7,11 +7,11 @@
 //---------------------------------------------------------------------------
 
 enum eTaxProfileType{eSalesTax = 0, ePurchasetax, eServiceCharge, eServiceChargeTax, eLocalTax, eProfitTax };
-enum eMenuType{ Food = 1, Beverage};
-enum eSettingType {PickUp = 1, DineIn, TakeAway,ItemPriceIncludeTax, ItemPriceIncludeServiceCharge, CalculateTaxBeforeDiscount, CalculateTaxAfterDiscount,
+enum eMenuType{ Food = 0, Beverage};
+enum eSettingType {PickUp = 0, DineIn, TakeAway, ItemPriceIncludeTax, ItemPriceIncludeServiceCharge, CalculateTaxBeforeDiscount, CalculateTaxAfterDiscount,
                         CalculateScPreDiscountedPrice, ReCalculateScAfterDiscount, ApplyServiceChargeTax, ServiceChargeTaxRate};
 
-typedef int TMMSettingType;
+
 
 struct TItemSizeTaxProfileInfo
 {
@@ -103,7 +103,7 @@ struct TSiteMenuInfo
 
 struct TTaxSettingsInfo
 {
-    TMMSettingType SettingType;
+    eSettingType SettingType;
     AnsiString Value;
 };
 

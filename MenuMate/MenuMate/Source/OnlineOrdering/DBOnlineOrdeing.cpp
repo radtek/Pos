@@ -303,13 +303,13 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
                      taxSettingInfo.SettingType = ItemPriceIncludeServiceCharge;
                     break;
                  case 8002:
-                     taxSettingInfo.SettingType = ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 0 ? CalculateTaxBeforeDiscount
-                                                        : CalculateTaxAfterDiscount;
+                     taxSettingInfo.SettingType = ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 0 ?
+                                                        CalculateTaxBeforeDiscount : CalculateTaxAfterDiscount;
                     taxSettingInfo.Value = "1";
                     break;
                  case 8003:
                      taxSettingInfo.SettingType = ibInternalQuery->FieldByName("INTEGER_VAL")->AsInteger == 0 ? CalculateScPreDiscountedPrice
-                                                        : ReCalculateScAfterDiscount;
+                                                         : ReCalculateScAfterDiscount;
                      taxSettingInfo.Value = "1";
                      break;
                  case 8005:
@@ -317,7 +317,7 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
                     break;
                  case 8007:
                      taxSettingInfo.SettingType = ServiceChargeTaxRate;
-                     taxSettingInfo.Value = CurrToStrF(ibInternalQuery->FieldByName("NUMERIC_VAL")->AsCurrency, ffCurrency, 2);
+                     taxSettingInfo.Value = CurrToStrF(ibInternalQuery->FieldByName("NUMERIC_VAL")->AsCurrency, ffGeneral, 2);
                     break;
                  default:
                     break;

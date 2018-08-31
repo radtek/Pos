@@ -35,7 +35,7 @@
 
 #include "ChefmateClient.h"
 #include "ManagerLoyaltyMate.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
