@@ -7,7 +7,7 @@ namespace Loyaltymate.Enum
 {
     public enum MenuType
     {
-        Food = 1,
+        Food = 0,
         Beverage
     }
 }

@@ -364,7 +364,7 @@ namespace Loyaltymate.Sevices
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
                 //var responseStream = new StreamReader(webResponse.GetResponseStream());
-                //response1 = JsonUtility.Deserialize<List<ApiSiteMenuViewModel>>(responseStream.ReadToEnd());
+                //response = JsonUtility.Deserialize<List<ApiSiteMenuViewModel>>(responseStream.ReadToEnd());
             }
             catch (WebException we)
             {

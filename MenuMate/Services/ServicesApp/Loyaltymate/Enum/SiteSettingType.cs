@@ -7,7 +7,7 @@ namespace Loyaltymate.Enum
 {
     public enum SiteSettingType
     {
-        PickUp = 1,
+        PickUp = 0,
         DineIn,
         TakeAway,
         ItemPriceIncludeTax,

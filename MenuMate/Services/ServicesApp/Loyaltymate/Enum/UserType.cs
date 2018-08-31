@@ -7,5 +7,7 @@ namespace Loyaltymate.Enum
 {
     public enum UserType
     {
+        Member = 0,
+        Staff
     }
 }

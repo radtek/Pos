@@ -25,3 +25,5 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public SiteSettingType TransactionType { get; set; }
     }
 }
+
+

@@ -14,5 +14,6 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public double Price { get; set; }
         public int OrderType { get; set; }
         public List<ApiOrderItemSizeViewModel> OrderItemSizes { get; set; }
+
     }
 }

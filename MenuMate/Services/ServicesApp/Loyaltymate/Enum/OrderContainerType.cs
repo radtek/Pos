@@ -7,5 +7,7 @@ namespace Loyaltymate.Enum
 {
     public enum OrderContainerType
     {
+        Tab = 0,
+        Table
     }
 }

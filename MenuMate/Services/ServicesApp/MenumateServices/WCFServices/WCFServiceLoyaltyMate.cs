@@ -4,9 +4,13 @@ using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.LoyaltyMate;
 using MenumateServices.Internal_Classes.LoyaltyMate;
 using MenumateServices.DTO.OnlineOrdering;
+using System.ServiceModel.Activation;
+using System.ServiceModel;
 
 namespace MenumateServices.WCFServices
 {
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+    [ServiceBehavior(MaxItemsInObjectGraph = 65536000)]
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "WCFServiceLoyaltyMate" in both code and config file together.
     public class WCFServiceLoyaltyMate : IWCFServiceLoyaltyMate
     {
@@ -189,6 +193,11 @@ namespace MenumateServices.WCFServices
                 ServiceLogger.LogException(exc.Message, exc);
             }
             return null;
+        }
+
+        public void GetOrdersFromWeb(string orders)
+        {
+            //todo
         }
     }
 }

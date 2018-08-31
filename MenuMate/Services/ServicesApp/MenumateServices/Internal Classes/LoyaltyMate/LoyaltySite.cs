@@ -97,8 +97,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 siteMenuViewModel.MenuConsumables.Add(CreateMenuConsumableViewModel(menu));
             }
-           // var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);
-            //var response = JsonUtility.Deserialize<ApiSiteMenuViewModel>(siteMenuViewModel);
+            var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);
             return siteMenuViewModel;
         }
 
@@ -235,12 +234,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             var siteTaxSettings = new ApiSiteTaxSettings();
             siteTaxSettings.SiteId = siteTaxSettingsInfo.SiteId;
-            siteTaxSettings.SiteTaxSettings = new List<ApiTaxSettings>();
+            siteTaxSettings.ApiTaxSettings = new List<ApiTaxSettings>();
             foreach(var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
             {
-                siteTaxSettings.SiteTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));     
+                siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));     
             }
-
+            var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteTaxSettings>(siteTaxSettings);
             return siteTaxSettings;
         }
 

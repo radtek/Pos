@@ -53,5 +53,8 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings);
+
+        [OperationContract]
+        void GetOrdersFromWeb(string orders);
     }
 }
