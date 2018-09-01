@@ -5679,7 +5679,7 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
                  "Refloat_Skim.Reasons, "
                 "zeds.initial_float, "
                 "zeds.Z_KEY, "
-                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  zeds.initial_float  else (Refloat_Skim.Amount + zeds.initial_float) END) AS FloatAmount   "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  0  else Refloat_Skim.Amount  END) AS FloatAmount   "
             "From "
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
