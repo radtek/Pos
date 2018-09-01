@@ -3,20 +3,114 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
-using Loyaltymate.Model.OnlineOrderingModel.DBOrders;
-using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Tools;
-
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 
 namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
 {
-    public class DBOrder
+    public class OnlineOrderDB
     {
-        //public FbTransaction transaction;
-        //public FbConnection connection;
+
+        // Singleton object: Povides with connections to the Menumate's dabase
+        OnlineOrderDBConnection dbConnection_ = OnlineOrderDBConnection.Instance;
         OnlineOrderDBQueries dbQueries = OnlineOrderDBQueries.Instance;
 
-        public string BuildConnectionString(string ipAddress, string dbpath)
+        public FbTransaction transaction;
+        public FbConnection connection;
+        public OnlineOrderDB()
+        {
+        }
+
+        class Nested
+        {
+            // Explicit static constructor to tell C# compiler
+            // not to mark type as beforefieldinit
+            static Nested()
+            {
+            }
+
+            internal static readonly OnlineOrderDB instance = new OnlineOrderDB();
+        }
+
+        #region Public
+
+        public static OnlineOrderDB Instance
+        {
+            get
+            {
+                return Nested.instance;
+            }
+        }
+
+        public bool BeginTransaction()
+        {
+            try
+            {
+                connection = dbConnection_.Open();
+                ServiceLogger.Log("In BeginTransaction() after dbConnection_.Open().");
+                transaction = connection.BeginTransaction();
+                ServiceLogger.Log("In BeginTransaction() after connection_.BeginTransaction().");
+                return true;
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in BeginTransaction " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+                return false;
+            }
+
+        }
+
+        public void EndTransaction()
+        {
+            try
+            {
+                if (transaction != null)
+                {
+                    transaction.Commit();
+                    ServiceLogger.Log("In EndTransaction() after transaction_.Commit().");
+                }
+                if (connection != null)
+                {
+                    ServiceLogger.Log("In EndTransaction() before connection_.Close().");
+                    connection.Close();
+                    ServiceLogger.Log("In EndTransaction() after connection_.Close().");
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in EndTransaction " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
+        }
+
+        public FbConnection BeginConnection()
+        {
+            return dbConnection_.Open();
+        }
+
+        public FbTransaction BeginFBtransaction()
+        {
+            return connection.BeginTransaction();
+        }
+
+        public void RollbackTransaction()
+        {
+            try
+            {
+                if (transaction != null)
+                    transaction.Rollback();
+                if (connection != null)
+                    connection.Close();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in RollbackTransaction " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 134, short.MaxValue);
+            }
+        }
+
+       public string BuildConnectionString(string ipAddress, string dbpath)
         {
             string connectionString = "User=SYSDBA;Password=masterkey;Database=" + dbpath + ";DataSource=" + ipAddress +
                                       ";Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=false;" +
@@ -78,28 +172,28 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
                             orderRow.PriceInclusive = itemSize.PriceInclusive;
                             orderRow.Quantity = itemSize.Quantity;
                             orderRow.ItemSizeId = itemSize.ItemSizeId;
-                            orderRow.TimeKey = setTimeKey(addDetailsTransaction, addDetailsConnection);
+                            orderRow.TimeKey = setTimeKey();
 
                             //Generate order id..
-                            orderRow.OrderId = GenerateKey(addDetailsTransaction, addDetailsConnection, "ORDERS");
+                            orderRow.OrderId = GenerateKey("ORDERS");
 
                             //generate tab key if tab not exist..
-                            orderRow.TabKey = GetOrCreateTabForOnlineOrdering(addDetailsTransaction, addDetailsConnection, 5, orderRow.OrderGuid, ""); //TODo
+                            orderRow.TabKey = GetOrCreateTabForOnlineOrdering(5, orderRow.OrderGuid, ""); //TODo
 
                             //Generate tansaction number..
-                            orderRow.TramsNo = GenerateKey(addDetailsTransaction, addDetailsConnection, "TRANSNO");
+                            orderRow.TramsNo = GenerateKey("TRANSNO");
 
                             //Load Item info like course, sc, kitchen name etc.
-                            LoadItemInfo(addDetailsTransaction, addDetailsConnection, ref orderRow);
+                            LoadItemInfo(ref orderRow);
 
                             //load And insert breakdown category into orderscategory..
-                            GetAndInsertBreakDownCategories(addDetailsTransaction, addDetailsConnection, itemSize.ItemSizeId, ref orderRow);
+                            GetAndInsertBreakDownCategories(itemSize.ItemSizeId, ref orderRow);
 
                             //Insert records to orders..
-                            ExecuteOrderQuery(addDetailsTransaction, addDetailsConnection, orderRow);
+                            ExecuteOrderQuery(orderRow);
 
                             //insert security event to security..
-                            ExecuteSecurityQuery(addDetailsTransaction, addDetailsConnection, orderRow);
+                            ExecuteSecurityQuery(orderRow);
                         }
                     }
                     addDetailsTransaction.Commit();
@@ -113,7 +207,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
-        public int GenerateKey(FbTransaction transaction, FbConnection connection, string inTableName)
+        public int GenerateKey(string inTableName)
         {
             object commandResult = null;
             try
@@ -142,13 +236,13 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             public KeyGeneratorException(string message, System.Exception inner) : base(message, inner) { }
         }
 
-        private int GetOrCreateTabForOnlineOrdering(FbTransaction transaction, FbConnection connection, int onlineOrderKey, string tabName, string id_number)
+        private int GetOrCreateTabForOnlineOrdering(int onlineOrderKey, string tabName, string id_number)
         {
-            int tabKey = FindTabKeyForOnlineOrderTab(transaction, connection, tabName);
+            int tabKey = FindTabKeyForOnlineOrderTab(tabName);
             try
             {
                 if (tabKey == 0)
-                    tabKey = createTabForOnlineOrder(transaction, connection, onlineOrderKey, tabName, id_number);
+                    tabKey = createTabForOnlineOrder(onlineOrderKey, tabName, id_number);
             }
             catch (Exception e)
             {
@@ -158,7 +252,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             return tabKey;
         }
 
-        private int FindTabKeyForOnlineOrderTab(FbTransaction transaction, FbConnection connection, string tabName)
+        private int FindTabKeyForOnlineOrderTab(string tabName)
         {
             int tabKey = 0;
 
@@ -187,15 +281,15 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             return tabKey;
         }
 
-        private int createTabForOnlineOrder(FbTransaction transaction, FbConnection connection, int onlineOrderKey, string tabName, string id_number)
+        private int createTabForOnlineOrder(int onlineOrderKey, string tabName, string id_number)
         {
-            int tabKey = CreateOnlineOrderTabInDB(transaction, connection, tabName, id_number);
+            int tabKey = CreateOnlineOrderTabInDB(tabName, id_number);
             return tabKey;
         }
 
-        private int CreateOnlineOrderTabInDB(FbTransaction transaction, FbConnection connection, string tabName, string id_number)
+        private int CreateOnlineOrderTabInDB(string tabName, string id_number)
         {
-            int tabKey = GenerateKey(transaction, connection, "TAB");
+            int tabKey = GenerateKey("TAB");
 
             try
             {
@@ -223,7 +317,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
                 return reader[ordinal];
         }
 
-        private void GetAndInsertBreakDownCategories(FbTransaction transaction, FbConnection connection, long itemSizeUniqueId, ref OrderAttributes orderInfo)
+        private void GetAndInsertBreakDownCategories(long itemSizeUniqueId, ref OrderAttributes orderInfo)
         {
             try
             {
@@ -242,7 +336,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
                         orderInfo.Cost = reader.GetDouble(reader.GetOrdinal("COST"));
                         orderInfo.CategoryKey = reader.GetInt32(reader.GetOrdinal("CATEGORY_KEY"));
                         orderInfo.PointsPercent = reader.GetDouble(reader.GetOrdinal("POINTS_PERCENT"));
-                        LoadItemSizeBreakDownCategories(transaction, connection, orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
+                        LoadItemSizeBreakDownCategories(orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
                     }
                 }
             }
@@ -253,7 +347,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
 
         }
 
-        private void LoadItemSizeBreakDownCategories(FbTransaction transaction, FbConnection connection, long orderKey, int itemSizeId)
+        private void LoadItemSizeBreakDownCategories(long orderKey, int itemSizeId)
         {
             try
             {
@@ -274,7 +368,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
-        private void ExecuteOrderQuery(FbTransaction transaction, FbConnection connection, OrderAttributes orderRow)
+        private void ExecuteOrderQuery(OrderAttributes orderRow)
         {
             try
             {
@@ -288,11 +382,11 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
-        private void ExecuteSecurityQuery(FbTransaction transaction, FbConnection connection, OrderAttributes orderRow)
+        private void ExecuteSecurityQuery(OrderAttributes orderRow)
         {
             try
             {
-                long securityKey = GenerateKey(transaction, connection, "SECURITY_KEY");
+                long securityKey = GenerateKey("SECURITY_KEY");
                 FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
                 command.ExecuteNonQuery();
             }
@@ -303,7 +397,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
-        private void LoadItemInfo(FbTransaction transaction, FbConnection connection, ref OrderAttributes orderInfo)
+        private void LoadItemInfo(ref OrderAttributes orderInfo)
         {
             try
             {
@@ -329,13 +423,13 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
 
         }
 
-        private int setTimeKey(FbTransaction transaction, FbConnection connection)
+        private int setTimeKey()
         {
-            int timeKey = GenerateKey(transaction, connection, "TURN_AROUND_TIMES");
+            int timeKey = GenerateKey("TURN_AROUND_TIMES");
             try
             {
-                openSaleStartTime(transaction, connection, timeKey);
-                closeSaleStartTime(transaction, connection, timeKey);
+                openSaleStartTime(timeKey);
+                closeSaleStartTime(timeKey);
             }
             catch (Exception e)
             {
@@ -346,7 +440,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             return timeKey;
         }
 
-        private void openSaleStartTime(FbTransaction transaction, FbConnection connection, int timeKey)
+        private void openSaleStartTime(int timeKey)
         {
             try
             {
@@ -360,7 +454,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
-        private void closeSaleStartTime(FbTransaction transaction, FbConnection connection, int timeKey)
+        private void closeSaleStartTime(int timeKey)
         {
             try
             {
@@ -374,5 +468,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
         }
 
+        #endregion
     }
+
 }

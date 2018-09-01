@@ -8,7 +8,7 @@ using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Tools;
 
 
-namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
+namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {
     public class DBOrder
     {

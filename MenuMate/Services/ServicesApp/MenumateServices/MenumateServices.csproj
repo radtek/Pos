@@ -197,10 +197,15 @@
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\OnlineOrdering\CourseInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrder.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSideInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSizeInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSizeTaxProfileInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\MenuConsumableInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\OnlineOrderDB.cs" />
+    <Compile Include="DTO\OnlineOrdering\OnlineOrderDBConnection.cs" />
+    <Compile Include="DTO\OnlineOrdering\OnlineOrderDBQueries.cs" />
+    <Compile Include="DTO\OnlineOrdering\OrderAttributes.cs" />
     <Compile Include="DTO\OnlineOrdering\SideGroupInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\SiteItemInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\SiteMenuInfo.cs" />
@@ -212,7 +217,6 @@
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
-    <Compile Include="Internal Classes\OnlineOrdering\OnlineOrderDBConnection.cs" />
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
     <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
