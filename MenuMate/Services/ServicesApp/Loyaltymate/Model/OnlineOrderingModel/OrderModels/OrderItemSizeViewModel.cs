@@ -8,6 +8,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
     public class ApiOrderItemSizeViewModel
     {
         public long OrderItemSizeId { get; set; }
+        public long OrderItemId { get; set; }
         public string Name { get; set; }
         public long ItemSizeId { get; set; }
         public double Quantity { get; set; }

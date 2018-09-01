@@ -7,6 +7,8 @@ using System.IO;
 using Loyaltymate.Utility;
 using Loyaltymate.Model.OnlineOrderingModel;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using Loyaltymate.Model.OnlineOrderingModel.DBOrders;
 
 namespace Loyaltymate.Sevices
 {
@@ -357,14 +359,11 @@ namespace Loyaltymate.Sevices
         public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel)
         {
             bool response = false;
-            //List<ApiSiteMenuViewModel> response1 = null;
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, inSyndicateCode, null, WebRequestMethods.Http.Post, siteMenuViewModel);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                //var responseStream = new StreamReader(webResponse.GetResponseStream());
-                //response = JsonUtility.Deserialize<List<ApiSiteMenuViewModel>>(responseStream.ReadToEnd());
             }
             catch (WebException we)
             {
@@ -409,5 +408,20 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
+        public bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            bool retVal = false;
+            try
+            {
+                DBOrder dbOrder = new DBOrder();
+                dbOrder.AddRecords(siteOrderViewModel);
+
+            }
+            catch(Exception ex)
+            {
+            }
+            return retVal;
+
+        }
     }
 }

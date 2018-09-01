@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Loyaltymate.Model.OnlineOrderingModel;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 
 namespace Loyaltymate.Sevices
 {
@@ -21,5 +22,6 @@ namespace Loyaltymate.Sevices
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);
         bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenus);
         bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings);
+        bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel);
     }
 }

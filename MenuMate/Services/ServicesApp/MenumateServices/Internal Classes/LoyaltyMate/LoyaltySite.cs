@@ -9,6 +9,8 @@ using MenumateServices.DTO.LoyaltyMate;
 using System.Net;
 using MenumateServices.DTO.OnlineOrdering;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using Loyaltymate.Utility;
 
 namespace MenumateServices.Internal_Classes.LoyaltyMate
 {
@@ -82,6 +84,24 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
+        public LoyaltyResponse InsertOrdersToDB(string ordersString)
+        {
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                var response = loyaltymateService.InsertOrdersToDB(CreateSiteOrderViewModel(ordersString));
+
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError("@Failed to insert Records to DB.", "", LoyaltyResponseCode.TaxSettingSyncingFailed);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
 
         #endregion
 
@@ -97,7 +117,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 siteMenuViewModel.MenuConsumables.Add(CreateMenuConsumableViewModel(menu));
             }
-            var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);
+            var requestData = JsonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);//just to test json
             return siteMenuViewModel;
         }
 
@@ -239,7 +259,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));     
             }
-            var requestData = AdyenIntegration.Utility.JSonUtility.Serialize<ApiSiteTaxSettings>(siteTaxSettings);
+            var requestData = JsonUtility.Serialize<ApiSiteTaxSettings>(siteTaxSettings);//just to test json
             return siteTaxSettings;
         }
 
@@ -252,6 +272,19 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return taxSetting;
         }
 
+        private ApiSiteOrderViewModel CreateSiteOrderViewModel(string ordersString)
+        {
+            ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel();
+            try
+            {
+                siteOrderViewModel = JsonUtility.Deserialize<ApiSiteOrderViewModel>(ordersString);    
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
+            return siteOrderViewModel;
+        }
 
         #endregion
 

@@ -197,7 +197,7 @@ namespace MenumateServices.WCFServices
 
         public void GetOrdersFromWeb(string orders)
         {
-            //todo
+            LoyaltySite.Instance.InsertOrdersToDB(orders);
         }
     }
 }

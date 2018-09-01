@@ -17,12 +17,14 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public OrderContainerType ContainerType { get; set; }
         public string ContainerName { get; set; }
         public string OrderGuid { get; set; }
-        public long MembershipProfileId { get; set; }
+        public long UserReferenceId { get; set; }
         public UserType UserType { get; set; }
         public string TerminalName { get; set; }
         public DateTime TransactionDate { get; set; }
+        public OrderType OrderType { get; set; }
         public List<ApiOrderItemViewModel> OrderItems { get; set; }
         public SiteSettingType TransactionType { get; set; }
+        public bool IsConfirmed { get; set; }
     }
 }
 

@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient, Version=5.12.1.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.5.12.1\lib\net40-client\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -57,6 +61,7 @@
     <Compile Include="Enum\MemberType.cs" />
     <Compile Include="Enum\MenuType.cs" />
     <Compile Include="Enum\OrderContainerType.cs" />
+    <Compile Include="Enum\OrderType.cs" />
     <Compile Include="Enum\PointType.cs" />
     <Compile Include="Enum\ProductPriority.cs" />
     <Compile Include="Enum\SiteSettingType.cs" />
@@ -86,6 +91,9 @@
     <Compile Include="Model\GiftCardApiViewModel.cs" />
     <Compile Include="Model\MembershipProfileViewModel.cs" />
     <Compile Include="Model\MemberViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\DBOrder.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OnlineOrderDBQueries.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OrderAttributes.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiCourseViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSideViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSizeTaxProfileViewModel.cs" />
@@ -96,7 +104,7 @@
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteMenuViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeDiscountViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeViewModelViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\SiteOrderTypeInfoViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\SiteOrderViewModel.cs" />
