@@ -91,7 +91,11 @@
     <Compile Include="Model\GiftCardApiViewModel.cs" />
     <Compile Include="Model\MembershipProfileViewModel.cs" />
     <Compile Include="Model\MemberViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\DBOrder.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\DBOrder.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OnlineOrderDB.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OnlineOrderDBConnection.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OnlineOrderDBQueries.cs" />
+    <Compile Include="Model\OnlineOrderingModel\DBOrders\OrderAttributes.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiCourseViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSideViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiItemSizeTaxProfileViewModel.cs" />
@@ -100,10 +104,6 @@
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSideGroupViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteMenuViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OnlineOrderDB.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OnlineOrderDBConnection.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OnlineOrderDBQueries.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OrderAttributes.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeDiscountViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeViewModel.cs" />

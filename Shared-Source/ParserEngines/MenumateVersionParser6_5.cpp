@@ -368,6 +368,13 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
         "ADD ONLINE_ORDER_ID VARCHAR(50) ",
         inDBControl);
     }
+    if ( !fieldExists( "ORDERS", "IS_DOCKET_PRINTED", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD IS_DOCKET_PRINTED T_TRUEFALSE DEFAULT 'T' ",
+        inDBControl);
+    }
 
 }
 //------------------------------------------------------------------------------
@@ -459,6 +466,11 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
         if ( fieldExists( "ORDERS ", "ONLINE_ORDER_ID ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ONLINE_ORDER_ID = '' WHERE a.ONLINE_ORDER_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ORDERS ", "IS_DOCKET_PRINTED ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.IS_DOCKET_PRINTED = 'T' WHERE a.IS_DOCKET_PRINTED IS NULL ",
             UpdateQuery->ExecQuery();
         }
 

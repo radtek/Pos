@@ -325,6 +325,27 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
             SiteTaxSettings.push_back(taxSettingInfo);
             ibInternalQuery->Next();
         }
+        for(int index = 3; index <= 10; ++index )
+        {
+            bool indexPresent = false;
+            for(std::list<TTaxSettingsInfo>::iterator it = SiteTaxSettings.begin(); it != SiteTaxSettings.end(); it++)
+            {
+                if(it->SettingType == index)
+                {
+                    indexPresent = true;
+                    break;
+                }
+            }
+
+            if(!indexPresent)
+            {
+                TTaxSettingsInfo taxSettingInfo;
+                taxSettingInfo.SettingType = index;
+                taxSettingInfo.Value = "0";
+                SiteTaxSettings.push_back(taxSettingInfo);
+            }
+        }
+
         siteTaxSettingsInfo.SiteTaxSettings = SiteTaxSettings;
         siteTaxSettingsInfo.SiteId = TGlobalSettings::Instance().SiteID;
     }
