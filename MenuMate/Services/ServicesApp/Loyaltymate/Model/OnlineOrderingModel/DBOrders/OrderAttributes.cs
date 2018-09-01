@@ -43,5 +43,13 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
         public long SecurityRef { get; set; }
         public long SideOrderKey { get; set; }
         public long CategoryKey { get; set; }
+        public string ItemCategory { get; set; }
+        public string ItemKitchenName { get; set; }
+        public string CourseName { get; set; }
+        public string CourseKitchenName { get; set; }
+        public string MenuName { get; set; }
+        public long SetvingCourseKey { get; set; }
+        public int TimeKey { get; set; }
+        public double PointsPercent { get; set; }
     }
 }

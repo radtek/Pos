@@ -118,6 +118,7 @@
     <Compile Include="Sevices\ILoyaltymateService.cs" />
     <Compile Include="Sevices\LoyaltymateService.cs" />
     <Compile Include="Sevices\RequestAddress.cs" />
+    <Compile Include="Tools\ServiceLogger.cs" />
     <Compile Include="Utility\JsonUtility.cs" />
     <Compile Include="Utility\WebUtility.cs" />
   </ItemGroup>

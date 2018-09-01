@@ -5,6 +5,7 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using Loyaltymate.Model.OnlineOrderingModel.DBOrders;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using Loyaltymate.Tools;
 
 
 namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
@@ -75,6 +76,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
                         orderRow.PriceInclusive = itemSize.PriceInclusive;
                         orderRow.Quantity = itemSize.Quantity;
                         orderRow.ItemSizeId = itemSize.ItemSizeId;
+                        orderRow.TimeKey = setTimeKey(addDetailsTransaction, addDetailsConnection);
 
                         //Generate order id..
                         orderRow.OrderId = GenerateKey(addDetailsTransaction, addDetailsConnection, "ORDERS");
@@ -84,6 +86,9 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
 
                         //Generate tansaction number..
                         orderRow.TramsNo = GenerateKey(addDetailsTransaction, addDetailsConnection, "TRANSNO");
+
+                        //Load Item info like course, sc, kitchen name etc.
+                        LoadItemInfo(addDetailsTransaction, addDetailsConnection, ref orderRow);
 
                         //load And insert breakdown category into orderscategory..
                         GetAndInsertBreakDownCategories(addDetailsTransaction, addDetailsConnection, itemSize.ItemSizeId, ref orderRow);
@@ -100,6 +105,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             catch (Exception ex)
             {
                 addDetailsTransaction.Rollback();
+                ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
             }
         }
 
@@ -119,7 +125,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in _generateKey " + e.Message, e);
+                ServiceLogger.LogException(@"in _generateKey " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 164, short.MaxValue);
             }
             return Convert.ToInt32(commandResult);
@@ -142,7 +148,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
             }
             return tabKey;
@@ -170,7 +176,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in findTabKeyForWebOrderKey " + e.Message, e);
+                ServiceLogger.LogException(@"in findTabKeyForWebOrderKey " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 269, short.MaxValue);
             }
 
@@ -180,8 +186,6 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
         private int createTabForOnlineOrder(FbTransaction transaction, FbConnection connection, int onlineOrderKey, string tabName, string id_number)
         {
             int tabKey = CreateOnlineOrderTabInDB(transaction, connection, tabName, id_number);
-            //updateWebOrderWithTabKey(webOrderKey, tabKey);
-
             return tabKey;
         }
 
@@ -199,7 +203,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in createWebOrderTabInDB " + e.Message, e);
+                ServiceLogger.LogException(@"in createWebOrderTabInDB " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 270, short.MaxValue);
             }
 
@@ -233,12 +237,14 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
                         orderInfo.GSTPercent = reader.GetDouble(reader.GetOrdinal("GST_PERCENT"));
                         orderInfo.Cost = reader.GetDouble(reader.GetOrdinal("COST"));
                         orderInfo.CategoryKey = reader.GetInt32(reader.GetOrdinal("CATEGORY_KEY"));
+                        orderInfo.PointsPercent = reader.GetDouble(reader.GetOrdinal("POINTS_PERCENT"));
                         LoadItemSizeBreakDownCategories(transaction, connection, orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
                     }
                 }
             }
             catch (Exception ex)
             {
+                ServiceLogger.LogException(@"in GetAndInsertBreakDownCategories while inserting records " + ex.Message, ex);
             }
 
         }
@@ -259,7 +265,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
             }
         }
@@ -273,7 +279,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
             }
         }
@@ -288,8 +294,79 @@ namespace Loyaltymate.Model.OnlineOrderingModel.DBOrders
             }
             catch (Exception e)
             {
-                //ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+            }
+        }
+
+        private void LoadItemInfo(FbTransaction transaction, FbConnection connection, ref OrderAttributes orderInfo)
+        {
+            try
+            {
+                FbCommand command = dbQueries.GetItemInfo(connection, transaction, orderInfo.SiteItemId);
+
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        orderInfo.ItemCategory = reader.GetString(reader.GetOrdinal("ITEM_CATEGORY"));
+                        orderInfo.ItemKitchenName = reader.GetString(reader.GetOrdinal("ITEM_KITCHEN_NAME"));
+                        orderInfo.CourseName = reader.GetString(reader.GetOrdinal("COURSE_NAME"));
+                        orderInfo.CourseKitchenName = reader.GetString(reader.GetOrdinal("COURSE_KITCHEN_NAME"));
+                        orderInfo.MenuName = reader.GetString(reader.GetOrdinal("MENU_NAME"));
+                        orderInfo.SetvingCourseKey = reader.GetInt32(reader.GetOrdinal("SERVINGCOURSES_KEY"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadItemInfo " + e.Message, e);
+            }
+
+        }
+
+        private int setTimeKey(FbTransaction transaction, FbConnection connection)
+        {
+            int timeKey = GenerateKey(transaction, connection, "TURN_AROUND_TIMES");
+            try
+            {
+                openSaleStartTime(transaction, connection, timeKey);
+                closeSaleStartTime(transaction, connection, timeKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in setTimeKey " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 266, short.MaxValue);
+            }
+
+            return timeKey;
+        }
+               
+        private void openSaleStartTime(FbTransaction transaction, FbConnection connection, int timeKey)
+        {
+            try
+            {
+                FbCommand command = dbQueries.OpenSaleStartTimeCmd(connection, transaction, timeKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in openSaleStartTime " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 267, short.MaxValue);
+            }
+        }
+
+        private void closeSaleStartTime(FbTransaction transaction, FbConnection connection, int timeKey)
+        {
+            try
+            {
+                FbCommand command = dbQueries.CloseSaleStartTimeCmd(connection, transaction, timeKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in closeSaleStartTime " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 268, short.MaxValue);
             }
         }
 
