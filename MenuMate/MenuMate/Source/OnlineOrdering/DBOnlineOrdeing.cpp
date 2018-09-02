@@ -95,8 +95,9 @@ std::list<TSiteItemInfo> TDBOnlineOrdering::GetItemInfo(Database::TDBTransaction
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Text =    "SELECT a.ITEM_KEY, a.ITEM_ID, a.ITEM_NAME, a.ITEM_IDENTIFIER, A.EXCLUSIVELY_AS_SIDE "
                                         "FROM ITEM a "
-                                        "WHERE a.ENABLED = :ENABLED ";
+                                        "WHERE a.ENABLED = :ENABLED AND a.COURSE_KEY = :COURSE_KEY ";
         ibInternalQuery->ParamByName("ENABLED")->AsString = "T";
+        ibInternalQuery->ParamByName("COURSE_KEY")->AsInteger = courseId;
         ibInternalQuery->ExecQuery();
 
         while (!ibInternalQuery->Eof)
