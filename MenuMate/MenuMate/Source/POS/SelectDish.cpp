@@ -135,6 +135,7 @@
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
+#include "OnlineOrderDocketPrinter.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -622,7 +623,11 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     InitializeChit();
     isWalkInUser = true;
     isRoomNoUiCalled = false;
-    IsChitPromptFormActive=true;   
+    IsChitPromptFormActive=true;
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TOnlineOrderDocketPrinter::Instance()->TriggerTransactionSync();
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()

@@ -3481,6 +3481,10 @@
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
 				<BuildOrder>793</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="OnlineOrdering\OnlineOrderDocketPrinter.cpp">
+				<DependentOn>OnlineOrdering\OnlineOrderDocketPrinter.h</DependentOn>
+				<BuildOrder>793</BuildOrder>
+			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
 			<FormResources Include="GenericGroupAssignment.dfm"/>
 			<FormResources Include="DiscountEditor.dfm"/>
