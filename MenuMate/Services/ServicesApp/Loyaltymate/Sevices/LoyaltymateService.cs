@@ -440,5 +440,31 @@ namespace Loyaltymate.Sevices
             return result;
 
         }
+
+        public bool UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateOrderStatus, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+                return false;
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                    response = true;
+                }
+            }
+            return response;
+        }
     }
 }
