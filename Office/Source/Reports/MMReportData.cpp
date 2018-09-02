@@ -2084,7 +2084,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Month From Archive.Time_Stamp) Order_Month, "
 			"Extract (Year From Archive.Time_Stamp) Order_Year, "
 			"Cast(Sum(Archive.Qty * Archive.Price ) +   Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) As PriceExc,"						//sales excl
+            "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"				//sales excl
 			"Cast(Sum(abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY )* Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2198,7 +2198,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Year From DayArchive.Time_Stamp) Order_Year, "
 
 			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.PRICE) ) +   Sum(DAYArchive.DISCOUNT) as Numeric(17,4)) Price,"				//sales excl
-			"Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DAYArchive.DISCOUNT_WITHOUT_TAX) as PriceExc,"
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2262,7 +2262,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
             "SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price )+ Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
+             "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //sales excl
 			"Cast(Sum(abs(Archive.Cost)* Archive.Qty) as Numeric(17,4)) Cost, "
             " Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4))SalesIncl "
 		"From "
@@ -2327,7 +2327,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count,"
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
+			 "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"    //salex excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
              "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2563,7 +2563,8 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"DayArchive.Size_Name,"
 		  	"Sum(DayArchive.Qty) Item_Count,"
    			"Cast(Sum(DayArchive.Qty * DayArchive.PRICE_LEVEL0 ) + Sum(coalesce(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(coalesce(Discounts_.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)  as Numeric(17,4)) PriceExc,"   //salex excl
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE ) ) +  Sum(coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)    as Numeric(17,4)) PriceExc," //salex excl
+
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(Discounts_.DISCOUNT_WITHOUT_TAX,0) + COALESCE(Discounts_.TAX_ON_DISCOUNT,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2959,7 +2960,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Archive.Size_Name, "
            " SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-            "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc, "       //sales excl   //chng
+           "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl   //chng
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY)* Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3016,7 +3017,8 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"DayArchive.Size_Name, "
             "SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-            "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl chng
+            "Cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //sales excl chng
+
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
@@ -3157,7 +3159,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
+		"Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
 	        "Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3214,7 +3216,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount)as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
+            "Cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc," //sales excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3408,7 +3410,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		   //sales excl
+              "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code, "
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -3475,7 +3477,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"			//sales excl
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	//sales excl
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code, "
             "Cast(Sum(abs(DayArchive.QTY )* DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4218,7 +4220,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"(Extract (Hour From Archive.TIME_STAMP) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time ,"
 		 	"Archive.Qty Item_Count,"
 			"Cast((Archive.Qty * Archive.Price )+ (Archive.Discount) as Numeric(17,4)) Price,"
-            "Cast(((Archive.Qty * abs(Archive.BASE_PRICE) ) ) + (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,  "	 //sales excl
+             "Cast((abs(Archive.Qty) * Archive.BASE_PRICE  )  +  (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"  //sales excl
 			"Cast((abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost ,"
             "Cast(Null As VarChar(50)) Code, "
             "Cast((abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4285,7 +4287,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"(Extract (Hour From DayArchive.TIME_STAMP) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 		  	"DayArchive.Qty Item_Count,"
 			"Cast((DayArchive.Qty * DayArchive.Price ) + (DayArchive.Discount)   as Numeric(17,4)) Price,"
-            "Cast(((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)   ) ) + (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,  "		//sales excl
+            "Cast((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  )  +  (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,"  //sales excl
 			"Cast((abs(DayArchive.Qty) * DayArchive.Cost) as Numeric(17,4)) Cost , "
             "Cast(Null As VarChar(50)) Code, "
             "Cast((abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4444,6 +4446,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 	qrConsumption->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrConsumption->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDateTime EndTime,TStrings *Terminals)
 {
@@ -4466,8 +4469,8 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From Archive.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From Archive.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-            "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
-			"max(Patron_Count) Patron_Count,"
+            "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"   	//sales excl
+            "max(Patron_Count) Patron_Count,"
 			"cast(SUM (Archive.QTY) as numeric(17,4))  SalesQty, "		   //sales Item count
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
      		"From "
@@ -4577,7 +4580,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From DAYARCHIVE.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-           "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"	  //sales excl
+           "Cast(Sum((abs(DAYARCHIVE.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"//sales excl
 			"max(Patron_Count) Patron_Count, "
 			"cast(SUM (DayArchive.QTY) as numeric(17,4)) SalesQty, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
