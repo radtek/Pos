@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace MenumateServices.DTO.LoyaltyMate
+namespace MenumateServices.DTO.OnlineOrdering
 {
     [DataContract]
     public class SideGroupInfo

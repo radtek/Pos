@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OnlineOrdering.Enum;
 using System.Runtime.Serialization;
+using MenumateServices.DTO.Enum;
 
-namespace MenumateServices.DTO.LoyaltyMate
+namespace MenumateServices.DTO.OnlineOrdering
 {
     [DataContract]
     public class ItemSizeTaxProfileInfo

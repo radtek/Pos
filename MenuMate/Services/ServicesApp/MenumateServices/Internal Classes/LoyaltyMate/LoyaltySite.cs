@@ -190,10 +190,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 siteItemViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
             }
-            siteItemViewModel.SideGroup = new List<ApiSideGroupViewModel>();
-            foreach (var sideGroup in siteItem.SideGroup)
+            siteItemViewModel.SideGroups = new List<ApiSideGroupViewModel>();
+            foreach (var sideGroup in siteItem.SideGroups)
             {
-                siteItemViewModel.SideGroup.Add(CreateSideGroupViewModel(sideGroup));
+                siteItemViewModel.SideGroups.Add(CreateSideGroupViewModel(sideGroup));
             }
             return siteItemViewModel;
         }
