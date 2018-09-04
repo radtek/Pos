@@ -31,7 +31,7 @@ TSiteMenuInfo TDBOnlineOrdering::GetMenuInfo(Database::TDBTransaction &dbTransac
             TMenuConsumableInfo menuInfo;
             menuInfo.MenuId = ibInternalQuery->FieldByName("MENU_KEY")->AsInteger;
             menuInfo.Name = ibInternalQuery->FieldByName("MENU_NAME")->AsString;
-            menuInfo.Description = ibInternalQuery->FieldByName("DESCRIPTION")->AsString;
+            menuInfo.Description = menuInfo.Name;
             menuInfo.MenuType = ibInternalQuery->FieldByName("MENU_TYPE")->AsInteger;
             menuInfo.IsPalmable = ibInternalQuery->FieldByName("PALMABLE")->AsString == "T" ? true : false;
             menuInfo.SiteCourses = GetCourseInfo(dbTransaction, ibInternalQuery->FieldByName("MENU_KEY")->AsInteger);
@@ -209,10 +209,10 @@ std::list<TSideGroupInfo> TDBOnlineOrdering::GetSideGroupInfo(Database::TDBTrans
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT a.GROUP_NO, a.ALLOW_SKIP, a.MAX_SELECT "
+        ibInternalQuery->SQL->Text =    "SELECT CAST ('Group' || a.GROUP_NO AS VARCHAR(20))GROUP_INFO, a.GROUP_NO, a.ALLOW_SKIP, a.MAX_SELECT "
                                         "FROM ITEMSIDES a "
                                         "WHERE a.MASTER_ITEM_KEY = :MASTER_ITEM_KEY "
-                                        "GROUP BY 1,2,3 ";
+                                        "GROUP BY 1,2,3,4 ";
         ibInternalQuery->ParamByName("MASTER_ITEM_KEY")->AsInteger = masterItemKey;
         ibInternalQuery->ExecQuery();
 
@@ -220,7 +220,7 @@ std::list<TSideGroupInfo> TDBOnlineOrdering::GetSideGroupInfo(Database::TDBTrans
         {
             TSideGroupInfo sideGroupInfo;
             sideGroupInfo.SideGroupId = ibInternalQuery->FieldByName("GROUP_NO")->AsInteger;
-            sideGroupInfo.Name = "Group " + ibInternalQuery->FieldByName("GROUP_NO")->AsInteger;
+            sideGroupInfo.Name = ibInternalQuery->FieldByName("GROUP_INFO")->AsString;
             sideGroupInfo.Description = sideGroupInfo.Name;
             sideGroupInfo.MaxSelect = ibInternalQuery->FieldByName("MAX_SELECT")->AsInteger;
             sideGroupInfo.AllowSkip = ibInternalQuery->FieldByName("ALLOW_SKIP")->AsString == "T" ? true : false;

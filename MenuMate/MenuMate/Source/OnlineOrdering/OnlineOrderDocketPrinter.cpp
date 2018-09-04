@@ -147,7 +147,7 @@ void TOnlineOrderDocketPrinter::TriggerTransactionSync()
 void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransaction &dBTransaction)
 {
 	try
-	{       MessageBox("Code Testing","Test",MB_OK);
+	{
 //        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
 //        TDeviceRealTerminal::Instance().RegisterTransaction(dBTransaction);
 //        dBTransaction.StartTransaction();
