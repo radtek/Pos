@@ -74,6 +74,7 @@
 #include "SetupGlCodes.h"
 //#include "ManagerClippIntegration.h"
 #include "SetUpPosPlus.h"
+#include "ManagerCloudSync.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -2034,7 +2035,10 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					switch(Action)
 					{
 					case 1 :
-						TGlobalSettings::Instance().LoyaltyMateEnabled = true;
+                        // to-do
+                        // Make sync operation based on site code & syndicate provided.
+						//TGlobalSettings::Instance().LoyaltyMateEnabled = true;
+                        ActivateLoyaltymate();
 						break;
 					case 2 :
 						TGlobalSettings::Instance().LoyaltyMateEnabled = false;
@@ -4254,6 +4258,11 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
 bool TfrmMaintain::CanEnableOnlineOrdering()
 {
     bool retValue = false;
+    if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        MessageBox("Please turn on the LoyaltyMate module first.\rOnline ordering needs Loyaltymate module to be turned on.","Info",MB_OK+MB_ICONINFORMATION);
+        return retValue;
+    }
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
@@ -4266,11 +4275,22 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
         SelectQuery->ExecQuery();
         if(SelectQuery->RecordCount == 0)
         {
-            TGlobalSettings::Instance().EnableOnlineOrdering = true;
-            MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
+            // to do
+            // 1. Make a seed file.
+            // 2. Use seed file and connect the SignalR application.
+            std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+            if(signalRUtility->LoadSignalRUtility())
+            {
+                TGlobalSettings::Instance().EnableOnlineOrdering = true;
+                MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
+            }
+            else
+                TGlobalSettings::Instance().EnableOnlineOrdering = false;
         }
         else
         {
+            // to do
+            // 1. Stop SignalR app.
             TGlobalSettings::Instance().EnableOnlineOrdering = false;
             MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
         }
@@ -4284,4 +4304,26 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
     }
     return retValue;
 }
-//--------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void TfrmMaintain::ActivateLoyaltymate()
+{
+    try
+    {
+        TManagerCloudSync ManagerCloudSync;
+        TGlobalSettings::Instance().LoyaltyMateEnabled = ManagerCloudSync.SyncCompanyDetails();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TGlobalSettings::Instance().LoyaltyMateEnabled = false;
+	}
+    if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        UnicodeString strValue = "Loyaltymate could not be enabled.\r";
+        strValue += "Please ensure below mentioned things:-.\r";
+        strValue += "1. Syndicate code & Site Id are correct.\r";
+        strValue += "2. POS terminal is connected to network.";
+        MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
+    }
+}
+//-----------------------------------------------------------------------------
