@@ -4,10 +4,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
-
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.DTO.OnlineOrdering;
 using MenumateServices.DTO.OnlineOrdering.OrderModels;
+using MenumateServices.DTO.OnlineOrdering.MenuModels;
 
 namespace MenumateServices.WCFServices
 {

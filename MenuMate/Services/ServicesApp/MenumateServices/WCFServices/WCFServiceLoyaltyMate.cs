@@ -6,10 +6,11 @@ using MenumateServices.Internal_Classes.LoyaltyMate;
 using MenumateServices.DTO.OnlineOrdering;
 using System.ServiceModel.Activation;
 using System.ServiceModel;
-using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Utility;
 using MenumateServices.DTO.OnlineOrdering.DBOrders;
 using MenumateServices.DTO.OnlineOrdering.OrderModels;
+using MenumateServices.DTO.OnlineOrdering.MenuModels;
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 
 namespace MenumateServices.WCFServices
 {

@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using MenumateServices.DTO.Enum;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     [DataContract]
-    public class SideGroupInfo
+    public class MenuConsumableInfo
     {
         [DataMember]
-        public long SideGroupId { get; set; }
+        public long MenuId { get; set; }
         [DataMember]
-        public long SiteItemId { get; set; }
+        public long SiteMenuCourseId { get; set; }
         [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }
         [DataMember]
-        public int MaxSelect { get; set; }
+        public MenuType Type { get; set; }
         [DataMember]
-        public bool AllowSkip { get; set; }
+        public bool IsPalmable { get; set; }
         [DataMember]
-        public List<ItemSideInfo> ItemSides { get; set; }
+        public List<CourseInfo> SiteCourses { get; set; }
     }
 }

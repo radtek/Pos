@@ -4,22 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     [DataContract]
-    public class ItemSideInfo
+    public class CourseInfo
     {
         [DataMember]
-        public long SiteItemId { get; set; }
+        public long CourseId { get; set; }
+        [DataMember]
+        public long SiteMenuCourseId { get; set; }
         [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }
         [DataMember]
-        public string ItemUniqueId { get; set; }
+        public string ServingCourseName { get; set; }
         [DataMember]
-        public bool OnlyAsSide { get; set; }
+        public string ServingCourseDescription { get; set; }
         [DataMember]
-        public List<ItemSizeInfo> ItemSizes { get; set; }
+        public List<SiteItemInfo> Items { get; set; }
     }
 }

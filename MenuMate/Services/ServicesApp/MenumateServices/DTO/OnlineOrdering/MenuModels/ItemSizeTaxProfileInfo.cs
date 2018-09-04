@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using MenumateServices.DTO.Enum;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     [DataContract]
-    public class CourseInfo
+    public class ItemSizeTaxProfileInfo
     {
         [DataMember]
-        public long CourseId { get; set; }
+        public long ItemSizeTaxProfileId { get; set; }
         [DataMember]
-        public long SiteMenuCourseId { get; set; }
+        public long TaxProfileId { get; set; }
         [DataMember]
         public string Name { get; set; }
         [DataMember]
         public string Description { get; set; }
         [DataMember]
-        public string ServingCourseName { get; set; }
+        public double Rate { get; set; }
         [DataMember]
-        public string ServingCourseDescription { get; set; }
+        public TaxProfileType Type { get; set; }
         [DataMember]
-        public List<SiteItemInfo> Items { get; set; }
+        public int Priority { get; set; }
     }
 }

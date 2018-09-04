@@ -9,9 +9,10 @@ using MenumateServices.DTO.LoyaltyMate;
 using System.Net;
 using MenumateServices.DTO.OnlineOrdering;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
-using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Utility;
 using MenumateServices.DTO.OnlineOrdering.OrderModels;
+using MenumateServices.DTO.OnlineOrdering.MenuModels;
+using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 
 namespace MenumateServices.Internal_Classes.LoyaltyMate
 {
