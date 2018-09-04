@@ -136,6 +136,9 @@ private:	// User declarations
     void ImportStockExchange();
     void CreateMenusToExchangeStockFolder();
     void ReFormatIpToUrl();
+    void EnableOnlineOrdering();
+    void DisableOnlineOrdering();
+    void UnloadSignalR();
 
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);

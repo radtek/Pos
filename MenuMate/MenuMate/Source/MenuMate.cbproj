@@ -3485,6 +3485,10 @@
 				<DependentOn>SignalRUtility.h</DependentOn>
 				<BuildOrder>793</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="OnlineOrdering\OnlineOrderDocketPrinter.cpp">
+				<DependentOn>OnlineOrdering\OnlineOrderDocketPrinter.h</DependentOn>
+				<BuildOrder>794</BuildOrder>
+			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
 			<FormResources Include="TierLevels.dfm"/>
 			<FormResources Include="Maintenance\PaymentMaintenance.dfm"/>

@@ -12,6 +12,7 @@
 #include <process.h>
 #include <Tlhelp32.h>
 #include <winbase.h>
+#include "Processing.h"
 #pragma package(smart_init)
 //----------------------------------------------------------------------------
 void TSignalRUtility::MakeOnlineOrderingSeedFile()
@@ -30,7 +31,6 @@ void TSignalRUtility::MakeOnlineOrderingSeedFile()
         List->Add(siteId);
         List->Add(syndicateCode);
         List->SaveToFile(fileName );
-        MessageBox("File Created","",MB_OK);
     }
     catch(Exception &Ex)
     {
@@ -41,6 +41,9 @@ void TSignalRUtility::MakeOnlineOrderingSeedFile()
 bool TSignalRUtility::UnloadSignalRUtility()
 {
     bool retValue = false;
+    std::auto_ptr<TfrmProcessing>(Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Managing Online Ordering Module";
+    Processing->Show();
     try
     {
         PROCESSENTRY32 entry;
@@ -66,14 +69,18 @@ bool TSignalRUtility::UnloadSignalRUtility()
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in LoadSignalRUtility",MB_OK);
+
     }
+    Processing->Close();
     return retValue;
 }
 //----------------------------------------------------------------------------
 bool TSignalRUtility::LoadSignalRUtility()
 {
     bool isProcOpen = false;
+    std::auto_ptr<TfrmProcessing>(Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Managing Online Ordering Module";
+    Processing->Show();
     MakeOnlineOrderingSeedFile();
     try
     {
@@ -84,12 +91,9 @@ bool TSignalRUtility::LoadSignalRUtility()
         ZeroMemory( &piSignalRApp, sizeof(piSignalRApp) );
         if(UnloadSignalRUtility())
         {
-            MessageBox("Unloaded file OnlineOrderingApp.exe","INFO",MB_OK);
             Sleep(10000);
         }
-        MessageBox("Loading OnlineOrderingApp.exe","INFO",MB_OK);
         UnicodeString strPath = GetUtilityName();
-        MessageBox("Loading OnlineOrderingApp.exe",strPath,MB_OK);
         isProcOpen = CreateProcess( strPath.t_str(),   // the path
         NULL,
         //argv[1],        // Command line
@@ -106,8 +110,8 @@ bool TSignalRUtility::LoadSignalRUtility()
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in LoadSignalRUtility",MB_OK);
     }
+    Processing->Close();
     return isProcOpen;
 }
 //----------------------------------------------------------------------------
@@ -134,7 +138,6 @@ bool TSignalRUtility::IsSignalRRunning()
     }
     catch(Exception &Ex)
     {
-        MessageBox(Ex.Message,"Exception in IsSignalRRunning",MB_OK);
     }
     return retValue;
 }

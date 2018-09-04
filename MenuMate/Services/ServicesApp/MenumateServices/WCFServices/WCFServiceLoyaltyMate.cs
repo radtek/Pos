@@ -198,12 +198,17 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
-        public void GetOrdersFromWeb(string orders)
+        public void GetOrdersFromWeb(string inSyndicateCode, string orders)
         {
            // LoyaltySite.Instance.InsertOrdersToDB(orders);
             ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel();
             siteOrderViewModel = JsonUtility.Deserialize<ApiSiteOrderViewModel>(orders);
-            InsertOrdersToDB(siteOrderViewModel);
+            bool retVal = InsertOrdersToDB(siteOrderViewModel);
+            if (retVal)
+                siteOrderViewModel.IsConfirmed = true;
+            else
+                siteOrderViewModel.IsConfirmed = false;
+            LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
         }
 
         private bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)

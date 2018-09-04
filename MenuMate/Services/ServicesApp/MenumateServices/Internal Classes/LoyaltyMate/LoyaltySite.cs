@@ -102,6 +102,26 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
+        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                var response = loyaltymateService.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError(
+                        "@Failed to update order status.",
+                        "",
+                        LoyaltyResponseCode.MenuSyncingFailed);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
 
         #endregion
 

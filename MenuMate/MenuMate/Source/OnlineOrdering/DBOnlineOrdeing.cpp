@@ -95,8 +95,9 @@ std::list<TSiteItemInfo> TDBOnlineOrdering::GetItemInfo(Database::TDBTransaction
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Text =    "SELECT a.ITEM_KEY, a.ITEM_ID, a.ITEM_NAME, a.ITEM_IDENTIFIER, A.EXCLUSIVELY_AS_SIDE "
                                         "FROM ITEM a "
-                                        "WHERE a.ENABLED = :ENABLED ";
+                                        "WHERE a.ENABLED = :ENABLED AND a.COURSE_KEY = :COURSE_KEY ";
         ibInternalQuery->ParamByName("ENABLED")->AsString = "T";
+        ibInternalQuery->ParamByName("COURSE_KEY")->AsInteger = courseId;
         ibInternalQuery->ExecQuery();
 
         while (!ibInternalQuery->Eof)
@@ -355,4 +356,88 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
 		throw;
 	}
     return siteTaxSettingsInfo;
+}
+//----------------------------------------------------------------------------------------------------
+void TDBOnlineOrdering::GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId)
+{
+	if(orderUniqueId.Trim() == "")
+	{
+		return;
+	}
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		/* Exclud the Sides here it will be loaded in as part of the order */
+		IBInternalQuery->SQL->Text =
+		"SELECT ORDER_KEY "
+		"FROM ORDERS "
+		"WHERE ONLINE_ORDER_ID =  :ONLINE_ORDER_ID "
+		        "AND (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0) "
+		"ORDER BY TAB_KEY,ORDER_KEY";
+
+        IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = orderUniqueId;
+		IBInternalQuery->ExecQuery();
+		if (IBInternalQuery->RecordCount)
+		{
+			std::set<__int64> OrderKeys;
+			for(; !IBInternalQuery->Eof;	IBInternalQuery->Next())
+			{
+				OrderKeys.insert(IBInternalQuery->FieldByName("ORDER_KEY")->AsInteger);
+			}
+			TDBOrder::GetOrdersIncludingSidesFromOrderKeys(DBTransaction,Orders,OrderKeys, true);
+		}
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//----------------------------------------------------------------------------
+UnicodeString TDBOnlineOrdering::GetOnlineOrderId(Database::TDBTransaction &dbTransaction)
+{
+    UnicodeString onlineOrderId = "";
+    try
+    {
+        std::list<TTaxSettingsInfo> SiteTaxSettings;
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT  FIRST 1 A.ONLINE_ORDER_ID "
+                                        "FROM ORDERS a "
+                                        "WHERE a.IS_DOCKET_PRINTED = :IS_DOCKET_PRINTED "
+                                        "ORDER BY a.ORDER_KEY ASC ";
+        ibInternalQuery->ParamByName("IS_DOCKET_PRINTED")->AsString = "F";
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            onlineOrderId = ibInternalQuery->FieldByName("ONLINE_ORDER_ID")->AsString;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return onlineOrderId;
+}
+//----------------------------------------------------------------------------
+void TDBOnlineOrdering::SetOnlineOrderStatus(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueId)
+{
+    try
+    {
+        std::list<TTaxSettingsInfo> SiteTaxSettings;
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "UPDATE ORDERS a SET a.IS_DOCKET_PRINTED = :IS_DOCKET_PRINTED "
+                                        "WHERE a.ONLINE_ORDER_ID = :ONLINE_ORDER_ID ";
+        ibInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = orderUniqueId;
+        ibInternalQuery->ParamByName("IS_DOCKET_PRINTED")->AsString = "T";
+        ibInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }

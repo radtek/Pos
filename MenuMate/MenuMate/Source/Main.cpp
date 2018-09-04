@@ -94,6 +94,7 @@
 #include "EftposSmartConnect.h"
 #include "EftposAdyen.h"
 #include "EFTPOSPaymentSense.h"
+#include "SignalRUtility.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -510,15 +511,32 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::SyncCompanyDetails()
 {
-   if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-         {
-           TManagerCloudSync ManagerCloudSync;
-           ManagerCloudSync.CheckSyndCodes();
-           ManagerCloudSync.SyncCompanyDetails();
-         }
+    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.CheckSyndCodes();
+        bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
+        if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            EnableOnlineOrdering();
+        }
+        else if(!isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            DisableOnlineOrdering();
+            UnicodeString strValue = "Online ordering could not be enabled since sync with online module failed.\r";
+            strValue += "Please ensure below mentioned things:-.\r";
+            strValue += "1. Syndicate code & Site Id are correct.\r";
+            strValue += "2. POS terminal is connected to network.";
+            MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
+        }
+    }
+    else
+    {
+       DisableOnlineOrdering();
+    }
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormActivate(TObject *Sender)
@@ -590,6 +608,7 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	if(Continue)
 	{
         TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
+        UnloadSignalR();
 		frmSecurity->LogOut();
 		frmMain->Close();
 	}
@@ -1787,4 +1806,50 @@ void TfrmMain::SaveItemPriceIncludeTaxToDatabase(vmVariables vmVariable, bool va
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
+void TfrmMain::EnableOnlineOrdering()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+        if(signalRUtility->LoadSignalRUtility())
+        {
+            TGlobalSettings::Instance().EnableOnlineOrdering = true;
+        }
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        DBTransaction.Rollback();
+	}
+}
+//-----------------------------------------------------------------------------
+void TfrmMain::DisableOnlineOrdering()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        UnloadSignalR();
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        DBTransaction.Rollback();
+	}
+}
+//-----------------------------------------------------------------------------
+void TfrmMain::UnloadSignalR()
+{
+    std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+    signalRUtility->UnloadSignalRUtility();
+}
+//-----------------------------------------------------------------------------
