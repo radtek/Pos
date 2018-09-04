@@ -113,9 +113,9 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseNoError();
                 else
                     return CreateResponseError(
-                        "@Failed to update order status.",
+                        "@Failed to save order status.",
                         "",
-                        LoyaltyResponseCode.MenuSyncingFailed);
+                        LoyaltyResponseCode.UpdateOnlineOrderStatusFailed);
             }
             catch (Exception ex)
             {
@@ -133,7 +133,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 if (response)
                     return CreateResponseNoError();
                 else
-                    return CreateResponseError("@Failed to insert Records to DB.", "", LoyaltyResponseCode.TaxSettingSyncingFailed);
+                    return CreateResponseError("@Failed to post invoice info.", "", LoyaltyResponseCode.PostOnlineOrderInvoiceInfoFailed);
             }
             catch (Exception ex)
             {
