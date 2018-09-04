@@ -145,6 +145,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
 
         #region private
 
+        //Creating Menu View Models
         private ApiSiteMenuViewModel CreateSiteMenuViewModel(SiteMenuInfo siteMenuInfo)
         {
             var siteMenuViewModel = new ApiSiteMenuViewModel();
@@ -310,6 +311,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return taxSetting;
         }
 
+        //Creating orderview Model received from signal R for storing order info for pos. 
         private ApiSiteOrderViewModel CreateSiteOrderViewModel(string ordersString)
         {
             ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel();
@@ -324,10 +326,102 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return siteOrderViewModel;
         }
 
+        //Creating orderview models for invoice info received from pos after billing.
         private ApiSiteOrderViewModel CreateSiteOrderViewModelForInvoice(SiteOrderModel siteOrderModel)
         {
-            ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel(); //todo
+            var siteOrderViewModel = new ApiSiteOrderViewModel();
+            siteOrderViewModel.CompanyId = siteOrderModel.CompanyId;
+            siteOrderViewModel.ContainerName = siteOrderModel.ContainerName;
+            siteOrderViewModel.ContainerNumber = siteOrderModel.ContainerNumber;
+            siteOrderViewModel.ContainerType = (Loyaltymate.Enum.OrderContainerType)siteOrderModel.ContainerType;
+            siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
+            siteOrderViewModel.Location = siteOrderModel.Location;
+            siteOrderViewModel.OrderGuid = siteOrderModel.OrderGuid;
+            siteOrderViewModel.OrderId = siteOrderModel.OrderId;
+            siteOrderViewModel.OrderType = (Loyaltymate.Enum.OrderType)siteOrderModel.OrderType;
+            siteOrderViewModel.SiteId = siteOrderModel.SiteId;
+            siteOrderViewModel.TerminalName = siteOrderModel.TerminalName;
+            siteOrderViewModel.TotalAmount = siteOrderModel.TotalAmount;
+            siteOrderViewModel.TransactionDate = siteOrderModel.TransactionDate;
+            siteOrderViewModel.TransactionType = (Loyaltymate.Enum.SiteSettingType)siteOrderModel.TransactionType;
+            siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
+            siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
+
+            foreach (var item in siteOrderModel.OrderItems)
+            {
+                siteOrderViewModel.OrderItems.Add(CreateItemsViewModelForInvoice(item));
+            }
+
+
             return siteOrderViewModel;
+        }
+
+        private ApiOrderItemViewModel CreateItemsViewModelForInvoice(OrderItemModel item)
+        {
+            var orderItemViewModel = new ApiOrderItemViewModel();
+            orderItemViewModel.Description = item.Description;
+            orderItemViewModel.Name = item.Name;
+            orderItemViewModel.OrderId = item.OrderId;
+            orderItemViewModel.OrderItemId = item.OrderItemId;
+            orderItemViewModel.Price = item.Price;
+            orderItemViewModel.SiteItemId = item.SiteItemId;
+            foreach (var itemSize in item.OrderItemSizes)
+            {
+                orderItemViewModel.OrderItemSizes.Add(CreateItemSizeViewModelForInvoice(itemSize));
+            }
+            return orderItemViewModel;
+        }
+
+        private ApiOrderItemSizeModel CreateItemSizeViewModelForInvoice(OrderItemSizeModel itemSize)
+        {
+            var orderItemSizeModel = new ApiOrderItemSizeModel();
+            orderItemSizeModel.BasePrice = itemSize.BasePrice;
+            orderItemSizeModel.ItemSizeId = itemSize.ItemSizeId;
+            orderItemSizeModel.MenuPrice = itemSize.MenuPrice;
+            orderItemSizeModel.Name = itemSize.Name;
+            orderItemSizeModel.OrderItemId = itemSize.OrderItemId;
+            orderItemSizeModel.OrderItemSizeId = itemSize.ItemSizeId;
+            orderItemSizeModel.Price = itemSize.Price;
+            orderItemSizeModel.PriceInclusive = itemSize.Price;
+            orderItemSizeModel.Quantity = itemSize.Quantity;
+            orderItemSizeModel.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+            foreach (var itemSizeDiscount in itemSize.OrderItemSizeDiscounts)
+            {
+                orderItemSizeModel.OrderItemSizeDiscounts.Add(CreateItemSizeDiscountViewModelForInvoice(itemSizeDiscount));
+            }
+            foreach (var itemSizeTaxProfile in itemSize.OrderItemSizeTaxProfiles)
+            {
+                orderItemSizeModel.OrderItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModelForInvoice(itemSizeTaxProfile));
+            }
+            return orderItemSizeModel;
+        }
+
+        private ApiOrderItemSizeDiscountViewModel CreateItemSizeDiscountViewModelForInvoice(OrderItemSizeDiscountModel itemSizeDiscount)
+        {
+            var orderItemSizeDiscountViewModel = new ApiOrderItemSizeDiscountViewModel();
+            orderItemSizeDiscountViewModel.Code = itemSizeDiscount.Code;
+            orderItemSizeDiscountViewModel.Name = itemSizeDiscount.Name;
+            orderItemSizeDiscountViewModel.OrderItemSizeDiscountId = itemSizeDiscount.OrderItemSizeDiscountId;
+            orderItemSizeDiscountViewModel.OrderItemSizeId = itemSizeDiscount.OrderItemSizeId;
+            orderItemSizeDiscountViewModel.Value = itemSizeDiscount.Value;
+            return orderItemSizeDiscountViewModel;
+        }
+
+        private ApiOrderItemSizeTaxProfileViewModel CreateItemSizeTaxProfileViewModelForInvoice(OrderItemSizeTaxProfileModel itemSizeTaxProfile)
+        {
+            var orderItemSizeTaxViewModel = new ApiOrderItemSizeTaxProfileViewModel();
+            orderItemSizeTaxViewModel.CompanyId = itemSizeTaxProfile.CompanyId;
+            orderItemSizeTaxViewModel.Description = itemSizeTaxProfile.Description;
+            orderItemSizeTaxViewModel.ItemSizeTaxProfileId = itemSizeTaxProfile.ItemSizeTaxProfileId;
+            orderItemSizeTaxViewModel.Name = itemSizeTaxProfile.Name;
+            orderItemSizeTaxViewModel.OrderItemSizeId = itemSizeTaxProfile.OrderItemSizeId;
+            orderItemSizeTaxViewModel.OrderItemSizeTaxProfileId = itemSizeTaxProfile.OrderItemSizeTaxProfileId;
+            orderItemSizeTaxViewModel.Percentage = itemSizeTaxProfile.Percentage;
+            orderItemSizeTaxViewModel.Priority = itemSizeTaxProfile.Priority;
+            orderItemSizeTaxViewModel.Rate = itemSizeTaxProfile.Rate;
+            orderItemSizeTaxViewModel.TaxProfileType = (Loyaltymate.Enum.TaxProfileType)itemSizeTaxProfile.TaxProfileType;
+            orderItemSizeTaxViewModel.Value = itemSizeTaxProfile.Value;
+            return orderItemSizeTaxViewModel;
         }
         #endregion
 
