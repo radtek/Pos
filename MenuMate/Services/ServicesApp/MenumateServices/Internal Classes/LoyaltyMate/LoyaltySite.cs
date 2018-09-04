@@ -114,7 +114,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseNoError();
                 else
                     return CreateResponseError(
-                        "@Failed to save order status.",
+                        "@Failed to update order status.",
                         "",
                         LoyaltyResponseCode.UpdateOnlineOrderStatusFailed);
             }
