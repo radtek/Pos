@@ -239,6 +239,9 @@ private:
     bool SetUpOracle();
     void EnableOnlineOrdering(Database::TDBTransaction &DBTransaction);
     bool CanEnableOnlineOrdering();
+    bool TrySyncForLoyaltyMate();
+    void DeactivateLoyaltymate();
+    void UnloadSignalR();
 public: // User declarations
 };
 #endif

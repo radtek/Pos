@@ -200,11 +200,11 @@
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\OnlineOrdering\CourseInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrder\DBOrder.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrder\OnlineOrderDB.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrder\OnlineOrderDBConnection.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrder\OnlineOrderDBQueries.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrder\OrderAttributes.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrders\DBOrder.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDB.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDBConnection.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDBQueries.cs" />
+    <Compile Include="DTO\OnlineOrdering\DBOrders\OrderAttributes.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSideInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSizeInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\ItemSizeTaxProfileInfo.cs" />

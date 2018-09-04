@@ -7,7 +7,7 @@
 class TManagerCloudSync
 {
    public:
-    void SyncCompanyDetails();
+    bool SyncCompanyDetails();
     void CheckSyndCodes();
    private:
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;

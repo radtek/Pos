@@ -2,7 +2,7 @@
 {
     public class RequestAddress
     {
-        public const string BaseAddress = "http://lmonlineordering.azurewebsites.net/";//http://192.168.0.125/Menumateapp/
+        public const string BaseAddress = "http://192.168.0.104/MenumateOrdering/";//"http://lmonlineordering.azurewebsites.net/";
 
         //Member
         public const string SaveMember = "api/MemberApi/Save";
@@ -30,11 +30,9 @@
 
         public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
 
-        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting";
+        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; //api needs to be changed.
 
-        public const string UpdateOrderStatus = "api/v5/OrderApi/SaveOrderConfirmation";
-
-        public const string PostOnlineOrderInvoiceInfo = "api/v5/OrderApi/SaveOrderBillingInformation";
+        public const string UpdateOrderStatus = "";
 
     }
 }

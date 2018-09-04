@@ -35,8 +35,9 @@ void TManagerCloudSync::CheckSyndCodes()
    DBTransaction.Commit();
 }
 
-void TManagerCloudSync::SyncCompanyDetails()
+bool TManagerCloudSync::SyncCompanyDetails()
 {
+    bool result = false;
     TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
     TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
     if(syndicateCode.Valid())
@@ -55,7 +56,7 @@ void TManagerCloudSync::SyncCompanyDetails()
         _lmOperationDialogBox->PreventCancelOperation = true;
         _lmOperationDialogBox->ShowModal();
 
-        bool result = syncThread->OperationSuccessful;
+        result = syncThread->OperationSuccessful;
 
         if(!result)
             MessageBox(syncThread->ErrorMessage,"Failed to perform sync operation", MB_ICONERROR + MB_OK);
@@ -63,5 +64,5 @@ void TManagerCloudSync::SyncCompanyDetails()
         // cleanup
         delete _lmOperationDialogBox;
     }
-
+    return result;
 }

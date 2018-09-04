@@ -141,6 +141,10 @@
 				<DependentOn>Analysis\ReportSections\XComplimentarySalesTotalsDetailsReportSection.h</DependentOn>
 				<BuildOrder>590</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="SignalRUtility.cpp">
+				<DependentOn>SignalRUtility.h</DependentOn>
+				<BuildOrder>793</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesDriverInterface.cpp">
 				<DependentOn>..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesDriverInterface.h</DependentOn>
 				<BuildOrder>510</BuildOrder>
