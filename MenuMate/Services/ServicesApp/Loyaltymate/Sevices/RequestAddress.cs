@@ -30,9 +30,11 @@
 
         public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
 
-        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; //api needs to be changed.
+        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; 
 
-        public const string UpdateOrderStatus = "";
+        public const string UpdateOrderStatus = "api/v5/OrderApi/SaveOrderConfirmation";
+
+        public const string PostOnlineOrderInvoiceInfo = "api/v5/OrderApi/SaveOrderBillingInformation";
 
     }
 }
