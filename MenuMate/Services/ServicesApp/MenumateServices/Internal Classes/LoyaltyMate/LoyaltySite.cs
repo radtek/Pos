@@ -372,9 +372,9 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return orderItemViewModel;
         }
 
-        private ApiOrderItemSizeModel CreateItemSizeViewModelForInvoice(OrderItemSizeModel itemSize)
+        private ApiOrderItemSizeViewModel CreateItemSizeViewModelForInvoice(OrderItemSizeModel itemSize)
         {
-            var orderItemSizeModel = new ApiOrderItemSizeModel();
+            var orderItemSizeModel = new ApiOrderItemSizeViewModel();
             orderItemSizeModel.BasePrice = itemSize.BasePrice;
             orderItemSizeModel.ItemSizeId = itemSize.ItemSizeId;
             orderItemSizeModel.MenuPrice = itemSize.MenuPrice;
