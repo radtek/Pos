@@ -59,6 +59,6 @@ namespace MenumateServices.WCFServices
         void GetOrdersFromWeb(string inSyndicateCode, string orders);
 
         [OperationContract]
-        LoyaltyResponse PostOnlineOrderingBillingInfo(string inSyndicateCode, SiteOrderModel siteOrderModel);
+        LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel);
     }
 }

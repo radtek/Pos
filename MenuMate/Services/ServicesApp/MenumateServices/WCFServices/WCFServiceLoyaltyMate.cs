@@ -243,11 +243,11 @@ namespace MenumateServices.WCFServices
 
         }
 
-        public LoyaltyResponse PostOnlineOrderingBillingInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
+        public LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
         {
             try
             {
-              //  return LoyaltySite.Instance.SyncSiteMenu(inSyndicateCode, siteOrderModel); //to change
+                return LoyaltySite.Instance.PostOnlineOrderInvoiceInfo(inSyndicateCode, siteOrderModel); 
             }
             catch (Exception exc)
             {

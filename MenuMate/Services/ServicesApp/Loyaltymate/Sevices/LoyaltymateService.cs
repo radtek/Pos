@@ -411,9 +411,9 @@ namespace Loyaltymate.Sevices
         }
 
         public bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)
-        {            
-                //DBOrder dbOrder = new DBOrder();
-                //dbOrder.AddRecords(siteOrderViewModel);           
+        {
+            //DBOrder dbOrder = new DBOrder();
+            //dbOrder.AddRecords(siteOrderViewModel);           
 
             bool result = false;
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
@@ -425,7 +425,7 @@ namespace Loyaltymate.Sevices
                     {
                         onlineOrderDB.AddRecords(siteOrderViewModel); //result = onlineOrderDB.AddRecords(siteOrderViewModel);
                         onlineOrderDB.transaction.Commit();
-                        ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order " );
+                        ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order ");
                     }
                 }
                 ServiceLogger.Log(@"outside using in dbWebOrderAccepted(string inOrderHandle) with order ");
@@ -445,6 +445,32 @@ namespace Loyaltymate.Sevices
         {
             bool response = false;
             var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateOrderStatus, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+                return false;
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                    response = true;
+                }
+            }
+            return response;
+        }
+
+        public bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.PostOnlineOrderInvoiceInfo, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);
             HttpWebResponse webResponse = null;
             try
             {
