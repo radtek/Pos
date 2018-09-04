@@ -11,6 +11,7 @@ using MenumateServices.DTO.OnlineOrdering;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Utility;
+using MenumateServices.DTO.OnlineOrdering.OrderModels;
 
 namespace MenumateServices.Internal_Classes.LoyaltyMate
 {
@@ -122,6 +123,23 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
+        public LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
+        {
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                var response = loyaltymateService.PostOnlineOrderInvoiceInfo(inSyndicateCode, CreateSiteOrderViewModelForInvoice(siteOrderModel));
+
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError("@Failed to insert Records to DB.", "", LoyaltyResponseCode.TaxSettingSyncingFailed);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
 
         #endregion
 
@@ -168,7 +186,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             courseViewModel.ServingCourseName = courseInfo.ServingCourseName;
             courseViewModel.SiteMenuCourseId = courseInfo.SiteMenuCourseId;
             courseViewModel.Items = new List<ApiSiteItemViewModel>();
-            foreach(var item in courseInfo.Items)
+            foreach (var item in courseInfo.Items)
             {
                 courseViewModel.Items.Add(CreateItemSiteViewModel(item));
             }
@@ -190,10 +208,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 siteItemViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
             }
-            siteItemViewModel.SideGroup = new List<ApiSideGroupViewModel>();
-            foreach (var sideGroup in siteItem.SideGroup)
+            siteItemViewModel.SideGroups = new List<ApiSideGroupViewModel>();
+            foreach (var sideGroup in siteItem.SideGroups)
             {
-                siteItemViewModel.SideGroup.Add(CreateSideGroupViewModel(sideGroup));
+                siteItemViewModel.SideGroups.Add(CreateSideGroupViewModel(sideGroup));
             }
             return siteItemViewModel;
         }
@@ -208,7 +226,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             sideGroupViewModel.SideGroupId = sideGroupInfo.SideGroupId;
             sideGroupViewModel.SiteItemId = sideGroupInfo.SiteItemId;
             sideGroupViewModel.ItemSides = new List<ApiItemSideViewModel>();
-            foreach(var itemSide in sideGroupInfo.ItemSides)
+            foreach (var itemSide in sideGroupInfo.ItemSides)
             {
                 sideGroupViewModel.ItemSides.Add(CreateItemSideViewModel(itemSide));
             }
@@ -224,7 +242,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSideViewModel.OnlyAsSide = itemSideInfo.OnlyAsSide;
             itemSideViewModel.SiteItemId = itemSideInfo.SiteItemId;
             itemSideViewModel.ItemSizes = new List<ApiItemSizeViewModel>();
-            foreach(var itemSize in itemSideInfo.ItemSizes)
+            foreach (var itemSize in itemSideInfo.ItemSizes)
             {
                 itemSideViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
             }
@@ -275,9 +293,9 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             var siteTaxSettings = new ApiSiteTaxSettings();
             siteTaxSettings.SiteId = siteTaxSettingsInfo.SiteId;
             siteTaxSettings.ApiTaxSettings = new List<ApiTaxSettings>();
-            foreach(var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
+            foreach (var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
             {
-                siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));     
+                siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));
             }
             var requestData = JsonUtility.Serialize<ApiSiteTaxSettings>(siteTaxSettings);//just to test json
             return siteTaxSettings;
@@ -297,15 +315,20 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel();
             try
             {
-                siteOrderViewModel = JsonUtility.Deserialize<ApiSiteOrderViewModel>(ordersString);    
+                siteOrderViewModel = JsonUtility.Deserialize<ApiSiteOrderViewModel>(ordersString);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
             return siteOrderViewModel;
         }
 
+        private ApiSiteOrderViewModel CreateSiteOrderViewModelForInvoice(SiteOrderModel siteOrderModel)
+        {
+            ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel(); //todo
+            return siteOrderViewModel;
+        }
         #endregion
 
 

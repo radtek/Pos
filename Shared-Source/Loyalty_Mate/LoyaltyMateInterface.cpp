@@ -1167,7 +1167,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendMenu(TSiteMenuInfo menuInfo)
                             itemSideGroupArray.Length = (itemSideGroupArray.Length + 1);
                             itemSideGroupArray[itemSideGroupArray.Length - 1] = sideGroupInfo;
                         }
-                        siteItemInfo->SideGroup = itemSideGroupArray;
+                        siteItemInfo->SideGroups = itemSideGroupArray;
                         siteItemInfoArray.Length = (siteItemInfoArray.Length + 1);
                         siteItemInfoArray[siteItemInfoArray.Length - 1] = siteItemInfo;
                     }

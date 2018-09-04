@@ -24,5 +24,6 @@ namespace Loyaltymate.Sevices
         bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings);
         bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel);
         bool UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel);
+        bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel);
     }
 }

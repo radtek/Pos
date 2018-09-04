@@ -14,7 +14,8 @@ namespace Loyaltymate.Model.OnlineOrderingModel
         public bool OnlyAsSide { get; set; }
         public long CompanyId { get; set; }
         public long SiteMenuCourseId { get; set; }
+        public string ImagePath { get; set; }
         public List<ApiItemSizeViewModel> ItemSizes { get; set; }
-        public List<ApiSideGroupViewModel> SideGroup { get; set; }
+        public List<ApiSideGroupViewModel> SideGroups { get; set; }
     }
 }

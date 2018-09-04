@@ -7,6 +7,7 @@ using System.Text;
 
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.DTO.OnlineOrdering;
+using MenumateServices.DTO.OnlineOrdering.OrderModels;
 
 namespace MenumateServices.WCFServices
 {
@@ -56,5 +57,8 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         void GetOrdersFromWeb(string inSyndicateCode, string orders);
+
+        [OperationContract]
+        LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel);
     }
 }

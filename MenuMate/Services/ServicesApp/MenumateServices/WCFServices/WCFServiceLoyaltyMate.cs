@@ -9,6 +9,7 @@ using System.ServiceModel;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using Loyaltymate.Utility;
 using MenumateServices.DTO.OnlineOrdering.DBOrders;
+using MenumateServices.DTO.OnlineOrdering.OrderModels;
 
 namespace MenumateServices.WCFServices
 {
@@ -240,6 +241,19 @@ namespace MenumateServices.WCFServices
             //::::::::::::::::::::::::::::::::::::::::::::::
             return result;
 
+        }
+
+        public LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
+        {
+            try
+            {
+                return LoyaltySite.Instance.PostOnlineOrderInvoiceInfo(inSyndicateCode, siteOrderModel); 
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return null;
         }
 
     }

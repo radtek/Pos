@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace MenumateServices.DTO.LoyaltyMate
+namespace MenumateServices.DTO.OnlineOrdering
 {
     [DataContract]
     public class SiteItemInfo
@@ -24,8 +24,10 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public long SiteMenuCourseId { get; set; }
         [DataMember]
+        public string ImagePath { get; set; }
+        [DataMember]
         public List<ItemSizeInfo> ItemSizes { get; set; }
         [DataMember]
-        public List<SideGroupInfo> SideGroup { get; set; }
+        public List<SideGroupInfo> SideGroups { get; set; }
     }
 }

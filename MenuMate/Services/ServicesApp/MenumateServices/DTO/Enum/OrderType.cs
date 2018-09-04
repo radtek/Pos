@@ -5,9 +5,11 @@ using System.Text;
 
 namespace MenumateServices.DTO.Enum
 {
-    public enum MenuType
+    public enum OrderType
     {
-        Food = 0,
-        Beverage
+        NormalOrder,
+        Unused,
+        CanceledOrder,
+        CreditNonExistingOrder
     }
 }

@@ -106,7 +106,7 @@
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteMenuViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeDiscountViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
-    <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\SiteOrderTypeInfoViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\SiteOrderViewModel.cs" />
