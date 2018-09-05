@@ -200,6 +200,7 @@
   <xs:element name="GetOrdersFromWeb">
     <xs:complexType>
       <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="orders" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>

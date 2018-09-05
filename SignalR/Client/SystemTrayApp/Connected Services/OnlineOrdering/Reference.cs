@@ -4021,7 +4021,7 @@ namespace SystemTrayApp.OnlineOrdering {
         SystemTrayApp.OnlineOrdering.LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SystemTrayApp.OnlineOrdering.SiteTaxSettingsinfo siteTaxSettings);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetOrdersFromWeb", ReplyAction="http://tempuri.org/IWCFServiceLoyaltyMate/GetOrdersFromWebResponse")]
-        void GetOrdersFromWeb(string orders);
+        void GetOrdersFromWeb(string inSyndicateCode, string orders);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -4103,8 +4103,8 @@ namespace SystemTrayApp.OnlineOrdering {
             return base.Channel.SyncTaxSettings(inSyndicateCode, siteTaxSettings);
         }
         
-        public void GetOrdersFromWeb(string orders) {
-            base.Channel.GetOrdersFromWeb(orders);
+        public void GetOrdersFromWeb(string inSyndicateCode, string orders) {
+            base.Channel.GetOrdersFromWeb(inSyndicateCode, orders);
         }
     }
 }

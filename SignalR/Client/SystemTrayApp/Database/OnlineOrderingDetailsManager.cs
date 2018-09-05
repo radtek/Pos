@@ -11,7 +11,7 @@ namespace OracleTCPServer
 
         public List<string> GetDetailsFromFile()
         {
-            List<string> list = new List<string>();
+            List<string> list = new List<string>(); 
             string path = System.IO.Path.GetDirectoryName(
                       System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
