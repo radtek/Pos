@@ -159,6 +159,7 @@ class TLoyaltyMateInterface
         //for online ordering menu syncing.
         MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
         MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
+        MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
@@ -227,7 +228,12 @@ class TLoyaltyMateInterface
         void CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction);
         void  DisableSyncSetting(Database::TDBTransaction &DBTransaction);
         RequestInfo* CreateRequest(AnsiString requestKey);
+        //Online ordering
         AnsiString GetSyndCodeForOnlineOrdering();
+        OrderItemModel* CreateOrderItemModel(TOrderItemModel itemModel);
+        OrderItemSizeModel* CreateOrderItemSizeModel(TOrderItemSizeModel orderItemSizeModel);
+        OrderItemSizeDiscountModel* CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel);
+        OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
 };
 
 #endif

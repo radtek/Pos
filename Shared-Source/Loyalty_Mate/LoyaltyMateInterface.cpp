@@ -1255,5 +1255,191 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SendTaxSettings(TSiteTaxSettings
     }
 }
 
+MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel)
+{
+    LoyaltyResponse *wcfResponse;
+    try
+    {
+        SiteOrderModel *wcfInfo = new SiteOrderModel();
+        wcfInfo->CompanyId = siteOrderModel.CompanyId;
+        wcfInfo->ContainerName = siteOrderModel.ContainerName;
+        wcfInfo->ContainerNumber = siteOrderModel.ContainerNumber;
+        wcfInfo->ContainerType = siteOrderModel.ContainerType;
+        wcfInfo->IsConfirmed = siteOrderModel.IsConfirmed;
+        wcfInfo->Location = siteOrderModel.Location;
+        wcfInfo->OrderGuid = siteOrderModel.OrderGuid;
+        wcfInfo->OrderId = siteOrderModel.OrderId;
+        wcfInfo->OrderType = siteOrderModel.OrderType;
+        wcfInfo->SiteId = siteOrderModel.SiteId;
+        wcfInfo->TerminalName = siteOrderModel.TerminalName;
+        wcfInfo->TotalAmount = siteOrderModel.TotalAmount;
+
+        TXSDateTime* transactionDate = new TXSDateTime;
+        transactionDate->AsDateTime = siteOrderModel.TransactionDate;
+
+        wcfInfo->TransactionDate = transactionDate;
+        wcfInfo->TransactionType = siteOrderModel.TransactionType;
+        wcfInfo->UserReferenceId = siteOrderModel.UserReferenceId;
+        wcfInfo->UserType = siteOrderModel.UserType;
+
+        if(!siteOrderModel.OrderItems.empty())
+        {
+            ArrayOfOrderItemModel orderItemsModelArray;
+
+            for(std::list<TOrderItemModel>::iterator itOrderItemModel = siteOrderModel.OrderItems.begin();
+                    itOrderItemModel != siteOrderModel.OrderItems.end(); ++itOrderItemModel)
+            {
+                TOrderItemModel itemModel = *itOrderItemModel;
+                OrderItemModel* orderItemModel = CreateOrderItemModel(itemModel);
+                orderItemsModelArray.Length = (orderItemsModelArray.Length + 1);
+                orderItemsModelArray[orderItemsModelArray.Length - 1] = orderItemModel;
+            }
+            wcfInfo->OrderItems = orderItemsModelArray;
+        }
+        CoInitialize(NULL);
+        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
+        wcfResponse = loyaltymateClient->PostOnlineOrderInvoiceInfo(SyndicateCode, wcfInfo);
+        delete wcfInfo;
+        wcfInfo = NULL;
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+
+OrderItemModel* TLoyaltyMateInterface::CreateOrderItemModel(TOrderItemModel itemModel)
+{
+    OrderItemModel* orderItemModel = new OrderItemModel;
+    try
+    {
+        orderItemModel->Description = itemModel.Description;
+        orderItemModel->Name = itemModel.Name;
+        orderItemModel->OrderId = itemModel.OrderId;
+        orderItemModel->OrderItemId = itemModel.OrderItemId;
+        orderItemModel->Price = itemModel.Price;
+        orderItemModel->SiteItemId = itemModel.SiteItemId;
+        if(!itemModel.OrderItemSizes.empty())
+        {
+            ArrayOfOrderItemSizeModel orderItemSizeArray;
+
+            for(std::list<TOrderItemSizeModel>::iterator itOrderItemSizeModel = itemModel.OrderItemSizes.begin();
+                    itOrderItemSizeModel != itemModel.OrderItemSizes.end(); ++itOrderItemSizeModel)
+            {
+                TOrderItemSizeModel itemSizeModel = *itOrderItemSizeModel;
+                OrderItemSizeModel* orderItemSizeModel = CreateOrderItemSizeModel(itemSizeModel);
+                orderItemSizeArray.Length = (orderItemSizeArray.Length + 1);
+                orderItemSizeArray[orderItemSizeArray.Length - 1] = orderItemSizeModel;
+            }
+            orderItemModel->OrderItemSizes = orderItemSizeArray;
+        }
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderItemModel;
+}
+
+OrderItemSizeModel* TLoyaltyMateInterface::CreateOrderItemSizeModel(TOrderItemSizeModel itemSizeModel)
+{
+    OrderItemSizeModel* orderItemSizeModel = new OrderItemSizeModel;
+    try
+    {
+        orderItemSizeModel->OrderItemSizeId = itemSizeModel.OrderItemSizeId;
+        orderItemSizeModel->BasePrice = itemSizeModel.BasePrice;
+        orderItemSizeModel->ItemSizeId = itemSizeModel.ItemSizeId;
+        orderItemSizeModel->MenuPrice = itemSizeModel.MenuPrice;
+        orderItemSizeModel->Name = itemSizeModel.Name;
+        orderItemSizeModel->OrderItemId = itemSizeModel.OrderItemId;
+        orderItemSizeModel->Price = itemSizeModel.Price;
+        orderItemSizeModel->PriceInclusive = itemSizeModel.PriceInclusive;
+        orderItemSizeModel->Quantity = itemSizeModel.Quantity;
+        orderItemSizeModel->ReferenceOrderItemSizeId = itemSizeModel.ReferenceOrderItemSizeId;
+
+        if(!itemSizeModel.OrderItemSizeDiscounts.empty())
+        {
+            ArrayOfOrderItemSizeDiscountModel orderItemSizeDiscountArray;
+
+            for(std::list<TOrderItemSizeDiscountModel>::iterator itOrderItemSizeDiscountModel = itemSizeModel.OrderItemSizeDiscounts.begin();
+                    itOrderItemSizeDiscountModel != itemSizeModel.OrderItemSizeDiscounts.end(); ++itOrderItemSizeDiscountModel)
+            {
+                TOrderItemSizeDiscountModel itemSizeDiscountModel = *itOrderItemSizeDiscountModel;
+                OrderItemSizeDiscountModel* orderItemSizeDiscountModel = CreateOrderItemSizeDiscountModel(itemSizeDiscountModel);
+                orderItemSizeDiscountArray.Length = (orderItemSizeDiscountArray.Length + 1);
+                orderItemSizeDiscountArray[orderItemSizeDiscountArray.Length - 1] = orderItemSizeDiscountModel;
+            }
+            orderItemSizeModel->OrderItemSizeDiscounts = orderItemSizeDiscountArray;
+        }
+
+        if(!itemSizeModel.OrderItemSizeTaxProfiles.empty())
+        {
+            ArrayOfOrderItemSizeTaxProfileModel orderItemSizeTaxProfileArray;
+
+            for(std::list<TOrderItemSizeTaxProfileModel>::iterator itOrderItemSizeTaxProfileModel = itemSizeModel.OrderItemSizeTaxProfiles.begin();
+                    itOrderItemSizeTaxProfileModel != itemSizeModel.OrderItemSizeTaxProfiles.end(); ++itOrderItemSizeTaxProfileModel)
+            {
+                TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel = *itOrderItemSizeTaxProfileModel;
+                OrderItemSizeTaxProfileModel* orderItemSizeTaxProfileModel = CreateOrderItemSizeTaxProfileModel(itemSizeTaxProfileModel);
+                orderItemSizeTaxProfileArray.Length = (orderItemSizeTaxProfileArray.Length + 1);
+                orderItemSizeTaxProfileArray[orderItemSizeTaxProfileArray.Length - 1] = orderItemSizeTaxProfileModel;
+            }
+            orderItemSizeModel->OrderItemSizeTaxProfiles = orderItemSizeTaxProfileArray;
+        }
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderItemSizeModel;
+}
+
+OrderItemSizeDiscountModel* TLoyaltyMateInterface::CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel)
+{
+    OrderItemSizeDiscountModel* orderItemSizeDiscountModel = new OrderItemSizeDiscountModel;
+    try
+    {
+        orderItemSizeDiscountModel->Code = itemSizeDiscountModel.Code;
+        orderItemSizeDiscountModel->Name = itemSizeDiscountModel.Name;
+        orderItemSizeDiscountModel->OrderItemSizeDiscountId = itemSizeDiscountModel.OrderItemSizeDiscountId;
+        orderItemSizeDiscountModel->OrderItemSizeId = itemSizeDiscountModel.OrderItemSizeId;
+        orderItemSizeDiscountModel->Value = itemSizeDiscountModel.Value;
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderItemSizeDiscountModel;
+}
+
+OrderItemSizeTaxProfileModel* TLoyaltyMateInterface::CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel)
+{
+    OrderItemSizeTaxProfileModel* orderItemSizeTaxProfileModel = new OrderItemSizeTaxProfileModel;
+    try
+    {
+        orderItemSizeTaxProfileModel->CompanyId = itemSizeTaxProfileModel.CompanyId;
+        orderItemSizeTaxProfileModel->Description = itemSizeTaxProfileModel.Description;
+        orderItemSizeTaxProfileModel->ItemSizeTaxProfileId = itemSizeTaxProfileModel.ItemSizeTaxProfileId;
+        orderItemSizeTaxProfileModel->Name = itemSizeTaxProfileModel.Name;
+        orderItemSizeTaxProfileModel->OrderItemSizeId = itemSizeTaxProfileModel.OrderItemSizeId;
+        orderItemSizeTaxProfileModel->OrderItemSizeTaxProfileId = itemSizeTaxProfileModel.OrderItemSizeTaxProfileId;
+        orderItemSizeTaxProfileModel->Percentage = itemSizeTaxProfileModel.Percentage;
+        orderItemSizeTaxProfileModel->Priority = itemSizeTaxProfileModel.Priority;
+        orderItemSizeTaxProfileModel->Rate = itemSizeTaxProfileModel.Rate;
+        orderItemSizeTaxProfileModel->TaxProfileType = itemSizeTaxProfileModel.TaxProfileType;
+        orderItemSizeTaxProfileModel->Value = itemSizeTaxProfileModel.Value;
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderItemSizeTaxProfileModel;
+}
+
 
 #pragma package(smart_init)
