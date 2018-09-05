@@ -117,6 +117,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\OrderLogo.bmp; DestDir: {app}; Flags: 
 Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.AspNet.SignalR.Client.dll.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\NewtonSoft.Json.dll; DestDir: {app}; Flags: ignoreversion;
 
 ;OpenSSL for Email - MM POS
 Source: {#GetEnv('BASEDIR')}\Static Files\email\openssl-0.9.8h-1-setup.exe; DestDir: {app}\email; Flags: ignoreversion onlyifdoesntexist

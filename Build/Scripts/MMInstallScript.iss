@@ -63,6 +63,7 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Printers.dat; DestDir: {app}; Flags: i
 Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.AspNet.SignalR.Client.dll.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\NewtonSoft.Json.dll; DestDir: {app}; Flags: ignoreversion;
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\LOYALTY - 6 Steps to Menumate Loyalty.pdf; DestDir: {app}\Documentation
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\MYOB - Premier Integration (Australian Version).pdf; DestDir: {app}\Documentation
