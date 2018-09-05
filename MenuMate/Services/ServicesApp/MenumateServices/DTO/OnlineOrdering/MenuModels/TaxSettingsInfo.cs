@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using MenumateServices.DTO.Enum;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     public class TaxSettingsInfo
     {

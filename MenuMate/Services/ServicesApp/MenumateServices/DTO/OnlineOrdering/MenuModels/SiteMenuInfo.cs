@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     [DataContract]
     public class SiteMenuInfo

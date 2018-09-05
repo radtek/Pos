@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MenumateServices.DTO.OnlineOrdering
+namespace MenumateServices.DTO.OnlineOrdering.MenuModels
 {
     public class SiteTaxSettingsinfo
     {
