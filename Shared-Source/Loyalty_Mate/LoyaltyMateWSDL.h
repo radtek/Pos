@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (4/09/2018 11:00:22 p.m. - - $Rev: 25127 $)
+// (5/09/2018 8:11:04 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -202,7 +202,9 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   GetGiftCardFailed, 
   GetPocketVoucherFailed, 
   MenuSyncingFailed, 
-  TaxSettingSyncingFailed
+  TaxSettingSyncingFailed, 
+  UpdateOnlineOrderStatusFailed, 
+  PostOnlineOrderInvoiceInfoFailed
 };
 
 class LoyaltyResponseCode_TypeInfoHolder : public TObject {
@@ -1683,12 +1685,12 @@ __published:
 };
 
 
-typedef DynamicArray<MenuConsumableInfo*> ArrayOfMenuConsumableInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<MenuConsumableInfo*> ArrayOfMenuConsumableInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : SiteMenuInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteMenuInfo : public TRemotable {
 private:
@@ -1720,12 +1722,12 @@ __published:
 };
 
 
-typedef DynamicArray<CourseInfo*> ArrayOfCourseInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<CourseInfo*> ArrayOfCourseInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : MenuConsumableInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class MenuConsumableInfo : public TRemotable {
 private:
@@ -1785,12 +1787,12 @@ __published:
 };
 
 
-typedef DynamicArray<SiteItemInfo*> ArrayOfSiteItemInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<SiteItemInfo*> ArrayOfSiteItemInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : CourseInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class CourseInfo : public TRemotable {
 private:
@@ -1850,13 +1852,13 @@ __published:
 };
 
 
-typedef DynamicArray<ItemSizeInfo*> ArrayOfItemSizeInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
-typedef DynamicArray<SideGroupInfo*> ArrayOfSideGroupInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<ItemSizeInfo*> ArrayOfItemSizeInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
+typedef DynamicArray<SideGroupInfo*> ArrayOfSideGroupInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : SiteItemInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteItemInfo : public TRemotable {
 private:
@@ -1937,12 +1939,12 @@ __published:
 };
 
 
-typedef DynamicArray<ItemSizeTaxProfileInfo*> ArrayOfItemSizeTaxProfileInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<ItemSizeTaxProfileInfo*> ArrayOfItemSizeTaxProfileInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : ItemSizeInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSizeInfo : public TRemotable {
 private:
@@ -2055,7 +2057,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : ItemSizeTaxProfileInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSizeTaxProfileInfo : public TRemotable {
 private:
@@ -2112,12 +2114,12 @@ __published:
 };
 
 
-typedef DynamicArray<ItemSideInfo*> ArrayOfItemSideInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<ItemSideInfo*> ArrayOfItemSideInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : SideGroupInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SideGroupInfo : public TRemotable {
 private:
@@ -2181,7 +2183,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : ItemSideInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSideInfo : public TRemotable {
 private:
@@ -2234,12 +2236,12 @@ __published:
 };
 
 
-typedef DynamicArray<TaxSettingsInfo*> ArrayOfTaxSettingsInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering"[GblCplx] */
+typedef DynamicArray<TaxSettingsInfo*> ArrayOfTaxSettingsInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels"[GblCplx] */
 
 
 // ************************************************************************ //
 // XML       : SiteTaxSettingsinfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteTaxSettingsinfo : public TRemotable {
 private:
@@ -2268,7 +2270,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : TaxSettingsInfo, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class TaxSettingsInfo : public TRemotable {
 private:
@@ -2294,7 +2296,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : SiteMenuInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteMenuInfo2 : public SiteMenuInfo {
 private:
@@ -2306,7 +2308,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : MenuConsumableInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class MenuConsumableInfo2 : public MenuConsumableInfo {
 private:
@@ -2318,7 +2320,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : CourseInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class CourseInfo2 : public CourseInfo {
 private:
@@ -2330,7 +2332,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : SiteItemInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteItemInfo2 : public SiteItemInfo {
 private:
@@ -2342,7 +2344,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : ItemSizeInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSizeInfo2 : public ItemSizeInfo {
 private:
@@ -2354,7 +2356,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : ItemSizeTaxProfileInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSizeTaxProfileInfo2 : public ItemSizeTaxProfileInfo {
 private:
@@ -2366,7 +2368,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : SideGroupInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SideGroupInfo2 : public SideGroupInfo {
 private:
@@ -2378,7 +2380,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : ItemSideInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class ItemSideInfo2 : public ItemSideInfo {
 private:
@@ -2390,7 +2392,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : SiteTaxSettingsinfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class SiteTaxSettingsinfo2 : public SiteTaxSettingsinfo {
 private:
@@ -2402,7 +2404,7 @@ __published:
 
 // ************************************************************************ //
 // XML       : TaxSettingsInfo, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels
 // ************************************************************************ //
 class TaxSettingsInfo2 : public TaxSettingsInfo {
 private:

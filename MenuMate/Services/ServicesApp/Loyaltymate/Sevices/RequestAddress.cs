@@ -2,7 +2,7 @@
 {
     public class RequestAddress
     {
-        public const string BaseAddress = "http://192.168.0.104/MenumateOrdering/";//"http://lmonlineordering.azurewebsites.net/";
+        public const string BaseAddress = "http://lmonlineordering.azurewebsites.net/";//"http://lmonlineordering.azurewebsites.net/";
 
         //Member
         public const string SaveMember = "api/MemberApi/Save";
