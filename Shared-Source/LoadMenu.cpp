@@ -500,7 +500,7 @@ __int32 TLoadMenu::ItemAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32
 					outPrintFont         = StrToInt( AnsiString( itPtr->Attribute( "printFont" ) ) );
 					outPrintDoubleWidth  = AnsiString( itPtr->Attribute( "printDoubleWidth" ) ).UpperCase() == "TRUE";
 					outPrintDoubleHeight = AnsiString( itPtr->Attribute( "printDoubleHeight" ) ).UpperCase() == "TRUE";
-                    outItemIdentifier =  StrToInt( AnsiString( itPtr->Attribute( "itemIdentifier" ) ) );
+                    outItemIdentifier =  itPtr->Attribute("itemIdentifier") == NULL ? 0 : StrToInt( AnsiString( itPtr->Attribute( "itemIdentifier" ) ) );
 
 					result = ( __int32 )itPtr;
 
