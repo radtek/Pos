@@ -74,6 +74,190 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
+        public bool GetTabExists(FbConnection connection, FbTransaction transaction, int tabKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                    SELECT 
+                                        TAB_KEY 
+                                    FROM 
+                                        TAB 
+                                    WHERE 
+                                        TAB_KEY = @TAB_KEY
+                                    ";
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetTabExists " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command.ExecuteNonQuery() > 0;
+        }
+
+        public FbCommand GetSeatForTable(FbConnection connection, FbTransaction transaction, int tableKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                    SELECT 
+                                        SEAT.SEAT_KEY 
+                                    FROM 
+                                        SEAT INNER JOIN TABLES ON SEAT.TABLE_KEY = TABLES.TABLE_KEY 
+                                    WHERE 
+                                        TABLES.TABLE_KEY = @TABLE_KEY AND SEAT.SEATNO = @SEATNO
+                                    ";
+
+                command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
+                command.Parameters.AddWithValue("@SEATNO", 1);
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSeatForTable " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
+        public FbCommand GetTabKeyBySeatKey(FbConnection connection, FbTransaction transaction, int seatKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                   SELECT TAB_KEY 
+			                        FROM 
+				                        SEAT 
+			                        WHERE 
+				                        SEAT_KEY = @SEAT_KEY
+                                    ";
+
+                command.Parameters.AddWithValue("@SEAT_KEY", seatKey);
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetTabKeyBySeatKey " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
+        public FbCommand SetSeatTabKey(FbConnection connection, FbTransaction transaction, int seatKey, int tabKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                         UPDATE SEAT
+                                           SET TAB_KEY = @TAB_KEY 
+		                                WHERE 
+		                                SEAT_KEY = @SEAT_KEY
+                                    ";
+
+                command.Parameters.AddWithValue("@SEAT_KEY", seatKey);
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetTabKeyBySeatKey " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
+        public FbCommand CreateSeatForTable(FbConnection connection, FbTransaction transaction, int tableKey, int seatKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                   INSERT INTO SEAT (
+                                            SEAT_KEY,
+                                            TABLE_KEY,
+                                            SEATNO) 
+                                         VALUES (
+                                            @SEAT_KEY,
+                                            @TABLE_KEY,
+                                            @SEATNO);
+                                    ";
+
+                command.Parameters.AddWithValue("@SEAT_KEY", seatKey);
+                command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
+                command.Parameters.AddWithValue("@SEATNO", 1);
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetorCreateSeatForTable " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
+        public FbCommand GetTableKeyByTableNumber(FbConnection connection, FbTransaction transaction, int tableNumber)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                    SELECT TABLE_KEY FROM TABLES
+                                        WHERE TABLE_NUMBER = @TABLE_NUMBER
+                                    ";
+
+
+
+                command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetTableKeyByTableName " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
         public FbCommand InsertRecordToOrders(FbConnection connection, FbTransaction transaction, OrderAttributes orderDbItem)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
@@ -145,7 +329,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         PATRON_COUNT,
                                         ONLINE_CHIT_NO, 
                                         ONLINE_CHIT_TYPE, 
-                                        ONLINE_ORDER_ID
+                                        ONLINE_ORDER_ID,
+                                        IS_DOCKET_PRINTED
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -208,7 +393,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         @PATRON_COUNT,
                                         @ONLINE_CHIT_NO, 
                                         @ONLINE_CHIT_TYPE, 
-                                        @ONLINE_ORDER_ID )";
+                                        @ONLINE_ORDER_ID,
+                                        @IS_DOCKET_PRINTED)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -267,10 +453,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ORDER_TYPE_MESSAGE", "");
                 command.Parameters.AddWithValue("@CONTACTS_KEY", orderDbItem.MembershipProfileId);
                 command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
-                command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount); 
-                command.Parameters.AddWithValue("@ONLINE_CHIT_NO", 0); 
-                command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType); 
+                command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
+                command.Parameters.AddWithValue("@ONLINE_CHIT_NO", 0);
+                command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType);
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", orderDbItem.OrderGuid);
+                command.Parameters.AddWithValue("@IS_DOCKET_PRINTED", "F");
 
                 if (orderDbItem.SideOrderKey > 0)
                     command.Parameters.AddWithValue("@SIDE_ORDER_KEY", orderDbItem.SideOrderKey); //todo
@@ -335,6 +522,49 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
+        public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+
+            try
+            {
+                command.CommandText = @"
+                                    INSERT INTO TABLES (
+                                            TABLE_KEY,
+                                            TABLE_NUMBER,
+                                            TABLE_NAME,
+                                            PARTY_NAME,
+                                            CIRCLE,
+                                            TEMPORARY) 
+                                    VALUES (
+                                            @TABLE_KEY,
+                                            @TABLE_NUMBER,
+                                            @TABLE_NAME,
+                                            @PARTY_NAME,
+                                            @CIRCLE,
+                                            @TEMPORARY)
+                                    ";
+
+                command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
+                command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                command.Parameters.AddWithValue("@TABLE_NAME", "Table# " + tableNumber);
+                command.Parameters.AddWithValue("@PARTY_NAME", 0);
+                command.Parameters.AddWithValue("@CIRCLE", 'F');
+                command.Parameters.AddWithValue("@TEMPORARY", 'F');
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateTable " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+
         public FbCommand InsertBreakDownCategoryToDB(FbConnection connection, FbTransaction transaction, long orderKey, int categoryKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
@@ -359,7 +589,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                 ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
             }
 
@@ -382,7 +612,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                 ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
             }
 
@@ -412,6 +642,29 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in LoadBreakDownCategoriesCmd " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+            }
+            return result;
+        }
+
+        public FbCommand GetItemSizeTaxProfileKey(FbConnection connection, FbTransaction transaction, int itemSizeKey)
+        {
+            FbCommand result = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                result.CommandText = @"
+                                        SELECT a.PROFILE_KEY
+                                        FROM TAXPROFILES_ITEMSIZE a
+                                        WHERE a.ITEMSIZE_KEY = @ITEMSIZE_KEY
+                                        GROUP BY 1
+                                    ";
+
+                result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetItemSizeTaxProfileKey " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
             }
             return result;
@@ -466,13 +719,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
             }
 
-            return command;            
+            return command;
         }
 
-        public FbCommand OpenSaleStartTimeCmd(
-                                       FbConnection connection,
-                                       FbTransaction transaction,
-                                       int currentTimeKey)
+        public FbCommand OpenSaleStartTimeCmd(FbConnection connection, FbTransaction transaction, int currentTimeKey)
         {
             FbCommand result = new FbCommand(@"", connection, transaction);
 
@@ -494,7 +744,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-               ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
+                ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
             }
 
@@ -510,10 +760,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         /// <param name="transaction"></param>
         /// <param name="currentTimeKey"></param>
         /// <returns></returns>
-        public FbCommand CloseSaleStartTimeCmd(
-                                FbConnection connection,
-                                FbTransaction transaction,
-                                int timeKey)
+        public FbCommand CloseSaleStartTimeCmd(FbConnection connection, FbTransaction transaction, int timeKey)
         {
             FbCommand result = new FbCommand(@"", connection, transaction);
 
@@ -543,6 +790,29 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             //.........................................................
 
             return result;
+        }
+
+        public FbCommand InsertTaxProfilesOrders(FbConnection connection, FbTransaction transaction, long tpis_Key, long profileKey, long orderKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                   INSERT INTO TAXPROFILES_ORDERS (TPO_KEY, PROFILE_KEY, ORDER_KEY)
+                                                     VALUES (@TPO_KEY, @PROFILE_KEY, @ORDER_KEY)";
+
+                command.Parameters.AddWithValue("@TPO_KEY", tpis_Key);
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+                command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertTaxProfilesOrders " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+            }
+
+            return command;
         }
 
         #endregion

@@ -4288,6 +4288,17 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
                 if(signalRUtility->LoadSignalRUtility())
                 {
                     TGlobalSettings::Instance().EnableOnlineOrdering = true;
+                    //If there is no OnlineOrder Device Create One.
+                    std::auto_ptr<TDeviceWeb> WebDevice(new TDeviceWeb());
+                    WebDevice->ID.Product = "OnlineOrder";
+                    WebDevice->ID.Name = "OnlineOrder";
+                    WebDevice->ID.Type = devPC;
+                    WebDevice->ID.LocationKey = TDeviceRealTerminal::Instance().ID.LocationKey;
+                    if(WebDevice->Locate(DBTransaction) == 0)
+                    {
+                        WebDevice->ID.ProfileKey = TManagerVariable::Instance().SetProfile(DBTransaction,eTerminalProfiles,WebDevice->ID.Name);
+                        WebDevice->Create(DBTransaction);
+                    }
                     MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
                 }
                 else

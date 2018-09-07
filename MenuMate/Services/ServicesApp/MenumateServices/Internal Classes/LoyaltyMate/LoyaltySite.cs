@@ -104,7 +104,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             try
             {

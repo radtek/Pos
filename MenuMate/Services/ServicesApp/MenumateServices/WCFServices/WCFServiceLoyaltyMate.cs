@@ -11,6 +11,7 @@ using MenumateServices.DTO.OnlineOrdering.DBOrders;
 using MenumateServices.DTO.OnlineOrdering.OrderModels;
 using MenumateServices.DTO.OnlineOrdering.MenuModels;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using System.Collections.Generic;
 
 namespace MenumateServices.WCFServices
 {
@@ -203,17 +204,18 @@ namespace MenumateServices.WCFServices
         public void GetOrdersFromWeb(string inSyndicateCode, string orders)
         {
            // LoyaltySite.Instance.InsertOrdersToDB(orders);
-            ApiSiteOrderViewModel siteOrderViewModel = new ApiSiteOrderViewModel();
-            siteOrderViewModel = JsonUtility.Deserialize<ApiSiteOrderViewModel>(orders);
+            List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
+            siteOrderViewModel = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
+            var requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);//just to test json
             bool retVal = InsertOrdersToDB(siteOrderViewModel);
-            if (retVal)
-                siteOrderViewModel.IsConfirmed = true;
-            else
-                siteOrderViewModel.IsConfirmed = false;
+            //if (retVal)
+            //    siteOrderViewModel.IsConfirmed = true;
+            //else
+            //    siteOrderViewModel.IsConfirmed = false;
             LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
         }
 
-        private bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)
+        private bool InsertOrdersToDB(List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             //DBOrder dbOrder = new DBOrder();
             //dbOrder.AddRecords(siteOrderViewModel);           

@@ -441,7 +441,7 @@ namespace Loyaltymate.Sevices
 
         }
 
-        public bool UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        public bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             bool response = false;
             var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateOrderStatus, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);

@@ -5,6 +5,7 @@ using System.Text;
 
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.Win32;
 
 namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {
@@ -109,8 +110,16 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             ServiceInfo serviceInfo = ServiceInfo.Instance;
 
-            //inDatabaseURI = Path.Combine(serviceInfo.WebmateDatabaseLocation(), settings_.DatabaseName);
-            //inDataSource = serviceInfo.WebmateDatabaseServerPath();
+           // inDatabaseURI = Path.Combine(settings_.MenumateLocation, settings_.DatabaseName);// ; "C:\\Databases\\DougnutKing\\MENUMATE.FDB";// Path.Combine(serviceInfo.WebmateDatabaseLocation(), settings_.DatabaseName);
+            inDataSource = "localhost";// (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "InterbaseIP", null); //;////serviceInfo.WebmateDatabaseServerPath();
+            inDatabaseURI = "C:\\Databases\\DougnutKing\\MENUMATE.FDB";
+           // inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
+            //if (InstallPath != null)
+            //{
+            //    // Do stuff
+            //}
+
+            
         }
 
         #endregion

@@ -9,8 +9,8 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
     public class ApiSiteOrderViewModel
     {
         public long CompanyId { get; set; }
-        public long SiteId { get; set; }
-        public long OrderId { get; set; }
+        public long SiteId { get; set; } //save in db
+        public long OrderId { get; set; } //save in db
         public string Location { get; set; }
         public double TotalAmount { get; set; }
         public int ContainerNumber { get; set; }

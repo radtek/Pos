@@ -17,6 +17,7 @@ public:
     static UnicodeString GetOnlineOrderId(Database::TDBTransaction &DBTransaction);
     static void GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId);
     static void SetOnlineOrderStatus(Database::TDBTransaction &DBTransaction, UnicodeString orderUniqueId);
+    static TSiteOrderModel OnlineOrderInvoiceInfo(Database::TDBTransaction &dbTransaction);
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);
