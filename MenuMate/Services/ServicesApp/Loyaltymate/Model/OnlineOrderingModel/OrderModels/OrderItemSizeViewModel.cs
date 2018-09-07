@@ -7,8 +7,8 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
 {
     public class ApiOrderItemSizeViewModel
     {
-        public long OrderItemSizeId { get; set; }
-        public long OrderItemId { get; set; }
+        public long OrderItemSizeId { get; set; }//save in db
+        public long OrderItemId { get; set; } ////save in db
         public string Name { get; set; }
         public long ItemSizeId { get; set; }
         public double Quantity { get; set; }
@@ -16,7 +16,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public double Price { get; set; }
         public double PriceInclusive { get; set; }
         public double BasePrice { get; set; }
-        public long ReferenceOrderItemSizeId { get; set; }
+        public long ReferenceOrderItemSizeId { get; set; } //to send back
         public List<ApiOrderItemSizeDiscountViewModel> OrderItemSizeDiscounts { get; set; }
         public List<ApiOrderItemSizeTaxProfileViewModel> OrderItemSizeTaxProfiles { get; set; }
     }

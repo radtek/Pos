@@ -7454,6 +7454,7 @@ void __fastcall TfrmMenuEdit::btnEditMenuClick(TObject *Sender)
 			MenuNode->Text = NewMenuName;
 			MenuData->LongDescription = NewMenuName;
 			MenuEdited = true;
+            ResetItemAndItemSizeIdentifier();
 		}
 	}
 }
@@ -14090,4 +14091,34 @@ void __fastcall TfrmMenuEdit::chbAvailableOnPalmClick(TObject *Sender)
     EnableOrDisableGenButtons();
 }
 //---------------------------------------------------------------------------
+void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
+{
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
 
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+                    ItemData->ItemIdentifier = 0;
+
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+                            ItemSizeData->ItemSizeIdentifier = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

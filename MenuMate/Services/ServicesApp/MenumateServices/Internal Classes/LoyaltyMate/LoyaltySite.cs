@@ -104,7 +104,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             try
             {
@@ -347,6 +347,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.TransactionType = (Loyaltymate.Enum.SiteSettingType)siteOrderModel.TransactionType;
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
             siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
+            siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();
 
             foreach (var item in siteOrderModel.OrderItems)
             {
@@ -366,6 +367,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemViewModel.OrderItemId = item.OrderItemId;
             orderItemViewModel.Price = item.Price;
             orderItemViewModel.SiteItemId = item.SiteItemId;
+            orderItemViewModel.OrderItemSizes = new List<ApiOrderItemSizeViewModel>();
+
             foreach (var itemSize in item.OrderItemSizes)
             {
                 orderItemViewModel.OrderItemSizes.Add(CreateItemSizeViewModelForInvoice(itemSize));
@@ -386,14 +389,19 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeModel.PriceInclusive = itemSize.Price;
             orderItemSizeModel.Quantity = itemSize.Quantity;
             orderItemSizeModel.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+            orderItemSizeModel.OrderItemSizeDiscounts = new List<ApiOrderItemSizeDiscountViewModel>();
+            orderItemSizeModel.OrderItemSizeTaxProfiles = new List<ApiOrderItemSizeTaxProfileViewModel>();
+
             foreach (var itemSizeDiscount in itemSize.OrderItemSizeDiscounts)
             {
                 orderItemSizeModel.OrderItemSizeDiscounts.Add(CreateItemSizeDiscountViewModelForInvoice(itemSizeDiscount));
             }
+
             foreach (var itemSizeTaxProfile in itemSize.OrderItemSizeTaxProfiles)
             {
                 orderItemSizeModel.OrderItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModelForInvoice(itemSizeTaxProfile));
             }
+
             return orderItemSizeModel;
         }
 

@@ -338,22 +338,10 @@ void TApplyParser::Create6_53Generators(TDBControl* const inDBControl)
 		executeQuery("CREATE GENERATOR GEN_ITEMSIZE_IDENTIFIER;", inDBControl);
 		executeQuery("SET GENERATOR GEN_ITEMSIZE_IDENTIFIER TO 0;", inDBControl);
 	}
-    if(!generatorExists("GEN_ONLINE_CHIT_NO", _dbControl))
-	{
-		executeQuery("CREATE GENERATOR GEN_ONLINE_CHIT_NO;", inDBControl);
-		executeQuery("SET GENERATOR GEN_ONLINE_CHIT_NO TO 0;", inDBControl);
-	}
 }
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
 {
-    if ( !fieldExists( "ORDERS", "ONLINE_CHIT_NO", _dbControl ) )
-    {
-        executeQuery (
-        "ALTER TABLE ORDERS "
-        "ADD ONLINE_CHIT_NO INTEGER ",
-        inDBControl);
-    }
     if ( !fieldExists( "ORDERS", "ONLINE_CHIT_TYPE", _dbControl ) )
     {
         executeQuery (
@@ -375,18 +363,40 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
         "ADD IS_DOCKET_PRINTED T_TRUEFALSE DEFAULT 'T' ",
         inDBControl);
     }
+    if ( !fieldExists( "ORDERS", "SITE_ID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD SITE_ID INTEGER ",
+        inDBControl);
+    }
+    if ( !fieldExists( "ORDERS", "ORDER_ITEM_ID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ORDER_ITEM_ID INTEGER ",
+        inDBControl);
+    }
+    if ( !fieldExists( "ORDERS", "ORDER_ITEM_SIZE_ID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ORDER_ITEM_SIZE_ID INTEGER ",
+        inDBControl);
+    }
+    if ( !fieldExists( "ORDERS", "REFERENCE_ORDER_ITEM_SIZE_ID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD REFERENCE_ORDER_ITEM_SIZE_ID INTEGER ",
+        inDBControl);
+    }
+
 
 }
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableDayArchive6_53(TDBControl* const inDBControl)
 {
-    if ( !fieldExists( "DAYARCHIVE", "ONLINE_CHIT_NO", _dbControl ) )
-    {
-        executeQuery (
-        "ALTER TABLE DAYARCHIVE "
-        "ADD ONLINE_CHIT_NO INTEGER ",
-        inDBControl);
-    }
     if ( !fieldExists( "DAYARCHIVE", "ONLINE_CHIT_TYPE", _dbControl ) )
     {
         executeQuery (
@@ -405,13 +415,6 @@ void TApplyParser::AlterTableDayArchive6_53(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableArchive6_53(TDBControl* const inDBControl)
 {
-    if (!fieldExists( "ARCHIVE", "ONLINE_CHIT_NO", _dbControl ) )
-	{
-        executeQuery (
-        "ALTER TABLE ARCHIVE "
-        "ADD ONLINE_CHIT_NO INTEGER ",
-        inDBControl);
-	}
     if (!fieldExists( "ARCHIVE", "ONLINE_CHIT_TYPE", _dbControl ) )
 	{
         executeQuery (
@@ -453,11 +456,7 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
     try
     {
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
-        if ( fieldExists( "ORDERS ", "ONLINE_CHIT_NO ", _dbControl ) )
-        {
-            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ONLINE_CHIT_NO = 0 WHERE a.ONLINE_CHIT_NO IS NULL ",
-            UpdateQuery->ExecQuery();
-        }
+
         if ( fieldExists( "ORDERS ", "ONLINE_CHIT_TYPE ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",
@@ -473,6 +472,27 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
             UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.IS_DOCKET_PRINTED = 'T' WHERE a.IS_DOCKET_PRINTED IS NULL ",
             UpdateQuery->ExecQuery();
         }
+        if ( fieldExists( "ORDERS ", "SITE_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.SITE_ID = 0 WHERE a.SITE_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ORDERS ", "ORDER_ITEM_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ORDER_ITEM_ID = 0 WHERE a.ORDER_ITEM_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ORDERS ", "ORDER_ITEM_SIZE_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ORDER_ITEM_SIZE_ID = 0 WHERE a.ORDER_ITEM_SIZE_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ORDERS ", "REFERENCE_ORDER_ITEM_SIZE_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.REFERENCE_ORDER_ITEM_SIZE_ID = 0 WHERE a.REFERENCE_ORDER_ITEM_SIZE_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
 
         transaction.Commit();
     }
@@ -489,11 +509,6 @@ void TApplyParser::UpdateDayArchive6_53(TDBControl* const inDBControl)
     try
     {
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
-        if ( fieldExists( "DAYARCHIVE ", "ONLINE_CHIT_NO ", _dbControl ) )
-        {
-            UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_CHIT_NO = 0 WHERE a.ONLINE_CHIT_NO IS NULL ",
-            UpdateQuery->ExecQuery();
-        }
         if ( fieldExists( "DAYARCHIVE ", "ONLINE_CHIT_TYPE ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",
@@ -521,11 +536,6 @@ void TApplyParser::UpdateArchive6_53(TDBControl* const inDBControl)
     {
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
-        if ( fieldExists( "ARCHIVE ", "ONLINE_CHIT_NO ", _dbControl ) )
-        {
-            UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_CHIT_NO = 0 WHERE a.ONLINE_CHIT_NO IS NULL ",
-            UpdateQuery->ExecQuery();
-        }
         if ( fieldExists( "ARCHIVE ", "ONLINE_CHIT_TYPE ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",

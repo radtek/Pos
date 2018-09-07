@@ -51,5 +51,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public long SetvingCourseKey { get; set; }
         public int TimeKey { get; set; }
         public double PointsPercent { get; set; }
+        public int ItemSizeKey { get; set; }
+        public List<int> TaxProfileKeys { get; set; }
+        public long SiteId { get; set; }
+        public long OrderItemId { get; set; }
+        public long OrderItemSizeId { get; set; }
+        public long ReferenceOrderItemSizeId { get; set; }
     }
 }

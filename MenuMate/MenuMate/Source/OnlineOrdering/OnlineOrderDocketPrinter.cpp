@@ -153,6 +153,8 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 //        dBTransaction.StartTransaction();
 
         UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderId(dBTransaction);
+        if(orderUniqueId.Trim() == "")
+            return;
 		// Load the Order.
 		TPaymentTransaction PaymentTransaction(dBTransaction);
 		PaymentTransaction.SalesType = eWeb;
@@ -286,7 +288,7 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 //        PaymentTransaction.WebOrderKey =  WebOrder.WebKey;
 
 		// Print the Order to the Kitchen.
-		PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"");   //tab key to be changed
+		PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"OnlineOrder");   //tab key to be changed
 		// Print the Receipts.
 		AutoPrintReceipts(TabWeb, PaymentTransaction);
 
@@ -340,7 +342,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
 
         if(DeviceName == "")
         {
-            DeviceName = "WebMate";
+            DeviceName = "OnlineOrder";
         }
         if(WebDevice->NameToKey(PaymentTransaction.DBTransaction, DeviceName) != 0)
         {

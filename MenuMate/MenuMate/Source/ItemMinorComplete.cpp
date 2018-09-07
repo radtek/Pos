@@ -227,9 +227,12 @@ TItemMinorComplete::TItemMinorComplete() {
     TabKey = 0;
     RoomNoStr = "";
     SplitMessage = "";
-    OnlineChitNo = 0;
     OnlineChitType = 0;
     OnlineOrderId = "";
+    SiteId = 0;
+    OrderItemId = 0;
+    OrderItemSizeId = 0;
+    ReferenceOrderItemSizeId = 0;
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -292,9 +295,12 @@ TItemMinorComplete::TItemMinorComplete(
     TabKey = initializer.TabKey;
     RoomNoStr = initializer.RoomNoStr;
     SplitMessage = initializer.SplitMessage;
-    OnlineChitNo = initializer.OnlineChitNo;
     OnlineChitType = initializer.OnlineChitType;
     OnlineOrderId = initializer.OnlineOrderId;
+    SiteId = initializer.SiteId;
+    OrderItemId = initializer.OrderItemId;
+    OrderItemSizeId = initializer.OrderItemSizeId;
+    ReferenceOrderItemSizeId = initializer.ReferenceOrderItemSizeId;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -347,9 +353,12 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     TabKey = rhs.TabKey;
     RoomNoStr = rhs.RoomNoStr;
     SplitMessage = rhs.SplitMessage;
-    OnlineChitNo = rhs.OnlineChitNo;
     OnlineChitType = rhs.OnlineChitType;
     OnlineOrderId = rhs.OnlineOrderId;
+    SiteId = rhs.SiteId;
+    OrderItemId = rhs.OrderItemId;
+    OrderItemSizeId = rhs.OrderItemSizeId;
+    ReferenceOrderItemSizeId = rhs.ReferenceOrderItemSizeId;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -403,9 +412,12 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->TabKey = TabKey;
         RetItem->RoomNoStr = RoomNoStr;
         RetItem->SplitMessage = SplitMessage;
-        RetItem->OnlineChitNo = OnlineChitNo;
         RetItem->OnlineChitType = OnlineChitType;
         RetItem->OnlineOrderId = OnlineOrderId;
+        RetItem->SiteId = SiteId;
+        RetItem->OrderItemId = OrderItemId;
+        RetItem->OrderItemSizeId = OrderItemSizeId;
+        RetItem->ReferenceOrderItemSizeId = ReferenceOrderItemSizeId;
     }
 }
 

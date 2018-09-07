@@ -109,7 +109,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
-       public string BuildConnectionString(string ipAddress, string dbpath)
+        public string BuildConnectionString(string ipAddress, string dbpath)
         {
             string connectionString = "User=SYSDBA;Password=masterkey;Database=" + dbpath + ";DataSource=" + ipAddress +
                                       ";Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=false;" +
@@ -133,66 +133,79 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         //    addDetailsTransaction.Commit();
         //}
 
-        public void AddRecords(ApiSiteOrderViewModel siteOrderViewModel)
+        public void AddRecords(List<ApiSiteOrderViewModel> siteOrderViewModelList)
         {
             try
             {
-                using (FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Program Files (x86)\\MenuMate\\Menumate.fdb"))) //path to be changed
+                using (FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Databases\\DougnutKing\\Menumate.fdb"))) //path to be changed
                 {
                     addDetailsConnection.Open();
 
                     FbTransaction addDetailsTransaction = addDetailsConnection.BeginTransaction();
 
-
-                    OrderAttributes orderRow = new OrderAttributes();
-                    orderRow.ContainerName = siteOrderViewModel.ContainerName;
-                    orderRow.ContainerType = siteOrderViewModel.ContainerType;
-                    orderRow.Location = siteOrderViewModel.Location;
-                    orderRow.OrderType = siteOrderViewModel.OrderType;
-                    orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                    orderRow.TerminalName = siteOrderViewModel.TerminalName;
-                    orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
-                    orderRow.TransactionType = siteOrderViewModel.TransactionType;
-                    orderRow.UserType = siteOrderViewModel.UserType;
-                    orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
-
-                    foreach (var item in siteOrderViewModel.OrderItems)
+                    foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
-                        orderRow.Name = item.Name;
-                        orderRow.OrderId = item.OrderItemId;
-                        orderRow.SiteItemId = item.SiteItemId;
-                        foreach (var itemSize in item.OrderItemSizes)
+                        OrderAttributes orderRow = new OrderAttributes();
+                        orderRow.ContainerName = siteOrderViewModel.ContainerName;
+                        orderRow.ContainerType = siteOrderViewModel.ContainerType;
+                        orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
+                        orderRow.Location = siteOrderViewModel.Location;
+                        orderRow.OrderType = siteOrderViewModel.OrderType;
+                        orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                        orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                        orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
+                        orderRow.TransactionType = siteOrderViewModel.TransactionType;
+                        orderRow.UserType = siteOrderViewModel.UserType;
+                        orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
+
+                        foreach (var item in siteOrderViewModel.OrderItems)
                         {
-                            orderRow.BasePrice = itemSize.BasePrice;
-                            orderRow.ItemSizeId = itemSize.ItemSizeId;
-                            orderRow.MenuPrice = itemSize.MenuPrice;
-                            orderRow.SizeName = itemSize.Name;
-                            orderRow.Price = itemSize.Price;
-                            orderRow.PriceInclusive = itemSize.PriceInclusive;
-                            orderRow.Quantity = itemSize.Quantity;
-                            orderRow.ItemSizeId = itemSize.ItemSizeId;
-                            orderRow.TimeKey = setTimeKey();
+                            orderRow.Name = item.Name;
+                            //orderRow.OrderId = item.OrderItemId;
+                            orderRow.SiteItemId = item.SiteItemId;
+                            foreach (var itemSize in item.OrderItemSizes)
+                            {
+                                orderRow.BasePrice = itemSize.BasePrice;
+                                orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                orderRow.MenuPrice = itemSize.MenuPrice;
+                                orderRow.SizeName = itemSize.Name;
+                                orderRow.Price = itemSize.Price;
+                                orderRow.PriceInclusive = itemSize.PriceInclusive;
+                                orderRow.Quantity = itemSize.Quantity;
+                                orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                orderRow.TimeKey = setTimeKey();
 
-                            //Generate order id..
-                            orderRow.OrderId = GenerateKey("ORDERS");
+                                //Generate order id..
+                                orderRow.OrderId = GenerateKey("ORDERS");
 
-                            //generate tab key if tab not exist..
-                            orderRow.TabKey = GetOrCreateTabForOnlineOrdering(5, orderRow.OrderGuid, ""); //TODo
+                                //Generate Security ref..
+                                orderRow.SecurityRef = GetNextSecurityRef();
 
-                            //Generate tansaction number..
-                            orderRow.TramsNo = GenerateKey("TRANSNO");
+                                //generate tab key if tab not exist..
+                                orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
+                                                    : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo
 
-                            //Load Item info like course, sc, kitchen name etc.
-                            LoadItemInfo(ref orderRow);
+                                //Generate tansaction number..
+                                orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
 
-                            //load And insert breakdown category into orderscategory..
-                            GetAndInsertBreakDownCategories(itemSize.ItemSizeId, ref orderRow);
+                                //Load Item info like course, sc, kitchen name etc.
+                                LoadItemInfo(ref orderRow);
 
-                            //Insert records to orders..
-                            ExecuteOrderQuery(orderRow);
+                                //load And insert breakdown category into orderscategory..
+                                GetAndInsertBreakDownCategories(itemSize.ItemSizeId, ref orderRow);
 
-                            //insert security event to security..
-                            ExecuteSecurityQuery(orderRow);
+                                //LoadTaxProfileKeys
+                                LoadItemSizeTaxProfileOrders(ref orderRow);
+
+                                //Insert records to orders..
+                                ExecuteOrderQuery(orderRow);
+
+                                //Insert Order tax profile info..
+                                ExecuteTaxProfileOrders(orderRow);
+
+                                //insert security event to security..
+                               // ExecuteSecurityQuery(orderRow);
+                            }
                         }
                     }
                     addDetailsTransaction.Commit();
@@ -251,6 +264,103 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tabKey;
         }
 
+        private int GetOrCreateTableForOnlineOrdering(int tableNumber, string containerName)
+        {
+            int tableKey = FindTableKeyForOnlineOrder(tableNumber);
+            try
+            {
+                if (tableKey == 0)
+                    tableKey = CreateOnlineOrderTableInDB(tableNumber);
+                int seatKey = GetOrCreateSeatForOnlineOrdering(tableKey);
+                tableKey = GetTabKey(seatKey, containerName);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
+            return tableKey;
+        }
+
+        private int GetTabKey(int seatKey, string containerName)
+        {
+            int tabKey = 0;
+            try
+            {
+                FbCommand command = dbQueries.GetTabKeyBySeatKey(connection, transaction, seatKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        tabKey = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "TAB_KEY",
+                                                        0));
+                }
+                if (!dbQueries.GetTabExists(connection, transaction, tabKey))
+                {
+                    if (tabKey == 0)
+                        tabKey = GenerateKey("TAB");
+                    command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, "");
+                    command.ExecuteNonQuery();
+                    SetSeatTab(tabKey, seatKey);
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
+            return tabKey;
+        }
+
+        private void SetSeatTab(int tabKey, int seatKey)
+        {
+            try
+            {
+                FbCommand command = dbQueries.SetSeatTabKey(connection, transaction, seatKey, tabKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
+        }
+
+        private int GetOrCreateSeatForOnlineOrdering(int tableKey)
+        {
+            FbCommand command = dbQueries.GetSeatForTable(connection, transaction, tableKey);
+            int seatKey = 0;
+            try
+            {
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        seatKey = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "SEAT_KEY",
+                                                        0));
+                }
+
+                if (seatKey == 0)
+                {
+                    seatKey = GenerateKey("SEAT");
+                    command = dbQueries.CreateSeatForTable(connection, transaction, tableKey, seatKey);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
+            }
+            return seatKey;
+        }
+
+
         private int FindTabKeyForOnlineOrderTab(string tabName)
         {
             int tabKey = 0;
@@ -280,6 +390,35 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tabKey;
         }
 
+        private int FindTableKeyForOnlineOrder(int tableNumber)
+        {
+            int tableKey = 0;
+
+            try
+            {
+                FbCommand command = dbQueries.GetTableKeyByTableNumber(connection, transaction, tableNumber);
+
+                //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
+
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        tableKey = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "TABLE_KEY",
+                                                        0));
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in FindTableKeyForOnlineOrde " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 269, short.MaxValue);
+            }
+
+            return tableKey;
+        }
+
         private int createTabForOnlineOrder(int onlineOrderKey, string tabName, string id_number)
         {
             int tabKey = CreateOnlineOrderTabInDB(tabName, id_number);
@@ -305,6 +444,27 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
 
             return tabKey;
+        }
+
+        private int CreateOnlineOrderTableInDB(int tableNumber)
+        {
+            int tableKey = GenerateKey("TABLES");
+
+            try
+            {
+                FbCommand command = dbQueries.CreateTable(connection, transaction, tableKey, tableNumber);
+
+                //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
+
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in createWebOrderTabInDB " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 270, short.MaxValue);
+            }
+
+            return tableKey;
         }
 
         object getReaderColumnValue(FbDataReader reader, string columnName, object defaultValue)
@@ -335,6 +495,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderInfo.Cost = reader.GetDouble(reader.GetOrdinal("COST"));
                         orderInfo.CategoryKey = reader.GetInt32(reader.GetOrdinal("CATEGORY_KEY"));
                         orderInfo.PointsPercent = reader.GetDouble(reader.GetOrdinal("POINTS_PERCENT"));
+                        orderInfo.ItemSizeKey = reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY"));
                         LoadItemSizeBreakDownCategories(orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
                     }
                 }
@@ -367,6 +528,27 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
+        private void LoadItemSizeTaxProfileOrders(ref OrderAttributes orderInfo)
+        {
+            try
+            {
+                FbCommand command = dbQueries.GetItemSizeTaxProfileKey(connection, transaction, orderInfo.ItemSizeKey);
+                orderInfo.TaxProfileKeys = new List<int>();
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        orderInfo.TaxProfileKeys.Add(reader.GetInt32(reader.GetOrdinal("PROFILE_KEY")));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+            }
+        }
+
         private void ExecuteOrderQuery(OrderAttributes orderRow)
         {
             try
@@ -381,20 +563,38 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
-        private void ExecuteSecurityQuery(OrderAttributes orderRow)
+        private void ExecuteTaxProfileOrders(OrderAttributes orderRow)
         {
             try
             {
-                long securityKey = GenerateKey("SECURITY_KEY");
-                FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
-                command.ExecuteNonQuery();
+                foreach (var takProfileKey in orderRow.TaxProfileKeys)
+                {
+                    long tpoKey = GenerateKey("TAXPROFILES_ORDERS");
+                    FbCommand command = dbQueries.InsertTaxProfilesOrders(connection, transaction, tpoKey, takProfileKey, orderRow.OrderId);
+                    command.ExecuteNonQuery();
+                }
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                ServiceLogger.LogException(@"in ExecuteTaxProfileOrders " + e.Message, e);
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
             }
         }
+
+        //private void ExecuteSecurityQuery(OrderAttributes orderRow)
+        //{
+        //    try
+        //    {
+        //        long securityKey = GenerateKey("SECURITY_KEY");
+        //        FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
+        //        command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+        //        //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+        //    }
+        //}
 
         private void LoadItemInfo(ref OrderAttributes orderInfo)
         {
@@ -467,6 +667,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
+        private long GetNextSecurityRef()
+        {
+            return GenerateKey("SECURITY_REF");
+        }
         #endregion
     }
 

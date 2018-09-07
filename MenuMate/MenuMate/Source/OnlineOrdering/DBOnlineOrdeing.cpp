@@ -441,3 +441,18 @@ void TDBOnlineOrdering::SetOnlineOrderStatus(Database::TDBTransaction &dbTransac
 		throw;
 	}
 }
+//----------------------------------------------------------------------------
+TSiteOrderModel TDBOnlineOrdering::OnlineOrderInvoiceInfo(Database::TDBTransaction &dbTransaction)
+{
+    TSiteOrderModel siteOrderModel;
+    try
+    {
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return siteOrderModel;
+}
