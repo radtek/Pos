@@ -161,7 +161,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         foreach (var item in siteOrderViewModel.OrderItems)
                         {
                             orderRow.Name = item.Name;
-                            orderRow.OrderId = item.OrderItemId;
+                            //orderRow.OrderId = item.OrderItemId;
                             orderRow.SiteItemId = item.SiteItemId;
                             foreach (var itemSize in item.OrderItemSizes)
                             {

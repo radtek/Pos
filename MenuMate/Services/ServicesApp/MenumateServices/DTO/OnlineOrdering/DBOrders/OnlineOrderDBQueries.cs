@@ -327,10 +327,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 			                            CONTACTS_KEY,
 			                            ACTIVECHITNUMBER_KEY, 
                                         PATRON_COUNT,
-                                        ONLINE_CHIT_NO, 
                                         ONLINE_CHIT_TYPE, 
                                         ONLINE_ORDER_ID,
-                                        IS_DOCKET_PRINTED
+                                        IS_DOCKET_PRINTED,
+                                        SITE_ID,
+                                        ORDER_ITEM_ID,
+                                        ORDER_ITEM_SIZE_ID,
+                                        REFERENCE_ORDER_ITEM_SIZE_ID
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -390,11 +393,14 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 		                                @ORDER_TYPE_MESSAGE,
 			                            @CONTACTS_KEY,
 			                            @ACTIVECHITNUMBER_KEY, 
-                                        @PATRON_COUNT,
-                                        @ONLINE_CHIT_NO, 
+                                        @PATRON_COUNT, 
                                         @ONLINE_CHIT_TYPE, 
                                         @ONLINE_ORDER_ID,
-                                        @IS_DOCKET_PRINTED)";
+                                        @IS_DOCKET_PRINTED,
+                                        @SITE_ID,
+                                        @ORDER_ITEM_ID,
+                                        @ORDER_ITEM_SIZE_ID,
+                                        @REFERENCE_ORDER_ITEM_SIZE_ID)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -454,10 +460,14 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@CONTACTS_KEY", orderDbItem.MembershipProfileId);
                 command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
                 command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
-                command.Parameters.AddWithValue("@ONLINE_CHIT_NO", 0);
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType);
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", orderDbItem.OrderGuid);
                 command.Parameters.AddWithValue("@IS_DOCKET_PRINTED", "F");
+				command.Parameters.AddWithValue("@SITE_ID", orderDbItem.SiteId);
+                command.Parameters.AddWithValue("@ORDER_ITEM_ID", orderDbItem.OrderItemId);
+                command.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderDbItem.OrderItemSizeId);
+                command.Parameters.AddWithValue("@REFERENCE_ORDER_ITEM_SIZE_ID", orderDbItem.ReferenceOrderItemSizeId);
+                
 
                 if (orderDbItem.SideOrderKey > 0)
                     command.Parameters.AddWithValue("@SIDE_ORDER_KEY", orderDbItem.SideOrderKey); //todo
