@@ -338,11 +338,6 @@ void TApplyParser::Create6_53Generators(TDBControl* const inDBControl)
 		executeQuery("CREATE GENERATOR GEN_ITEMSIZE_IDENTIFIER;", inDBControl);
 		executeQuery("SET GENERATOR GEN_ITEMSIZE_IDENTIFIER TO 0;", inDBControl);
 	}
-    if(!generatorExists("GEN_ONLINE_CHIT_NO", _dbControl))
-	{
-		executeQuery("CREATE GENERATOR GEN_ONLINE_CHIT_NO;", inDBControl);
-		executeQuery("SET GENERATOR GEN_ONLINE_CHIT_NO TO 0;", inDBControl);
-	}
 }
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
@@ -402,13 +397,6 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableDayArchive6_53(TDBControl* const inDBControl)
 {
-    if ( !fieldExists( "DAYARCHIVE", "ONLINE_CHIT_NO", _dbControl ) )
-    {
-        executeQuery (
-        "ALTER TABLE DAYARCHIVE "
-        "ADD ONLINE_CHIT_NO INTEGER ",
-        inDBControl);
-    }
     if ( !fieldExists( "DAYARCHIVE", "ONLINE_CHIT_TYPE", _dbControl ) )
     {
         executeQuery (
@@ -427,13 +415,6 @@ void TApplyParser::AlterTableDayArchive6_53(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableArchive6_53(TDBControl* const inDBControl)
 {
-    if (!fieldExists( "ARCHIVE", "ONLINE_CHIT_NO", _dbControl ) )
-	{
-        executeQuery (
-        "ALTER TABLE ARCHIVE "
-        "ADD ONLINE_CHIT_NO INTEGER ",
-        inDBControl);
-	}
     if (!fieldExists( "ARCHIVE", "ONLINE_CHIT_TYPE", _dbControl ) )
 	{
         executeQuery (
@@ -528,11 +509,6 @@ void TApplyParser::UpdateDayArchive6_53(TDBControl* const inDBControl)
     try
     {
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
-        if ( fieldExists( "DAYARCHIVE ", "ONLINE_CHIT_NO ", _dbControl ) )
-        {
-            UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_CHIT_NO = 0 WHERE a.ONLINE_CHIT_NO IS NULL ",
-            UpdateQuery->ExecQuery();
-        }
         if ( fieldExists( "DAYARCHIVE ", "ONLINE_CHIT_TYPE ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",
@@ -560,11 +536,6 @@ void TApplyParser::UpdateArchive6_53(TDBControl* const inDBControl)
     {
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
-        if ( fieldExists( "ARCHIVE ", "ONLINE_CHIT_NO ", _dbControl ) )
-        {
-            UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_CHIT_NO = 0 WHERE a.ONLINE_CHIT_NO IS NULL ",
-            UpdateQuery->ExecQuery();
-        }
         if ( fieldExists( "ARCHIVE ", "ONLINE_CHIT_TYPE ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",

@@ -1124,9 +1124,12 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "ACC_NO, "
             "FIRST_NAME, "
             "LAST_NAME, "
-            "ONLINE_CHIT_NO, "
             "ONLINE_CHIT_TYPE, "
-            "ONLINE_ORDER_ID "
+            "ONLINE_ORDER_ID, "
+            "SITE_ID, "
+            "ORDER_ITEM_ID, "
+            "ORDER_ITEM_SIZE_ID, "
+            "REFERENCE_ORDER_ITEM_SIZE_ID "
           ") "
 			"VALUES "
 			"( "
@@ -1207,10 +1210,13 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":ACC_NO, "
             ":FIRST_NAME, "
             ":LAST_NAME, "
-            ":ONLINE_CHIT_NO, "
             ":ONLINE_CHIT_TYPE, "
-            ":ONLINE_ORDER_ID "
-          	");";
+            ":ONLINE_ORDER_ID , "
+            ":SITE_ID, "
+            ":ORDER_ITEM_ID, "
+            ":ORDER_ITEM_SIZE_ID, "
+            ":REFERENCE_ORDER_ITEM_SIZE_ID "
+            ");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
             IBInternalQuery->ParamByName("ORDER_IDENTIFICATION_NUMBER")->AsInteger = Order->OrderIdentificationNo;
@@ -1342,9 +1348,13 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
 			}
 
-            IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
+
             IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
             IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+            IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Order->SiteId;
+            IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
+            IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
+            IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
 
 			IBInternalQuery->ExecQuery();
 
@@ -1541,9 +1551,12 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "ACC_NO, "
                 "FIRST_NAME, "
                 "LAST_NAME, "
-                "ONLINE_CHIT_NO, "
                 "ONLINE_CHIT_TYPE, "
-                "ONLINE_ORDER_ID "
+                "ONLINE_ORDER_ID, "
+                "SITE_ID, "
+                "ORDER_ITEM_ID, "
+                "ORDER_ITEM_SIZE_ID, "
+                "REFERENCE_ORDER_ITEM_SIZE_ID "
 		   	") "
 				"VALUES "
 				"( "
@@ -1624,9 +1637,12 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":ACC_NO, "
                 ":FIRST_NAME, "
                 ":LAST_NAME, "
-                ":ONLINE_CHIT_NO, "
                 ":ONLINE_CHIT_TYPE, "
-                ":ONLINE_ORDER_ID "
+                ":ONLINE_ORDER_ID , "
+                ":SITE_ID, "
+                ":ORDER_ITEM_ID, "
+                ":ORDER_ITEM_SIZE_ID, "
+                ":REFERENCE_ORDER_ITEM_SIZE_ID "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1738,9 +1754,12 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                     IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
                 IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
                 IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
-                IBInternalQuery->ParamByName("ONLINE_CHIT_NO")->AsInteger = Order->OnlineChitNo;
                 IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
                 IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+                IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Order->SiteId;
+                IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
+                IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
+                IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
 
 				IBInternalQuery->ExecQuery();
 
