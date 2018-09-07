@@ -178,6 +178,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 //Generate order id..
                                 orderRow.OrderId = GenerateKey("ORDERS");
 
+                                //Generate Security ref..
+                                orderRow.SecurityRef = GetNextSecurityRef();
+
                                 //generate tab key if tab not exist..
                                 orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
                                                     : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo
@@ -201,7 +204,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 ExecuteTaxProfileOrders(orderRow);
 
                                 //insert security event to security..
-                                ExecuteSecurityQuery(orderRow);
+                               // ExecuteSecurityQuery(orderRow);
                             }
                         }
                     }
@@ -578,20 +581,20 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
-        private void ExecuteSecurityQuery(OrderAttributes orderRow)
-        {
-            try
-            {
-                long securityKey = GenerateKey("SECURITY_KEY");
-                FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
-                command.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
-            }
-        }
+        //private void ExecuteSecurityQuery(OrderAttributes orderRow)
+        //{
+        //    try
+        //    {
+        //        long securityKey = GenerateKey("SECURITY_KEY");
+        //        FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
+        //        command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+        //        //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+        //    }
+        //}
 
         private void LoadItemInfo(ref OrderAttributes orderInfo)
         {
@@ -664,6 +667,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
         }
 
+        private long GetNextSecurityRef()
+        {
+            return GenerateKey("SECURITY_REF");
+        }
         #endregion
     }
 

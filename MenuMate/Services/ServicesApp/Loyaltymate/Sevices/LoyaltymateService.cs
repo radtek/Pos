@@ -8,7 +8,6 @@ using Loyaltymate.Utility;
 using Loyaltymate.Model.OnlineOrderingModel;
 using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
-using Loyaltymate.Model.OnlineOrderingModel.DBOrders;
 using System.Diagnostics;
 using Loyaltymate.Tools;
 
@@ -412,32 +411,32 @@ namespace Loyaltymate.Sevices
 
         public bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)
         {
-            //DBOrder dbOrder = new DBOrder();
-            //dbOrder.AddRecords(siteOrderViewModel);           
+        //    //DBOrder dbOrder = new DBOrder();
+        //    //dbOrder.AddRecords(siteOrderViewModel);           
 
-            bool result = false;
-            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
-            try
-            {
-                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
-                {
-                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
-                    {
-                        onlineOrderDB.AddRecords(siteOrderViewModel); //result = onlineOrderDB.AddRecords(siteOrderViewModel);
-                        onlineOrderDB.transaction.Commit();
-                        ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order ");
-                    }
-                }
-                ServiceLogger.Log(@"outside using in dbWebOrderAccepted(string inOrderHandle) with order ");
-            }
-            catch (Exception e)
-            {
-                onlineOrderDB.RollbackTransaction();
-                ServiceLogger.Log(@"In InsertOrdersToDB " + e.Message);
-                EventLog.WriteEntry("IN Order Creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
-            }
-            //::::::::::::::::::::::::::::::::::::::::::::::
-            return result;
+        //    bool result = false;
+        //    OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+        //    try
+        //    {
+        //        using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+        //        {
+        //            using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+        //            {
+        //                onlineOrderDB.AddRecords(siteOrderViewModel); //result = onlineOrderDB.AddRecords(siteOrderViewModel);
+        //                onlineOrderDB.transaction.Commit();
+        //                ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order ");
+        //            }
+        //        }
+        //        ServiceLogger.Log(@"outside using in dbWebOrderAccepted(string inOrderHandle) with order ");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        onlineOrderDB.RollbackTransaction();
+        //        ServiceLogger.Log(@"In InsertOrdersToDB " + e.Message);
+        //        EventLog.WriteEntry("IN Order Creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
+        //    }
+        //    //::::::::::::::::::::::::::::::::::::::::::::::
+            return true;
 
         }
 

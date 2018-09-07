@@ -424,7 +424,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.SizeName); //todo 
                 command.Parameters.AddWithValue("@SETMENU_MASK", orderDbItem.SetMenuMask);
                 command.Parameters.AddWithValue("@SETMENU_GROUP", 0); //todo in future
-                command.Parameters.AddWithValue("@ITEM_CATEGORY", QueryUtilities.GetSubstring("Table #" + orderDbItem.ItemCategory, 1, 40));
+                command.Parameters.AddWithValue("@ITEM_CATEGORY", QueryUtilities.GetSubstring(orderDbItem.ItemCategory, 1, 40));
                 command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
                 command.Parameters.AddWithValue("@TIME_KEY", orderDbItem.TimeKey);
                 command.Parameters.AddWithValue("@GST_PERCENT", orderDbItem.GSTPercent);
@@ -466,7 +466,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in SetOrderCmd " + e.Message, e);
+                ServiceLogger.LogException(@"in InsertRecordToOrders " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 195, short.MaxValue);
             }
 
@@ -670,34 +671,34 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return result;
         }
 
-        public FbCommand InsertIntoSecurity(FbConnection connection, FbTransaction transaction, OrderAttributes orderDbItem, long securityKey)
-        {
-            FbCommand command = new FbCommand(@"", connection, transaction);
+//        public FbCommand InsertIntoSecurity(FbConnection connection, FbTransaction transaction, OrderAttributes orderDbItem, long securityKey)
+//        {
+//            FbCommand command = new FbCommand(@"", connection, transaction);
 
-            try
-            {
-                command.CommandText = @"
-                                   INSERT INTO SECURITY (SECURITY_KEY, SECURITY_REF, SECURITY_EVENT, FROM_VAL, TO_VAL, NOTE, TERMINAL_NAME, USER_KEY, TIME_STAMP)
-                                     VALUES (@SECURITY_KEY, @SECURITY_REF, @SECURITY_EVENT, @FROM_VAL, @TO_VAL, @NOTE, @TERMINAL_NAME, @USER_KEY, @TIME_STAMP)";
+//            try
+//            {
+//                command.CommandText = @"
+//                                   INSERT INTO SECURITY (SECURITY_KEY, SECURITY_REF, SECURITY_EVENT, FROM_VAL, TO_VAL, NOTE, TERMINAL_NAME, USER_KEY, TIME_STAMP)
+//                                     VALUES (@SECURITY_KEY, @SECURITY_REF, @SECURITY_EVENT, @FROM_VAL, @TO_VAL, @NOTE, @TERMINAL_NAME, @USER_KEY, @TIME_STAMP)";
 
-                command.Parameters.AddWithValue("@SECURITY_KEY", securityKey);
-                command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
-                command.Parameters.AddWithValue("@SECURITY_EVENT", "Online ordered by");
-                command.Parameters.AddWithValue("@FROM_VAL", orderDbItem.ContainerName);
-                command.Parameters.AddWithValue("@TO_VAL", orderDbItem.ContainerName);
-                command.Parameters.AddWithValue("@NOTE", "");
-                command.Parameters.AddWithValue("@TERMINAL_NAME", orderDbItem.Location);
-                command.Parameters.AddWithValue("@USER_KEY", orderDbItem.MembershipProfileId);
-                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
-            }
-            catch (Exception e)
-            {
-                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
-            }
+//                command.Parameters.AddWithValue("@SECURITY_KEY", securityKey);
+//                command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
+//                command.Parameters.AddWithValue("@SECURITY_EVENT", "Online ordered by");
+//                command.Parameters.AddWithValue("@FROM_VAL", orderDbItem.ContainerName);
+//                command.Parameters.AddWithValue("@TO_VAL", orderDbItem.ContainerName);
+//                command.Parameters.AddWithValue("@NOTE", "");
+//                command.Parameters.AddWithValue("@TERMINAL_NAME", orderDbItem.Location);
+//                command.Parameters.AddWithValue("@USER_KEY", orderDbItem.MembershipProfileId);
+//                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
+//            }
+//            catch (Exception e)
+//            {
+//                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+//                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+//            }
 
-            return command;
-        }
+//            return command;
+//        }
 
         public FbCommand GetItemInfo(FbConnection connection, FbTransaction transaction, long itemId)
         {
