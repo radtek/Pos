@@ -1024,6 +1024,7 @@ private:
     void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
     int GetItemIdentifier(AnsiString genQuery);
     void EnableOrDisableGenButtons();
+    void ResetItemAndItemSizeIdentifier();
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
