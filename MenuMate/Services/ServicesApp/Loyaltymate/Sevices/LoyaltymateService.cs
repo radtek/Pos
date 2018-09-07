@@ -492,5 +492,50 @@ namespace Loyaltymate.Sevices
             }
             return response;
         }
+        public ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode)
+        {
+            ApiOnlineOrderingResponse response = null;
+            string requestAddress = RequestAddress.IsOnlineOrderingEnableBySiteId + @"/" + siteCode.ToString();
+            var request = Utility.WebUtility.CreateRequest(requestAddress, inSyndicateCode, null,
+                WebRequestMethods.Http.Get);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                response = CreateOnlineOrderingResponse(webResponse.StatusCode,webResponse.StatusDescription);
+            }
+            catch (WebException we)
+            {
+                response = CreateOnlineOrderingResponse(HttpStatusCode.ExpectationFailed, we.Message);    
+            }
+            catch (Exception ex)
+            {
+                response = CreateOnlineOrderingResponse(HttpStatusCode.ExpectationFailed, ex.Message);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return response;
+        }
+
+        private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpStatusCode statusCode, string message)
+        {
+            ApiOnlineOrderingResponse apiOnlineOrderingResponse = new ApiOnlineOrderingResponse();
+            apiOnlineOrderingResponse.IsSuccessful = statusCode == HttpStatusCode.OK ? true : false;
+            if (apiOnlineOrderingResponse.IsSuccessful)
+                apiOnlineOrderingResponse.Message = "";
+            else
+            {
+                if (message.Contains("(406)"))
+                    apiOnlineOrderingResponse.Message = "Online Ordering is Disabled for the site in LoyaltyMate.\nPlease Enable it first in LoyaltyMate.";
+                else
+                    apiOnlineOrderingResponse.Message = "Unsuccessful sync for online ordering.\nPlease check if syndicatecode and site id are correct.";
+            }
+            return apiOnlineOrderingResponse;
+        }
     }
 }

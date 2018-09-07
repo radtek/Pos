@@ -60,5 +60,8 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel);
+
+        [OperationContract]
+        LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode);
     }
 }

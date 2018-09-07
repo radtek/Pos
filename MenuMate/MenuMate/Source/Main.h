@@ -139,6 +139,7 @@ private:	// User declarations
     void EnableOnlineOrdering();
     void DisableOnlineOrdering();
     void UnloadSignalR();
+    bool SyncOnlineOrderingDetails();
 
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);

@@ -4282,7 +4282,8 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
             // to do
             // 1. Make a seed file.
             // 2. Use seed file and connect the SignalR application.
-            if(TrySyncForLoyaltyMate())
+            //if(TrySyncForLoyaltyMate())
+            if(SyncOnlineOrderingDetails())
             {
                 std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
                 if(signalRUtility->LoadSignalRUtility())
@@ -4291,7 +4292,15 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
                     MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
                 }
                 else
+                {
                     TGlobalSettings::Instance().EnableOnlineOrdering = false;
+                }
+            }
+            else
+            {
+                if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                    UnloadSignalR();
+                TGlobalSettings::Instance().EnableOnlineOrdering = false;
             }
         }
         else
@@ -4351,5 +4360,13 @@ void TfrmMaintain::UnloadSignalR()
     std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
     signalRUtility->UnloadSignalRUtility();
     TGlobalSettings::Instance().EnableOnlineOrdering = false;
+}
+//-----------------------------------------------------------------------------
+bool TfrmMaintain::SyncOnlineOrderingDetails()
+{
+    bool result = false;
+    TManagerCloudSync ManagerCloudSync;
+    result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    return result;
 }
 //-----------------------------------------------------------------------------

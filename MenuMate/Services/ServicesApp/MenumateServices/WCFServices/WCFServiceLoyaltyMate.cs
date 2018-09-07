@@ -257,5 +257,17 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
+        public LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode)
+        {
+            try
+            {
+                return LoyaltyOnlineOrdering.Instance.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return null; 
+        }
     }
 }

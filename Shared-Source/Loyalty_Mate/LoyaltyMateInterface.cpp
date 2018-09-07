@@ -183,6 +183,21 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncCompanyDetails(TSyndCode syn
     }
 }
 //---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode)
+{
+    try
+    {
+        LoyaltyOnlineOrderingResponse* response;
+        CoInitialize(NULL);
+        response = loyaltymateClient->SyncOnlineOrderingDetails(syndicateCode.GetSyndCode(),siteCode);
+        return CreateMMResponse( response );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode syndicateCode,AnsiString uniqueId,AnsiString memberCardCode)
 {
     try
@@ -857,6 +872,16 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(VoucherTransact
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
+                "" ) ;
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse)
+{
+     return MMLoyaltyServiceResponse(
+                inWCFResponse->IsSuccessful,
+                AnsiString( inWCFResponse->ResponseText.t_str() ),
+                "",
+                Successful,
                 "" ) ;
 }
 //---------------------------------------------------------------------------

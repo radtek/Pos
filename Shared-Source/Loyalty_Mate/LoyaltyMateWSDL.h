@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (5/09/2018 8:11:04 p.m. - - $Rev: 25127 $)
+// (7/09/2018 10:32:54 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -42,7 +42,7 @@
 #endif
 
 
-namespace NS_LoyaltyMateWSDL {
+namespace NS__LoyaltyMateWSDL {
 
 // ************************************************************************ //
 // The following types, referred to in the WSDL document are not being represented
@@ -78,6 +78,7 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionInfo;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo;
 class SOAP_REMOTABLE_CLASS VoucherTransactionResponse;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo;
+class SOAP_REMOTABLE_CLASS LoyaltyOnlineOrderingResponse;
 class SOAP_REMOTABLE_CLASS MemberInfo2;
 class SOAP_REMOTABLE_CLASS VoucherInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyMemberResponse2;
@@ -95,6 +96,7 @@ class SOAP_REMOTABLE_CLASS VoucherTransactionInfo2;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo2;
 class SOAP_REMOTABLE_CLASS VoucherTransactionResponse2;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
+class SOAP_REMOTABLE_CLASS LoyaltyOnlineOrderingResponse2;
 class SOAP_REMOTABLE_CLASS SiteMenuInfo;
 class SOAP_REMOTABLE_CLASS MenuConsumableInfo;
 class SOAP_REMOTABLE_CLASS CourseInfo;
@@ -1484,6 +1486,32 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : LoyaltyOnlineOrderingResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class LoyaltyOnlineOrderingResponse : public TRemotable {
+private:
+  bool            FIsSuccessful;
+  bool            FIsSuccessful_Specified;
+  UnicodeString   FResponseText;
+  bool            FResponseText_Specified;
+  void __fastcall SetIsSuccessful(int Index, bool _prop_val)
+  {  FIsSuccessful = _prop_val; FIsSuccessful_Specified = true;  }
+  bool __fastcall IsSuccessful_Specified(int Index)
+  {  return FIsSuccessful_Specified;  } 
+  void __fastcall SetResponseText(int Index, UnicodeString _prop_val)
+  {  FResponseText = _prop_val; FResponseText_Specified = true;  }
+  bool __fastcall ResponseText_Specified(int Index)
+  {  return FResponseText_Specified;  } 
+__published:
+  __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
+  __property UnicodeString ResponseText = { index=(IS_OPTN|IS_NLBL), read=FResponseText, write=SetResponseText, stored = ResponseText_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : MemberInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
@@ -1680,6 +1708,18 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
 class ReleasedVoucherInfo2 : public ReleasedVoucherInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LoyaltyOnlineOrderingResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class LoyaltyOnlineOrderingResponse2 : public LoyaltyOnlineOrderingResponse {
 private:
 __published:
 };
@@ -2938,16 +2978,17 @@ public:
   virtual LoyaltyResponse* SyncTaxSettings(const UnicodeString inSyndicateCode, const SiteTaxSettingsinfo* siteTaxSettings) = 0; 
   virtual void            GetOrdersFromWeb(const UnicodeString inSyndicateCode, const UnicodeString orders) = 0; 
   virtual LoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
+  virtual LoyaltyOnlineOrderingResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS_LoyaltyMateWSDL
+};     // NS__
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
-using  namespace NS_LoyaltyMateWSDL;
+using  namespace NS__LoyaltyMateWSDL;
 #endif
 
 

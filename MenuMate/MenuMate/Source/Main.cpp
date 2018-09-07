@@ -520,6 +520,7 @@ void TfrmMain::SyncCompanyDetails()
         bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
         if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
+            UnloadSignalR();
             EnableOnlineOrdering();
         }
         else if(!isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
@@ -1812,10 +1813,17 @@ void TfrmMain::EnableOnlineOrdering()
     DBTransaction.StartTransaction();
     try
     {
-        std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
-        if(signalRUtility->LoadSignalRUtility())
+        if(SyncOnlineOrderingDetails())
         {
-            TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+            if(signalRUtility->LoadSignalRUtility())
+            {
+                TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            }
+        }
+        else
+        {
+            TGlobalSettings::Instance().EnableOnlineOrdering = false;
         }
         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
         DBTransaction.Commit();
@@ -1851,5 +1859,13 @@ void TfrmMain::UnloadSignalR()
 {
     std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
     signalRUtility->UnloadSignalRUtility();
+}
+//-----------------------------------------------------------------------------
+bool TfrmMain::SyncOnlineOrderingDetails()
+{
+    bool result = false;
+    TManagerCloudSync ManagerCloudSync;
+    result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    return result;
 }
 //-----------------------------------------------------------------------------

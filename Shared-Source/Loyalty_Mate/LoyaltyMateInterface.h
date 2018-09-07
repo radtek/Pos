@@ -159,6 +159,7 @@ class TLoyaltyMateInterface
         //for online ordering menu syncing.
         MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
         MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
+        MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
@@ -208,6 +209,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
 
         MMLoyaltyServiceResponse CreateMMResponse(VoucherTransactionResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse);
 
         // creates MMResponse from an exception message
         MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );

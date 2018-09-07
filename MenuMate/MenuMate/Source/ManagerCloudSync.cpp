@@ -66,3 +66,36 @@ bool TManagerCloudSync::SyncCompanyDetails()
     }
     return result;
 }
+//----------------------------------------------------------------------------
+bool TManagerCloudSync::SyncOnlineOrderingDetails()
+{
+    bool result = false;
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
+    if(syndicateCode.Valid())
+     {
+        // initiate loyaltymate member create thread and create member
+        TLoyaltyMateOnlineOrderingThread* syncThread = new TLoyaltyMateOnlineOrderingThread(syndicateCode);
+        syncThread->OnTerminate = loyaltyMateOperationCompleted;
+        syncThread->FreeOnTerminate = true;
+        syncThread->Start();
+
+        // display dialog box
+        _lmOperationDialogBox = new TfrmLoyaltyMateOperationDialogBox(Screen->ActiveForm);
+
+        _lmOperationDialogBox->OperationDescription = "Syncing Online Ordering Details with server...Please Wait.";
+        _lmOperationDialogBox->OperationTitle = "LoyaltyMate Operation";
+        _lmOperationDialogBox->PreventCancelOperation = true;
+        _lmOperationDialogBox->ShowModal();
+
+        result = syncThread->OperationSuccessful;
+
+        if(!result)
+            MessageBox(syncThread->ErrorMessage,"Failed to perform sync operation", MB_ICONERROR + MB_OK);
+
+        // cleanup
+        delete _lmOperationDialogBox;
+    }
+    return result;
+}
+//----------------------------------------------------------------------------

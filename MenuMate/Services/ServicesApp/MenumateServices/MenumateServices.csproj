@@ -183,6 +183,7 @@
     <Compile Include="DTO\Enum\SiteSettingType.cs" />
     <Compile Include="DTO\Enum\UserType.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyOnlineOrderingResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyTierResponse.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyOnlineOrdering.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
