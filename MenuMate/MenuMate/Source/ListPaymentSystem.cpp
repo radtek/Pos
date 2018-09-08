@@ -6933,16 +6933,13 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
             MessageBox(Order->OnlineOrderId,Order->OnlineOrderId,MB_OK);
             if(Order->OnlineOrderId.Trim() != "")
             {
-               // MessageBox("1",1,MB_OK);
                 TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction);
-                 MessageBox("5",5,MB_OK);
                 TMMProcessingState State(Screen->ActiveForm, "Posting Invoice to cloud Please Wait...", "Posting Invoice");
                 TDeviceRealTerminal::Instance().ProcessingController.Push(State);
                 AnsiString ErrorMessage;
 
                 TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
                 MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
-                MessageBox("6",6,MB_OK);
                 TDeviceRealTerminal::Instance().ProcessingController.Pop();
                 if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
                 {
@@ -6976,7 +6973,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
 {
     TSiteOrderModel siteOrderModel;
     try
-    {      //MessageBox("2",2,MB_OK);
+    {
         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
         siteOrderModel.CompanyId = 0;
         siteOrderModel.SiteId = Order->SiteId;
@@ -7000,7 +6997,6 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
         throw;
     }
-    // MessageBox("2.1",2,MB_OK);
     return siteOrderModel;
 }
 //--------------------------------------------------------------------------------------
@@ -7008,7 +7004,7 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
 {
     std::list<TOrderItemModel> orderItemModelList;
     try
-    {      // MessageBox("3",3,MB_OK);
+    {
         for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
         {
             TOrderItemModel orderItemModel;
@@ -7046,7 +7042,6 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
         throw;
     }
-     //MessageBox("3.1",3,MB_OK);
     return orderItemModelList;
 }
 //--------------------------------------------------------------------------------------
@@ -7054,7 +7049,7 @@ std::list<TOrderItemSizeDiscountModel> TListPaymentSystem::GetOrderItemSizeDisco
 {
     std::list<TOrderItemSizeDiscountModel> orderItemSizeDiscountModelList;
     try
-    {    // MessageBox("4",4,MB_OK);
+    {
         for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();
         std::advance(ptrDiscounts, 1))
         {
