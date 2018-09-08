@@ -22,7 +22,7 @@
 //#include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
-
+#include "OnlineOrderingAttributes.h"
 
 class TReqPrintJob;
 class TItemComplete;
@@ -238,6 +238,10 @@ protected:
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);
      void InsertDataInMallTables(TPaymentTransaction paymentTransaction, long arcBillKey);
+     void GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction);
+     TSiteOrderModel GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction);
+     std::list<TOrderItemModel> GetOrderItemModel(TPaymentTransaction paymentTransaction);
+     std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
 };
 
 #endif

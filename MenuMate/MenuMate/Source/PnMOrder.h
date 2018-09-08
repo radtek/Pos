@@ -26,7 +26,12 @@ public:
         TimeKey(0),
         PatronCount(0),
         IsWeighted(false),
-        ItemType(0) {
+        ItemType(0),
+        RoomNumber(""),
+        AccNumber(""),
+        FirstName(""),
+        LastName(""),
+        OnlineOrderId("") {
 	}
 
 	TPnMOrder( const TPnMOrder& inOther );
@@ -56,6 +61,7 @@ public:
     UnicodeString AccNumber;
     UnicodeString FirstName;
     UnicodeString LastName;
+    UnicodeString OnlineOrderId;
 
 	// Selected for billing therefore not shown in orders list
 	bool operator < (const TPnMOrder & rhs)

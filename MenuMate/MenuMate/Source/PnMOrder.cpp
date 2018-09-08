@@ -32,6 +32,7 @@ TPnMOrder::TPnMOrder( const TPnMOrder& inOther )
     AccNumber = inOther.AccNumber;
     FirstName = inOther.FirstName;
     LastName = inOther.LastName;
+    OnlineOrderId = inOther.OnlineOrderId;
 }
 //---------------------------------------------------------------------------
 

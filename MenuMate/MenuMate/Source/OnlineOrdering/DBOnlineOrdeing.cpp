@@ -123,9 +123,9 @@ std::list<TSiteItemInfo> TDBOnlineOrdering::GetItemInfo(Database::TDBTransaction
     return siteItemsList;
 }
 //------------------------------------------------------------------------------
-std::list<TItemSizeInfo> TDBOnlineOrdering::GetItemSizeInfo(Database::TDBTransaction &dbTransaction, int itemId)
+std::list<TItemSizeInf> TDBOnlineOrdering::GetItemSizeInfo(Database::TDBTransaction &dbTransaction, int itemId)
 {
-    std::list<TItemSizeInfo> ItemSizeInfo;
+    std::list<TItemSizeInf> ItemSizeInfo;
     try
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
@@ -141,7 +141,7 @@ std::list<TItemSizeInfo> TDBOnlineOrdering::GetItemSizeInfo(Database::TDBTransac
 
         while (!ibInternalQuery->Eof)
         {
-            TItemSizeInfo itemSizeInfo;
+            TItemSizeInf itemSizeInfo;
             itemSizeInfo.ItemSizeId			= ibInternalQuery->FieldByName("ITEMSIZE_IDENTIFIER")->AsInteger;;
             itemSizeInfo.Name               = ibInternalQuery->FieldByName("SIZE_NAME")->AsString;
             itemSizeInfo.Description        = itemSizeInfo.Name;

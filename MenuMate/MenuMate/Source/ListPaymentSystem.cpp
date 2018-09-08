@@ -1669,6 +1669,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
     InsertDataInMallTables(PaymentTransaction, ArcBillKey);
+    GetAndUploadOnlineOrderingInvoice(PaymentTransaction);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -6920,4 +6921,153 @@ void TListPaymentSystem::InsertDataInMallTables(TPaymentTransaction paymentTrans
         mall->PushToDatabase(paymentTransaction, arcBillKey, currentTime);
         delete mall;
     }
+}
+//----------------------------------------------------------------------------
+void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction)
+{
+    try
+    {
+        if(paymentTransaction.Orders->Count)
+        {
+            TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+            MessageBox(Order->OnlineOrderId,Order->OnlineOrderId,MB_OK);
+            if(Order->OnlineOrderId.Trim() != "")
+            {
+               // MessageBox("1",1,MB_OK);
+                TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction);
+                 MessageBox("5",5,MB_OK);
+                TMMProcessingState State(Screen->ActiveForm, "Posting Invoice to cloud Please Wait...", "Posting Invoice");
+                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+                AnsiString ErrorMessage;
+
+                TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+                MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
+                MessageBox("6",6,MB_OK);
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+                {
+                    throw Exception("Authentication failed with Loyaltymate Service");
+                }
+                else if(createResponse.IsSuccesful)
+                {
+                    MessageBox("invoice posted successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+                }
+                else
+                {
+                    ErrorMessage = "Failed to post invoice info.";
+                    if(createResponse.Description == "Failed to post invoice info.")
+                      ErrorMessage = "Failed to post invoice info.";
+
+                    throw Exception(ErrorMessage);
+                }
+                delete loyaltyMateInterface;
+                loyaltyMateInterface = NULL;
+            }
+        }
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        //throw;
+    }
+}
+//----------------------------------------------------------------------------
+TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction)
+{
+    TSiteOrderModel siteOrderModel;
+    try
+    {      //MessageBox("2",2,MB_OK);
+        TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+        siteOrderModel.SiteId = Order->SiteId;
+        siteOrderModel.TransactionType = paymentTransaction.SalesType;
+        siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
+        siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
+        siteOrderModel.ContainerNumber = Order->ContainerTabType == TabTableSeat ? Order->TableNo : Order->TabKey;
+        siteOrderModel.ContainerType = Order->ContainerTabType == TabTableSeat ? OnlineTable : OnlineTab;
+        siteOrderModel. ContainerName = Order->TabContainerName;
+        siteOrderModel. OrderGuid = Order->OnlineOrderId;
+        siteOrderModel.UserReferenceId = Order->ContactsKey;
+//                siteOrderModel.UserType;         to do check whetrher user is a member or staff..
+        siteOrderModel.TerminalName = Order->Terminal;
+        siteOrderModel.TransactionDate = Now();;
+        siteOrderModel.OrderType = Order->OrderType;
+        siteOrderModel.IsConfirmed = true;
+        siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    // MessageBox("2.1",2,MB_OK);
+    return siteOrderModel;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransaction paymentTransaction)
+{
+    std::list<TOrderItemModel> orderItemModelList;
+    try
+    {      // MessageBox("3",3,MB_OK);
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+            TOrderItemModel orderItemModel;
+            TItemComplete* Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+            orderItemModel.OrderItemId = Order->OrderItemId;
+            orderItemModel.Name = Order->Item;
+            orderItemModel.Description = Order->Item;
+    //                    orderItemModel.SiteItemId = Order->;      todo
+            orderItemModel.Price = Order->PriceEach_BillCalc();
+            std::list<TOrderItemSizeModel> orderItemSizeModelList;
+            TOrderItemSizeModel orderItemSizeModel;
+            orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+            orderItemSizeModel.OrderItemId = Order->OrderItemId;
+            orderItemSizeModel.Name = Order->Size;
+            orderItemSizeModel.ItemSizeId = Order->Item_ID;
+            orderItemSizeModel.Quantity = Order->GetQty();
+            orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+            orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+            orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+            orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+            orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+            orderItemSizeModelList.push_back(orderItemSizeModel);
+          //  orderItemSizeModel.ReferenceOrderItemSizeId todo
+            orderItemModel.OrderItemSizes.push_back(orderItemSizeModel);
+
+            orderItemModelList.push_back(orderItemModel);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+     //MessageBox("3.1",3,MB_OK);
+    return orderItemModelList;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemSizeDiscountModel> TListPaymentSystem::GetOrderItemSizeDiscountModel(TItemMinorComplete *Order)
+{
+    std::list<TOrderItemSizeDiscountModel> orderItemSizeDiscountModelList;
+    try
+    {    // MessageBox("4",4,MB_OK);
+        for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();
+        std::advance(ptrDiscounts, 1))
+        {
+            if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+                continue;
+
+            TOrderItemSizeDiscountModel orderItemSizeDisountModel;
+            orderItemSizeDisountModel.OrderItemSizeId = Order->OrderItemSizeId;
+            orderItemSizeDisountModel.Name = ptrDiscounts->Name.SubString(1, 15);
+            orderItemSizeDisountModel.Value = RoundToNearest(Order->DiscountValue_BillCalc(ptrDiscounts),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+            orderItemSizeDisountModel.Code = ptrDiscounts->DiscountCode;
+            orderItemSizeDiscountModelList.push_back(orderItemSizeDisountModel);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderItemSizeDiscountModelList;
 }

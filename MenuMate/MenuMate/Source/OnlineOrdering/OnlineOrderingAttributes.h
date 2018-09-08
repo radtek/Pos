@@ -27,7 +27,7 @@ struct TItemSizeTaxProfileInfo
      int Priority;
 };
 
-struct  TItemSizeInfo
+struct  TItemSizeInf
 {
      int ItemSizeId;
      AnsiString Name;
@@ -53,7 +53,7 @@ struct  TItemSideInfo
      AnsiString ItemUniqueId;
      bool OnlyAsSide;
      int CompanyId;
-     std::list<TItemSizeInfo> ItemSizes;
+     std::list<TItemSizeInf> ItemSizes;
 };
 
 struct  TSideGroupInfo
@@ -74,7 +74,7 @@ struct  TSiteItemInfo
      AnsiString ItemUniqueId;
      bool OnlyAsSide;
      int CompanyId;
-     std::list<TItemSizeInfo> ItemSizes;
+     std::list<TItemSizeInf> ItemSizes;
      std::list<TSideGroupInfo> SideGroup;
 };
 

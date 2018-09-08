@@ -2487,11 +2487,11 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		IBInternalQuery->SQL->Text =
         "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
         " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE, "
-        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME "
+        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME, a.ONLINE_ORDER_ID  "
         " FROM ORDERS a inner join SIZES b  "
         " on a.SIZE_NAME = b.SIZE_NAME  "
         " WHERE a.TAB_KEY = :TAB_KEY "
-        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19  "
+        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20  "
         " ORDER BY a.ITEM_NAME,a.SIZE_NAME,a.Price,a.QTY ";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
@@ -2544,7 +2544,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
             Order.AccNumber      = IBInternalQuery->FieldByName("ACC_NO")->AsString;
             Order.FirstName      = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
             Order.LastName      = IBInternalQuery->FieldByName("LAST_NAME")->AsString;
-
+            Order.OnlineOrderId = IBInternalQuery->FieldByName("ONLINE_ORDER_ID")->AsString;
             if(isSCDOrPWDDiscountExist)
             {
                 bool isSCDApplied = false;
@@ -4216,6 +4216,7 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
         Order->AccNo = atoi(AnsiString(OrderTable->FieldByName("ACC_NO")->AsString).c_str());
         Order->FirstName = (AnsiString(OrderTable->FieldByName("FIRST_NAME")->AsString));
         Order->LastName = (AnsiString(OrderTable->FieldByName("LAST_NAME")->AsString));
+        Order->OnlineOrderId = (AnsiString(OrderTable->FieldByName("ONLINE_ORDER_ID")->AsString));
  	}
 }
 
