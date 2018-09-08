@@ -1668,33 +1668,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
-    if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
-    {
-        //Check if mall type is dean and deluca
-        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
-        {
-            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
-            if(item->TableNo)
-            {
-                TGlobalSettings::Instance().MezzanineTablesMap.clear();
-                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
-                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
-                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
-                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
-                {
-                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
-                    bool canContinue = (innerit == outerit->second.end());
-
-                    if(!canContinue)
-                        InsertMezzanineSales(PaymentTransaction);
-                }
-            }
-        }
-        //Instantiation is happenning in a factory based on the active mall in database
-        TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-        delete mall;
-    }
+    InsertDataInMallTables(PaymentTransaction, ArcBillKey);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -6917,4 +6891,33 @@ void TListPaymentSystem::UpdateEftposLogsForInvoice(TPaymentTransaction paymentT
     }
 }
 //----------------------------------------------------------------------------
+void TListPaymentSystem::InsertDataInMallTables(TPaymentTransaction paymentTransaction, long arcBillKey)
+{
+    if(TGlobalSettings::Instance().mallInfo.MallId && paymentTransaction.Orders->Count)
+    {
+        //Check if mall type is dean and deluca
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {
+            TItemComplete *item = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+            if(item->TableNo)
+            {
+                TGlobalSettings::Instance().MezzanineTablesMap.clear();
+                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(paymentTransaction.DBTransaction);
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    bool canContinue = (innerit == outerit->second.end());
 
+                    if(!canContinue)
+                        InsertMezzanineSales(paymentTransaction);
+                }
+            }
+        }
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(paymentTransaction, arcBillKey, currentTime);
+        delete mall;
+    }
+}
