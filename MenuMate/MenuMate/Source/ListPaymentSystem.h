@@ -19,7 +19,7 @@
 #include "PaymentTypeGroup.h"
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
-#include "ThorlinkDataObjects.h"
+//#include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
 
@@ -58,8 +58,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     int positionPoints;
     int positionVoucher;
      TDateTime TrasactionDate;
-    std::vector<TTenderDetails> tenderDetailsList;
-    std::vector<TItemDetailsThor> itemsList;
+    //std::vector<TTenderDetails> tenderDetailsList;
+    //std::vector<TItemDetailsThor> itemsList;
     TListPaymentSystem();
     virtual __fastcall ~TListPaymentSystem();
 
@@ -107,8 +107,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool AllowsTipsOnTransactions();
     std::vector<AnsiString> GetTippableCardTypes();
     int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
-    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
-    bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
+//    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
+   // bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
     AnsiString CreateFilename(TDateTime date);
     UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
     void SaveIntVariable(vmVariables vmVar, int CompName);
@@ -208,8 +208,8 @@ protected:
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
-     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
-     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
+//     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
+//     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
