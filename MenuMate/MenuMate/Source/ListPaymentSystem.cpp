@@ -6978,6 +6978,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
     try
     {      //MessageBox("2",2,MB_OK);
         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+        siteOrderModel.CompanyId = 0;
         siteOrderModel.SiteId = Order->SiteId;
         siteOrderModel.TransactionType = paymentTransaction.SalesType;
         siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
@@ -6987,7 +6988,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel. ContainerName = Order->TabContainerName;
         siteOrderModel. OrderGuid = Order->OnlineOrderId;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
-//                siteOrderModel.UserType;         to do check whetrher user is a member or staff..
+                siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
         siteOrderModel.TerminalName = Order->Terminal;
         siteOrderModel.TransactionDate = Now();;
         siteOrderModel.OrderType = Order->OrderType;
@@ -7015,10 +7016,13 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
             orderItemModel.OrderItemId = Order->OrderItemId;
             orderItemModel.Name = Order->Item;
             orderItemModel.Description = Order->Item;
-    //                    orderItemModel.SiteItemId = Order->;      todo
+            orderItemModel.SiteItemId = 0;//Order->;      todo
             orderItemModel.Price = Order->PriceEach_BillCalc();
+
             std::list<TOrderItemSizeModel> orderItemSizeModelList;
+
             TOrderItemSizeModel orderItemSizeModel;
+
             orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
             orderItemSizeModel.OrderItemId = Order->OrderItemId;
             orderItemSizeModel.Name = Order->Size;
@@ -7030,8 +7034,9 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
             orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
             orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
             orderItemSizeModelList.push_back(orderItemSizeModel);
-          //  orderItemSizeModel.ReferenceOrderItemSizeId todo
-            orderItemModel.OrderItemSizes.push_back(orderItemSizeModel);
+            orderItemSizeModel.ReferenceOrderItemSizeId  = 0 ;//todo
+
+            orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
 
             orderItemModelList.push_back(orderItemModel);
         }
