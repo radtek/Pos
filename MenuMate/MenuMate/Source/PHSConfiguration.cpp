@@ -171,6 +171,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = true;
         tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+        cbNoTaxToSihot->Enabled = true;
+        cbNoTaxToSihot->Checked = TGlobalSettings::Instance().SendNoTaxToSiHot;
     }
     else if(PMSType == oracle)
     {
@@ -187,6 +189,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
         tbTimeOut->Enabled = false;
+        cbNoTaxToSihot->Enabled = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -231,6 +234,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = false;
+        cbNoTaxToSihot->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -887,3 +891,13 @@ void TfrmPHSConfiguration::InitDefaultPaymentInDB()
     }
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbNoTaxToSihotClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().SendNoTaxToSiHot = cbNoTaxToSihot->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmSendNoTaxToSihot, TGlobalSettings::Instance().SendNoTaxToSiHot);
+    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+

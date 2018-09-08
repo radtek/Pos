@@ -111,7 +111,9 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 {
     double discountValue = 0.0;
     bool AddDiscountPart = false;
-    double taxPercentage = GetVATpercentage(itemComplete);
+    double taxPercentage = 0;
+    if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
+        taxPercentage = GetVATpercentage(itemComplete);
 
     if(itemComplete->RevenueCode == 0)
     {
@@ -127,7 +129,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     }
 
     UnicodeString categoryCode        = itemComplete->RevenueCode;
-   
+
     if(categoryCode == "")
         categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
@@ -175,16 +177,34 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool recalculateTax)
 {
      double price = 0;
-     if(recalculateTax)
+     if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                     -(double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
      else
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                 -(double)itemComplete->BillCalcResult.TotalDiscount);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
-     price = RoundTo(price,-2);
      return price;
 }
 //----------------------------------------------------------------------------
@@ -220,9 +240,27 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
                                                    ,UnicodeString _billNo)
 {
     TSiHotService siHotService;
-    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
-    if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    UnicodeString categoryCode = "";
+    if(TGlobalSettings::Instance().SendNoTaxToSiHot /*&& condition for availability of rev code*/)
+    {
+       //categoryCode = ;
+    }
+//    categoryCode = itemComplete->ThirdPartyCode;
+//    if(categoryCode == "")
+//        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+
+    if(itemComplete->RevenueCode == 0)
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               itemComplete->RevenueCode = itRev->first;
+               break;
+            }
+        }
+    }
 
     std::map<UnicodeString,TSiHotService>::iterator it;
 
