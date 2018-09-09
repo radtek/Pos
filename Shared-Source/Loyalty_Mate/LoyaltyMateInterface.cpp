@@ -1320,6 +1320,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
                 orderItemsModelArray[orderItemsModelArray.Length - 1] = orderItemModel;
             }
             wcfInfo->OrderItems = orderItemsModelArray;
+            wcfInfo->OrderInvoiceTransaction = CreateOrderInvoiceTransaction(siteOrderModel.OrderInvoiceTransaction);
         }
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
@@ -1466,5 +1467,49 @@ OrderItemSizeTaxProfileModel* TLoyaltyMateInterface::CreateOrderItemSizeTaxProfi
     return orderItemSizeTaxProfileModel;
 }
 
+OrderInvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction)
+{
+    OrderInvoiceTransactionModel* orderInvoiceTransactionModel = new OrderInvoiceTransactionModel;
+    try
+    {
+        orderInvoiceTransactionModel->OrderInvoiceTransactionId = orderinvoiceTransaction.OrderInvoiceTransactionId;
+        orderInvoiceTransactionModel->OrderId = orderinvoiceTransaction.OrderId;
+        orderInvoiceTransactionModel->InvoiceTransactionId = orderinvoiceTransaction.InvoiceTransactionId;
+        orderInvoiceTransactionModel->InvoiceTransaction = CreateOrderInvoiceTransaction(orderinvoiceTransaction.InvoiceTransaction);
+    }
+     catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderInvoiceTransactionModel;
+}
+
+InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransaction)
+{
+    InvoiceTransactionModel* invoiceTransactionModel = new InvoiceTransactionModel;
+    try
+    {
+         invoiceTransactionModel->InvoiceTransactionId = invoiceTransaction.InvoiceTransactionId;
+         invoiceTransactionModel->InvoiceNumber = invoiceTransaction.InvoiceNumber;
+         invoiceTransactionModel->TotalSaleAmount = invoiceTransaction.TotalSaleAmount;
+         TXSDateTime* transactionDate = new TXSDateTime;
+         transactionDate->AsDateTime = invoiceTransaction.TransactionDate;
+         invoiceTransactionModel->TransactionDate = transactionDate;
+         invoiceTransactionModel->SiteId = invoiceTransaction.SiteId;
+         invoiceTransactionModel->TerminalName = invoiceTransaction.TerminalName;
+         //invoiceTransactionModel->Receipt = invoiceTransaction.Receipt;
+         invoiceTransactionModel->ReceiptPath = invoiceTransaction.ReceiptPath;
+         invoiceTransactionModel->Rounding = invoiceTransaction.Rounding;
+         invoiceTransactionModel->UserReferenceId = invoiceTransaction.UserReferenceId;
+         invoiceTransactionModel->UserType = invoiceTransaction.UserType;
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return invoiceTransactionModel;
+}
 
 #pragma package(smart_init)

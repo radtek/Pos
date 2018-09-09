@@ -6992,6 +6992,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel.OrderType = Order->OrderType;
         siteOrderModel.IsConfirmed = true;
         siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
+        siteOrderModel.OrderInvoiceTransaction = GetOrderInvoiceTransaction(paymentTransaction);
     }
      catch(Exception &Ex)
     {
@@ -7082,3 +7083,59 @@ std::list<TOrderItemSizeDiscountModel> TListPaymentSystem::GetOrderItemSizeDisco
     }
     return orderItemSizeDiscountModelList;
 }
+//-------------------------------------------------------------------------------------------------
+TOrderInvoiceTransactionModel TListPaymentSystem::GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction)
+{
+    TOrderInvoiceTransactionModel orderInvoiceTransactionModel;
+    try
+    {
+        orderInvoiceTransactionModel.OrderInvoiceTransactionId = 0;
+        orderInvoiceTransactionModel.OrderId = 0;//;
+        orderInvoiceTransactionModel.InvoiceTransactionId = 0;           //todo
+        orderInvoiceTransactionModel.InvoiceTransaction = GetInvoiceTransaction(paymentTransaction);
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderInvoiceTransactionModel;
+}
+//---------------------------------------------------------------------------------------
+TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTransaction paymentTransaction)
+{
+    TInvoiceTransactionModel invoiceTransactionModel;
+    try
+    {
+         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+         invoiceTransactionModel.InvoiceTransactionId = 0;;
+	     invoiceTransactionModel.InvoiceNumber = paymentTransaction.InvoiceNumber;
+	     invoiceTransactionModel.TotalSaleAmount = paymentTransaction.Money.RoundedGrandTotal;
+	     invoiceTransactionModel.TransactionDate = Now();
+	     invoiceTransactionModel.SiteId = Order->SiteId;
+	     invoiceTransactionModel.TerminalName = Order->Terminal;
+//         if( ManagerReceipt->ReceiptToArchive->Size > 0 )
+//		 {
+//			ManagerReceipt->ReceiptToArchive->Position = 0;
+////            invoiceTransaction.Receipt.
+////			invoiceTransactionModel.Receipt->LoadFromStream(ManagerReceipt->ReceiptToArchive);
+//ManagerReceipt->ReceiptToArchive->
+//		 }
+//	 TByteDynArray Receipt;
+//     Receipt.Length =  ManagerReceipt->ReceiptToArchive->Size;
+//     Receipt.
+	     invoiceTransactionModel.ReceiptPath = "";
+	     invoiceTransactionModel.Rounding = RoundToNearest(paymentTransaction.Money.RoundingAdjustment, 0.01,
+                                                    TGlobalSettings::Instance().MidPointRoundsDown);
+	     invoiceTransactionModel.UserReferenceId = Order->ContactsKey;
+	     invoiceTransactionModel.UserType = 0;//         to do check whetrher user is a member or staff..
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return invoiceTransactionModel;
+}
+//----------------------------------------------------------
+

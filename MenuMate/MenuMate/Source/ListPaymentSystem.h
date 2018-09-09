@@ -242,6 +242,8 @@ protected:
      TSiteOrderModel GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction);
      std::list<TOrderItemModel> GetOrderItemModel(TPaymentTransaction paymentTransaction);
      std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
+     TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
+     TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
 };
 
 #endif
