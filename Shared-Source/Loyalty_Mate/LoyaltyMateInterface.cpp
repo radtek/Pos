@@ -1498,7 +1498,7 @@ InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TI
          invoiceTransactionModel->TransactionDate = transactionDate;
          invoiceTransactionModel->SiteId = invoiceTransaction.SiteId;
          invoiceTransactionModel->TerminalName = invoiceTransaction.TerminalName;
-         //invoiceTransactionModel->Receipt = invoiceTransaction.Receipt;
+         invoiceTransactionModel->Receipt = invoiceTransaction.Receipt;
          invoiceTransactionModel->ReceiptPath = invoiceTransaction.ReceiptPath;
          invoiceTransactionModel->Rounding = invoiceTransaction.Rounding;
          invoiceTransactionModel->UserReferenceId = invoiceTransaction.UserReferenceId;
