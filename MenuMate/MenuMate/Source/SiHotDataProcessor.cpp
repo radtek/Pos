@@ -195,12 +195,14 @@ double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool reca
          if(recalculateTax)
          {
              price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
-                            (double)itemComplete->BillCalcResult.TotalTax);
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value);
          }
          else
          {
              price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
                             (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value -
                             (double)itemComplete->BillCalcResult.TotalDiscount);
          }
          price = RoundTo(price,-2);
@@ -241,22 +243,23 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
 {
     TSiHotService siHotService;
     UnicodeString categoryCode = "";
-    if(TGlobalSettings::Instance().SendNoTaxToSiHot /*&& condition for availability of rev code*/)
+    if(TGlobalSettings::Instance().SendNoTaxToSiHot)
     {
-       //categoryCode = ;
+       categoryCode = TGlobalSettings::Instance().RevenueCodeDiscountPart;
     }
-//    categoryCode = itemComplete->ThirdPartyCode;
-//    if(categoryCode == "")
-//        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    else
+    {
+       categoryCode = itemComplete->RevenueCode;
+    }
 
-    if(itemComplete->RevenueCode == 0)
+    if(categoryCode == 0 || categoryCode == "")
     {
         for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
             itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
         {
             if(itRev->second.IsDefault)
             {
-               itemComplete->RevenueCode = itRev->first;
+               categoryCode = itRev->first;
                break;
             }
         }
@@ -271,7 +274,8 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.SuperCategory         = categoryCode;
         siHotService.SuperCategory_Desc    = "";
         siHotService.MiddleCategory        = categoryCode;
-        siHotService.MiddleCategory_Desc   = itemComplete->MenuName;
+//        MessageBox(siHotService.MiddleCategory,"AddDiscountPartToService3",MB_OK);
+        siHotService.MiddleCategory_Desc   = "Discount";
         siHotService.ArticleCategory       = categoryCode;
         siHotService.ArticleCategory_Desc  = "";
         siHotService.ArticleNo             = categoryCode;

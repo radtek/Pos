@@ -443,6 +443,6 @@ TGlobalSettings::TGlobalSettings()
     GiftCard_MegaworldForDaily = 0;
     CheckSaleMegaworldForDaily = 0;
     SendNoTaxToSiHot = false;
-    RevenueCodeDiscountPart = 0;
+    RevenueCodeDiscountPart = "";
 }
 

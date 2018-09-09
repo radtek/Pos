@@ -538,7 +538,7 @@ public:
     Currency GiftCard_MegaworldForDaily;
     Currency CheckSaleMegaworldForDaily;
     bool SendNoTaxToSiHot;
-    int RevenueCodeDiscountPart;
+    UnicodeString RevenueCodeDiscountPart;
 };
 
 #endif

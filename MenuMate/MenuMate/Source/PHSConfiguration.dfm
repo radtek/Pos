@@ -86,7 +86,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
-      Visible = False
+      WordWrap = True
     end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16
