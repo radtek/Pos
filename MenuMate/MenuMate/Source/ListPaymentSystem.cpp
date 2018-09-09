@@ -7046,7 +7046,7 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
             }
 
-            //orderItemModelList.push_back(orderItemModel);
+            orderItemModelList.push_back(orderItemModel);
         }
     }
     catch(Exception &Ex)
