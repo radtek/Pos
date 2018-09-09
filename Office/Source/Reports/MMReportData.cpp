@@ -841,31 +841,29 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 		"Select  AB.Terminal_Name, UPPER(AB.Pay_Type) Pay_Type,AB.Group_number,	Sum (AB.SubTotal) SubTotal,	cast((Sum (AB.Trans_Count)  )   as  int) Trans_Count "
 	"FROM(	"
 		"Select "
-			"Security.Terminal_Name, "
+			"ArcBill.Terminal_Name, "
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
 			"ArcBillPay.Group_number, "
 			"Sum (ArcBillPay.SubTotal) SubTotal, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
             "From ArcBill "
-            "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
             "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
             "Where "
             "ArcBill.Time_Stamp >= :StartTime and "
             "ArcBill.Time_Stamp < :EndTime and "
             //"ArcBillPay.Properties != 131072 and "
             "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
-			"Security.Security_Event = 'Billed By' and "
-			"ArcBillPay.SubTotal <> 0  ";
+            "ArcBillPay.SubTotal <> 0  ";
 
 
 	if (Terminals->Count > 0)
 	{
 		qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
-										ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+										ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
 		"Group By "
-			"Security.Terminal_Name, "
+			"ArcBill.Terminal_Name, "
 			"ArcBillPay.Tax_Free, "
 			"ArcBillPay.Group_number, "
 			"UPPER(ArcBillPay.Pay_Type) "
@@ -914,19 +912,17 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
         "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
         "From ArcBill "
-        "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
         "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
         "WHERE "
         "ArcBill.Time_Stamp >= :StartTime and "
         "ArcBill.Time_Stamp < :EndTime and "
         //"ArcBillPay.Properties != 131072 and "
         "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
-        "Security.Security_Event = 'Billed By'    and "
-        "ArcBillPay.SubTotal <> 0  ";
+       "ArcBillPay.SubTotal <> 0  ";
 	if (Terminals->Count > 0)
 	{
 		qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
-												ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+												ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrCashupTotal->SQL->Text		=	qrCashupTotal->SQL->Text +
 		"Group By "
@@ -14404,9 +14400,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
 		"From "
-			"ArcBill  Left Join Security on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive on "
+			"ArcBill "
+                "Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
 			"Left Join ArcCategories on "
 				"Archive.Category_Key = ArcCategories.Category_Key "
@@ -14430,14 +14425,17 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
-
-          "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
+          "ARCHIVE.ARCHIVE_KEY not in (   select  ARCHIVE.ARCHIVE_KEY from ARCHIVE "
+          "left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF "
+         " where Archive.TIME_STAMP_BILLED >= :StartTime  "
+         "and Archive.TIME_STAMP_BILLED < :EndTime and ARCHIVE.PRICE=0 and SECURITY.SECURITY_EVENT='CancelY' or SECURITY.SECURITY_EVENT='Cancel')"
+          " and  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and  "
 
- "ARCHIVE.PRICE<>0 and "
+            //"ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"Archive.TIME_STAMP_BILLED < :EndTime  ";
+
 	if (Locations && Locations->Count > 0)
 	{
 		qrSalesSummary->SQL->Text	=	qrSalesSummary->SQL->Text + "and (" +
@@ -14482,12 +14480,11 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"ArcBill.Sales_Type,"
 			"Sum(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"Security Left Join ArcBill on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-		"Where "
+		"ARCBILL left join  PATRONCOUNT on ARCBILL.ARCBILL_KEY = PATRONCOUNT.ARCBILL_KEY "
+        "Where "
 			"ArcBill.Time_Stamp >= :StartTime and "
-			"ArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"ArcBill.Time_Stamp < :EndTime ";
+		
 	if (Locations && Locations->Count > 0)
 	{
 		qrPatronCount->SQL->Text	=	qrPatronCount->SQL->Text + "and (" +
@@ -14503,7 +14500,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrPatronCount->SQL->Text = qrPatronCount->SQL->Text +
 			"ArcBill.Sales_Type "
 		"Having "
-			"Count(Patron_Count) > 0 "
+			"Count(ArcBill.Patron_Count) > 0 "
 		"Order By "
 			"1,"
 			"ArcBill.Sales_Type";
@@ -14537,9 +14534,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"  Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Orders_Total ,	"
 			"Max(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"ArcBill  Left Join Security on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive on "
+		   	"ArcBill "
+                "Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
 			"Left Join ArcCategories on "
 				"Archive.Category_Key = ArcCategories.Category_Key "
@@ -14568,8 +14564,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
  "ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"Archive.TIME_STAMP_BILLED < :EndTime  " ;
+
 	if (Locations && Locations->Count > 0)
 	{
 		qrAveSummary->SQL->Text	=	qrAveSummary->SQL->Text + "and (" +
@@ -14614,15 +14610,16 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
 			"Cast('All Locations' As Varchar(25)) Location,";
 	}
-	qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
-   			"Count(ArcBill.ArcBill_Key) Bill_Count,"
+   //	qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
+   		qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
+               "CAST(Sum(Archive.Qty)AS NUMERIC(17,4)) Bill_Count," 
+            
             "cast(Sum(Archive.DISCOUNT_WITHOUT_TAX) as numeric(17, 4)) DISCOUNT_WITHOUT_TAX ,  "
 			 "  cast(Sum(Archive.TAX_ON_DISCOUNT) as numeric(17, 4)) TAX_ON_DISCOUNT  , "
 			"cast(Sum(Archive.Discount) as numeric(17, 4)) Discount_Total "
 		"From "
-			"Security Left Join ArcBill On "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive On "
+			"Arcbill "
+               "Left Join Archive On "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
             "inner JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
 		"FROM ARCORDERDISCOUNTS a "
@@ -14631,12 +14628,12 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 		"Where "
 
-         " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
+         "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "     //change include and
          "ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Discounted By' " ;
+			"Archive.TIME_STAMP_BILLED < :EndTime  " ;
+
 
 
    	if (Locations && Locations->Count > 0)
@@ -14683,15 +14680,15 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"Sum(Archive.Qty) Item_Count,"
 			"cast(Sum(Archive.Qty * Archive.PRICE_ADJUST - Archive.Qty * Archive.PRICE_LEVEL1) as numeric(17, 4)) Total "
 		"From "
-			"Archive  Left Join Security On "
-				"Security.Security_Ref = Archive.Security_Ref "
+			"Archive   Left Join Security On "
+			   "Security.Security_Ref = Archive.Security_Ref "
          "Left Join ARCBILL On "
 				 " Archive.ArcBill_Key=ArcBill.ArcBill_Key "
 	"Where "
             "Archive.Order_Type != 2 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Price Adjust' and "
+		 "Security.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level0  " ;
       	if (Locations && Locations->Count > 0)
 	{
@@ -14816,6 +14813,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		}
 	}
 }
+
 
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupFinanceDaily(TDateTime StartTime, TDateTime EndTime, TStrings *Terminals, TStrings *Locations)
