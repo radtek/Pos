@@ -33,6 +33,11 @@ TPnMOrder::TPnMOrder( const TPnMOrder& inOther )
     FirstName = inOther.FirstName;
     LastName = inOther.LastName;
     OnlineOrderId = inOther.OnlineOrderId;
+    OnlineChitType = inOther.OnlineChitType;
+    SiteId = inOther.SiteId;
+    OrderItemId = inOther.OrderItemId;
+    OrderItemSizeId = inOther.OrderItemSizeId;
+    ReferenceOrderItemSizeId = inOther.ReferenceOrderItemSizeId;
 }
 //---------------------------------------------------------------------------
 

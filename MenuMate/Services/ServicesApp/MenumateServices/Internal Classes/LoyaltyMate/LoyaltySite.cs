@@ -377,6 +377,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
             siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
             siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();
+            siteOrderViewModel.OrderInvoiceTransaction = new ApiOrderInvoiceTransactionViewModel();
 
             if (siteOrderModel.OrderItems != null)
             {
@@ -384,6 +385,11 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 {
                     siteOrderViewModel.OrderItems.Add(CreateItemsViewModelForInvoice(item));
                 }
+            }
+
+            if (siteOrderModel.OrderInvoiceTransaction != null)
+            {
+                siteOrderViewModel.OrderInvoiceTransaction = CreateOrderInvoiceTransactionViewModel(siteOrderModel.OrderInvoiceTransaction);    
             }
             var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);//just to test json
 
@@ -473,6 +479,38 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeTaxViewModel.Value = itemSizeTaxProfile.Value;
             return orderItemSizeTaxViewModel;
         }
+
+        private ApiOrderInvoiceTransactionViewModel CreateOrderInvoiceTransactionViewModel(OrderInvoiceTransactionModel invoiceTransactionModel)
+        {
+            var orderinvoiceTransactionViewModel = new ApiOrderInvoiceTransactionViewModel();
+            orderinvoiceTransactionViewModel.InvoiceTransactionId = invoiceTransactionModel.InvoiceTransactionId;
+            orderinvoiceTransactionViewModel.OrderId = invoiceTransactionModel.OrderId;
+            orderinvoiceTransactionViewModel.OrderInvoiceTransactionId = invoiceTransactionModel.OrderInvoiceTransactionId;
+            orderinvoiceTransactionViewModel.InvoiceTransaction = new ApiInvoiceTransactionViewModel();
+            if (invoiceTransactionModel.InvoiceTransaction != null)
+            {
+                orderinvoiceTransactionViewModel.InvoiceTransaction = CreateInvoiceTransactionViewModel(invoiceTransactionModel.InvoiceTransaction);
+            }
+            return orderinvoiceTransactionViewModel;
+        }
+
+        private ApiInvoiceTransactionViewModel CreateInvoiceTransactionViewModel(InvoiceTransactionModel invoiceTransactionModel)
+        {
+            var invoiceTransactionViewModel = new ApiInvoiceTransactionViewModel();
+            invoiceTransactionViewModel.InvoiceNumber = invoiceTransactionModel.InvoiceNumber;
+            invoiceTransactionViewModel.InvoiceTransactionId = invoiceTransactionModel.InvoiceTransactionId;
+            invoiceTransactionViewModel.Receipt = invoiceTransactionModel.Receipt;
+            invoiceTransactionViewModel.ReceiptPath = invoiceTransactionModel.ReceiptPath;
+            invoiceTransactionViewModel.Rounding = invoiceTransactionModel.Rounding;
+            invoiceTransactionViewModel.SiteId = invoiceTransactionModel.SiteId;
+            invoiceTransactionViewModel.TerminalName = invoiceTransactionModel.TerminalName;
+            invoiceTransactionViewModel.TotalSaleAmount = invoiceTransactionModel.TotalSaleAmount;
+            invoiceTransactionViewModel.TransactionDate = invoiceTransactionModel.TransactionDate;
+            invoiceTransactionViewModel.UserReferenceId = invoiceTransactionModel.UserReferenceId;
+            invoiceTransactionViewModel.UserType = (Loyaltymate.Enum.UserType)invoiceTransactionModel.UserType;
+            return invoiceTransactionViewModel;
+        }
+        
         #endregion
 
 

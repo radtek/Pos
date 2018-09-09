@@ -25,6 +25,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public List<ApiOrderItemViewModel> OrderItems { get; set; }
         public SiteSettingType TransactionType { get; set; }
         public bool IsConfirmed { get; set; }
+        public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
     }
 }
 

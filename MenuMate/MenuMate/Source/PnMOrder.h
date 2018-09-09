@@ -31,7 +31,12 @@ public:
         AccNumber(""),
         FirstName(""),
         LastName(""),
-        OnlineOrderId("") {
+        OnlineOrderId(""),
+        OnlineChitType(0),
+        SiteId(0),
+        OrderItemId(0),
+        OrderItemSizeId(0),
+        ReferenceOrderItemSizeId(0) {
 	}
 
 	TPnMOrder( const TPnMOrder& inOther );
@@ -62,6 +67,12 @@ public:
     UnicodeString FirstName;
     UnicodeString LastName;
     UnicodeString OnlineOrderId;
+    int OnlineChitType;
+    int SiteId;
+    int OrderItemId;
+    int OrderItemSizeId;
+    int ReferenceOrderItemSizeId;
+
 
 	// Selected for billing therefore not shown in orders list
 	bool operator < (const TPnMOrder & rhs)

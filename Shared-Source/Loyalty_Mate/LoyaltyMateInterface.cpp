@@ -1329,7 +1329,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
-    {      MessageBox(exc.Message,11.4,MB_OK);
+    {
         return CreateExceptionFailedResponse( exc.Message );
     }
 }

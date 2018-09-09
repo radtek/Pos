@@ -210,6 +210,8 @@
     <Compile Include="DTO\OnlineOrdering\MenuModels\ItemSizeInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\MenuModels\ItemSizeTaxProfileInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\MenuModels\MenuConsumableInfo.cs" />
+    <Compile Include="DTO\OnlineOrdering\OrderModels\InvoiceTransactionModel.cs" />
+    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderInvoiceTransactionModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeDiscountModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeTaxProfileModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeViewModel.cs" />

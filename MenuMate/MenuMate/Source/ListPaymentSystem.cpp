@@ -6977,6 +6977,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
         siteOrderModel.CompanyId = 0;
         siteOrderModel.SiteId = Order->SiteId;
+        siteOrderModel.OrderId = 0;
         siteOrderModel.TransactionType = paymentTransaction.SalesType;
         siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
         siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
@@ -6985,7 +6986,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel. ContainerName = Order->TabContainerName;
         siteOrderModel. OrderGuid = Order->OnlineOrderId;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
-                siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
+        siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
         siteOrderModel.TerminalName = Order->Terminal;
         siteOrderModel.TransactionDate = Now();;
         siteOrderModel.OrderType = Order->OrderType;
@@ -7005,36 +7006,46 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
     std::list<TOrderItemModel> orderItemModelList;
     try
     {
+        std::map<int, TOrderItemModel >OrderItemModelMap;
         for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
         {
             TOrderItemModel orderItemModel;
             TItemComplete* Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
-            orderItemModel.OrderItemId = Order->OrderItemId;
-            orderItemModel.Name = Order->Item;
-            orderItemModel.Description = Order->Item;
-            orderItemModel.SiteItemId = 0;//Order->;      todo
-            orderItemModel.Price = Order->PriceEach_BillCalc();
 
-            std::list<TOrderItemSizeModel> orderItemSizeModelList;
 
-            TOrderItemSizeModel orderItemSizeModel;
+            if(OrderItemModelMap.find(1) != OrderItemModelMap.end())
+	        {
 
-            orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
-            orderItemSizeModel.OrderItemId = Order->OrderItemId;
-            orderItemSizeModel.Name = Order->Size;
-            orderItemSizeModel.ItemSizeId = Order->Item_ID;
-            orderItemSizeModel.Quantity = Order->GetQty();
-            orderItemSizeModel.MenuPrice = Order->PriceLevel0;
-            orderItemSizeModel.Price = Order->PriceEach_BillCalc();
-            orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
-            orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
-            orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
-            orderItemSizeModelList.push_back(orderItemSizeModel);
-            orderItemSizeModel.ReferenceOrderItemSizeId  = 0 ;//todo
+            }
+            else
+            {
+                orderItemModel.OrderItemId = Order->OrderItemId;
+                orderItemModel.Name = Order->Item;
+                orderItemModel.Description = Order->Item;
+                orderItemModel.SiteItemId = 0;//Order->;      todo
+                orderItemModel.Price = Order->PriceEach_BillCalc();
 
-            orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
+                std::list<TOrderItemSizeModel> orderItemSizeModelList;
 
-            orderItemModelList.push_back(orderItemModel);
+                TOrderItemSizeModel orderItemSizeModel;
+
+                orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+                orderItemSizeModel.OrderItemId = Order->OrderItemId;
+                orderItemSizeModel.Name = Order->Size;
+                orderItemSizeModel.ItemSizeId = Order->Item_ID;
+                orderItemSizeModel.Quantity = Order->GetQty();
+                orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+                orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+                orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+                orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+                orderItemSizeModel.ReferenceOrderItemSizeId  = 0 ;//todo
+                orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+                orderItemSizeModelList.push_back(orderItemSizeModel);
+
+                orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
+            }
+
+            //orderItemModelList.push_back(orderItemModel);
         }
     }
     catch(Exception &Ex)

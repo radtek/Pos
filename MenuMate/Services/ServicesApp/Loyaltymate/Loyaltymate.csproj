@@ -100,6 +100,8 @@
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSideGroupViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\OrderModels\InvoiceTransactionViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderInvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeDiscountViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
     <Compile Include="Model\OnlineOrderingModel\OrderModels\OrderItemSizeViewModel.cs" />
