@@ -7046,7 +7046,6 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
 
                 OrderItemModelMap[Order->OrderItemId] = orderItemModel;
-                orderItemModelList.push_back(orderItemModel);
             }
             else
             {
@@ -7067,8 +7066,13 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
 
                 it->second.OrderItemSizes.push_back(orderItemSizeModel);
-
             }
+        }
+
+        //Now iterate values from map and insert it into list..
+        for(std::map<int,TOrderItemModel>::iterator it = OrderItemModelMap.begin();  it != OrderItemModelMap.end(); it++)
+        {
+            orderItemModelList.push_back(it->second);
         }
     }
     catch(Exception &Ex)
