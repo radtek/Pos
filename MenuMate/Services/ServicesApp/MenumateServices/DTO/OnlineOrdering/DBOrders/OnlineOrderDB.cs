@@ -174,6 +174,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 orderRow.Quantity = itemSize.Quantity;
                                 orderRow.ItemSizeId = itemSize.ItemSizeId;
                                 orderRow.TimeKey = setTimeKey();
+                                orderRow.Email = orderRow.ContainerName;
 
                                 //Generate order id..
                                 orderRow.OrderId = GenerateKey("ORDERS");

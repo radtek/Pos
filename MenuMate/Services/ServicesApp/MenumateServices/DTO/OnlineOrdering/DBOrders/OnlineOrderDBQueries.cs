@@ -333,7 +333,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         SITE_ID,
                                         ORDER_ITEM_ID,
                                         ORDER_ITEM_SIZE_ID,
-                                        REFERENCE_ORDER_ITEM_SIZE_ID
+                                        REFERENCE_ORDER_ITEM_SIZE_ID,
+                                        EMAIL
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -400,7 +401,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         @SITE_ID,
                                         @ORDER_ITEM_ID,
                                         @ORDER_ITEM_SIZE_ID,
-                                        @REFERENCE_ORDER_ITEM_SIZE_ID)";
+                                        @REFERENCE_ORDER_ITEM_SIZE_ID,
+                                        @EMAIL)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -467,6 +469,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ORDER_ITEM_ID", orderDbItem.OrderItemId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderDbItem.OrderItemSizeId);
                 command.Parameters.AddWithValue("@REFERENCE_ORDER_ITEM_SIZE_ID", orderDbItem.ReferenceOrderItemSizeId);
+                command.Parameters.AddWithValue("@EMAIL", orderDbItem.Email);
                 
 
                 if (orderDbItem.SideOrderKey > 0)
