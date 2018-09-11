@@ -236,6 +236,8 @@ class TLoyaltyMateInterface
         OrderItemSizeModel* CreateOrderItemSizeModel(TOrderItemSizeModel orderItemSizeModel);
         OrderItemSizeDiscountModel* CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel);
         OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
+        OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
+        InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
 };
 
 #endif

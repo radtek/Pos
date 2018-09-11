@@ -66,6 +66,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTabKeyByWebOrderKeyCmd " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -95,6 +96,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTabExists " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -127,6 +129,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetSeatForTable " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -157,6 +160,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTabKeyBySeatKey " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -187,6 +191,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTabKeyBySeatKey " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -222,6 +227,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetorCreateSeatForTable " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -250,6 +256,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTableKeyByTableName " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
@@ -333,7 +340,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         SITE_ID,
                                         ORDER_ITEM_ID,
                                         ORDER_ITEM_SIZE_ID,
-                                        REFERENCE_ORDER_ITEM_SIZE_ID
+                                        REFERENCE_ORDER_ITEM_SIZE_ID,
+                                        EMAIL
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -400,7 +408,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         @SITE_ID,
                                         @ORDER_ITEM_ID,
                                         @ORDER_ITEM_SIZE_ID,
-                                        @REFERENCE_ORDER_ITEM_SIZE_ID)";
+                                        @REFERENCE_ORDER_ITEM_SIZE_ID,
+                                        @EMAIL)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -467,6 +476,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ORDER_ITEM_ID", orderDbItem.OrderItemId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderDbItem.OrderItemSizeId);
                 command.Parameters.AddWithValue("@REFERENCE_ORDER_ITEM_SIZE_ID", orderDbItem.ReferenceOrderItemSizeId);
+                command.Parameters.AddWithValue("@EMAIL", orderDbItem.Email);
                 
 
                 if (orderDbItem.SideOrderKey > 0)
@@ -525,6 +535,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in CreateTabCmd " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
             }
 
@@ -568,6 +579,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in CreateTable " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
             }
 
@@ -601,6 +613,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+                throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
             }
 
@@ -624,7 +637,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+                throw;
             }
 
             return command;
@@ -653,7 +666,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in LoadBreakDownCategoriesCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+                throw;
             }
             return result;
         }
@@ -676,39 +689,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetItemSizeTaxProfileKey " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+                throw;
             }
             return result;
         }
-
-//        public FbCommand InsertIntoSecurity(FbConnection connection, FbTransaction transaction, OrderAttributes orderDbItem, long securityKey)
-//        {
-//            FbCommand command = new FbCommand(@"", connection, transaction);
-
-//            try
-//            {
-//                command.CommandText = @"
-//                                   INSERT INTO SECURITY (SECURITY_KEY, SECURITY_REF, SECURITY_EVENT, FROM_VAL, TO_VAL, NOTE, TERMINAL_NAME, USER_KEY, TIME_STAMP)
-//                                     VALUES (@SECURITY_KEY, @SECURITY_REF, @SECURITY_EVENT, @FROM_VAL, @TO_VAL, @NOTE, @TERMINAL_NAME, @USER_KEY, @TIME_STAMP)";
-
-//                command.Parameters.AddWithValue("@SECURITY_KEY", securityKey);
-//                command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
-//                command.Parameters.AddWithValue("@SECURITY_EVENT", "Online ordered by");
-//                command.Parameters.AddWithValue("@FROM_VAL", orderDbItem.ContainerName);
-//                command.Parameters.AddWithValue("@TO_VAL", orderDbItem.ContainerName);
-//                command.Parameters.AddWithValue("@NOTE", "");
-//                command.Parameters.AddWithValue("@TERMINAL_NAME", orderDbItem.Location);
-//                command.Parameters.AddWithValue("@USER_KEY", orderDbItem.MembershipProfileId);
-//                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
-//            }
-//            catch (Exception e)
-//            {
-//                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
-//                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
-//            }
-
-//            return command;
-//        }
 
         public FbCommand GetItemInfo(FbConnection connection, FbTransaction transaction, long itemId)
         {
@@ -727,7 +711,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+                throw;
             }
 
             return command;
@@ -756,7 +740,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
+                throw;
             }
 
             //.........................................................
@@ -795,7 +779,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in CloseSaleStartTimeCmd " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 179, short.MaxValue);
+                throw;
             }
 
             //.........................................................
@@ -820,7 +804,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in InsertTaxProfilesOrders " + e.Message, e);
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+                throw;
             }
 
             return command;

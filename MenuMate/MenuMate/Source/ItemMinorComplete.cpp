@@ -233,6 +233,7 @@ TItemMinorComplete::TItemMinorComplete() {
     OrderItemId = 0;
     OrderItemSizeId = 0;
     ReferenceOrderItemSizeId = 0;
+    Email = "";
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -301,6 +302,7 @@ TItemMinorComplete::TItemMinorComplete(
     OrderItemId = initializer.OrderItemId;
     OrderItemSizeId = initializer.OrderItemSizeId;
     ReferenceOrderItemSizeId = initializer.ReferenceOrderItemSizeId;
+    Email = initializer.Email;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -359,6 +361,7 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     OrderItemId = rhs.OrderItemId;
     OrderItemSizeId = rhs.OrderItemSizeId;
     ReferenceOrderItemSizeId = rhs.ReferenceOrderItemSizeId;
+    Email = rhs.Email;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -418,6 +421,7 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->OrderItemId = OrderItemId;
         RetItem->OrderItemSizeId = OrderItemSizeId;
         RetItem->ReferenceOrderItemSizeId = ReferenceOrderItemSizeId;
+        RetItem->Email = Email;
     }
 }
 

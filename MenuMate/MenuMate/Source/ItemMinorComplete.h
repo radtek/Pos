@@ -343,6 +343,7 @@ class TItemMinorComplete : public TItemMinor
     int OrderItemId;
     int OrderItemSizeId;
     int ReferenceOrderItemSizeId;
+    UnicodeString Email;
 
 private:
         bool is_being_returned_to_stock_;

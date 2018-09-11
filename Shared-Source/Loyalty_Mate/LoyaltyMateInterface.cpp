@@ -1284,7 +1284,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
 {
     LoyaltyResponse *wcfResponse;
     try
-    {     MessageBox("7",7,MB_OK);
+    {
         SiteOrderModel *wcfInfo = new SiteOrderModel();
         wcfInfo->CompanyId = siteOrderModel.CompanyId;
         wcfInfo->ContainerName = siteOrderModel.ContainerName;
@@ -1308,7 +1308,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
         wcfInfo->UserType = siteOrderModel.UserType;
 
         if(!siteOrderModel.OrderItems.empty())
-        {       MessageBox("8",8,MB_OK);
+        {
             ArrayOfOrderItemModel orderItemsModelArray;
 
             for(std::list<TOrderItemModel>::iterator itOrderItemModel = siteOrderModel.OrderItems.begin();
@@ -1320,6 +1320,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
                 orderItemsModelArray[orderItemsModelArray.Length - 1] = orderItemModel;
             }
             wcfInfo->OrderItems = orderItemsModelArray;
+            wcfInfo->OrderInvoiceTransaction = CreateOrderInvoiceTransaction(siteOrderModel.OrderInvoiceTransaction);
         }
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
@@ -1329,7 +1330,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
-    {      MessageBox(exc.Message,11.4,MB_OK);
+    {
         return CreateExceptionFailedResponse( exc.Message );
     }
 }
@@ -1338,7 +1339,7 @@ OrderItemModel* TLoyaltyMateInterface::CreateOrderItemModel(TOrderItemModel item
 {
     OrderItemModel* orderItemModel = new OrderItemModel;
     try
-    {            MessageBox("9",9,MB_OK);
+    {
         orderItemModel->Description = itemModel.Description;
         orderItemModel->Name = itemModel.Name;
         orderItemModel->OrderId = itemModel.OrderId;
@@ -1361,7 +1362,7 @@ OrderItemModel* TLoyaltyMateInterface::CreateOrderItemModel(TOrderItemModel item
         }
     }
     catch(Exception& exc)
-    {    MessageBox(exc.Message,11.3,MB_OK);
+    {
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
         throw;
     }
@@ -1372,7 +1373,7 @@ OrderItemSizeModel* TLoyaltyMateInterface::CreateOrderItemSizeModel(TOrderItemSi
 {
     OrderItemSizeModel* orderItemSizeModel = new OrderItemSizeModel;
     try
-    {            MessageBox("10",10,MB_OK);
+    {
         orderItemSizeModel->OrderItemSizeId = itemSizeModel.OrderItemSizeId;
         orderItemSizeModel->BasePrice = itemSizeModel.BasePrice;
         orderItemSizeModel->ItemSizeId = itemSizeModel.ItemSizeId;
@@ -1415,7 +1416,7 @@ OrderItemSizeModel* TLoyaltyMateInterface::CreateOrderItemSizeModel(TOrderItemSi
         }
     }
     catch(Exception& exc)
-    {    MessageBox(exc.Message,11.2,MB_OK);
+    {
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
         throw;
     }
@@ -1426,7 +1427,7 @@ OrderItemSizeDiscountModel* TLoyaltyMateInterface::CreateOrderItemSizeDiscountMo
 {
     OrderItemSizeDiscountModel* orderItemSizeDiscountModel = new OrderItemSizeDiscountModel;
     try
-    {      MessageBox("11",11,MB_OK);
+    {
         orderItemSizeDiscountModel->Code = itemSizeDiscountModel.Code;
         orderItemSizeDiscountModel->Name = itemSizeDiscountModel.Name;
         orderItemSizeDiscountModel->OrderItemSizeDiscountId = itemSizeDiscountModel.OrderItemSizeDiscountId;
@@ -1434,7 +1435,7 @@ OrderItemSizeDiscountModel* TLoyaltyMateInterface::CreateOrderItemSizeDiscountMo
         orderItemSizeDiscountModel->Value = itemSizeDiscountModel.Value;
     }
     catch(Exception& exc)
-    {    MessageBox(exc.Message,11.1,MB_OK);
+    {
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
         throw;
     }
@@ -1466,5 +1467,49 @@ OrderItemSizeTaxProfileModel* TLoyaltyMateInterface::CreateOrderItemSizeTaxProfi
     return orderItemSizeTaxProfileModel;
 }
 
+OrderInvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction)
+{
+    OrderInvoiceTransactionModel* orderInvoiceTransactionModel = new OrderInvoiceTransactionModel;
+    try
+    {
+        orderInvoiceTransactionModel->OrderInvoiceTransactionId = orderinvoiceTransaction.OrderInvoiceTransactionId;
+        orderInvoiceTransactionModel->OrderId = orderinvoiceTransaction.OrderId;
+        orderInvoiceTransactionModel->InvoiceTransactionId = orderinvoiceTransaction.InvoiceTransactionId;
+        orderInvoiceTransactionModel->InvoiceTransaction = CreateOrderInvoiceTransaction(orderinvoiceTransaction.InvoiceTransaction);
+    }
+     catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return orderInvoiceTransactionModel;
+}
+
+InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransaction)
+{
+    InvoiceTransactionModel* invoiceTransactionModel = new InvoiceTransactionModel;
+    try
+    {
+         invoiceTransactionModel->InvoiceTransactionId = invoiceTransaction.InvoiceTransactionId;
+         invoiceTransactionModel->InvoiceNumber = invoiceTransaction.InvoiceNumber;
+         invoiceTransactionModel->TotalSaleAmount = invoiceTransaction.TotalSaleAmount;
+         TXSDateTime* transactionDate = new TXSDateTime;
+         transactionDate->AsDateTime = invoiceTransaction.TransactionDate;
+         invoiceTransactionModel->TransactionDate = transactionDate;
+         invoiceTransactionModel->SiteId = invoiceTransaction.SiteId;
+         invoiceTransactionModel->TerminalName = invoiceTransaction.TerminalName;
+         invoiceTransactionModel->Receipt = invoiceTransaction.Receipt;
+         invoiceTransactionModel->ReceiptPath = invoiceTransaction.ReceiptPath;
+         invoiceTransactionModel->Rounding = invoiceTransaction.Rounding;
+         invoiceTransactionModel->UserReferenceId = invoiceTransaction.UserReferenceId;
+         invoiceTransactionModel->UserType = invoiceTransaction.UserType;
+    }
+    catch(Exception& exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+        throw;
+    }
+    return invoiceTransactionModel;
+}
 
 #pragma package(smart_init)

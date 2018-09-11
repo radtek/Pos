@@ -1237,10 +1237,6 @@
 				<DependentOn>EFTPOSPaymentSense.h</DependentOn>
 				<BuildOrder>798</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>795</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="OnlineOrdering\OnlineOrderingAttributes.cpp">
 				<DependentOn>OnlineOrdering\OnlineOrderingAttributes.h</DependentOn>
 				<BuildOrder>804</BuildOrder>
@@ -3464,6 +3460,10 @@
 			<CppCompile Include="OnlineOrdering\OnlineOrderDocketPrinter.cpp">
 				<DependentOn>OnlineOrdering\OnlineOrderDocketPrinter.h</DependentOn>
 				<BuildOrder>793</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
+				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
+				<BuildOrder>789</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
 			<FormResources Include="GenericGroupGUI.dfm"/>

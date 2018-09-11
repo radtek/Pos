@@ -391,6 +391,13 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
         "ADD REFERENCE_ORDER_ITEM_SIZE_ID INTEGER ",
         inDBControl);
     }
+    if ( !fieldExists( "ORDERS", "EMAIL", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD EMAIL Varchar(80) ",
+        inDBControl);
+    }
 
 
 }
@@ -490,6 +497,11 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
         if ( fieldExists( "ORDERS ", "REFERENCE_ORDER_ITEM_SIZE_ID ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.REFERENCE_ORDER_ITEM_SIZE_ID = 0 WHERE a.REFERENCE_ORDER_ITEM_SIZE_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ORDERS ", "EMAIL ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.EMAIL = "" WHERE a.EMAIL IS NULL ",
             UpdateQuery->ExecQuery();
         }
 

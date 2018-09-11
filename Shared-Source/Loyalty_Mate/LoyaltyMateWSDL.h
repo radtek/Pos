@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (7/09/2018 10:32:54 p.m. - - $Rev: 25127 $)
+// (9/09/2018 6:37:02 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -54,6 +54,7 @@ namespace NS__LoyaltyMateWSDL {
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:base64Binary    - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:decimal         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
@@ -117,12 +118,16 @@ class SOAP_REMOTABLE_CLASS SideGroupInfo2;
 class SOAP_REMOTABLE_CLASS ItemSideInfo2;
 class SOAP_REMOTABLE_CLASS SiteTaxSettingsinfo2;
 class SOAP_REMOTABLE_CLASS TaxSettingsInfo2;
+class SOAP_REMOTABLE_CLASS OrderInvoiceTransactionModel;
 class SOAP_REMOTABLE_CLASS SiteOrderModel;
+class SOAP_REMOTABLE_CLASS InvoiceTransactionModel;
 class SOAP_REMOTABLE_CLASS OrderItemModel;
 class SOAP_REMOTABLE_CLASS OrderItemSizeModel;
 class SOAP_REMOTABLE_CLASS OrderItemSizeDiscountModel;
 class SOAP_REMOTABLE_CLASS OrderItemSizeTaxProfileModel;
 class SOAP_REMOTABLE_CLASS SiteOrderModel2;
+class SOAP_REMOTABLE_CLASS OrderInvoiceTransactionModel2;
+class SOAP_REMOTABLE_CLASS InvoiceTransactionModel2;
 class SOAP_REMOTABLE_CLASS OrderItemModel2;
 class SOAP_REMOTABLE_CLASS OrderItemSizeModel2;
 class SOAP_REMOTABLE_CLASS OrderItemSizeDiscountModel2;
@@ -281,6 +286,19 @@ __published:
   __property OrderContainerType __propType = { read=__instanceType };
 };
 
+enum class UserType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
+{
+  Member, 
+  Staff
+};
+
+class UserType_TypeInfoHolder : public TObject {
+  UserType __instanceType;
+public:
+__published:
+  __property UserType __propType = { read=__instanceType };
+};
+
 enum class OrderType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
 {
   NormalOrder, 
@@ -294,19 +312,6 @@ class OrderType_TypeInfoHolder : public TObject {
 public:
 __published:
   __property OrderType __propType = { read=__instanceType };
-};
-
-enum class UserType   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum"[GblSmpl] */
-{
-  Member, 
-  Staff
-};
-
-class UserType_TypeInfoHolder : public TObject {
-  UserType __instanceType;
-public:
-__published:
-  __property UserType __propType = { read=__instanceType };
 };
 
 
@@ -2452,6 +2457,49 @@ __published:
 };
 
 
+
+
+// ************************************************************************ //
+// XML       : OrderInvoiceTransactionModel, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels
+// ************************************************************************ //
+class OrderInvoiceTransactionModel : public TRemotable {
+private:
+  InvoiceTransactionModel* FInvoiceTransaction;
+  bool            FInvoiceTransaction_Specified;
+  __int64         FInvoiceTransactionId;
+  bool            FInvoiceTransactionId_Specified;
+  __int64         FOrderId;
+  bool            FOrderId_Specified;
+  __int64         FOrderInvoiceTransactionId;
+  bool            FOrderInvoiceTransactionId_Specified;
+  void __fastcall SetInvoiceTransaction(int Index, InvoiceTransactionModel* _prop_val)
+  {  FInvoiceTransaction = _prop_val; FInvoiceTransaction_Specified = true;  }
+  bool __fastcall InvoiceTransaction_Specified(int Index)
+  {  return FInvoiceTransaction_Specified;  } 
+  void __fastcall SetInvoiceTransactionId(int Index, __int64 _prop_val)
+  {  FInvoiceTransactionId = _prop_val; FInvoiceTransactionId_Specified = true;  }
+  bool __fastcall InvoiceTransactionId_Specified(int Index)
+  {  return FInvoiceTransactionId_Specified;  } 
+  void __fastcall SetOrderId(int Index, __int64 _prop_val)
+  {  FOrderId = _prop_val; FOrderId_Specified = true;  }
+  bool __fastcall OrderId_Specified(int Index)
+  {  return FOrderId_Specified;  } 
+  void __fastcall SetOrderInvoiceTransactionId(int Index, __int64 _prop_val)
+  {  FOrderInvoiceTransactionId = _prop_val; FOrderInvoiceTransactionId_Specified = true;  }
+  bool __fastcall OrderInvoiceTransactionId_Specified(int Index)
+  {  return FOrderInvoiceTransactionId_Specified;  } 
+
+public:
+  __fastcall ~OrderInvoiceTransactionModel();
+__published:
+  __property InvoiceTransactionModel* InvoiceTransaction = { index=(IS_OPTN|IS_NLBL), read=FInvoiceTransaction, write=SetInvoiceTransaction, stored = InvoiceTransaction_Specified };
+  __property __int64    InvoiceTransactionId = { index=(IS_OPTN), read=FInvoiceTransactionId, write=SetInvoiceTransactionId, stored = InvoiceTransactionId_Specified };
+  __property __int64       OrderId = { index=(IS_OPTN), read=FOrderId, write=SetOrderId, stored = OrderId_Specified };
+  __property __int64    OrderInvoiceTransactionId = { index=(IS_OPTN), read=FOrderInvoiceTransactionId, write=SetOrderInvoiceTransactionId, stored = OrderInvoiceTransactionId_Specified };
+};
+
+
 typedef DynamicArray<OrderItemModel*> ArrayOfOrderItemModel; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels"[GblCplx] */
 
 
@@ -2477,6 +2525,8 @@ private:
   bool            FOrderGuid_Specified;
   __int64         FOrderId;
   bool            FOrderId_Specified;
+  OrderInvoiceTransactionModel* FOrderInvoiceTransaction;
+  bool            FOrderInvoiceTransaction_Specified;
   ArrayOfOrderItemModel FOrderItems;
   bool            FOrderItems_Specified;
   OrderType       FOrderType;
@@ -2527,6 +2577,10 @@ private:
   {  FOrderId = _prop_val; FOrderId_Specified = true;  }
   bool __fastcall OrderId_Specified(int Index)
   {  return FOrderId_Specified;  } 
+  void __fastcall SetOrderInvoiceTransaction(int Index, OrderInvoiceTransactionModel* _prop_val)
+  {  FOrderInvoiceTransaction = _prop_val; FOrderInvoiceTransaction_Specified = true;  }
+  bool __fastcall OrderInvoiceTransaction_Specified(int Index)
+  {  return FOrderInvoiceTransaction_Specified;  } 
   void __fastcall SetOrderItems(int Index, ArrayOfOrderItemModel _prop_val)
   {  FOrderItems = _prop_val; FOrderItems_Specified = true;  }
   bool __fastcall OrderItems_Specified(int Index)
@@ -2575,6 +2629,7 @@ __published:
   __property UnicodeString   Location = { index=(IS_OPTN|IS_NLBL), read=FLocation, write=SetLocation, stored = Location_Specified };
   __property UnicodeString  OrderGuid = { index=(IS_OPTN|IS_NLBL), read=FOrderGuid, write=SetOrderGuid, stored = OrderGuid_Specified };
   __property __int64       OrderId = { index=(IS_OPTN), read=FOrderId, write=SetOrderId, stored = OrderId_Specified };
+  __property OrderInvoiceTransactionModel* OrderInvoiceTransaction = { index=(IS_OPTN|IS_NLBL), read=FOrderInvoiceTransaction, write=SetOrderInvoiceTransaction, stored = OrderInvoiceTransaction_Specified };
   __property ArrayOfOrderItemModel OrderItems = { index=(IS_OPTN|IS_NLBL), read=FOrderItems, write=SetOrderItems, stored = OrderItems_Specified };
   __property OrderType   OrderType = { index=(IS_OPTN), read=FOrderType, write=SetOrderType, stored = OrderType_Specified };
   __property __int64        SiteId = { index=(IS_OPTN), read=FSiteId, write=SetSiteId, stored = SiteId_Specified };
@@ -2582,6 +2637,98 @@ __published:
   __property double     TotalAmount = { index=(IS_OPTN), read=FTotalAmount, write=SetTotalAmount, stored = TotalAmount_Specified };
   __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
   __property SiteSettingType TransactionType = { index=(IS_OPTN), read=FTransactionType, write=SetTransactionType, stored = TransactionType_Specified };
+  __property __int64    UserReferenceId = { index=(IS_OPTN), read=FUserReferenceId, write=SetUserReferenceId, stored = UserReferenceId_Specified };
+  __property UserType     UserType = { index=(IS_OPTN), read=FUserType, write=SetUserType, stored = UserType_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : InvoiceTransactionModel, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels
+// ************************************************************************ //
+class InvoiceTransactionModel : public TRemotable {
+private:
+  UnicodeString   FInvoiceNumber;
+  bool            FInvoiceNumber_Specified;
+  __int64         FInvoiceTransactionId;
+  bool            FInvoiceTransactionId_Specified;
+  TByteDynArray   FReceipt;
+  bool            FReceipt_Specified;
+  UnicodeString   FReceiptPath;
+  bool            FReceiptPath_Specified;
+  double          FRounding;
+  bool            FRounding_Specified;
+  __int64         FSiteId;
+  bool            FSiteId_Specified;
+  UnicodeString   FTerminalName;
+  bool            FTerminalName_Specified;
+  double          FTotalSaleAmount;
+  bool            FTotalSaleAmount_Specified;
+  TXSDateTime*    FTransactionDate;
+  bool            FTransactionDate_Specified;
+  __int64         FUserReferenceId;
+  bool            FUserReferenceId_Specified;
+  UserType        FUserType;
+  bool            FUserType_Specified;
+  void __fastcall SetInvoiceNumber(int Index, UnicodeString _prop_val)
+  {  FInvoiceNumber = _prop_val; FInvoiceNumber_Specified = true;  }
+  bool __fastcall InvoiceNumber_Specified(int Index)
+  {  return FInvoiceNumber_Specified;  } 
+  void __fastcall SetInvoiceTransactionId(int Index, __int64 _prop_val)
+  {  FInvoiceTransactionId = _prop_val; FInvoiceTransactionId_Specified = true;  }
+  bool __fastcall InvoiceTransactionId_Specified(int Index)
+  {  return FInvoiceTransactionId_Specified;  } 
+  void __fastcall SetReceipt(int Index, TByteDynArray _prop_val)
+  {  FReceipt = _prop_val; FReceipt_Specified = true;  }
+  bool __fastcall Receipt_Specified(int Index)
+  {  return FReceipt_Specified;  } 
+  void __fastcall SetReceiptPath(int Index, UnicodeString _prop_val)
+  {  FReceiptPath = _prop_val; FReceiptPath_Specified = true;  }
+  bool __fastcall ReceiptPath_Specified(int Index)
+  {  return FReceiptPath_Specified;  } 
+  void __fastcall SetRounding(int Index, double _prop_val)
+  {  FRounding = _prop_val; FRounding_Specified = true;  }
+  bool __fastcall Rounding_Specified(int Index)
+  {  return FRounding_Specified;  } 
+  void __fastcall SetSiteId(int Index, __int64 _prop_val)
+  {  FSiteId = _prop_val; FSiteId_Specified = true;  }
+  bool __fastcall SiteId_Specified(int Index)
+  {  return FSiteId_Specified;  } 
+  void __fastcall SetTerminalName(int Index, UnicodeString _prop_val)
+  {  FTerminalName = _prop_val; FTerminalName_Specified = true;  }
+  bool __fastcall TerminalName_Specified(int Index)
+  {  return FTerminalName_Specified;  } 
+  void __fastcall SetTotalSaleAmount(int Index, double _prop_val)
+  {  FTotalSaleAmount = _prop_val; FTotalSaleAmount_Specified = true;  }
+  bool __fastcall TotalSaleAmount_Specified(int Index)
+  {  return FTotalSaleAmount_Specified;  } 
+  void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
+  {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
+  bool __fastcall TransactionDate_Specified(int Index)
+  {  return FTransactionDate_Specified;  } 
+  void __fastcall SetUserReferenceId(int Index, __int64 _prop_val)
+  {  FUserReferenceId = _prop_val; FUserReferenceId_Specified = true;  }
+  bool __fastcall UserReferenceId_Specified(int Index)
+  {  return FUserReferenceId_Specified;  } 
+  void __fastcall SetUserType(int Index, UserType _prop_val)
+  {  FUserType = _prop_val; FUserType_Specified = true;  }
+  bool __fastcall UserType_Specified(int Index)
+  {  return FUserType_Specified;  } 
+
+public:
+  __fastcall ~InvoiceTransactionModel();
+__published:
+  __property UnicodeString InvoiceNumber = { index=(IS_OPTN|IS_NLBL), read=FInvoiceNumber, write=SetInvoiceNumber, stored = InvoiceNumber_Specified };
+  __property __int64    InvoiceTransactionId = { index=(IS_OPTN), read=FInvoiceTransactionId, write=SetInvoiceTransactionId, stored = InvoiceTransactionId_Specified };
+  __property TByteDynArray    Receipt = { index=(IS_OPTN|IS_NLBL), read=FReceipt, write=SetReceipt, stored = Receipt_Specified };
+  __property UnicodeString ReceiptPath = { index=(IS_OPTN|IS_NLBL), read=FReceiptPath, write=SetReceiptPath, stored = ReceiptPath_Specified };
+  __property double       Rounding = { index=(IS_OPTN), read=FRounding, write=SetRounding, stored = Rounding_Specified };
+  __property __int64        SiteId = { index=(IS_OPTN), read=FSiteId, write=SetSiteId, stored = SiteId_Specified };
+  __property UnicodeString TerminalName = { index=(IS_OPTN|IS_NLBL), read=FTerminalName, write=SetTerminalName, stored = TerminalName_Specified };
+  __property double     TotalSaleAmount = { index=(IS_OPTN), read=FTotalSaleAmount, write=SetTotalSaleAmount, stored = TotalSaleAmount_Specified };
+  __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
   __property __int64    UserReferenceId = { index=(IS_OPTN), read=FUserReferenceId, write=SetUserReferenceId, stored = UserReferenceId_Specified };
   __property UserType     UserType = { index=(IS_OPTN), read=FUserType, write=SetUserType, stored = UserType_Specified };
 };
@@ -2896,6 +3043,30 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels
 // ************************************************************************ //
 class SiteOrderModel2 : public SiteOrderModel {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : OrderInvoiceTransactionModel, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels
+// ************************************************************************ //
+class OrderInvoiceTransactionModel2 : public OrderInvoiceTransactionModel {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : InvoiceTransactionModel, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels
+// ************************************************************************ //
+class InvoiceTransactionModel2 : public InvoiceTransactionModel {
 private:
 __published:
 };

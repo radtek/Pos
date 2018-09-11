@@ -153,9 +153,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteMenuViewModel.CompanyId = siteMenuInfo.CompanyId;
             siteMenuViewModel.SiteId = siteMenuInfo.SiteId;
             siteMenuViewModel.MenuConsumables = new List<ApiMenuConsumableViewModel>();
-            foreach (var menu in siteMenuInfo.MenuConsumables)
+            if (siteMenuInfo.MenuConsumables != null)
             {
-                siteMenuViewModel.MenuConsumables.Add(CreateMenuConsumableViewModel(menu));
+                foreach (var menu in siteMenuInfo.MenuConsumables)
+                {
+                    siteMenuViewModel.MenuConsumables.Add(CreateMenuConsumableViewModel(menu));
+                }
             }
             var requestData = JsonUtility.Serialize<ApiSiteMenuViewModel>(siteMenuViewModel);//just to test json
             return siteMenuViewModel;
@@ -171,9 +174,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             menuConsumableViewModel.SiteMenuCourseId = menuConsumableInfo.SiteMenuCourseId;
             menuConsumableViewModel.Type = (Loyaltymate.Enum.MenuType)menuConsumableInfo.Type;
             menuConsumableViewModel.SiteCourses = new List<ApiCourseViewModel>();
-            foreach (var siteCourse in menuConsumableInfo.SiteCourses)
+            if (menuConsumableInfo.SiteCourses != null)
             {
-                menuConsumableViewModel.SiteCourses.Add(CreateCourseViewModel(siteCourse));
+                foreach (var siteCourse in menuConsumableInfo.SiteCourses)
+                {
+                    menuConsumableViewModel.SiteCourses.Add(CreateCourseViewModel(siteCourse));
+                }
             }
             return menuConsumableViewModel;
         }
@@ -188,9 +194,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             courseViewModel.ServingCourseName = courseInfo.ServingCourseName;
             courseViewModel.SiteMenuCourseId = courseInfo.SiteMenuCourseId;
             courseViewModel.Items = new List<ApiSiteItemViewModel>();
-            foreach (var item in courseInfo.Items)
+            if (courseInfo.Items != null)
             {
-                courseViewModel.Items.Add(CreateItemSiteViewModel(item));
+                foreach (var item in courseInfo.Items)
+                {
+                    courseViewModel.Items.Add(CreateItemSiteViewModel(item));
+                }
             }
             return courseViewModel;
         }
@@ -206,14 +215,20 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteItemViewModel.SiteItemId = siteItem.SiteItemId;
             siteItemViewModel.SiteMenuCourseId = siteItem.SiteMenuCourseId;
             siteItemViewModel.ItemSizes = new List<ApiItemSizeViewModel>();
-            foreach (var itemSize in siteItem.ItemSizes)
+            if (siteItem.ItemSizes != null)
             {
-                siteItemViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
+                foreach (var itemSize in siteItem.ItemSizes)
+                {
+                    siteItemViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
+                }
             }
             siteItemViewModel.SideGroups = new List<ApiSideGroupViewModel>();
-            foreach (var sideGroup in siteItem.SideGroups)
+            if (siteItem.SideGroups != null)
             {
-                siteItemViewModel.SideGroups.Add(CreateSideGroupViewModel(sideGroup));
+                foreach (var sideGroup in siteItem.SideGroups)
+                {
+                    siteItemViewModel.SideGroups.Add(CreateSideGroupViewModel(sideGroup));
+                }
             }
             return siteItemViewModel;
         }
@@ -228,9 +243,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             sideGroupViewModel.SideGroupId = sideGroupInfo.SideGroupId;
             sideGroupViewModel.SiteItemId = sideGroupInfo.SiteItemId;
             sideGroupViewModel.ItemSides = new List<ApiItemSideViewModel>();
-            foreach (var itemSide in sideGroupInfo.ItemSides)
+            if (sideGroupInfo.ItemSides != null)
             {
-                sideGroupViewModel.ItemSides.Add(CreateItemSideViewModel(itemSide));
+                foreach (var itemSide in sideGroupInfo.ItemSides)
+                {
+                    sideGroupViewModel.ItemSides.Add(CreateItemSideViewModel(itemSide));
+                }
             }
             return sideGroupViewModel;
         }
@@ -244,9 +262,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSideViewModel.OnlyAsSide = itemSideInfo.OnlyAsSide;
             itemSideViewModel.SiteItemId = itemSideInfo.SiteItemId;
             itemSideViewModel.ItemSizes = new List<ApiItemSizeViewModel>();
-            foreach (var itemSize in itemSideInfo.ItemSizes)
+            if (itemSideInfo.ItemSizes != null)
             {
-                itemSideViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
+                foreach (var itemSize in itemSideInfo.ItemSizes)
+                {
+                    itemSideViewModel.ItemSizes.Add(CreateItemSizeViewModel(itemSize));
+                }
             }
             return itemSideViewModel;
         }
@@ -268,9 +289,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSizeViewModel.SiteItemId = itemSize.SiteItemId;
             itemSizeViewModel.ThirdPartyId = itemSize.ThirdPartyId;
             itemSizeViewModel.ItemSizeTaxProfiles = new List<ApiItemSizeTaxProfileViewModel>();
-            foreach (var taxProfile in itemSize.ItemSizeTaxProfiles)
+            if (itemSize.ItemSizeTaxProfiles != null)
             {
-                itemSizeViewModel.ItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModel(taxProfile));
+                foreach (var taxProfile in itemSize.ItemSizeTaxProfiles)
+                {
+                    itemSizeViewModel.ItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModel(taxProfile));
+                }
             }
 
             return itemSizeViewModel;
@@ -295,10 +319,15 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             var siteTaxSettings = new ApiSiteTaxSettings();
             siteTaxSettings.SiteId = siteTaxSettingsInfo.SiteId;
             siteTaxSettings.ApiTaxSettings = new List<ApiTaxSettings>();
-            foreach (var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
+
+            if (siteTaxSettingsInfo.SiteTaxSettings != null)
             {
-                siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));
+                foreach (var taxSetting in siteTaxSettingsInfo.SiteTaxSettings)
+                {
+                    siteTaxSettings.ApiTaxSettings.Add(CreateTaxSettingViewModel(taxSetting));
+                }
             }
+
             var requestData = JsonUtility.Serialize<ApiSiteTaxSettings>(siteTaxSettings);//just to test json
             return siteTaxSettings;
         }
@@ -348,12 +377,21 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
             siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
             siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();
+            siteOrderViewModel.OrderInvoiceTransaction = new ApiOrderInvoiceTransactionViewModel();
 
-            foreach (var item in siteOrderModel.OrderItems)
+            if (siteOrderModel.OrderItems != null)
             {
-                siteOrderViewModel.OrderItems.Add(CreateItemsViewModelForInvoice(item));
+                foreach (var item in siteOrderModel.OrderItems)
+                {
+                    siteOrderViewModel.OrderItems.Add(CreateItemsViewModelForInvoice(item));
+                }
             }
 
+            if (siteOrderModel.OrderInvoiceTransaction != null)
+            {
+                siteOrderViewModel.OrderInvoiceTransaction = CreateOrderInvoiceTransactionViewModel(siteOrderModel.OrderInvoiceTransaction);    
+            }
+            var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);//just to test json
 
             return siteOrderViewModel;
         }
@@ -369,9 +407,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemViewModel.SiteItemId = item.SiteItemId;
             orderItemViewModel.OrderItemSizes = new List<ApiOrderItemSizeViewModel>();
 
-            foreach (var itemSize in item.OrderItemSizes)
+            if (item.OrderItemSizes != null)
             {
-                orderItemViewModel.OrderItemSizes.Add(CreateItemSizeViewModelForInvoice(itemSize));
+                foreach (var itemSize in item.OrderItemSizes)
+                {
+                    orderItemViewModel.OrderItemSizes.Add(CreateItemSizeViewModelForInvoice(itemSize));
+                }
             }
             return orderItemViewModel;
         }
@@ -392,14 +433,20 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeModel.OrderItemSizeDiscounts = new List<ApiOrderItemSizeDiscountViewModel>();
             orderItemSizeModel.OrderItemSizeTaxProfiles = new List<ApiOrderItemSizeTaxProfileViewModel>();
 
-            foreach (var itemSizeDiscount in itemSize.OrderItemSizeDiscounts)
+            if (itemSize.OrderItemSizeDiscounts != null)
             {
-                orderItemSizeModel.OrderItemSizeDiscounts.Add(CreateItemSizeDiscountViewModelForInvoice(itemSizeDiscount));
+                foreach (var itemSizeDiscount in itemSize.OrderItemSizeDiscounts)
+                {
+                    orderItemSizeModel.OrderItemSizeDiscounts.Add(CreateItemSizeDiscountViewModelForInvoice(itemSizeDiscount));
+                }
             }
 
-            foreach (var itemSizeTaxProfile in itemSize.OrderItemSizeTaxProfiles)
+            if (itemSize.OrderItemSizeTaxProfiles != null)
             {
-                orderItemSizeModel.OrderItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModelForInvoice(itemSizeTaxProfile));
+                foreach (var itemSizeTaxProfile in itemSize.OrderItemSizeTaxProfiles)
+                {
+                    orderItemSizeModel.OrderItemSizeTaxProfiles.Add(CreateItemSizeTaxProfileViewModelForInvoice(itemSizeTaxProfile));
+                }
             }
 
             return orderItemSizeModel;
@@ -432,6 +479,38 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeTaxViewModel.Value = itemSizeTaxProfile.Value;
             return orderItemSizeTaxViewModel;
         }
+
+        private ApiOrderInvoiceTransactionViewModel CreateOrderInvoiceTransactionViewModel(OrderInvoiceTransactionModel invoiceTransactionModel)
+        {
+            var orderinvoiceTransactionViewModel = new ApiOrderInvoiceTransactionViewModel();
+            orderinvoiceTransactionViewModel.InvoiceTransactionId = invoiceTransactionModel.InvoiceTransactionId;
+            orderinvoiceTransactionViewModel.OrderId = invoiceTransactionModel.OrderId;
+            orderinvoiceTransactionViewModel.OrderInvoiceTransactionId = invoiceTransactionModel.OrderInvoiceTransactionId;
+            orderinvoiceTransactionViewModel.InvoiceTransaction = new ApiInvoiceTransactionViewModel();
+            if (invoiceTransactionModel.InvoiceTransaction != null)
+            {
+                orderinvoiceTransactionViewModel.InvoiceTransaction = CreateInvoiceTransactionViewModel(invoiceTransactionModel.InvoiceTransaction);
+            }
+            return orderinvoiceTransactionViewModel;
+        }
+
+        private ApiInvoiceTransactionViewModel CreateInvoiceTransactionViewModel(InvoiceTransactionModel invoiceTransactionModel)
+        {
+            var invoiceTransactionViewModel = new ApiInvoiceTransactionViewModel();
+            invoiceTransactionViewModel.InvoiceNumber = invoiceTransactionModel.InvoiceNumber;
+            invoiceTransactionViewModel.InvoiceTransactionId = invoiceTransactionModel.InvoiceTransactionId;
+            invoiceTransactionViewModel.Receipt = invoiceTransactionModel.Receipt;
+            invoiceTransactionViewModel.ReceiptPath = invoiceTransactionModel.ReceiptPath;
+            invoiceTransactionViewModel.Rounding = invoiceTransactionModel.Rounding;
+            invoiceTransactionViewModel.SiteId = invoiceTransactionModel.SiteId;
+            invoiceTransactionViewModel.TerminalName = invoiceTransactionModel.TerminalName;
+            invoiceTransactionViewModel.TotalSaleAmount = invoiceTransactionModel.TotalSaleAmount;
+            invoiceTransactionViewModel.TransactionDate = invoiceTransactionModel.TransactionDate;
+            invoiceTransactionViewModel.UserReferenceId = invoiceTransactionModel.UserReferenceId;
+            invoiceTransactionViewModel.UserType = (Loyaltymate.Enum.UserType)invoiceTransactionModel.UserType;
+            return invoiceTransactionViewModel;
+        }
+        
         #endregion
 
 

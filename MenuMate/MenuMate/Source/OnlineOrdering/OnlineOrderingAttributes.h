@@ -171,6 +171,29 @@ struct TOrderItemModel
 	std::list<TOrderItemSizeModel> OrderItemSizes;
 };
 
+struct TInvoiceTransactionModel
+{
+	 int InvoiceTransactionId;
+	 AnsiString InvoiceNumber;
+	 double TotalSaleAmount;
+	 TDateTime TransactionDate;
+	 int SiteId;
+	 AnsiString TerminalName;
+	 TByteDynArray Receipt;
+	 AnsiString ReceiptPath;
+	 double Rounding;
+	 int UserReferenceId;
+	 eUserType UserType;
+};
+
+struct TOrderInvoiceTransactionModel
+{
+    int OrderInvoiceTransactionId;
+    int  OrderId;
+    int InvoiceTransactionId;
+    TInvoiceTransactionModel InvoiceTransaction;
+};
+
 struct TSiteOrderModel
 {
 	 int CompanyId;
@@ -190,6 +213,7 @@ struct TSiteOrderModel
 	 std::list<TOrderItemModel> OrderItems;
 	 eSiteSettingType TransactionType;
 	 bool IsConfirmed;
+     TOrderInvoiceTransactionModel OrderInvoiceTransaction;
 };
 
 #endif
