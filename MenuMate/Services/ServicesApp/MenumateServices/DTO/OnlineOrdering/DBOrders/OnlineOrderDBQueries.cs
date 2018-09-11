@@ -269,8 +269,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
-            //...........................................
-
             try
             {
                 command.CommandText = @"
@@ -490,17 +488,12 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 195, short.MaxValue);
             }
-
-            //............................................
-
             return command;
         }
 
         public FbCommand CreateTab(FbConnection connection, FbTransaction transaction, int tabKey, string tabName, string id_number)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
-
-            //...........................................
 
             try
             {
@@ -538,8 +531,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
             }
-
-            //............................................
 
             return command;
         }
@@ -719,9 +710,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
         public FbCommand OpenSaleStartTimeCmd(FbConnection connection, FbTransaction transaction, int currentTimeKey)
         {
-            FbCommand result = new FbCommand(@"", connection, transaction);
-
-            //........................................................
+            FbCommand result = new FbCommand(@"", connection, transaction);            
 
             try
             {
@@ -742,9 +731,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
                 throw;
             }
-
-            //.........................................................
-
+            
             return result;
         }
 
@@ -758,8 +745,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public FbCommand CloseSaleStartTimeCmd(FbConnection connection, FbTransaction transaction, int timeKey)
         {
             FbCommand result = new FbCommand(@"", connection, transaction);
-
-            //........................................................
 
             try
             {
@@ -781,8 +766,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in CloseSaleStartTimeCmd " + e.Message, e);
                 throw;
             }
-
-            //.........................................................
 
             return result;
         }

@@ -7140,16 +7140,14 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
 	     invoiceTransactionModel.TransactionDate = Now();
 	     invoiceTransactionModel.SiteId = Order->SiteId;
 	     invoiceTransactionModel.TerminalName = Order->Terminal;
-//         if( ManagerReceipt->ReceiptToArchive->Size > 0 )
-//		 {
-//			ManagerReceipt->ReceiptToArchive->Position = 0;
-////            invoiceTransaction.Receipt.
-////			invoiceTransactionModel.Receipt->LoadFromStream(ManagerReceipt->ReceiptToArchive);
-//ManagerReceipt->ReceiptToArchive->
-//		 }
-//	 TByteDynArray Receipt;
-//     Receipt.Length =  ManagerReceipt->ReceiptToArchive->Size;
-//     Receipt.
+
+         if( ManagerReceipt->ReceiptToArchive->Size > 0 )
+		 {
+            ManagerReceipt->ReceiptToArchive-> Position =  0 ;
+            invoiceTransactionModel.Receipt.set_length ( ManagerReceipt->ReceiptToArchive->Size) ;
+            ManagerReceipt->ReceiptToArchive->ReadBuffer ( & invoiceTransactionModel.Receipt[ 0 ] , ManagerReceipt->ReceiptToArchive-> Size ) ;
+		 }
+
 	     invoiceTransactionModel.ReceiptPath = "";
 	     invoiceTransactionModel.Rounding = RoundToNearest(paymentTransaction.Money.RoundingAdjustment, 0.01,
                                                     TGlobalSettings::Instance().MidPointRoundsDown);
