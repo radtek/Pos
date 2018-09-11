@@ -1129,8 +1129,9 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "SITE_ID, "
             "ORDER_ITEM_ID, "
             "ORDER_ITEM_SIZE_ID, "
-            "REFERENCE_ORDER_ITEM_SIZE_ID "
-          ") "
+            "REFERENCE_ORDER_ITEM_SIZE_ID, "
+            "EMAIL "
+            ") "
 			"VALUES "
 			"( "
 			":ORDER_KEY,"
@@ -1215,7 +1216,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":SITE_ID, "
             ":ORDER_ITEM_ID, "
             ":ORDER_ITEM_SIZE_ID, "
-            ":REFERENCE_ORDER_ITEM_SIZE_ID "
+            ":REFERENCE_ORDER_ITEM_SIZE_ID, "
+            ":EMAIL "
             ");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
@@ -1355,6 +1357,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
             IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
             IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
+            IBInternalQuery->ParamByName("EMAIL")->AsString = Order->Email;
 
 			IBInternalQuery->ExecQuery();
 
@@ -1556,7 +1559,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "SITE_ID, "
                 "ORDER_ITEM_ID, "
                 "ORDER_ITEM_SIZE_ID, "
-                "REFERENCE_ORDER_ITEM_SIZE_ID "
+                "REFERENCE_ORDER_ITEM_SIZE_ID, "
+                "EMAIL "
 		   	") "
 				"VALUES "
 				"( "
@@ -1642,7 +1646,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":SITE_ID, "
                 ":ORDER_ITEM_ID, "
                 ":ORDER_ITEM_SIZE_ID, "
-                ":REFERENCE_ORDER_ITEM_SIZE_ID "
+                ":REFERENCE_ORDER_ITEM_SIZE_ID, "
+                ":EMAIL "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1760,6 +1765,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
                 IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
                 IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
+                IBInternalQuery->ParamByName("EMAIL")->AsString = Order->Email;
 
 				IBInternalQuery->ExecQuery();
 

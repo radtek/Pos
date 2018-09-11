@@ -425,7 +425,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                     Kitchen->GetPrintouts(PrintTransaction->DBTransaction, Request.get());
                     if (!Request->Printouts->Print(devPalm,JobName))
                     {
-                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Printing Some Web Orders Failed, Please Check Printer.");
+                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Printing Some Online Orders Failed, Please Check Printer.");
                         //throw Exception("Printing Some Orders Failed, Please Check Printer.");
                     }
                     ManagerDockets->Archive(Request.get());
@@ -450,11 +450,6 @@ void TOnlineDocketPrinterThread::AutoPrintReceipts(TMMTabType TabType, TPaymentT
 {
     try
     {
-        if (true)  //to be changed..
-        {
-            UnicodeString str = "Inside  AutoPrintReceipts ";
-            str = str + Now()+ "\n";
-
             bool OrdersLoadedFromTabs = false;
             TMMContactInfo InvoiceOwnerInfo;
             TPaymentTransaction InvoiceTransaction(PaymentTransaction.DBTransaction);
@@ -571,7 +566,6 @@ void TOnlineDocketPrinterThread::AutoPrintReceipts(TMMTabType TabType, TPaymentT
             {
                 TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
             }
-            //if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
             if (OrdersLoadedFromTabs)
             {
                 while (InvoiceTransaction.Orders->Count != 0)
@@ -580,7 +574,6 @@ void TOnlineDocketPrinterThread::AutoPrintReceipts(TMMTabType TabType, TPaymentT
                     InvoiceTransaction.Orders->Delete(0);
                 }
             }
-        }
 
     }
     catch(Exception & E)
