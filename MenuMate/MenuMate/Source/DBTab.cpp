@@ -14,6 +14,7 @@
 #include "TableManager.h"
 #include "ManagerPatron.h"
 #include <Memory>
+#include "DeviceRealTerminal.h"
 
 
 
@@ -2313,5 +2314,35 @@ std::vector<TPatronType> TDBTab::GetDelayedPatronCount(Database::TDBTransaction 
 		throw;
 	}
     return patrons;
+}
+//-----------------------------------------------------------------------------
+bool TDBTab::HasOnlineOrders(int tabKey)
+{
+    bool retValue = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
+                           "ONLINE_ORDER_ID <> :ONLINE_ORDER_ID AND ONLINE_ORDER_ID IS NOT NULL";
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("ONLINE_ORDER_ID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+            retValue = true;
+        }
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       MessageBox(ex.Message,"",MB_OK);
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+       dbTransaction.Rollback();
+    }
+    return retValue;
 }
 //-----------------------------------------------------------------------------

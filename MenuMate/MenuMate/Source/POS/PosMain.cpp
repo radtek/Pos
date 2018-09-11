@@ -86,6 +86,7 @@ void __fastcall TfrmPOSMain::FormShow(TObject *Sender)
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
         tbtnTransfer->Enabled = false;
     MenuEdited = false;
+    TransferSelected = false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPOSMain::CardSwipe(Messages::TMessage& Message)
@@ -357,6 +358,7 @@ void __fastcall TfrmPOSMain::tbtnTransferClick(TObject *Sender)
     }
     delete Transfer;
     Transfer = NULL;
+    TransferSelected = true;
 	ShowTableScreen();
 }
 //---------------------------------------------------------------------------

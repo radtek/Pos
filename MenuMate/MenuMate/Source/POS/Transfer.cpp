@@ -43,6 +43,7 @@
 #include "DBTab.h"
 #include "SCDPWDChecker.h"
 #include "ManagerDiscount.h"
+#include "DBTables.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -2262,6 +2263,22 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                 }
                }
             }
+            if(TDBTab::HasOnlineOrders(tabKey))
+            {
+                MessageBox("An online Order is saved on the Tab.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
+                Retval = mrAbort;
+                if(Section == "Select Transfer To")
+                {
+                    btnTransferTo->Caption =  "Select";
+                    lbDisplayTransferto->Clear();
+                }
+                else
+                {
+                    btnTransferFrom->Caption =  "Select";
+                    lbDisplayTransferfrom->Clear();
+                }
+                return mrAbort;
+            }
             PopulateSourceDestTabDetails(DBTransaction, tabname, tabKey, listbox, true);
             UpdateListBox(listbox);
         }
@@ -2471,6 +2488,13 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
                            {
                               lbDisplayTransferto->Clear();
+                              if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                              {
+                                MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                Retval = mrAbort;
+                                btnTransferTo->Caption =  "Select";
+                                break;
+                              }
                               if( CurrentDestTable != floorPlanReturnParams.TabContainerNumber )
                               {
                                  CurrentDestTable = floorPlanReturnParams.TabContainerNumber;
@@ -2495,13 +2519,21 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                             if(floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ))
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
                            {
-                             if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
-                             {
-                                CurrentSourceTable = floorPlanReturnParams.TabContainerNumber;
-                             }
-                             UpdateSourceTableDetails(DBTransaction);
-                             UpdateSourceSeatDetails(DBTransaction);
-                             CurrentSourceDisplayMode = eTables;
+                                if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                                {
+                                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                    Retval = mrAbort;
+                                    btnTransferFrom->Caption =  "Select";
+                                    lbDisplayTransferfrom->Clear();
+                                    break;
+                                }
+                                if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
+                                {
+                                    CurrentSourceTable = floorPlanReturnParams.TabContainerNumber;
+                                }
+                                UpdateSourceTableDetails(DBTransaction);
+                                UpdateSourceSeatDetails(DBTransaction);
+                                CurrentSourceDisplayMode = eTables;
                            }
                            else
                            {

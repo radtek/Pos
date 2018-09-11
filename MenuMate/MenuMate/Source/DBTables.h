@@ -91,6 +91,7 @@ class TDBTables
 
     //load table which are in mezzanine area.
     static std::set<int> GetMezzanineAreaTables(TMezzanineTable mezzanineDetails);
+    static bool HasOnlineOrders(int tableNumber);
 };
 
 #endif
