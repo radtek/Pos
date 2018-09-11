@@ -10,6 +10,7 @@
 #include "PhoenixHotelSystem.h"
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
+#include "ManagerMews.h"
 
 //---------------------------------------------------------------------------
 
@@ -38,6 +39,11 @@ void TManagerPMS::Initialize(Database::TDBControl &inDBControl, int pmsIdentifie
         case 3:
         {
              TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerOraclePMS());
+             break;
+        }
+        case 4:
+        {
+             TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerMews());
              break;
         }
     }

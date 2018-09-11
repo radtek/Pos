@@ -12,7 +12,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 //---------------------------------------------------------------------------
-enum ePMS { phoenix = 1, siHot, oracle};
+enum ePMS { phoenix = 1, siHot, oracle, mews};
 class TfrmPHSConfiguration : public TZForm
 {
 	friend TZForm;
@@ -45,6 +45,10 @@ __published:	// IDE-managed Components
     TTouchBtn *tbOracleInterfaceIP;
     TTouchBtn *tbOracleInterfacePort;
     TTouchBtn *tbTimeOut;
+    TComboBox *comboOutlets;
+    TComboBox *comboServices;
+    TLabel *lblServices;
+    TLabel *lblOutlets;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -69,6 +73,8 @@ __published:	// IDE-managed Components
     void __fastcall tbOracleInterfacePortMouseClick(TObject *Sender);
     void __fastcall tbOracleInterfaceIPMouseClick(TObject *Sender);
     void __fastcall tbTimeOutMouseClick(TObject *Sender);
+    void __fastcall comboOutletsChange(TObject *Sender);
+    void __fastcall comboServicesChange(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
@@ -78,6 +84,11 @@ private:	// User declarations
    void InitializePMSDefaultPayment();
    bool DefaultPaymentInitRequired();
    void InitDefaultPaymentInDB();
+   void UpdateMewsUI();
+   void UpdateOracleUI();
+   void UpdateSiHotUI();
+   void UpdateMotelMateUI();
+   void SyncMewsDetailsFromCloud();
 public:		// User declarations
    ePMS PMSType;
 

@@ -22,7 +22,7 @@ enum eMembershipType {
 };
 
 enum ePMSType{
-    Phoenix = 1,SiHot,Oracle
+    Phoenix = 1,SiHot,Oracle,Mews
 };
 
 enum eSetFontSize {eSeven , eEight, eNine, eTenth, eEleven };
@@ -537,6 +537,10 @@ public:
     Currency CheckSaleMegaworld;
     Currency GiftCard_MegaworldForDaily;
     Currency CheckSaleMegaworldForDaily;
+    UnicodeString OutletIdMewsSelected;
+    UnicodeString ServiceMewsSelected;
+    UnicodeString ClientToken;
+    UnicodeString AccessToken;
 };
 
 #endif

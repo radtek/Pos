@@ -237,6 +237,7 @@ private:
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
     bool SetUpOracle();
+    bool SetUpMews();
 public: // User declarations
 };
 #endif

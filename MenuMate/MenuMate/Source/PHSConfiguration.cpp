@@ -11,6 +11,7 @@
 #include "VerticalSelect.h"
 #include "MessageMaintenance.h"
 #include "PMSTaxCodes.h"
+#include "ManagerMews.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -41,7 +42,7 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIPAddressClick(TObject *Sender)
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
 			TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress = frmTouchKeyboard->KeyboardText.Trim();
-            if(PMSType == siHot)
+            if(PMSType == siHot || PMSType == mews)
             {
 			    tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
             }
@@ -68,24 +69,44 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixPortNumberClick(TObject *Sender)
 	}
 	else
 	{
-      std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-		frmTouchNumpad->Caption = "Enter the Port Number of the PMS Hotel System.";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-//			PhoenixHM->TCPPort = frmTouchNumpad->INTResult;
-//			tbPhoenixPortNumber->Caption = "PMS Server Port Number\r" + IntToStr(PhoenixHM->TCPPort);
-			TDeviceRealTerminal::Instance().BasePMS->TCPPort = frmTouchNumpad->INTResult;
-			tbPhoenixPortNumber->Caption = "PMS Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSTCPPort,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-            DBTransaction1.Commit();
-		}
+        if(PMSType != mews)
+        {
+            std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+            frmTouchNumpad->Caption = "Enter the Port Number of the PMS Hotel System.";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->Mode = pmNumber;
+            frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+            if (frmTouchNumpad->ShowModal() == mrOk)
+            {
+                TDeviceRealTerminal::Instance().BasePMS->TCPPort = frmTouchNumpad->INTResult;
+                tbPhoenixPortNumber->Caption = "PMS Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSTCPPort,TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+                DBTransaction1.Commit();
+            }
+        }
+        else if(PMSType == mews)
+        {
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 255;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ClientToken;
+            frmTouchKeyboard->Caption = "Enter the Client Token.";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                TGlobalSettings::Instance().ClientToken = frmTouchKeyboard->KeyboardText.Trim();
+                tbPhoenixPortNumber->Caption = "Client Token\r" + TGlobalSettings::Instance().ClientToken;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmClientToken,TGlobalSettings::Instance().ClientToken);
+                DBTransaction1.Commit();
+            }
+        }
+
 	}
 }
 //---------------------------------------------------------------------------
@@ -138,99 +159,23 @@ void TfrmPHSConfiguration::UpdateGUI()
 	tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 	tbPointCat->Caption = "Points Category\r" + TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
 	tbCreditCat->Caption = "Credit Category\r" + TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-    if(PMSType == oracle || PMSType == siHot)
-    {
-        tbPaymentDefCat->Caption = "Payment Category\r" ;//+ TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-    }
-    else
-    {
-        tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-    }
-    if(PMSType != siHot)
-        tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
-    else
-        tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
-    // enable default transaction count button for sihot also
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
 
     if(PMSType == siHot)
     {
-        //tbDefTransAccount->Caption = "ServiceCharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
-		tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
-        tbPhoenixPortNumber->Enabled = false;
-        TouchBtn1->Enabled = false;
-        cbEnableCustomerJourney->Enabled = true;
-        cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
-        tbServingTime->Enabled = false;
-        tbRevenueCentre->Enabled = false;
-        tbItemDefCat->Enabled = true;
-        tbOracleInterfaceIP->Enabled = false;
-        tbOracleInterfacePort->Enabled = false;
-        cbMakeOracleServer->Enabled = false;
-        tbTimeOut->Enabled = true;
-        tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+        UpdateSiHotUI();
     }
     else if(PMSType == oracle)
     {
-        tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbExpensesAccount->Enabled = false;
-		tbTipAccount->Enabled = false;
-        tbServiceCharge->Enabled = false;
-        TouchBtn1->Enabled = false;
-        tbRoundingCategory->Enabled = false;
-        tbItemDefCat->Enabled = false;
-        tbDefTransAccount->Enabled = false;
-        tbSurchargeCat->Enabled = false;
-        tbPhoenixID->Enabled = false;
-        cbEnableCustomerJourney->Enabled = false;
-        tbTimeOut->Enabled = false;
-        if(CanEnablePOSServer())
-        {
-            cbMakeOracleServer->Enabled = true;
-            cbMakeOracleServer->OnClick = NULL;
-            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
-            cbMakeOracleServer->OnClick = cbMakePOSServer;
-        }
-        else
-        {
-            cbMakeOracleServer->Enabled = false;
-            cbMakeOracleServer->OnClick = NULL;
-            cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
-            cbMakeOracleServer->OnClick = cbMakePOSServer;
-        }
-        if(TGlobalSettings::Instance().IsOraclePOSServer)
-        {
-            tbOracleInterfaceIP->Enabled = true;
-            tbOracleInterfacePort->Enabled = true;
-            tbOracleInterfaceIP->Caption = "Oracle Interface IP\r" + TGlobalSettings::Instance().OracleInterfaceIPAddress;
-            tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
-        }
-        else
-        {
-            tbOracleInterfaceIP->Enabled = false;
-            tbOracleInterfacePort->Enabled = false;
-            tbOracleInterfaceIP->Caption = "Oracle Interface IP";
-            tbOracleInterfaceIP->Caption = "Oracle Interface Port";
-        }
+        UpdateOracleUI();
+    }
+    else if(PMSType == mews)
+    {
+        UpdateMewsUI();
     }
     else
     {
-        tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
-        tbExpensesAccount->Enabled = false;
-		tbTipAccount->Enabled = false;
-        tbServiceCharge->Enabled = false;
-        tbServingTime->Enabled = false;
-        tbRevenueCodes->Enabled = false;
-        tbRevenueCentre->Enabled = false;
-        cbEnableCustomerJourney->Enabled = false;
-        tbOracleInterfaceIP->Enabled = false;
-        tbOracleInterfacePort->Enabled = false;
-        cbMakeOracleServer->Enabled = false;
-        tbTimeOut->Enabled = false;
+        UpdateMotelMateUI();
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -239,7 +184,7 @@ void TfrmPHSConfiguration::UpdateGUI()
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
 }
-
+//---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 {
     if(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "")
@@ -499,40 +444,47 @@ void __fastcall TfrmPHSConfiguration::tbRoundingCategoryClick(
 
 void __fastcall TfrmPHSConfiguration::TouchBtn1MouseClick(TObject *Sender)
 {
-   AnsiString SourceCode;
-   AnsiString DestCode;
-   // Find the Phoenix Code in the Ram Menus.
-   // Find the Phoenix Code in the DB.
-   if(MessageBox("This will replace all matching third party codes stored against existing orders. Do you wish to continue?", "Third Party Code Change Confirmation",MB_YESNO + MB_ICONWARNING) == IDYES)
-   {
-	  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-      frmTouchKeyboard->MaxLength = 255;
-      frmTouchKeyboard->AllowCarriageReturn = false;
-      frmTouchKeyboard->StartWithShiftDown = false;
-      frmTouchKeyboard->KeyboardText = SourceCode;
-      frmTouchKeyboard->Caption = "Enter code that failed.";
-      if (frmTouchKeyboard->ShowModal() == mrOk)
-      {
-         SourceCode = frmTouchKeyboard->KeyboardText;
-         frmTouchKeyboard->MaxLength = 255;
-         frmTouchKeyboard->AllowCarriageReturn = false;
-         frmTouchKeyboard->StartWithShiftDown = false;
-         frmTouchKeyboard->KeyboardText = DestCode;
-         frmTouchKeyboard->Caption = "Enter the new code.";
-         if (frmTouchKeyboard->ShowModal() == mrOk)
-         {
-            DestCode = frmTouchKeyboard->KeyboardText;
-            if(TDeviceRealTerminal::Instance().BasePMS->TestCode(DestCode))
-            {
-               if(MessageBox("This will replace all existing orders with code " + SourceCode + " with code " + DestCode + ". Do you wish to continue?", "Third Party Code Change Confirmation",MB_YESNO + MB_ICONWARNING) == IDYES)
-               {
-                  TDeviceRealTerminal::Instance().BasePMS->FindAndReplaceCode(SourceCode, DestCode);
-                  UpdateGUI();
-               }
-            }
-         }
-      }
-   }
+    if(PMSType != mews)
+    {
+       AnsiString SourceCode;
+       AnsiString DestCode;
+       // Find the Phoenix Code in the Ram Menus.
+       // Find the Phoenix Code in the DB.
+       if(MessageBox("This will replace all matching third party codes stored against existing orders. Do you wish to continue?", "Third Party Code Change Confirmation",MB_YESNO + MB_ICONWARNING) == IDYES)
+       {
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+          frmTouchKeyboard->MaxLength = 255;
+          frmTouchKeyboard->AllowCarriageReturn = false;
+          frmTouchKeyboard->StartWithShiftDown = false;
+          frmTouchKeyboard->KeyboardText = SourceCode;
+          frmTouchKeyboard->Caption = "Enter code that failed.";
+          if (frmTouchKeyboard->ShowModal() == mrOk)
+          {
+             SourceCode = frmTouchKeyboard->KeyboardText;
+             frmTouchKeyboard->MaxLength = 255;
+             frmTouchKeyboard->AllowCarriageReturn = false;
+             frmTouchKeyboard->StartWithShiftDown = false;
+             frmTouchKeyboard->KeyboardText = DestCode;
+             frmTouchKeyboard->Caption = "Enter the new code.";
+             if (frmTouchKeyboard->ShowModal() == mrOk)
+             {
+                DestCode = frmTouchKeyboard->KeyboardText;
+                if(TDeviceRealTerminal::Instance().BasePMS->TestCode(DestCode))
+                {
+                   if(MessageBox("This will replace all existing orders with code " + SourceCode + " with code " + DestCode + ". Do you wish to continue?", "Third Party Code Change Confirmation",MB_YESNO + MB_ICONWARNING) == IDYES)
+                   {
+                      TDeviceRealTerminal::Instance().BasePMS->FindAndReplaceCode(SourceCode, DestCode);
+                      UpdateGUI();
+                   }
+                }
+             }
+          }
+       }
+    }
+    else if(PMSType == mews)
+    {
+        SyncMewsDetailsFromCloud();
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -650,23 +602,44 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
 	}
 	else
 	{
-        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-		frmTouchNumpad->Caption = "Enter Revenue Centre.";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->INTInitial = atoi(TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.c_str());
-        frmTouchNumpad->SetMaxLengthValue(5);
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-			TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchNumpad->INTResult;
-			tbRevenueCentre->Caption = "Revenue Centre ID\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCentre,TDeviceRealTerminal::Instance().BasePMS->RevenueCentre);
-            DBTransaction1.Commit();
-		}
+        if(PMSType != mews)
+        {
+            std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+            frmTouchNumpad->Caption = "Enter Revenue Centre.";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->Mode = pmNumber;
+            frmTouchNumpad->INTInitial = atoi(TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.c_str());
+            frmTouchNumpad->SetMaxLengthValue(5);
+            if (frmTouchNumpad->ShowModal() == mrOk)
+            {
+                TDeviceRealTerminal::Instance().BasePMS->RevenueCentre = frmTouchNumpad->INTResult;
+                tbRevenueCentre->Caption = "Revenue Centre ID\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCentre,TDeviceRealTerminal::Instance().BasePMS->RevenueCentre);
+                DBTransaction1.Commit();
+            }
+        }
+        else
+        {
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 255;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().AccessToken;
+            frmTouchKeyboard->Caption = "Enter the Access Token";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                TGlobalSettings::Instance().AccessToken = frmTouchKeyboard->KeyboardText;
+                tbServiceCharge->Caption = "Access Token\r" + TGlobalSettings::Instance().AccessToken;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAccessToken,TGlobalSettings::Instance().AccessToken);
+                DBTransaction1.Commit();
+            }
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -884,6 +857,165 @@ void TfrmPHSConfiguration::InitDefaultPaymentInDB()
     catch(Exception &Ex)
     {
         DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::comboOutletsChange(TObject *Sender)
+{
+//
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::comboServicesChange(TObject *Sender)
+{
+//
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::UpdateMewsUI()
+{
+    comboOutlets->Enabled           = true;
+    comboServices->Enabled          = true;
+    comboOutlets->Visible           = true;
+    comboServices->Visible          = true;
+    TouchBtn1->Enabled              = true;
+    TouchBtn1->Caption              = "Get Details";
+    tbRevenueCentre->Visible        = true;
+    tbRevenueCentre->Enabled        = true;
+    tbPhoenixID->Enabled            = false;
+    tbPhoenixID->Visible            = false;
+    tbPaymentDefCat->Visible        = false;
+    tbPaymentDefCat->Enabled        = false;
+    lblOutlets->Enabled             = true;
+    lblOutlets->Visible             = true;
+    lblServices->Enabled            = true;
+    lblServices->Visible            = true;
+    tbPhoenixIPAddress->Caption     = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    tbPhoenixPortNumber->Caption    = "Client Token\r" + TGlobalSettings::Instance().ClientToken;
+    tbRevenueCentre->Caption        = "AccessToken\r" + TGlobalSettings::Instance().AccessToken;
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::UpdateOracleUI()
+{
+    tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+    tbExpensesAccount->Enabled = false;
+    tbTipAccount->Enabled = false;
+    tbServiceCharge->Enabled = false;
+    TouchBtn1->Enabled = false;
+    tbRoundingCategory->Enabled = false;
+    tbItemDefCat->Enabled = false;
+    tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    tbDefTransAccount->Enabled = false;
+    tbSurchargeCat->Enabled = false;
+    tbPhoenixID->Enabled = false;
+    cbEnableCustomerJourney->Enabled = false;
+    tbTimeOut->Enabled = false;
+    comboOutlets->Enabled = false;
+    comboServices->Enabled = false;
+    comboOutlets->Visible = false;
+    comboServices->Visible = false;
+    lblOutlets->Enabled = false;
+    lblOutlets->Visible = false;
+    lblServices->Enabled = false;
+    lblServices->Visible = false;
+    tbPaymentDefCat->Caption = "Payment Category\r" ;
+    if(CanEnablePOSServer())
+    {
+        cbMakeOracleServer->Enabled = true;
+        cbMakeOracleServer->OnClick = NULL;
+        cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+        cbMakeOracleServer->OnClick = cbMakePOSServer;
+    }
+    else
+    {
+        cbMakeOracleServer->Enabled = false;
+        cbMakeOracleServer->OnClick = NULL;
+        cbMakeOracleServer->Checked = TGlobalSettings::Instance().IsOraclePOSServer ;
+        cbMakeOracleServer->OnClick = cbMakePOSServer;
+    }
+    if(TGlobalSettings::Instance().IsOraclePOSServer)
+    {
+        tbOracleInterfaceIP->Enabled = true;
+        tbOracleInterfacePort->Enabled = true;
+        tbOracleInterfaceIP->Caption = "Oracle Interface IP\r" + TGlobalSettings::Instance().OracleInterfaceIPAddress;
+        tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
+    }
+    else
+    {
+        tbOracleInterfaceIP->Enabled = false;
+        tbOracleInterfacePort->Enabled = false;
+        tbOracleInterfaceIP->Caption = "Oracle Interface IP";
+        tbOracleInterfaceIP->Caption = "Oracle Interface Port";
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::UpdateSiHotUI()
+{
+    tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
+    tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
+    tbPhoenixPortNumber->Enabled = false;
+    TouchBtn1->Enabled = false;
+    cbEnableCustomerJourney->Enabled = true;
+    cbEnableCustomerJourney->Checked = TGlobalSettings::Instance().EnableCustomerJourney;
+    tbServingTime->Enabled = false;
+    tbRevenueCentre->Enabled = false;
+    tbItemDefCat->Enabled = true;
+    tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
+    tbOracleInterfaceIP->Enabled = false;
+    tbOracleInterfacePort->Enabled = false;
+    cbMakeOracleServer->Enabled = false;
+    tbTimeOut->Enabled = true;
+    tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+    tbPaymentDefCat->Caption = "Payment Category\r" ;
+    comboOutlets->Enabled = false;
+    comboServices->Enabled = false;
+    comboOutlets->Visible = false;
+    comboServices->Visible = false;
+    lblOutlets->Enabled = false;
+    lblOutlets->Visible = false;
+    lblServices->Enabled = false;
+    lblServices->Visible = false;
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::UpdateMotelMateUI()
+{
+    tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
+    tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    tbExpensesAccount->Enabled = false;
+    tbTipAccount->Enabled = false;
+    tbServiceCharge->Enabled = false;
+    tbServingTime->Enabled = false;
+    tbRevenueCodes->Enabled = false;
+    tbRevenueCentre->Enabled = false;
+    cbEnableCustomerJourney->Enabled = false;
+    tbOracleInterfaceIP->Enabled = false;
+    tbOracleInterfacePort->Enabled = false;
+    cbMakeOracleServer->Enabled = false;
+    tbTimeOut->Enabled = false;
+    tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+    comboOutlets->Enabled = false;
+    comboServices->Enabled = false;
+    lblOutlets->Enabled = false;
+    lblOutlets->Visible = false;
+    lblServices->Enabled = false;
+    lblServices->Visible = false;
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::SyncMewsDetailsFromCloud()
+{
+    try
+    {
+        // Sync Outlets Details
+        std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+        bool isSetUp = managerMews->SetUpMews("","","");
+        if(!isSetUp)
+            MessageBox("Could not sync the fresh details from Mews","Info",MB_OK+MB_ICONINFORMATION);
+    }
+    catch(Exception &ex)
+    {
     }
 }
 //---------------------------------------------------------------------------

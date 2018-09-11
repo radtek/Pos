@@ -74,9 +74,36 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       ParentFont = False
       WordWrap = True
     end
+    object lblServices: TLabel
+      Left = 16
+      Top = 143
+      Width = 81
+      Height = 22
+      Caption = 'Services'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblOutlets: TLabel
+      Left = 310
+      Top = 87
+      Width = 66
+      Height = 22
+      Caption = 'Outlets'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16
-      Top = 88
+      Top = 33
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -95,7 +122,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixPortNumber: TTouchBtn
       Left = 310
-      Top = 87
+      Top = 32
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -114,7 +141,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixID: TTouchBtn
       Left = 310
-      Top = 32
+      Top = 87
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -361,7 +388,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbRevenueCentre: TTouchBtn
       Left = 16
-      Top = 32
+      Top = 88
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -458,6 +485,22 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbTimeOutMouseClick
+    end
+    object comboOutlets: TComboBox
+      Left = 310
+      Top = 117
+      Width = 266
+      Height = 21
+      TabOrder = 21
+      OnChange = comboOutletsChange
+    end
+    object comboServices: TComboBox
+      Left = 16
+      Top = 175
+      Width = 266
+      Height = 21
+      TabOrder = 22
+      OnChange = comboServicesChange
     end
   end
   object Panel2: TPanel

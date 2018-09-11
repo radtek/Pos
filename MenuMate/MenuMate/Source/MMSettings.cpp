@@ -433,6 +433,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
         TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
         TGlobalSettings::Instance().RestartServiceAtZED = TManagerVariable::Instance().GetBool(DBTransaction, vmRestartServiceAtZED, false);
+        TGlobalSettings::Instance().OutletIdMewsSelected = TManagerVariable::Instance().GetStr(DBTransaction, vmOutletIdMewsSelected, "");
+        TGlobalSettings::Instance().ServiceMewsSelected = TManagerVariable::Instance().GetStr(DBTransaction, vmServiceMewsSelected, "");
+        TGlobalSettings::Instance().ClientToken = TManagerVariable::Instance().GetStr(DBTransaction, vmClientToken, "");
+        TGlobalSettings::Instance().AccessToken = TManagerVariable::Instance().GetStr(DBTransaction, vmAccessToken, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
