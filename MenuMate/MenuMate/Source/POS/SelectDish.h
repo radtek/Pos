@@ -500,6 +500,7 @@ private: // User declarations
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
     void SyncSiteMenus();
     void SyncTaxSetting();
+    bool CheckOrderCompatability();
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);

@@ -182,11 +182,16 @@ private:	// User declarations
     void ApplyDiscountWithRestructure(TPaymentTransaction &paymentTransaction, TDiscount discount);
     void CustomizeDefaultCustomerInfo(TPaymentTransaction &PaymentTransaction);
     bool IsPMSConfigured();
+    bool NeedtoUpdateTableForOnlineOrdering();
+    void UpdateTableForOnlineOrdering();
+    void UpdateTabForOnlineOrdering();
+    bool CheckTabCompatablityForOnlineOrdering(int tabKey);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
 	void __fastcall UpdateRightButtonDisplay(TObject *Sender);
 	int CurrentTable, CurrentRoom,CurrentMember,CurrentInvoiceKey;
+    bool HasOnlineOrders;
     TMMContactInfo TempUserInfo;
     TMMTabType CurrentTabType;
 	TMMDisplayMode CurrentDisplayMode;

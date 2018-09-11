@@ -1111,6 +1111,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 							frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 							frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 							frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                             DBTransaction.StartTransaction();
 
@@ -7991,11 +7992,15 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
         bool isSameMenuTypeItemExist = true;
-
+        bool onlineOrderCompatible = true;
+        if(SelectedTable != 0)
+        {
+           onlineOrderCompatible = CheckOrderCompatability();
+        }
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
-		if (Item && isSameMenuTypeItemExist)
+		if (Item && isSameMenuTypeItemExist && onlineOrderCompatible)
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -8854,6 +8859,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 					frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 					frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                    frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                     DBTransaction.StartTransaction();
 
@@ -9040,6 +9046,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
+            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTable);
 
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -9054,7 +9061,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             }
 
             DBTransaction.Commit();
-
 			frmBillGroup->ShowModal();
 			setPatronCount( frmBillGroup->PatronCount );
 
@@ -9333,6 +9339,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 						frmBillGroup->CurrentTabType = OrderContainer.Location["TMMTabType"];
 						frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 						frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
+                        frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                         DBTransaction.StartTransaction();
 
@@ -10208,6 +10215,16 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                                 if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
 //	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 	                            {
+
+
+                                    bool hasOnlineOrders = TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber);
+                                    if(hasOnlineOrders)
+                                    {
+                                      MessageBox("An online Order is saved on the Table.\rPlease Select some other Table.","Info",MB_OK+MB_ICONINFORMATION);
+                                      Retval = mrAbort;
+                                      break;
+                                    }
+
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
 	                                OrderContainer.Location["ContainerName"] = floorPlanReturnParams.TabContainerName;
@@ -10479,6 +10496,14 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                 {
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
+
+                  bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]);
+                  if(hasOnlineOrders)
+                  {
+                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
+                      isItemSelected = false;
+                  }
+
                   if(isItemSelected)
                    {
                      if(CheckIfSubsidizedDiscountValid(SelectedItem.Properties["TabKey"]))
@@ -11152,13 +11177,9 @@ void TfrmSelectDish::showTablePicker()
     try
     {
         if( tpConnectorUp )
-        {
             showNewTablePicker( tpConnector );
-        }
         else
-        {
             showOldTablePicker();
-        }
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
@@ -11200,13 +11221,20 @@ void TfrmSelectDish::showOldTablePicker()
         // Runs new web app of floorPlan
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
         if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
-//        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
             tableSelected            = true;
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
             SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
-            SelectedParty = floorPlanReturnParams.PartyName;
-
+            SelectedParty            = floorPlanReturnParams.PartyName;
+            if(floorPlanReturnParams.HasOnlineOrders)
+            {
+                if(SeatOrders[SelectedSeat]->Orders->Count > 0)
+                {
+                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                    SelectedTable = 0;
+                    return;
+                }
+            }
             refreshSelectedSeat();
             RefreshSeats();
             if( TGlobalSettings::Instance().CaptureCustomerName )
@@ -12606,6 +12634,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 				frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 				frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 				frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 				DBTransaction.StartTransaction();
 				std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, frmBillGroup->CurrentTable);
 				int patronCount = GetCount(selectedTablePatrons);
@@ -16560,4 +16589,21 @@ void TfrmSelectDish::SyncTaxSetting()
 	}
 }
 //------------------------------------------------------------------------------
+bool TfrmSelectDish::CheckOrderCompatability()
+{
+    bool retValue = true;
+    try
+    {
 
+        retValue = !TDBTables::HasOnlineOrders(SelectedTable);
+        if(!retValue)
+            MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return retValue;
+}
+//------------------------------------------------------------------------------

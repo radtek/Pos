@@ -10,7 +10,7 @@
 #include "GlobalSettings.h"
 #include "ManagerPatron.h"
 #include "DeviceRealTerminal.h"
-
+#include "MMMessageBox.h"
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 
@@ -1664,5 +1664,35 @@ std::set<int> TDBTables::GetMezzanineAreaTables(TMezzanineTable mezzanineDetails
 
     return mezzanineTables;
 }
+//---------------------------------------------------------------------------
+bool TDBTables::HasOnlineOrders(int tableNumber)
+{
+    bool retValue = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
+                           "ONLINE_ORDER_ID <> :ONLINE_ORDER_ID AND ONLINE_ORDER_ID IS NOT NULL";
+        query->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+        query->ParamByName("ONLINE_ORDER_ID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+            retValue = true;
+        }
 
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       MessageBox(ex.Message,"",MB_OK);
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+       dbTransaction.Rollback();
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
 
