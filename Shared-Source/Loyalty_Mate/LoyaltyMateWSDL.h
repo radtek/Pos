@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (9/09/2018 6:37:02 p.m. - - $Rev: 25127 $)
+// (12/09/2018 7:46:43 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -2541,6 +2541,8 @@ private:
   bool            FTransactionDate_Specified;
   SiteSettingType FTransactionType;
   bool            FTransactionType_Specified;
+  UnicodeString   FUserEmailId;
+  bool            FUserEmailId_Specified;
   __int64         FUserReferenceId;
   bool            FUserReferenceId_Specified;
   UserType        FUserType;
@@ -2609,6 +2611,10 @@ private:
   {  FTransactionType = _prop_val; FTransactionType_Specified = true;  }
   bool __fastcall TransactionType_Specified(int Index)
   {  return FTransactionType_Specified;  } 
+  void __fastcall SetUserEmailId(int Index, UnicodeString _prop_val)
+  {  FUserEmailId = _prop_val; FUserEmailId_Specified = true;  }
+  bool __fastcall UserEmailId_Specified(int Index)
+  {  return FUserEmailId_Specified;  } 
   void __fastcall SetUserReferenceId(int Index, __int64 _prop_val)
   {  FUserReferenceId = _prop_val; FUserReferenceId_Specified = true;  }
   bool __fastcall UserReferenceId_Specified(int Index)
@@ -2637,6 +2643,7 @@ __published:
   __property double     TotalAmount = { index=(IS_OPTN), read=FTotalAmount, write=SetTotalAmount, stored = TotalAmount_Specified };
   __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
   __property SiteSettingType TransactionType = { index=(IS_OPTN), read=FTransactionType, write=SetTransactionType, stored = TransactionType_Specified };
+  __property UnicodeString UserEmailId = { index=(IS_OPTN|IS_NLBL), read=FUserEmailId, write=SetUserEmailId, stored = UserEmailId_Specified };
   __property __int64    UserReferenceId = { index=(IS_OPTN), read=FUserReferenceId, write=SetUserReferenceId, stored = UserReferenceId_Specified };
   __property UserType     UserType = { index=(IS_OPTN), read=FUserType, write=SetUserType, stored = UserType_Specified };
 };
@@ -3156,7 +3163,7 @@ typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__LoyaltyMateWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__LoyaltyMateWSDL;

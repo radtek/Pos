@@ -45,6 +45,8 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         [DataMember]
         public bool IsConfirmed { get; set; }
         [DataMember]
+        public string UserEmailId { get; set; }
+        [DataMember]
         public OrderInvoiceTransactionModel OrderInvoiceTransaction { get; set; }
 
     }

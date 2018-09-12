@@ -213,6 +213,7 @@ struct TSiteOrderModel
 	 std::list<TOrderItemModel> OrderItems;
 	 eSiteSettingType TransactionType;
 	 bool IsConfirmed;
+     AnsiString UserEmailId;
      TOrderInvoiceTransactionModel OrderInvoiceTransaction;
 };
 

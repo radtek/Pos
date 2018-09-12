@@ -6991,6 +6991,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel.TransactionDate = Now();;
         siteOrderModel.OrderType = Order->OrderType;
         siteOrderModel.IsConfirmed = true;
+        siteOrderModel.UserEmailId = "";
         siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
         siteOrderModel.OrderInvoiceTransaction = GetOrderInvoiceTransaction(paymentTransaction);
     }

@@ -157,6 +157,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderRow.TransactionType = siteOrderViewModel.TransactionType;
                         orderRow.UserType = siteOrderViewModel.UserType;
                         orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
+                        orderRow.Email = siteOrderViewModel.UserEmailId;
 
                         foreach (var item in siteOrderViewModel.OrderItems)
                         {
@@ -173,8 +174,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 orderRow.PriceInclusive = itemSize.PriceInclusive;
                                 orderRow.Quantity = itemSize.Quantity;
                                 orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.TimeKey = setTimeKey();
-                                orderRow.Email = orderRow.ContainerName;
+                                orderRow.TimeKey = setTimeKey();                                
 
                                 //Generate order id..
                                 orderRow.OrderId = GenerateKey("ORDERS");
