@@ -156,6 +156,7 @@ struct TOrderItemSizeModel
     double PriceInclusive;
     double BasePrice;
     int ReferenceOrderItemSizeId;
+    int ItemSizeUniqueId;
     std::list<TOrderItemSizeDiscountModel> OrderItemSizeDiscounts;
     std::list<TOrderItemSizeTaxProfileModel> OrderItemSizeTaxProfiles;
 };
@@ -168,6 +169,7 @@ struct TOrderItemModel
 	AnsiString Description;
 	int SiteItemId;
 	double Price;
+    int ItemUniqueId;
 	std::list<TOrderItemSizeModel> OrderItemSizes;
 };
 
@@ -214,6 +216,7 @@ struct TSiteOrderModel
 	 eSiteSettingType TransactionType;
 	 bool IsConfirmed;
      AnsiString UserEmailId;
+     AnsiString MemberGuid;
      TOrderInvoiceTransactionModel OrderInvoiceTransaction;
 };
 

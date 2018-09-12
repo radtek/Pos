@@ -164,6 +164,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.Name = item.Name;
                             //orderRow.OrderId = item.OrderItemId;
                             orderRow.SiteItemId = item.SiteItemId;
+                            orderRow.ItemUniqueId = item.ItemUniqueId;
                             foreach (var itemSize in item.OrderItemSizes)
                             {
                                 orderRow.BasePrice = itemSize.BasePrice;
@@ -174,7 +175,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 orderRow.PriceInclusive = itemSize.PriceInclusive;
                                 orderRow.Quantity = itemSize.Quantity;
                                 orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.TimeKey = setTimeKey();                                
+                                orderRow.TimeKey = setTimeKey();
+                                orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
 
                                 //Generate order id..
                                 orderRow.OrderId = GenerateKey("ORDERS");
@@ -588,7 +590,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
-                FbCommand command = dbQueries.GetItemInfo(connection, transaction, orderInfo.SiteItemId);
+                FbCommand command = dbQueries.GetItemInfo(connection, transaction, orderInfo.ItemUniqueId);
 
                 using (FbDataReader reader = command.ExecuteReader())
                 {

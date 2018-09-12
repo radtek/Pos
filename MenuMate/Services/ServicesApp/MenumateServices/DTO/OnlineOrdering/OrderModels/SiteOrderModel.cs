@@ -47,6 +47,8 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         [DataMember]
         public string UserEmailId { get; set; }
         [DataMember]
+        public Guid? MemberGuid { get; set; }
+        [DataMember]
         public OrderInvoiceTransactionModel OrderInvoiceTransaction { get; set; }
 
     }

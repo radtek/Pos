@@ -26,6 +26,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public SiteSettingType TransactionType { get; set; }
         public bool IsConfirmed { get; set; }
         public string UserEmailId{get; set;}
+        public Guid? MemberGuid { get; set; }
         public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
     }
 }

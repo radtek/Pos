@@ -22,6 +22,8 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         [DataMember]
         public double Price { get; set; }
         [DataMember]
+        public long ItemUniqueId { get; set; }
+        [DataMember]
         public List<OrderItemSizeModel> OrderItemSizes { get; set; }
 
     }

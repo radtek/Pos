@@ -214,7 +214,7 @@
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderInvoiceTransactionModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeDiscountModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeTaxProfileModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeViewModel.cs" />
+    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\SiteOrderTypeInfoModel.cs" />
     <Compile Include="DTO\OnlineOrdering\OrderModels\SiteOrderModel.cs" />
