@@ -30,7 +30,7 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         [DataMember]
         public long ReferenceOrderItemSizeId { get; set; }
         [DataMember]
-        public long ItemSizeUniqueId { get; set; }
+        public string ItemSizeUniqueId { get; set; }
         [DataMember]
         public List<OrderItemSizeDiscountModel> OrderItemSizeDiscounts { get; set; }
         [DataMember]

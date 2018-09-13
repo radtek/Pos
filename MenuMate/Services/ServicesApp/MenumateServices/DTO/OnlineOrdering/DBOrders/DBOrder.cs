@@ -96,7 +96,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             LoadItemInfo(addDetailsTransaction, addDetailsConnection, ref orderRow);
 
                             //load And insert breakdown category into orderscategory..
-                            GetAndInsertBreakDownCategories(addDetailsTransaction, addDetailsConnection, itemSize.ItemSizeId, ref orderRow);
+                            GetAndInsertBreakDownCategories(addDetailsTransaction, addDetailsConnection, ref orderRow);
 
                             //Insert records to orders..
                             ExecuteOrderQuery(addDetailsTransaction, addDetailsConnection, orderRow);
@@ -226,11 +226,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 return reader[ordinal];
         }
 
-        private void GetAndInsertBreakDownCategories(FbTransaction transaction, FbConnection connection, long itemSizeUniqueId, ref OrderAttributes orderInfo)
+        private void GetAndInsertBreakDownCategories(FbTransaction transaction, FbConnection connection, ref OrderAttributes orderInfo)
         {
             try
             {
-                FbCommand command = dbQueries.GetItemSizeInfo(connection, transaction, itemSizeUniqueId);
+                FbCommand command = dbQueries.GetItemSizeInfo(connection, transaction, orderInfo.ItemSizeUniqueId);
 
                 using (FbDataReader reader = command.ExecuteReader())
                 {
@@ -310,7 +310,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
-                FbCommand command = dbQueries.GetItemInfo(connection, transaction, orderInfo.SiteItemId);
+                FbCommand command = dbQueries.GetItemInfo(connection, transaction, orderInfo.ItemUniqueId);
 
                 using (FbDataReader reader = command.ExecuteReader())
                 {

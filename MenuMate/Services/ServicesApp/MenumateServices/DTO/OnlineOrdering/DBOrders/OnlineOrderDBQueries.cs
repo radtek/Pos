@@ -611,7 +611,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand GetItemSizeInfo(FbConnection connection, FbTransaction transaction, long itemSizeId)
+        public FbCommand GetItemSizeInfo(FbConnection connection, FbTransaction transaction, string itemSizeId)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -685,7 +685,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return result;
         }
 
-        public FbCommand GetItemInfo(FbConnection connection, FbTransaction transaction, long itemId)
+        public FbCommand GetItemInfo(FbConnection connection, FbTransaction transaction, string itemId)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 

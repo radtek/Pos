@@ -13,7 +13,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public string Description { get; set; }
         public long SiteItemId { get; set; }
         public double Price { get; set; }        
-        public long ItemUniqueId { get; set; }
+        public string ItemUniqueId { get; set; }
         public List<ApiOrderItemSizeViewModel> OrderItemSizes { get; set; }
 
     }

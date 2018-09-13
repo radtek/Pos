@@ -17,7 +17,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public double PriceInclusive { get; set; }
         public double BasePrice { get; set; }
         public long ReferenceOrderItemSizeId { get; set; } //to send back
-        public long ItemSizeUniqueId{ get; set; }
+        public string ItemSizeUniqueId{ get; set; }
         public List<ApiOrderItemSizeDiscountViewModel> OrderItemSizeDiscounts { get; set; }
         public List<ApiOrderItemSizeTaxProfileViewModel> OrderItemSizeTaxProfiles { get; set; }
     }

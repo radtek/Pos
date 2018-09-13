@@ -195,7 +195,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 LoadItemInfo(ref orderRow);
 
                                 //load And insert breakdown category into orderscategory..
-                                GetAndInsertBreakDownCategories(itemSize.ItemSizeId, ref orderRow);
+                                GetAndInsertBreakDownCategories(ref orderRow);
 
                                 //LoadTaxProfileKeys
                                 LoadItemSizeTaxProfileOrders(ref orderRow);
@@ -480,11 +480,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 return reader[ordinal];
         }
 
-        private void GetAndInsertBreakDownCategories(long itemSizeUniqueId, ref OrderAttributes orderInfo)
+        private void GetAndInsertBreakDownCategories(ref OrderAttributes orderInfo)
         {
             try
             {
-                FbCommand command = dbQueries.GetItemSizeInfo(connection, transaction, itemSizeUniqueId);
+                FbCommand command = dbQueries.GetItemSizeInfo(connection, transaction, orderInfo.ItemSizeUniqueId);
 
                 using (FbDataReader reader = command.ExecuteReader())
                 {

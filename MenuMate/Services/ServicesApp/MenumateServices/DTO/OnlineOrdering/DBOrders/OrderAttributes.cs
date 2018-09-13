@@ -58,7 +58,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public long OrderItemSizeId { get; set; }
         public long ReferenceOrderItemSizeId { get; set; }
         public string Email { get; set; }
-        public long ItemUniqueId { get; set; }
-        public long ItemSizeUniqueId { get; set; }
+        public string ItemUniqueId { get; set; }
+        public string ItemSizeUniqueId { get; set; }
     }
 }
