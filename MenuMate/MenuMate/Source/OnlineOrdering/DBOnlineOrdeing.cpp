@@ -146,7 +146,7 @@ std::list<TItemSizeInf> TDBOnlineOrdering::GetItemSizeInfo(Database::TDBTransact
             itemSizeInfo.Name               = ibInternalQuery->FieldByName("SIZE_NAME")->AsString;
             itemSizeInfo.Description        = itemSizeInfo.Name;
             itemSizeInfo.IsWeighted         = false;
-            itemSizeInfo.Price              = ibInternalQuery->FieldByName("PRICE")->AsInteger;
+            itemSizeInfo.Price              = ibInternalQuery->FieldByName("PRICE")->AsDouble;
             itemSizeInfo.IsFree             = ibInternalQuery->FieldByName("FREE")->AsString == "T" ? true : false;
             itemSizeInfo.PointsPercentage   = ibInternalQuery->FieldByName("POINTS_PERCENT")->AsDouble;
             itemSizeInfo.PointsPrice        = ibInternalQuery->FieldByName("PRICE_FOR_POINTS")->AsDouble;
@@ -442,17 +442,26 @@ void TDBOnlineOrdering::SetOnlineOrderStatus(Database::TDBTransaction &dbTransac
 	}
 }
 //----------------------------------------------------------------------------
-TSiteOrderModel TDBOnlineOrdering::OnlineOrderInvoiceInfo(Database::TDBTransaction &dbTransaction)
+int TDBOnlineOrdering::GetMemberKey(Database::TDBTransaction &dbTransaction, int orderKey)
 {
-    TSiteOrderModel siteOrderModel;
+    int memberKey = 0;
     try
     {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = " SELECT a.CONTACTS_KEY FROM ORDERS a "
+                                      "WHERE a.ORDER_KEY = :ORDER_KEY ";
+        ibInternalQuery->ParamByName("ORDER_KEY")->AsString = orderKey;
+        ibInternalQuery->ExecQuery();
 
+        if(ibInternalQuery->RecordCount)
+            memberKey = ibInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return siteOrderModel;
+    return memberKey;
 }
+//------------------------------------------------------------------------------------------
