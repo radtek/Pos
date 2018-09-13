@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (13/09/2018 2:23:47 a.m. - - $Rev: 25127 $)
+// (13/09/2018 4:34:40 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -2760,7 +2760,7 @@ class OrderItemModel : public TRemotable {
 private:
   UnicodeString   FDescription;
   bool            FDescription_Specified;
-  __int64         FItemUniqueId;
+  UnicodeString   FItemUniqueId;
   bool            FItemUniqueId_Specified;
   UnicodeString   FName;
   bool            FName_Specified;
@@ -2778,7 +2778,7 @@ private:
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
   {  return FDescription_Specified;  } 
-  void __fastcall SetItemUniqueId(int Index, __int64 _prop_val)
+  void __fastcall SetItemUniqueId(int Index, UnicodeString _prop_val)
   {  FItemUniqueId = _prop_val; FItemUniqueId_Specified = true;  }
   bool __fastcall ItemUniqueId_Specified(int Index)
   {  return FItemUniqueId_Specified;  } 
@@ -2811,7 +2811,7 @@ public:
   __fastcall ~OrderItemModel();
 __published:
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
-  __property __int64    ItemUniqueId = { index=(IS_OPTN), read=FItemUniqueId, write=SetItemUniqueId, stored = ItemUniqueId_Specified };
+  __property UnicodeString ItemUniqueId = { index=(IS_OPTN|IS_NLBL), read=FItemUniqueId, write=SetItemUniqueId, stored = ItemUniqueId_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property __int64       OrderId = { index=(IS_OPTN), read=FOrderId, write=SetOrderId, stored = OrderId_Specified };
   __property __int64    OrderItemId = { index=(IS_OPTN), read=FOrderItemId, write=SetOrderItemId, stored = OrderItemId_Specified };
@@ -2835,7 +2835,7 @@ private:
   bool            FBasePrice_Specified;
   __int64         FItemSizeId;
   bool            FItemSizeId_Specified;
-  __int64         FItemSizeUniqueId;
+  UnicodeString   FItemSizeUniqueId;
   bool            FItemSizeUniqueId_Specified;
   double          FMenuPrice;
   bool            FMenuPrice_Specified;
@@ -2865,7 +2865,7 @@ private:
   {  FItemSizeId = _prop_val; FItemSizeId_Specified = true;  }
   bool __fastcall ItemSizeId_Specified(int Index)
   {  return FItemSizeId_Specified;  } 
-  void __fastcall SetItemSizeUniqueId(int Index, __int64 _prop_val)
+  void __fastcall SetItemSizeUniqueId(int Index, UnicodeString _prop_val)
   {  FItemSizeUniqueId = _prop_val; FItemSizeUniqueId_Specified = true;  }
   bool __fastcall ItemSizeUniqueId_Specified(int Index)
   {  return FItemSizeUniqueId_Specified;  } 
@@ -2915,7 +2915,7 @@ public:
 __published:
   __property double      BasePrice = { index=(IS_OPTN), read=FBasePrice, write=SetBasePrice, stored = BasePrice_Specified };
   __property __int64    ItemSizeId = { index=(IS_OPTN), read=FItemSizeId, write=SetItemSizeId, stored = ItemSizeId_Specified };
-  __property __int64    ItemSizeUniqueId = { index=(IS_OPTN), read=FItemSizeUniqueId, write=SetItemSizeUniqueId, stored = ItemSizeUniqueId_Specified };
+  __property UnicodeString ItemSizeUniqueId = { index=(IS_OPTN|IS_NLBL), read=FItemSizeUniqueId, write=SetItemSizeUniqueId, stored = ItemSizeUniqueId_Specified };
   __property double      MenuPrice = { index=(IS_OPTN), read=FMenuPrice, write=SetMenuPrice, stored = MenuPrice_Specified };
   __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
   __property __int64    OrderItemId = { index=(IS_OPTN), read=FOrderItemId, write=SetOrderItemId, stored = OrderItemId_Specified };

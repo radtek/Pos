@@ -156,7 +156,7 @@ struct TOrderItemSizeModel
     double PriceInclusive;
     double BasePrice;
     int ReferenceOrderItemSizeId;
-    int ItemSizeUniqueId;
+    AnsiString ItemSizeUniqueId;
     std::list<TOrderItemSizeDiscountModel> OrderItemSizeDiscounts;
     std::list<TOrderItemSizeTaxProfileModel> OrderItemSizeTaxProfiles;
 };
@@ -169,7 +169,7 @@ struct TOrderItemModel
 	AnsiString Description;
 	int SiteItemId;
 	double Price;
-    int ItemUniqueId;
+    AnsiString ItemUniqueId;
 	std::list<TOrderItemSizeModel> OrderItemSizes;
 };
 
