@@ -100,9 +100,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                             //Insert records to orders..
                             ExecuteOrderQuery(addDetailsTransaction, addDetailsConnection, orderRow);
-
-                            //insert security event to security..
-                            //ExecuteSecurityQuery(addDetailsTransaction, addDetailsConnection, orderRow);
                         }
                     }
                     addDetailsTransaction.Commit();
@@ -290,21 +287,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
             }
         }
-
-        //private void ExecuteSecurityQuery(FbTransaction transaction, FbConnection connection, OrderAttributes orderRow)
-        //{
-        //    try
-        //    {
-        //        long securityKey = GenerateKey(transaction, connection, "SECURITY_KEY");
-        //        FbCommand command = dbQueries.InsertIntoSecurity(connection, transaction, orderRow, securityKey);
-        //        command.ExecuteNonQuery();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
-        //        //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
-        //    }
-        //}
 
         private void LoadItemInfo(FbTransaction transaction, FbConnection connection, ref OrderAttributes orderInfo)
         {
