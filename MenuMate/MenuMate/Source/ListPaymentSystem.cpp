@@ -6930,7 +6930,6 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
         if(paymentTransaction.Orders->Count)
         {
             TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
-            MessageBox(Order->OnlineOrderId,Order->OnlineOrderId,MB_OK);
             if(Order->OnlineOrderId.Trim() != "")
             {
                 TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction);

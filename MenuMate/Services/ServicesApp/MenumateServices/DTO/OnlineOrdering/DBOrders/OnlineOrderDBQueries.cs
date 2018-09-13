@@ -412,13 +412,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
                 command.Parameters.AddWithValue("@ITEM_NAME", orderDbItem.Name);
-                command.Parameters.AddWithValue("@ITEM_ID", orderDbItem.ItemSizeId);
+                command.Parameters.AddWithValue("@ITEM_ID", orderDbItem.ItemId);
                 command.Parameters.AddWithValue("@SIZE_NAME", orderDbItem.SizeName);
                 command.Parameters.AddWithValue("@NOTE", "");
                 command.Parameters.AddWithValue("@PARTY_NAME", "");
                 command.Parameters.AddWithValue("@TABLE_NUMBER", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderDbItem.ContainerNumber : 0);
                 command.Parameters.AddWithValue("@TABLE_NAME", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ?
-                    QueryUtilities.GetSubstring("Table #" + orderDbItem.ContainerNumber, 1, 25) : QueryUtilities.GetSubstring("Table #" + orderDbItem.ContainerName, 1, 25));
+                    QueryUtilities.GetSubstring("Table #" + orderDbItem.ContainerNumber, 1, 25) : QueryUtilities.GetSubstring(orderDbItem.ContainerName, 1, 25));
                 command.Parameters.AddWithValue("@SEATNO", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? 1 : 0);
                 command.Parameters.AddWithValue("@PRICE", orderDbItem.Price);
                 command.Parameters.AddWithValue("@PRINTED", 'F');
@@ -691,7 +691,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             try
             {
-                command.CommandText = @"SELECT a.ITEM_IDENTIFIER, a.ITEM_CATEGORY, a.ITEM_KITCHEN_NAME, a.ITEM_NAME, 
+                command.CommandText = @"SELECT a.ITEM_IDENTIFIER, a.ITEM_ID, a.ITEM_CATEGORY, a.ITEM_KITCHEN_NAME, a.ITEM_NAME, 
                                                 c.COURSE_NAME,c.COURSE_KITCHEN_NAME, m.MENU_NAME, c.SERVINGCOURSES_KEY 
                                         FROM ITEM a
                                         INNER JOIN COURSE c ON a.COURSE_KEY = c.COURSE_KEY INNER JOIN MENU m ON c.MENU_KEY = M.MENU_KEY 

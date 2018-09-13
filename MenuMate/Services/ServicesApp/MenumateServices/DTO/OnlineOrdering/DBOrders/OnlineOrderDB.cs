@@ -602,6 +602,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderInfo.CourseKitchenName = reader.GetString(reader.GetOrdinal("COURSE_KITCHEN_NAME"));
                         orderInfo.MenuName = reader.GetString(reader.GetOrdinal("MENU_NAME"));
                         orderInfo.SetvingCourseKey = reader.GetInt32(reader.GetOrdinal("SERVINGCOURSES_KEY"));
+                        orderInfo.ItemId = reader.GetInt32(reader.GetOrdinal("ITEM_ID"));
                     }
                 }
             }
