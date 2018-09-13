@@ -696,12 +696,6 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 				}
 				Note = frmMessage->TextResult;
 
-				// Get User Otpions
-				bool InformChef = (MessageBox("Do you wish to send a cancellation notice to the Chef?", "Inform Chef?",
-						MB_YESNO + MB_ICONQUESTION) == IDYES);
-
-				bool ReturnStock = (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)",
-						"Return To Stock?", MB_YESNO + MB_ICONQUESTION) == IDYES);
 
 				Database::TDBTransaction DBTransaction(DBControl);
 				DBTransaction.StartTransaction();
@@ -709,7 +703,17 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 				std::auto_ptr <TPaymentTransaction> TempTransaction(new TPaymentTransaction(DBTransaction));
 				std::auto_ptr <TList> OrdersList(new TList);
 				TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeCanceled);
-
+                 bool InformChef = false;
+                bool ReturnStock = false;
+                std::auto_ptr<TfrmPaymentType> frmPaymentType;
+                 if(frmPaymentType->IsReceipeAdded(OrdersList.get()))
+                {
+                   ReturnStock = (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?", MB_YESNO + MB_ICONQUESTION) == IDYES);
+                }
+                if(frmPaymentType->IsItemAssignToPrinter(OrdersList.get()))
+                {
+                    InformChef = (MessageBox("Do you wish to send a cancellation notice to the Chef?", "Inform Chef?", MB_YESNO + MB_ICONQUESTION) == IDYES);
+                }
 				for (int i = 0; i < OrdersList->Count; i++)
 				{
 					TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];

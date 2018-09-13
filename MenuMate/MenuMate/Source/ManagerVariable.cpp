@@ -3403,6 +3403,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmPMSAPIKey,  "PMS API KEY", "This API Key can be used for PMS integration is provided", vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction,vmRestartServiceAtZED,"Restart Service", "This setting will restart service at ZED", vmgPOS, false);
+        SetVarBool(DBTransaction,vmSendNoTaxToSihot,"No Tax to SiHot", "This setting will Postings to SiHot with No Tax", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmRevenueCodeDiscountPart, "Revenue Code for discount", "Revenue Code for discount", vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction,vmEnableOnlineOrdering,"Enable Online Ordering","Enable or disables online ordering access from pos", vmgPOS, false);
 	}
 	catch(Exception &E)

@@ -167,10 +167,13 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRevenueCentre->Enabled = false;
         tbItemDefCat->Enabled = true;
         tbOracleInterfaceIP->Enabled = false;
-        tbOracleInterfacePort->Enabled = false;
+        tbOracleInterfacePort->Caption = "Discounts Account\r" + TGlobalSettings::Instance().RevenueCodeDiscountPart;
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = true;
         tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
+        cbNoTaxToSihot->Enabled = true;
+        cbNoTaxToSihot->Checked = TGlobalSettings::Instance().SendNoTaxToSiHot;
+        tbOracleInterfacePort->Enabled = cbNoTaxToSihot->Checked;
     }
     else if(PMSType == oracle)
     {
@@ -187,6 +190,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbPhoenixID->Enabled = false;
         cbEnableCustomerJourney->Enabled = false;
         tbTimeOut->Enabled = false;
+        cbNoTaxToSihot->Enabled = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -231,6 +235,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfacePort->Enabled = false;
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = false;
+        cbNoTaxToSihot->Enabled = false;
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
@@ -712,22 +717,43 @@ void __fastcall TfrmPHSConfiguration::tbOracleInterfacePortMouseClick(TObject *S
 	}
 	else
 	{
-        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-		frmTouchNumpad->Caption = "Enter Oracle Interface Port Number.";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->INTInitial = TGlobalSettings::Instance().OracleInterfacePortNumber;
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-			TGlobalSettings::Instance().OracleInterfacePortNumber = frmTouchNumpad->INTResult;
-			tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
-            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction1.StartTransaction();
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmOracleInterfacePortNumber,TGlobalSettings::Instance().OracleInterfacePortNumber);
-            DBTransaction1.Commit();
-		}
+        if(PMSType == oracle)
+        {
+            std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+            frmTouchNumpad->Caption = "Enter Oracle Interface Port Number.";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->Mode = pmNumber;
+            frmTouchNumpad->INTInitial = TGlobalSettings::Instance().OracleInterfacePortNumber;
+            if (frmTouchNumpad->ShowModal() == mrOk)
+            {
+                TGlobalSettings::Instance().OracleInterfacePortNumber = frmTouchNumpad->INTResult;
+                tbOracleInterfacePort->Caption = "Oracle Interface Port\r" + IntToStr(TGlobalSettings::Instance().OracleInterfacePortNumber);
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmOracleInterfacePortNumber,TGlobalSettings::Instance().OracleInterfacePortNumber);
+                DBTransaction1.Commit();
+            }
+        }
+        else if(PMSType == siHot)
+        {
+            std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            frmTouchKeyboard->MaxLength = 255;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().RevenueCodeDiscountPart;
+            frmTouchKeyboard->Caption = "Enter the Discounts Account";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                TGlobalSettings::Instance().RevenueCodeDiscountPart = frmTouchKeyboard->KeyboardText;
+                tbOracleInterfacePort->Caption = "Discounts Account\r" + TGlobalSettings::Instance().RevenueCodeDiscountPart;
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmRevenueCodeDiscountPart,TGlobalSettings::Instance().RevenueCodeDiscountPart);
+                DBTransaction1.Commit();
+            }
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -887,3 +913,14 @@ void TfrmPHSConfiguration::InitDefaultPaymentInDB()
     }
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbNoTaxToSihotClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().SendNoTaxToSiHot = cbNoTaxToSihot->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmSendNoTaxToSihot, TGlobalSettings::Instance().SendNoTaxToSiHot);
+    DBTransaction.Commit();
+    tbOracleInterfacePort->Enabled = cbNoTaxToSihot->Checked;
+}
+//---------------------------------------------------------------------------
+

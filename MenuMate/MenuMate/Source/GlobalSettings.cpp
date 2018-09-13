@@ -442,6 +442,8 @@ TGlobalSettings::TGlobalSettings()
     CheckSaleMegaworld = 0;
     GiftCard_MegaworldForDaily = 0;
     CheckSaleMegaworldForDaily = 0;
+    SendNoTaxToSiHot = false;
+    RevenueCodeDiscountPart = "";
     EnableOnlineOrdering = false;
 }
 

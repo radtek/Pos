@@ -4583,7 +4583,9 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				"Count(Orders.Order_Key) > 0 ";
 
 				IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
+
 				IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
+
 				IBInternalQuery->ParamByName("Contacts_Key")->AsInteger = TempUserInfo.ContactKey;
 				IBInternalQuery->ExecQuery();
 				// Ordered By Sold By Data.
@@ -4744,6 +4746,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					TotalInBilledTips / TipCount));
 				}
 
+
 				Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 				Printout->PrintFormat->Line->ColCount = 1;
 				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
@@ -4751,6 +4754,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
 				Printout->PrintFormat->AddLine();
 				Printout->PrintFormat->NewLine();
+                //-------------------------------------------------------------------------------------
 
 				// TILL CASH IN DRAW REPORT.
 				// ---------------------------------------------------------------------
@@ -4812,7 +4816,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					{
 						TTransactionCount ThisTransaction = TransactionsCount[itCurrentPayment->second.Name];
 
-						AddSectionTitle(Printout.get(), itCurrentPayment->second.Name + " (" + IntToStr(ThisTransaction.Count) + ")");
+					   AddSectionTitle(Printout.get(), itCurrentPayment->second.Name + " (" + IntToStr(ThisTransaction.Count) + ")");
 
 						Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 						Printout->PrintFormat->Line->ColCount = 2;
@@ -4854,14 +4858,28 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				Printout->PrintFormat->Line->Columns[0]->Text = "";
 				Printout->PrintFormat->Line->Columns[1]->DoubleLine();
 				Printout->PrintFormat->AddLine();
+
 				Printout->PrintFormat->Add("GRAND TOTAL|" + FormatFloat("0.00", GrandTotal));
+               //  Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 
-				Printout->PrintFormat->NewLine();
-				Printout->PrintFormat->Line->Columns[0]->Text = "";
-				Printout->PrintFormat->Line->Columns[1]->DoubleLine();
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
 				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
 
-				// ---------------------------------------------------------------------------
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
+                 // ---------------------------------------------------------------------------
 				// Discount Report
 				// ---------------------------------------------------------------------------
 
@@ -4892,6 +4910,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					Item->Total = IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency;
 					ItemsList->AddObject(IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn ")
 					+ IBInternalQuery->FieldByName("NOTE")->AsString, Item);
+
 				}
 
 				if (ItemsList->Count > 0)
@@ -4937,6 +4956,175 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					Printout->PrintFormat->Add("TOTAL DISCOUNTS|" + FormatFloat("0.00", DiscountTotal));
 				}
 				delete ItemsList;
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+                Currency Tax = 0, ServiceCharge = 0, ServiceChargeTax = 0;
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "SELECT CAST(SUM( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, "
+                                             " Cast(SUM(coalesce(T.ServiceCharge,0)) as Numeric(17,4)) ServiceCharge,  "
+                                             " Cast(SUM(coalesce(T.ServiceChargeTax,0)) as Numeric(17,4)) ServiceChargeTax  "
+                                              "FROM DAYARCHIVE DA "
+                                                    "INNER JOIN DAYARCBILL AR ON AR.ARCBILL_KEY = DA.ARCBILL_KEY  "
+                                                     "LEFT JOIN SECURITY ON AR.SECURITY_REF = SECURITY.SECURITY_REF "
+                                                    "Left Join Contacts on  Security.user_key = Contacts.Contacts_Key "
+                                                 "LEFT JOIN "
+                                                   " ( "
+                                                      " SELECT "
+                                                          "DAYARCORDERTAXES.ARCHIVE_KEY, "
+                                                         " MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 0 THEN DAYARCORDERTAXES.TAX_VALUE END) AS Tax, "
+                                                          "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 2 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
+                                                          "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax "
+                                                       "FROM  "
+                                                          "( "
+                                                            " SELECT "
+                                                                "a.ARCHIVE_KEY,  "
+                                                                 "a.TAX_TYPE, "
+                                                                "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+                                                             "FROM DAYARCORDERTAXES a "
+                                                             "GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
+                                                            " ORDER BY 1 "
+                                                          ") DAYARCORDERTAXES "
+                                                       "GROUP BY DAYARCORDERTAXES.ARCHIVE_KEY "
+                                                   " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                                                 "AND "
+                                                " DA.Time_Stamp >= :StartTime  and "
+                                                " DA.Time_Stamp <  :EndTime  AND "
+                                                 "Security.Security_Event = '" +
+				                                   UnicodeString(SecurityTypes[secBilledBy]) + "' and " "Contacts.Contacts_Key = :Contacts_Key "
+
+
+                                 "UNION ALL  "
+
+                                     "SELECT cast(Sum( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, "
+                                     " Cast(SUM(COALESCE(T.ServiceCharge,0)) as Numeric(17,4)) ServiceCharge,  "
+                                         " Cast(SUM(coalesce(T.ServiceChargeTax,0)) as Numeric(17,4)) ServiceChargeTax  "
+                                          "FROM ARCHIVE DA "
+                                                      "INNER JOIN ARCBILL AR ON AR.ARCBILL_KEY = DA.ARCBILL_KEY  "
+                                                      "LEFT JOIN SECURITY ON AR.SECURITY_REF = SECURITY.SECURITY_REF "
+                                                    "Left Join Contacts on  Security.user_key = Contacts.Contacts_Key "
+
+                                             "LEFT JOIN "
+                                               " ( "
+                                                  " SELECT "
+                                                      "ARCORDERTAXES.ARCHIVE_KEY, "
+                                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS Tax, "
+                                                      "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
+                                                      "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax "
+                                                   "FROM  "
+                                                      "( "
+                                                        " SELECT "
+                                                            "a.ARCHIVE_KEY,  "
+                                                             "a.TAX_TYPE, "
+                                                            "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+                                                         "FROM ARCORDERTAXES a "
+                                                         "GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
+                                                        " ORDER BY 1 "
+                                                      ") ARCORDERTAXES "
+                                                   "GROUP BY ARCORDERTAXES.ARCHIVE_KEY "
+                                               " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                                             "AND "
+                                            " DA.Time_Stamp >= :StartTime  and "
+                                             " DA.Time_Stamp <  :EndTime  AND "
+                                              "Security.Security_Event = '" +
+                                              UnicodeString(SecurityTypes[secBilledBy]) + "' and " "Contacts.Contacts_Key = :Contacts_Key ";
+
+
+
+                IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
+				IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
+                IBInternalQuery->ParamByName("Contacts_Key")->AsInteger = TempUserInfo.ContactKey;
+                IBInternalQuery->ExecQuery();
+
+                for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+                {
+						Tax += IBInternalQuery->FieldByName("Tax")->AsCurrency;
+                        ServiceCharge += IBInternalQuery->FieldByName("ServiceCharge")->AsCurrency;
+                        ServiceChargeTax += IBInternalQuery->FieldByName("ServiceChargeTax")->AsCurrency;
+                }
+                if(Tax!=0)
+                {
+                     Printout->PrintFormat->Add("Tax Total|" + FormatFloat("0.00", Tax));
+                }
+
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+                if(ServiceChargeTax!=0)
+                {
+                    Printout->PrintFormat->Add("Service Charge Tax|" + FormatFloat("0.00", ServiceChargeTax));
+                }
+
+
+                if(ServiceCharge!=0)
+                {
+                    Printout->PrintFormat->Add("Service Charge|" + FormatFloat("0.00", ServiceCharge));
+                }
+
+                if (TotalInBilledTips != 0)
+                 {
+                    Printout->PrintFormat->Add("Tips Billed | " + FormatFloat("0.00", TotalInBilledTips));
+
+                 }
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
+                    Currency servictip = 0 ;
+                    servictip = ServiceCharge + TotalInBilledTips ;
+
+                    Printout->PrintFormat->Add("Service Charge And Tip total | "+ FormatFloat("0.00",servictip));
+
+                    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                    Printout->PrintFormat->Line->ColCount = 2;
+                    Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+                    Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+                    Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+                    Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+                    Printout->PrintFormat->Add("Total Billed|" + FormatFloat("0.00", GrandTotal));
+                    //  Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+
+                    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                    Printout->PrintFormat->Line->ColCount = 2;
+                    Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+                    Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+                    Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+                    Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
 
 				Printout->PrintFormat->PartialCut();
 				Printout->Print();
@@ -4968,6 +5156,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 }
+
 
 void __fastcall TfrmAnalysis::FormResize(TObject *Sender)
 {

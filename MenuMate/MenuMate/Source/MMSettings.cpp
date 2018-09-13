@@ -433,6 +433,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
         TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
         TGlobalSettings::Instance().RestartServiceAtZED = TManagerVariable::Instance().GetBool(DBTransaction, vmRestartServiceAtZED, false);
+        TGlobalSettings::Instance().SendNoTaxToSiHot = TManagerVariable::Instance().GetBool(DBTransaction, vmSendNoTaxToSihot, false);
+        TGlobalSettings::Instance().RevenueCodeDiscountPart = TManagerVariable::Instance().GetStr(DBTransaction, vmRevenueCodeDiscountPart, "");
         TGlobalSettings::Instance().EnableOnlineOrdering = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
 }
 
