@@ -56,7 +56,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     SELECT 
                                         TAB_KEY 
                                     FROM 
-                                        ORDERS 
+                                        TAB 
                                     WHERE 
                                         TAB_NAME = @TAB_NAME
                                     ";

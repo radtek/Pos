@@ -137,11 +137,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
-                using (FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Databases\\DougnutKing\\Menumate.fdb"))) //path to be changed
-                {
-                    addDetailsConnection.Open();
+                //using (FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Databases\\DougnutKing\\Menumate.fdb"))) //path to be changed
+                //{
+                //    addDetailsConnection.Open();
 
-                    FbTransaction addDetailsTransaction = addDetailsConnection.BeginTransaction();
+                //    FbTransaction addDetailsTransaction = addDetailsConnection.BeginTransaction();
 
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
@@ -160,11 +160,12 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.UserType = siteOrderViewModel.UserType;
                             orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
                             orderRow.Email = siteOrderViewModel.UserEmailId;
+                            orderRow.SiteId = siteOrderViewModel.SiteId;
 
                             foreach (var item in siteOrderViewModel.OrderItems)
                             {
                                 orderRow.Name = item.Name;
-                                //orderRow.OrderId = item.OrderItemId;
+                                orderRow.OrderItemId = item.OrderItemId;
                                 orderRow.SiteItemId = item.SiteItemId;
                                 orderRow.ItemUniqueId = item.ItemUniqueId;
                                 foreach (var itemSize in item.OrderItemSizes)
@@ -179,6 +180,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.ItemSizeId = itemSize.ItemSizeId;
                                     orderRow.TimeKey = setTimeKey();
                                     orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
+                                    orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
+                                    orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
 
                                     //Generate order id..
                                     orderRow.OrderId = GenerateKey("ORDERS");
@@ -207,21 +210,22 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                                     //Insert Order tax profile info..
                                     ExecuteTaxProfileOrders(orderRow);
+                                    siteOrderViewModel.IsConfirmed = true;
                                 }
                             }
                         }
                         catch (Exception ex)
                         {
                             siteOrderViewModel.IsConfirmed = false;
-                            addDetailsTransaction.Rollback();
+                            //addDetailsTransaction.Rollback();
                             ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
                             throw;
                         }
 
                     }
-                    addDetailsTransaction.Commit();
+                //    addDetailsTransaction.Commit();
 
-                }
+                //}
             }
             catch (Exception ex)
             {
