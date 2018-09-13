@@ -133,7 +133,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         //    addDetailsTransaction.Commit();
         //}
 
-        public void AddRecords(List<ApiSiteOrderViewModel> siteOrderViewModelList)
+        public void AddRecords(ref List<ApiSiteOrderViewModel> siteOrderViewModelList)
         {
             try
             {
@@ -145,71 +145,79 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
-                        OrderAttributes orderRow = new OrderAttributes();
-                        orderRow.ContainerName = siteOrderViewModel.ContainerName;
-                        orderRow.ContainerType = siteOrderViewModel.ContainerType;
-                        orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
-                        orderRow.Location = siteOrderViewModel.Location;
-                        orderRow.OrderType = siteOrderViewModel.OrderType;
-                        orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                        orderRow.TerminalName = siteOrderViewModel.TerminalName;
-                        orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
-                        orderRow.TransactionType = siteOrderViewModel.TransactionType;
-                        orderRow.UserType = siteOrderViewModel.UserType;
-                        orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
-                        orderRow.Email = siteOrderViewModel.UserEmailId;
-
-                        foreach (var item in siteOrderViewModel.OrderItems)
+                        try
                         {
-                            orderRow.Name = item.Name;
-                            //orderRow.OrderId = item.OrderItemId;
-                            orderRow.SiteItemId = item.SiteItemId;
-                            orderRow.ItemUniqueId = item.ItemUniqueId;
-                            foreach (var itemSize in item.OrderItemSizes)
+                            OrderAttributes orderRow = new OrderAttributes();
+                            orderRow.ContainerName = siteOrderViewModel.ContainerName;
+                            orderRow.ContainerType = siteOrderViewModel.ContainerType;
+                            orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
+                            orderRow.Location = siteOrderViewModel.Location;
+                            orderRow.OrderType = siteOrderViewModel.OrderType;
+                            orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                            orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                            orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
+                            orderRow.TransactionType = siteOrderViewModel.TransactionType;
+                            orderRow.UserType = siteOrderViewModel.UserType;
+                            orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
+                            orderRow.Email = siteOrderViewModel.UserEmailId;
+
+                            foreach (var item in siteOrderViewModel.OrderItems)
                             {
-                                orderRow.BasePrice = itemSize.BasePrice;
-                                orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.MenuPrice = itemSize.MenuPrice;
-                                orderRow.SizeName = itemSize.Name;
-                                orderRow.Price = itemSize.Price;
-                                orderRow.PriceInclusive = itemSize.PriceInclusive;
-                                orderRow.Quantity = itemSize.Quantity;
-                                orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.TimeKey = setTimeKey();
-                                orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
+                                orderRow.Name = item.Name;
+                                //orderRow.OrderId = item.OrderItemId;
+                                orderRow.SiteItemId = item.SiteItemId;
+                                orderRow.ItemUniqueId = item.ItemUniqueId;
+                                foreach (var itemSize in item.OrderItemSizes)
+                                {
+                                    orderRow.BasePrice = itemSize.BasePrice;
+                                    orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                    orderRow.MenuPrice = itemSize.MenuPrice;
+                                    orderRow.SizeName = itemSize.Name;
+                                    orderRow.Price = itemSize.Price;
+                                    orderRow.PriceInclusive = itemSize.PriceInclusive;
+                                    orderRow.Quantity = itemSize.Quantity;
+                                    orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                    orderRow.TimeKey = setTimeKey();
+                                    orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
 
-                                //Generate order id..
-                                orderRow.OrderId = GenerateKey("ORDERS");
+                                    //Generate order id..
+                                    orderRow.OrderId = GenerateKey("ORDERS");
 
-                                //Generate Security ref..
-                                orderRow.SecurityRef = GetNextSecurityRef();
+                                    //Generate Security ref..
+                                    orderRow.SecurityRef = GetNextSecurityRef();
 
-                                //generate tab key if tab not exist..
-                                orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
-                                                    : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo
+                                    //generate tab key if tab not exist..
+                                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
+                                                        : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo
 
-                                //Generate tansaction number..
-                                orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
+                                    //Generate tansaction number..
+                                    orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
 
-                                //Load Item info like course, sc, kitchen name etc.
-                                LoadItemInfo(ref orderRow);
+                                    //Load Item info like course, sc, kitchen name etc.
+                                    LoadItemInfo(ref orderRow);
 
-                                //load And insert breakdown category into orderscategory..
-                                GetAndInsertBreakDownCategories(ref orderRow);
+                                    //load And insert breakdown category into orderscategory..
+                                    GetAndInsertBreakDownCategories(ref orderRow);
 
-                                //LoadTaxProfileKeys
-                                LoadItemSizeTaxProfileOrders(ref orderRow);
+                                    //LoadTaxProfileKeys
+                                    LoadItemSizeTaxProfileOrders(ref orderRow);
 
-                                //Insert records to orders..
-                                ExecuteOrderQuery(orderRow);
+                                    //Insert records to orders..
+                                    ExecuteOrderQuery(orderRow);
 
-                                //Insert Order tax profile info..
-                                ExecuteTaxProfileOrders(orderRow);
-
-                                //insert security event to security..
-                               // ExecuteSecurityQuery(orderRow);
+                                    //Insert Order tax profile info..
+                                    ExecuteTaxProfileOrders(orderRow);
+                                }
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            siteOrderViewModel.IsConfirmed = false;
+                            addDetailsTransaction.Rollback();
+                            ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
+                            throw;
+                        }
+
                     }
                     addDetailsTransaction.Commit();
 

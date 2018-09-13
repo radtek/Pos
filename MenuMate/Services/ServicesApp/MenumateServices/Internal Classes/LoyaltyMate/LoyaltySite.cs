@@ -86,24 +86,6 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse InsertOrdersToDB(string ordersString)
-        {
-            try
-            {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.InsertOrdersToDB(CreateSiteOrderViewModel(ordersString));
-
-                if (response)
-                    return CreateResponseNoError();
-                else
-                    return CreateResponseError("@Failed to insert Records to DB.", "", LoyaltyResponseCode.TaxSettingSyncingFailed);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
         public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             try

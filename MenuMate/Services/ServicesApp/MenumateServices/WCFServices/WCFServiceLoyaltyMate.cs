@@ -207,7 +207,7 @@ namespace MenumateServices.WCFServices
             List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
             siteOrderViewModel = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
             var requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);//just to test json
-            bool retVal = InsertOrdersToDB(siteOrderViewModel);
+            bool retVal = InsertOrdersToDB(ref siteOrderViewModel);
             //if (retVal)
             //    siteOrderViewModel.IsConfirmed = true;
             //else
@@ -215,7 +215,7 @@ namespace MenumateServices.WCFServices
             LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
         }
 
-        private bool InsertOrdersToDB(List<ApiSiteOrderViewModel> siteOrderViewModel)
+        private bool InsertOrdersToDB(ref List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             //DBOrder dbOrder = new DBOrder();
             //dbOrder.AddRecords(siteOrderViewModel);           
@@ -228,7 +228,7 @@ namespace MenumateServices.WCFServices
                 {
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        onlineOrderDB.AddRecords(siteOrderViewModel); //result = onlineOrderDB.AddRecords(siteOrderViewModel);
+                        onlineOrderDB.AddRecords(ref siteOrderViewModel); //result = onlineOrderDB.AddRecords(siteOrderViewModel);
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order ");
                     }

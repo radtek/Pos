@@ -22,7 +22,6 @@ namespace Loyaltymate.Sevices
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);
         bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenus);
         bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings);
-        bool InsertOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel);
         bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel);
         bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel);
         ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int inSiteCode);
