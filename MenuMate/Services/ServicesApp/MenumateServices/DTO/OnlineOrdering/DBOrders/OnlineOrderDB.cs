@@ -182,6 +182,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
                                     orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
                                     orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+                                    orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
 
                                     //Generate order id..
                                     orderRow.OrderId = GenerateKey("ORDERS");
@@ -625,6 +626,26 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
 
+        }
+
+        private long GetSideParentOrderKey(long ordreferenceOrderItemSizeId)
+        {
+            long ParentSideOrderKey = 0;
+            try
+            {
+                FbCommand command = dbQueries.GetSideParentOrderKey(connection, transaction, ordreferenceOrderItemSizeId);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        ParentSideOrderKey = Convert.ToInt32(getReaderColumnValue(reader, "ORDER_KEY", 0));
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSideParentOrderKey " + e.Message, e);
+                throw;
+            }
+            return ParentSideOrderKey;
         }
 
         private int setTimeKey()

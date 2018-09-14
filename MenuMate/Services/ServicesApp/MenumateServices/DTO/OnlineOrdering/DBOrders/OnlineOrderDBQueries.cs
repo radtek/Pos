@@ -685,6 +685,29 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return result;
         }
 
+        public FbCommand GetSideParentOrderKey(FbConnection connection, FbTransaction transaction, long orderItemSizeId)
+        {
+            FbCommand result = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                result.CommandText = @"
+                                        SELECT a.ORDER_KEY
+                                        FROM ORDERS a 
+                                        WHERE a.ORDER_ITEM_SIZE_ID = @ORDER_ITEM_SIZE_ID
+                                        GROUP BY 1
+                                    ";
+
+                result.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderItemSizeId);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSideParentOrderKey " + e.Message, e);
+                throw;
+            }
+            return result;
+        }
+
         public FbCommand GetItemInfo(FbConnection connection, FbTransaction transaction, string itemId)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
