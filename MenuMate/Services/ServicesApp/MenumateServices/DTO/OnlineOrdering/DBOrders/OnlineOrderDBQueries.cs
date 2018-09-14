@@ -446,7 +446,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@DISCOUNT", 0);
                 command.Parameters.AddWithValue("@DISCOUNT_REASON", "");
                 command.Parameters.AddWithValue("@REDEEMED", 0.0f);
-                command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.Name);
+                command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.ItemKitchenName);
                 command.Parameters.AddWithValue("@SIZE_KITCHEN_NAME", orderDbItem.SizeName);
                 command.Parameters.AddWithValue("@COURSE_KITCHEN_NAME", orderDbItem.CourseKitchenName);
                 command.Parameters.AddWithValue("@POINTS_PERCENT", orderDbItem.PointsPercent);
@@ -632,6 +632,28 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
 
             return command;
+        }
+
+        public FbCommand GetItemUniqueIdByItemSIzeUniqueID(FbConnection connection, FbTransaction transaction, string itemSizeId)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT ITEM.ITEM_IDENTIFIER 
+                                        FROM ITEM 
+                                        INNER JOIN ITEMSIZE ON ITEM.ITEM_KEY = ITEMSIZE.ITEM_KEY 
+                                        WHERE ITEMSIZE.ITEMSIZE_IDENTIFIER = @ITEMSIZE_IDENTIFIER ";
+
+                command.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", itemSizeId);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+                throw;
+            }
+
+            return command;            
         }
 
         public FbCommand LoadBreakDownCategoriesCmd(FbConnection connection, FbTransaction transaction, int itemSizeKey)

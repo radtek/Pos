@@ -183,6 +183,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
                                     orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
                                     orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
+                                    orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
 
                                     //Generate order id..
                                     orderRow.OrderId = GenerateKey("ORDERS");
@@ -376,8 +377,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             return seatKey;
         }
-
-
+        
         private int FindTabKeyForOnlineOrderTab(string tabName)
         {
             int tabKey = 0;
@@ -610,13 +610,15 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     while (reader.Read())
                     {
                         orderInfo.ItemCategory = reader.GetString(reader.GetOrdinal("ITEM_CATEGORY"));
+                        orderInfo.Name = reader.GetString(reader.GetOrdinal("ITEM_NAME"));
                         orderInfo.ItemKitchenName = reader.GetString(reader.GetOrdinal("ITEM_KITCHEN_NAME"));
+                        orderInfo.ItemKitchenName = orderInfo.ItemKitchenName.Trim() == "" ? orderInfo.Name : orderInfo.ItemKitchenName;                        
                         orderInfo.CourseName = reader.GetString(reader.GetOrdinal("COURSE_NAME"));
                         orderInfo.CourseKitchenName = reader.GetString(reader.GetOrdinal("COURSE_KITCHEN_NAME"));
                         orderInfo.CourseKitchenName = orderInfo.CourseKitchenName.Trim() == "" ? orderInfo.CourseName : orderInfo.CourseKitchenName;
                         orderInfo.MenuName = reader.GetString(reader.GetOrdinal("MENU_NAME"));
                         orderInfo.SetvingCourseKey = reader.GetInt32(reader.GetOrdinal("SERVINGCOURSES_KEY"));
-                        orderInfo.ItemId = reader.GetInt32(reader.GetOrdinal("ITEM_ID"));
+                        orderInfo.ItemId = reader.GetInt32(reader.GetOrdinal("ITEM_ID"));                        
                     }
                 }
             }
@@ -626,6 +628,26 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
 
+        }
+
+        private string GetItemUniqueID(string itemSizeUniqueId)
+        {
+            string ItemUniqueId = "";
+            try
+            {
+                FbCommand command = dbQueries.GetItemUniqueIdByItemSIzeUniqueID(connection, transaction, itemSizeUniqueId);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        ItemUniqueId = Convert.ToString(getReaderColumnValue(reader, "ITEM_IDENTIFIER", ""));
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSideParentOrderKey " + e.Message, e);
+                throw;
+            }
+            return ItemUniqueId;
         }
 
         private long GetSideParentOrderKey(long ordreferenceOrderItemSizeId)
