@@ -941,42 +941,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                        {
                           CheckLoyalty(ItemsToBill);
                        }
-                       //to test
-                       if(TGlobalSettings::Instance().EnableOnlineOrdering && ItemsToBill.size())
-                       {
-                            Database::TDBTransaction dBTransaction(DBControl);
-                            TDeviceRealTerminal::Instance().RegisterTransaction(dBTransaction);
-                            dBTransaction.StartTransaction();
-
-                            TMMContactInfo TempUserInfo;
-                            eMemberSource MemberSource;
-                            std::set<__int64>::iterator it = ItemsToBill.begin();
-                            int orderKey = 0;
-
-                            if (it != ItemsToBill.end())
-                                orderKey = *it;
-
-                            TempUserInfo.ContactKey = TDBOnlineOrdering::GetMemberKey(dBTransaction, orderKey);
-
-                            TempUserInfo.ContactKey = TDBContacts::GetOrCreateContact(dBTransaction, TempUserInfo.ContactKey, eMember, TempUserInfo);
-                            MessageBox(TempUserInfo.ContactKey,"TempUserInfo.ContactKey",MB_OK);
-                            dBTransaction.Commit();
-							TDBContacts::SetContactDetails(DBTransaction, TempUserInfo.ContactKey, eMember, TempUserInfo);
-
-
-                            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo, MemberSource);
-
-                            if (Result == lsAccepted)
-                            {
-                                ApplyMembership(DBTransaction, TempUserInfo);
-                            }
-                            else if (Result == lsAccountBlocked)
-                            {
-                                MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-                                    MB_OK + MB_ICONINFORMATION);
-                            }
-
-                        }
 
                        BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
 				}
@@ -5835,37 +5799,6 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
         btnSplitPayment->Enabled    = false;
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
-
-//        if(TGlobalSettings::Instance().EnableOnlineOrdering)
-//        {
-//            Database::TDBTransaction DBTransaction(DBControl);
-//            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-//            DBTransaction.StartTransaction();
-//            TMMContactInfo TempMembershipInfo;
-//            TempMembershipInfo.Clear();
-//            eMemberSource MemberSource;
-//            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempMembershipInfo,MemberSource);
-//            if (Result == lsAccepted)
-//            {
-//                TGlobalSettings::Instance().IsDiscountSelected = false;
-//                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
-//                {
-//                    GetLoyaltyMember(DBTransaction,TempMembershipInfo);
-//                    TDBTab::SetTabOrdersLoyalty(DBTransaction,CurrentSelectedTab, TempMembershipInfo.ContactKey);
-//                }
-//             }
-//             else if (Result == lsAccountBlocked)
-//             {
-//                MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-//                    MB_OK + MB_ICONINFORMATION);
-//             }
-//             else if (Result == lsCancel)
-//             {
-//                RemoveMembership(DBTransaction);
-//             }
-//             DBTransaction.Commit();
-//             ShowReceipt();
-//        }
     }
 }
 //---------------------------------------------------------------------------
