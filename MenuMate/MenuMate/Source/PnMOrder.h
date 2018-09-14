@@ -30,13 +30,8 @@ public:
         RoomNumber(""),
         AccNumber(""),
         FirstName(""),
-        LastName(""),
-        OnlineOrderId(""),
-        OnlineChitType(0),
-        SiteId(0),
-        OrderItemId(0),
-        OrderItemSizeId(0),
-        ReferenceOrderItemSizeId(0) {
+        LastName("")
+        {
 	}
 
 	TPnMOrder( const TPnMOrder& inOther );
@@ -66,12 +61,6 @@ public:
     UnicodeString AccNumber;
     UnicodeString FirstName;
     UnicodeString LastName;
-    UnicodeString OnlineOrderId;
-    int OnlineChitType;
-    int SiteId;
-    int OrderItemId;
-    int OrderItemSizeId;
-    int ReferenceOrderItemSizeId;
 
 
 	// Selected for billing therefore not shown in orders list

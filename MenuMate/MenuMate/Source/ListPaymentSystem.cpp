@@ -6986,7 +6986,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel. OrderGuid = Order->OnlineOrderId;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
         siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
-        siteOrderModel.TerminalName = Order->Terminal;
+        siteOrderModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
         siteOrderModel.TransactionDate = Now();;
         siteOrderModel.OrderType = Order->OrderType;
         siteOrderModel.IsConfirmed = true;
@@ -7022,7 +7022,7 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemModel.OrderItemId = Order->OrderItemId;
                 orderItemModel.Name = Order->Item;
                 orderItemModel.Description = Order->Item;
-                orderItemModel.SiteItemId = 0;//Order->;      todo
+                orderItemModel.SiteItemId = 0;//Order->SiteId;
                 orderItemModel.Price = Order->PriceEach_BillCalc();
 
                 std::list<TOrderItemSizeModel> orderItemSizeModelList;
@@ -7038,7 +7038,7 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemSizeModel.Price = Order->PriceEach_BillCalc();
                 orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
                 orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
-                orderItemSizeModel.ReferenceOrderItemSizeId  = 0 ;//todo
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
                 orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
 
                 orderItemSizeModelList.push_back(orderItemSizeModel);
@@ -7062,7 +7062,7 @@ std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransac
                 orderItemSizeModel.Price = Order->PriceEach_BillCalc();
                 orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
                 orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
-                orderItemSizeModel.ReferenceOrderItemSizeId  = 0 ;//todo
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
                 orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
 
                 it->second.OrderItemSizes.push_back(orderItemSizeModel);
@@ -7139,7 +7139,7 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
 	     invoiceTransactionModel.TotalSaleAmount = paymentTransaction.Money.RoundedGrandTotal;
 	     invoiceTransactionModel.TransactionDate = Now();
 	     invoiceTransactionModel.SiteId = Order->SiteId;
-	     invoiceTransactionModel.TerminalName = Order->Terminal;
+	     invoiceTransactionModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
 
          if( ManagerReceipt->ReceiptToArchive->Size > 0 )
 		 {

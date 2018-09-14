@@ -358,7 +358,9 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.TransactionType = (Loyaltymate.Enum.SiteSettingType)siteOrderModel.TransactionType;
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
             siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
-            siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();
+            siteOrderViewModel.UserEmailId = siteOrderModel.UserEmailId;
+            siteOrderViewModel.MemberGuid = siteOrderModel.MemberGuid;
+            siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();            
             siteOrderViewModel.OrderInvoiceTransaction = new ApiOrderInvoiceTransactionViewModel();
 
             if (siteOrderModel.OrderItems != null)
@@ -387,6 +389,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemViewModel.OrderItemId = item.OrderItemId;
             orderItemViewModel.Price = item.Price;
             orderItemViewModel.SiteItemId = item.SiteItemId;
+            orderItemViewModel.ItemUniqueId = item.ItemUniqueId;
             orderItemViewModel.OrderItemSizes = new List<ApiOrderItemSizeViewModel>();
 
             if (item.OrderItemSizes != null)
@@ -412,6 +415,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeModel.PriceInclusive = itemSize.Price;
             orderItemSizeModel.Quantity = itemSize.Quantity;
             orderItemSizeModel.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+            orderItemSizeModel.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
             orderItemSizeModel.OrderItemSizeDiscounts = new List<ApiOrderItemSizeDiscountViewModel>();
             orderItemSizeModel.OrderItemSizeTaxProfiles = new List<ApiOrderItemSizeTaxProfileViewModel>();
 
