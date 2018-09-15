@@ -193,13 +193,17 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                                     //generate tab key if tab not exist..
                                     orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
-                                                        : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo
-
-                                    //Generate tansaction number..
-                                    orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
+                                                        : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo                                    
 
                                     //Load Item info like course, sc, kitchen name etc.
                                     LoadItemInfo(ref orderRow);
+
+                                    //Generate tansaction number..
+                                    if (orderRow.ReferenceOrderItemSizeId == 0)
+                                    {
+                                        orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
+                                        orderRow.MasterContainer = orderRow.SizeName;
+                                    }
 
                                     //load And insert breakdown category into orderscategory..
                                     GetAndInsertBreakDownCategories(ref orderRow);
@@ -211,10 +215,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     ExecuteOrderQuery(orderRow);
 
                                     //Insert Order tax profile info..
-                                    ExecuteTaxProfileOrders(orderRow);
-                                    siteOrderViewModel.IsConfirmed = true;
+                                    ExecuteTaxProfileOrders(orderRow);                                    
                                 }
                             }
+                            siteOrderViewModel.IsConfirmed = true;
                         }
                         catch (Exception ex)
                         {
@@ -513,6 +517,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderInfo.CategoryKey = reader.GetInt32(reader.GetOrdinal("CATEGORY_KEY"));
                         orderInfo.PointsPercent = reader.GetDouble(reader.GetOrdinal("POINTS_PERCENT"));
                         orderInfo.ItemSizeKey = reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY"));
+                        orderInfo.SizeName = reader.GetString(reader.GetOrdinal("SIZE_NAME"));
+                        orderInfo.SizeKitchenName = reader.GetString(reader.GetOrdinal("SIZE_KITCHEN_NAME"));
+                        orderInfo.SizeKitchenName = orderInfo.SizeKitchenName.Trim() == "" ? orderInfo.SizeName : orderInfo.SizeKitchenName;
                         LoadItemSizeBreakDownCategories(orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
                     }
                 }
