@@ -289,8 +289,6 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 
 		// Print the Order to the Kitchen.
 		PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"OnlineOrder");   //tab key to be changed
-		// Print the Receipts.
-		AutoPrintReceipts(TabWeb, PaymentTransaction);
 
         // Change the Order Status.
         TDBOnlineOrdering::SetOnlineOrderStatus(PaymentTransaction.DBTransaction, orderUniqueId);
@@ -398,6 +396,8 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                 if (WebKey != 0)
                 {
                     std::auto_ptr<TStringList>WebDetials(new TStringList);
+                    UnicodeString OrderType = "Order Type : " + TDBOnlineOrdering::GetChitTypeByOnlineOrderId(PaymentTransaction.DBTransaction, JobName);
+                    WebDetials->Add(OrderType);
                     TDBWebUtil::getWebOrderDetials(PaymentTransaction.DBTransaction, WebKey, *WebDetials.get());
                     Request->ExtraInfo->AddStrings(WebDetials.get());
 
@@ -446,142 +446,6 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
     }
 }
 // ---------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::AutoPrintReceipts(TMMTabType TabType, TPaymentTransaction &PaymentTransaction)
-{
-    try
-    {
-            bool OrdersLoadedFromTabs = false;
-            TMMContactInfo InvoiceOwnerInfo;
-            TPaymentTransaction InvoiceTransaction(PaymentTransaction.DBTransaction);
-
-            std::auto_ptr<TDeviceWeb>WebDevice(new TDeviceWeb());
-            WebDevice->NameToKey(PaymentTransaction.DBTransaction, "WebMate");
-            WebDevice->Load(PaymentTransaction.DBTransaction);
-
-            std::auto_ptr<TReqPrintJob>TempReceipt(new TReqPrintJob(WebDevice.get()));
-
-            std::set<__int64>SelectedTabs;
-            if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabHandheldCashAccount || TabType == TabCashAccount)
-            {
-                InvoiceTransaction.Orders->Assign(PaymentTransaction.Orders);
-                TDBOrder::GetTabKeysFromOrders(PaymentTransaction.Orders, SelectedTabs);
-                InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(InvoiceTransaction.DBTransaction, SelectedTabs);
-                InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-            }
-            else
-            {
-                TDBOrder::GetTabKeysFromOrders(PaymentTransaction.Orders, SelectedTabs);
-                TDBOrder::GetOrdersFromTabKeys(InvoiceTransaction.DBTransaction, InvoiceTransaction.Orders, SelectedTabs);
-                InvoiceTransaction.Money.CreditAvailable = TDBTab::GetTabsCredit(InvoiceTransaction.DBTransaction, SelectedTabs);
-                InvoiceTransaction.Money.Recalc(InvoiceTransaction);
-                OrdersLoadedFromTabs = true;
-            }
-
-            if (InvoiceTransaction.Money.TotalAdjustment != 0)
-            {
-                InvoiceTransaction.TotalAdjustment = InvoiceTransaction.Money.TotalAdjustment;
-                InvoiceTransaction.DiscountReason = InvoiceTransaction.TotalAdjustment < 0 ? "Discount " : "Surcharge";
-            }
-
-            InvoiceTransaction.TabCredit.clear();
-            for (std::set<__int64>::iterator pTabKey = SelectedTabs.begin(); pTabKey != SelectedTabs.end(); advance(pTabKey, 1))
-            {
-                int WebKey = TDBWebUtil::GetWebOrderKeyByTabKey(InvoiceTransaction.DBTransaction, *pTabKey);
-                if (WebKey != 0)
-                {
-                    std::auto_ptr<TStringList>WebDetials(new TStringList);
-                    TDBWebUtil::getWebOrderDetials(InvoiceTransaction.DBTransaction, WebKey, *WebDetials.get());
-                    TempReceipt->ExtraInfo->AddStrings(WebDetials.get());
-
-                    std::auto_ptr<TStringList>WebDeliveryDetials(new TStringList);
-                    std::auto_ptr<TStringList>WebComments(new TStringList);
-                    std::auto_ptr<TStringList>WebPaymentDetials(new TStringList);
-                    TDBWebUtil::getWebOrderData(PaymentTransaction.DBTransaction, WebDeliveryDetials.get(), WebPaymentDetials.get(), WebComments.get(), WebKey);
-
-                    TempReceipt->PaymentInfo->AddStrings(WebPaymentDetials.get());
-                    TempReceipt->OrderComments->AddStrings(WebComments.get());
-//                    UnicodeString _orderType = checkWebOrderType(PaymentTransaction.DBTransaction, WebKey);
-//                    if(_orderType == "Pickup")
-//                    {
-//                        WebDeliveryDetials->Clear(); //remove delivery info for pickup order in kitchen docket..
-//                    }
-                    TempReceipt->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
-                }
-
-                Currency TabCurrentCredit = TDBTab::GetTabCredit(InvoiceTransaction.DBTransaction, *pTabKey);
-                if (TabCurrentCredit != 0)
-                {
-                    InvoiceTransaction.Money.CreditAvailable += TabCurrentCredit;
-                    TTabCredit Credit = InvoiceTransaction.TabCredit[*pTabKey];
-                    Credit.CurrentCredit = TabCurrentCredit;
-                    InvoiceTransaction.TabCredit[*pTabKey] = Credit;
-                }
-            }
-
-            InvoiceTransaction.Membership.Assign(PaymentTransaction.Membership);
-
-            TempReceipt->JobType = pjReceiptReceipt;
-            TempReceipt->PaymentType = ptPreliminary;
-            TempReceipt->MiscData["PartyName"] = "";
-
-            if (TabType == TabInvoice)
-            {
-//                TempReceipt->JobType = pjReceiptInvoice;
-//                TempReceipt->PaymentType = ptFinal;
-//                std::set<__int64>::iterator pTabKey = SelectedTabs.begin();
-//                int InvoiceKey = TDBTab::GetTabInvoice(InvoiceTransaction.DBTransaction, *pTabKey);
-//                InvoiceTransaction.InvoiceNumber = Invoice->GetInvoiceNumber(InvoiceTransaction.DBTransaction, InvoiceKey);
-//                int ContactKey = Invoice->GetInvoiceOwner(InvoiceTransaction.DBTransaction, InvoiceKey);
-//
-//                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(InvoiceTransaction.DBTransaction, ContactKey, InvoiceOwnerInfo);
-//
-//                TempReceipt->ExtraInfo->Add("Name: " + InvoiceOwnerInfo.Name);
-//                TempReceipt->ExtraInfo->Add("Member No. " + InvoiceOwnerInfo.MembershipNumber);
-            }
-            else if (TabType == TabRoom)
-            {
-                std::set<__int64>::iterator pTabKey = SelectedTabs.begin();
-                int RoomNo = TDBRooms::GetRoomNumber(InvoiceTransaction.DBTransaction, *pTabKey);
-                TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
-                TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(InvoiceTransaction.DBTransaction, RoomNo));
-            }
-            else if (TabType == TabTableSeat)
-            {
-                std::set<__int64>::iterator pTabKey = SelectedTabs.begin();
-                int SeatKey = TDBTables::GetSeatKey(InvoiceTransaction.DBTransaction, *pTabKey);
-                int TableKey = TDBTables::GetTableKey(InvoiceTransaction.DBTransaction, SeatKey);
-                int TableNo = TDBTables::GetTableNo(InvoiceTransaction.DBTransaction, TableKey);
-                TempReceipt->MiscData["PartyName"] = TDBTables::GetPartyName(InvoiceTransaction.DBTransaction, TableNo);
-            }
-
-            // Print Invoice.
-            TempReceipt->Transaction = &InvoiceTransaction;
-            TempReceipt->SignReceipt = true;
-            TempReceipt->SenderType = devPC;
-            TempReceipt->Waiter = TDeviceRealTerminal::Instance().User.Name;
-
-            Receipt->GetPrintouts(InvoiceTransaction.DBTransaction, TempReceipt.get(), TComms::Instance().ReceiptPrinter);
-            TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-            if (TGlobalSettings::Instance().PrintSignatureReceiptsTwice)
-            {
-                TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
-            }
-            if (OrdersLoadedFromTabs)
-            {
-                while (InvoiceTransaction.Orders->Count != 0)
-                {
-                    delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
-                    InvoiceTransaction.Orders->Delete(0);
-                }
-            }
-
-    }
-    catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-    }
-}
-//--------------------------------------------------------------------------------------------------
 void TOnlineDocketPrinterThread::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
     if(inTransaction->WebOrderKey > 0)
