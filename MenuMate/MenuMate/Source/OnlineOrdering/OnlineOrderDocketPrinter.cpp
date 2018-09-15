@@ -357,6 +357,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                 Request->BarCodeData = PaymentTransaction.TimeKey;
                 Request->Transaction = PrintTransaction.get();
                 Request->JobType = pjKitchen;
+                UnicodeString OrderType = "Order Type : ";
                 if(PaymentTransaction.Orders->Count)
                 {
                     TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
@@ -392,12 +393,13 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                             PrintTransaction->Orders->Add(PaymentTransaction.Orders->Items[i]);
                         }
                     }
+                    OrderType = OrderType + (Order->OnlineChitType > 0 ? (Order->OnlineChitType == 1 ? "DineIn" : "TakeAway")  : "PickUp");
                 }
 
                 if (WebKey != 0)
                 {
                     std::auto_ptr<TStringList>WebDetials(new TStringList);
-                    UnicodeString OrderType = "Order Type : " + TDBOnlineOrdering::GetChitTypeByOnlineOrderId(PaymentTransaction.DBTransaction, JobName);
+
                     WebDetials->Add(OrderType);
                     TDBWebUtil::getWebOrderDetials(PaymentTransaction.DBTransaction, WebKey, *WebDetials.get());
                     Request->ExtraInfo->AddStrings(WebDetials.get());
@@ -456,14 +458,21 @@ void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* 
             std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
             if( ChefMateClientManager->ChefMateEnabled() )
             {
-                TMMContactInfo memberInfo  = TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                TMMContactInfo memberInfo;// = TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                UnicodeString paymentStatus;
                 if(inTransaction->Orders->Count)
                 {
                         TItemComplete *Order = (TItemComplete*)inTransaction->Orders->Items[0];
                         memberInfo.Name = Order->Email;
                         memberInfo.EMail = Order->Email;
+
+                        if(Order->OnlineChitType != 1)
+                        {
+                            TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                            paymentStatus = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                        }
                 }
-                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+//                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
                 CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
                 if( error == CMC_ERROR_FAILED )
                 {
