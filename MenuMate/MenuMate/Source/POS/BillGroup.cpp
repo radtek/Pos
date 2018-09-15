@@ -53,6 +53,7 @@
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
+#include "ManagerSyndCode.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -876,6 +877,8 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+        DownloadOnlineMember();
 	try
 	{
         TGlobalSettings::Instance().IsThorPay = true;
@@ -941,42 +944,6 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                        {
                           CheckLoyalty(ItemsToBill);
                        }
-                       //to test
-                       if(TGlobalSettings::Instance().EnableOnlineOrdering && ItemsToBill.size())
-                       {
-                            Database::TDBTransaction dBTransaction(DBControl);
-                            TDeviceRealTerminal::Instance().RegisterTransaction(dBTransaction);
-                            dBTransaction.StartTransaction();
-
-                            TMMContactInfo TempUserInfo;
-                            eMemberSource MemberSource;
-                            std::set<__int64>::iterator it = ItemsToBill.begin();
-                            int orderKey = 0;
-
-                            if (it != ItemsToBill.end())
-                                orderKey = *it;
-
-                            TempUserInfo.ContactKey = TDBOnlineOrdering::GetMemberKey(dBTransaction, orderKey);
-
-                            TempUserInfo.ContactKey = TDBContacts::GetOrCreateContact(dBTransaction, TempUserInfo.ContactKey, eMember, TempUserInfo);
-                            MessageBox(TempUserInfo.ContactKey,"TempUserInfo.ContactKey",MB_OK);
-                            dBTransaction.Commit();
-							TDBContacts::SetContactDetails(DBTransaction, TempUserInfo.ContactKey, eMember, TempUserInfo);
-
-
-                            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo, MemberSource);
-
-                            if (Result == lsAccepted)
-                            {
-                                ApplyMembership(DBTransaction, TempUserInfo);
-                            }
-                            else if (Result == lsAccountBlocked)
-                            {
-                                MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-                                    MB_OK + MB_ICONINFORMATION);
-                            }
-
-                        }
 
                        BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
 				}
@@ -1009,8 +976,8 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 //----------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 {
-     TStringList* logList = new TStringList();
-     logList->Add("-----------------------btnBillSelectedMouseClick() called-----------------------------");
+    TStringList* logList = new TStringList();
+    logList->Add("-----------------------btnBillSelectedMouseClick() called-----------------------------");
     TSaveLogs::RecordFiscalLogs(logList);
     logList->Clear();
 
@@ -1018,6 +985,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
     TMMTabType type;
     int noOfTabs = 0;
     int tabKey;
+
     if(CurrentDisplayMode == eTabs)
     {
         if(HasOnlineOrders)
@@ -1028,6 +996,8 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 return;
             }
         }
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+            DownloadOnlineMember();
     }
 	try
 	{
@@ -2799,6 +2769,8 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                             ItemSetAddItems(DBTransaction,SelectedTab);
                             CurrentSelectedTab = SelectedTab;
                             HasOnlineOrders = TDBTab::HasOnlineOrders(SelectedTab);
+
+                            // Get online member.
                         }
                     }
                 }
@@ -5933,3 +5905,60 @@ bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
     return retValue;
 }
 //---------------------------------------------------------------------------
+bool TfrmBillGroup::DownloadOnlineMember()
+{
+    try
+    {
+        UnicodeString emailId = GetMemberEmailIdForOrder();
+        GetLoyaltyMemberByEmail(emailId);
+    }
+    catch(Exception &ex)
+    {
+    }
+}
+//---------------------------------------------------------------------------
+UnicodeString TfrmBillGroup::GetMemberEmailIdForOrder()
+{
+    UnicodeString emailId = "";
+    if(CurrentDisplayMode == eTabs)
+    {
+        emailId = TDBTab::GetMemberEmail(CurrentSelectedTab);
+    }
+    else if(CurrentDisplayMode == eTables)
+    {
+        emailId = TDBTables::GetMemberEmail(CurrentTable);
+    }
+    return emailId;
+}
+//---------------------------------------------------------------------------
+void TfrmBillGroup::GetLoyaltyMemberByEmail(UnicodeString email)
+{
+    bool memberDownloadStatus = false;
+    bool MemberNotExist = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo contactInfo;
+        contactInfo.EMail = email;
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(dbTransaction);
+        if(TDeviceRealTerminal::Instance().ManagerMembership->GetMemberFromCloudForOO(contactInfo))
+        {
+            int contactKey = TDBContacts::GetContactByEmail(dbTransaction,email);
+            TDBContacts::GetContactDetails(dbTransaction, contactKey, contactInfo);
+            TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+            ManagerLoyaltyVoucher.DisplayMemberVouchers(dbTransaction,contactInfo);
+            Membership.Assign(contactInfo, emsManual);
+        }
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        dbTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+

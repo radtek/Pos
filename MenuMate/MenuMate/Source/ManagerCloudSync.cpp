@@ -96,6 +96,8 @@ bool TManagerCloudSync::SyncOnlineOrderingDetails()
         // cleanup
         delete _lmOperationDialogBox;
     }
+    else
+        MessageBox("Syndicate provided is not valid.\rOnline ordering can not be enabled at the moment.","",MB_OK);
     return result;
 }
 //----------------------------------------------------------------------------

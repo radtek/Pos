@@ -186,6 +186,9 @@ private:	// User declarations
     void UpdateTableForOnlineOrdering();
     void UpdateTabForOnlineOrdering();
     bool CheckTabCompatablityForOnlineOrdering(int tabKey);
+    bool DownloadOnlineMember();
+    UnicodeString GetMemberEmailIdForOrder();
+    void GetLoyaltyMemberByEmail(UnicodeString email);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

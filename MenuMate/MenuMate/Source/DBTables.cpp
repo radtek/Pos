@@ -1695,4 +1695,31 @@ bool TDBTables::HasOnlineOrders(int tableNumber)
     return retValue;
 }
 //---------------------------------------------------------------------------
-
+UnicodeString TDBTables::GetMemberEmail(int tableNumber)
+{
+    UnicodeString email = "";
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
+                           "ONLINE_ORDER_ID <> :ONLINE_ORDER_ID AND ONLINE_ORDER_ID IS NOT NULL";
+        query->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+        query->ParamByName("ONLINE_ORDER_ID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+               email = query->FieldByName("EMAIL")->AsString;
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       dbTransaction.Rollback();
+    }
+    return email;
+}
+//-----------------------------------------------------------------------------

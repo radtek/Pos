@@ -126,6 +126,7 @@ public:
     static void DeleteDelayedPatronCount(Database::TDBTransaction &dbTransaction, int _tabKey);
     static std::vector<TPatronType> GetDelayedPatronCount(Database::TDBTransaction &dbTransaction, int _tabKey);
     static bool HasOnlineOrders(int tabKey);
+    static UnicodeString GetMemberEmail(int tabKey);
 };
 
 #endif

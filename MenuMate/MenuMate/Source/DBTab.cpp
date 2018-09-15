@@ -2346,3 +2346,34 @@ bool TDBTab::HasOnlineOrders(int tabKey)
     return retValue;
 }
 //-----------------------------------------------------------------------------
+UnicodeString TDBTab::GetMemberEmail(int tabKey)
+{
+    UnicodeString email = "";
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
+                           "ONLINE_ORDER_ID <> :ONLINE_ORDER_ID AND ONLINE_ORDER_ID IS NOT NULL";
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("ONLINE_ORDER_ID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+           if(query->FieldByName("EMAIL")->AsString != NULL && query->FieldByName("EMAIL")->AsString != "")
+               email = query->FieldByName("EMAIL")->AsString;
+           else
+              MessageBox("Membership details for the order are missing.","Info",MB_OK+MB_ICONINFORMATION);
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       dbTransaction.Rollback();
+    }
+    return email;
+}
+//-----------------------------------------------------------------------------
