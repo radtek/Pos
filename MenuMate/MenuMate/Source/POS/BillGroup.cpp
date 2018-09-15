@@ -5807,37 +5807,6 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
         btnSplitPayment->Enabled    = false;
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
-
-//        if(TGlobalSettings::Instance().EnableOnlineOrdering)
-//        {
-//            Database::TDBTransaction DBTransaction(DBControl);
-//            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-//            DBTransaction.StartTransaction();
-//            TMMContactInfo TempMembershipInfo;
-//            TempMembershipInfo.Clear();
-//            eMemberSource MemberSource;
-//            TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempMembershipInfo,MemberSource);
-//            if (Result == lsAccepted)
-//            {
-//                TGlobalSettings::Instance().IsDiscountSelected = false;
-//                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
-//                {
-//                    GetLoyaltyMember(DBTransaction,TempMembershipInfo);
-//                    TDBTab::SetTabOrdersLoyalty(DBTransaction,CurrentSelectedTab, TempMembershipInfo.ContactKey);
-//                }
-//             }
-//             else if (Result == lsAccountBlocked)
-//             {
-//                MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked",
-//                    MB_OK + MB_ICONINFORMATION);
-//             }
-//             else if (Result == lsCancel)
-//             {
-//                RemoveMembership(DBTransaction);
-//             }
-//             DBTransaction.Commit();
-//             ShowReceipt();
-//        }
     }
 }
 //---------------------------------------------------------------------------

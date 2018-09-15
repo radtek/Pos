@@ -434,7 +434,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
                 command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
                 command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.MembershipProfileId); //to test loyalty key
-                command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.SizeName); //todo 
+                command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);  
                 command.Parameters.AddWithValue("@SETMENU_MASK", orderDbItem.SetMenuMask);
                 command.Parameters.AddWithValue("@SETMENU_GROUP", 0); //todo in future
                 command.Parameters.AddWithValue("@ITEM_CATEGORY", QueryUtilities.GetSubstring(orderDbItem.ItemCategory, 1, 40));
@@ -446,8 +446,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@DISCOUNT", 0);
                 command.Parameters.AddWithValue("@DISCOUNT_REASON", "");
                 command.Parameters.AddWithValue("@REDEEMED", 0.0f);
-                command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.Name);
-                command.Parameters.AddWithValue("@SIZE_KITCHEN_NAME", orderDbItem.SizeName);
+                command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.ItemKitchenName);
+                command.Parameters.AddWithValue("@SIZE_KITCHEN_NAME", orderDbItem.SizeKitchenName);
                 command.Parameters.AddWithValue("@COURSE_KITCHEN_NAME", orderDbItem.CourseKitchenName);
                 command.Parameters.AddWithValue("@POINTS_PERCENT", orderDbItem.PointsPercent);
                 command.Parameters.AddWithValue("@CATEGORY_KEY", orderDbItem.CategoryKey);
@@ -563,7 +563,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
                 command.Parameters.AddWithValue("@TABLE_NAME", "Table# " + tableNumber);
-                command.Parameters.AddWithValue("@PARTY_NAME", 0);
+                command.Parameters.AddWithValue("@PARTY_NAME", "");
                 command.Parameters.AddWithValue("@CIRCLE", 'F');
                 command.Parameters.AddWithValue("@TEMPORARY", 'F');
             }
@@ -619,7 +619,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 command.CommandText = @"SELECT a.ITEMSIZE_KEY, A.PLU, A.ITEM_KEY MENU_ITEM_KEY, a.POINTS_PERCENT,
                                             A.SETMENU_MASK, A.THIRDPARTYCODES_KEY,A.COST, CATEGORY_KEY, 
-                                            a.COST_GST_PERCENT, a.DEFAULT_PATRON_COUNT, a.GST_PERCENT  
+                                            a.COST_GST_PERCENT, a.DEFAULT_PATRON_COUNT, a.GST_PERCENT,a.SIZE_NAME,a.SIZE_KITCHEN_NAME   
                                         FROM ITEMSIZE a  
                                         WHERE A.ITEMSIZE_IDENTIFIER = @ITEMSIZE_IDENTIFIER ";
 
@@ -632,6 +632,28 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
 
             return command;
+        }
+
+        public FbCommand GetItemUniqueIdByItemSIzeUniqueID(FbConnection connection, FbTransaction transaction, string itemSizeId)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT ITEM.ITEM_IDENTIFIER 
+                                        FROM ITEM 
+                                        INNER JOIN ITEMSIZE ON ITEM.ITEM_KEY = ITEMSIZE.ITEM_KEY 
+                                        WHERE ITEMSIZE.ITEMSIZE_IDENTIFIER = @ITEMSIZE_IDENTIFIER ";
+
+                command.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", itemSizeId);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SetOrderBreakdownCategoryCmd " + e.Message, e);
+                throw;
+            }
+
+            return command;            
         }
 
         public FbCommand LoadBreakDownCategoriesCmd(FbConnection connection, FbTransaction transaction, int itemSizeKey)
@@ -680,6 +702,29 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetItemSizeTaxProfileKey " + e.Message, e);
+                throw;
+            }
+            return result;
+        }
+
+        public FbCommand GetSideParentOrderKey(FbConnection connection, FbTransaction transaction, long orderItemSizeId)
+        {
+            FbCommand result = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                result.CommandText = @"
+                                        SELECT a.ORDER_KEY
+                                        FROM ORDERS a 
+                                        WHERE a.ORDER_ITEM_SIZE_ID = @ORDER_ITEM_SIZE_ID
+                                        GROUP BY 1
+                                    ";
+
+                result.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderItemSizeId);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSideParentOrderKey " + e.Message, e);
                 throw;
             }
             return result;

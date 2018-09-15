@@ -30,6 +30,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public double PriceInclusive { get; set; }
         public double BasePrice { get; set; }
         public string SizeName { get; set; }
+        public string SizeKitchenName { get; set; }
         public int ContainerNumber { get; set; }
         public long TramsNo { get; set; }
         public long PLU { get; set; }
@@ -61,5 +62,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public string ItemUniqueId { get; set; }
         public string ItemSizeUniqueId { get; set; }
         public long ItemId { get; set; }
+        public string MasterContainer { get; set; }
     }
 }

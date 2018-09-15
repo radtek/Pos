@@ -1298,6 +1298,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostOnlineOrderInvoiceInfo(TSite
         wcfInfo->SiteId = siteOrderModel.SiteId;
         wcfInfo->TerminalName = siteOrderModel.TerminalName;
         wcfInfo->TotalAmount = siteOrderModel.TotalAmount;
+        wcfInfo->UserEmailId = siteOrderModel.UserEmailId;
 
         TXSDateTime* transactionDate = new TXSDateTime;
         transactionDate->AsDateTime = siteOrderModel.TransactionDate;

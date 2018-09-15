@@ -13,7 +13,6 @@ class TOnlineDocketPrinterThread : public TThread
         void PrepareDataAndPrintDocket(Database::TDBTransaction &dbTransaction );
         void ProcessSecurity(TPaymentTransaction &PaymentTransaction);
         void PrintKitchenDockets(TPaymentTransaction &PaymentTransaction, int WebKey, UnicodeString JobName,UnicodeString DeviceName);
-        void AutoPrintReceipts(TMMTabType TabType, TPaymentTransaction &PaymentTransaction);
         void sendWebOrderToChefmate(TPaymentTransaction* inTransaction);
         void completeOrderToChefMate(TPaymentTransaction* inTransaction);
     protected:

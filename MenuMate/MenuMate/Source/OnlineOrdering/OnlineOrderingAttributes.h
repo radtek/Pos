@@ -25,6 +25,7 @@ struct TItemSizeTaxProfileInfo
      double Rate;
      eTaxProfileType TaxProfileType;
      int Priority;
+     TItemSizeTaxProfileInfo(): ItemSizeTaxProfileId(0), Name(""), Description(""), Rate(0.0), TaxProfileType(eSalesTax), Priority(0) {}
 };
 
 struct  TItemSizeInf
@@ -42,6 +43,8 @@ struct  TItemSizeInf
      AnsiString ThirdPartyId;
      int DefaultPatronCount;
      std::list<TItemSizeTaxProfileInfo> ItemSizeTaxProfiles;
+     TItemSizeInf(): ItemSizeId(0), Name(""), Description(""), IsWeighted(false), Price(0.0), IsFree(false), PointsPercentage(0.0), PointsPrice(0),
+                     CanBePaidUsingPoints(false), OrderingUniqueId(""), ThirdPartyId(""), DefaultPatronCount(1) { }
 };
 
 struct  TItemSideInfo
@@ -54,6 +57,7 @@ struct  TItemSideInfo
      bool OnlyAsSide;
      int CompanyId;
      std::list<TItemSizeInf> ItemSizes;
+     TItemSideInfo(): SiteItemId(0), SideGroupId(0), Name(""), Description(""), ItemUniqueId(""), OnlyAsSide(false), CompanyId(0) {}
 };
 
 struct  TSideGroupInfo
@@ -64,6 +68,7 @@ struct  TSideGroupInfo
      int MaxSelect;
      bool AllowSkip;
      std::list<TItemSideInfo> ItemSides;
+     TSideGroupInfo(): SideGroupId(0), Name(""), Description(""), MaxSelect(0), AllowSkip(false) {}
 };
 
 struct  TSiteItemInfo
@@ -76,6 +81,7 @@ struct  TSiteItemInfo
      int CompanyId;
      std::list<TItemSizeInf> ItemSizes;
      std::list<TSideGroupInfo> SideGroup;
+     TSiteItemInfo():  SiteItemId(0), Name(""),  Description(""), ItemUniqueId(""),  OnlyAsSide(false), CompanyId(0) {}
 };
 
 struct  TCourseInfo
@@ -86,6 +92,7 @@ struct  TCourseInfo
      AnsiString ServingCourseName;
      AnsiString ServingCourseDescription;
      std::list<TSiteItemInfo> Items;
+     TCourseInfo(): CourseId(0), Name(""), Description(""), ServingCourseName(""), ServingCourseDescription("") {}
 };
 
 struct TMenuConsumableInfo
@@ -96,6 +103,7 @@ struct TMenuConsumableInfo
      eMenuType MenuType;
      bool IsPalmable;
      std::list<TCourseInfo> SiteCourses;
+     TMenuConsumableInfo(): MenuId(0), Name(""),  Description(""), MenuType(Food), IsPalmable(true) {}
 };
 
 struct TSiteMenuInfo
@@ -103,6 +111,7 @@ struct TSiteMenuInfo
      int CompanyId;
      int SiteId;
      std::list<TMenuConsumableInfo> MenuConsumables;
+     TSiteMenuInfo(): CompanyId(0), SiteId(0) {}
 };
 
 //Tax Setting Models
@@ -110,12 +119,14 @@ struct TTaxSettingsInfo
 {
     eSiteSettingType SettingType;
     AnsiString Value;
+    TTaxSettingsInfo(): SettingType(PickUp), Value(0) {}
 };
 
 struct TSiteTaxSettingsInfo
 {
     int SiteId;
     std::list<TTaxSettingsInfo> SiteTaxSettings;
+    TSiteTaxSettingsInfo(): SiteId(0) {}
 };
 
 //Order Models
@@ -133,6 +144,8 @@ struct TOrderItemSizeTaxProfileModel
     double Rate;
     int Priority;
     int CompanyId;
+    TOrderItemSizeTaxProfileModel(): OrderItemSizeTaxProfileId(0), OrderItemSizeId(0), TaxProfileType(eSalesTax), Percentage(0.0), Value(0.0),
+                                     ItemSizeTaxProfileId(0), Name(""), Description(""), Rate(0.0), Priority(0), CompanyId(0) {}
 };
 
 struct TOrderItemSizeDiscountModel
@@ -142,6 +155,7 @@ struct TOrderItemSizeDiscountModel
     AnsiString Name;
     double Value;
     AnsiString Code;
+    TOrderItemSizeDiscountModel(): OrderItemSizeDiscountId(0), OrderItemSizeId(0), Name(""),  Value(0.0), Code("") {}
 };
 
 struct TOrderItemSizeModel
@@ -159,6 +173,8 @@ struct TOrderItemSizeModel
     AnsiString ItemSizeUniqueId;
     std::list<TOrderItemSizeDiscountModel> OrderItemSizeDiscounts;
     std::list<TOrderItemSizeTaxProfileModel> OrderItemSizeTaxProfiles;
+    TOrderItemSizeModel(): OrderItemSizeId(0), OrderItemId(0), Name(""), ItemSizeId(0), Quantity(0.0), MenuPrice(0.0), Price(0.0), PriceInclusive(0.0),
+                            BasePrice(0.0), ReferenceOrderItemSizeId(0), ItemSizeUniqueId("") {}
 };
 
 struct TOrderItemModel
@@ -171,6 +187,7 @@ struct TOrderItemModel
 	double Price;
     AnsiString ItemUniqueId;
 	std::list<TOrderItemSizeModel> OrderItemSizes;
+    TOrderItemModel(): OrderItemId(0), OrderId(0), Name(""), Description(""), SiteItemId(0), Price(0.0), ItemUniqueId("") {}
 };
 
 struct TInvoiceTransactionModel
@@ -186,6 +203,8 @@ struct TInvoiceTransactionModel
 	 double Rounding;
 	 int UserReferenceId;
 	 eUserType UserType;
+     TInvoiceTransactionModel():InvoiceTransactionId(0), InvoiceNumber(""), TotalSaleAmount(0.0), TransactionDate(Now()), SiteId(0), TerminalName(""),
+                                ReceiptPath(""), Rounding(0.0),UserReferenceId(0), UserType(Member) {}
 };
 
 struct TOrderInvoiceTransactionModel
@@ -194,6 +213,7 @@ struct TOrderInvoiceTransactionModel
     int  OrderId;
     int InvoiceTransactionId;
     TInvoiceTransactionModel InvoiceTransaction;
+    TOrderInvoiceTransactionModel():OrderInvoiceTransactionId(0), OrderId(0), InvoiceTransactionId(0){}
 };
 
 struct TSiteOrderModel
@@ -218,6 +238,9 @@ struct TSiteOrderModel
      AnsiString UserEmailId;
      AnsiString MemberGuid;
      TOrderInvoiceTransactionModel OrderInvoiceTransaction;
+     TSiteOrderModel():CompanyId(0), SiteId(0), OrderId(0), Location(""), TotalAmount(0.0), ContainerNumber(0), ContainerType(OnlineTab), ContainerName(""),
+                       OrderGuid(""), UserReferenceId(0), UserType(Member), TerminalName(""), TransactionDate(Now()), OrderType(eNormalOrder),
+                       TransactionType(PickUp), IsConfirmed(true), UserEmailId(""), MemberGuid("") {}
 };
 
 #endif
