@@ -465,29 +465,3 @@ int TDBOnlineOrdering::GetMemberKey(Database::TDBTransaction &dbTransaction, int
     return memberKey;
 }
 //----------------------------------------------------------------------------
-UnicodeString TDBOnlineOrdering::GetChitTypeByOnlineOrderId(Database::TDBTransaction &dbTransaction, UnicodeString onlineOrderId)
-{
-    UnicodeString orderType;
-    try
-    {
-        std::list<TTaxSettingsInfo> SiteTaxSettings;
-        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
-        ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT A.ONLINE_CHIT_TYPE FROM ORDERS a "
-                                        "WHERE a.ONLINE_ORDER_ID = :ONLINE_ORDER_ID "
-                                        "GROUP BY 1 ";
-        ibInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = onlineOrderId;
-        ibInternalQuery->ExecQuery();
-
-        if(ibInternalQuery->RecordCount)
-            orderType = (ibInternalQuery->FieldByName("ONLINE_CHIT_TYPE")->AsInteger > 0 ?
-                        (ibInternalQuery->FieldByName("ONLINE_CHIT_TYPE")->AsInteger == 1 ? "DineIn" : "TakeAway")  : "PickUp");
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return orderType;
-}
-//------------------------------------------------------------------------------------------

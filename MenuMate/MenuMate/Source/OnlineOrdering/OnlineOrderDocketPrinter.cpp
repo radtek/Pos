@@ -357,6 +357,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                 Request->BarCodeData = PaymentTransaction.TimeKey;
                 Request->Transaction = PrintTransaction.get();
                 Request->JobType = pjKitchen;
+                UnicodeString OrderType = "Order Type : ";
                 if(PaymentTransaction.Orders->Count)
                 {
                     TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
@@ -392,12 +393,13 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                             PrintTransaction->Orders->Add(PaymentTransaction.Orders->Items[i]);
                         }
                     }
+                    OrderType = OrderType + (Order->OnlineChitType > 0 ? (Order->OnlineChitType == 1 ? "DineIn" : "TakeAway")  : "PickUp");
                 }
 
                 if (WebKey != 0)
                 {
                     std::auto_ptr<TStringList>WebDetials(new TStringList);
-                    UnicodeString OrderType = "Order Type : " + TDBOnlineOrdering::GetChitTypeByOnlineOrderId(PaymentTransaction.DBTransaction, JobName);
+
                     WebDetials->Add(OrderType);
                     TDBWebUtil::getWebOrderDetials(PaymentTransaction.DBTransaction, WebKey, *WebDetials.get());
                     Request->ExtraInfo->AddStrings(WebDetials.get());
