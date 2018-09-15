@@ -393,6 +393,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                         }
                     }
                 }
+
                 if (WebKey != 0)
                 {
                     std::auto_ptr<TStringList>WebDetials(new TStringList);
@@ -429,7 +430,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
                         //throw Exception("Printing Some Orders Failed, Please Check Printer.");
                     }
                     ManagerDockets->Archive(Request.get());
-                    completeOrderToChefMate(PrintTransaction.get());
+                    SendOnlineOrderToChefmate(PrintTransaction.get());
                 }
             }
         }
@@ -446,35 +447,33 @@ void TOnlineDocketPrinterThread::PrintKitchenDockets(TPaymentTransaction &Paymen
     }
 }
 // ---------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::completeOrderToChefMate(TPaymentTransaction* inTransaction)
-{
-    if(inTransaction->WebOrderKey > 0)
-    {
-        sendWebOrderToChefmate(inTransaction);
-    }
-}
-//-----------------------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::sendWebOrderToChefmate(TPaymentTransaction* inTransaction)
+void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* inTransaction)
 {
     try
     {
-        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-        if( ChefMateClientManager->ChefMateEnabled() )
+        if(inTransaction->WebOrderKey > 0)
         {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
-            UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
-            CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
-            if( error == CMC_ERROR_FAILED )
+            std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+            if( ChefMateClientManager->ChefMateEnabled() )
             {
-                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
+                TMMContactInfo memberInfo  = TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                if(inTransaction->Orders->Count)
+                {
+                        TItemComplete *Order = (TItemComplete*)inTransaction->Orders->Items[0];
+                        memberInfo.Name = Order->Email;
+                        memberInfo.EMail = Order->Email;
+                }
+                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
+                if( error == CMC_ERROR_FAILED )
+                {
+                    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate Online Ordering failed to send an complete order to Chefmate");
+                }
             }
-            DBTransaction.Commit();
         }
     }
     catch(Exception & E)
     {
-       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate Online Ordering failed to Open Chefmate Interface");
     }
 }
