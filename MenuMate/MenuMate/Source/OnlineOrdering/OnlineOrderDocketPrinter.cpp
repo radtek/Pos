@@ -456,14 +456,21 @@ void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* 
             std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
             if( ChefMateClientManager->ChefMateEnabled() )
             {
-                TMMContactInfo memberInfo  = TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                TMMContactInfo memberInfo;// = TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                UnicodeString paymentStatus;
                 if(inTransaction->Orders->Count)
                 {
                         TItemComplete *Order = (TItemComplete*)inTransaction->Orders->Items[0];
                         memberInfo.Name = Order->Email;
                         memberInfo.EMail = Order->Email;
+
+                        if(Order->OnlineChitType != 1)
+                        {
+                            TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                            paymentStatus = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                        }
                 }
-                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+//                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
                 CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
                 if( error == CMC_ERROR_FAILED )
                 {

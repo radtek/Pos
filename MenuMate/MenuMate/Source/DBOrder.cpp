@@ -4229,6 +4229,7 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
         Order->SiteId = OrderTable->FieldByName("SITE_ID")->AsInteger;
 		Order->Email = (AnsiString(OrderTable->FieldByName("EMAIL")->AsString));
         Order->ContactsKey = OrderTable->FieldByName("CONTACTS_KEY")->AsInteger;
+        Order->OnlineChitType = OrderTable->FieldByName("ONLINE_CHIT_TYPE")->AsInteger;
  	}
 }
 
