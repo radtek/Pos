@@ -203,16 +203,19 @@ namespace MenumateServices.WCFServices
 
         public void GetOrdersFromWeb(string inSyndicateCode, string orders)
         {
-           // LoyaltySite.Instance.InsertOrdersToDB(orders);
-            List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
-            siteOrderViewModel = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
-            var requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);//just to test json
-            bool retVal = InsertOrdersToDB(ref siteOrderViewModel);
-            //if (retVal)
-            //    siteOrderViewModel.IsConfirmed = true;
-            //else
-            //    siteOrderViewModel.IsConfirmed = false;
-            LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
+            try
+            {
+                List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
+                siteOrderViewModel = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
+                var requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);//just to test json
+                bool retVal = InsertOrdersToDB(ref siteOrderViewModel);
+                LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                throw;
+            }
         }
 
         private bool InsertOrdersToDB(ref List<ApiSiteOrderViewModel> siteOrderViewModel)

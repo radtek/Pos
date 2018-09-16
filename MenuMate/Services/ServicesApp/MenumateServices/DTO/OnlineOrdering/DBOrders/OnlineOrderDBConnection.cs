@@ -111,9 +111,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             ServiceInfo serviceInfo = ServiceInfo.Instance;
 
            // inDatabaseURI = Path.Combine(settings_.MenumateLocation, settings_.DatabaseName);// ; "C:\\Databases\\DougnutKing\\MENUMATE.FDB";// Path.Combine(serviceInfo.WebmateDatabaseLocation(), settings_.DatabaseName);
-            inDataSource =  (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "InterbaseIP", null); //;////serviceInfo.WebmateDatabaseServerPath();
-        //    inDatabaseURI = "C:\\Databases\\DougnutKing\\MENUMATE.FDB";
-            inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
+            //inDataSource = "localhost1";// (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "InterbaseIP", null); //;////serviceInfo.WebmateDatabaseServerPath();
+          //  inDatabaseURI = "C:\\Databases\\DougnutKing\\MENUMATE.FDB";
+         //   inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
             //if (InstallPath != null)
             //{
             //    // Do stuff
@@ -127,7 +127,42 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             //{
             //    inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
             //}
+
+            List<string> dbDeatils = new List<string>();
+            dbDeatils = GetDetailsFromFile();
+            for (int i = 0; i < dbDeatils.Count; i++)
+            {
+                if (i == 0)
+                    inDataSource = dbDeatils[i];
+                else if (i == 1)
+                    inDatabaseURI = dbDeatils[i];
+            }
             
+        }
+
+        private static List<string> GetDetailsFromFile()
+        {
+            List<string> list = new List<string>();
+            string path = System.IO.Path.GetDirectoryName(
+                      System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+
+            string location = Path.Combine(path, "MenumateDBPath\\DBPathAndIP.txt");
+            if (location.Contains(@"file:\"))
+            {
+                location = location.Replace(@"file:\", "");
+            }
+            bool exists = File.Exists(location);
+            using (StreamReader r = new StreamReader(location))
+            {
+                // Use while != null pattern for loopOnlineOrderDBConnection
+                string line;
+                while ((line = r.ReadLine()) != null)
+                {
+                    list.Add(line);
+                }
+            }
+            return list;
         }
 
         #endregion
