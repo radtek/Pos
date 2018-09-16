@@ -1878,8 +1878,6 @@ void TfrmMain::WriteDBPathAndIPToFile()
     AnsiString fileName =  DirectoryName + "/" + "DBPathAndIP.txt";
 
     std::auto_ptr <TStringList> logList(new TStringList);
-    MessageBox(TGlobalSettings::Instance().InterbaseIP,"TGlobalSettings::Instance().InterbaseIP",MB_OK);
-    MessageBox(TGlobalSettings::Instance().DatabasePath,"TGlobalSettings::Instance().DatabasePath",MB_OK);
     logList->Add(TGlobalSettings::Instance().InterbaseIP);
     logList->Add(TGlobalSettings::Instance().DatabasePath);
     logList->SaveToFile(fileName );

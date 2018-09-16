@@ -286,9 +286,8 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Text =    "SELECT a.VARIABLES_KEY, COALESCE(a.INTEGER_VAL,0) INTEGER_VAL, a.NUMERIC_VAL "
                                         "FROM VARSPROFILE a "
-                                        "WHERE a.VARIABLES_KEY IN (8000,8001,8002,8003, 8005,8007) AND PROFILE_KEY = :PROFILE_KEY "//8004,for service charge
+                                        "WHERE a.VARIABLES_KEY IN (8000,8001,8002,8003, 8005,8007) "//8004,for service charge
                                         "ORDER BY a.VARIABLES_KEY ";
-        ibInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
         ibInternalQuery->ExecQuery();
 
         while (!ibInternalQuery->Eof)
