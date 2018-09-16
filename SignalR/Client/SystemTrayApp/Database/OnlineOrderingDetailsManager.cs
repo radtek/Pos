@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace OracleTCPServer
+namespace OnlineOrdersManager
 {
     public class OnlineOrderingDetailsManager
     {

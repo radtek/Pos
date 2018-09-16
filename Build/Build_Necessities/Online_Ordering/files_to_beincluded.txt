@@ -1,0 +1,9 @@
+Microsoft.AspNet.SignalR.Client     (DLL file)
+OnlineOrderingApp                   (application file)
+OnlineOrderingApp.exe               (config file)
+NewtonSoft.Json                     (DLL file)
+
+
+
+
+**********Include these files into static files folder*****************

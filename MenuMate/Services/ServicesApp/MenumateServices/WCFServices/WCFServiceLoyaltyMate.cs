@@ -214,7 +214,6 @@ namespace MenumateServices.WCFServices
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
-                throw;
             }
         }
 

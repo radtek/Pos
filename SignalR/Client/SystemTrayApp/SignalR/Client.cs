@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.AspNet.SignalR.Client;
 using SystemTrayApp.OnlineOrdering;
-using OracleTCPServer;
+using OnlineOrdersManager;
 
 namespace SystemTrayApp.SignalR
 {
@@ -120,8 +120,9 @@ namespace SystemTrayApp.SignalR
                 string siteCode = "";
                 string syndicateCode = "";
                 logsList.Add("Received Order from LM at                             " + DateTime.Now.ToString("hh:mm:ss tt"));
-                
+                logsList.Add("Order Received is                                     " + order);
                 GetSiteDetails(ref siteCode, ref syndicateCode);
+                logsList.Add("siteCode is      " + siteCode + "     and syndicateCode is       " + syndicateCode);
                 loyaltyMateClient.GetOrdersFromWeb(syndicateCode,order);
             }
             catch (Exception exception)
