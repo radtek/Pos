@@ -501,6 +501,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
        {
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
        }
+       WriteDBPathAndIPToFile();
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -1869,3 +1870,18 @@ bool TfrmMain::SyncOnlineOrderingDetails()
     return result;
 }
 //-----------------------------------------------------------------------------
+void TfrmMain::WriteDBPathAndIPToFile()
+{
+    AnsiString DirectoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services/MenumateDBPath";
+    if (!DirectoryExists(DirectoryName))
+        CreateDir(DirectoryName);
+    AnsiString fileName =  DirectoryName + "/" + "DBPathAndIP.txt";
+
+    std::auto_ptr <TStringList> logList(new TStringList);
+    MessageBox(TGlobalSettings::Instance().InterbaseIP,"TGlobalSettings::Instance().InterbaseIP",MB_OK);
+    MessageBox(TGlobalSettings::Instance().DatabasePath,"TGlobalSettings::Instance().DatabasePath",MB_OK);
+    logList->Add(TGlobalSettings::Instance().InterbaseIP);
+    logList->Add(TGlobalSettings::Instance().DatabasePath);
+    logList->SaveToFile(fileName );
+}
+////------------------------------------------------------------------------------------------

@@ -140,7 +140,7 @@ private:	// User declarations
     void DisableOnlineOrdering();
     void UnloadSignalR();
     bool SyncOnlineOrderingDetails();
-
+    void WriteDBPathAndIPToFile();
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);
     void __fastcall IdleHandler(TObject *Sender, bool &Done);
