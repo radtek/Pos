@@ -490,7 +490,13 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Left = 310
       Top = 117
       Width = 266
-      Height = 21
+      Height = 24
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 21
       OnChange = comboOutletsChange
     end
@@ -498,7 +504,13 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Left = 16
       Top = 175
       Width = 266
-      Height = 21
+      Height = 24
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 22
       OnChange = comboServicesChange
     end

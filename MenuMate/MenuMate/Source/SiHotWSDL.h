@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (4/07/2018 1:04:11 a.m. - - $Rev: 25127 $)
+// (17/09/2018 5:15:22 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -865,9 +865,9 @@ __published:
 __interface INTERFACE_UUID("{D882000E-B7D1-AD60-7B83-61CBF026BB1B}") ISiHotIntegrationWebService : public IInvokable
 {
 public:
-  virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest, const int timeOut, const UnicodeString apiKey) = 0; 
-  virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails, const int timeOut, const UnicodeString apiKey) = 0; 
-  virtual bool            ValidateCreadentials(const UnicodeString address, const int port, const int transno) = 0; 
+  virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest, const int timeOut, const UnicodeString apiKey) = 0;
+  virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails, const int timeOut, const UnicodeString apiKey) = 0;
+  virtual bool            ValidateCreadentials(const UnicodeString address, const int port, const int transno) = 0;
 };
 typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebService;
 

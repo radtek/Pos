@@ -229,6 +229,19 @@ object frmPhoenixRoom: TfrmPhoenixRoom
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnCancelClick
       end
+      object btnSpaces: TTouchBtn
+        Left = 8
+        Top = 154
+        Width = 119
+        Height = 65
+        ParentColor = True
+        Caption = 'Spaces'
+        ButtonColor = clNavy
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = btnSpacesMouseClick
+      end
     end
     object Panel19: TPanel
       Left = 1006

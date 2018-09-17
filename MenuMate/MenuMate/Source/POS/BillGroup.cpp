@@ -45,12 +45,13 @@
 #include "MMInvoicePaymentSystem.h"
 #include "ManagerDelayedPayment.h"
 #include "SelectSaveOption.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "MallExportOtherDetailsUpdate.h"
 #include "ManagerLoyaltyVoucher.h"
 #include "PMSHelper.h"
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
+#include "DBTab.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -226,10 +227,10 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
                             case TabMember:
                                     tbtnSelectZone->Caption = "Members Tab";
                                     break;
-                            case TabClipp:
-                                    tbtnSelectZone->Caption = "Clipp Tabs";
-                                    ClipOptionSelected=true;
-                                    break;
+//                            case TabClipp:
+//                                    tbtnSelectZone->Caption = "Clipp Tabs";
+//                                    ClipOptionSelected=true;
+//                                    break;
                     }
                     break;
                 case eRooms:
@@ -1136,27 +1137,27 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 
                           //check whether selected table's selected guest is linked to clipp tab
                          TMMTabType allSelectedTabType = TDBTab::GetLinkedTableAndClipTab(DBTransaction, tabKey, true);
-                         if(allSelectedTabType == TabClipp)
-                         {
-                            CurrentSelectedTab = tabKey;
-                         }
+//                         if(allSelectedTabType == TabClipp)
+//                         {
+//                            CurrentSelectedTab = tabKey;
+//                         }
 
                         //All itms are being billed on clipp so close Tab
-                        if( (CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp) || (sendCloseTabMessage && allSelectedTabType == TabClipp ) ) && (sendCloseTabMessage))
-                        {
-                            int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, CurrentSelectedTab);
-                            TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
-                            TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = true;
-                            TMMProcessingState State(Screen->ActiveForm, "Processing Transaction With Clipp Please Wait...", "Processing Clipp Transaction");
-                            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-                            TManagerClippIntegration::Instance()->CloseTab(CurrentSelectedTab);
-                            TManagerClippIntegration::Instance()->OnCloseTabTerminate = &(CloseTerminateCallBack);
-                        }
-                        else
-                        {
+//                        if( (CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp) || (sendCloseTabMessage && allSelectedTabType == TabClipp ) ) && (sendCloseTabMessage))
+//                        {
+//                            int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, CurrentSelectedTab);
+//                            TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
+//                            TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = true;
+//                            TMMProcessingState State(Screen->ActiveForm, "Processing Transaction With Clipp Please Wait...", "Processing Clipp Transaction");
+//                            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+//                            TManagerClippIntegration::Instance()->CloseTab(CurrentSelectedTab);
+//                            TManagerClippIntegration::Instance()->OnCloseTabTerminate = &(CloseTerminateCallBack);
+//                        }
+//                        else
+//                        {
 
                               BillItems(DBTransaction, SelectedItemKeys, transactionType );
-                        }
+//                        }
 
 					}
 					else
@@ -1175,11 +1176,11 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                     TSaveLogs::RecordFiscalLogs(logList);
                     logList->Clear();
 
-                    if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (!sendCloseTabMessage) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+                    if((/*CurrentTabType == TabClipp || */(CurrentTabType == TabTableSeat && type == TabClipp)) && (!sendCloseTabMessage) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
                     {
                         //send tab details if some items are selected for bill
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+                        //TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+                        //sendClippTabKey->SendTabDetails(CurrentSelectedTab);
                     }
                     ResetForm();
                     if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
@@ -1295,7 +1296,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 					MessageBox("Nothing to Bill.", "Info", MB_OK + MB_ICONINFORMATION);
 				}
                 //check whether selected table's selected guest is linked to clipp tab
-                TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
+                //TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
 
 				DBTransaction.Commit();
                 logList->Clear();
@@ -1310,18 +1311,18 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                     RemoveLoyaltymateMembership(SplitItemKeySet);
                 }
                 //If tab is clipp tab than send the detail
-                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isClippTabFullyPaid) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
-                {
-                    //close clipp full payment done by partial button
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->CloseTab(CurrentSelectedTab);
-                }
-                else if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
-                {
-                    //Send tab Details if payment is done partially
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                }
+//                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isClippTabFullyPaid) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+//                {
+//                    //close clipp full payment done by partial button
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->CloseTab(CurrentSelectedTab);
+//                }
+//                else if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+//                {
+//                    //Send tab Details if payment is done partially
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                }
 
                 ResetForm();
 			}
@@ -1433,17 +1434,17 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
                 logList->Clear();
 
                 //If tab is clipp tab than send the detail
-                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
-                {
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(BackupCurrentSelectedTab);
-                }
-                 //If tab is clipp tab than send the detail
-                else if((CurrentTabType == TabClipp ||  (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (!TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
-                {
-                    TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
-                    closeClippTab->CloseTab(BackupCurrentSelectedTab);
-                }
+//                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
+//                {
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(BackupCurrentSelectedTab);
+//                }
+//                 //If tab is clipp tab than send the detail
+//                else if((CurrentTabType == TabClipp ||  (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (!TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
+//                {
+//                    TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
+//                    closeClippTab->CloseTab(BackupCurrentSelectedTab);
+//                }
 
 				DBTransaction.StartTransaction();
 				// Now reslect all the remaining items.
@@ -1584,12 +1585,12 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 		}
 
-        if(CurrentTabType== TabClipp )
-        {
-          Transfer->ClipPresentInFromPanel =true;
-          Transfer->ClipPresentInToPanel =false;
-
-        }
+//        if(CurrentTabType== TabClipp )
+//        {
+//          Transfer->ClipPresentInFromPanel =true;
+//          Transfer->ClipPresentInToPanel =false;
+//
+//        }
 		Transfer->TempSourceUserInfo = TempUserInfo;
         Database::TDBTransaction DBTransaction(DBControl);
         Transfer->DBTransaction = &DBTransaction;
@@ -1780,11 +1781,11 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 					{
 						TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), TabTransferTo, TDeviceRealTerminal::Instance().User.ContactKey, source_key);
                        // if items are moved to guest which is  linked to clip tab then update the clip tab
-                        if(TDBTab::GetLinkedTableAndClipTab(DBTransaction,TabTransferTo,true)  )
-                        {
-                           TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
-                           updateClippTab->SendTabDetails(TabTransferTo);
-                        }
+//                        if(TDBTab::GetLinkedTableAndClipTab(DBTransaction,TabTransferTo,true)  )
+//                        {
+//                           TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
+//                           updateClippTab->SendTabDetails(TabTransferTo);
+//                        }
             		}
 					else
 					{
@@ -1808,11 +1809,11 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 
 				DBTransaction.Commit();
                 //Send tab details back if selected tab is clipp tab.
-                if(CurrentTabType == TabClipp)
-                {
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                }
+//                if(CurrentTabType == TabClipp)
+//                {
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                }
 				ShowReceipt();
 			}
 			else
@@ -1908,11 +1909,11 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 
             //Send tab details back if selected tab is clipp tab.
-            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
-            {
-                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-            }
+//            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
+//            {
+//                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//            }
 			ShowReceipt();
             EnableButtons();
 		}
@@ -1995,11 +1996,11 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 					DBTransaction.Commit();
 
                     //Send tab details back if selected tab is clipp tab.
-                     if(CurrentTabType == TabClipp|| (CurrentTabType == TabTableSeat && type == TabClipp))
-                    {
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                     if(CurrentTabType == TabClipp|| (CurrentTabType == TabTableSeat && type == TabClipp))
+//                    {
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
 					ShowReceipt();
 				}
 				else
@@ -2194,11 +2195,11 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                             //check whether selected table's selected guest is linked to clipp tab
                             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
                             //Send tab details back if selected tab is clipp tab.
-                            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
-                            {
-                                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                            }
+//                            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
+//                            {
+//                                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                            }
                          }
                          else if (Result == lsAccountBlocked)
                          {
@@ -2315,16 +2316,16 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                             applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders) &&
                                                    SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
                         }
-                        if(CurrentTabType == TabClipp && SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
-                          && applyDiscount)
-                        {
-                           isSCDAppliedOnClipp = true;
-                        }
-                        if(CurrentTabType == TabClipp && SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
-                          && applyDiscount)
-                        {
-                           isPWDAppliedOnClipp = true;
-                        }
+//                        if(CurrentTabType == TabClipp && SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+//                          && applyDiscount)
+//                        {
+//                           isSCDAppliedOnClipp = true;
+//                        }
+//                        if(CurrentTabType == TabClipp && SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+//                          && applyDiscount)
+//                        {
+//                           isPWDAppliedOnClipp = true;
+//                        }
                         /*if(applyDiscount)
                         {
                             ManagerDiscount->ClearDiscount(PaymentTransaction.Orders, CurrentDiscount);
@@ -2358,8 +2359,8 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                     if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
                     {
                         //send tab details if discount is applied
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+                        //TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+                        //sendClippTabKey->SendTabDetails(CurrentSelectedTab);
                     }
                 }
 			}
@@ -2471,11 +2472,11 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                            MessageBox("No discount for this voucher has been setup in Menumate.", "Warning", MB_ICONWARNING + MB_OK);
                         }
                     }
-                    if(CurrentTabType == TabClipp)
-                    {
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                    if(CurrentTabType == TabClipp)
+//                    {
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
 
                 }
             }
@@ -2757,10 +2758,10 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
            RemoveMembershipDiscounts(DBTransaction);
         }
 
-         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-        {
-            CheckingClipItemsInSelectedList(DBTransaction);
-        }
+//         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//        {
+//            CheckingClipItemsInSelectedList(DBTransaction);
+//        }
         DBTransaction.Commit();
         if(!TGlobalSettings::Instance().IsThorlinkSelected)
         {
@@ -2869,13 +2870,13 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
     }
 	ShowReceipt();
 
-    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        Database::TDBTransaction DBTransaction(DBControl);
-        DBTransaction.StartTransaction();
-        CheckingClipItemsInSelectedList(DBTransaction);
-        DBTransaction.Commit();
-    }
+//    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//    {
+//        Database::TDBTransaction DBTransaction(DBControl);
+//        DBTransaction.StartTransaction();
+//        CheckingClipItemsInSelectedList(DBTransaction);
+//        DBTransaction.Commit();
+//    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
@@ -3056,13 +3057,13 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
 	ShowReceipt();
 
 
-    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        Database::TDBTransaction DBTransaction(DBControl);
-        DBTransaction.StartTransaction();
-        CheckingClipItemsInSelectedList(DBTransaction);
-        DBTransaction.Commit();
-    }
+//    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//    {
+//        Database::TDBTransaction DBTransaction(DBControl);
+//        DBTransaction.StartTransaction();
+//        CheckingClipItemsInSelectedList(DBTransaction);
+//        DBTransaction.Commit();
+//    }
 }
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SplitItemOnClick(int itemSelected)
@@ -3335,11 +3336,11 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 			}
 
             //check whether selected table's selected guest is linked to clipp tab
-            TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
-            if(CurrentTabType == TabTableSeat && type == TabClipp)
-            {
-                tbtnMove->Enabled = false;
-            }
+//            TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
+//            if(CurrentTabType == TabTableSeat && type == TabClipp)
+//            {
+//                tbtnMove->Enabled = false;
+//            }
 		}
 	}
 	else // Clear Display.
@@ -3578,22 +3579,22 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
             case TabWeb:
                     lbePartyName->Caption = "Web Orders";
                     break;
-            case TabClipp:
-                    lbePartyName->Caption = "Clipp Tabs";
-                    break;
+//            case TabClipp:
+//                    lbePartyName->Caption = "Clipp Tabs";
+//                    break;
 		}
 
 		if (CurrentTabType == TabNormal || CurrentTabType == TabDelayedPayment || CurrentTabType == TabClipp)
 		{
-            if(CurrentTabType == TabClipp)
-            {
-                TDBClippTab::GetOpenClippTabs(DBTransaction, TabList, CurrentTabType);
-
-            }
-            else
-            {
+//            if(CurrentTabType == TabClipp)
+//            {
+//                TDBClippTab::GetOpenClippTabs(DBTransaction, TabList, CurrentTabType);
+//
+//            }
+//            else
+//            {
 			    TDBTab::GetTabs(DBTransaction, TabList, CurrentTabType);
-            }
+//            }
 			tgridContainerList->RowCount = TabList->Count;
 
 			for (int i = 0; i < TabList->Count; i++)
@@ -4829,14 +4830,14 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                 }
 			}break;
             //new cas added for clipp tab
-            case TabClipp:
-			{
-				CurrentDisplayMode = eTabs;
-				CurrentTabType = TabClipp;
-				UpdateRightButtonDisplay(NULL);
-				CurrentTable = 1;
-				ResetForm();
-          	}break;
+//            case TabClipp:
+//			{
+//				CurrentDisplayMode = eTabs;
+//				CurrentTabType = TabClipp;
+//				UpdateRightButtonDisplay(NULL);
+//				CurrentTable = 1;
+//				ResetForm();
+//          	}break;
 		}
 
         EnableButtons();
@@ -5510,10 +5511,10 @@ void __fastcall TfrmBillGroup::tbtnToggleGSTMouseClick(TObject *Sender)
     {
        RemoveMembershipDiscounts(DBTransaction);
     }
-     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        CheckingClipItemsInSelectedList(DBTransaction);
-    }
+//     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//    {
+//        CheckingClipItemsInSelectedList(DBTransaction);
+//    }
     DBTransaction.Commit();
     if(!TGlobalSettings::Instance().IsThorlinkSelected)
     {

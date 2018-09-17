@@ -18,6 +18,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include "OracleDataObjects.h"
+#include "MewsDataObjects.h"
 //---------------------------------------------------------------------------
 
 class TfrmPhoenixRoom : public TZForm
@@ -172,6 +173,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *tbtnKeyboard;
 	TTouchBtn *btnNumPad;
 	TPanel *Panel15;
+    TTouchBtn *btnSpaces;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall ShiftClick(TObject *Sender);
 	void __fastcall ButtonMouseUp(TObject *Sender, TMouseButton Button,
@@ -204,6 +206,8 @@ __published:	// IDE-managed Components
 	void __fastcall btnRoomsLeftMouseDown(TObject *Sender,
 			 TMouseButton Button, TShiftState Shift, int X, int Y);
 	void __fastcall btnNumPadClick(TObject *Sender);
+    void __fastcall btnSpacesMouseClick(TObject *Sender);
+
 private:	// User declarations
 	__fastcall TfrmPhoenixRoom(TComponent* Owner);
 	
@@ -224,6 +228,9 @@ private:	// User declarations
     void SearchPhoenix(TPhoenixRoomStatusExt SelectedRoom);
     void SearchSiHot(TPhoenixRoomStatusExt SelectedRoom);
     void SearchOracle(TPhoenixRoomStatusExt SelectedRoom);
+    std::vector<TSpace> spaces;
+    bool SpaceShow;
+    std::vector<TCustomerMews> CustomersMews;
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);

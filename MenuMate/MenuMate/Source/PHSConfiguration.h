@@ -11,6 +11,7 @@
 #include "ZForm.h"
 #include "TouchBtn.h"
 #include "TouchControls.h"
+#include "MewsDataObjects.h"
 //---------------------------------------------------------------------------
 enum ePMS { phoenix = 1, siHot, oracle, mews};
 class TfrmPHSConfiguration : public TZForm
@@ -89,6 +90,11 @@ private:	// User declarations
    void UpdateSiHotUI();
    void UpdateMotelMateUI();
    void SyncMewsDetailsFromCloud();
+   void PopulateDropDowns(TStrings* outlets, TStrings* services);
+   std::vector<TOutlet> outlets;
+   std::vector<TServiceMews> services;
+   int GetIndexForSelectedMewsOutlet();
+   int GetIndexForSelectedMewsService();
 public:		// User declarations
    ePMS PMSType;
 

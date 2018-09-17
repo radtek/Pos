@@ -74,6 +74,14 @@ void TBasePMS::GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomRe
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews)//std::auto_ptr<TRoomInquiryResult> _roomResult)
+{
+}
+//---------------------------------------------------------------------------
+void TBasePMS::GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews)//std::auto_ptr<TRoomInquiryResult> _roomResult)
+{
+}
+//---------------------------------------------------------------------------
 void TBasePMS::LogPMSEnabling(TriggerLocation triggerType)
 {
 }

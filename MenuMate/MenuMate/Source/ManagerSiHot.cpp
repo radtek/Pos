@@ -119,11 +119,11 @@ void TManagerSiHot::Initialise()
 bool TManagerSiHot::GetRoundingandDefaultAccount()
 {
     bool retValue = false;
-    std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
-    retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort, TDeviceRealTerminal::Instance().BasePMS->ApiKey);
-    UpdateSiHotLogs(retValue);
-    if(!retValue)
-        MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
+//    std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
+//    retValue = siHotDataProcessor->GetDefaultAccount(TCPIPAddress,TCPPort, TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+//    UpdateSiHotLogs(retValue);
+//    if(!retValue)
+//        MessageBox("SiHot could not get enabled.Please set correct URL and Default Transaction Account","Error", MB_OK + MB_ICONERROR);
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -269,7 +269,7 @@ bool TManagerSiHot::GetDefaultAccount(UnicodeString processMessage)
 //---------------------------------------------------------------------------
 TRoomResponse TManagerSiHot::SendRoomRequest(TRoomRequest _roomRequest)
 {
-     // Call to SiHotInterface for sending Room Request
+      //Call to SiHotInterface for sending Room Request
      std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
      return siHotInterface->SendRoomRequest(_roomRequest,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
 }

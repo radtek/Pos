@@ -94,15 +94,15 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixPortNumberClick(TObject *Sender)
             frmTouchKeyboard->MaxLength = 255;
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = false;
-            frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ClientToken;
+            frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->ClientToken;
             frmTouchKeyboard->Caption = "Enter the Client Token.";
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
                 TGlobalSettings::Instance().ClientToken = frmTouchKeyboard->KeyboardText.Trim();
-                tbPhoenixPortNumber->Caption = "Client Token\r" + TGlobalSettings::Instance().ClientToken;
+                tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ClientToken;
                 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction1.StartTransaction();
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmClientToken,TGlobalSettings::Instance().ClientToken);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmClientToken,TDeviceRealTerminal::Instance().BasePMS->ClientToken);
                 DBTransaction1.Commit();
             }
         }
@@ -181,7 +181,6 @@ void TfrmPHSConfiguration::UpdateGUI()
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
 }
 //---------------------------------------------------------------------------
@@ -628,15 +627,15 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
             frmTouchKeyboard->MaxLength = 255;
             frmTouchKeyboard->AllowCarriageReturn = false;
             frmTouchKeyboard->StartWithShiftDown = false;
-            frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().AccessToken;
+            frmTouchKeyboard->KeyboardText = TDeviceRealTerminal::Instance().BasePMS->AccessToken;
             frmTouchKeyboard->Caption = "Enter the Access Token";
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
                 TGlobalSettings::Instance().AccessToken = frmTouchKeyboard->KeyboardText;
-                tbServiceCharge->Caption = "Access Token\r" + TGlobalSettings::Instance().AccessToken;
+                tbRevenueCentre->Caption = "Access Token\r" + TDeviceRealTerminal::Instance().BasePMS->AccessToken;
                 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction1.StartTransaction();
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAccessToken,TGlobalSettings::Instance().AccessToken);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAccessToken,TDeviceRealTerminal::Instance().BasePMS->AccessToken);
                 DBTransaction1.Commit();
             }
         }
@@ -863,37 +862,24 @@ void TfrmPHSConfiguration::InitDefaultPaymentInDB()
 
 void __fastcall TfrmPHSConfiguration::comboOutletsChange(TObject *Sender)
 {
-//
+    TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet = outlets[comboOutlets->ItemIndex].Id;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmOutletIdMewsSelected,TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet);
+    DBTransaction1.Commit();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmPHSConfiguration::comboServicesChange(TObject *Sender)
 {
-//
+    TDeviceRealTerminal::Instance().BasePMS->SelectedMewsService = services[comboServices->ItemIndex].Id;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmServiceMewsSelected,TDeviceRealTerminal::Instance().BasePMS->SelectedMewsService);
+    DBTransaction1.Commit();
 }
 //---------------------------------------------------------------------------
-void TfrmPHSConfiguration::UpdateMewsUI()
-{
-    comboOutlets->Enabled           = true;
-    comboServices->Enabled          = true;
-    comboOutlets->Visible           = true;
-    comboServices->Visible          = true;
-    TouchBtn1->Enabled              = true;
-    TouchBtn1->Caption              = "Get Details";
-    tbRevenueCentre->Visible        = true;
-    tbRevenueCentre->Enabled        = true;
-    tbPhoenixID->Enabled            = false;
-    tbPhoenixID->Visible            = false;
-    tbPaymentDefCat->Visible        = false;
-    tbPaymentDefCat->Enabled        = false;
-    lblOutlets->Enabled             = true;
-    lblOutlets->Visible             = true;
-    lblServices->Enabled            = true;
-    lblServices->Visible            = true;
-    tbPhoenixIPAddress->Caption     = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-    tbPhoenixPortNumber->Caption    = "Client Token\r" + TGlobalSettings::Instance().ClientToken;
-    tbRevenueCentre->Caption        = "AccessToken\r" + TGlobalSettings::Instance().AccessToken;
-}
+
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateOracleUI()
 {
@@ -948,6 +934,7 @@ void TfrmPHSConfiguration::UpdateOracleUI()
         tbOracleInterfaceIP->Caption = "Oracle Interface IP";
         tbOracleInterfaceIP->Caption = "Oracle Interface Port";
     }
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateSiHotUI()
@@ -977,6 +964,7 @@ void TfrmPHSConfiguration::UpdateSiHotUI()
     lblOutlets->Visible = false;
     lblServices->Enabled = false;
     lblServices->Visible = false;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateMotelMateUI()
@@ -1002,20 +990,105 @@ void TfrmPHSConfiguration::UpdateMotelMateUI()
     lblOutlets->Visible = false;
     lblServices->Enabled = false;
     lblServices->Visible = false;
+    tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+}
+//--------------------------------------------------------------------------
+void TfrmPHSConfiguration::UpdateMewsUI()
+{
+    outlets.clear();
+    services.clear();
+    tbPhoenixIPAddress->Caption     = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    tbPhoenixPortNumber->Caption    = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ClientToken;
+    tbRevenueCentre->Caption        = "AccessToken\r" + TDeviceRealTerminal::Instance().BasePMS->AccessToken;
+    comboOutlets->Enabled           = true;
+    comboServices->Enabled          = true;
+    comboOutlets->Visible           = true;
+    comboServices->Visible          = true;
+    TouchBtn1->Enabled              = true;
+    TouchBtn1->Caption              = "Get Details";
+    tbRevenueCentre->Visible        = true;
+    tbRevenueCentre->Enabled        = true;
+    tbPhoenixID->Enabled            = false;
+    tbPhoenixID->Visible            = false;
+    tbPaymentDefCat->Visible        = false;
+    tbPaymentDefCat->Enabled        = false;
+    lblOutlets->Enabled             = true;
+    lblOutlets->Visible             = true;
+    lblServices->Enabled            = true;
+    lblServices->Visible            = true;
+    PopulateDropDowns(comboOutlets->Items,comboServices->Items);
+    comboOutlets->ItemIndex = GetIndexForSelectedMewsOutlet();
+    comboServices->ItemIndex = GetIndexForSelectedMewsService();
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::SyncMewsDetailsFromCloud()
 {
+    if(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() == "" ||
+        TDeviceRealTerminal::Instance().BasePMS->ClientToken.Trim() == "" ||
+        TDeviceRealTerminal::Instance().BasePMS->AccessToken.Trim() == "")
+    {
+        MessageBox("Url,Client Token and Access Token values are required for the operation to complete.\rPlease check.","Info",MB_OK+MB_ICONINFORMATION);
+        return;
+    }
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
     try
     {
         // Sync Outlets Details
+        UnicodeString ipAddress = TManagerVariable::Instance().GetStr(DBTransaction1, vmPMSIPAddress, "");
+        UnicodeString clientToken = TManagerVariable::Instance().GetStr(DBTransaction1, vmClientToken, "");
+        UnicodeString accessToken = TManagerVariable::Instance().GetStr(DBTransaction1, vmAccessToken, "");
         std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
-        bool isSetUp = managerMews->SetUpMews("","","");
+        bool isSetUp = managerMews->SetUpMews(ipAddress,clientToken,accessToken);
         if(!isSetUp)
             MessageBox("Could not sync the fresh details from Mews","Info",MB_OK+MB_ICONINFORMATION);
+        DBTransaction1.Commit();
     }
     catch(Exception &ex)
     {
+        DBTransaction1.Rollback();
     }
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::PopulateDropDowns(TStrings* outletstrings, TStrings* servicesstrings)
+{
+    std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+    outlets = managerMews->GetOutletsFromDB();
+    services = managerMews->GetServicesFromDB();
+
+    for(int i = 0; i < outlets.size(); i++)
+    {
+        UnicodeString outletName = outlets[i].Name;
+        outletstrings->Add(outletName);
+    }
+    for(int i = 0; i < services.size(); i++)
+    {
+        UnicodeString serviceName = services[i].Name;
+        servicesstrings->Add(serviceName);
+    }
+}
+//---------------------------------------------------------------------------
+int TfrmPHSConfiguration::GetIndexForSelectedMewsService()
+{
+    for(int i = 0; i < services.size(); i++)
+    {
+        if(services[i].Id == TDeviceRealTerminal::Instance().BasePMS->SelectedMewsService)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//---------------------------------------------------------------------------
+int TfrmPHSConfiguration::GetIndexForSelectedMewsOutlet()
+{
+    for(int i = 0; i < outlets.size(); i++)
+    {
+        if(outlets[i].Id == TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 //---------------------------------------------------------------------------

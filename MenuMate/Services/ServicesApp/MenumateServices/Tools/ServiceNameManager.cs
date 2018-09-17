@@ -50,6 +50,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.SmartConnect: return "MenumateServiceSmartConnect";
                 case MenumateServicesIdentifier.AdyenIntegration: return "AdyenIntegrationWebService";
                 case MenumateServicesIdentifier.PaymentSense: return "MenumateServicePaymentSense";
+                case MenumateServicesIdentifier.MewsIntegration: return "MewsIntegrationWebService";
                 default: return @"";
             }
         }

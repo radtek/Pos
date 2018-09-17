@@ -7,6 +7,7 @@
 #include <System.hpp>
 #include<list>
 #include <memory>
+#include "MewsDataObjects.h"
 //---------------------------------------------------------------------------
 class TSiHotInterface
 {

@@ -28,7 +28,7 @@
 #include "ListSecurityRefContainer.h"
 #include "ItemSizeCategory.h"
 #include "DBSecurity.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "DBTax.h"
 #include "TaxProfileDBAccessManager_MM.h"
 #include "TaxProfile.h"
@@ -281,39 +281,39 @@ void TfrmTabManager::ShowTabsDetails()
 		}
         else if (CurrentTabType == TabClipp)
 		{
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-
-			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-            IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
-            "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
-            "CLIPP_TAB.IS_TAB_CLOSED = 'F' " "AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
-            (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " + " ORDER BY " "TAB.TAB_KEY DESC";
-            IBInternalQuery->ExecQuery();
-			int Y = 0;
-			while (!IBInternalQuery->Eof)
-			{
-				int LableHeight = sbTabs->ClientHeight / NUMBER_OF_TABS_IN_VIEW;
-				// Slow
-				TTouchBtn *cbTabName = new TTouchBtn(this);
-				cbTabName->Top = Y + Label1->Top;
-				cbTabName->Width = pnlTabs->ClientWidth - (Label1->Top * 2);
-				cbTabName->Left = Label1->Left;
-				cbTabName->Height = LableHeight - Label1->Top;
-				cbTabName->Caption = IBInternalQuery->FieldByName("NAME")->AsString;
-				cbTabName->Tag = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
-				cbTabName->OnMouseClick = TouchButtonTabClick;
-				cbTabName->Parent = sbTabs;
-				cbTabName->ParentFont = true;
-				cbTabName->ButtonColor = SEAT_UNSELECTED_COLOUR;
-				Y += LableHeight;
-                MaxScrollPosition += LableHeight;
-				IBInternalQuery->Next();
-			}
-			DBTransaction.Commit();
-
-			lbePartyName->Caption = "Clipp Tabs";
+//			Database::TDBTransaction DBTransaction(DBControl);
+//			DBTransaction.StartTransaction();
+//
+//			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//
+//            IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
+//            "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
+//            "CLIPP_TAB.IS_TAB_CLOSED = 'F' " "AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
+//            (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " + " ORDER BY " "TAB.TAB_KEY DESC";
+//            IBInternalQuery->ExecQuery();
+//			int Y = 0;
+//			while (!IBInternalQuery->Eof)
+//			{
+//				int LableHeight = sbTabs->ClientHeight / NUMBER_OF_TABS_IN_VIEW;
+//				// Slow
+//				TTouchBtn *cbTabName = new TTouchBtn(this);
+//				cbTabName->Top = Y + Label1->Top;
+//				cbTabName->Width = pnlTabs->ClientWidth - (Label1->Top * 2);
+//				cbTabName->Left = Label1->Left;
+//				cbTabName->Height = LableHeight - Label1->Top;
+//				cbTabName->Caption = IBInternalQuery->FieldByName("NAME")->AsString;
+//				cbTabName->Tag = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
+//				cbTabName->OnMouseClick = TouchButtonTabClick;
+//				cbTabName->Parent = sbTabs;
+//				cbTabName->ParentFont = true;
+//				cbTabName->ButtonColor = SEAT_UNSELECTED_COLOUR;
+//				Y += LableHeight;
+//                MaxScrollPosition += LableHeight;
+//				IBInternalQuery->Next();
+//			}
+//			DBTransaction.Commit();
+//
+//			lbePartyName->Caption = "Clipp Tabs";
 		}
 		else
 		{
@@ -891,8 +891,8 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
                     if(CurrentTabType == TabClipp)
                     {
                         //send clipp tab details back
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(SelectedTab);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(SelectedTab);
                     }
 				}
 			}
@@ -1632,8 +1632,8 @@ void __fastcall TfrmTabManager::btnTabCreditClick(TObject *Sender)
 	frmDropDown->AddButton("Add Credit To Tab", &btnAddCreditToTabClick);
     if(CurrentTabType != TabClipp)
     {
-        frmDropDown->AddButton("Refund Credit From Tab", &btnRefundCreditToTabClick);
-        frmDropDown->AddButton("Set Credit Limit", &btnSetCreditLimitClick);
+//        frmDropDown->AddButton("Refund Credit From Tab", &btnRefundCreditToTabClick);
+//        frmDropDown->AddButton("Set Credit Limit", &btnSetCreditLimitClick);
     }
 
 	if (frmDropDown->ShowModal() == mrOk)
@@ -1826,31 +1826,31 @@ void __fastcall TfrmTabManager::btnClippTabMouseClick(TObject *Sender)
 {
 	//Set Clipp Tab details to be form here..
 
-    SelectedTable = 0;
-	SelectedSeat = 0;
-	SelectedRoomNo = 0;
-
-    //Enable/disable the buttons for Clipp Tab..
-	btnAddNewTab->Enabled = false;
-	btnChangeDetails->Enabled = false;
-	btnManInvoice->Enabled = false;
-	btnSubsidisedProfile->Enabled = false;
-    btnTabCredit->Enabled = true;
-    btnPermanent->Enabled = false;
-	btnAddNewTab->Caption = "Create Tab";
-
-	CurrentTabContainerName = "";
-	CurrentTabType = TabClipp;
-
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-
-	TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name);
-
-	DBTransaction.Commit();
-
-
-	ShowTabsDetails();
+//    SelectedTable = 0;
+//	SelectedSeat = 0;
+//	SelectedRoomNo = 0;
+//
+//    //Enable/disable the buttons for Clipp Tab..
+//	btnAddNewTab->Enabled = false;
+//	btnChangeDetails->Enabled = false;
+//	btnManInvoice->Enabled = false;
+//	btnSubsidisedProfile->Enabled = false;
+//    btnTabCredit->Enabled = true;
+//    btnPermanent->Enabled = false;
+//	btnAddNewTab->Caption = "Create Tab";
+//
+//	CurrentTabContainerName = "";
+//	CurrentTabType = TabClipp;
+//
+//	Database::TDBTransaction DBTransaction(DBControl);
+//	DBTransaction.StartTransaction();
+//
+//	TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name);
+//
+//	DBTransaction.Commit();
+//
+//
+//	ShowTabsDetails();
 }
 //---------------------------------------------------------------------------
 AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)

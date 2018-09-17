@@ -72,7 +72,7 @@
 #include "FolderManager.h"
 
 #include "SetupGlCodes.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "SetUpPosPlus.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -147,6 +147,8 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
         else if(TGlobalSettings::Instance().PMSType == Oracle)
             tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
+        else if(TGlobalSettings::Instance().PMSType == Mews)
+            tbPHSInterface->Caption = "P.M.S Interface\r[Mews Enabled]";
         else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
@@ -218,16 +220,16 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
     RefreshDrinkCommandButtonColor();
     RefreshThorlinkButtonColor();                                                // Refreshes the Thorlink button color
 	//Changing the color of clipp button
-    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        TouchBtnClipInterface->ButtonColor = clGreen;
-        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-    }
-    else
-    {
+//    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//    {
+//        TouchBtnClipInterface->ButtonColor = clGreen;
+//        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
+//    }
+//    else
+//    {
         TouchBtnClipInterface->ButtonColor = clRed;
         TouchBtnClipInterface->Caption = "Clipp Interface \r[Disabled]";
-    }
+//    }
      if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
     {
         TouchBtnRunRateBoard->ButtonColor = clGreen;
@@ -3353,54 +3355,54 @@ void __fastcall TfrmMaintain::SaveServerCheck()
 
 void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-				TVerticalSelection Item;
-				Item.Title = "Cancel";
-				Item.Properties["Color"] = "0x000098F5";
-				Item.Properties["FontColor"] = IntToStr(clWhite);;
-				Item.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item);
-
-				TVerticalSelection Item1;
-				Item1.Title = "Enable";
-				Item1.Properties["Action"] = IntToStr(1);
-				Item1.Properties["Color"] = IntToStr(clGreen);
-				Item1.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item1);
-
-				TVerticalSelection Item2;
-				Item2.Title = "Disable";
-				Item2.Properties["Action"] = IntToStr(2);
-				Item2.Properties["Color"] = IntToStr(clRed);
-				Item2.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item2);
-
-				SelectionForm1->ShowModal();
-				TVerticalSelection SelectedItem1;
-				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-				{
-					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-					switch(Action)
-					{
-					case 1 :
-						TGlobalSettings::Instance().IsClippIntegrationEnabled = true;
-                        TouchBtnClipInterface->ButtonColor = clGreen;
-                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-                        TManagerClippIntegration::Instance();
-						break;
-					case 2 :
-						TGlobalSettings::Instance().IsClippIntegrationEnabled = false;
-                        TouchBtnClipInterface->ButtonColor = clRed;
-                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Disabled]";
-						break;
-					}
-
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsClippIntegrationEnabled,TGlobalSettings::Instance().IsClippIntegrationEnabled);
-					DBTransaction.Commit();
-                }
+//    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+//    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+//
+//				TVerticalSelection Item;
+//				Item.Title = "Cancel";
+//				Item.Properties["Color"] = "0x000098F5";
+//				Item.Properties["FontColor"] = IntToStr(clWhite);;
+//				Item.CloseSelection = true;
+//				SelectionForm1->Items.push_back(Item);
+//
+//				TVerticalSelection Item1;
+//				Item1.Title = "Enable";
+//				Item1.Properties["Action"] = IntToStr(1);
+//				Item1.Properties["Color"] = IntToStr(clGreen);
+//				Item1.CloseSelection = true;
+//				SelectionForm1->Items.push_back(Item1);
+//
+//				TVerticalSelection Item2;
+//				Item2.Title = "Disable";
+//				Item2.Properties["Action"] = IntToStr(2);
+//				Item2.Properties["Color"] = IntToStr(clRed);
+//				Item2.CloseSelection = true;
+//				SelectionForm1->Items.push_back(Item2);
+//
+//				SelectionForm1->ShowModal();
+//				TVerticalSelection SelectedItem1;
+//				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+//				{
+//					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+//					switch(Action)
+//					{
+//					case 1 :
+//						TGlobalSettings::Instance().IsClippIntegrationEnabled = true;
+//                        TouchBtnClipInterface->ButtonColor = clGreen;
+//                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
+//                        TManagerClippIntegration::Instance();
+//						break;
+//					case 2 :
+//						TGlobalSettings::Instance().IsClippIntegrationEnabled = false;
+//                        TouchBtnClipInterface->ButtonColor = clRed;
+//                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Disabled]";
+//						break;
+//					}
+//
+//					DBTransaction.StartTransaction();
+//					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsClippIntegrationEnabled,TGlobalSettings::Instance().IsClippIntegrationEnabled);
+//					DBTransaction.Commit();
+//                }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)

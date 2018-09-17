@@ -121,7 +121,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "MessageManager.h"
 #include "ManagerEJournal.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "ManagerHappyHour.h"
 #include "ManagerDelayedPayment.h"
 #include "MallExportManager.h"
@@ -8709,8 +8709,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 
 			bool DoProcessOrders = true;
 
-			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember || OrderContainer.Location["TMMTabType"] == TabClipp
-                || type == TabClipp)
+			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember /*|| OrderContainer.Location["TMMTabType"] == TabClipp
+                || type == TabClipp*/)
 			{
 			   	DBTransaction.StartTransaction();
 
@@ -8801,12 +8801,12 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                     logList->Add("Trabsaction commit of tbtnSaveMouseClick().");
                     TSaveLogs::RecordFiscalLogs(logList);
 
-                    if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
-                            && (!OrderContainer.Location["BillOff"]))
-                    {   //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
-                     }
+//                    if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
+//                            && (!OrderContainer.Location["BillOff"]))
+//                    {   //send clipp tab details
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
+//                     }
 					ResetPOS();
 
 				}
@@ -8826,8 +8826,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                 if( (OrderContainer.Location["BillOff"] ) && (OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp ))
                 {
                         //close clipp tab
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
                 }
 
                 else if (OrderContainer.Location["BillOff"])
@@ -9309,8 +9309,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                     if(type == TabClipp)
                     {
                         //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(TabKey);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(TabKey);
                     }
                     delete logList;
                     logList = NULL;
@@ -10421,26 +10421,26 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 					SelectionForm->Items.push_back(Item);
 				}
 			}break;
-            case TabClipp:
-			{
-                CurrentTabType = TabClipp;
-                TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-                IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
-                "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
-                "CLIPP_TAB.IS_TAB_CLOSED = 'F' " /*"AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
-                (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " +*/ " ORDER BY " "TAB.TAB_KEY DESC";
-                IBInternalQuery->ExecQuery();
-
-                for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
-				{
-					Item.Title = IBInternalQuery->FieldByName("NAME")->AsString;
-					Item.Properties["TabKey"] = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
-					Item.Properties["Color"] = clInfoBk;
-					Item.CloseSelection = true;
-					SelectionForm->Items.push_back(Item);
-				}
-			}break;
+//            case TabClipp:
+//			{
+//                CurrentTabType = TabClipp;
+//                TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//
+//                IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
+//                "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
+//                "CLIPP_TAB.IS_TAB_CLOSED = 'F' " /*"AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
+//                (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " +*/ " ORDER BY " "TAB.TAB_KEY DESC";
+//                IBInternalQuery->ExecQuery();
+//
+//                for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+//				{
+//					Item.Title = IBInternalQuery->FieldByName("NAME")->AsString;
+//					Item.Properties["TabKey"] = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
+//					Item.Properties["Color"] = clInfoBk;
+//					Item.CloseSelection = true;
+//					SelectionForm->Items.push_back(Item);
+//				}
+//			}break;
      		}
 
                 bool isItemSelected = false;

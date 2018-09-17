@@ -20,9 +20,6 @@ C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\Newtonsoft
 C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\NLog.dll
 C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\Newtonsoft.Json.xml
 C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\NLog.xml
-C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\ResolveAssemblyReference.cache
-C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.dll
-C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\AdyenIntegration.dll
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\AdyenIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Debug\Newtonsoft.Json.dll
@@ -32,3 +29,15 @@ C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\bin\Deb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\ResolveAssemblyReference.cache
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.dll
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.pdb
+G:\Shareables\Mews\Services\ServicesApp\Ready for Distribution\AdyenIntegration.dll
+G:\Shareables\Mews\Services\ServicesApp\Ready for Distribution\AdyenIntegration.pdb
+G:\Shareables\Mews\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.csprojAssemblyReference.cache
+G:\Shareables\Mews\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.csproj.CoreCompileInputs.cache
+G:\Shareables\Mews\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.csproj.CopyComplete
+G:\Shareables\Mews\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.dll
+G:\Shareables\Mews\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.pdb
+C:\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\AdyenIntegration.dll
+C:\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\AdyenIntegration.pdb
+C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.dll
+C:\V6-Master\MenuMate\Services\ServicesApp\AdyenIntegration\obj\Debug\AdyenIntegration.pdb

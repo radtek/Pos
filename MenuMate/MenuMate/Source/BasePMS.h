@@ -7,6 +7,7 @@
 #include "SiHotDataObjects.h"
 #include "ManagerPMSCodes.h"
 #include "OracleDataObjects.h"
+#include "MewsDataObjects.h"
 //---------------------------------------------------------------------------
 enum TriggerLocation {eBoot = 1,eUI,eSelf};
 class TBasePMS
@@ -41,6 +42,10 @@ class TBasePMS
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
+        UnicodeString SelectedMewsService;
+        UnicodeString SelectedMewsOutlet;
+        UnicodeString ClientToken;
+        UnicodeString AccessToken;
 //        std::map<int, TPMSPaymentType> PMSPaymentTypeMap;
         public :
         bool Registered;
@@ -62,6 +67,8 @@ class TBasePMS
         void virtual GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> _roomResult);
         void virtual LogPMSEnabling(TriggerLocation triggerType);
         void virtual UnsetPostingFlag();
+        void virtual GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
+        void virtual GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
 };
 //extern TBasePMS *BasePMS;
 #endif

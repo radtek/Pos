@@ -9,7 +9,7 @@
 #include "Main.h"
 #include "enum.h"
 #include "MMLogging.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "Setup.h"
 #include "Maintain.h"
 #include "DbMod.h"
@@ -481,8 +481,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-            TManagerClippIntegration::Instance();
+//         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//            TManagerClippIntegration::Instance();
 
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {

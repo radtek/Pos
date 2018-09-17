@@ -109,7 +109,11 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
     }
 
 	this->Caption = pnlLabel->Caption;
-
+    if(MessageType == eRevenueCodes && TGlobalSettings::Instance().PMSType == 4)
+    {
+        btnAdd->Enabled = false;
+        btnEdit->Enabled = false;
+    }
 	FormResize(NULL);
 	ShowMessages();
 }

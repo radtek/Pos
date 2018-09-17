@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>73b59aac-6830-49d9-86bd-6e9db74ae8e7</ProjectGuid>
+    <ProjectGuid>{73B59AAC-6830-49D9-86BD-6E9DB74AE8E7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MewsIntegration</RootNamespace>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Ready for Distribution\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,8 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,8 +45,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Domain\AccountingCategory.cs" />
+    <Compile Include="Domain\BasicInquiry.cs" />
+    <Compile Include="Domain\Bill.cs" />
+    <Compile Include="Domain\Category.cs" />
+    <Compile Include="Domain\Classification.cs" />
+    <Compile Include="Domain\Customer.cs" />
+    <Compile Include="Domain\CustomerSearch.cs" />
+    <Compile Include="Domain\Extent.cs" />
+    <Compile Include="Domain\Item.cs" />
+    <Compile Include="Domain\Order.cs" />
+    <Compile Include="Domain\Outlet.cs" />
+    <Compile Include="Domain\Promotions.cs" />
+    <Compile Include="Domain\RootObject.cs" />
+    <Compile Include="Domain\Service.cs" />
+    <Compile Include="Domain\Space.cs" />
+    <Compile Include="Domain\SpaceCategory.cs" />
+    <Compile Include="Domain\SpaceDetails.cs" />
+    <Compile Include="Domain\UnitCost.cs" />
+    <Compile Include="MewsCommunicationController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\JsonUtility.cs" />
+    <Compile Include="Utilities\MewsRequestAddress.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

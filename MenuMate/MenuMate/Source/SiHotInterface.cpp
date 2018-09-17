@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "SiHotInterface.h"
+#include "MMLogging.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -169,7 +170,7 @@ SiHotPayment* TSiHotInterface::GetPayment(std::vector<TSiHotPayments>::iterator 
     payment->Source = it->Source;
     payment->Type = it->Type;
     return payment;
-}
+}//
 //---------------------------------------------------------------------------
 bool TSiHotInterface::ValidateIPAddressPort(AnsiString address,int port,int transno)
 {
@@ -184,4 +185,9 @@ bool TSiHotInterface::ValidateIPAddressPort(AnsiString address,int port,int tran
        return false;
 	}
 }
+
+//---------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
