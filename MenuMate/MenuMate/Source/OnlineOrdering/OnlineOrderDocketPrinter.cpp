@@ -468,11 +468,11 @@ void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* 
                         memberInfo.Name = Order->Email;
                         memberInfo.EMail = Order->Email;
 
-                        if(Order->OnlineChitType != 1)
-                        {
-                            TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
-                            paymentStatus = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
-                        }
+//                        if(Order->OnlineChitType != 1)
+//                        {
+                          //  TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                         //   paymentStatus = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+//                        }
                 }
 //                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
                 CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
