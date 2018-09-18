@@ -366,6 +366,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\FileSupplier.cs" />
+    <Compile Include="Tools\FileWriter.cs" />
     <Compile Include="Tools\MenumateServiceLoader.cs" />
     <Compile Include="Tools\MenumateServicesIdentifier.cs" />
     <Compile Include="Tools\ServiceInfo.cs" />

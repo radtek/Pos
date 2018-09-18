@@ -6452,6 +6452,7 @@ void __fastcall TfrmMenuEdit::btnCommitClick(TObject *Sender)
 	}
 	if (Application->MessageBox("Are your sure you want to force this menu? This will cause Palms to lose synch", "MenuMate", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 	{
+        SetItemAndItemSizeIdentifier();
 		AnsiString FilePath = CurrentConnection.ServerPath + "\\Menu Import";
 		AnsiString BackupFilePath = CurrentConnection.ServerPath + "\\Menu Backup";
 		if (!DirectoryExists(FilePath))
@@ -14093,7 +14094,7 @@ void __fastcall TfrmMenuEdit::chbAvailableOnPalmClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
 {
-    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+     TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
     for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
     {
         TTreeNode *CourseNode = MenuNode->Item[i];
@@ -14115,6 +14116,45 @@ void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
                         {
                             TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
                             ItemSizeData->ItemSizeIdentifier = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------------------
+void TfrmMenuEdit::SetItemAndItemSizeIdentifier()
+{
+    AnsiString ItemSizeIdentifier = "SELECT GEN_ID(GEN_ITEMSIZE_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    AnsiString ItemIdentifier = "SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM RDB$DATABASE ";
+
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+
+                    if(!ItemData->ItemIdentifier)
+                        ItemData->ItemIdentifier = GetItemIdentifier(ItemIdentifier);
+
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                            if(!ItemSizeData->ItemSizeIdentifier)
+                                ItemSizeData->ItemSizeIdentifier = GetItemIdentifier(ItemSizeIdentifier);
                         }
                     }
                 }

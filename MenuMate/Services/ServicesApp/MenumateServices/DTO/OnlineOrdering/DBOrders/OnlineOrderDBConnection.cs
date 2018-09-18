@@ -109,25 +109,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             inPassword = "masterkey";
 
             ServiceInfo serviceInfo = ServiceInfo.Instance;
-
-           // inDatabaseURI = Path.Combine(settings_.MenumateLocation, settings_.DatabaseName);// ; "C:\\Databases\\DougnutKing\\MENUMATE.FDB";// Path.Combine(serviceInfo.WebmateDatabaseLocation(), settings_.DatabaseName);
-            //inDataSource = "localhost1";// (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "InterbaseIP", null); //;////serviceInfo.WebmateDatabaseServerPath();
-          //  inDatabaseURI = "C:\\Databases\\DougnutKing\\MENUMATE.FDB";
-         //   inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
-            //if (InstallPath != null)
-            //{
-            //    // Do stuff
-            //}
-            //inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
-            //if (inDatabaseURI != null)
-            //{
-            //    inDataSource = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "InterbaseIP", null);
-            //}
-            //else
-            //{
-            //    inDatabaseURI = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\IQWORKS\MenuMate\Database", "DatabasePath", null);
-            //}
-
             List<string> dbDeatils = new List<string>();
             dbDeatils = GetDetailsFromFile();
             for (int i = 0; i < dbDeatils.Count; i++)

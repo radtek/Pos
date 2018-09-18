@@ -1025,6 +1025,7 @@ private:
     int GetItemIdentifier(AnsiString genQuery);
     void EnableOrDisableGenButtons();
     void ResetItemAndItemSizeIdentifier();
+    void SetItemAndItemSizeIdentifier();
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
