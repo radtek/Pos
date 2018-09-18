@@ -958,7 +958,21 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
         logList->Clear();
 		DBTransaction.Commit();
 		ResetForm();
+        UpdateRightButtonDisplay(Sender);
+        if(CurrentDisplayMode == eTables)
+        {
+            if(NeedtoUpdateTableForOnlineOrdering())
+               UpdateTableForOnlineOrdering();
+        }
+        else if(CurrentDisplayMode == eTabs)
+        {
+            if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
+                UpdateTabForOnlineOrdering();
+        }
+        else
+            HasOnlineOrders = false;
 	}
+
 	catch(Exception & E)
 	{
         DBTransaction.Rollback();
@@ -1222,6 +1236,19 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 }
             }
 		}
+        UpdateRightButtonDisplay(Sender);
+        if(CurrentDisplayMode == eTables)
+        {
+            if(NeedtoUpdateTableForOnlineOrdering())
+               UpdateTableForOnlineOrdering();
+        }
+        else if(CurrentDisplayMode == eTabs)
+        {
+            if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
+                UpdateTabForOnlineOrdering();
+        }
+        else
+            HasOnlineOrders = false;
 	}
 	catch(Exception & E)
 	{
@@ -2769,9 +2796,13 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                             ItemSetAddItems(DBTransaction,SelectedTab);
                             CurrentSelectedTab = SelectedTab;
                             HasOnlineOrders = TDBTab::HasOnlineOrders(SelectedTab);
-
                             // Get online member.
                         }
+                    }
+                    else
+                    {
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        return;
                     }
                 }
             }
@@ -5879,7 +5910,8 @@ bool TfrmBillGroup::DownloadOnlineMember()
     try
     {
         UnicodeString emailId = GetMemberEmailIdForOrder();
-        GetLoyaltyMemberByEmail(emailId);
+        if(emailId != NULL && emailId.Trim() != "")
+            GetLoyaltyMemberByEmail(emailId);
     }
     catch(Exception &ex)
     {
