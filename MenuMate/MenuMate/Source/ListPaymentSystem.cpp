@@ -2531,7 +2531,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                 "PRICE_INCL, "
                 "PRICE_ADJUST, "
                 "ONLINE_CHIT_TYPE, "
-                "ONLINE_ORDER_ID "
+                "ORDER_GUID "
 				")"
 				" VALUES "
 				"("
@@ -2583,7 +2583,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                 ":PRICE_INCL, "
                 ":PRICE_ADJUST, "
                 ":ONLINE_CHIT_TYPE, "
-                ":ONLINE_ORDER_ID "
+                ":ORDER_GUID "
 				");";
 
                 IBInternalQuery->ParamByName("CHIT_NAME")->AsString = Order->ChitNumber.Name;
@@ -2682,7 +2682,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				}
 
                 IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
-                IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+                IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
 
 				IBInternalQuery->ExecQuery();
 				ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, MasterArchiveKey, Order);
@@ -2737,7 +2737,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 "PRICE_LEVEL0," "PRICE_LEVEL1," "SERVINGCOURSES_KEY, CHIT_NAME, CHIT_OPTION,"
                          "BASE_PRICE,"
                          "DISCOUNT_WITHOUT_TAX,"
-                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ONLINE_ORDER_ID )"
+                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ORDER_GUID )"
                          " VALUES (" ":ARCHIVE_KEY," ":ARCBILL_KEY," ":TERMINAL_NAME,"
 						 ":MENU_NAME," ":COURSE_NAME," ":ITEM_NAME," ":ITEM_CATEGORY," ":ITEM_SHORT_NAME," ":ITEM_ID," ":SIZE_NAME,"
 						 ":TABLE_NUMBER," ":TABLE_NAME," ":SEAT_NUMBER," ":SERVER_NAME," ":TAB_NAME," ":LOYALTY_NAME," ":ORDER_TYPE,"
@@ -2747,7 +2747,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 ":SERVINGCOURSES_KEY, :CHIT_NAME, :CHIT_OPTION, "
                          ":BASE_PRICE,"
                          ":DISCOUNT_WITHOUT_TAX,"
-                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ONLINE_ORDER_ID  );";
+                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ORDER_GUID  );";
 
 					IBInternalQuery->ParamByName("CHIT_NAME")->AsString =
 					Order->ChitNumber.Name;
@@ -2855,7 +2855,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					}
 
                     IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
-                    IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = Order->OnlineOrderId;
+                    IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
                     IBInternalQuery->ExecQuery();
 
 					ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, SubArchiveKey, CurrentSubOrder);
@@ -6930,7 +6930,7 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
         if(paymentTransaction.Orders->Count)
         {
             TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
-            if(Order->OnlineOrderId.Trim() != "")
+            if(Order->OrderGuid.Trim() != "")
             {
                 TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction);
                 TMMProcessingState State(Screen->ActiveForm, "Posting Invoice to cloud Please Wait...", "Posting Invoice");

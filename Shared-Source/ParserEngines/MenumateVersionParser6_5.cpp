@@ -353,7 +353,7 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
     {
         executeQuery (
         "ALTER TABLE ORDERS "
-        "ADD ONLINE_ORDER_ID VARCHAR(50) ",
+        "ADD ONLINE_ORDER_ID INTEGER ",
         inDBControl);
     }
     if ( !fieldExists( "ORDERS", "IS_DOCKET_PRINTED", _dbControl ) )
@@ -398,6 +398,13 @@ void TApplyParser::AlterTableOrders6_53(TDBControl* const inDBControl)
         "ADD EMAIL Varchar(80) ",
         inDBControl);
     }
+    if ( !fieldExists( "ORDERS", "ORDER_GUID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ORDERS "
+        "ADD ORDER_GUID VARCHAR(50) ",
+        inDBControl);
+    }
 
 
 }
@@ -411,11 +418,11 @@ void TApplyParser::AlterTableDayArchive6_53(TDBControl* const inDBControl)
         "ADD ONLINE_CHIT_TYPE INTEGER ",
         inDBControl);
     }
-    if ( !fieldExists( "DAYARCHIVE", "ONLINE_ORDER_ID", _dbControl ) )
+    if ( !fieldExists( "DAYARCHIVE", "ORDER_GUID", _dbControl ) )
     {
         executeQuery (
         "ALTER TABLE DAYARCHIVE "
-        "ADD ONLINE_ORDER_ID VARCHAR(50) ",
+        "ADD ORDER_GUID VARCHAR(50) ",
         inDBControl);
     }
 }
@@ -429,11 +436,11 @@ void TApplyParser::AlterTableArchive6_53(TDBControl* const inDBControl)
         "ADD ONLINE_CHIT_TYPE INTEGER ",
         inDBControl);
 	}
-    if (!fieldExists( "ARCHIVE", "ONLINE_ORDER_ID", _dbControl ) )
+    if (!fieldExists( "ARCHIVE", "ORDER_GUID", _dbControl ) )
 	{
         executeQuery (
         "ALTER TABLE ARCHIVE "
-        "ADD ONLINE_ORDER_ID VARCHAR(50) ",
+        "ADD ORDER_GUID VARCHAR(50) ",
         inDBControl);
 	}
 }
@@ -471,7 +478,7 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
         }
         if ( fieldExists( "ORDERS ", "ONLINE_ORDER_ID ", _dbControl ) )
         {
-            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ONLINE_ORDER_ID = '' WHERE a.ONLINE_ORDER_ID IS NULL ",
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ONLINE_ORDER_ID = 0 WHERE a.ONLINE_ORDER_ID IS NULL ",
             UpdateQuery->ExecQuery();
         }
         if ( fieldExists( "ORDERS ", "IS_DOCKET_PRINTED ", _dbControl ) )
@@ -501,10 +508,14 @@ void TApplyParser::UpdateOrders6_53(TDBControl* const inDBControl)
         }
         if ( fieldExists( "ORDERS ", "EMAIL ", _dbControl ) )
         {
-            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.EMAIL = "" WHERE a.EMAIL IS NULL ",
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.EMAIL = '' WHERE a.EMAIL IS NULL ",
             UpdateQuery->ExecQuery();
         }
-
+        if ( fieldExists( "ORDERS ", "ORDER_GUID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ORDERS a SET a.ORDER_GUID = '' WHERE a.ORDER_GUID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
 
         transaction.Commit();
     }
@@ -526,9 +537,9 @@ void TApplyParser::UpdateDayArchive6_53(TDBControl* const inDBControl)
             UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",
             UpdateQuery->ExecQuery();
         }
-        if ( fieldExists( "DAYARCHIVE ", "ONLINE_ORDER_ID ", _dbControl ) )
+        if ( fieldExists( "DAYARCHIVE ", "ORDER_GUID ", _dbControl ) )
         {
-            UpdateQuery->SQL->Text =  "UPDATE DAYARCHIVE a SET a.ONLINE_ORDER_ID = '' WHERE a.ONLINE_ORDER_ID IS NULL ",
+            UpdateQuery->SQL->Text =  "UPDATE ORDER_GUID a SET a.ORDER_GUID = '' WHERE a.ORDER_GUID IS NULL ",
             UpdateQuery->ExecQuery();
         }
 
@@ -553,9 +564,9 @@ void TApplyParser::UpdateArchive6_53(TDBControl* const inDBControl)
             UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_CHIT_TYPE = 0 WHERE a.ONLINE_CHIT_TYPE IS NULL ",
             UpdateQuery->ExecQuery();
         }
-        if ( fieldExists( "ARCHIVE ", "ONLINE_ORDER_ID ", _dbControl ) )
+        if ( fieldExists( "ARCHIVE ", "ORDER_GUID ", _dbControl ) )
         {
-            UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ONLINE_ORDER_ID = '' WHERE a.ONLINE_ORDER_ID IS NULL ",
+            UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ORDER_GUID = '' WHERE a.ORDER_GUID IS NULL ",
             UpdateQuery->ExecQuery();
         }
 

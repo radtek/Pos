@@ -9,6 +9,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
     public class OrderAttributes
     {
         public long OrderId { get; set; }
+        public long OnlinerderId { get; set; }
         public long TabKey { get; set; }
         public string Location { get; set; }
         public OrderContainerType ContainerType { get; set; }
