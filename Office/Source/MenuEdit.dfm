@@ -146,24 +146,6 @@ object frmMenuEdit: TfrmMenuEdit
                 TabOrder = 2
                 OnClick = btnEditMenuClick
               end
-              object btnGenItemID: TButton
-                Left = 210
-                Top = 128
-                Width = 121
-                Height = 25
-                Caption = 'Auto Gen Item ID'
-                TabOrder = 4
-                OnClick = btnGenItemIDClick
-              end
-              object btnGenItemSizeID: TButton
-                Left = 210
-                Top = 184
-                Width = 121
-                Height = 25
-                Caption = 'Auto Gen ItemSize Id'
-                TabOrder = 3
-                OnClick = btnGenItemSizeIDClick
-              end
               object chbAvailableOnPalm: TCheckBox
                 Left = 0
                 Top = 104
@@ -171,7 +153,6 @@ object frmMenuEdit: TfrmMenuEdit
                 Height = 17
                 Caption = 'Menu Available On Palms'
                 TabOrder = 0
-                OnClick = chbAvailableOnPalmClick
                 OnKeyPress = chbAvailableOnPalmKeyPress
               end
             end

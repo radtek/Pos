@@ -463,8 +463,6 @@ class TfrmMenuEdit : public TForm
     TButton *btnSyncRevenueCodeCourse;
     TButton *btnSyncRevenueCodeMenu;
     TLabel *Label3;
-    TButton *btnGenItemID;
-    TButton *btnGenItemSizeID;
     TIBSQL *qrItemIdentifier;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
@@ -740,7 +738,6 @@ class TfrmMenuEdit : public TForm
     void __fastcall btnGenItemSizeIDClick(TObject *Sender);
     void __fastcall ItemIdentifierChange(TObject *Sender);
     void __fastcall ItemSizeIdentifierChange(TObject *Sender);
-    void __fastcall chbAvailableOnPalmClick(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);
@@ -1025,6 +1022,7 @@ private:
     int GetItemIdentifier(AnsiString genQuery);
     void EnableOrDisableGenButtons();
     void ResetItemAndItemSizeIdentifier();
+    void SetItemAndItemSizeIdentifier();
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);

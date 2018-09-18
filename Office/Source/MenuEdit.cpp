@@ -6452,6 +6452,9 @@ void __fastcall TfrmMenuEdit::btnCommitClick(TObject *Sender)
 	}
 	if (Application->MessageBox("Are your sure you want to force this menu? This will cause Palms to lose synch", "MenuMate", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 	{
+        if(chbAvailableOnPalm->Checked)
+            SetItemAndItemSizeIdentifier();
+            
 		AnsiString FilePath = CurrentConnection.ServerPath + "\\Menu Import";
 		AnsiString BackupFilePath = CurrentConnection.ServerPath + "\\Menu Backup";
 		if (!DirectoryExists(FilePath))
@@ -7382,7 +7385,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-            EnableOrDisableGenButtons();
 			resetMenuTaxProfileProvider( dmMMData->dbMenuMate );
 
 			ClearTree();
@@ -7416,7 +7418,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-            EnableOrDisableGenButtons();
 			tvMenu->Selected = MenuNode;
 			return true;
 		}
@@ -11195,7 +11196,6 @@ Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 	rbFoodMenu->Checked			= MenuInfo->Menu_Type == Menu::mtFoodMenu;
 	rbDrinkMenu->Checked		= MenuInfo->Menu_Type == Menu::mtBeverageMenu;
 	chbAvailableOnPalm->Checked	= MenuInfo->Palmable;
-    EnableOrDisableGenButtons();
 	TTreeNode *SizesNode		  = ((TEditorNode *)MenuNode->Data)->AddNode(SIZES_NODE);
 	SizesNode->Text				  = "Available Sizes";
 	TTreeNode *CategoriesNode	  = ((TEditorNode *)MenuNode->Data)->AddNode(CATEGORIES_NODE);
@@ -12401,7 +12401,6 @@ void TfrmMenuEdit::SaveMenu( AnsiString inFileName, AnsiString inBackupFileName 
 		saveMenu->MenuName        = menuData->LongDescription;
 		saveMenu->MenuType        = rbFoodMenu->Checked ? Menu::mtFoodMenu : Menu::mtBeverageMenu;
 		saveMenu->AvailableOnPalm = chbAvailableOnPalm->Checked;
-        EnableOrDisableGenButtons();
 		//........................................
 		// Category Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[CATEGORY_GROUPS_INDEX];
@@ -14080,20 +14079,9 @@ int TfrmMenuEdit::GetItemIdentifier(AnsiString genQuery)
     return ItemIdentifier;
 }
 //---------------------------------------------------------------------------
-void TfrmMenuEdit::EnableOrDisableGenButtons()
-{
-    btnGenItemID->Enabled = chbAvailableOnPalm->Checked;
-    btnGenItemSizeID->Enabled = chbAvailableOnPalm->Checked;
-}
-
-void __fastcall TfrmMenuEdit::chbAvailableOnPalmClick(TObject *Sender)
-{
-    EnableOrDisableGenButtons();
-}
-//---------------------------------------------------------------------------
 void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
 {
-    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+     TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
     for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
     {
         TTreeNode *CourseNode = MenuNode->Item[i];
@@ -14115,6 +14103,45 @@ void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
                         {
                             TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
                             ItemSizeData->ItemSizeIdentifier = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------------------
+void TfrmMenuEdit::SetItemAndItemSizeIdentifier()
+{
+    AnsiString ItemSizeIdentifier = "SELECT GEN_ID(GEN_ITEMSIZE_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    AnsiString ItemIdentifier = "SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM RDB$DATABASE ";
+
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+
+                    if(!ItemData->ItemIdentifier)
+                        ItemData->ItemIdentifier = GetItemIdentifier(ItemIdentifier);
+
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                            if(!ItemSizeData->ItemSizeIdentifier)
+                                ItemSizeData->ItemSizeIdentifier = GetItemIdentifier(ItemSizeIdentifier);
                         }
                     }
                 }

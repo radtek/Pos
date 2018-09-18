@@ -372,11 +372,11 @@ void TDBOnlineOrdering::GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTra
 		IBInternalQuery->SQL->Text =
 		"SELECT ORDER_KEY "
 		"FROM ORDERS "
-		"WHERE ONLINE_ORDER_ID =  :ONLINE_ORDER_ID "
+		"WHERE ORDER_GUID =  :ORDER_GUID "
 		        "AND (SIDE_ORDER_KEY IS NULL OR SIDE_ORDER_KEY = 0) "
 		"ORDER BY TAB_KEY,ORDER_KEY";
 
-        IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = orderUniqueId;
+        IBInternalQuery->ParamByName("ORDER_GUID")->AsString = orderUniqueId;
 		IBInternalQuery->ExecQuery();
 		if (IBInternalQuery->RecordCount)
 		{
@@ -403,7 +403,7 @@ UnicodeString TDBOnlineOrdering::GetOnlineOrderId(Database::TDBTransaction &dbTr
         std::list<TTaxSettingsInfo> SiteTaxSettings;
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT  FIRST 1 A.ONLINE_ORDER_ID "
+        ibInternalQuery->SQL->Text =    "SELECT  FIRST 1 A.ORDER_GUID "
                                         "FROM ORDERS a "
                                         "WHERE a.IS_DOCKET_PRINTED = :IS_DOCKET_PRINTED "
                                         "ORDER BY a.ORDER_KEY ASC ";
@@ -411,7 +411,7 @@ UnicodeString TDBOnlineOrdering::GetOnlineOrderId(Database::TDBTransaction &dbTr
         ibInternalQuery->ExecQuery();
 
         if(ibInternalQuery->RecordCount)
-            onlineOrderId = ibInternalQuery->FieldByName("ONLINE_ORDER_ID")->AsString;
+            onlineOrderId = ibInternalQuery->FieldByName("ORDER_GUID")->AsString;
     }
     catch(Exception &E)
 	{
@@ -429,8 +429,8 @@ void TDBOnlineOrdering::SetOnlineOrderStatus(Database::TDBTransaction &dbTransac
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Text =    "UPDATE ORDERS a SET a.IS_DOCKET_PRINTED = :IS_DOCKET_PRINTED "
-                                        "WHERE a.ONLINE_ORDER_ID = :ONLINE_ORDER_ID ";
-        ibInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsString = orderUniqueId;
+                                        "WHERE a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderUniqueId;
         ibInternalQuery->ParamByName("IS_DOCKET_PRINTED")->AsString = "T";
         ibInternalQuery->ExecQuery();
     }

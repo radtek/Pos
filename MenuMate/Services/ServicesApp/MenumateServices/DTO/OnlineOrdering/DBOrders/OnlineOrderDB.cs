@@ -117,32 +117,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return connectionString;
         }
 
-        //public void AddOrdersToDB(ApiSiteOrderViewModel siteOrderViewModel)
-        //{
-        //    //string dbpath = "C:\\Program Files (x86)\\MenuMate\\Menumate.fdb";
-        //    //string ipAddress = "localhost";
-
-        //    FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Program Files (x86)\\MenuMate\\Menumate.fdb"));
-        //    addDetailsConnection.Open();
-
-        //    FbTransaction addDetailsTransaction = addDetailsConnection.BeginTransaction();
-        //    string SQLCommandText = "INSERT INTO SALES_TYPE (SALES_TYPE_KEY, SALES_TYPE_NAME, DEFAULT_SALES_TYPE) VALUES(8, 'test', 'F') ";
-
-        //    FbCommand addDetailsCommand = new FbCommand(SQLCommandText, addDetailsConnection, addDetailsTransaction);
-        //    addDetailsCommand.ExecuteNonQuery();
-        //    addDetailsTransaction.Commit();
-        //}
-
         public void AddRecords(ref List<ApiSiteOrderViewModel> siteOrderViewModelList)
         {
             try
             {
-                //using (FbConnection addDetailsConnection = new FbConnection(BuildConnectionString("localhost", "C:\\Databases\\DougnutKing\\Menumate.fdb"))) //path to be changed
-                //{
-                //    addDetailsConnection.Open();
-
-                //    FbTransaction addDetailsTransaction = addDetailsConnection.BeginTransaction();
-
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
                         try
@@ -161,6 +139,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
                             orderRow.Email = siteOrderViewModel.UserEmailId;
                             orderRow.SiteId = siteOrderViewModel.SiteId;
+                            orderRow.OnlinerderId = siteOrderViewModel.OrderId;
 
                             foreach (var item in siteOrderViewModel.OrderItems)
                             {
@@ -229,9 +208,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         }
 
                     }
-                //    addDetailsTransaction.Commit();
-
-                //}
             }
             catch (Exception ex)
             {
@@ -323,7 +299,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 {
                     if (tabKey == 0)
                         tabKey = GenerateKey("TAB");
-                    command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, "");
+                    command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, 3);
                     command.ExecuteNonQuery();
                     SetSeatTab(tabKey, seatKey);
                 }
@@ -452,7 +428,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             try
             {
-                FbCommand command = dbQueries.CreateTab(connection, transaction, tabKey, tabName, id_number);
+                FbCommand command = dbQueries.CreateTab(connection, transaction, tabKey, tabName, 0);
 
                 //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
 

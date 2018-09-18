@@ -332,14 +332,15 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 			                            CONTACTS_KEY,
 			                            ACTIVECHITNUMBER_KEY, 
                                         PATRON_COUNT,
-                                        ONLINE_CHIT_TYPE, 
-                                        ONLINE_ORDER_ID,
+                                        ONLINE_CHIT_TYPE,
                                         IS_DOCKET_PRINTED,
                                         SITE_ID,
                                         ORDER_ITEM_ID,
                                         ORDER_ITEM_SIZE_ID,
                                         REFERENCE_ORDER_ITEM_SIZE_ID,
-                                        EMAIL
+                                        EMAIL,                                         
+                                        ONLINE_ORDER_ID,
+                                        ORDER_GUID
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -400,14 +401,15 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 			                            @CONTACTS_KEY,
 			                            @ACTIVECHITNUMBER_KEY, 
                                         @PATRON_COUNT, 
-                                        @ONLINE_CHIT_TYPE, 
-                                        @ONLINE_ORDER_ID,
+                                        @ONLINE_CHIT_TYPE,
                                         @IS_DOCKET_PRINTED,
                                         @SITE_ID,
                                         @ORDER_ITEM_ID,
                                         @ORDER_ITEM_SIZE_ID,
                                         @REFERENCE_ORDER_ITEM_SIZE_ID,
-                                        @EMAIL)";
+                                        @EMAIL,                                         
+                                        @ONLINE_ORDER_ID,
+                                        @ORDER_GUID)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -468,13 +470,14 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
                 command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType);
-                command.Parameters.AddWithValue("@ONLINE_ORDER_ID", orderDbItem.OrderGuid);
                 command.Parameters.AddWithValue("@IS_DOCKET_PRINTED", "F");
 				command.Parameters.AddWithValue("@SITE_ID", orderDbItem.SiteId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_ID", orderDbItem.OrderItemId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderDbItem.OrderItemSizeId);
                 command.Parameters.AddWithValue("@REFERENCE_ORDER_ITEM_SIZE_ID", orderDbItem.ReferenceOrderItemSizeId);
                 command.Parameters.AddWithValue("@EMAIL", orderDbItem.Email);
+                command.Parameters.AddWithValue("@ONLINE_ORDER_ID", orderDbItem.OnlinerderId);
+                command.Parameters.AddWithValue("@ORDER_GUID", orderDbItem.OrderGuid);
                 
 
                 if (orderDbItem.SideOrderKey > 0)
@@ -491,7 +494,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand CreateTab(FbConnection connection, FbTransaction transaction, int tabKey, string tabName, string id_number)
+        public FbCommand CreateTab(FbConnection connection, FbTransaction transaction, int tabKey, string tabName, int tabType)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -521,9 +524,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TAB_KEY", tabKey);
                 command.Parameters.AddWithValue("@CREDIT_LIMIT", -1);
                 command.Parameters.AddWithValue("@TAB_PERMANENT", 'F');
-                command.Parameters.AddWithValue("@TAB_TYPE", 0);
+                command.Parameters.AddWithValue("@TAB_TYPE", tabType);
                 command.Parameters.AddWithValue("@TAB_NAME", tabName);
-                command.Parameters.AddWithValue("@ID_NUMBER", id_number);
+                command.Parameters.AddWithValue("@ID_NUMBER", "");
             }
             catch (Exception e)
             {
