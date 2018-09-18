@@ -7383,7 +7383,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-            EnableOrDisableGenButtons();
 			resetMenuTaxProfileProvider( dmMMData->dbMenuMate );
 
 			ClearTree();
@@ -7417,7 +7416,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-            EnableOrDisableGenButtons();
 			tvMenu->Selected = MenuNode;
 			return true;
 		}
@@ -11196,7 +11194,6 @@ Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 	rbFoodMenu->Checked			= MenuInfo->Menu_Type == Menu::mtFoodMenu;
 	rbDrinkMenu->Checked		= MenuInfo->Menu_Type == Menu::mtBeverageMenu;
 	chbAvailableOnPalm->Checked	= MenuInfo->Palmable;
-    EnableOrDisableGenButtons();
 	TTreeNode *SizesNode		  = ((TEditorNode *)MenuNode->Data)->AddNode(SIZES_NODE);
 	SizesNode->Text				  = "Available Sizes";
 	TTreeNode *CategoriesNode	  = ((TEditorNode *)MenuNode->Data)->AddNode(CATEGORIES_NODE);
@@ -12402,7 +12399,6 @@ void TfrmMenuEdit::SaveMenu( AnsiString inFileName, AnsiString inBackupFileName 
 		saveMenu->MenuName        = menuData->LongDescription;
 		saveMenu->MenuType        = rbFoodMenu->Checked ? Menu::mtFoodMenu : Menu::mtBeverageMenu;
 		saveMenu->AvailableOnPalm = chbAvailableOnPalm->Checked;
-        EnableOrDisableGenButtons();
 		//........................................
 		// Category Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[CATEGORY_GROUPS_INDEX];
@@ -14079,17 +14075,6 @@ int TfrmMenuEdit::GetItemIdentifier(AnsiString genQuery)
         qrItemIdentifier->Transaction->Commit();
     }
     return ItemIdentifier;
-}
-//---------------------------------------------------------------------------
-void TfrmMenuEdit::EnableOrDisableGenButtons()
-{
-    btnGenItemID->Enabled = chbAvailableOnPalm->Checked;
-    btnGenItemSizeID->Enabled = chbAvailableOnPalm->Checked;
-}
-
-void __fastcall TfrmMenuEdit::chbAvailableOnPalmClick(TObject *Sender)
-{
-    EnableOrDisableGenButtons();
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
