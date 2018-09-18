@@ -6452,7 +6452,9 @@ void __fastcall TfrmMenuEdit::btnCommitClick(TObject *Sender)
 	}
 	if (Application->MessageBox("Are your sure you want to force this menu? This will cause Palms to lose synch", "MenuMate", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 	{
-        SetItemAndItemSizeIdentifier();
+        if(chbAvailableOnPalm->Checked)
+            SetItemAndItemSizeIdentifier();
+            
 		AnsiString FilePath = CurrentConnection.ServerPath + "\\Menu Import";
 		AnsiString BackupFilePath = CurrentConnection.ServerPath + "\\Menu Backup";
 		if (!DirectoryExists(FilePath))
