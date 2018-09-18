@@ -491,7 +491,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand CreateTab(FbConnection connection, FbTransaction transaction, int tabKey, string tabName, string id_number)
+        public FbCommand CreateTab(FbConnection connection, FbTransaction transaction, int tabKey, string tabName, int tabType)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -521,9 +521,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TAB_KEY", tabKey);
                 command.Parameters.AddWithValue("@CREDIT_LIMIT", -1);
                 command.Parameters.AddWithValue("@TAB_PERMANENT", 'F');
-                command.Parameters.AddWithValue("@TAB_TYPE", 0);
+                command.Parameters.AddWithValue("@TAB_TYPE", tabType);
                 command.Parameters.AddWithValue("@TAB_NAME", tabName);
-                command.Parameters.AddWithValue("@ID_NUMBER", id_number);
+                command.Parameters.AddWithValue("@ID_NUMBER", "");
             }
             catch (Exception e)
             {

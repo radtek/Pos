@@ -323,7 +323,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 {
                     if (tabKey == 0)
                         tabKey = GenerateKey("TAB");
-                    command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, "");
+                    command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, 3);
                     command.ExecuteNonQuery();
                     SetSeatTab(tabKey, seatKey);
                 }
@@ -452,7 +452,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             try
             {
-                FbCommand command = dbQueries.CreateTab(connection, transaction, tabKey, tabName, id_number);
+                FbCommand command = dbQueries.CreateTab(connection, transaction, tabKey, tabName, 0);
 
                 //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
 
