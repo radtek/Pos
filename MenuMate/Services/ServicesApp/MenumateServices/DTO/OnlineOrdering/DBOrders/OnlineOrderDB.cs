@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using MenumateServices.Tools;
 
 namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {
@@ -121,11 +122,19 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
+                
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
                         try
                         {
                             OrderAttributes orderRow = new OrderAttributes();
+
+                            if (siteOrderViewModel.ContainerType == Loyaltymate.Enum.OrderContainerType.Table)
+                            {
+                                bool canOrderBeSaved = dbQueries.IsTableAlreadyOccupied(connection, transaction, siteOrderViewModel.UserEmailId, siteOrderViewModel.ContainerNumber);
+                                if (!canOrderBeSaved)
+                                    new Exception("Order can't be saved to this table because it already contains orders.");
+                            }
                             orderRow.ContainerName = siteOrderViewModel.ContainerName;
                             orderRow.ContainerType = siteOrderViewModel.ContainerType;
                             orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
@@ -142,7 +151,14 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.OnlinerderId = siteOrderViewModel.OrderId;
 
                             if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber > 100)
-                                orderRow.ContainerType = 0;    
+                                orderRow.ContainerType = 0;
+
+                            //generate tab key if tab not exist..
+                            orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
+                                                : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo 
+
+                            //Generate Security ref..
+                            orderRow.SecurityRef = GetNextSecurityRef();    
 
                             foreach (var item in siteOrderViewModel.OrderItems)
                             {
@@ -168,14 +184,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
 
                                     //Generate order id..
-                                    orderRow.OrderId = GenerateKey("ORDERS");
-
-                                    //Generate Security ref..
-                                    orderRow.SecurityRef = GetNextSecurityRef();
-
-                                    //generate tab key if tab not exist..
-                                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
-                                                        : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo                                    
+                                    orderRow.OrderId = GenerateKey("ORDERS");                                                                                                       
 
                                     //Load Item info like course, sc, kitchen name etc.
                                     LoadItemInfo(ref orderRow);

@@ -58,10 +58,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     FROM 
                                         TAB 
                                     WHERE 
-                                        TAB_NAME = @TAB_NAME
+                                        TAB_NAME = @TAB_NAME AND TAB_TYPE = @TAB_TYPE
                                     ";
 
                 command.Parameters.AddWithValue("@TAB_NAME", tabName);
+                command.Parameters.AddWithValue("@TAB_TYPE", 0);
             }
             catch (Exception e)
             {
@@ -73,6 +74,28 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             //............................................
 
             return command;
+        }
+
+        public bool IsTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, int tableNumber)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+            try
+            {
+                command.CommandText = @"
+                                    SELECT A.ORDER_KEY 
+                                    FROM ORDERS a
+                                    WHERE a.TABLE_NUMBER = @TABLE_NUMBER AND a.EMAIL <> @EMAIL ";
+
+                command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                command.Parameters.AddWithValue("@EMAIL", memberEmail);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableAlreadyOccupied " + e.Message, e);
+                throw;
+            }
+
+            return command.ExecuteNonQuery() > 0;
         }
 
         public bool GetTabExists(FbConnection connection, FbTransaction transaction, int tabKey)
