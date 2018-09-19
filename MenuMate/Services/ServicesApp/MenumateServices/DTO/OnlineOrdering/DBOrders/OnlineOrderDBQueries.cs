@@ -433,7 +433,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@HAPPYHOUR", 'F');
                 command.Parameters.AddWithValue("@ORDER_LOCATION", orderDbItem.Location);
                 command.Parameters.AddWithValue("@TAB_TYPE", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? 3 : 0);
-                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
+                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
                 command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
                 command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.MembershipProfileId); //to test loyalty key
                 command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);  
