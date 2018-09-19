@@ -131,8 +131,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                             if (siteOrderViewModel.ContainerType == Loyaltymate.Enum.OrderContainerType.Table)
                             {
-                                bool canOrderBeSaved = dbQueries.IsTableAlreadyOccupied(connection, transaction, siteOrderViewModel.UserEmailId, siteOrderViewModel.ContainerNumber);
-                                if (!canOrderBeSaved)
+                                bool retVal = IsTableBusy(siteOrderViewModel.ContainerNumber, siteOrderViewModel.UserEmailId);
+                                if (retVal)
                                     throw new Exception("Order can't be saved to this table because it already contains orders.");
                             }
                             orderRow.ContainerName = siteOrderViewModel.ContainerName;
@@ -326,6 +326,31 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
             return tabKey;
+        }
+
+        private bool IsTableBusy(int tableNumber, string email)
+        {
+            int orderKey = 0;
+            try
+            {
+                FbCommand command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableNumber);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        orderKey = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "ORDER_KEY",
+                                                        0));
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableBusy " + e.Message, e);
+                throw;
+            }
+            return orderKey > 0;
         }
 
         private void SetSeatTab(int tabKey, int seatKey)

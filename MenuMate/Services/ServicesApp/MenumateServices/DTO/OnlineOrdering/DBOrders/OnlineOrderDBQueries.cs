@@ -76,7 +76,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public bool IsTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, int tableNumber)
+        public FbCommand CheckTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, int tableNumber)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
             try
@@ -88,6 +88,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
                 command.Parameters.AddWithValue("@EMAIL", memberEmail);
+                
             }
             catch (Exception e)
             {
@@ -95,7 +96,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
 
-            return command.ExecuteNonQuery() > 0;
+            return command;
         }
 
         public bool GetTabExists(FbConnection connection, FbTransaction transaction, int tabKey)
