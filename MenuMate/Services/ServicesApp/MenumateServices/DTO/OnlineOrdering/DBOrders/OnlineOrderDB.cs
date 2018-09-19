@@ -133,7 +133,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             {
                                 bool canOrderBeSaved = dbQueries.IsTableAlreadyOccupied(connection, transaction, siteOrderViewModel.UserEmailId, siteOrderViewModel.ContainerNumber);
                                 if (!canOrderBeSaved)
-                                    new Exception("Order can't be saved to this table because it already contains orders.");
+                                    throw new Exception("Order can't be saved to this table because it already contains orders.");
                             }
                             orderRow.ContainerName = siteOrderViewModel.ContainerName;
                             orderRow.ContainerType = siteOrderViewModel.ContainerType;
