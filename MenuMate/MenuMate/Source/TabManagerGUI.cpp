@@ -1967,6 +1967,7 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
         btnLockTab->Enabled             = false;
         btnRemoveTab->Enabled           = false;
         btnSubsidisedProfile->Enabled   = false;
+        btnPermanent->Enabled      = false;
     }
     else
     {
@@ -1977,6 +1978,7 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
         btnLockTab->Enabled             = true;
         btnRemoveTab->Enabled           = true;
         btnSubsidisedProfile->Enabled   = true;
+        btnPermanent->Enabled      = true;
     }
 }
 //---------------------------------------------------------------------------
