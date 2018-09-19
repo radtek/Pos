@@ -5910,7 +5910,7 @@ bool TfrmBillGroup::DownloadOnlineMember()
     try
     {
         UnicodeString emailId = GetMemberEmailIdForOrder();
-        if(emailId != NULL && emailId.Trim() != "")
+        if(emailId.Trim() != "")
             GetLoyaltyMemberByEmail(emailId);
     }
     catch(Exception &ex)
