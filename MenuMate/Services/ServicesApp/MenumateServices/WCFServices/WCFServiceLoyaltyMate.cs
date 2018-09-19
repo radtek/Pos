@@ -228,7 +228,8 @@ namespace MenumateServices.WCFServices
                 WriteAndClearStringList();
 
                 LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
-                stringList.Add("After Updating order status to web.....");
+                requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
+                stringList.Add("After Updating order status to web..json is ..." + requestData);
                 WriteAndClearStringList();
             }
             catch (Exception exc)

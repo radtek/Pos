@@ -150,7 +150,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.SiteId = siteOrderViewModel.SiteId;
                             orderRow.OnlinerderId = siteOrderViewModel.OrderId;
 
-                            if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber > 100)
+                            if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
                                 orderRow.ContainerType = 0;
 
                             //generate tab key if tab not exist..
