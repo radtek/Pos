@@ -541,7 +541,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
-
+            if(tableNumber == 0)
+                throw new Exception("Table number can not be zero.");
             //...........................................
 
             try

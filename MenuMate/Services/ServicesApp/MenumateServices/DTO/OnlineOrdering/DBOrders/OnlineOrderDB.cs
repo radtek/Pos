@@ -141,6 +141,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.SiteId = siteOrderViewModel.SiteId;
                             orderRow.OnlinerderId = siteOrderViewModel.OrderId;
 
+                            if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber > 100)
+                                orderRow.ContainerType = 0;    
+
                             foreach (var item in siteOrderViewModel.OrderItems)
                             {
                                 orderRow.Name = item.Name;
@@ -171,7 +174,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.SecurityRef = GetNextSecurityRef();
 
                                     //generate tab key if tab not exist..
-                                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
+                                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
                                                         : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo                                    
 
                                     //Load Item info like course, sc, kitchen name etc.
@@ -246,13 +249,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             public KeyGeneratorException(string message, System.Exception inner) : base(message, inner) { }
         }
 
-        private int GetOrCreateTabForOnlineOrdering(int onlineOrderKey, string tabName, string id_number)
+        private int GetOrCreateTabForOnlineOrdering(string tabName, string id_number)
         {
             int tabKey = FindTabKeyForOnlineOrderTab(tabName);
             try
             {
                 if (tabKey == 0)
-                    tabKey = createTabForOnlineOrder(onlineOrderKey, tabName, id_number);
+                    tabKey = createTabForOnlineOrder(tabName, id_number);
             }
             catch (Exception e)
             {
@@ -419,7 +422,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tableKey;
         }
 
-        private int createTabForOnlineOrder(int onlineOrderKey, string tabName, string id_number)
+        private int createTabForOnlineOrder(string tabName, string id_number)
         {
             int tabKey = CreateOnlineOrderTabInDB(tabName, id_number);
             return tabKey;
