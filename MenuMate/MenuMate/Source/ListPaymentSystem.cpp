@@ -6976,14 +6976,14 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
         siteOrderModel.CompanyId = 0;
         siteOrderModel.SiteId = Order->SiteId;
-        siteOrderModel.OrderId = 0;
+        siteOrderModel.OrderId = Order->OnlineOrderId;
         siteOrderModel.TransactionType = paymentTransaction.SalesType;
         siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
         siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
         siteOrderModel.ContainerNumber = Order->ContainerTabType == TabTableSeat ? Order->TableNo : Order->TabKey;
         siteOrderModel.ContainerType = Order->ContainerTabType == TabTableSeat ? OnlineTable : OnlineTab;
-        siteOrderModel. ContainerName = Order->TabContainerName;
-        siteOrderModel. OrderGuid = Order->OnlineOrderId;
+        siteOrderModel.ContainerName = Order->TabContainerName;
+        siteOrderModel.OrderGuid = Order->OrderGuid;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
         siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
         siteOrderModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
