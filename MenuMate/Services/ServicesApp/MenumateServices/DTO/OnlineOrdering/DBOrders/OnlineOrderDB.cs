@@ -213,7 +213,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 //addDetailsTransaction.Rollback();
                 ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
-                //throw;
+                throw;
             }
         }
 
@@ -264,6 +264,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
         private int GetOrCreateTableForOnlineOrdering(int tableNumber, string containerName)
         {
+            if (tableNumber < 1 || tableNumber > 100)
+                throw new Exception("Table number must be between 1 and 100.");
+
             int tableKey = FindTableKeyForOnlineOrder(tableNumber);
             try
             {
