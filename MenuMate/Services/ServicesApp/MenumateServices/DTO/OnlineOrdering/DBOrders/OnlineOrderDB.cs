@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using MenumateServices.Tools;
 
 namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {
@@ -121,11 +122,19 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
+                
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
                         try
                         {
                             OrderAttributes orderRow = new OrderAttributes();
+
+                            if (siteOrderViewModel.ContainerType == Loyaltymate.Enum.OrderContainerType.Table)
+                            {
+                                bool retVal = IsTableBusy(siteOrderViewModel.ContainerNumber, siteOrderViewModel.UserEmailId);
+                                if (retVal)
+                                    throw new Exception("Order can't be saved to this table because it already contains orders.");
+                            }
                             orderRow.ContainerName = siteOrderViewModel.ContainerName;
                             orderRow.ContainerType = siteOrderViewModel.ContainerType;
                             orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
@@ -140,6 +149,16 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.Email = siteOrderViewModel.UserEmailId;
                             orderRow.SiteId = siteOrderViewModel.SiteId;
                             orderRow.OnlinerderId = siteOrderViewModel.OrderId;
+
+                            if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
+                                orderRow.ContainerType = 0;
+
+                            //generate tab key if tab not exist..
+                            orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
+                                                : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo 
+
+                            //Generate Security ref..
+                            orderRow.SecurityRef = GetNextSecurityRef();    
 
                             foreach (var item in siteOrderViewModel.OrderItems)
                             {
@@ -165,14 +184,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
 
                                     //Generate order id..
-                                    orderRow.OrderId = GenerateKey("ORDERS");
-
-                                    //Generate Security ref..
-                                    orderRow.SecurityRef = GetNextSecurityRef();
-
-                                    //generate tab key if tab not exist..
-                                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(5, orderRow.ContainerName, "1")
-                                                        : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo                                    
+                                    orderRow.OrderId = GenerateKey("ORDERS");                                                                                                       
 
                                     //Load Item info like course, sc, kitchen name etc.
                                     LoadItemInfo(ref orderRow);
@@ -213,7 +225,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 //addDetailsTransaction.Rollback();
                 ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
-                //throw;
+                throw;
             }
         }
 
@@ -246,13 +258,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             public KeyGeneratorException(string message, System.Exception inner) : base(message, inner) { }
         }
 
-        private int GetOrCreateTabForOnlineOrdering(int onlineOrderKey, string tabName, string id_number)
+        private int GetOrCreateTabForOnlineOrdering(string tabName, string id_number)
         {
             int tabKey = FindTabKeyForOnlineOrderTab(tabName);
             try
             {
                 if (tabKey == 0)
-                    tabKey = createTabForOnlineOrder(onlineOrderKey, tabName, id_number);
+                    tabKey = createTabForOnlineOrder(tabName, id_number);
             }
             catch (Exception e)
             {
@@ -264,6 +276,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
         private int GetOrCreateTableForOnlineOrdering(int tableNumber, string containerName)
         {
+            if (tableNumber < 1 || tableNumber > 100)
+                throw new Exception("Table number must be between 1 and 100.");
+
             int tableKey = FindTableKeyForOnlineOrder(tableNumber);
             try
             {
@@ -311,6 +326,31 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
             return tabKey;
+        }
+
+        private bool IsTableBusy(int tableNumber, string email)
+        {
+            int orderKey = 0;
+            try
+            {
+                FbCommand command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableNumber);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        orderKey = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "ORDER_KEY",
+                                                        0));
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableBusy " + e.Message, e);
+                throw;
+            }
+            return orderKey > 0;
         }
 
         private void SetSeatTab(int tabKey, int seatKey)
@@ -416,7 +456,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tableKey;
         }
 
-        private int createTabForOnlineOrder(int onlineOrderKey, string tabName, string id_number)
+        private int createTabForOnlineOrder(string tabName, string id_number)
         {
             int tabKey = CreateOnlineOrderTabInDB(tabName, id_number);
             return tabKey;

@@ -14,8 +14,8 @@ class TDBOnlineOrdering
 public:
     static TSiteMenuInfo GetMenuInfo(Database::TDBTransaction &dbTransaction);
     static TSiteTaxSettingsInfo GetTaxSettings(Database::TDBTransaction &dbTransaction);
-    static UnicodeString GetOnlineOrderId(Database::TDBTransaction &DBTransaction);
-    static void GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId);
+    static UnicodeString GetOnlineOrderGUID(Database::TDBTransaction &DBTransaction);
+    static void GetOrdersByOnlineOrderGUID(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId);
     static void SetOnlineOrderStatus(Database::TDBTransaction &DBTransaction, UnicodeString orderUniqueId);
     static int GetMemberKey(Database::TDBTransaction &dbTransaction, int orderKey);
 private:

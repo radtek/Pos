@@ -357,7 +357,7 @@ TSiteTaxSettingsInfo TDBOnlineOrdering::GetTaxSettings(Database::TDBTransaction 
     return siteTaxSettingsInfo;
 }
 //----------------------------------------------------------------------------------------------------
-void TDBOnlineOrdering::GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId)
+void TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(Database::TDBTransaction &DBTransaction,TList *Orders, UnicodeString orderUniqueId)
 {
 	if(orderUniqueId.Trim() == "")
 	{
@@ -395,9 +395,9 @@ void TDBOnlineOrdering::GetOrdersByOnlineOrderId(Database::TDBTransaction &DBTra
 	}
 }
 //----------------------------------------------------------------------------
-UnicodeString TDBOnlineOrdering::GetOnlineOrderId(Database::TDBTransaction &dbTransaction)
+UnicodeString TDBOnlineOrdering::GetOnlineOrderGUID(Database::TDBTransaction &dbTransaction)
 {
-    UnicodeString onlineOrderId = "";
+    UnicodeString onlineOrderGUID = "";
     try
     {
         std::list<TTaxSettingsInfo> SiteTaxSettings;
@@ -411,14 +411,14 @@ UnicodeString TDBOnlineOrdering::GetOnlineOrderId(Database::TDBTransaction &dbTr
         ibInternalQuery->ExecQuery();
 
         if(ibInternalQuery->RecordCount)
-            onlineOrderId = ibInternalQuery->FieldByName("ORDER_GUID")->AsString;
+            onlineOrderGUID = ibInternalQuery->FieldByName("ORDER_GUID")->AsString;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return onlineOrderId;
+    return onlineOrderGUID;
 }
 //----------------------------------------------------------------------------
 void TDBOnlineOrdering::SetOnlineOrderStatus(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueId)

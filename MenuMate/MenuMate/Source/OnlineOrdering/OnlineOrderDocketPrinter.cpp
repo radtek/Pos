@@ -152,7 +152,7 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 //        TDeviceRealTerminal::Instance().RegisterTransaction(dBTransaction);
 //        dBTransaction.StartTransaction();
 
-        UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderId(dBTransaction);
+        UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderGUID(dBTransaction);
         if(orderUniqueId.Trim() == "")
             return;
 		// Load the Order.
@@ -162,7 +162,7 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 
 	 //	std::set<__int64>ItemsTabs;
 	  //	ItemsTabs.insert(WebOrder.TabKey);
-		TDBOnlineOrdering::GetOrdersByOnlineOrderId(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
+		TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
 
 		TMMContactInfo Member;
 	  //	TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, WebOrder.ContactKey, Member);

@@ -58,10 +58,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     FROM 
                                         TAB 
                                     WHERE 
-                                        TAB_NAME = @TAB_NAME
+                                        TAB_NAME = @TAB_NAME AND TAB_TYPE = @TAB_TYPE
                                     ";
 
                 command.Parameters.AddWithValue("@TAB_NAME", tabName);
+                command.Parameters.AddWithValue("@TAB_TYPE", 0);
             }
             catch (Exception e)
             {
@@ -71,6 +72,29 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
 
             //............................................
+
+            return command;
+        }
+
+        public FbCommand CheckTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, int tableNumber)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+            try
+            {
+                command.CommandText = @"
+                                    SELECT A.ORDER_KEY 
+                                    FROM ORDERS a
+                                    WHERE a.TABLE_NUMBER = @TABLE_NUMBER AND a.EMAIL <> @EMAIL ";
+
+                command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                command.Parameters.AddWithValue("@EMAIL", memberEmail);
+                
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableAlreadyOccupied " + e.Message, e);
+                throw;
+            }
 
             return command;
         }
@@ -433,7 +457,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@HAPPYHOUR", 'F');
                 command.Parameters.AddWithValue("@ORDER_LOCATION", orderDbItem.Location);
                 command.Parameters.AddWithValue("@TAB_TYPE", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? 3 : 0);
-                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TransactionDate);
+                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
                 command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
                 command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.MembershipProfileId); //to test loyalty key
                 command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);  
@@ -541,7 +565,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
-
+            if(tableNumber == 0)
+                throw new Exception("Table number can not be zero.");
             //...........................................
 
             try
