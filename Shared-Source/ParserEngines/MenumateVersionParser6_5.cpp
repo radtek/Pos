@@ -61,6 +61,8 @@ void TApplyParser::update6_53Tables()
     UpdateOrders6_53(_dbControl);
     UpdateDayArchive6_53(_dbControl);
     UpdateArchive6_53(_dbControl);
+    AlterTableArcBills6_53(_dbControl);
+    UpdateTableArcBills6_53(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -567,6 +569,45 @@ void TApplyParser::UpdateArchive6_53(TDBControl* const inDBControl)
         if ( fieldExists( "ARCHIVE ", "ORDER_GUID ", _dbControl ) )
         {
             UpdateQuery->SQL->Text =  "UPDATE ARCHIVE a SET a.ORDER_GUID = '' WHERE a.ORDER_GUID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTableArcBills6_53(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "DAYARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE DAYARCBILL ADD EFTPOS_SERVICE_ID INTEGER ", inDBControl);
+    }
+    if ( !fieldExists( "ARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE ARCBILL ADD EFTPOS_SERVICE_ID INTEGER ", inDBControl);
+    }
+}
+//-----------------------------------------------------------------------------
+void TApplyParser::UpdateTableArcBills6_53(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+        if ( fieldExists( "DAYARCBILL ", "EFTPOS_SERVICE_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE DAYARCBILL a SET a.EFTPOS_SERVICE_ID = 0 WHERE a.EFTPOS_SERVICE_ID IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        if ( fieldExists( "ARCBILL ", "EFTPOS_SERVICE_ID ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE ARCBILL a SET a.EFTPOS_SERVICE_ID = 0 WHERE a.EFTPOS_SERVICE_ID IS NULL ",
             UpdateQuery->ExecQuery();
         }
 

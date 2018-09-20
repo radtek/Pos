@@ -2050,14 +2050,33 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		Retval = IBInternalQuery->Fields[0]->AsInteger;
 		IBInternalQuery->Close();
 
+        int AdyenServiceId = 0;
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+		    {
+                TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
+                if (SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && SubPayment->GetPay() != 0)
+                {
+                    IBInternalQuery->Close();
+                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ADYENSERVICEID, 0) FROM RDB$DATABASE";
+                    IBInternalQuery->ExecQuery();
+                    AdyenServiceId = IBInternalQuery->Fields[0]->AsInteger;
+                    IBInternalQuery->Close();
+                    break;
+                }
+            }
+        }
+
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILL (" "ARCBILL_KEY, " "TERMINAL_NAME, " "STAFF_NAME, " "TIME_STAMP, " "TOTAL, " "DISCOUNT, "
 		"PATRON_COUNT, " "RECEIPT, " "SECURITY_REF, " "BILLED_LOCATION, " "INVOICE_NUMBER, " "SALES_TYPE, " "INVOICE_KEY,"
-        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT ) " "VALUES ("
+        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT, EFTPOS_SERVICE_ID ) "
+        "VALUES ("
 		":ARCBILL_KEY, " ":TERMINAL_NAME, " ":STAFF_NAME, " ":TIME_STAMP, " ":TOTAL, " ":DISCOUNT, " ":PATRON_COUNT, " ":RECEIPT, "
 		":SECURITY_REF, " ":BILLED_LOCATION," ":INVOICE_NUMBER, " ":SALES_TYPE, " ":INVOICE_KEY, "
-        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT ) ";
+        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT, :EFTPOS_SERVICE_ID ) ";
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
@@ -2065,15 +2084,12 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
         currentTime = IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime;
 		IBInternalQuery->ParamByName("TOTAL")->AsCurrency = Total;
 		IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Discount;
-        IBInternalQuery->ParamByName("ROUNDING_ADJUSTMENT")->AsCurrency = RoundToNearest(
-					PaymentTransaction.Money.RoundingAdjustment,
-					0.01,
-					TGlobalSettings::Instance().MidPointRoundsDown);
+        IBInternalQuery->ParamByName("ROUNDING_ADJUSTMENT")->AsCurrency = RoundToNearest(PaymentTransaction.Money.RoundingAdjustment, 0.01,
+					                                                            TGlobalSettings::Instance().MidPointRoundsDown);
 		int TotalCount = 0;
 		std::vector <TPatronType> ::iterator ptrPatronTypes;
         if(!MakePatronCountZero)
         {
-
             for (ptrPatronTypes = PaymentTransaction.Patrons.begin(); ptrPatronTypes != PaymentTransaction.Patrons.end(); ptrPatronTypes++)
             {
                 TotalCount += ptrPatronTypes->Count;
@@ -2098,6 +2114,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("BILLED_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
 		IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = PaymentTransaction.InvoiceKey;
 		IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = PaymentTransaction.RefundRefReceipt;
+        IBInternalQuery->ParamByName("EFTPOS_SERVICE_ID")->AsInteger = AdyenServiceId;
 
 		// set the receipt information if available, else insert null
 
