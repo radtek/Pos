@@ -115,6 +115,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\printer.gif; DestDir: {app}\kios
 Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\indexFinancial.html; DestDir: {app}\kiosk; Flags: ignoreversion 
 Source: {#GetEnv('BASEDIR')}\Static Files\OrderLogo.bmp; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe.config; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.AspNet.SignalR.Client.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\NewtonSoft.Json.dll; DestDir: {app}; Flags: ignoreversion;
 
 ;OpenSSL for Email - MM POS
 Source: {#GetEnv('BASEDIR')}\Static Files\email\openssl-0.9.8h-1-setup.exe; DestDir: {app}\email; Flags: ignoreversion onlyifdoesntexist

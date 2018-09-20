@@ -4,6 +4,7 @@
 
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
+#include "DBTables.h"
 
 
 //---------------------------------------------------------------------------
@@ -196,6 +197,7 @@ bool TEnableFloorPlan::runBackupFloorPlan(TForm* inOwner, bool  inShowAll, TFloo
         inFloorPlanReturnParams.TabContainerNumber = frmSelectTable->SelectedTabContainerNumber;
         inFloorPlanReturnParams.TabContainerName   = frmSelectTable->SelectedTabContainerName;
         inFloorPlanReturnParams.PartyName          = frmSelectTable->SelectedPartyName;
+        inFloorPlanReturnParams.HasOnlineOrders    = TDBTables::HasOnlineOrders(inFloorPlanReturnParams.TabContainerNumber);
 
         return true;
     }

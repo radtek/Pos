@@ -83,7 +83,7 @@ public:
                       AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
                       TColor inColor, bool inDisplaySizes, bool inEnabled, bool inItemOnlySide,
                       bool  inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
-                      __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight );
+                      __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inItemIdentifier);
 
    __int32 AssembleOptionMask(const int inGroupNumber,
                               const int inMaxSelect,
@@ -124,7 +124,7 @@ public:
                           bool inDisableWhenCountReachesZero,
                           bool inCanBePaidForUsingPoints,
                           const int inDefaultPatronCount,
-                          Currency inPriceForPoints,int revenueCode); // add price for points.
+                          Currency inPriceForPoints,int revenueCode, int inItemSizeIdentifier); // add price for points.
 
      void SaveBCategory( __int32 inItemSizeHandle, __int32 inKey, AnsiString inName );
 

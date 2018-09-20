@@ -14,6 +14,7 @@
 #include "LoyaltyMateWSDL.h"
 #include "Discount.h"
 #include "LoyaltyMateUtilities.h"
+#include "OnlineOrderingAttributes.h"
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------
@@ -155,6 +156,11 @@ class TLoyaltyMateInterface
         void ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVoucherDetail& VoucherDetail);
         void ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail);
         void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
+        //for online ordering menu syncing.
+        MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
+        MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
+        MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
+        MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
@@ -204,6 +210,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
 
         MMLoyaltyServiceResponse CreateMMResponse(VoucherTransactionResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse);
 
         // creates MMResponse from an exception message
         MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
@@ -223,6 +230,14 @@ class TLoyaltyMateInterface
         void CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction);
         void  DisableSyncSetting(Database::TDBTransaction &DBTransaction);
         RequestInfo* CreateRequest(AnsiString requestKey);
+        //Online ordering
+        AnsiString GetSyndCodeForOnlineOrdering();
+        OrderItemModel* CreateOrderItemModel(TOrderItemModel itemModel);
+        OrderItemSizeModel* CreateOrderItemSizeModel(TOrderItemSizeModel orderItemSizeModel);
+        OrderItemSizeDiscountModel* CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel);
+        OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
+        OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
+        InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
 };
 
 #endif

@@ -280,6 +280,9 @@
 			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\VersionUpgrade_V6.cpp">
 				<BuildOrder>51</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_5.cpp">
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
 			<FormResources Include="main.dfm"/>
 			<BuildConfiguration Include="Base">

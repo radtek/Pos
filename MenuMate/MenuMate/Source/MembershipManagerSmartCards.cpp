@@ -2258,6 +2258,8 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
             SmartCardContact.Points = loyaltyMateOperationDialogBox->Info.Points;
             TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
             SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
+            MessageBox(loyaltyMateOperationDialogBox->Info.MemberVouchers.size(),"loyaltyMateOperationDialogBox->Info.MemberVouchers",MB_OK);
+            MessageBox(SmartCardContact.MemberVouchers.size(),"SmartCardContact.MemberVouchers",MB_OK);
             SmartCardContact.HasTransactions = loyaltyMateOperationDialogBox->Info.HasTransactions;
         }
 	}
@@ -2669,11 +2671,11 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromEmail(TMMContactInfo &MMCo
        {
          MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
        }
-       MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
-       MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
-       MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
-       MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
-       MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
+           MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
+           MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
+           MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
+           MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
+           MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
        }
    else
    {
@@ -3323,5 +3325,120 @@ bool TManagerMembershipSmartCards::IsEmailLiveForDiffMember(TMMContactInfo conta
         DBTransaction.Rollback();
     }
     return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TManagerMembershipSmartCards::GetMemberFromCloudForOO(TMMContactInfo &UserInfo)
+{
+   bool existInLocalDb = false;
+   bool memberDownloadStatus = false;
+   bool MemberNotExist = false;
+   Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+   TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+   dbTransaction.StartTransaction();
+   try
+   {
+       if(ManagerSyndicateCode.GetCommunicationSyndCode().Valid())
+       {
+           memberDownloadStatus = runMemberDownloadThreadForOO(ManagerSyndicateCode.GetCommunicationSyndCode(),
+                                     UserInfo,true,MemberNotExist);
+
+           if(MemberNotExist)
+           {
+               TGlobalSettings::Instance().IsPOSOffline = false;
+           }
+           else
+           {
+               TGlobalSettings::Instance().IsPOSOffline = !memberDownloadStatus;
+           }
+           if(TGlobalSettings::Instance().IsPOSOffline)
+           {
+               MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
+           }
+           MembershipSystem->CurrentYearPoints  = UserInfo.CurrentYearPoint;
+           MembershipSystem->PreviousYearPoints = UserInfo.PreviousYearPoint;
+           MembershipSystem->AvailableBDPoint  = UserInfo.AvailableBDPoint;
+           MembershipSystem->AvailableFVPoint = UserInfo.AvailableFVPoint;
+           MembershipSystem->MemberVouchers = UserInfo.MemberVouchers;
+           MembershipSystem->SetContactDetails(dbTransaction, UserInfo.ContactKey, UserInfo);
+           MembershipSystem->SetContactLoyaltyAttributes(dbTransaction, UserInfo.ContactKey, UserInfo);
+       }
+       else
+       {
+          MessageBox( "Syndicate Code is not valid.", "Message", MB_ICONINFORMATION + MB_OK);
+       }
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        dbTransaction.Rollback();
+    }
+    return memberDownloadStatus;
+}
+//-----------------------------------------------------------------------------
+bool TManagerMembershipSmartCards::runMemberDownloadThreadForOO(TSyndCode CurrentSyndicateCode, TMMContactInfo &SmartCardContact,bool useEmail,bool &memberNotExist)
+{
+	bool replacePointsFromCloud = true;
+	TLoyaltyMateDownloadMemberThread* loyaltyMemberDownloadThread = new TLoyaltyMateDownloadMemberThread(CurrentSyndicateCode,replacePointsFromCloud);
+	loyaltyMemberDownloadThread->FreeOnTerminate = true;
+	loyaltyMemberDownloadThread->UUID = SmartCardContact.CloudUUID;
+	loyaltyMemberDownloadThread->DownLoadFromUUID = false;
+    loyaltyMemberDownloadThread->MemberCode = SmartCardContact.MemberCode;
+	loyaltyMemberDownloadThread->DownLoadFromCode = false;;
+    loyaltyMemberDownloadThread->MemberEmail = SmartCardContact.EMail;
+	loyaltyMemberDownloadThread->DownLoadFromEmail = useEmail;
+	//display the dialog box
+	std::auto_ptr<TfrmLoyaltyMateOperationDialogBox> loyaltyMateOperationDialogBox = std::auto_ptr<TfrmLoyaltyMateOperationDialogBox>(TfrmLoyaltyMateOperationDialogBox::Create<TfrmLoyaltyMateOperationDialogBox>(Screen->ActiveForm));
+	loyaltyMateOperationDialogBox->OperationDescription = "Downloading member information from LoyaltyMate... Please Wait.";
+	loyaltyMateOperationDialogBox->OperationTitle 		= "LoyaltyMate Operation";
+	loyaltyMateOperationDialogBox->DownloadThread 		= loyaltyMemberDownloadThread;
+	loyaltyMateOperationDialogBox->Info			= SmartCardContact;
+	loyaltyMemberDownloadThread->Start();
+    bool dialogResultSuccessful = loyaltyMateOperationDialogBox->ShowModal() == mrOk;
+	if(dialogResultSuccessful)
+	{
+            dialogResultSuccessful = true;
+            //download complete, copy the values across and display the member information
+            SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
+            SmartCardContact.Phone          = loyaltyMateOperationDialogBox->Info.Phone;
+            SmartCardContact.Mobile          = loyaltyMateOperationDialogBox->Info.Mobile;
+            SmartCardContact.EMail           = loyaltyMateOperationDialogBox->Info.EMail;
+            SmartCardContact.Name            = loyaltyMateOperationDialogBox->Info.Name;
+            SmartCardContact.Surname         = loyaltyMateOperationDialogBox->Info.Surname;
+            SmartCardContact.MailingAddress         = loyaltyMateOperationDialogBox->Info.MailingAddress;
+            SmartCardContact.LocationAddress         = loyaltyMateOperationDialogBox->Info.LocationAddress;
+            SmartCardContact.Title         = loyaltyMateOperationDialogBox->Info.Title;
+            SmartCardContact.ActivationToken = loyaltyMateOperationDialogBox->Info.ActivationToken;
+            SmartCardContact.DateOfBirth     = loyaltyMateOperationDialogBox->Info.DateOfBirth;
+            SmartCardContact.LastVisit       = loyaltyMateOperationDialogBox->Info.LastVisit;
+            SmartCardContact.TierLevel       = loyaltyMateOperationDialogBox->Info.TierLevel;
+            SmartCardContact.LastBirthdayProcessed       = loyaltyMateOperationDialogBox->Info.LastBirthdayProcessed;
+            SmartCardContact.MemberType       = loyaltyMateOperationDialogBox->Info.MemberType;
+            SmartCardContact.ActivationDate       = loyaltyMateOperationDialogBox->Info.ActivationDate;
+            SmartCardContact.PreviousYearPoint       = loyaltyMateOperationDialogBox->Info.PreviousYearPoint;
+            SmartCardContact.CurrentYearPoint       = loyaltyMateOperationDialogBox->Info.CurrentYearPoint;
+            SmartCardContact.AvailableBDPoint       = loyaltyMateOperationDialogBox->Info.AvailableBDPoint;
+            SmartCardContact.AvailableFVPoint       = loyaltyMateOperationDialogBox->Info.AvailableFVPoint;
+            SmartCardContact.MemberCode       = loyaltyMateOperationDialogBox->Info.MemberCode;
+            if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
+            {
+               SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+            }
+            if(SmartCardContact.SiteID == 0)
+            {
+               SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
+            }
+            SmartCardContact.LastModified  = loyaltyMateOperationDialogBox->Info.LastModified;
+            SmartCardContact.IsFirstVisitRewarded  = loyaltyMateOperationDialogBox->Info.IsFirstVisitRewarded;
+            SmartCardContact.MemberCode  = loyaltyMateOperationDialogBox->Info.MemberCode;
+            SmartCardContact.Points = loyaltyMateOperationDialogBox->Info.Points;
+            TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
+            SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
+            SmartCardContact.HasTransactions = loyaltyMateOperationDialogBox->Info.HasTransactions;
+	}
+    else
+    {
+      memberNotExist = loyaltyMateOperationDialogBox->BarcodeMemberNotExist;
+    }
+	return dialogResultSuccessful;
 }
 //-----------------------------------------------------------------------------

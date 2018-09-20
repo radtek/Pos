@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="771009f2-b0df-42e0-9456-77787bac37c4" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8734/MenumateServices/LoyaltyMate/" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="f64f14fa-3ead-4738-9ed5-4ef662c0f7d9" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="7ea3c0ee-0e98-4182-ac7c-e231843a4c53" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1" />
+    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="86c8c1b0-50c1-4844-aac7-796df1f8d4f2" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd6" />
+    <MetadataFile FileName="item3.xsd" MetadataType="Schema" ID="b989e960-89c4-44f1-b33f-4782d164708b" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3" />
+    <MetadataFile FileName="item4.xsd" MetadataType="Schema" ID="44d486b2-7a19-4466-bfde-e747d9e15c12" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5" />
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="fa631be9-4813-4903-af6c-bee8e69f8f52" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?disco" />
+    <MetadataFile FileName="item5.xsd" MetadataType="Schema" ID="bd2555db-1934-4612-8de4-583704d2d076" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd0" />
+    <MetadataFile FileName="item6.xsd" MetadataType="Schema" ID="80a46b1e-84dd-47e6-a35c-fa6d775c7418" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7" />
+    <MetadataFile FileName="WCFServiceLoyaltyMate.wsdl" MetadataType="Wsdl" ID="71b89f66-6079-4b1e-87c5-a864306be08c" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?wsdl" />
+    <MetadataFile FileName="item7.xsd" MetadataType="Schema" ID="d2019291-4a56-4680-8c50-626eae5eca7d" SourceId="1" SourceUrl="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -28,10 +28,11 @@
 #include "ListSecurityRefContainer.h"
 #include "ItemSizeCategory.h"
 #include "DBSecurity.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "DBTax.h"
 #include "TaxProfileDBAccessManager_MM.h"
 #include "TaxProfile.h"
+#include "DBTab.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_TABS_IN_VIEW 7
 // ---------------------------------------------------------------------------
@@ -888,12 +889,12 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
 						TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, 0);
 					}
 
-                    if(CurrentTabType == TabClipp)
-                    {
-                        //send clipp tab details back
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(SelectedTab);
-                    }
+//                    if(CurrentTabType == TabClipp)
+//                    {
+//                        //send clipp tab details back
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(SelectedTab);
+//                    }
 				}
 			}
 		}
@@ -1251,6 +1252,7 @@ void TfrmTabManager::RefreshTabDetails()
 			btnPINTab->Caption = "Set Tab PIN";
 		}
 		DBTransaction.Commit();
+        CustomizeForOnlineOrderingTabs(SelectedTab);
 	}
 }
 
@@ -1951,6 +1953,33 @@ AnsiString TfrmTabManager::CheckDiscountApplicability(int discountKey)
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,err.Message);
 	}
     return message;
+}
+//---------------------------------------------------------------------------
+void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
+{
+    bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedTab);
+    if(hasOnlineOrders)
+    {
+        btnChangeDetails->Enabled       = false;
+        TouchButton1->Enabled           = false;
+        btnTabCredit->Enabled           = false;
+        btnPINTab->Enabled              = false;
+        btnLockTab->Enabled             = false;
+        btnRemoveTab->Enabled           = false;
+        btnSubsidisedProfile->Enabled   = false;
+        btnPermanent->Enabled      = false;
+    }
+    else
+    {
+        btnChangeDetails->Enabled       = true;
+        TouchButton1->Enabled           = true;
+        btnTabCredit->Enabled           = true;
+        btnPINTab->Enabled              = true;
+        btnLockTab->Enabled             = true;
+        btnRemoveTab->Enabled           = true;
+        btnSubsidisedProfile->Enabled   = true;
+        btnPermanent->Enabled      = true;
+    }
 }
 //---------------------------------------------------------------------------
 

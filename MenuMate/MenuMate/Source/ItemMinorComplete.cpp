@@ -227,6 +227,14 @@ TItemMinorComplete::TItemMinorComplete() {
     TabKey = 0;
     RoomNoStr = "";
     SplitMessage = "";
+    OnlineChitType = 0;
+    OnlineOrderId = 0;
+    SiteId = 0;
+    OrderItemId = 0;
+    OrderItemSizeId = 0;
+    ReferenceOrderItemSizeId = 0;
+    Email = "";
+    OrderGuid = "";
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -289,6 +297,14 @@ TItemMinorComplete::TItemMinorComplete(
     TabKey = initializer.TabKey;
     RoomNoStr = initializer.RoomNoStr;
     SplitMessage = initializer.SplitMessage;
+    OnlineChitType = initializer.OnlineChitType;
+    OnlineOrderId = initializer.OnlineOrderId;
+    SiteId = initializer.SiteId;
+    OrderItemId = initializer.OrderItemId;
+    OrderItemSizeId = initializer.OrderItemSizeId;
+    ReferenceOrderItemSizeId = initializer.ReferenceOrderItemSizeId;
+    Email = initializer.Email;
+    OrderGuid = initializer.OrderGuid;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -341,6 +357,14 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     TabKey = rhs.TabKey;
     RoomNoStr = rhs.RoomNoStr;
     SplitMessage = rhs.SplitMessage;
+    OnlineChitType = rhs.OnlineChitType;
+    OnlineOrderId = rhs.OnlineOrderId;
+    SiteId = rhs.SiteId;
+    OrderItemId = rhs.OrderItemId;
+    OrderItemSizeId = rhs.OrderItemSizeId;
+    ReferenceOrderItemSizeId = rhs.ReferenceOrderItemSizeId;
+    Email = rhs.Email;
+    OrderGuid = rhs.OrderGuid;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -394,6 +418,14 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->TabKey = TabKey;
         RetItem->RoomNoStr = RoomNoStr;
         RetItem->SplitMessage = SplitMessage;
+        RetItem->OnlineChitType = OnlineChitType;
+        RetItem->OnlineOrderId = OnlineOrderId;
+        RetItem->SiteId = SiteId;
+        RetItem->OrderItemId = OrderItemId;
+        RetItem->OrderItemSizeId = OrderItemSizeId;
+        RetItem->ReferenceOrderItemSizeId = ReferenceOrderItemSizeId;
+        RetItem->Email = Email;
+        RetItem->OrderGuid = OrderGuid;
     }
 }
 

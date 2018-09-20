@@ -174,7 +174,7 @@ __int32 TSaveMenu::SaveItem( __int32 inCourseHandle, __int32 inKey, AnsiString i
                              AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
                              TColor inColor, bool inDisplaySizes, bool inEnabled, bool inItemOnlySide,
                              bool  inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
-                             __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight )
+                             __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inItemIdentifier )
 {
     try
     {
@@ -200,6 +200,7 @@ __int32 TSaveMenu::SaveItem( __int32 inCourseHandle, __int32 inKey, AnsiString i
 	  setNodeAttr( itemElem,  "printFont",         inPrintFont );
       setNodeAttr( itemElem,  "printDoubleWidth",  inPrintDoubleWidth ? "true" : "false" );
       setNodeAttr( itemElem,  "printDoubleHeight", inPrintDoubleHeight ? "true" : "false" );
+      setNodeAttr( itemElem,  "itemIdentifier",             IntToStr( inItemIdentifier ) );
 
       //:::::::::::::::::::::::::::::::::
 
@@ -341,7 +342,7 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
                                  bool inDisableWhenCountReachesZero,
                                  bool inCanBePaidForUsingPoints,
                                  const int inDefaultPatronCount,
-                                 Currency inPriceForPoints, int revenueCode)
+                                 Currency inPriceForPoints, int revenueCode, int inItemSizeIdentifier)
 {
     try
     {
@@ -385,36 +386,25 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
         setNodeAttr( sizeElem,  "thirdPartyCodeKey",        IntToStr( inThirdPartyCodeKey ) );
         setNodeAttr( sizeElem,  "tareWeight",               inTareWeight );
         setNodeAttr( sizeElem,  "PLU",                      IntToStr( inPLU ) );
-
         //  ASEAN++
         //setNodeAttr( sizeElem,  "isTaxExempt",                 inIsTaxExempt ? "true" : "false" );
         //setNodeAttr( sizeElem,  "hasServiceCharge",            inHasServiceCharge ? "true" : "false" );
-
         setNodeAttr( sizeElem,  "availableQuantity",           FloatToStr( inAvailableQuantity ) );
         setNodeAttr( sizeElem,  "defaultQuantity",             FloatToStr( inDefaultQuantity ) );
         setNodeAttr( sizeElem,  "warningQuantity",             FloatToStr( inWarningQuantity ) );
         setNodeAttr( sizeElem,  "disableWhenCountReachesZero", inDisableWhenCountReachesZero ? "true" : "false" );
-
-        setNodeAttr(sizeElem,
-                    "canBePaidForUsingPoints",
-                    true_or_false[inCanBePaidForUsingPoints]);
-
-        setNodeAttr(sizeElem,
-                    "defaultPatronCount",
-                    IntToStr(inDefaultPatronCount));
+        setNodeAttr(sizeElem,  "canBePaidForUsingPoints", true_or_false[inCanBePaidForUsingPoints]);
+        setNodeAttr(sizeElem, "defaultPatronCount", IntToStr(inDefaultPatronCount));
         setNodeAttr( sizeElem,  "priceforpoints",    CurrToStr( inPriceForPoints ) ); // add price for points..
         setNodeAttr( sizeElem,  "revenueCode", IntToStr(revenueCode));
+        setNodeAttr( sizeElem,  "itemSizeIdentifier", IntToStr(inItemSizeIdentifier));
         //setNodeAttr( sizeElem,  "revenueCodeDescription", IntToStr(""));
-
         //:::::::::::::::::::::::::::::::::
-
         TiXmlElement *newElem;
-
         addElement( sizeElem, "BreakdownCategories", newElem );
         addElement( sizeElem, "Receipes",            newElem );
         addElement( sizeElem, "TaxProfiles",         newElem );
         addElement( sizeElem, "PriceLevels",         newElem );
-
         //:::::::::::::::::::::::::::::::::
 
         return ( __int32 )sizeElem;

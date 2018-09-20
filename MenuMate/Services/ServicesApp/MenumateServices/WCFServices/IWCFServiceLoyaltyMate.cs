@@ -4,8 +4,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
-
 using MenumateServices.DTO.LoyaltyMate;
+using MenumateServices.DTO.OnlineOrdering;
+using MenumateServices.DTO.OnlineOrdering.OrderModels;
+using MenumateServices.DTO.OnlineOrdering.MenuModels;
 
 namespace MenumateServices.WCFServices
 {
@@ -46,5 +48,20 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
+
+        [OperationContract]
+        LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);
+
+        [OperationContract]
+        LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings);
+
+        [OperationContract]
+        void GetOrdersFromWeb(string inSyndicateCode, string orders);
+
+        [OperationContract]
+        LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel);
+
+        [OperationContract]
+        LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode);
     }
 }
