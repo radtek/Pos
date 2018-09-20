@@ -1692,6 +1692,7 @@ static AnsiString PaymentTypeList =
 			ReportControl->AddFilter(ReportFilter);
 			break;
 		}
+
         	case Breakdown_Category:
 		{
 			requiredPermission = Security::MenuReports;
@@ -1704,6 +1705,27 @@ static AnsiString PaymentTypeList =
 
 			ReportFilter->Caption						= "Select the menus you wish to have appear in this report.";
 			ReportFilter->SQL								= MenuBreakdown_Category;
+			ReportFilter->DisplayField					= "Menu_Name";
+			ReportFilter->SelectionField				= "Menu_Name";
+			ReportFilter->SelectionDateRange			= false;
+			SubReport0->AddFilterIndex(0);
+
+			ReportControl->AddFilter(ReportFilter);
+			break;
+		}
+
+        case  MENU_ITEMNAME_ITEMUNIQUEID:
+            {
+			requiredPermission = Security::MenuReports;
+
+			ReportControl									= new TReportControl;
+			ReportControl->PrintReport					= &TfrmReports::PrintMenuItemNameUniqueId;
+			TSubReport *SubReport0						= ReportControl->AddSubReport("ItemName");
+
+			TReportCheckboxFilter *ReportFilter		= new TReportCheckboxFilter(ReportControl, MMFilterTransaction);
+
+			ReportFilter->Caption						= "Select the menus you wish to have appear in this report.";
+			ReportFilter->SQL								= MenuListSQL;
 			ReportFilter->DisplayField					= "Menu_Name";
 			ReportFilter->SelectionField				= "Menu_Name";
 			ReportFilter->SelectionDateRange			= false;
@@ -5088,6 +5110,47 @@ void TfrmReports::PrintMenuItemBarcodes(TReportControl *ReportControl)
 		}
 	}
 }
+//-------------------------------------------------------------------------
+void TfrmReports::PrintMenuItemNameUniqueId(TReportControl *ReportControl)
+{
+ 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+
+	try
+	{
+		TReportCheckboxFilter *MenuFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(0);
+		dmMMReportData->SetupMenuItemAndUniqueId(MenuFilter->Selection);
+
+		if (ReportType == rtExcel)
+		{
+			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+			ExcelDataSetsList ->AddObject("Menus",(TObject *)dmMMReportData->qrMenu3rdParty);
+			ExportToExcel( ExcelDataSetsList.get(), TreeView1->Selected->Text );
+		}
+		else
+		{
+			if (rvMenuMate->SelectReport("repItemNameUniqueId", false))
+			{
+				rvMenuMate->Execute();
+			}
+			else
+			{
+				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+			}
+		}
+	}
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
+
+
 //---------------------------------------------------------------------------
 void TfrmReports::PrintCashup(TReportControl *ReportControl)
 {
@@ -10260,6 +10323,7 @@ case 9:
             }
 	break;
 }
+
 
   }
 	}

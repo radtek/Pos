@@ -17037,7 +17037,41 @@ void TdmMMReportData::SetupMezzanineSales(TDateTime StartTime, TDateTime EndTime
     qrMezzanine->ParamByName("EndTime")->AsDateTime	= EndTime;
 } 
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+void TdmMMReportData::SetupMenuItemAndUniqueId(TStrings *Menus)
+{
+	 qrMenuItem->Close();
+	 qrMenuItem->SQL->Text =
+	 	"Select "
+	 		"Menu.Menu_Name,"
+	 		"Course.Course_Name,"
+			"Item.Item_Name,"
+             "Item.Item_Identifier"
 
+	 	"From "
+	 		"Menu Left Join Course On "
+	 			"Menu.Menu_Key = Course.Menu_Key "
+			"Left Join Item On "
+	 			"Course.Course_Key = Item.Course_Key "
+	 		"Left Join ItemSize On "
+				"Item.Item_Key = ItemSize.Item_Key ";
+	 if (Menus->Count > 0)
+	 {
+		qrMenuItem->SQL->Text	=	qrMenuItem->SQL->Text + "Where (" +
+												ParamString(Menus->Count, "Menu.Menu_Name", "MenuParam") + ")";
+	 }
+	 qrMenuItem->SQL->Text		=	qrMenuItem->SQL->Text +
+		"Order By "
+			"Menu.Menu_Name,"
+			"Course.CAO,"
+			"Item.IAO,"
+			"ItemSize.ISAO";
+
+	for (int i=0; i<Menus->Count; i++)
+	{
+		qrMenuItem->ParamByName("MenuParam" + IntToStr(i))->AsString = Menus->Strings[i];
+	}
+}
 
 
 
