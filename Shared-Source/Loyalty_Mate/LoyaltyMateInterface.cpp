@@ -198,6 +198,20 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncOnlineOrderingDetails(TSyndC
     }
 }
 //---------------------------------------------------------------------------
+bool TLoyaltyMateInterface::UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode)
+{
+    bool isSuccesssful = false;
+    try
+    {
+        CoInitialize(NULL);
+        isSuccesssful = loyaltymateClient->UnsetOrderingDetails(syndicateCode.GetSyndCode(),siteCode);
+    }
+    catch( Exception& exc )
+    {
+    }
+    return isSuccesssful;
+}
+//---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode syndicateCode,AnsiString uniqueId,AnsiString memberCardCode)
 {
     try

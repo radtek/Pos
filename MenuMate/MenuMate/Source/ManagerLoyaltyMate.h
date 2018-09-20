@@ -199,6 +199,7 @@ class TLoyaltyMateOnlineOrderingThread: public TThread
 		TSyndCode _syndicateCode;
 		void SyncOnlineOrderingDetails();
 		void ThreadTerminated();
+        void UnsetSignalRStatusAtCloud();
 
 	protected:
 		virtual void __fastcall Execute();
@@ -207,6 +208,7 @@ class TLoyaltyMateOnlineOrderingThread: public TThread
         TLoyaltyMateOnlineOrderingThread(TSyndCode inSyndicateCode);
         bool OperationSuccessful;
         AnsiString ErrorMessage;
+        bool UnsetSignalRStatus;
 };
 //--------------------------------------------------------------------------
 class TManagerLoyaltyMate

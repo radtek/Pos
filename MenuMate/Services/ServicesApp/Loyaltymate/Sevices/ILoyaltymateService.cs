@@ -25,5 +25,6 @@ namespace Loyaltymate.Sevices
         bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel);
         bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel);
         ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int inSiteCode);
+        bool UnsetOrderingDetails(string inSyndicateCode, int inSiteCode);
     }
 }

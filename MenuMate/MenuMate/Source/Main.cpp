@@ -541,6 +541,20 @@ void TfrmMain::SyncCompanyDetails()
 
 }
 //---------------------------------------------------------------------------
+void TfrmMain::UnsetOrderingDetails()
+{
+    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.CheckSyndCodes();
+        bool isSyncSuccessful = ManagerCloudSync.UnsetSinalRConnectionStatus();
+    }
+    else
+    {
+       DisableOnlineOrdering();
+    }
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormActivate(TObject *Sender)
 {
 	if( proxyMateManager->ClientUp && !fpConnectorUp )
@@ -610,6 +624,8 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	if(Continue)
 	{
         TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
+        // call api to set connection status of signalR
+        UnsetOrderingDetails();
         UnloadSignalR();
 		frmSecurity->LogOut();
 		frmMain->Close();
