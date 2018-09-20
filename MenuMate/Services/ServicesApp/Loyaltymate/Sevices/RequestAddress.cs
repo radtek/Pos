@@ -2,7 +2,8 @@
 {
     public class RequestAddress
     {
-        public const string BaseAddress = "http://lmonlineordering.azurewebsites.net/";//"http://lmonlineordering.azurewebsites.net/";
+        public const string BaseAddress = "http://menumatepos.com/";
+                                            //"http://lmonlineordering.azurewebsites.net/";
 
         //Member
         public const string SaveMember = "api/MemberApi/Save";
@@ -37,5 +38,7 @@
         public const string PostOnlineOrderInvoiceInfo = "api/v5/OrderApi/SaveOrderBillingInformation";
 
         public const string IsOnlineOrderingEnableBySiteId = "api/v5/SiteApi/IsOnlineOrderingEnableBySiteId/";
+
+        public const string UnsetOrderingDetails = "api/v5/SiteApi/SignalRDisconnectBySite/";
     }
 }
