@@ -843,7 +843,7 @@ TLoyaltyMateOnlineOrderingThread::TLoyaltyMateOnlineOrderingThread(TSyndCode inS
 	 OperationSuccessful(false),
 	 ErrorMessage("")
 {
-	FreeOnTerminate = false;
+	FreeOnTerminate = true;
     UnsetSignalRStatus = false;
 }
 //---------------------------------------------------------------------------
