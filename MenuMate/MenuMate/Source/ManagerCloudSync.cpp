@@ -79,6 +79,7 @@ bool TManagerCloudSync::SyncOnlineOrderingDetails()
         syncThread->OnTerminate = loyaltyMateOperationCompleted;
         syncThread->FreeOnTerminate = true;
         syncThread->UnsetSignalRStatus = false;
+
         syncThread->Start();
 
         // display dialog box
