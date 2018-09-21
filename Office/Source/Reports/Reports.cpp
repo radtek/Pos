@@ -527,6 +527,9 @@ void __fastcall TfrmReports::TreeView1Change(TObject *Sender,
 	static AnsiString MenuListSQL =
 		"Select Menu_Name From Menu Order By Menu_Name";
 
+    static AnsiString OOAMenuListSQL =
+		"Select Menu_Name From Menu Order By Menu_Name";
+
 	static AnsiString ConsumptionMenuList =
 			"Select Distinct "
 				"Archive.Menu_Name "
@@ -1714,18 +1717,18 @@ static AnsiString PaymentTypeList =
 			break;
 		}
 
-        case  MENU_ITEMNAME_ITEMUNIQUEID:
-            {
+          case  MENU_ITEMS_IDENTIFIER:
+           {
 			requiredPermission = Security::MenuReports;
 
 			ReportControl									= new TReportControl;
-			ReportControl->PrintReport					= &TfrmReports::PrintMenuItemNameUniqueId;
+			ReportControl->PrintReport					= &TfrmReports::PrintMenuItemsIdentifier;
 			TSubReport *SubReport0						= ReportControl->AddSubReport("ItemName");
 
 			TReportCheckboxFilter *ReportFilter		= new TReportCheckboxFilter(ReportControl, MMFilterTransaction);
 
 			ReportFilter->Caption						= "Select the menus you wish to have appear in this report.";
-			ReportFilter->SQL								= MenuListSQL;
+			ReportFilter->SQL								= OOAMenuListSQL;
 			ReportFilter->DisplayField					= "Menu_Name";
 			ReportFilter->SelectionField				= "Menu_Name";
 			ReportFilter->SelectionDateRange			= false;
@@ -1734,6 +1737,7 @@ static AnsiString PaymentTypeList =
 			ReportControl->AddFilter(ReportFilter);
 			break;
 		}
+
 
 		case CASHUP_INDEX:
 		{
@@ -5111,7 +5115,7 @@ void TfrmReports::PrintMenuItemBarcodes(TReportControl *ReportControl)
 	}
 }
 //-------------------------------------------------------------------------
-void TfrmReports::PrintMenuItemNameUniqueId(TReportControl *ReportControl)
+void TfrmReports::PrintMenuItemsIdentifier(TReportControl *ReportControl)
 {
  	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 	{
@@ -5126,13 +5130,18 @@ void TfrmReports::PrintMenuItemNameUniqueId(TReportControl *ReportControl)
 		if (ReportType == rtExcel)
 		{
 			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-			ExcelDataSetsList ->AddObject("Menus",(TObject *)dmMMReportData->qrMenu3rdParty);
+			ExcelDataSetsList ->AddObject("Menus",(TObject *)dmMMReportData->qrMenuItem);
 			ExportToExcel( ExcelDataSetsList.get(), TreeView1->Selected->Text );
 		}
 		else
 		{
-			if (rvMenuMate->SelectReport("repItemNameUniqueId", false))
+			if (rvMenuMate->SelectReport("repMenuItemIdentifiers", false))
 			{
+                AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+				rvMenuMate->SetParam("ReportRange", DateRange);
+				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 				rvMenuMate->Execute();
 			}
 			else
