@@ -99,7 +99,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public bool GetTabExists(FbConnection connection, FbTransaction transaction, int tabKey)
+        public FbCommand GetTabExists(FbConnection connection, FbTransaction transaction, int tabKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -126,7 +126,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             //............................................
 
-            return command.ExecuteNonQuery() > 0;
+            return command;
         }
 
         public FbCommand GetSeatForTable(FbConnection connection, FbTransaction transaction, int tableKey)
