@@ -844,6 +844,7 @@ TLoyaltyMateOnlineOrderingThread::TLoyaltyMateOnlineOrderingThread(TSyndCode inS
 	 ErrorMessage("")
 {
 	FreeOnTerminate = false;
+    UnsetSignalRStatus = false;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::ThreadTerminated()
@@ -854,8 +855,36 @@ void TLoyaltyMateOnlineOrderingThread::ThreadTerminated()
 //---------------------------------------------------------------------------
 void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
 {
-    SyncOnlineOrderingDetails();
+    if(UnsetSignalRStatus)
+        UnsetSignalRStatusAtCloud();
+    else
+        SyncOnlineOrderingDetails();
     ReturnValue = 1;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateOnlineOrderingThread::UnsetSignalRStatusAtCloud()
+{
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+    try
+    {
+        if(Terminated)
+        {
+            ThreadTerminated();
+            delete LoyaltyMateInterface;
+            return;
+        }
+        bool isSuccessful = LoyaltyMateInterface->UnsetOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
+        if(isSuccessful)
+            OperationSuccessful = true;
+        else
+            OperationSuccessful = false;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        ErrorMessage = E.Message;
+    }
+    delete LoyaltyMateInterface;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()

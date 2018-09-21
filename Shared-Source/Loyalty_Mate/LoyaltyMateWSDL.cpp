@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (13/09/2018 4:34:40 p.m. - - $Rev: 25127 $)
+// (21/09/2018 4:07:51 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -472,30 +472,30 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeModel");
   /* ArrayOfOrderItemSizeTaxProfileModel */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeTaxProfileModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeTaxProfileModel");
-  /* DiscountType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(DiscountType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"DiscountType");
-  /* ArrayOfDiscountInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountInfo");
-  /* SiteSettingType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(SiteSettingType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"SiteSettingType");
-  /* ArrayOfSiteItemInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfSiteItemInfo");
-  /* ArrayOfItemSideInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfItemSideInfo");
-  /* ArrayOfOrderItemSizeDiscountModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeDiscountModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeDiscountModel");
-  /* ArrayOfDiscountUsageInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountUsageInfo");
-  /* ArrayOfItemSizeTaxProfileInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfItemSizeTaxProfileInfo");
-  /* ArrayOfMenuConsumableInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfMenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfMenuConsumableInfo");
-  /* ArrayOfOrderItemModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemModel");
   /* ArrayOfVoucherInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfVoucherInfo");
+  /* ArrayOfDiscountUsageInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountUsageInfo");
+  /* ArrayOfMenuConsumableInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfMenuConsumableInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfMenuConsumableInfo");
+  /* ArrayOfItemSizeTaxProfileInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfItemSizeTaxProfileInfo");
+  /* ArrayOfOrderItemModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemModel");
+  /* DiscountType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(DiscountType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/Loyaltymate.Enum", L"DiscountType");
+  /* SiteSettingType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(SiteSettingType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"SiteSettingType");
+  /* ArrayOfItemSideInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfItemSideInfo");
+  /* ArrayOfSiteItemInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiteItemInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.MenuModels", L"ArrayOfSiteItemInfo");
+  /* ArrayOfOrderItemSizeDiscountModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeDiscountModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeDiscountModel");
+  /* ArrayOfDiscountInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfDiscountInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ArrayOfDiscountInfo");
 }
 #pragma startup RegTypes 32
 
-};     // NS__LoyaltyMateWSDL
+};     // NS__
 

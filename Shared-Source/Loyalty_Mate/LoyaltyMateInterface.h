@@ -161,6 +161,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
         MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
         MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
+        bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();

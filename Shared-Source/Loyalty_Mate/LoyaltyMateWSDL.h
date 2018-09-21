@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (13/09/2018 4:34:40 p.m. - - $Rev: 25127 $)
+// (21/09/2018 4:07:51 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -3179,13 +3179,14 @@ public:
   virtual void            GetOrdersFromWeb(const UnicodeString inSyndicateCode, const UnicodeString orders) = 0; 
   virtual LoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
   virtual LoyaltyOnlineOrderingResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
+  virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0;
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__LoyaltyMateWSDL
+};     // NS__
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__LoyaltyMateWSDL;

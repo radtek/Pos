@@ -39,6 +39,21 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return GetOrderingInformation(inSyndicateCode, siteCode);
         }
 
+        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        {
+            bool retValue = false;
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                retValue = loyaltymateService.UnsetOrderingDetails(inSyndicateCode, siteCode);
+            }
+            catch (Exception exc)
+            {
+                retValue = false;
+            }
+            return retValue;
+        }
+
         LoyaltyOnlineOrderingResponse GetOrderingInformation(string inSyndicateCode, int siteCode)
         {
             try
