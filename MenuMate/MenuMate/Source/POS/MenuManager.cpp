@@ -14,6 +14,7 @@
 #include "MMLogging.h"
 #include "ListCourse.h"
 #include "DBGroups.h"
+#include "SelectDish.h"
 
 #include "MenuManagerItemSizeSelection.h"
 
@@ -469,6 +470,13 @@ void __fastcall TfrmMenuManager::btnRemoveMenuClick(TObject *Sender)
                      }
                   }
                   DBTransaction.Commit();
+
+                  //Sync Menu with web for online ordering..
+                 if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                 {
+                    frmSelectDish->SyncSiteMenus();
+                 }
+
                }
                catch (Exception &E)
                {
@@ -535,6 +543,12 @@ void __fastcall TfrmMenuManager::tbtnAddMenuClick(TObject *Sender)
 			{
 				RedrawMenus();
 				btnTimerTimer(Sender);
+
+                 //Sync Menu with web for online ordering..
+                 if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                 {
+                    frmSelectDish->SyncSiteMenus();
+                 }
 
 				if(TDeviceRealTerminal::Instance().IMManager->Registered)
 				{

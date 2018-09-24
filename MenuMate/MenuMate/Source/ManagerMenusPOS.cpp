@@ -1020,12 +1020,6 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 
 		 DBTransaction.Commit();
 
-         //Sync Menu with web for online ordering..
-         if(TGlobalSettings::Instance().EnableOnlineOrdering && Success)
-         {
-            frmSelectDish->SyncSiteMenus();
-         }
-
 		 TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 	  }
 	  catch(Exception & E)
