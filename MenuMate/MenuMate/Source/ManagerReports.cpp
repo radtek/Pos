@@ -1202,6 +1202,35 @@ void TManagerReports::PrintFloatAdjustments(Database::TDBTransaction &DBTransact
 	  throw;
 	}
 }
+//-------------------------------------------------------------------------------------------------------------------
+
+void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTransaction)
+{
+	AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
+
+	bool PrinterExists = true;
+
+	if(TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
+	{
+		PrinterExists = false;
+	}
+
+	std::auto_ptr<TPrintout> Printout(new TPrintout);
+
+	if(!PrinterExists)
+	{
+		TPrinterPhysical DefaultScreenPrinter;
+		DefaultScreenPrinter.NormalCharPerLine = 40;
+		DefaultScreenPrinter.BoldCharPerLine = 40;
+		Printout->Printer	  = DefaultScreenPrinter;
+	}
+	else
+	{
+		Printout->Printer	  = TComms::Instance().ReceiptPrinter;
+	}
+
+
+}
 
 
 

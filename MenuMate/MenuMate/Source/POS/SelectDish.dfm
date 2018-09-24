@@ -1326,7 +1326,6 @@ object frmSelectDish: TfrmSelectDish
               Font.Name = 'Tahoma'
               Font.Style = []
               ParentFont = False
-              ExplicitWidth = 88
             end
             object memOverview: TMemo
               Left = 5

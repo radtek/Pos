@@ -113,6 +113,7 @@ class TManagerReports
       TManagerReports(TForm * inOwner);
 	  void PrintConsumption(Database::TDBTransaction &DBTransaction);
 	  void PrintTableTabSummaryReport(Database::TDBTransaction &);
+       void PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTransaction);
    ~TManagerReports();
 	  void PrintConsumptionByMenu(Database::TDBTransaction &DBTransaction, AnsiString SelectedMenu);
 	  void PrintFloatAdjustments(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
