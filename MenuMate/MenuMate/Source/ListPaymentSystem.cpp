@@ -6961,11 +6961,7 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
                 {
                     throw Exception("Authentication failed with Loyaltymate Service");
                 }
-                else if(createResponse.IsSuccesful)
-                {
-                    MessageBox("invoice posted successfully.", "Information", MB_OK + MB_ICONINFORMATION);
-                }
-                else
+                else if(!createResponse.IsSuccesful)
                 {
                     ErrorMessage = "Failed to post invoice info.";
                     if(createResponse.Description == "Failed to post invoice info.")
