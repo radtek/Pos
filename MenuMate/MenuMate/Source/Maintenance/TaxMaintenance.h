@@ -77,6 +77,7 @@ private:	// User declarations
     void saveIntSettingToDatabase(vmVariables vmVariable, int value);
     void saveNumSettingToDatabase(vmVariables vmVariable, double value);
     void ReadVariablesFromDatabase();
+    void SyncTaxSettingWithWeb();
 };
 //---------------------------------------------------------------------------
 

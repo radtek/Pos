@@ -15,6 +15,7 @@
 #include "DBGroups.h"
 
 #include "ImportMenu.h"
+#include "SelectDish.h"
 
 //---------------------------------------------------------------------------
 
@@ -1019,6 +1020,12 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 
 		 DBTransaction.Commit();
 
+         //Sync Menu with web for online ordering..
+         if(TGlobalSettings::Instance().EnableOnlineOrdering && Success)
+         {
+            frmSelectDish->SyncSiteMenus();
+         }
+
 		 TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 	  }
 	  catch(Exception & E)
@@ -1171,6 +1178,12 @@ bool TManagerMenusPOS::LoadMenus( TIBDatabase *IBDatabase, AnsiString inDirName 
 		}
 
 		frmProcessing->Close();
+
+         //Sync Menu with web for online ordering..
+         if(TGlobalSettings::Instance().EnableOnlineOrdering)
+         {
+            frmSelectDish->SyncSiteMenus();
+         }
 
 		TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 

@@ -498,8 +498,6 @@ private: // User declarations
     void SyncWithCloud();
     //void SyncMenuAndTaxSettings(int syncType);
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
-    void SyncSiteMenus();
-    void SyncTaxSetting();
     bool CheckOrderCompatability();
 
 protected:
@@ -704,6 +702,8 @@ public: // User declarations
     void UpdateMenuItemsAfterLoginScreen();
     int GetDefaultServingCourse(int item_key);
     bool CheckForServingCoursePrompt(int item_key);
+    void SyncSiteMenus();
+    void SyncTaxSetting();
  };
 // ---------------------------------------------------------------------------
 
