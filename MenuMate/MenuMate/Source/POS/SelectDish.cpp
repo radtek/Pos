@@ -9970,17 +9970,8 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			}break;
         case 14: // Genrating Room Payment Summary
 			{
-
-				Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-				DBTransaction.StartTransaction();
-
-				std::auto_ptr<TfrmProcessing>(Processing)(TfrmProcessing::Create<TfrmProcessing>(this));
-				Processing->Message = "Genrating Room Payment Summary ...";
-				Processing->Show();
-
-				std::auto_ptr<TManagerReports>(ManagerReports)(new TManagerReports((TForm*)(this)));
-				ManagerReports->PrintPMSRoomPaymentReport(DBTransaction);
-				DBTransaction.Commit();
+                std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
+                managerReportExport->ExportReport(2);
 			}break;
 		}
 	}
