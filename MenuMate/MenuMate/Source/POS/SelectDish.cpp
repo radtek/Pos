@@ -7209,6 +7209,8 @@ void TfrmSelectDish::SelectNewMenus()
 				{
 					Broadcast = true;
                     Refresh();
+                    SyncSiteMenus();
+
 				}
 				else if (Result == lsDenied)
 				{
@@ -7219,10 +7221,10 @@ void TfrmSelectDish::SelectNewMenus()
 					MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 				}
 			}
-                        else
-                         {
-                           AskForLogin = true;
-                         }
+            else
+             {
+               AskForLogin = true;
+             }
 			std::auto_ptr<TNetMessageMenuChanged>dbRequest(new TNetMessageMenuChanged);
 			for (int i = 0; i < frmSelectActiveMenus->pnlMenus->ControlCount; i++)
 			{
@@ -7236,10 +7238,10 @@ void TfrmSelectDish::SelectNewMenus()
 			TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
 			TDeviceRealTerminal::Instance().Menus->SetMenuList(DBTransaction, TDeviceRealTerminal::Instance().ID.DeviceKey);
 		}
-                else
-                {
-                   AskForLogin = true;
-                }
+        else
+        {
+           AskForLogin = true;
+        }
 	}
 	DBTransaction.Commit();
     if (AskForLogin)

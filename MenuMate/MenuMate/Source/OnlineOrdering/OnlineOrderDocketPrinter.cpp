@@ -466,17 +466,13 @@ void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* 
                 {
                         TItemComplete *Order = (TItemComplete*)inTransaction->Orders->Items[0];
 
+                        memberInfo.Name = Order->Email;
+                        memberInfo.EMail = Order->Email;
+
                         if(Order->OnlineChitType != 1)
                         {
-                            memberInfo.Name = "Order Id # " + Order->OnlineOrderId;
-                            memberInfo.EMail = memberInfo.Name;
-                          //  TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
+                            //  TDBWebUtil::LoadMemberDetails(inTransaction->DBTransaction, inTransaction->WebOrderKey);
                          //   paymentStatus = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
-                        }
-                        else
-                        {
-                            memberInfo.Name = Order->Email;
-                            memberInfo.EMail = Order->Email;
                         }
                 }
 //                UnicodeString paymentStatus  = TDBWebUtil::LoadPaymentStatus(inTransaction->DBTransaction, inTransaction->WebOrderKey);
