@@ -4275,7 +4275,7 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
         SelectQuery->Close();
         SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY";
         SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
-        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9635;
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
         SelectQuery->ExecQuery();
         if(SelectQuery->RecordCount == 0)
         {
