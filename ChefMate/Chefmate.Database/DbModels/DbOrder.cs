@@ -309,18 +309,20 @@ namespace Chefmate.Database.DbModels
             var queryString = @"SELECT Count(*) || ' x ' || AccumulatedQuery.ITEM_NAME ITEM_NAME 
                                 FROM
                                     (SELECT A.ORDERITEM_KEY, A.ITEM_KEY, 
-                                        (CASE WHEN (OPTIONS.OPTION_NAME <> '') THEN B.ITEM_NAME || ' - ' || OPTIONS.OPTION_NAME ELSE B.ITEM_NAME END) ITEM_NAME 
+                                        (CASE WHEN (OIO.OPTION_NAME <> '') THEN B.ITEM_NAME || ' - ' || OIO.OPTION_NAME ELSE B.ITEM_NAME END) ITEM_NAME 
                                                 FROM ORDERITEMS A
                                                 INNER JOIN ITEMS B
                                                 ON A.ITEM_KEY = B.ITEM_KEY
                                                 LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
-                                                LEFT JOIN(SELECT A.ORDERITEM_KEY, MIN(A.OPTION_KEY) OPTION_KEY 
-                                                            FROM ORDERITEMOPTIONS a 
-                                                            GROUP BY 1) OIO ON A.ORDERITEM_KEY = OIO.ORDERITEM_KEY  
-                                                LEFT JOIN OPTIONS ON OIO.OPTION_KEY = OPTIONS.OPTION_KEY                                                
+                                                LEFT JOIN(SELECT OIO.ORDERITEM_KEY, OIO.ORDERITEMOPTION_KEY, b.OPTION_KEY, OPTIONS.OPTION_NAME
+                                                        FROM (SELECT A.ORDERITEM_KEY,MIN(a.ORDERITEMOPTION_KEY) ORDERITEMOPTION_KEY  
+                                                                    FROM ORDERITEMOPTIONS a 
+                                                                    GROUP BY 1) OIO 
+                                                        INNER JOIN ORDERITEMOPTIONS b ON OIO.ORDERITEMOPTION_KEY = b.ORDERITEMOPTION_KEY 
+                                                        INNER JOIN OPTIONS ON b.OPTION_KEY = OPTIONS.OPTION_KEY)OIO ON A.ORDERITEM_KEY = OIO.ORDERITEM_KEY 
                                                 WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
                                                 AND ORDER_ITEM_STATUS <> @CANCEL_ITEM
-                                                GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME, OPTIONS.OPTION_NAME
+                                                GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME, OIO.OPTION_NAME
                                     UNION ALL 
                                     SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME ITEM_NAME FROM ORDERITEMS A
                                                 INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
