@@ -9970,8 +9970,56 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			}break;
         case 14: // Genrating Room Payment Summary
 			{
-                std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
-                managerReportExport->ExportReport(2);
+
+				std::auto_ptr<TManagerReports>rep_mgr(new TManagerReports((TForm*)this));
+				std::auto_ptr<TContactStaff>staff;
+				std::auto_ptr<TfrmProcessing>working_dlg(TfrmProcessing::Create<TfrmProcessing>(this));
+				TMMContactInfo temp_info;
+				Database::TDBTransaction trans(TDeviceRealTerminal::Instance().DBControl);
+
+				working_dlg->Message = "Please Wait...";
+				TDeviceRealTerminal::Instance().RegisterTransaction(trans);
+
+				trans.StartTransaction();
+				staff.reset(new TContactStaff(trans));
+				trans.Commit();
+
+				if (!staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckZeds))
+				{
+					TLoginSuccess login_result;
+
+					PreUserInfo = TDeviceRealTerminal::Instance().User;
+					trans.StartTransaction();
+					login_result = staff->Login(this, trans, temp_info, CheckZeds);
+					trans.Commit();
+
+					switch(login_result)
+					{
+					case lsDenied:
+						MessageBox("This user does not have permission to print " "consumption reports.", "Permission Denied", MB_OK | MB_ICONERROR);
+						break;
+					case lsPINIncorrect:
+						MessageBox("The login was unsuccessful.", "Login failure", MB_OK | MB_ICONERROR);
+						break;
+					case lsAccepted:
+						working_dlg->Show();
+						trans.StartTransaction();
+                           rep_mgr->PrintPMSRoomPaymentReport(trans);
+                             trans.Commit();
+						/* Fall through */
+					default:
+						break;
+					}
+					TDeviceRealTerminal::Instance().User = PreUserInfo;
+				}
+				else
+				{
+					working_dlg->Show();
+					trans.StartTransaction();
+
+						rep_mgr->PrintPMSRoomPaymentReport(trans);
+                         trans.Commit();
+				}
 			}break;
 		}
 	}

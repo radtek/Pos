@@ -293,7 +293,7 @@ void TManagerReports::PrintConsumption(Database::TDBTransaction &DBTransaction)
 
 		if(Now() < StartTime) // We are between Midnight and 5am
 		{
-			StartTime = (Date()-1) + EncodeTime(sessionDateCode,0,0,0); 
+			StartTime = (Date()-1) + EncodeTime(sessionDateCode,0,0,0);
 			EndTime = Date() + EncodeTime(sessionDateCode,0,0,0); //  
 		}
 
@@ -1229,9 +1229,111 @@ void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTran
 		Printout->Printer	  = TComms::Instance().ReceiptPrinter;
 	}
 
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-}
+        int sessionDateCode = TGlobalSettings::Instance().EndOfDay;
+		TDateTime StartTime = Date() + EncodeTime(sessionDateCode,0,0,0); // According to session start time
+		TDateTime EndTime = (Date()+1) + EncodeTime(sessionDateCode,0,0,0); // Tommorow  session start time
+
+		if(Now() < StartTime) // We are between Midnight and 5am
+		{
+			StartTime = (Date()-1) + EncodeTime(sessionDateCode,0,0,0);
+			EndTime = Date() + EncodeTime(sessionDateCode,0,0,0); //
+		}
+
+		Printout->PrintFormat->DocumentName					= "PMS Room Payment Report";
+
+		Printout->PrintFormat->Line->FontInfo.Height			= fsDoubleSize;
+		Printout->PrintFormat->Line->ColCount					= 1;
+		Printout->PrintFormat->Line->Columns[0]->Width		= Printout->PrintFormat->Width;
+		Printout->PrintFormat->Line->Columns[0]->Alignment	= taCenter;
+		Printout->PrintFormat->Line->Columns[0]->Text		= "PMS Room Payment Summary Report";
+		Printout->PrintFormat->AddLine();
+
+		Printout->PrintFormat->Line->FontInfo.Height			= fsNormalSize;
+		Printout->PrintFormat->Line->Columns[0]->Width		= Printout->PrintFormat->Width;
+		Printout->PrintFormat->NewLine();
+
+		Printout->PrintFormat->Line->Columns[0]->Text 		= "Report Covers ALL Tills for All Menus";
+		Printout->PrintFormat->AddLine();
+
+		Printout->PrintFormat->Line->Columns[0]->Text			= "From " + StartTime.FormatString("dd/mmm h:nn:ss am/pm") + " To " + EndTime.FormatString("dd/mmm h:nn:ss am/pm");
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->Line->Columns[0]->Text			= "Printed At " + Now().FormatString("dd/mmm h:nn:ss am/pm");
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->Line->Columns[0]->Text			= DeviceName;
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->Line->Columns[0]->Text			= TDeviceRealTerminal::Instance().User.Name;
+		Printout->PrintFormat->AddLine();
+		Printout->PrintFormat->Line->Columns[0]->Text			= "All Menus";
+		Printout->PrintFormat->AddLine();
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text = "select "
+            "db.Staff_Name, "
+            "db.time_stamp, "
+            "db.TOTAL, "
+            "db.INVOICE_NUMBER, "
+            "s.TERMINAL_NAME "
+            "from DAYARCBILL db "
+            "Inner join SECURITY s on s.SECURITY_REF = db.SECURITY_REF "
+            "Left join DAYARCBILLPAY dp on dp.ARCBILL_KEY = db.ARCBILL_KEY "
+            //"where dp.PROPERTIES like '%16%' and "
+            "where db.Time_Stamp >= :StartTime and "
+            "db.Time_Stamp <= :EndTime ";
+
+		IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
+		IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
+		IBInternalQuery->ExecQuery();
+        Float InvoiceNo;
 
 
+        if(InvoiceNo > 0)
+        {
+         AddSectionTitle(Printout.get(),"Room Payment Report for Zed Period");
+
+
+
+
+            Printout->PrintFormat->Line->ColCount					= 3;
+            Printout->PrintFormat->Line->Columns[0]->Width		= Printout->PrintFormat->Width * 1/5;
+			Printout->PrintFormat->Line->Columns[0]->Alignment	= taLeftJustify;
+			Printout->PrintFormat->Line->Columns[1]->Width		= Printout->PrintFormat->Width * 1/5;
+			Printout->PrintFormat->Line->Columns[1]->Alignment	= taRightJustify;
+			Printout->PrintFormat->Line->Columns[2]->Width		= Printout->PrintFormat->Width - Printout->PrintFormat->Line->Columns[0]->Width - Printout->PrintFormat->Line->Columns[1]->Width;
+			Printout->PrintFormat->Line->Columns[2]->Alignment	= taRightJustify;
+
+			Printout->PrintFormat->Line->Columns[0]->Text = "Terminal Name";
+			Printout->PrintFormat->Line->Columns[1]->Text = "Invoice No.";
+			Printout->PrintFormat->Line->Columns[2]->Text = "Amount";
+			Printout->PrintFormat->AddLine();
+
+			Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+
+                Printout->PrintFormat->AddLine();
+                for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+                {
+                 InvoiceNo = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsFloat;
+
+                  Printout->PrintFormat->Add(FormatFloat("0.00", InvoiceNo));
+                }
+
+
+			Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+
+        }
+        Printout->PrintFormat->PartialCut();
+        std::auto_ptr<TfrmShowPrintout>(frmShowPrintout)(TfrmShowPrintout::Create<TfrmShowPrintout>(Owner));
+		Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
+		frmShowPrintout->Execute();
+        }
+         	catch (Exception &E)
+            {
+                TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+                throw;
+            }
+        }
 
 
