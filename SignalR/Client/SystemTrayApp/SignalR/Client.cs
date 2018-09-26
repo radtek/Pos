@@ -12,8 +12,7 @@ namespace SystemTrayApp.SignalR
     public static class Client
     {
         private static IHubProxy _hubProxy { get; set; }
-        //const string ServerURI = "http://localhost/MenumateOrdering/";
-        const string ServerURI = "http://lmonlineordering.azurewebsites.net/";
+        const string ServerURI = "http://menumatepos.com";
         public static HubConnection Connection { get; set; }
         private static NotifyIcon notifyIcon;
         private static List<string> logsList;
