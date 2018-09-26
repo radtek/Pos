@@ -310,7 +310,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                                         "TAB_KEY",
                                                         0));
                 }
-                if (!dbQueries.GetTabExists(connection, transaction, tabKey))
+                if (!IsTabKeyExist(tabKey))
                 {
                     if (tabKey == 0)
                         tabKey = GenerateKey("TAB");
@@ -326,6 +326,31 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
             return tabKey;
+        }
+
+        private bool IsTabKeyExist(int tabKey)
+        {
+            int TabId = 0;
+            try
+            {
+                FbCommand command = dbQueries.GetTabExists(connection, transaction, tabKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        TabId = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "TAB_KEY",
+                                                        0));
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTabKeyExist " + e.Message, e);
+                throw;
+            }
+            return TabId > 0;
         }
 
         private bool IsTableBusy(int tableNumber, string email)

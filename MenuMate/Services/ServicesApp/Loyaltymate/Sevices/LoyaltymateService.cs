@@ -505,5 +505,38 @@ namespace Loyaltymate.Sevices
             }
             return apiOnlineOrderingResponse;
         }
+
+        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        {
+            bool isSuccessful = false;
+            string requestAddress = RequestAddress.UnsetOrderingDetails + @"/" + siteCode.ToString();
+            var request = Utility.WebUtility.CreateRequest(requestAddress, inSyndicateCode, null,
+                WebRequestMethods.Http.Get);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                if (webResponse.StatusCode == HttpStatusCode.OK)
+                    isSuccessful = true;
+                else
+                    isSuccessful = false;
+            }
+            catch (WebException we)
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return isSuccessful;
+        }
     }
 }

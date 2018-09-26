@@ -2258,8 +2258,6 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
             SmartCardContact.Points = loyaltyMateOperationDialogBox->Info.Points;
             TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
             SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
-            MessageBox(loyaltyMateOperationDialogBox->Info.MemberVouchers.size(),"loyaltyMateOperationDialogBox->Info.MemberVouchers",MB_OK);
-            MessageBox(SmartCardContact.MemberVouchers.size(),"SmartCardContact.MemberVouchers",MB_OK);
             SmartCardContact.HasTransactions = loyaltyMateOperationDialogBox->Info.HasTransactions;
         }
 	}

@@ -305,10 +305,27 @@ namespace MenumateServices.WCFServices
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in PostOnlineOrderInvoiceInfo     " + exc.Message);
+                stringList.Add("Exception in SyncOnlineOrderingDetails     " + exc.Message);
                 WriteAndClearStringList();
             }
             return null; 
+        }
+
+        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        {
+            try
+            {
+                stringList.Add("-------------------------------------------------------Inside UnsetOrderingDetails-------------------------------------------------------...");
+                WriteAndClearStringList();
+                return LoyaltyOnlineOrdering.Instance.UnsetOrderingDetails(inSyndicateCode, siteCode);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                stringList.Add("Exception in UnsetOrderingDetails     " + exc.Message);
+                WriteAndClearStringList();
+            }
+            return false;
         }
 
         private void WriteAndClearStringList()

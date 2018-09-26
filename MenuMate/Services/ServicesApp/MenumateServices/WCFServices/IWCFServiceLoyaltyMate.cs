@@ -63,5 +63,8 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode);
+        
+        [OperationContract]
+        bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
     }
 }
