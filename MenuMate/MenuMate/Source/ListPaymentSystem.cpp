@@ -3699,7 +3699,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
             }
             else
             {
-                if (CloseAndPrint)
+                if (CloseAndPrint || IsRoomReceiptSettingEnable())
                 {
                     PrintReceipt(RequestEFTPOSReceipt);
                 }
@@ -6734,9 +6734,12 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
         TGlobalSettings::Instance().PrintCardHolderReceipt )
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
-    if (TGlobalSettings::Instance().DuplicateReceipts)
-    {
-        if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+
+      if(TGlobalSettings::Instance().DuplicateReceipts || (TGlobalSettings::Instance().PrintSignatureReceiptsTwice && TGlobalSettings::Instance().AutoPrintRoomReceipts
+      && TDeviceRealTerminal::Instance().BasePMS->Enabled) )
+      {
+
+       if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
         {
             // Print all the TPrintouts including the EFTPOS one.
             LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
@@ -6745,8 +6748,9 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         {
             // Only print the first TPrintout as the EFTPOS job does not need duplication.
             LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+
         }
-    }
+      }
 }
 //-------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction)
@@ -7175,4 +7179,8 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
     return invoiceTransactionModel;
 }
 //----------------------------------------------------------
+ bool TListPaymentSystem:: IsRoomReceiptSettingEnable()
+ {
+  return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
 
+ }
