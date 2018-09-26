@@ -1280,54 +1280,88 @@ void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTran
             "from DAYARCBILL db "
             "Inner join SECURITY s on s.SECURITY_REF = db.SECURITY_REF "
             "Left join DAYARCBILLPAY dp on dp.ARCBILL_KEY = db.ARCBILL_KEY "
-            //"where dp.PROPERTIES like '%16%' and "
-            "where db.Time_Stamp >= :StartTime and "
-            "db.Time_Stamp <= :EndTime ";
 
-		IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
-		IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
-		IBInternalQuery->ExecQuery();
+            "where s.SECURITY_EVENT= 'Billed By' and dp.NOTE <> 'Total Change.'  " ;
+
+
+       // IBInternalQuery->ParamByName("NOTE")->AsString = "Total Change.";
+        IBInternalQuery->ExecQuery();
         Float InvoiceNo;
+        std::vector<UnicodeString> DeviceNames;
 
 
-        if(InvoiceNo > 0)
-        {
-         AddSectionTitle(Printout.get(),"Room Payment Report for Zed Period");
+          	Float total = 0;
+            AddSectionTitle(Printout.get(),"Room Payment Report for Zed Period");
+            Printout->PrintFormat->NewLine();
+            //Printout->PrintFormat->AddLine();
+
+            Printout->PrintFormat->Line->ColCount = 4;
+            Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 1 / 4;;
+            Printout->PrintFormat->Line->Columns[0]->Text = "InvoiceNo.";
+            Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+            Printout->PrintFormat->Line->Columns[1]->Width =  Printout->PrintFormat->Width * 1 / 4;
+            Printout->PrintFormat->Line->Columns[1]->Text = "Date";
+            Printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+            Printout->PrintFormat->Line->Columns[2]->Width = Printout->PrintFormat->Width * 1 / 4;
+            Printout->PrintFormat->Line->Columns[2]->Text = "Time";
+            Printout->PrintFormat->Line->Columns[2]->Alignment = taLeftJustify;
+            Printout->PrintFormat->Line->Columns[3]->Width = Printout->PrintFormat->Width - Printout->PrintFormat->Line->Columns[2]->Width - Printout->PrintFormat->Line->Columns[1]->Width - Printout->PrintFormat->Line->Columns[0]->Width;
+            Printout->PrintFormat->Line->Columns[3]->Text = "Amount";
+            Printout->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
+            Printout->PrintFormat->AddLine();
+
+            for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+//            	DeviceNames.push_back(IBInternalQuery->FieldByName("Terminal_Name")->AsString);
+//
+//                Printout->PrintFormat->Line->ColCount = 1;
+//				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+//				Printout->PrintFormat->Line->Columns[0]->Text = DeviceNames.back();
+//				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+//				Printout->PrintFormat->AddLine();
+//
+//				DeviceNames.pop_back();
+//
+//				Printout->PrintFormat->Line->ColCount = 4;
+//				Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                Printout->PrintFormat->Line->Columns[0]->Text = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+                Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("TIME_STAMP")->AsDate.FormatString("dd/mm/yyyy");
+                Printout->PrintFormat->Line->Columns[2]->Text = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("HH:MM:SS ");
+                Printout->PrintFormat->Line->Columns[3]->Text = FloatToStrF(IBInternalQuery->FieldByName("TOTAL")->AsFloat, ffNumber, 18, CurrencyDecimals);
 
 
+                   Printout->PrintFormat->AddLine();
+                   total += IBInternalQuery->FieldByName("TOTAL")->AsFloat;
+
+           }
 
 
-            Printout->PrintFormat->Line->ColCount					= 3;
-            Printout->PrintFormat->Line->Columns[0]->Width		= Printout->PrintFormat->Width * 1/5;
-			Printout->PrintFormat->Line->Columns[0]->Alignment	= taLeftJustify;
-			Printout->PrintFormat->Line->Columns[1]->Width		= Printout->PrintFormat->Width * 1/5;
-			Printout->PrintFormat->Line->Columns[1]->Alignment	= taRightJustify;
-			Printout->PrintFormat->Line->Columns[2]->Width		= Printout->PrintFormat->Width - Printout->PrintFormat->Line->Columns[0]->Width - Printout->PrintFormat->Line->Columns[1]->Width;
-			Printout->PrintFormat->Line->Columns[2]->Alignment	= taRightJustify;
-
-			Printout->PrintFormat->Line->Columns[0]->Text = "Terminal Name";
-			Printout->PrintFormat->Line->Columns[1]->Text = "Invoice No.";
-			Printout->PrintFormat->Line->Columns[2]->Text = "Amount";
-			Printout->PrintFormat->AddLine();
-
-			Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-
-                Printout->PrintFormat->AddLine();
-                for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-                {
-                 InvoiceNo = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsFloat;
-
-                  Printout->PrintFormat->Add(FormatFloat("0.00", InvoiceNo));
-                }
+           	    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
 
 
-			Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+                Printout->PrintFormat->Add("Total Bill|" + FormatFloat("0.00", total));
 
-        }
-        Printout->PrintFormat->PartialCut();
-        std::auto_ptr<TfrmShowPrintout>(frmShowPrintout)(TfrmShowPrintout::Create<TfrmShowPrintout>(Owner));
-		Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
-		frmShowPrintout->Execute();
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
+                Printout->PrintFormat->PartialCut();
+                std::auto_ptr<TfrmShowPrintout>(frmShowPrintout)(TfrmShowPrintout::Create<TfrmShowPrintout>(Owner));
+                Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
+                frmShowPrintout->Execute();
         }
          	catch (Exception &E)
             {
