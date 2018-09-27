@@ -18,7 +18,7 @@ namespace MewsIntegration.Domain
         [DataMember]
         public UnitCost UnitCost { get; set; }
         [DataMember]
-        public DateTime ConsumedUtc { get; set; }
+        public string ConsumedUtc { get; set; }
         [DataMember]
         public Category Category { get; set; }
     }

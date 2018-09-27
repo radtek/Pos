@@ -1492,6 +1492,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                         PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
                         PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
                     }
+                                        // Check for Other payment types in case of mews
                     // check if guest details already present
                     if(!IsSavedSavesWithSiHot(CurrentTransaction))
                     {
@@ -1542,7 +1543,20 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 								RoomNumber = atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								CurrentTransaction.Phoenix.RoomNumber =
 									atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
-							}							
+							}
+                            else if(TGlobalSettings::Instance().PMSType != Mews)
+                            {
+//                                MessageBox("Populate room details for psoting here for Mews","",MB_OK);
+                                CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+//                                MessageBox(CurrentTransaction.Customer.RoomNumberStr,"CurrentTransaction.Customer.RoomNumberStr",MB_OK);
+                                CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+//                                MessageBox(CurrentTransaction.Phoenix.FirstName,"CurrentTransaction.Phoenix.FirstName",MB_OK);
+                                CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+//                                MessageBox(CurrentTransaction.Phoenix.LastName,"CurrentTransaction.Phoenix.LastName",MB_OK);
+                                CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+//                                MessageBox(CurrentTransaction.Phoenix.AccountNumber,"CurrentTransaction.Phoenix.AccountNumber",MB_OK);
+                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
                             if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -1993,10 +2007,12 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             AnsiString TabName = "";
             int RoomNumber = 0;
             UnicodeString RoomNumberStr = "";
+
             if (CurrentTransaction.RoomNumber == 0)
             {
                 if (TRooms::Instance().Enabled && !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
+
                     if (TRooms::Instance().SelectRoom(CurrentTransaction.DBTransaction) == mrOk)
                     {
                         CurrentTransaction.RoomNumber = TRooms::Instance().SelectedRoom->RoomNo;
@@ -2025,6 +2041,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                         PMSIPAddress = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
                         PMSPort = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
                     }
+                    // Check for Other payment types in case of mews
                     if(!IsSavedSavesWithSiHot(CurrentTransaction))
                     {
                         std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
@@ -2093,6 +2110,19 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 									CurrentTransaction.Phoenix.RoomNumber =
 										atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								}
+                                else if(TGlobalSettings::Instance().PMSType == Mews)
+                                {
+//                                    MessageBox("Populate room details for psoting here for Mews","",MB_OK);
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+//                                    MessageBox(CurrentTransaction.Customer.RoomNumberStr,"CurrentTransaction.Customer.RoomNumberStr",MB_OK);
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+//                                    MessageBox(CurrentTransaction.Phoenix.FirstName,"CurrentTransaction.Phoenix.FirstName",MB_OK);
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+//                                    MessageBox(CurrentTransaction.Phoenix.LastName,"CurrentTransaction.Phoenix.LastName",MB_OK);
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+//                                    MessageBox(CurrentTransaction.Phoenix.AccountNumber,"CurrentTransaction.Phoenix.AccountNumber",MB_OK);
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                }
                                 else if(TGlobalSettings::Instance().PMSType != SiHot)
                                 {
                                     CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -4976,3 +5006,9 @@ int TfrmPaymentType::GettingCourseKey(Database::TDBTransaction &DBTransaction, i
 	}
     return RetVal;
 }
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::IsMewsPaymentCompatible()
+{
+
+}
+//----------------------------------------------------------------------------

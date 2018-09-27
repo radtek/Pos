@@ -72,6 +72,7 @@ class TCustomerMews
      UnicodeString TaxIdentificationNumber;
      UnicodeString Title;
      TDateTime UpdatedUtc;
+     UnicodeString RoomNumber;
 };
 
 class TCustomerSearch
@@ -183,5 +184,14 @@ class TOrder
     std::vector<TItemMews> Items;
 };
 
+class TAccountingCategoriesMapping
+{
+    public:
+    int CategoryMapId;
+    int CategoryKey;
+    UnicodeString MMCategoryName;
+    UnicodeString MewsCategoryId;
+    UnicodeString MewsCategoryCode;
+};
 
 #endif

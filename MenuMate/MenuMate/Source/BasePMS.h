@@ -46,6 +46,8 @@ class TBasePMS
         UnicodeString SelectedMewsOutlet;
         UnicodeString ClientToken;
         UnicodeString AccessToken;
+        std::vector<TAccountingCategoriesMapping> MewsAccountingCategoriesList;
+        std::map<int,TAccountingCategory> MewsAccountingMap;
 //        std::map<int, TPMSPaymentType> PMSPaymentTypeMap;
         public :
         bool Registered;
@@ -69,6 +71,7 @@ class TBasePMS
         void virtual UnsetPostingFlag();
         void virtual GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
         void virtual GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
+        bool virtual GetSpaces(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken);
 };
 //extern TBasePMS *BasePMS;
 #endif

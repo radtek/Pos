@@ -19,5 +19,7 @@ class TMewsInterface
         TSpaceDetails GetSpaces(UnicodeString address,UnicodeString clientToken,UnicodeString accessToken);
         std::vector<TAccountingCategory> GetMewsAccountingCategories(UnicodeString address,UnicodeString clientToken,UnicodeString accessToken);
         std::vector<TCustomerMews> GetCustomers(UnicodeString platformAddress,TCustomerSearch customerSearch);
+        UnicodeString PostMewsOrder(UnicodeString platformAddress,TOrder order);
+        bool PostMewsBill(UnicodeString platformAddress,TOrder order);
 };
 #endif

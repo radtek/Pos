@@ -992,10 +992,6 @@
 				<DependentOn>Analysis\ReportBuilders\ConsolidatedEndOfDayReportBuilder.h</DependentOn>
 				<BuildOrder>741</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MembershipThorlinkGUI.cpp">
-				<DependentOn>MembershipThorlinkGUI.h</DependentOn>
-				<BuildOrder>701</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerEJournal.cpp">
 				<DependentOn>ManagerEJournal.h</DependentOn>
 				<BuildOrder>720</BuildOrder>
@@ -1315,10 +1311,6 @@
 				<DependentOn>Analysis\ReportBuilders\ConsolidatedZReportBuilder.h</DependentOn>
 				<BuildOrder>740</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ThorlinkDataObjects.cpp">
-				<DependentOn>ThorlinkDataObjects.h</DependentOn>
-				<BuildOrder>704</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="RegenerateMallReport.cpp">
 				<Form>frmRegenerateMallReport</Form>
 				<DependentOn>RegenerateMallReport.h</DependentOn>
@@ -1524,10 +1516,6 @@
 				<DependentOn>GlobalSettings.h</DependentOn>
 				<BuildOrder>299</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerThorVoucher.cpp">
-				<DependentOn>ManagerThorVoucher.h</DependentOn>
-				<BuildOrder>701</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerDelayedPayment.cpp">
 				<DependentOn>ManagerDelayedPayment.h</DependentOn>
 				<BuildOrder>666</BuildOrder>
@@ -1717,10 +1705,6 @@
 			<CppCompile Include="MallExportSettings.cpp">
 				<DependentOn>MallExportSettings.h</DependentOn>
 				<BuildOrder>735</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MembershipThorlink.cpp">
-				<DependentOn>MembershipThorlink.h</DependentOn>
-				<BuildOrder>702</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MessageManager.cpp">
 				<BuildOrder>248</BuildOrder>
@@ -3481,17 +3465,13 @@
 				<DependentOn>MewsInterface.h</DependentOn>
 				<BuildOrder>795</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ThorlinkClient.cpp">
-				<DependentOn>ThorlinkClient.h</DependentOn>
-				<BuildOrder>795</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="SiHotWSDL.cpp">
 				<DependentOn>SiHotWSDL.h</DependentOn>
 				<BuildOrder>795</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MewsWSDL.cpp">
 				<DependentOn>MewsWSDL.h</DependentOn>
-				<BuildOrder>796</BuildOrder>
+				<BuildOrder>790</BuildOrder>
 			</CppCompile>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>

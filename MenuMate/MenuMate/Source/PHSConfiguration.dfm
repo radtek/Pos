@@ -101,6 +101,48 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       ParentFont = False
       WordWrap = True
     end
+    object lbTips: TLabel
+      Left = 16
+      Top = 422
+      Width = 46
+      Height = 22
+      Caption = 'Tips '
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lbServiceCharge: TLabel
+      Left = 310
+      Top = 310
+      Width = 143
+      Height = 22
+      Caption = 'Service Charge'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lbSurcharge: TLabel
+      Left = 17
+      Top = 257
+      Width = 98
+      Height = 24
+      Caption = 'Surcharge'
+      Color = 10011108
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -19
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+      WordWrap = True
+    end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16
       Top = 33
@@ -487,10 +529,11 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       OnMouseClick = tbTimeOutMouseClick
     end
     object comboOutlets: TComboBox
-      Left = 310
-      Top = 117
+      Left = 309
+      Top = 115
       Width = 266
       Height = 24
+      DropDownCount = 10
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -13
@@ -502,9 +545,10 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object comboServices: TComboBox
       Left = 16
-      Top = 175
+      Top = 172
       Width = 266
       Height = 24
+      DropDownCount = 10
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -13
@@ -513,6 +557,51 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       ParentFont = False
       TabOrder = 22
       OnChange = comboServicesChange
+    end
+    object comboServiceCharge: TComboBox
+      Left = 310
+      Top = 338
+      Width = 265
+      Height = 24
+      DropDownCount = 10
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 23
+      OnChange = comboServiceChargeChange
+    end
+    object comboTips: TComboBox
+      Left = 17
+      Top = 447
+      Width = 265
+      Height = 24
+      DropDownCount = 10
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 24
+      OnChange = comboTipsChange
+    end
+    object comboSurcharge: TComboBox
+      Left = 17
+      Top = 285
+      Width = 265
+      Height = 24
+      DropDownCount = 10
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 25
+      OnChange = comboSurchargeChange
     end
   end
   object Panel2: TPanel

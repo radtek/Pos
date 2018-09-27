@@ -17,8 +17,12 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         List<Outlet> GetMewsOutlets(string platformAddress, BasicInquiry basicInquiry);
         [OperationContract]
-        List<Customer> SearchCustomers(string platformAddress, CustomerSearch customerSearch);
+        Customers SearchCustomers(string platformAddress, CustomerSearch customerSearch);
         [OperationContract]
         SpaceDetails GetSpaceIds(string platformAddress, BasicInquiry customerSearch);
+        [OperationContract]
+        string PostOrder(string platformAddress, Order order);
+        [OperationContract]
+        bool PostBill(string platformAddress, Order order);
     }
 }

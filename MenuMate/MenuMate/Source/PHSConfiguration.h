@@ -50,6 +50,12 @@ __published:	// IDE-managed Components
     TComboBox *comboServices;
     TLabel *lblServices;
     TLabel *lblOutlets;
+    TLabel *lbTips;
+    TLabel *lbServiceCharge;
+    TComboBox *comboServiceCharge;
+    TComboBox *comboTips;
+    TComboBox *comboSurcharge;
+    TLabel *lbSurcharge;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -76,6 +82,9 @@ __published:	// IDE-managed Components
     void __fastcall tbTimeOutMouseClick(TObject *Sender);
     void __fastcall comboOutletsChange(TObject *Sender);
     void __fastcall comboServicesChange(TObject *Sender);
+    void __fastcall comboServiceChargeChange(TObject *Sender);
+    void __fastcall comboTipsChange(TObject *Sender);
+    void __fastcall comboSurchargeChange(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
@@ -91,10 +100,17 @@ private:	// User declarations
    void UpdateMotelMateUI();
    void SyncMewsDetailsFromCloud();
    void PopulateDropDowns(TStrings* outlets, TStrings* services);
+   void PopulateDropDowns2(TStrings* outlets, TStrings* services, TStrings* surchargestrings);
    std::vector<TOutlet> outlets;
    std::vector<TServiceMews> services;
+   std::vector<TAccountingCategory> categories;
    int GetIndexForSelectedMewsOutlet();
    int GetIndexForSelectedMewsService();
+   int GetIndexForSelectedTips();
+   int GetIndexForSelectedServiceCharge();
+   int GetIndexForSelectedSurcharge();
+//   std::map<int,UnicodeString> GetFreshMenumateCategories();
+//   void InitializeMewsCategories();
 public:		// User declarations
    ePMS PMSType;
 

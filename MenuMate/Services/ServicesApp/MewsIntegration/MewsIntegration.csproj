@@ -51,6 +51,8 @@
     <Compile Include="Domain\Category.cs" />
     <Compile Include="Domain\Classification.cs" />
     <Compile Include="Domain\Customer.cs" />
+    <Compile Include="Domain\CustomerDetails.cs" />
+    <Compile Include="Domain\Customers.cs" />
     <Compile Include="Domain\CustomerSearch.cs" />
     <Compile Include="Domain\Extent.cs" />
     <Compile Include="Domain\Item.cs" />

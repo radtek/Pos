@@ -3407,6 +3407,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarStr(DBTransaction, vmServiceMewsSelected,  "Service ID", "Service ID", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmClientToken,  "Client Token", "Client Token", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmAccessToken,  "Access Token", "Access Token", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmMewsServiceCharge,  "Mews Service Charge", "Mews Service Charge", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmMewsTips,  "Mews Tips", "Mews Tips", vmg3rdPartyInterface, "");
         //vmRestartServiceAtZED
 	}
 	catch(Exception &E)

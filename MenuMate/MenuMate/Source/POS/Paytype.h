@@ -176,6 +176,7 @@ private:	// User declarations
     bool IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int CategoryKey);
     bool IsCourseAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int coursekey);
     int GettingCourseKey(Database::TDBTransaction &DBTransaction, int Itemkey);
+    bool IsMewsPaymentCompatible();
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

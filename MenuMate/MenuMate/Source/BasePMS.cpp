@@ -90,4 +90,7 @@ void TBasePMS::UnsetPostingFlag()
 {
 }
 //---------------------------------------------------------------------------
-
+bool TBasePMS::GetSpaces(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken)
+{
+}
+//---------------------------------------------------------------------------

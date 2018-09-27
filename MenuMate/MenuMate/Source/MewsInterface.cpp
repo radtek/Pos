@@ -187,39 +187,27 @@ std::vector<TCustomerMews> TMewsInterface::GetCustomers(UnicodeString platformAd
         customerSearchMews->ClientToken = customerSearch.ClientToken;
         customerSearchMews->Name = customerSearch.Name;
         customerSearchMews->SpaceId = customerSearch.SpaceId;
-        ArrayOfCustomer customerArray;
-        CoInitialize(NULL);
-        customerArray = mewsClient->SearchCustomers(platformAddress,customerSearchMews);
-        List->Add("After receiving response.");
-        for(int i = 0; i < customerArray.get_length(); i++)
+        Customers *customers = mewsClient->SearchCustomers(platformAddress,customerSearchMews);
+        if(customers != NULL)
         {
-            List->Add("Value of i is: " + i);
-            TCustomerMews customerMews;
-            customerMews.FirstName = customerArray[i]->FirstName;
-            customerMews.LastName = customerArray[i]->LastName;
-            customerMews.Id = customerArray[i]->Id;
-//            if(customerArray[i]->Classifications != NULL)
-//            {
-                for(int j = 0; j < customerArray[i]->Classifications.get_length();j++)
-                {
-                    customerMews.Classifications.push_back(customerArray[i]->Classifications[j]);
-                }
-            //}
-            if(customerArray[i]->Number != NULL)
-                customerMews.Number = customerArray[i]->Number;
-            else
-                customerMews.Number = "";
-            if(customerArray[i]->Phone != NULL)
-                customerMews.Phone = customerArray[i]->Phone;
-            else
-                customerMews.Phone = "";
-            if(customerArray[i]->SecondLastName != NULL)
-                customerMews.SecondLastName = customerArray[i]->SecondLastName;
-            else
-                customerMews.SecondLastName = "";
+            for(int i = 0; i < customers->CustomersList.get_length(); i++)
+            {
+                TCustomerMews customerMews;
+                customerMews.Classifications.clear();
+                customerMews.FirstName =  customers->CustomersList[i]->FirstName;
+                customerMews.LastName =  customers->CustomersList[i]->LastName;
+                customerMews.Id =  customers->CustomersList[i]->Id;
+                customerMews.Number = customers->CustomersList[i]->CustomerDetails->Number;
+                customerMews.Email = customers->CustomersList[i]->CustomerDetails->Email;
+                customerMews.Phone = customers->CustomersList[i]->CustomerDetails->Phone;
 
-            customerMewsList.push_back(customerMews);
-            List->Add("Added an instance of customer to vector");
+                    for(int j = 0; j < customers->CustomersList[i]->CustomerDetails->Classifications.get_length(); j++)
+                    {
+                        customerMews.Classifications.push_back(customers->CustomersList[i]->CustomerDetails->Classifications[j]);
+                    }
+                customerMews.RoomNumber = customers->CustomersList[i]->RoomNumber;
+                customerMewsList.push_back(customerMews);
+            }
         }
         return customerMewsList;
     }
@@ -228,5 +216,54 @@ std::vector<TCustomerMews> TMewsInterface::GetCustomers(UnicodeString platformAd
          return customerMewsList;
     }
 
+}
+//---------------------------------------------------------------------------
+UnicodeString TMewsInterface::PostMewsOrder(UnicodeString platformAddress,TOrder order)
+{
+    UnicodeString retValue = "";
+    try
+    {
+        Order* orderMews = new Order();
+        orderMews->AccessToken = order.AccessToken;
+        orderMews->ClientToken = order.ClientToken;
+        orderMews->CustomerId = order.CustomerId;
+        orderMews->ServiceId  = order.ServiceId;
+        ArrayOfItem arrayOfItems;
+        for(int i = 0; i < order.Items.size(); i++)
+        {
+            Item *item = new Item();
+            item->Name = order.Items[i].Name;
+            item->UnitCount = order.Items[i].UnitCount;
+            item->UnitCost = new UnitCost();
+            item->UnitCost->Amount = order.Items[i].UnitCost.Amount;
+            item->UnitCost->Currency = order.Items[i].UnitCost.Currency;
+            item->UnitCost->Tax  = order.Items[i].UnitCost.Tax;
+            item->Category = new Category();
+            item->Category->Code = order.Items[i].Category.Code;
+            arrayOfItems.Length = (arrayOfItems.Length + 1);
+            arrayOfItems[arrayOfItems.Length - 1] = item;
+        }
+        orderMews->Items = arrayOfItems;
+        retValue = mewsClient->PostOrder(platformAddress,orderMews);
+    }
+    catch(Exception &ex)
+    {
+         return "";
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
+{
+    bool retValue = true;
+    try
+    {
+        Order* order = new Order();
+    }
+    catch(Exception &ex)
+    {
+         return false;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------

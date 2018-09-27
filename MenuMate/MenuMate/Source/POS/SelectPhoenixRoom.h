@@ -174,6 +174,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *btnNumPad;
 	TPanel *Panel15;
     TTouchBtn *btnSpaces;
+    TRadioGroup *RadioGroupSelection;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall ShiftClick(TObject *Sender);
 	void __fastcall ButtonMouseUp(TObject *Sender, TMouseButton Button,
@@ -207,6 +208,7 @@ __published:	// IDE-managed Components
 			 TMouseButton Button, TShiftState Shift, int X, int Y);
 	void __fastcall btnNumPadClick(TObject *Sender);
     void __fastcall btnSpacesMouseClick(TObject *Sender);
+    void __fastcall RadioGroupSelectionClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmPhoenixRoom(TComponent* Owner);
@@ -230,7 +232,7 @@ private:	// User declarations
     void SearchOracle(TPhoenixRoomStatusExt SelectedRoom);
     std::vector<TSpace> spaces;
     bool SpaceShow;
-    std::vector<TCustomerMews> CustomersMews;
+    void ShowSpaces();
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);
@@ -256,6 +258,7 @@ public:		// User declarations
 //    std::auto_ptr<TRoomInquiryResult*> roomResult;
     TRoomInquiryResult roomResult;
     int OracleRoomIndex;
+    std::vector<TCustomerMews> CustomersMews;
 };
 //---------------------------------------------------------------------------
 

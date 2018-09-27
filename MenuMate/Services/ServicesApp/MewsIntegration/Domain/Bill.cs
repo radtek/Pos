@@ -14,7 +14,7 @@ namespace MewsIntegration.Domain
         [DataMember]
         public string Number { get; set; }
         [DataMember]
-        public DateTime ClosedUtc { get; set; }
+        public string ClosedUtc { get; set; }
         [DataMember]
         public List<Item> Items { get; set; }
 

@@ -58,6 +58,7 @@ private:	// User declarations
     void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
     bool CheckDefaultPatronTypes();
     void LoadRevenueCodes(Database::TDBTransaction &DBTransaction);
+    void LoadRevenueCodesForMews(Database::TDBTransaction &DBTransaction);
     void AddMessage(TObject *Sender);
     void AddRevenueCode(TObject *Sender);
     void UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key);

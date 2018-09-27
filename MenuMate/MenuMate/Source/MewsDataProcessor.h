@@ -18,5 +18,15 @@ class TMewsDataProcessor
         std::vector<TServiceMews> GetServices();
         TCustomerSearch CreateInquiryForRoomBySpace(UnicodeString queryString);
         TCustomerSearch CreateInquiryForRoomByName(UnicodeString queryString);
+        std::vector<TAccountingCategory> GetCategoriesFromDB();
+        TUnitCost GetUnitCost(TItemComplete* itemComplete, double portion);
+        std::vector<TAccountingCategoriesMapping> GetMewsCategoriesList();
+        std::vector<TItemMews> GetMewsOrder(TPaymentTransaction &paymentTransaction, double portion, int index, double tipPortion, std::map<int,TAccountingCategory> accountingMap);
+        std::vector<TBill> GetMewsBill(TPaymentTransaction &paymentTransaction, double portion, int index, double tipPortion, std::map<int,TAccountingCategory> accountingMap);
+        std::map<int,UnicodeString> GetFreshMenumateCategories();
+        void InitializeMewsCategories();
+        std::map<int,TAccountingCategory> GetMewsCategoriesMap();
+        void UpdateCategories(int categoryKey, UnicodeString name, bool isDeleted);
+        void InsertCategories(int categoryKey, UnicodeString name);
 };
 #endif

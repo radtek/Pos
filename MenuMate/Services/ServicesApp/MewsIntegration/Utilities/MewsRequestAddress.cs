@@ -8,5 +8,7 @@
         public const string CustomerSearchByName = "/api/connector/v1/customers/getAllByName/";
         public const string CustomerSearch = "/api/connector/v1/customers/search/";
         public const string SpaceIds = "/api/connector/v1/spaces/getAll/";
+        public const string AddOrder = "/api/connector/v1/orders/add";
+        public const string AddBill = "/api/connector/v1/outletBills/add";
     }
 }

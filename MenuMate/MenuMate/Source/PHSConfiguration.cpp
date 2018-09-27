@@ -12,6 +12,7 @@
 #include "MessageMaintenance.h"
 #include "PMSTaxCodes.h"
 #include "ManagerMews.h"
+#include "MewsDataProcessor.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -98,7 +99,7 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixPortNumberClick(TObject *Sender)
             frmTouchKeyboard->Caption = "Enter the Client Token.";
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
-                TGlobalSettings::Instance().ClientToken = frmTouchKeyboard->KeyboardText.Trim();
+                TDeviceRealTerminal::Instance().BasePMS->ClientToken = frmTouchKeyboard->KeyboardText.Trim();
                 tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ClientToken;
                 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction1.StartTransaction();
@@ -577,6 +578,15 @@ void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Send
 
 void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
 {
+   // For the selected Menu show categories used in that
+   // on same grid table, when 1 selected and Edit clicked, show a list of
+   // Mews Categories.
+   if(TGlobalSettings::Instance().PMSType == 4)
+   {
+        if(TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet.Trim() != "")
+            MessageBox("Outlet Selection is mandatory to access Revenue Maps./rPlease Select an outlet.","Info",MB_OK);
+            return;
+   }
    std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
                  (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
                               (this,TDeviceRealTerminal::Instance().DBControl));
@@ -631,7 +641,7 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCentreMouseClick(TObject *Sender)
             frmTouchKeyboard->Caption = "Enter the Access Token";
             if (frmTouchKeyboard->ShowModal() == mrOk)
             {
-                TGlobalSettings::Instance().AccessToken = frmTouchKeyboard->KeyboardText;
+                TDeviceRealTerminal::Instance().BasePMS->AccessToken = frmTouchKeyboard->KeyboardText;
                 tbRevenueCentre->Caption = "Access Token\r" + TDeviceRealTerminal::Instance().BasePMS->AccessToken;
                 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction1.StartTransaction();
@@ -859,14 +869,19 @@ void TfrmPHSConfiguration::InitDefaultPaymentInDB()
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::comboOutletsChange(TObject *Sender)
 {
+    UnicodeString existingValue = TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet;
     TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet = outlets[comboOutlets->ItemIndex].Id;
     Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction1.StartTransaction();
     TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmOutletIdMewsSelected,TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet);
     DBTransaction1.Commit();
+    if( existingValue != TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet)
+    {
+        std::auto_ptr<TMewsDataProcessor> processor(new TMewsDataProcessor());
+        processor->InitializeMewsCategories();
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -934,6 +949,18 @@ void TfrmPHSConfiguration::UpdateOracleUI()
         tbOracleInterfaceIP->Caption = "Oracle Interface IP";
         tbOracleInterfaceIP->Caption = "Oracle Interface Port";
     }
+    lbTips->Visible = false;
+    lbTips->Enabled = false;
+    lbServiceCharge->Visible = false;
+    lbServiceCharge->Enabled = false;
+    comboTips->Visible = false;
+    comboTips->Enabled = false;
+    comboServiceCharge->Visible = false;
+    comboServiceCharge->Enabled = false;
+    lbSurcharge->Visible            = false;
+    lbSurcharge->Enabled            = false;
+    comboSurcharge->Visible         = false;
+    comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //---------------------------------------------------------------------------
@@ -964,6 +991,18 @@ void TfrmPHSConfiguration::UpdateSiHotUI()
     lblOutlets->Visible = false;
     lblServices->Enabled = false;
     lblServices->Visible = false;
+    lbTips->Visible = false;
+    lbTips->Enabled = false;
+    lbServiceCharge->Visible = false;
+    lbServiceCharge->Enabled = false;
+    comboTips->Visible = false;
+    comboTips->Enabled = false;
+    comboServiceCharge->Visible = false;
+    comboServiceCharge->Enabled = false;
+    lbSurcharge->Visible            = false;
+    lbSurcharge->Enabled            = false;
+    comboSurcharge->Visible         = false;
+    comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //---------------------------------------------------------------------------
@@ -990,6 +1029,18 @@ void TfrmPHSConfiguration::UpdateMotelMateUI()
     lblOutlets->Visible = false;
     lblServices->Enabled = false;
     lblServices->Visible = false;
+    lbTips->Visible = false;
+    lbTips->Enabled = false;
+    lbServiceCharge->Visible = false;
+    lbServiceCharge->Enabled = false;
+    comboTips->Visible = false;
+    comboTips->Enabled = false;
+    comboServiceCharge->Visible = false;
+    comboServiceCharge->Enabled = false;
+    lbSurcharge->Visible            = false;
+    lbSurcharge->Enabled            = false;
+    comboSurcharge->Visible         = false;
+    comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //--------------------------------------------------------------------------
@@ -997,6 +1048,7 @@ void TfrmPHSConfiguration::UpdateMewsUI()
 {
     outlets.clear();
     services.clear();
+    categories.clear();
     tbPhoenixIPAddress->Caption     = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
     tbPhoenixPortNumber->Caption    = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ClientToken;
     tbRevenueCentre->Caption        = "AccessToken\r" + TDeviceRealTerminal::Instance().BasePMS->AccessToken;
@@ -1016,9 +1068,38 @@ void TfrmPHSConfiguration::UpdateMewsUI()
     lblOutlets->Visible             = true;
     lblServices->Enabled            = true;
     lblServices->Visible            = true;
+    tbTipAccount->Enabled           = false;
+    tbServiceCharge->Enabled        = false;
+    tbTipAccount->Visible           = false;
+    tbServiceCharge->Visible        = false;
+    tbPointCat->Enabled             = false;
+    tbItemDefCat->Enabled           = false;
+    tbCreditCat->Enabled            = false;
+    tbRoundingCategory->Enabled     = false;
+    tbDefTransAccount->Enabled      = false;
+    tbExpensesAccount->Enabled      = false;
+    tbServingTime->Enabled          = false;
+    tbOracleInterfaceIP->Enabled    = false;
+    tbOracleInterfacePort->Enabled  = false;
+    tbTimeOut->Enabled              = false;
+    cbMakeOracleServer->Enabled     = false;
+    comboTips->Enabled              = true;
+    comboTips->Visible              = true;
+    comboServiceCharge->Enabled     = true;
+    comboServiceCharge->Visible     = true;
+    lbSurcharge->Visible            = true;
+    lbSurcharge->Enabled            = true;
+    comboSurcharge->Visible         = true;
+    comboSurcharge->Enabled         = true;
+    tbSurchargeCat->Enabled         = false;
+    tbSurchargeCat->Visible         = false;
     PopulateDropDowns(comboOutlets->Items,comboServices->Items);
+    PopulateDropDowns2(comboServiceCharge->Items,comboTips->Items, comboSurcharge->Items);
     comboOutlets->ItemIndex = GetIndexForSelectedMewsOutlet();
     comboServices->ItemIndex = GetIndexForSelectedMewsService();
+    comboTips->ItemIndex  = GetIndexForSelectedTips();
+    comboServiceCharge->ItemIndex = GetIndexForSelectedServiceCharge();
+    comboSurcharge->ItemIndex     = GetIndexForSelectedSurcharge();
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::SyncMewsDetailsFromCloud()
@@ -1042,6 +1123,10 @@ void TfrmPHSConfiguration::SyncMewsDetailsFromCloud()
         bool isSetUp = managerMews->SetUpMews(ipAddress,clientToken,accessToken);
         if(!isSetUp)
             MessageBox("Could not sync the fresh details from Mews","Info",MB_OK+MB_ICONINFORMATION);
+        else
+        {
+            UpdateMewsUI();
+        }
         DBTransaction1.Commit();
     }
     catch(Exception &ex)
@@ -1065,6 +1150,30 @@ void TfrmPHSConfiguration::PopulateDropDowns(TStrings* outletstrings, TStrings* 
     {
         UnicodeString serviceName = services[i].Name;
         servicesstrings->Add(serviceName);
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::PopulateDropDowns2(TStrings* serviceChargeStrings, TStrings* tipsstrings, TStrings* surchargestrings)
+{
+    std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+    categories = managerMews->GetCategoriesFromDB();
+
+    for(int i = 0; i < categories.size(); i++)
+    {
+        UnicodeString serviceCharge = categories[i].Code;
+        serviceChargeStrings->Add(serviceCharge);
+    }
+
+    for(int i = 0; i < categories.size(); i++)
+    {
+        UnicodeString tips = categories[i].Code;
+        tipsstrings->Add(tips);
+    }
+
+    for(int i = 0; i < categories.size(); i++)
+    {
+        UnicodeString surcharge = categories[i].Code;
+        surchargestrings->Add(surcharge);
     }
 }
 //---------------------------------------------------------------------------
@@ -1092,3 +1201,67 @@ int TfrmPHSConfiguration::GetIndexForSelectedMewsOutlet()
     return -1;
 }
 //---------------------------------------------------------------------------
+int TfrmPHSConfiguration::GetIndexForSelectedTips()
+{
+    for(int i = 0; i < categories.size(); i++)
+    {
+        if(categories[i].Id == TDeviceRealTerminal::Instance().BasePMS->TipAccount)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//---------------------------------------------------------------------------
+int TfrmPHSConfiguration::GetIndexForSelectedServiceCharge()
+{
+    for(int i = 0; i < categories.size(); i++)
+    {
+        if(categories[i].Id == TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//---------------------------------------------------------------------------
+int TfrmPHSConfiguration::GetIndexForSelectedSurcharge()
+{
+    for(int i = 0; i < categories.size(); i++)
+    {
+        if(categories[i].Id == TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::comboServiceChargeChange(TObject *Sender)
+{
+    TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount = categories[comboServiceCharge->ItemIndex].Id;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmMewsServiceCharge,TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount);
+    DBTransaction1.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPHSConfiguration::comboTipsChange(TObject *Sender)
+{
+    TDeviceRealTerminal::Instance().BasePMS->TipAccount = categories[comboTips->ItemIndex].Id;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmMewsTips,TDeviceRealTerminal::Instance().BasePMS->TipAccount);
+    DBTransaction1.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::comboSurchargeChange(TObject *Sender)
+{
+    TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount = categories[comboSurcharge->ItemIndex].Id;
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultSurchargeAccount,TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount);
+    DBTransaction1.Commit();
+}
+//------------------------------------------------------------------------------

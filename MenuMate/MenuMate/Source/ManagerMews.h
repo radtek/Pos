@@ -14,11 +14,13 @@ class TManagerMews : public TBasePMS
 //       void GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString PMSIPAddress,int PMSPort);
        void Initialise();
        bool ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
-       bool SetUpMews(UnicodeString url, UnicodeString accessToke, UnicodeString clientToken);
+       bool SetUpMews(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
        void LogPMSEnabling(TriggerLocation triggerType);
        void UnsetPostingFlag();
        std::vector<TOutlet> GetOutletsFromDB();
        std::vector<TServiceMews> GetServicesFromDB();
+       bool GetSpaces(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
+       std::vector<TAccountingCategory> GetCategoriesFromDB();
     private :
        bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);
@@ -32,10 +34,9 @@ class TManagerMews : public TBasePMS
        void WaitOrProceedWithPost();
        void SetPostingFlag();
        void LogWaitStatus(std::auto_ptr<TStringList> waitLogs);
-       bool GetOutlets(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken);
-       bool GetServices(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken);
-       bool GetSpaces(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken);
-       bool GetCategories(UnicodeString url, UnicodeString accessToken, UnicodeString clientToken);
+       bool GetOutlets(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
+       bool GetServices(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
+       bool GetCategories(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
        void GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
        void GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
 };

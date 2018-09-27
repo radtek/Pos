@@ -18,7 +18,7 @@ namespace MewsIntegration.Domain
         [DataMember]
         public string ServiceId { get; set; }
         [DataMember]
-        public DateTime ConsumptionUtc { get; set; }
+        public string ConsumptionUtc { get; set; }
         [DataMember]
         public List<Bill> Bills { get; set; }
         [DataMember]

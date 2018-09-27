@@ -2164,36 +2164,24 @@ void TApplyParser::update6_53Tables()
     Create6_53Tables(_dbControl);
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_53Generators(TDBControl* const inDBControl)
-{
-//    if(!generatorExists("GEN_MEWSOUTLETS", _dbControl))
-//	{
-//		executeQuery("CREATE GENERATOR GEN_MEWSOUTLETS;", inDBControl);
-//		executeQuery("SET GENERATOR GEN_MEWSOUTLETS TO 0;", inDBControl);
-//	}
-//    if(!generatorExists("GEN_MEWSSERVICES", _dbControl))
-//	{
-//		executeQuery("CREATE GENERATOR GEN_MEWSSERVICES;", inDBControl);
-//		executeQuery("SET GENERATOR GEN_MEWSSERVICES TO 0;", inDBControl);
-//	}
-//    if(!generatorExists("GEN_MEWSCATEGORIES", _dbControl))
-//	{
-//		executeQuery("CREATE GENERATOR GEN_MEWSCATEGORIES;", inDBControl);
-//		executeQuery("SET GENERATOR GEN_MEWSCATEGORIES TO 0;", inDBControl);
-//	}
-//    if(!generatorExists("GEN_MEWSSPACES", _dbControl))
-//	{
-//		executeQuery("CREATE GENERATOR GEN_MEWSSPACES;", inDBControl);
-//		executeQuery("SET GENERATOR GEN_MEWSSPACES TO 0;", inDBControl);
-//	}
-}//------------------------------------------------------------------------------
 void TApplyParser::Create6_53Tables(TDBControl* const inDBControl)
 {
+    Create6_53Generators(_dbControl);
     Create6_53TableOutlets(_dbControl);
     Create6_53TableServices(_dbControl);
     Create6_53TablePromotions(_dbControl);
     Create6_53TableSpaces(_dbControl);
     AlterTable6_53RevenueCodeDetails(_dbControl);
+    Create6_53TablePMSAccountingCategories(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_53Generators(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSACCOUNTINGCATEGORIESID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSACCOUNTINGCATEGORIESID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSACCOUNTINGCATEGORIESID TO 0;", inDBControl);
+	}
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_53TableOutlets(TDBControl* const inDBControl)
@@ -2324,6 +2312,31 @@ void TApplyParser::AlterTable6_53RevenueCodeDetails(TDBControl* const inDBContro
         "ALTER TABLE REVENUECODEDETAILS "
         "ADD CLASSIFICATION VARCHAR(50) ; ",
         inDBControl);
+    }
+    if ( fieldExists( "REVENUECODEDETAILS ", "REVENUECODE_DESCRIPTION", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ALTER REVENUECODE_DESCRIPTION TYPE char(50);",
+        inDBControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_53TablePMSAccountingCategories(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSACCOUNTINGCATEGORIES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSACCOUNTINGCATEGORIES "
+        "( "
+        "  CATEGORYMAPID INTEGER NOT NULL PRIMARY KEY, "
+        "  REVENUE_CENTRE VARCHAR(50),                 "
+        "  CATEGORY_KEY INTEGER,                       "
+        "  MM_CATEGORYNAME VARCHAR(50),                "
+        "  PMSACCOUNTINGID VARCHAR(50),                "
+        "  MEWS_CATEGORYNAME VARCHAR(50)               "
+        ");",
+		inDBControl );
     }
 }
 //------------------------------------------------------------------------------

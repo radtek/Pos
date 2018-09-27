@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8747/MenumateServices/MewsService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (17/09/2018 5:33:30 p.m. - - $Rev: 25127 $)
+// (27/09/2018 8:32:43 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   MewsWSDLH
@@ -44,14 +44,13 @@ namespace NS__MewsWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also
+// typically map to predefined/known XML or Embarcadero types; however, they could also 
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:anyType         - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS BasicInquiry;
 class SOAP_REMOTABLE_CLASS Extent;
@@ -60,10 +59,17 @@ class SOAP_REMOTABLE_CLASS Promotions;
 class SOAP_REMOTABLE_CLASS AccountingCategory;
 class SOAP_REMOTABLE_CLASS Outlet;
 class SOAP_REMOTABLE_CLASS CustomerSearch;
+class SOAP_REMOTABLE_CLASS Customers;
 class SOAP_REMOTABLE_CLASS Customer;
+class SOAP_REMOTABLE_CLASS CustomerDetails;
 class SOAP_REMOTABLE_CLASS SpaceDetails;
 class SOAP_REMOTABLE_CLASS SpaceCategory;
 class SOAP_REMOTABLE_CLASS Space;
+class SOAP_REMOTABLE_CLASS Order;
+class SOAP_REMOTABLE_CLASS Bill;
+class SOAP_REMOTABLE_CLASS Item;
+class SOAP_REMOTABLE_CLASS Category;
+class SOAP_REMOTABLE_CLASS UnitCost;
 class SOAP_REMOTABLE_CLASS BasicInquiry2;
 class SOAP_REMOTABLE_CLASS Extent2;
 class SOAP_REMOTABLE_CLASS Service2;
@@ -71,10 +77,17 @@ class SOAP_REMOTABLE_CLASS Promotions2;
 class SOAP_REMOTABLE_CLASS AccountingCategory2;
 class SOAP_REMOTABLE_CLASS Outlet2;
 class SOAP_REMOTABLE_CLASS CustomerSearch2;
+class SOAP_REMOTABLE_CLASS Customers2;
 class SOAP_REMOTABLE_CLASS Customer2;
+class SOAP_REMOTABLE_CLASS CustomerDetails2;
 class SOAP_REMOTABLE_CLASS SpaceDetails2;
 class SOAP_REMOTABLE_CLASS SpaceCategory2;
 class SOAP_REMOTABLE_CLASS Space2;
+class SOAP_REMOTABLE_CLASS Order2;
+class SOAP_REMOTABLE_CLASS Bill2;
+class SOAP_REMOTABLE_CLASS Item2;
+class SOAP_REMOTABLE_CLASS Category2;
+class SOAP_REMOTABLE_CLASS UnitCost2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -426,23 +439,85 @@ typedef DynamicArray<Customer*>   ArrayOfCustomer; /* "http://schemas.datacontra
 
 
 // ************************************************************************ //
+// XML       : Customers, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Customers : public TRemotable {
+private:
+  ArrayOfCustomer FCustomersList;
+  bool            FCustomersList_Specified;
+  void __fastcall SetCustomersList(int Index, ArrayOfCustomer _prop_val)
+  {  FCustomersList = _prop_val; FCustomersList_Specified = true;  }
+  bool __fastcall CustomersList_Specified(int Index)
+  {  return FCustomersList_Specified;  } 
+
+public:
+  __fastcall ~Customers();
+__published:
+  __property ArrayOfCustomer CustomersList = { index=(IS_OPTN|IS_NLBL), read=FCustomersList, write=SetCustomersList, stored = CustomersList_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : Customer, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
 // ************************************************************************ //
 class Customer : public TRemotable {
 private:
-  ArrayOfstring   FAddress;
-  bool            FAddress_Specified;
-  TXSDateTime*    FBirthDate;
-  bool            FBirthDate_Specified;
-  UnicodeString   FBirthPlace;
-  bool            FBirthPlace_Specified;
-  Variant         FCategoryId;
-  bool            FCategoryId_Specified;
+  CustomerDetails* FCustomerDetails;
+  bool            FCustomerDetails_Specified;
+  UnicodeString   FFirstName;
+  bool            FFirstName_Specified;
+  UnicodeString   FId;
+  bool            FId_Specified;
+  UnicodeString   FLastName;
+  bool            FLastName_Specified;
+  UnicodeString   FRoomNumber;
+  bool            FRoomNumber_Specified;
+  void __fastcall SetCustomerDetails(int Index, CustomerDetails* _prop_val)
+  {  FCustomerDetails = _prop_val; FCustomerDetails_Specified = true;  }
+  bool __fastcall CustomerDetails_Specified(int Index)
+  {  return FCustomerDetails_Specified;  } 
+  void __fastcall SetFirstName(int Index, UnicodeString _prop_val)
+  {  FFirstName = _prop_val; FFirstName_Specified = true;  }
+  bool __fastcall FirstName_Specified(int Index)
+  {  return FFirstName_Specified;  } 
+  void __fastcall SetId(int Index, UnicodeString _prop_val)
+  {  FId = _prop_val; FId_Specified = true;  }
+  bool __fastcall Id_Specified(int Index)
+  {  return FId_Specified;  } 
+  void __fastcall SetLastName(int Index, UnicodeString _prop_val)
+  {  FLastName = _prop_val; FLastName_Specified = true;  }
+  bool __fastcall LastName_Specified(int Index)
+  {  return FLastName_Specified;  } 
+  void __fastcall SetRoomNumber(int Index, UnicodeString _prop_val)
+  {  FRoomNumber = _prop_val; FRoomNumber_Specified = true;  }
+  bool __fastcall RoomNumber_Specified(int Index)
+  {  return FRoomNumber_Specified;  } 
+
+public:
+  __fastcall ~Customer();
+__published:
+  __property CustomerDetails* CustomerDetails = { index=(IS_OPTN|IS_NLBL), read=FCustomerDetails, write=SetCustomerDetails, stored = CustomerDetails_Specified };
+  __property UnicodeString  FirstName = { index=(IS_OPTN|IS_NLBL), read=FFirstName, write=SetFirstName, stored = FirstName_Specified };
+  __property UnicodeString         Id = { index=(IS_OPTN|IS_NLBL), read=FId, write=SetId, stored = Id_Specified };
+  __property UnicodeString   LastName = { index=(IS_OPTN|IS_NLBL), read=FLastName, write=SetLastName, stored = LastName_Specified };
+  __property UnicodeString RoomNumber = { index=(IS_OPTN|IS_NLBL), read=FRoomNumber, write=SetRoomNumber, stored = RoomNumber_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : CustomerDetails, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class CustomerDetails : public TRemotable {
+private:
   ArrayOfstring   FClassifications;
   bool            FClassifications_Specified;
-  TXSDateTime*    FCreatedUtc;
-  bool            FCreatedUtc_Specified;
   UnicodeString   FEmail;
   bool            FEmail_Specified;
   UnicodeString   FFirstName;
@@ -451,52 +526,18 @@ private:
   bool            FGender_Specified;
   UnicodeString   FId;
   bool            FId_Specified;
-  UnicodeString   FLanguageCode;
-  bool            FLanguageCode_Specified;
   UnicodeString   FLastName;
   bool            FLastName_Specified;
-  UnicodeString   FLoyaltyCode;
-  bool            FLoyaltyCode_Specified;
-  UnicodeString   FNationalityCode;
-  bool            FNationalityCode_Specified;
-  UnicodeString   FNotes;
-  bool            FNotes_Specified;
   UnicodeString   FNumber;
   bool            FNumber_Specified;
   UnicodeString   FPhone;
   bool            FPhone_Specified;
-  Variant         FSecondLastName;
-  bool            FSecondLastName_Specified;
-  UnicodeString   FTaxIdentificationNumber;
-  bool            FTaxIdentificationNumber_Specified;
   UnicodeString   FTitle;
   bool            FTitle_Specified;
-  TXSDateTime*    FUpdatedUtc;
-  bool            FUpdatedUtc_Specified;
-  void __fastcall SetAddress(int Index, ArrayOfstring _prop_val)
-  {  FAddress = _prop_val; FAddress_Specified = true;  }
-  bool __fastcall Address_Specified(int Index)
-  {  return FAddress_Specified;  } 
-  void __fastcall SetBirthDate(int Index, TXSDateTime* _prop_val)
-  {  FBirthDate = _prop_val; FBirthDate_Specified = true;  }
-  bool __fastcall BirthDate_Specified(int Index)
-  {  return FBirthDate_Specified;  } 
-  void __fastcall SetBirthPlace(int Index, UnicodeString _prop_val)
-  {  FBirthPlace = _prop_val; FBirthPlace_Specified = true;  }
-  bool __fastcall BirthPlace_Specified(int Index)
-  {  return FBirthPlace_Specified;  } 
-  void __fastcall SetCategoryId(int Index, Variant _prop_val)
-  {  FCategoryId = _prop_val; FCategoryId_Specified = true;  }
-  bool __fastcall CategoryId_Specified(int Index)
-  {  return FCategoryId_Specified;  } 
   void __fastcall SetClassifications(int Index, ArrayOfstring _prop_val)
   {  FClassifications = _prop_val; FClassifications_Specified = true;  }
   bool __fastcall Classifications_Specified(int Index)
   {  return FClassifications_Specified;  } 
-  void __fastcall SetCreatedUtc(int Index, TXSDateTime* _prop_val)
-  {  FCreatedUtc = _prop_val; FCreatedUtc_Specified = true;  }
-  bool __fastcall CreatedUtc_Specified(int Index)
-  {  return FCreatedUtc_Specified;  } 
   void __fastcall SetEmail(int Index, UnicodeString _prop_val)
   {  FEmail = _prop_val; FEmail_Specified = true;  }
   bool __fastcall Email_Specified(int Index)
@@ -513,26 +554,10 @@ private:
   {  FId = _prop_val; FId_Specified = true;  }
   bool __fastcall Id_Specified(int Index)
   {  return FId_Specified;  } 
-  void __fastcall SetLanguageCode(int Index, UnicodeString _prop_val)
-  {  FLanguageCode = _prop_val; FLanguageCode_Specified = true;  }
-  bool __fastcall LanguageCode_Specified(int Index)
-  {  return FLanguageCode_Specified;  } 
   void __fastcall SetLastName(int Index, UnicodeString _prop_val)
   {  FLastName = _prop_val; FLastName_Specified = true;  }
   bool __fastcall LastName_Specified(int Index)
   {  return FLastName_Specified;  } 
-  void __fastcall SetLoyaltyCode(int Index, UnicodeString _prop_val)
-  {  FLoyaltyCode = _prop_val; FLoyaltyCode_Specified = true;  }
-  bool __fastcall LoyaltyCode_Specified(int Index)
-  {  return FLoyaltyCode_Specified;  } 
-  void __fastcall SetNationalityCode(int Index, UnicodeString _prop_val)
-  {  FNationalityCode = _prop_val; FNationalityCode_Specified = true;  }
-  bool __fastcall NationalityCode_Specified(int Index)
-  {  return FNationalityCode_Specified;  } 
-  void __fastcall SetNotes(int Index, UnicodeString _prop_val)
-  {  FNotes = _prop_val; FNotes_Specified = true;  }
-  bool __fastcall Notes_Specified(int Index)
-  {  return FNotes_Specified;  } 
   void __fastcall SetNumber(int Index, UnicodeString _prop_val)
   {  FNumber = _prop_val; FNumber_Specified = true;  }
   bool __fastcall Number_Specified(int Index)
@@ -541,47 +566,20 @@ private:
   {  FPhone = _prop_val; FPhone_Specified = true;  }
   bool __fastcall Phone_Specified(int Index)
   {  return FPhone_Specified;  } 
-  void __fastcall SetSecondLastName(int Index, Variant _prop_val)
-  {  FSecondLastName = _prop_val; FSecondLastName_Specified = true;  }
-  bool __fastcall SecondLastName_Specified(int Index)
-  {  return FSecondLastName_Specified;  } 
-  void __fastcall SetTaxIdentificationNumber(int Index, UnicodeString _prop_val)
-  {  FTaxIdentificationNumber = _prop_val; FTaxIdentificationNumber_Specified = true;  }
-  bool __fastcall TaxIdentificationNumber_Specified(int Index)
-  {  return FTaxIdentificationNumber_Specified;  } 
   void __fastcall SetTitle(int Index, UnicodeString _prop_val)
   {  FTitle = _prop_val; FTitle_Specified = true;  }
   bool __fastcall Title_Specified(int Index)
   {  return FTitle_Specified;  } 
-  void __fastcall SetUpdatedUtc(int Index, TXSDateTime* _prop_val)
-  {  FUpdatedUtc = _prop_val; FUpdatedUtc_Specified = true;  }
-  bool __fastcall UpdatedUtc_Specified(int Index)
-  {  return FUpdatedUtc_Specified;  } 
-
-public:
-  __fastcall ~Customer();
 __published:
-  __property ArrayOfstring    Address = { index=(IS_OPTN|IS_NLBL), read=FAddress, write=SetAddress, stored = Address_Specified };
-  __property TXSDateTime*  BirthDate = { index=(IS_OPTN), read=FBirthDate, write=SetBirthDate, stored = BirthDate_Specified };
-  __property UnicodeString BirthPlace = { index=(IS_OPTN|IS_NLBL), read=FBirthPlace, write=SetBirthPlace, stored = BirthPlace_Specified };
-  __property Variant    CategoryId = { index=(IS_OPTN|IS_NLBL), read=FCategoryId, write=SetCategoryId, stored = CategoryId_Specified };
   __property ArrayOfstring Classifications = { index=(IS_OPTN|IS_NLBL), read=FClassifications, write=SetClassifications, stored = Classifications_Specified };
-  __property TXSDateTime* CreatedUtc = { index=(IS_OPTN), read=FCreatedUtc, write=SetCreatedUtc, stored = CreatedUtc_Specified };
   __property UnicodeString      Email = { index=(IS_OPTN|IS_NLBL), read=FEmail, write=SetEmail, stored = Email_Specified };
   __property UnicodeString  FirstName = { index=(IS_OPTN|IS_NLBL), read=FFirstName, write=SetFirstName, stored = FirstName_Specified };
   __property UnicodeString     Gender = { index=(IS_OPTN|IS_NLBL), read=FGender, write=SetGender, stored = Gender_Specified };
   __property UnicodeString         Id = { index=(IS_OPTN|IS_NLBL), read=FId, write=SetId, stored = Id_Specified };
-  __property UnicodeString LanguageCode = { index=(IS_OPTN|IS_NLBL), read=FLanguageCode, write=SetLanguageCode, stored = LanguageCode_Specified };
   __property UnicodeString   LastName = { index=(IS_OPTN|IS_NLBL), read=FLastName, write=SetLastName, stored = LastName_Specified };
-  __property UnicodeString LoyaltyCode = { index=(IS_OPTN|IS_NLBL), read=FLoyaltyCode, write=SetLoyaltyCode, stored = LoyaltyCode_Specified };
-  __property UnicodeString NationalityCode = { index=(IS_OPTN|IS_NLBL), read=FNationalityCode, write=SetNationalityCode, stored = NationalityCode_Specified };
-  __property UnicodeString      Notes = { index=(IS_OPTN|IS_NLBL), read=FNotes, write=SetNotes, stored = Notes_Specified };
   __property UnicodeString     Number = { index=(IS_OPTN|IS_NLBL), read=FNumber, write=SetNumber, stored = Number_Specified };
   __property UnicodeString      Phone = { index=(IS_OPTN|IS_NLBL), read=FPhone, write=SetPhone, stored = Phone_Specified };
-  __property Variant    SecondLastName = { index=(IS_OPTN|IS_NLBL), read=FSecondLastName, write=SetSecondLastName, stored = SecondLastName_Specified };
-  __property UnicodeString TaxIdentificationNumber = { index=(IS_OPTN|IS_NLBL), read=FTaxIdentificationNumber, write=SetTaxIdentificationNumber, stored = TaxIdentificationNumber_Specified };
   __property UnicodeString      Title = { index=(IS_OPTN|IS_NLBL), read=FTitle, write=SetTitle, stored = Title_Specified };
-  __property TXSDateTime* UpdatedUtc = { index=(IS_OPTN), read=FUpdatedUtc, write=SetUpdatedUtc, stored = UpdatedUtc_Specified };
 };
 
 
@@ -759,6 +757,224 @@ __published:
 };
 
 
+typedef DynamicArray<Bill*>       ArrayOfBill;    /* "http://schemas.datacontract.org/2004/07/MewsIntegration.Domain"[GblCplx] */
+typedef DynamicArray<Item*>       ArrayOfItem;    /* "http://schemas.datacontract.org/2004/07/MewsIntegration.Domain"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : Order, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Order : public TRemotable {
+private:
+  UnicodeString   FAccessToken;
+  bool            FAccessToken_Specified;
+  ArrayOfBill     FBills;
+  bool            FBills_Specified;
+  UnicodeString   FClientToken;
+  bool            FClientToken_Specified;
+  UnicodeString   FConsumptionUtc;
+  bool            FConsumptionUtc_Specified;
+  UnicodeString   FCustomerId;
+  bool            FCustomerId_Specified;
+  ArrayOfItem     FItems;
+  bool            FItems_Specified;
+  UnicodeString   FServiceId;
+  bool            FServiceId_Specified;
+  void __fastcall SetAccessToken(int Index, UnicodeString _prop_val)
+  {  FAccessToken = _prop_val; FAccessToken_Specified = true;  }
+  bool __fastcall AccessToken_Specified(int Index)
+  {  return FAccessToken_Specified;  } 
+  void __fastcall SetBills(int Index, ArrayOfBill _prop_val)
+  {  FBills = _prop_val; FBills_Specified = true;  }
+  bool __fastcall Bills_Specified(int Index)
+  {  return FBills_Specified;  } 
+  void __fastcall SetClientToken(int Index, UnicodeString _prop_val)
+  {  FClientToken = _prop_val; FClientToken_Specified = true;  }
+  bool __fastcall ClientToken_Specified(int Index)
+  {  return FClientToken_Specified;  } 
+  void __fastcall SetConsumptionUtc(int Index, UnicodeString _prop_val)
+  {  FConsumptionUtc = _prop_val; FConsumptionUtc_Specified = true;  }
+  bool __fastcall ConsumptionUtc_Specified(int Index)
+  {  return FConsumptionUtc_Specified;  } 
+  void __fastcall SetCustomerId(int Index, UnicodeString _prop_val)
+  {  FCustomerId = _prop_val; FCustomerId_Specified = true;  }
+  bool __fastcall CustomerId_Specified(int Index)
+  {  return FCustomerId_Specified;  } 
+  void __fastcall SetItems(int Index, ArrayOfItem _prop_val)
+  {  FItems = _prop_val; FItems_Specified = true;  }
+  bool __fastcall Items_Specified(int Index)
+  {  return FItems_Specified;  } 
+  void __fastcall SetServiceId(int Index, UnicodeString _prop_val)
+  {  FServiceId = _prop_val; FServiceId_Specified = true;  }
+  bool __fastcall ServiceId_Specified(int Index)
+  {  return FServiceId_Specified;  } 
+
+public:
+  __fastcall ~Order();
+__published:
+  __property UnicodeString AccessToken = { index=(IS_OPTN|IS_NLBL), read=FAccessToken, write=SetAccessToken, stored = AccessToken_Specified };
+  __property ArrayOfBill      Bills = { index=(IS_OPTN|IS_NLBL), read=FBills, write=SetBills, stored = Bills_Specified };
+  __property UnicodeString ClientToken = { index=(IS_OPTN|IS_NLBL), read=FClientToken, write=SetClientToken, stored = ClientToken_Specified };
+  __property UnicodeString ConsumptionUtc = { index=(IS_OPTN|IS_NLBL), read=FConsumptionUtc, write=SetConsumptionUtc, stored = ConsumptionUtc_Specified };
+  __property UnicodeString CustomerId = { index=(IS_OPTN|IS_NLBL), read=FCustomerId, write=SetCustomerId, stored = CustomerId_Specified };
+  __property ArrayOfItem      Items = { index=(IS_OPTN|IS_NLBL), read=FItems, write=SetItems, stored = Items_Specified };
+  __property UnicodeString  ServiceId = { index=(IS_OPTN|IS_NLBL), read=FServiceId, write=SetServiceId, stored = ServiceId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Bill, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Bill : public TRemotable {
+private:
+  UnicodeString   FClosedUtc;
+  bool            FClosedUtc_Specified;
+  ArrayOfItem     FItems;
+  bool            FItems_Specified;
+  UnicodeString   FNumber;
+  bool            FNumber_Specified;
+  UnicodeString   FOutletId;
+  bool            FOutletId_Specified;
+  void __fastcall SetClosedUtc(int Index, UnicodeString _prop_val)
+  {  FClosedUtc = _prop_val; FClosedUtc_Specified = true;  }
+  bool __fastcall ClosedUtc_Specified(int Index)
+  {  return FClosedUtc_Specified;  } 
+  void __fastcall SetItems(int Index, ArrayOfItem _prop_val)
+  {  FItems = _prop_val; FItems_Specified = true;  }
+  bool __fastcall Items_Specified(int Index)
+  {  return FItems_Specified;  } 
+  void __fastcall SetNumber(int Index, UnicodeString _prop_val)
+  {  FNumber = _prop_val; FNumber_Specified = true;  }
+  bool __fastcall Number_Specified(int Index)
+  {  return FNumber_Specified;  } 
+  void __fastcall SetOutletId(int Index, UnicodeString _prop_val)
+  {  FOutletId = _prop_val; FOutletId_Specified = true;  }
+  bool __fastcall OutletId_Specified(int Index)
+  {  return FOutletId_Specified;  } 
+
+public:
+  __fastcall ~Bill();
+__published:
+  __property UnicodeString  ClosedUtc = { index=(IS_OPTN|IS_NLBL), read=FClosedUtc, write=SetClosedUtc, stored = ClosedUtc_Specified };
+  __property ArrayOfItem      Items = { index=(IS_OPTN|IS_NLBL), read=FItems, write=SetItems, stored = Items_Specified };
+  __property UnicodeString     Number = { index=(IS_OPTN|IS_NLBL), read=FNumber, write=SetNumber, stored = Number_Specified };
+  __property UnicodeString   OutletId = { index=(IS_OPTN|IS_NLBL), read=FOutletId, write=SetOutletId, stored = OutletId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Item, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Item : public TRemotable {
+private:
+  Category*       FCategory;
+  bool            FCategory_Specified;
+  UnicodeString   FConsumedUtc;
+  bool            FConsumedUtc_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  UnicodeString   FType;
+  bool            FType_Specified;
+  UnitCost*       FUnitCost;
+  bool            FUnitCost_Specified;
+  int             FUnitCount;
+  bool            FUnitCount_Specified;
+  void __fastcall SetCategory(int Index, Category* _prop_val)
+  {  FCategory = _prop_val; FCategory_Specified = true;  }
+  bool __fastcall Category_Specified(int Index)
+  {  return FCategory_Specified;  } 
+  void __fastcall SetConsumedUtc(int Index, UnicodeString _prop_val)
+  {  FConsumedUtc = _prop_val; FConsumedUtc_Specified = true;  }
+  bool __fastcall ConsumedUtc_Specified(int Index)
+  {  return FConsumedUtc_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+  void __fastcall SetType(int Index, UnicodeString _prop_val)
+  {  FType = _prop_val; FType_Specified = true;  }
+  bool __fastcall Type_Specified(int Index)
+  {  return FType_Specified;  } 
+  void __fastcall SetUnitCost(int Index, UnitCost* _prop_val)
+  {  FUnitCost = _prop_val; FUnitCost_Specified = true;  }
+  bool __fastcall UnitCost_Specified(int Index)
+  {  return FUnitCost_Specified;  } 
+  void __fastcall SetUnitCount(int Index, int _prop_val)
+  {  FUnitCount = _prop_val; FUnitCount_Specified = true;  }
+  bool __fastcall UnitCount_Specified(int Index)
+  {  return FUnitCount_Specified;  } 
+
+public:
+  __fastcall ~Item();
+__published:
+  __property Category*    Category = { index=(IS_OPTN|IS_NLBL), read=FCategory, write=SetCategory, stored = Category_Specified };
+  __property UnicodeString ConsumedUtc = { index=(IS_OPTN|IS_NLBL), read=FConsumedUtc, write=SetConsumedUtc, stored = ConsumedUtc_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
+  __property UnitCost*    UnitCost = { index=(IS_OPTN|IS_NLBL), read=FUnitCost, write=SetUnitCost, stored = UnitCost_Specified };
+  __property int         UnitCount = { index=(IS_OPTN), read=FUnitCount, write=SetUnitCount, stored = UnitCount_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Category, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Category : public TRemotable {
+private:
+  UnicodeString   FCode;
+  bool            FCode_Specified;
+  void __fastcall SetCode(int Index, UnicodeString _prop_val)
+  {  FCode = _prop_val; FCode_Specified = true;  }
+  bool __fastcall Code_Specified(int Index)
+  {  return FCode_Specified;  } 
+__published:
+  __property UnicodeString       Code = { index=(IS_OPTN|IS_NLBL), read=FCode, write=SetCode, stored = Code_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : UnitCost, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class UnitCost : public TRemotable {
+private:
+  double          FAmount;
+  bool            FAmount_Specified;
+  UnicodeString   FCurrency;
+  bool            FCurrency_Specified;
+  double          FTax;
+  bool            FTax_Specified;
+  void __fastcall SetAmount(int Index, double _prop_val)
+  {  FAmount = _prop_val; FAmount_Specified = true;  }
+  bool __fastcall Amount_Specified(int Index)
+  {  return FAmount_Specified;  } 
+  void __fastcall SetCurrency(int Index, UnicodeString _prop_val)
+  {  FCurrency = _prop_val; FCurrency_Specified = true;  }
+  bool __fastcall Currency_Specified(int Index)
+  {  return FCurrency_Specified;  } 
+  void __fastcall SetTax(int Index, double _prop_val)
+  {  FTax = _prop_val; FTax_Specified = true;  }
+  bool __fastcall Tax_Specified(int Index)
+  {  return FTax_Specified;  } 
+__published:
+  __property double         Amount = { index=(IS_OPTN), read=FAmount, write=SetAmount, stored = Amount_Specified };
+  __property UnicodeString   Currency = { index=(IS_OPTN|IS_NLBL), read=FCurrency, write=SetCurrency, stored = Currency_Specified };
+  __property double            Tax = { index=(IS_OPTN), read=FTax, write=SetTax, stored = Tax_Specified };
+};
+
+
 
 
 // ************************************************************************ //
@@ -846,10 +1062,34 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : Customers, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Customers2 : public Customers {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : Customer, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
 // ************************************************************************ //
 class Customer2 : public Customer {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : CustomerDetails, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class CustomerDetails2 : public CustomerDetails {
 private:
 __published:
 };
@@ -892,6 +1132,66 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : Order, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Order2 : public Order {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Bill, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Bill2 : public Bill {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Item, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Item2 : public Item {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Category, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Category2 : public Category {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : UnitCost, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class UnitCost2 : public UnitCost {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IMewsIntegrationWebService/%operationName%
@@ -908,8 +1208,10 @@ public:
   virtual ArrayOfService  GetMewsServices(const UnicodeString platformAddress, const BasicInquiry* basicInquiry) = 0; 
   virtual ArrayOfAccountingCategory GetMewsAccountingCategories(const UnicodeString platformAddress, const BasicInquiry* basicInquiry) = 0; 
   virtual ArrayOfOutlet   GetMewsOutlets(const UnicodeString platformAddress, const BasicInquiry* basicInquiry) = 0; 
-  virtual ArrayOfCustomer SearchCustomers(const UnicodeString platformAddress, const CustomerSearch* customerSearch) = 0; 
+  virtual Customers*      SearchCustomers(const UnicodeString platformAddress, const CustomerSearch* customerSearch) = 0; 
   virtual SpaceDetails*   GetSpaceIds(const UnicodeString platformAddress, const BasicInquiry* customerSearch) = 0; 
+  virtual UnicodeString   PostOrder(const UnicodeString platformAddress, const Order* order) = 0; 
+  virtual bool            PostBill(const UnicodeString platformAddress, const Order* order) = 0; 
 };
 typedef DelphiInterface<IMewsIntegrationWebService> _di_IMewsIntegrationWebService;
 

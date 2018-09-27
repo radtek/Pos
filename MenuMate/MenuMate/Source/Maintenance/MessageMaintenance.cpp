@@ -112,7 +112,8 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
     if(MessageType == eRevenueCodes && TGlobalSettings::Instance().PMSType == 4)
     {
         btnAdd->Enabled = false;
-        btnEdit->Enabled = false;
+        btnDelete->Enabled = false;
+        //btnEdit->Enabled = false;
     }
 	FormResize(NULL);
 	ShowMessages();
@@ -164,9 +165,18 @@ void TfrmMessageMaintenance::ShowMessages()
       }
       case eRevenueCodes:
       {
-        sgDisplay->Cols[0]->Add("Code");
-        sgDisplay->Cols[1]->Add("Description");
-        LoadRevenueCodes(DBTransaction);
+        if(TGlobalSettings::Instance().PMSType != 4)
+        {
+            sgDisplay->Cols[0]->Add("Code");
+            sgDisplay->Cols[1]->Add("Description");
+            LoadRevenueCodes(DBTransaction);
+        }
+        else
+        {
+            sgDisplay->Cols[0]->Add("Menumate Category");
+            sgDisplay->Cols[1]->Add("Mews Category");
+            // LoadRevenueCodesForMews(DBTransaction)
+        }
         break;
       }
       case eServingTimes:
@@ -221,7 +231,14 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
     {
         case eRevenueCodes:
         {
-            AddRevenueCode(Sender);
+            if(TGlobalSettings::Instance().PMSType != 4)
+            {
+                AddRevenueCode(Sender);
+            }
+            else
+            {
+                // Call for Mews
+            }
             break;
         }
         case eServingTimes:
@@ -368,7 +385,14 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
             else if(MessageType == eRevenueCodes)
             {
                 int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
-                UpdateRevenueCode(DBTransaction,key);
+                if(TGlobalSettings::Instance().PMSType != 4)
+                {
+                    UpdateRevenueCode(DBTransaction,key);
+                }
+                else
+                {
+                    // Cal for Mews
+                }
             }
             else if(MessageType == eServingTimes)
             {
@@ -813,6 +837,16 @@ void TfrmMessageMaintenance::LoadRevenueCodes(Database::TDBTransaction &DBTransa
     sgDisplay->Cols[0]->Add("Code");
     sgDisplay->Cols[1]->Add("Decription");
     managerPMSCodes->GetRevenueCodesDetails(DBTransaction,sgDisplay,managerPMSCodes->RevenueCodesMap);
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::LoadRevenueCodesForMews(Database::TDBTransaction &DBTransaction)
+{
+    sgDisplay->Cols[0]->Clear();
+    sgDisplay->Cols[1]->Clear();
+    sgDisplay->Cols[0]->Add("Menumate Category");
+    sgDisplay->Cols[1]->Add("Mews Category");
+    //managerPMSCodes->GetRevenueCodesDetails(DBTransaction,sgDisplay,managerPMSCodes->RevenueCodesMap);
+    //Get RevenueCodes For Mews
 }
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key)

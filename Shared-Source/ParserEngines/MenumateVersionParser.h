@@ -949,6 +949,7 @@ namespace MenumateVersionParser
         //void Create6_53TableCategories(TDBControl* const inDBControl);
         void Create6_53TableSpaces(TDBControl* const inDBControl);
         void AlterTable6_53RevenueCodeDetails(TDBControl* const inDBControl);
+        void Create6_53TablePMSAccountingCategories(TDBControl* const inDBControl);
 
     };// class
 } // namespace
