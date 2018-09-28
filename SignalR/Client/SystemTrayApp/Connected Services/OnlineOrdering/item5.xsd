@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" />
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd6" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering" />
+  <xs:element name="SaveMember">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="inInfo" nillable="true" type="q1:MemberInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveMemberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="SaveMemberResult" nillable="true" type="q2:LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByUniqueId">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="requestInfo" nillable="true" type="q3:RequestInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByUniqueIdResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberByUniqueIdResult" nillable="true" type="q4:LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByCardCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="requestInfo" nillable="true" type="q5:RequestInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByCardCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberByCardCodeResult" nillable="true" type="q6:LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByEmail">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="requestInfo" nillable="true" type="q7:RequestInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberByEmailResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberByEmailResult" nillable="true" type="q8:LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateMemberCardCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="uniqueId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="memberCardCode" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateMemberCardCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="UpdateMemberCardCodeResult" nillable="true" type="q9:LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostTransaction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="transaction" nillable="true" type="q10:TransactionInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostTransactionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="PostTransactionResult" nillable="true" type="q11:LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCompanyInformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCompanyInformationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetCompanyInformationResult" nillable="true" type="q12:LoyaltyCompanyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetGiftCardBalance">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="requestInfo" nillable="true" type="q13:RequestInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetGiftCardBalanceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetGiftCardBalanceResult" nillable="true" type="q14:LoyaltyGiftCardResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPocketVoucherDetail">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="requestInfo" nillable="true" type="q15:RequestInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPocketVoucherDetailResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetPocketVoucherDetailResult" nillable="true" type="q16:LoyaltyVoucherResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessVoucherTransaction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="transaction" nillable="true" type="q17:VoucherTransactionInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProcessVoucherTransactionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="ProcessVoucherTransactionResult" nillable="true" type="q18:VoucherTransactionResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReleaseVouchers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="releasedVoucherInfo" nillable="true" type="q19:ReleasedVoucherInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReleaseVouchersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="ReleaseVouchersResult" nillable="true" type="q20:LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncMenu">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="siteViewModel" nillable="true" type="q21:SiteMenuInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncMenuResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="SyncMenuResult" nillable="true" type="q22:LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncTaxSettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering" minOccurs="0" name="siteTaxSettings" nillable="true" type="q23:SiteTaxSettingsinfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncTaxSettingsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="SyncTaxSettingsResult" nillable="true" type="q24:LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOrdersFromWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="orders" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOrdersFromWebResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

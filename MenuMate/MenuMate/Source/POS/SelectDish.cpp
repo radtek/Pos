@@ -134,6 +134,8 @@
 #include "FiscalPrinterAdapter.h"
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
+#include "DBOnlineOrdeing.h"
+#include "OnlineOrderDocketPrinter.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -621,7 +623,11 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     InitializeChit();
     isWalkInUser = true;
     isRoomNoUiCalled = false;
-    IsChitPromptFormActive=true;   
+    IsChitPromptFormActive=true;
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TOnlineOrderDocketPrinter::Instance()->TriggerTransactionSync();
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1105,6 +1111,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 							frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 							frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 							frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                             DBTransaction.StartTransaction();
 
@@ -7202,6 +7209,8 @@ void TfrmSelectDish::SelectNewMenus()
 				{
 					Broadcast = true;
                     Refresh();
+                    SyncSiteMenus();
+
 				}
 				else if (Result == lsDenied)
 				{
@@ -7212,10 +7221,10 @@ void TfrmSelectDish::SelectNewMenus()
 					MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 				}
 			}
-                        else
-                         {
-                           AskForLogin = true;
-                         }
+            else
+             {
+               AskForLogin = true;
+             }
 			std::auto_ptr<TNetMessageMenuChanged>dbRequest(new TNetMessageMenuChanged);
 			for (int i = 0; i < frmSelectActiveMenus->pnlMenus->ControlCount; i++)
 			{
@@ -7229,10 +7238,10 @@ void TfrmSelectDish::SelectNewMenus()
 			TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
 			TDeviceRealTerminal::Instance().Menus->SetMenuList(DBTransaction, TDeviceRealTerminal::Instance().ID.DeviceKey);
 		}
-                else
-                {
-                   AskForLogin = true;
-                }
+        else
+        {
+           AskForLogin = true;
+        }
 	}
 	DBTransaction.Commit();
     if (AskForLogin)
@@ -7985,11 +7994,15 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
         bool isSameMenuTypeItemExist = true;
-
+        bool onlineOrderCompatible = true;
+        if(SelectedTable != 0)
+        {
+           onlineOrderCompatible = CheckOrderCompatability();
+        }
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
-		if (Item && isSameMenuTypeItemExist)
+		if (Item && isSameMenuTypeItemExist && onlineOrderCompatible)
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -8135,7 +8148,7 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 			}break;
             case 15:
             {
-                DoCloundSync();
+                SyncWithCloud();//DoCloundSync();
 			}break;
             case 16:
             {
@@ -8709,8 +8722,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 
 			bool DoProcessOrders = true;
 
-			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember /*|| OrderContainer.Location["TMMTabType"] == TabClipp
-                || type == TabClipp*/)
+			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember || OrderContainer.Location["TMMTabType"] == TabClipp
+                || type == TabClipp)
 			{
 			   	DBTransaction.StartTransaction();
 
@@ -8801,12 +8814,12 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                     logList->Add("Trabsaction commit of tbtnSaveMouseClick().");
                     TSaveLogs::RecordFiscalLogs(logList);
 
-//                    if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
-//                            && (!OrderContainer.Location["BillOff"]))
-//                    {   //send clipp tab details
+                    if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
+                            && (!OrderContainer.Location["BillOff"]))
+                    {   //send clipp tab details
 //                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
 //                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
-//                     }
+                     }
 					ResetPOS();
 
 				}
@@ -8848,6 +8861,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 					frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 					frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                    frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                     DBTransaction.StartTransaction();
 
@@ -9034,6 +9048,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
+            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTable);
 
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -9048,7 +9063,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             }
 
             DBTransaction.Commit();
-
 			frmBillGroup->ShowModal();
 			setPatronCount( frmBillGroup->PatronCount );
 
@@ -9306,12 +9320,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         logList->Add("Payment not completed for tbtnSelectTable(().");
                         TSaveLogs::RecordFiscalLogs(logList);
                     }
-                    if(type == TabClipp)
-                    {
-                        //send clipp tab details
+//                    if(type == TabClipp)
+//                    {
+//                        //send clipp tab details
 //                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
 //                        sendClippTabKey->SendTabDetails(TabKey);
-                    }
+//                    }
                     delete logList;
                     logList = NULL;
 
@@ -9327,6 +9341,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 						frmBillGroup->CurrentTabType = OrderContainer.Location["TMMTabType"];
 						frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 						frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
+                        frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                         DBTransaction.StartTransaction();
 
@@ -10202,6 +10217,16 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                                 if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
 //	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 	                            {
+
+
+                                    bool hasOnlineOrders = TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber);
+                                    if(hasOnlineOrders)
+                                    {
+                                      MessageBox("An online Order is saved on the Table.\rPlease Select some other Table.","Info",MB_OK+MB_ICONINFORMATION);
+                                      Retval = mrAbort;
+                                      break;
+                                    }
+
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
 	                                OrderContainer.Location["ContainerName"] = floorPlanReturnParams.TabContainerName;
@@ -10421,26 +10446,26 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 					SelectionForm->Items.push_back(Item);
 				}
 			}break;
-//            case TabClipp:
-//			{
-//                CurrentTabType = TabClipp;
-//                TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-//
-//                IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
-//                "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
-//                "CLIPP_TAB.IS_TAB_CLOSED = 'F' " /*"AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
-//                (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " +*/ " ORDER BY " "TAB.TAB_KEY DESC";
-//                IBInternalQuery->ExecQuery();
-//
-//                for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
-//				{
-//					Item.Title = IBInternalQuery->FieldByName("NAME")->AsString;
-//					Item.Properties["TabKey"] = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
-//					Item.Properties["Color"] = clInfoBk;
-//					Item.CloseSelection = true;
-//					SelectionForm->Items.push_back(Item);
-//				}
-//			}break;
+            case TabClipp:
+			{
+                CurrentTabType = TabClipp;
+                TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+                IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
+                "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
+                "CLIPP_TAB.IS_TAB_CLOSED = 'F' " /*"AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
+                (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " +*/ " ORDER BY " "TAB.TAB_KEY DESC";
+                IBInternalQuery->ExecQuery();
+
+                for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+				{
+					Item.Title = IBInternalQuery->FieldByName("NAME")->AsString;
+					Item.Properties["TabKey"] = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
+					Item.Properties["Color"] = clInfoBk;
+					Item.CloseSelection = true;
+					SelectionForm->Items.push_back(Item);
+				}
+			}break;
      		}
 
                 bool isItemSelected = false;
@@ -10473,6 +10498,14 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                 {
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
+
+                  bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]);
+                  if(hasOnlineOrders)
+                  {
+                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
+                      isItemSelected = false;
+                  }
+
                   if(isItemSelected)
                    {
                      if(CheckIfSubsidizedDiscountValid(SelectedItem.Properties["TabKey"]))
@@ -11146,13 +11179,9 @@ void TfrmSelectDish::showTablePicker()
     try
     {
         if( tpConnectorUp )
-        {
             showNewTablePicker( tpConnector );
-        }
         else
-        {
             showOldTablePicker();
-        }
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
@@ -11194,13 +11223,20 @@ void TfrmSelectDish::showOldTablePicker()
         // Runs new web app of floorPlan
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
         if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
-//        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
             tableSelected            = true;
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
             SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
-            SelectedParty = floorPlanReturnParams.PartyName;
-
+            SelectedParty            = floorPlanReturnParams.PartyName;
+            if(floorPlanReturnParams.HasOnlineOrders)
+            {
+                if(SeatOrders[SelectedSeat]->Orders->Count > 0)
+                {
+                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                    SelectedTable = 0;
+                    return;
+                }
+            }
             refreshSelectedSeat();
             RefreshSeats();
             if( TGlobalSettings::Instance().CaptureCustomerName )
@@ -12600,6 +12636,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 				frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 				frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 				frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 				DBTransaction.StartTransaction();
 				std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, frmBillGroup->CurrentTable);
 				int patronCount = GetCount(selectedTablePatrons);
@@ -15436,17 +15473,70 @@ void TfrmSelectDish::SendPointValueToRunRate( TPaymentTransaction &inTransaction
 	}
 }
 //-----------------------------------------------------------------------------------------------------
-void TfrmSelectDish::DoCloundSync()
+void TfrmSelectDish::SyncWithCloud()
 {
-  if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-     {
-        TManagerCloudSync ManagerCloudSync;
-        ManagerCloudSync.SyncCompanyDetails();
-        ManageDiscounts();
-        TotalCosts();
-        RedrawSeatOrders();
-        HighlightSelectedItem();
-     }
+    try
+    {
+         if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+         {
+            std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+            TVerticalSelection Item;
+            Item.Title = "Cancel";
+            Item.Properties["Color"] = "0x000098F5";
+            Item.Properties["FontColor"] = IntToStr(clWhite);;
+            Item.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item);
+
+            TVerticalSelection Item1;
+            Item1.Title = "Sync Member Info";
+            Item1.Properties["Action"] = IntToStr(1);
+            Item1.Properties["Color"] = IntToStr(clNavy);
+            Item1.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item1);
+
+            if(TGlobalSettings::Instance().EnableOnlineOrdering)
+            {
+                TVerticalSelection Item2;
+                Item2.Title = "Sync Menu";
+                Item2.Properties["Action"] = IntToStr(2);
+                Item2.Properties["Color"] = IntToStr(clNavy);
+                Item2.CloseSelection = true;
+                SelectionForm1->Items.push_back(Item2);
+
+                TVerticalSelection Item3;
+                Item3.Title = "Sync Tax Setting";
+                Item3.Properties["Action"] = IntToStr(3);
+                Item3.Properties["Color"] = IntToStr(clNavy);
+                Item3.CloseSelection = true;
+                SelectionForm1->Items.push_back(Item3);
+            }
+
+            SelectionForm1->ShowModal();
+            TVerticalSelection SelectedItem1;
+            if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+            {
+                int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+                switch(Action)
+                {
+                case 1 :
+                    DoCloundSync();
+                    break;
+                case 2 :
+                    SyncSiteMenus();
+                    break;
+                case 3:
+                    SyncTaxSetting();
+                    break;
+                }
+            }
+         }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
 //----------------------------------------------------------------------------------------------------------------------
 void TfrmSelectDish::CheckGiftCardBalance()
@@ -16395,4 +16485,127 @@ void TfrmSelectDish::GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSea
     }
 }
 //--------------------------------------------------------------------------------
+void TfrmSelectDish::DoCloundSync()
+{
+    try
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.SyncCompanyDetails();
+        ManageDiscounts();
+        TotalCosts();
+        RedrawSeatOrders();
+        HighlightSelectedItem();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncSiteMenus()
+{
+    try
+    {
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+        if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(dBTransaction))
+        {
+            MessageBox("There are no menus to sync. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
+            TMMProcessingState State(Screen->ActiveForm, "Syncing Menu With cloud Please Wait...", "Syncing Menu");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            AnsiString ErrorMessage;
+            TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
+            TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+            MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendMenu(menuInfo);
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+            {
+                throw Exception("Authentication failed with Loyaltymate Service");
+            }
+            else if(createResponse.IsSuccesful)
+            {
+                MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            }
+            else
+            {
+                if(createResponse.Description == "Failed to update menu to server.")
+                  ErrorMessage = "Failed to update menu to server.";
+                else
+                  ErrorMessage = "Failed to update menu to server.";
+                throw Exception(ErrorMessage);
+            }
+            delete loyaltyMateInterface;
+            loyaltyMateInterface = NULL;
+        }
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncTaxSetting()
+{
+    try
+    {
+        TMMProcessingState State(Screen->ActiveForm, "Syncing Tax Settings With cloud Please Wait...", "Syncing Tax Settings");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        AnsiString ErrorMessage;
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+        TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
 
+        TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+        MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Loyaltymate Service");
+        }
+        else if(createResponse.IsSuccesful)
+        {
+            MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            if(createResponse.Description == "Failed to update tax settings to server.")
+              ErrorMessage = "Failed to update tax settings to server.";
+            else
+              ErrorMessage = "Failed to update tax settings to server.";
+            throw Exception(ErrorMessage);
+        }
+        delete loyaltyMateInterface;
+        loyaltyMateInterface = NULL;
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+bool TfrmSelectDish::CheckOrderCompatability()
+{
+    bool retValue = true;
+    try
+    {
+
+        retValue = !TDBTables::HasOnlineOrders(SelectedTable);
+        if(!retValue)
+            MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return retValue;
+}
+//------------------------------------------------------------------------------

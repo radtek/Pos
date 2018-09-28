@@ -970,7 +970,13 @@ UnicodeString TChefmateClient::cmTableTabName( TItemComplete *inOrder )
 {
 	try
 	{
-		return 	inOrder->TabContainerName + " : " + inOrder->TabName;
+        UnicodeString orderId = "";
+
+        if(inOrder->OrderGuid.Trim() != "" && inOrder->OnlineChitType != 1)
+            orderId = "Order # " + IntToStr(inOrder->OnlineOrderId);
+        else
+            orderId = inOrder->TabContainerName + " : " + inOrder->TabName;
+        return 	orderId;
 	}
 	catch( ... )
 	{

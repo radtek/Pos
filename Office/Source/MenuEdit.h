@@ -409,10 +409,14 @@ class TfrmMenuEdit : public TForm
 	TButton *btnAddRecipesToAllSizes;
 	TLabel *lblItemHandheldName;
 	TLabel *lblItemReceiptName;
+    TLabel *lblItemIdentifier;
+	TLabel *lblItemSizeIdentifier;
 	TTntEdit *tntedItemHandheldName;
-	TTntEdit *tntedItemReceiptName;
+	TTntEdit *tntedItemReceiptName;  
 	TTntEdit *tntedCourseHandheldName;
 	TTntEdit *tntedCourseReceiptName;
+    TTntEdit *tntedItemIdentifier;
+    TTntEdit *tntedItemSizeIdentifier;
 	TLabel *lblCourseReceiptName;
 	TLabel *lblCourseHandheldName;
 	TLabel *lblOptionHandheldName;
@@ -459,6 +463,7 @@ class TfrmMenuEdit : public TForm
     TButton *btnSyncRevenueCodeCourse;
     TButton *btnSyncRevenueCodeMenu;
     TLabel *Label3;
+    TIBSQL *qrItemIdentifier;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -729,7 +734,10 @@ class TfrmMenuEdit : public TForm
 	void __fastcall btnSyncRevenueCodeMenuClick(TObject *Sender);
     void __fastcall cbRevenueGroupCodeSelect(TObject *Sender);
     void __fastcall lbAvailableSizesClick(TObject *Sender);
-  
+    void __fastcall btnGenItemIDClick(TObject *Sender);
+    void __fastcall btnGenItemSizeIDClick(TObject *Sender);
+    void __fastcall ItemIdentifierChange(TObject *Sender);
+    void __fastcall ItemSizeIdentifierChange(TObject *Sender);
 protected:
 	void __fastcall WMLoadMenu(TMessage& Message);
 	void __fastcall WMLoadMenuFile(TMessage& Message);
@@ -1011,6 +1019,10 @@ private:
     bool isItemPriceIncludeServiceCharge;
     std::map<int,AnsiString> revenueCodesMap;
     void SaveMenuRevenueCodes( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode );
+    int GetItemIdentifier(AnsiString genQuery);
+    void EnableOrDisableGenButtons();
+    void ResetItemAndItemSizeIdentifier();
+    void SetItemAndItemSizeIdentifier();
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
@@ -1019,7 +1031,6 @@ public:		// User declarations
 	void Execute();
 
 	bool IterateOverMenuItems(TIterationAction &);
-
     //::::::::::::::::::::::::::::::::::::::::::
 	//   Create Xml From CSv
 	//::::::::::::::::::::::::::::::::::::::::::
@@ -1345,18 +1356,16 @@ public:
 	int GetImageIndex(TTreeView *DropTree, TTreeNode *DropNode);
 	int GetSelectedIndex(TTreeView *DropTree, TTreeNode *DropNode);
 	bool CanExcept(TTreeNode *N);
-
 	TColor Colour;
 	TList *Condiments;
 	std::map<int, std::map<AnsiString, TForcedOption> > ForcedOptions;
 	TList *ForcedSides;
 	bool ItemOnlySide;
 	TRecipe DefaultStockRecipe;
-
 	WideString KitchenName;
-
 	TPrinterOptions PrinterOptions; // cww
     bool IsDragandDrop;
+    int ItemIdentifier;
 };
 //---------------------------------------------------------------------------
 class TForcedSide
@@ -1390,64 +1399,46 @@ public:
 	int GetImageIndex(TTreeView *DropTree, TTreeNode *DropNode);
 	int GetSelectedIndex(TTreeView *DropTree, TTreeNode *DropNode);
 	bool CanExcept(TTreeNode *N);
-
 	Currency		Price;
 	Currency		SpecialPrice;
 	double			GST;
-
 	Currency		TareWeight;
-
 	bool			Free;
 	double			PointsPercent;
-
 	//	bool				UseRecipe;
 	Currency		Cost;
 	double			CostGST;
 	Currency MaxRetailPrice;
-
 	AnsiString		Barcode;
 	TList		   *RecipeList;
 	unsigned long	SetMenuMask;
 	bool			SettingMenuMask;		// Forces RefreshItemSize to not clear the Set Menu Item checkbox as soon as it is checked.
 	bool			SetMenuStandardItem;
-
 	__int32   		CategoryKey;
-
 	__property __int32 SizeKey = { read = GetSizeKey, write = SetSizeKey };
-
 	AnsiString		Category;
 	TStringList	   *CategoryList;
-
 	std::vector<Menu::TNameAndKey> BCategoryList; // Breakdown Category List
-
 	__int32		    ThirdPartyCodeKey;
 	AnsiString		ThirdPartyCode;
-
 	int				MemberPurchaseCount;
 	double			MemberPurchaseDiscount;
-
 	int				LocationPurchaseCount;
 	double			LocationPurchaseDiscount;
-
 	__int32         PLU;
-
 	bool IsTaxExempt;
 	bool HasServiceCharge;
-
 	bool CanBePaidForUsingPoints;
-
 	double AvailableQuantity;
 	double DefaultQuantity;
 	double WarningQuantity;
 	bool DisableWhenCountReachesZero;
-
 	int DefaultPatronCount;
-
     int RevenueCode;
     AnsiString RevenueCodeDescription;
-
 	std::set<__int32> TaxProfileKeys;
-	AnsiString KitchenName;   
+	AnsiString KitchenName;
+    int ItemSizeIdentifier; 
 
    std::map<int,Menu::TItemSizePriceLevel> ItemSizePriceLevels;
    std::map<int,Menu::TPriceLevelsName> PriceLevelsName;

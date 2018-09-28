@@ -4,9 +4,8 @@
 #pragma hdrstop
 
 #include "FiscalPrinterAdapter.h"
-#include "main.h"
+//#include "main.h"
 #include <Math.hpp>
-#include "MMMessageBox.h"
 #include "FiscalIntegration_OCX.h"
 #include "DeviceRealTerminal.h"
 #include "SaveLogs.h"
@@ -64,7 +63,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
                 itemDetails.SizeName = order->Size;
         else
             itemDetails.SizeName = "";
-        itemDetails.Quantity = Double(order->GetQty()); 
+        itemDetails.Quantity = Double(order->GetQty());
         itemDetails.ItemCategory = order->Categories->FinancialCategory;
         double priceTotal = 0;
         double ItemPrice = 0;
@@ -268,6 +267,7 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
 {
     UnicodeString response = "";
     TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
+    TStringList* logList = new TStringList();
     try
     {
         fpclass->Billno = WideString(receiptData.Billno).c_bstr();
@@ -330,7 +330,7 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
             fpclass->LoadReceiptDiscountInfo(4, WideString(i->Type).c_bstr());
             fpclass->AddDiscountInfoToList();
         }
-        TStringList* logList = new TStringList();
+
         logList->Add("Inside PrintFiscalReceipt() function.");
         std::auto_ptr<TSaveLogs> saveLogs(new TSaveLogs());
         AnsiString path = ExtractFilePath(Application->ExeName) + "/Fiscal POS Logs";
@@ -357,6 +357,7 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
 UnicodeString TFiscalPrinterAdapter::GetFiscalPrinterStatus()
 {
     UnicodeString printerStatus = "";
+//    TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
     try
     {
         TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
@@ -368,12 +369,14 @@ UnicodeString TFiscalPrinterAdapter::GetFiscalPrinterStatus()
     {
         printerStatus = E.Message;
     }
+
     return printerStatus;
 }
 //-----------------------------------------------------------------------------------------------
 UnicodeString TFiscalPrinterAdapter::OpenCashDrawerForFiscalPrinter()
 {
     UnicodeString openDrawerMessage = "";
+
     try
     {
         TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
@@ -384,6 +387,7 @@ UnicodeString TFiscalPrinterAdapter::OpenCashDrawerForFiscalPrinter()
     {
         openDrawerMessage = E.Message;
     }
+
     return openDrawerMessage;
 }
-
+//------------------------------------------------------------------------------

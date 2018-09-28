@@ -15,6 +15,7 @@
 #include "DBGroups.h"
 
 #include "ImportMenu.h"
+#include "SelectDish.h"
 
 //---------------------------------------------------------------------------
 
@@ -1175,6 +1176,12 @@ bool TManagerMenusPOS::LoadMenus( TIBDatabase *IBDatabase, AnsiString inDirName 
 		frmProcessing->Close();
          if(TGlobalSettings::Instance().PMSType == 4 && TDeviceRealTerminal::Instance().BasePMS->Enabled)
             TDeviceRealTerminal::Instance().BasePMS->Initialise();
+
+         //Sync Menu with web for online ordering..
+         if(TGlobalSettings::Instance().EnableOnlineOrdering)
+         {
+            frmSelectDish->SyncSiteMenus();
+         }
 
 		TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 

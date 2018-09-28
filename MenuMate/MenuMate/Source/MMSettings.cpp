@@ -435,6 +435,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().RestartServiceAtZED = TManagerVariable::Instance().GetBool(DBTransaction, vmRestartServiceAtZED, false);
         TGlobalSettings::Instance().SendNoTaxToSiHot = TManagerVariable::Instance().GetBool(DBTransaction, vmSendNoTaxToSihot, false);
         TGlobalSettings::Instance().RevenueCodeDiscountPart = TManagerVariable::Instance().GetStr(DBTransaction, vmRevenueCodeDiscountPart, "");
+        TGlobalSettings::Instance().EnableOnlineOrdering = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
         TGlobalSettings::Instance().OutletIdMewsSelected = TManagerVariable::Instance().GetStr(DBTransaction, vmOutletIdMewsSelected, "");
         TGlobalSettings::Instance().ServiceMewsSelected = TManagerVariable::Instance().GetStr(DBTransaction, vmServiceMewsSelected, "");
         TGlobalSettings::Instance().ClientToken = TManagerVariable::Instance().GetStr(DBTransaction, vmClientToken, "");

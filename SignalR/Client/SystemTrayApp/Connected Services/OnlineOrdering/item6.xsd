@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="SiteSettingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PickUp" />
+      <xs:enumeration value="DineIn" />
+      <xs:enumeration value="TakeAway" />
+      <xs:enumeration value="ItemPriceIncludeTax" />
+      <xs:enumeration value="ItemPriceIncludeServiceCharge" />
+      <xs:enumeration value="CalculateTaxBeforeDiscount" />
+      <xs:enumeration value="CalculateTaxAfterDiscount" />
+      <xs:enumeration value="CalculateScPreDiscountedPrice" />
+      <xs:enumeration value="ReCalculateScAfterDiscount" />
+      <xs:enumeration value="ApplyServiceChargeTax" />
+      <xs:enumeration value="ServiceChargeTaxRate" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="SiteSettingType" nillable="true" type="tns:SiteSettingType" />
+</xs:schema>

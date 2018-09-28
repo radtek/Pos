@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" />
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Loyaltymate.Enum" />
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum" />
+  <xs:complexType name="MemberInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Activated" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Address1" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="AvailableBirthDayPoint" type="xs:double" />
+      <xs:element minOccurs="0" name="AvailableFirstVisitPoint" type="xs:double" />
+      <xs:element minOccurs="0" name="BirthdayBenefitDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CardNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CurrentYearPoint" type="xs:double" />
+      <xs:element minOccurs="0" name="DateOfBirth" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EarnedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Gender" type="xs:int" />
+      <xs:element minOccurs="0" name="HasTransactions" type="xs:boolean" />
+      <xs:element minOccurs="0" name="HomeSiteId" type="xs:long" />
+      <xs:element minOccurs="0" name="IsFirstVisitRewarded" type="xs:boolean" />
+      <xs:element minOccurs="0" name="LastModified" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LastVisitDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="LoadedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="MemberCardCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MemberType" type="xs:int" />
+      <xs:element minOccurs="0" name="MemberVouchers" nillable="true" type="tns:ArrayOfVoucherInfo" />
+      <xs:element minOccurs="0" name="MembershipNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MiddleName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Mobile" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PhoneNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointRule" type="xs:int" />
+      <xs:element minOccurs="0" name="PreviousYearPoint" type="xs:double" />
+      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TierId" type="xs:long" />
+      <xs:element minOccurs="0" name="Title" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="YearStartDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ZipCode" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MemberInfo" nillable="true" type="tns:MemberInfo" />
+  <xs:complexType name="ArrayOfVoucherInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VoucherInfo" nillable="true" type="tns:VoucherInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVoucherInfo" nillable="true" type="tns:ArrayOfVoucherInfo" />
+  <xs:complexType name="VoucherInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DiscountCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="NumberOfUsesRemaining" type="xs:int" />
+      <xs:element minOccurs="0" name="VoucherDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="VoucherName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VoucherInfo" nillable="true" type="tns:VoucherInfo" />
+  <xs:complexType name="LoyaltyMemberResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q1:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="MemberInfo" nillable="true" type="tns:MemberInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LoyaltyMemberResponse" nillable="true" type="tns:LoyaltyMemberResponse" />
+  <xs:simpleType name="LoyaltyResponseCode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Successful" />
+      <xs:enumeration value="AuthenticationFailed" />
+      <xs:enumeration value="CreateMemberFailed" />
+      <xs:enumeration value="UpdateMemberFailed" />
+      <xs:enumeration value="DeleteMemberFailed" />
+      <xs:enumeration value="GetMemberFailed" />
+      <xs:enumeration value="PostTransactionFailed" />
+      <xs:enumeration value="MemberNotExist" />
+      <xs:enumeration value="CompanySyncFailed" />
+      <xs:enumeration value="InvalidGiftVoucher" />
+      <xs:enumeration value="InvalidPocketVoucher" />
+      <xs:enumeration value="TransactionFailed" />
+      <xs:enumeration value="GetGiftCardFailed" />
+      <xs:enumeration value="GetPocketVoucherFailed" />
+      <xs:enumeration value="MenuSyncingFailed" />
+      <xs:enumeration value="TaxSettingSyncingFailed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="LoyaltyResponseCode" nillable="true" type="tns:LoyaltyResponseCode" />
+  <xs:complexType name="RequestInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="RequestKey" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="RequestTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="SiteCode" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RequestInfo" nillable="true" type="tns:RequestInfo" />
+  <xs:complexType name="LoyaltyResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q2:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LoyaltyResponse" nillable="true" type="tns:LoyaltyResponse" />
+  <xs:complexType name="TransactionInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="InvoiceNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointsDelta" type="xs:double" />
+      <xs:element minOccurs="0" name="PointsType" type="xs:int" />
+      <xs:element minOccurs="0" name="SiteCode" type="xs:long" />
+      <xs:element minOccurs="0" name="TransactionDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="UniqueId" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TransactionInfo" nillable="true" type="tns:TransactionInfo" />
+  <xs:complexType name="LoyaltyCompanyResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q3:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CompanyInfo" nillable="true" type="tns:CompanyInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LoyaltyCompanyResponse" nillable="true" type="tns:LoyaltyCompanyResponse" />
+  <xs:complexType name="CompanyInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Discounts" nillable="true" type="tns:ArrayOfDiscountInfo" />
+      <xs:element minOccurs="0" name="HasGiftCardsAvailable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="HasPocketVouchersAvailable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="TierLevels" nillable="true" type="tns:ArrayOfTierLevelInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CompanyInfo" nillable="true" type="tns:CompanyInfo" />
+  <xs:complexType name="ArrayOfDiscountInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DiscountInfo" nillable="true" type="tns:DiscountInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDiscountInfo" nillable="true" type="tns:ArrayOfDiscountInfo" />
+  <xs:complexType name="DiscountInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AppearanceOrder" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DailyUsageAllowedPerMember" type="xs:int" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DiscountGroup" type="xs:int" />
+      <xs:element minOccurs="0" name="DiscountId" type="xs:long" />
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Loyaltymate.Enum" minOccurs="0" name="DiscountType" type="q4:DiscountType" />
+      <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Loyaltymate.Enum" minOccurs="0" name="DisplayAs" type="q5:DisplayOption" />
+      <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Loyaltymate.Enum" minOccurs="0" name="ImplicationType" type="q6:ImplicationType" />
+      <xs:element minOccurs="0" name="IsAutoMembersDiscount" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsCategoryFilterApplicable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsMemberExemptDiscount" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsMembersOnlyDiscount" type="xs:boolean" />
+      <xs:element minOccurs="0" name="MaximumNumberOfItemsAllowed" type="xs:int" />
+      <xs:element minOccurs="0" name="MaximumValue" type="xs:decimal" />
+      <xs:element minOccurs="0" name="MinimumNumberOfItemsAllowed" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PriorityOrder" nillable="true" type="xs:int" />
+      <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/Loyaltymate.Enum" minOccurs="0" name="ProductPriority" type="q7:ProductPriority" />
+      <xs:element minOccurs="0" name="RoundToDecimalPlaces" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Value" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DiscountInfo" nillable="true" type="tns:DiscountInfo" />
+  <xs:complexType name="ArrayOfTierLevelInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TierLevelInfo" nillable="true" type="tns:TierLevelInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTierLevelInfo" nillable="true" type="tns:ArrayOfTierLevelInfo" />
+  <xs:complexType name="TierLevelInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AllowEarntLoyaltyRedemption" type="xs:boolean" />
+      <xs:element minOccurs="0" name="BirthdayBonus" type="xs:double" />
+      <xs:element minOccurs="0" name="ChangeCard" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Level" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointsRequired" type="xs:double" />
+      <xs:element minOccurs="0" name="PricedRedemptionRate" type="xs:double" />
+      <xs:element minOccurs="0" name="SendMailToHeadOffice" type="xs:boolean" />
+      <xs:element minOccurs="0" name="SendMailToMember" type="xs:boolean" />
+      <xs:element minOccurs="0" name="TierId" type="xs:int" />
+      <xs:element minOccurs="0" name="WeighedRedemptionPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="WeighedRedemptionWeight" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TierLevelInfo" nillable="true" type="tns:TierLevelInfo" />
+  <xs:complexType name="LoyaltyGiftCardResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q8="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q8:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="GiftCardInfo" nillable="true" type="tns:GiftCardInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LoyaltyGiftCardResponse" nillable="true" type="tns:LoyaltyGiftCardResponse" />
+  <xs:complexType name="GiftCardInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ExpiryDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="GiftCardNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointBalance" type="xs:double" />
+      <xs:element minOccurs="0" name="ResponseMessage" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="StartDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="StatusCode" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GiftCardInfo" nillable="true" type="tns:GiftCardInfo" />
+  <xs:complexType name="LoyaltyVoucherResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q9="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q9:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+          <xs:element minOccurs="0" name="VoucherInfo" nillable="true" type="tns:VoucherInfo" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LoyaltyVoucherResponse" nillable="true" type="tns:LoyaltyVoucherResponse" />
+  <xs:complexType name="VoucherTransactionInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DiscountUsages" nillable="true" type="tns:ArrayOfDiscountUsageInfo" />
+      <xs:element minOccurs="0" name="GiftCardNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InvoiceNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MemberUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MemberVoucherDiscountAmount" type="xs:double" />
+      <xs:element minOccurs="0" name="PocketVoucherDiscountAmount" type="xs:double" />
+      <xs:element minOccurs="0" name="PocketVoucherNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointsPurchased" type="xs:double" />
+      <xs:element minOccurs="0" name="PointsRedeemed" type="xs:double" />
+      <xs:element minOccurs="0" name="PurchasedGiftCardNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteCode" type="xs:long" />
+      <xs:element minOccurs="0" name="TotalSaleAmount" type="xs:double" />
+      <xs:element minOccurs="0" name="TransactionDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="TransactionReferenceNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="VoucherName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="VoucherTransactionInfo" nillable="true" type="tns:VoucherTransactionInfo" />
+  <xs:complexType name="ArrayOfDiscountUsageInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DiscountUsageInfo" nillable="true" type="tns:DiscountUsageInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDiscountUsageInfo" nillable="true" type="tns:ArrayOfDiscountUsageInfo" />
+  <xs:complexType name="DiscountUsageInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DiscountAmount" type="xs:double" />
+      <xs:element minOccurs="0" name="DiscountCode" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DiscountUsageInfo" nillable="true" type="tns:DiscountUsageInfo" />
+  <xs:complexType name="VoucherTransactionResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q10="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q10:MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="GiftCardExpiryDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VoucherTransactionResponse" nillable="true" type="tns:VoucherTransactionResponse" />
+  <xs:complexType name="ReleasedVoucherInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DiscountCodes" nillable="true" type="tns:ArrayOfDiscountUsageInfo" />
+      <xs:element minOccurs="0" name="GiftCardNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PocketVoucherNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TransactionReferenceNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="VoucherName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ReleasedVoucherInfo" nillable="true" type="tns:ReleasedVoucherInfo" />
+  <xs:complexType name="SiteMenuInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CompanyId" type="xs:long" />
+      <xs:element minOccurs="0" name="MenuConsumables" nillable="true" type="tns:ArrayOfMenuConsumableInfo" />
+      <xs:element minOccurs="0" name="SiteId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteMenuInfo" nillable="true" type="tns:SiteMenuInfo" />
+  <xs:complexType name="ArrayOfMenuConsumableInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MenuConsumableInfo" nillable="true" type="tns:MenuConsumableInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMenuConsumableInfo" nillable="true" type="tns:ArrayOfMenuConsumableInfo" />
+  <xs:complexType name="MenuConsumableInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsPalmable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="MenuId" type="xs:long" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteCourses" nillable="true" type="tns:ArrayOfCourseInfo" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+      <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum" minOccurs="0" name="Type" type="q11:MenuType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MenuConsumableInfo" nillable="true" type="tns:MenuConsumableInfo" />
+  <xs:complexType name="ArrayOfCourseInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CourseInfo" nillable="true" type="tns:CourseInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCourseInfo" nillable="true" type="tns:ArrayOfCourseInfo" />
+  <xs:complexType name="CourseInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CourseId" type="xs:long" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Items" nillable="true" type="tns:ArrayOfSiteItemInfo" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServingCourseDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServingCourseName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CourseInfo" nillable="true" type="tns:CourseInfo" />
+  <xs:complexType name="ArrayOfSiteItemInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SiteItemInfo" nillable="true" type="tns:SiteItemInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSiteItemInfo" nillable="true" type="tns:ArrayOfSiteItemInfo" />
+  <xs:complexType name="SiteItemInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CompanyId" type="xs:long" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizes" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+      <xs:element minOccurs="0" name="ItemUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OnlyAsSide" type="xs:boolean" />
+      <xs:element minOccurs="0" name="SideGroup" nillable="true" type="tns:ArrayOfSideGroupInfo" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteItemInfo" nillable="true" type="tns:SiteItemInfo" />
+  <xs:complexType name="ArrayOfItemSizeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSizeInfo" nillable="true" type="tns:ItemSizeInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSizeInfo" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+  <xs:complexType name="ItemSizeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CanBePaidUsingPoints" type="xs:boolean" />
+      <xs:element minOccurs="0" name="DefaultPatronCount" type="xs:int" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsFree" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsWeighted" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ItemSizeId" type="xs:long" />
+      <xs:element minOccurs="0" name="ItemSizeTaxProfiles" nillable="true" type="tns:ArrayOfItemSizeTaxProfileInfo" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrderingUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointsPercentage" type="xs:double" />
+      <xs:element minOccurs="0" name="PointsPrice" type="xs:double" />
+      <xs:element minOccurs="0" name="Price" type="xs:double" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+      <xs:element minOccurs="0" name="ThirdPartyId" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSizeInfo" nillable="true" type="tns:ItemSizeInfo" />
+  <xs:complexType name="ArrayOfItemSizeTaxProfileInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSizeTaxProfileInfo" nillable="true" type="tns:ItemSizeTaxProfileInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSizeTaxProfileInfo" nillable="true" type="tns:ArrayOfItemSizeTaxProfileInfo" />
+  <xs:complexType name="ItemSizeTaxProfileInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizeTaxProfileId" type="xs:long" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Priority" type="xs:int" />
+      <xs:element minOccurs="0" name="Rate" type="xs:double" />
+      <xs:element minOccurs="0" name="TaxProfileId" type="xs:long" />
+      <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/OnlineOrdering.Enum" minOccurs="0" name="Type" type="q12:TaxProfileType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSizeTaxProfileInfo" nillable="true" type="tns:ItemSizeTaxProfileInfo" />
+  <xs:complexType name="ArrayOfSideGroupInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SideGroupInfo" nillable="true" type="tns:SideGroupInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSideGroupInfo" nillable="true" type="tns:ArrayOfSideGroupInfo" />
+  <xs:complexType name="SideGroupInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AllowSkip" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSides" nillable="true" type="tns:ArrayOfItemSideInfo" />
+      <xs:element minOccurs="0" name="MaxSelect" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SideGroupId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SideGroupInfo" nillable="true" type="tns:SideGroupInfo" />
+  <xs:complexType name="ArrayOfItemSideInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSideInfo" nillable="true" type="tns:ItemSideInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSideInfo" nillable="true" type="tns:ArrayOfItemSideInfo" />
+  <xs:complexType name="ItemSideInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizes" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+      <xs:element minOccurs="0" name="ItemUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OnlyAsSide" type="xs:boolean" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSideInfo" nillable="true" type="tns:ItemSideInfo" />
+</xs:schema>

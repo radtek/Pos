@@ -20,8 +20,6 @@ object frmMaintain: TfrmMaintain
   Scaled = False
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -128,10 +126,6 @@ object frmMaintain: TfrmMaintain
     object tsMaintenance: TTabSheet
       Caption = 'Maintenance.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -496,10 +490,6 @@ object frmMaintain: TfrmMaintain
       Caption = 'Quick Messages.'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -682,10 +672,6 @@ object frmMaintain: TfrmMaintain
       Caption = 'Interfaces.'
       ImageIndex = 3
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -699,7 +685,7 @@ object frmMaintain: TfrmMaintain
           Left = 8
           Top = 48
           Width = 465
-          Height = 665
+          Height = 594
           Caption = 'Interfaces '
           Font.Charset = ANSI_CHARSET
           Font.Color = clBlack
@@ -922,6 +908,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
+            Visible = False
             Caption = 'Clipp Interface'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
@@ -931,7 +918,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnRunRateBoard: TTouchBtn
             Left = 28
-            Top = 521
+            Top = 450
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -956,6 +943,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
+            Visible = False
             Caption = 'Thorlink'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
@@ -965,7 +953,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnSecurity: TTouchBtn
             Left = 247
-            Top = 520
+            Top = 450
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -982,7 +970,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnFiscalStorage: TTouchBtn
             Left = 28
-            Top = 584
+            Top = 521
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16

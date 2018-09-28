@@ -7,6 +7,7 @@
 #include <memory>
 #include "PaymentTransaction.h"
 #include "FiscalDataObjects.h"
+#include "Main.h"
 //---------------------------------------------------------------------------
 class TFiscalPrinterAdapter
 {

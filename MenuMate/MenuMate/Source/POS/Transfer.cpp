@@ -38,10 +38,12 @@
 #include "Processing.h"
 #include <string>
 #include "DBSecurity.h"
-#include "DBClippTab.h"
+//#include "DBClippTab.h"
 //#include "ManagerClippIntegration.h"
+#include "DBTab.h"
 #include "SCDPWDChecker.h"
 #include "ManagerDiscount.h"
+#include "DBTables.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -133,10 +135,10 @@ void __fastcall TfrmTransfer::FormShow(TObject *Sender)
                {
                  btnTransferFrom->Caption = "Rooms";
                }
-//               if(CurrentSourceDisplayMode == eTabs && CurrentSourceTabType == TabClipp)
-//               {
-//                 btnTransferFrom->Caption = "Clipp Tabs";
-//               }
+               if(CurrentSourceDisplayMode == eTabs && CurrentSourceTabType == TabClipp)
+               {
+                 btnTransferFrom->Caption = "Clipp Tabs";
+               }
              }
              UpdateListBox(lbDisplayTransferfrom);
            }
@@ -205,7 +207,7 @@ void TfrmTransfer::UpdateSourceSeatDetails(Database::TDBTransaction &DBTransacti
 	  {
          UnicodeString tabname = "";
          int key = 0;
-		 if (CurrentSourceTabType == TabNormal || CurrentSourceTabType == TabStaff /*|| CurrentSourceTabType == TabClipp*/)
+		 if (CurrentSourceTabType == TabNormal || CurrentSourceTabType == TabStaff || CurrentSourceTabType == TabClipp)
 		 {
 			std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
 			std::auto_ptr <TStringList> TabList(new TStringList);
@@ -228,14 +230,14 @@ void TfrmTransfer::UpdateSourceSeatDetails(Database::TDBTransaction &DBTransacti
                 }
                 btnTransferFrom->Caption = "Staff";
 			   break;
-//            case TabClipp:
-//                if(lbDisplayTransferfrom->Count > 0)
-//                {
-//                    tabname = lbDisplayTransferfrom->Items->Strings[0];
-//                    key = GetTabKeyFromListBox(lbDisplayTransferfrom, 0);
-//                }
-//                btnTransferFrom->Caption = "Clipp Tabs";
-//			   break;
+            case TabClipp:
+                if(lbDisplayTransferfrom->Count > 0)
+                {
+                    tabname = lbDisplayTransferfrom->Items->Strings[0];
+                    key = GetTabKeyFromListBox(lbDisplayTransferfrom, 0);
+                }
+                btnTransferFrom->Caption = "Clipp Tabs";
+			   break;
 			}
             ClearListBox(lbDisplayTransferfrom);
             PopulateSourceDestTabDetails(DBTransaction, tabname, key, lbDisplayTransferfrom, true);
@@ -312,7 +314,7 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
       UnicodeString tabname = "";
       int key = 0;
 	  int Count = 0;
-	  if (CurrentDestTabType == TabNormal || CurrentDestTabType == TabStaff  /*|| CurrentDestTabType == TabClipp*/)
+	  if (CurrentDestTabType == TabNormal || CurrentDestTabType == TabStaff  || CurrentDestTabType == TabClipp)
 	  {
 		 std::auto_ptr <TStringList> TabList(new TStringList);
 		 std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
@@ -336,14 +338,14 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
             }
 
 			break;
-//        case TabClipp:
-//            if(lbDisplayTransferto->Count > 0)
-//            {
-//                tabname = lbDisplayTransferto->Items->Strings[0];
-//                key = GetTabKeyFromListBox(lbDisplayTransferto, 0);
-//                btnTransferTo->Caption = "Clipp Tabs";
-//            }
-//			break;
+        case TabClipp:
+            if(lbDisplayTransferto->Count > 0)
+            {
+                tabname = lbDisplayTransferto->Items->Strings[0];
+                key = GetTabKeyFromListBox(lbDisplayTransferto, 0);
+                btnTransferTo->Caption = "Clipp Tabs";
+            }
+			break;
         }
         ClearListBox(lbDisplayTransferto);
         PopulateSourceDestTabDetails(DBTransaction, tabname, key, lbDisplayTransferto, true);
@@ -782,7 +784,7 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
        {
 
 
-           //CheckClipAndTableCondition(*DBTransaction);
+           CheckClipAndTableCondition(*DBTransaction);
 
            //check for if transferrring any linked clip tab or table to other destination
              if(!CheckLinkedTabValidations(*DBTransaction,false))
@@ -812,7 +814,7 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
                  DestName = lbDisplayTransferto->Items->Strings[0];
               }
            }
-            if(sourceTabKey == destTabKey /*&& !ClipTabSelected*/)
+            if(sourceTabKey == destTabKey && !ClipTabSelected)
             {
                 MessageBox("Source and Destination of transfers can not be same.", "Error", MB_OK + MB_ICONERROR);
             }
@@ -827,22 +829,22 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
                 {
                    if(CheckStaffTabAccess(*DBTransaction))
                    {
-//                       if(ClipTabSelected)
-//                         {
-//
-//                            //callinf this function if we are transferring from or to clipp
-//                               if(MessageBox("Do you wish these items to be removed From Clipp?", "Save Changes?", MB_YESNO + MB_ICONQUESTION) == ID_YES )
-//                                  {
-//                                     CloseClipTab = true;
-//                                     linkCliptabToTable = false;
-//                                  }
-//                                  else
-//                                  {
-//                                      CloseClipTab = false;
-//                                      linkCliptabToTable = true;
-//
-//                                  }
-//                         }
+                       if(ClipTabSelected)
+                         {
+
+                            //callinf this function if we are transferring from or to clipp
+                               if(MessageBox("Do you wish these items to be removed From Clipp?", "Save Changes?", MB_YESNO + MB_ICONQUESTION) == ID_YES )
+                                  {
+                                     CloseClipTab = true;
+                                     linkCliptabToTable = false;
+                                  }
+                                  else
+                                  {
+                                      CloseClipTab = false;
+                                      linkCliptabToTable = true;
+
+                                  }
+                         }
 
 
                        TotalTransferTableOrTab(*DBTransaction);
@@ -907,47 +909,47 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
              // here ItemTransferredFromClip is used so that if items were transferred from clip tab then only it should enter
               // vidout it u can transfer from table to clip tab and it will ask for linking ,which should not happen and therefore is bug .
 
-//              if(ClipTabSelected && ItemTransferredFromClip)
-//              {
-//                    fullTransfer= CheckPartialTransferInClipCase(*DBTransaction);
-//                    if(fullTransfer)
-//                    {
-//                           if(MessageBox("Do you wish these items to be removed From Clipp?", "Save Changes?", MB_YESNO + MB_ICONQUESTION) == ID_YES)
-//                            {
-//                                CloseClipTab = true;
-//                                linkCliptabToTable = false;
-//                            }
-//                            else
-//                            {
-//                                CloseClipTab = false;
-//                                linkCliptabToTable = true;
-//                            }
-//
-//                           if(linkCliptabToTable)
-//                           {
-//                              if(ClipPresentInFromPanel)
-//                              {
-//                                 DoCliptabLinking(*DBTransaction,GetTabKeyFromListBox(lbDisplayTransferfrom, 0),NewClipTabKey);
-//                              }
-//                              else
-//                              {
-//                                  DoCliptabLinking(*DBTransaction,GetTabKeyFromListBox(lbDisplayTransferto, 0),NewClipTabKey);
-//                              }
-//
-//                           }
-//                    }
-//                    else
-//                    {
-//                        if(ClipPresentInFromPanel && lbDisplayTransferfrom->Count==1 )
-//                        {
-//                            CloseClipTab = true;
-//                        }
-//                        else if(ClipPresentInToPanel && lbDisplayTransferto->Count ==1)
-//                        {
-//                            CloseClipTab = true;
-//                        }
-//                    }
-//              }
+              if(ClipTabSelected && ItemTransferredFromClip)
+              {
+                    fullTransfer= CheckPartialTransferInClipCase(*DBTransaction);
+                    if(fullTransfer)
+                    {
+                           if(MessageBox("Do you wish these items to be removed From Clipp?", "Save Changes?", MB_YESNO + MB_ICONQUESTION) == ID_YES)
+                            {
+                                CloseClipTab = true;
+                                linkCliptabToTable = false;
+                            }
+                            else
+                            {
+                                CloseClipTab = false;
+                                linkCliptabToTable = true;
+                            }
+
+                           if(linkCliptabToTable)
+                           {
+                              if(ClipPresentInFromPanel)
+                              {
+                                 DoCliptabLinking(*DBTransaction,GetTabKeyFromListBox(lbDisplayTransferfrom, 0),NewClipTabKey);
+                              }
+                              else
+                              {
+                                  DoCliptabLinking(*DBTransaction,GetTabKeyFromListBox(lbDisplayTransferto, 0),NewClipTabKey);
+                              }
+
+                           }
+                    }
+                    else
+                    {
+                        if(ClipPresentInFromPanel && lbDisplayTransferfrom->Count==1 )
+                        {
+                            CloseClipTab = true;
+                        }
+                        else if(ClipPresentInToPanel && lbDisplayTransferto->Count ==1)
+                        {
+                            CloseClipTab = true;
+                        }
+                    }
+              }
 
 
               DeleteEmptyTabs(*DBTransaction);
@@ -1680,27 +1682,27 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
               if(frmTransferItemOrGuest->ShowModal() != mrCancel)
               {
                  dest_tabkey = frmTransferItemOrGuest->dest_tab_key;
-                 //CheckClipAndTableCondition(*DBTransaction);
+                 CheckClipAndTableCondition(*DBTransaction);
                 int sourceTabKey = GetTabKeyFromListBox(lbDisplayTransferfrom, itemPosition);
 
                 TMMTabType sourceTabType = TDBTab::GetLinkedTableAndClipTab(*DBTransaction, sourceTabKey);
                 int seatNo= dest_tabkey;
-//                if(sourceTabType==TabClipp )
-//                {
-//                   MessageBox("Linked tab/table cannot be transferred to other locations.", "Error", MB_OK + MB_ICONERROR);
-//                   return ;
-//                }
-//               if(ClipTabSelected)
-//                {
-//                    isClipLongPress=true;
-//                  if( !ItemTransferredFromClip )
-//                    {
-//                       if(TDBTab::GetTabType(*DBTransaction,sourceTabKey)==TabClipp )
-//                        {
-//                             ItemTransferredFromClip =true;
-//                        }
-//                    }
-//                 }
+                if(sourceTabType==TabClipp )
+                {
+                   MessageBox("Linked tab/table cannot be transferred to other locations.", "Error", MB_OK + MB_ICONERROR);
+                   return ;
+                }
+               if(ClipTabSelected)
+                {
+                    isClipLongPress=true;
+                  if( !ItemTransferredFromClip )
+                    {
+                       if(TDBTab::GetTabType(*DBTransaction,sourceTabKey)==TabClipp )
+                        {
+                             ItemTransferredFromClip =true;
+                        }
+                    }
+                 }
 
                  if(btnTransferFrom->Caption == btnTransferTo->Caption)
                  {
@@ -1822,28 +1824,28 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
               {
 
                  dest_tabkey = frmTransferItemOrGuest->dest_tab_key;
-                  //CheckClipAndTableCondition(*DBTransaction);
+                  CheckClipAndTableCondition(*DBTransaction);
 
                    int sourceTabKey = GetTabKeyFromListBox(lbDisplayTransferto, itemPosition);
 
                     TMMTabType sourceTabType = TDBTab::GetLinkedTableAndClipTab(*DBTransaction,sourceTabKey);
                     int seatNo= dest_tabkey;
-//                    if(sourceTabType==TabClipp )
-//                    {
-//                       MessageBox("Linked tab/table cannot be transferred to other locations..", "Error", MB_OK + MB_ICONERROR);
-//                       return ;
-//                    }
-//                 if(ClipTabSelected)
-//                  {
-//                    isClipLongPress=true;
-//                    if( !ItemTransferredFromClip )
-//                    {
-//                       if(TDBTab::GetTabType(*DBTransaction,sourceTabKey)==TabClipp )
-//                        {
-//                             ItemTransferredFromClip =true;
-//                        }
-//                    }
-//                  }
+                    if(sourceTabType==TabClipp )
+                    {
+                       MessageBox("Linked tab/table cannot be transferred to other locations..", "Error", MB_OK + MB_ICONERROR);
+                       return ;
+                    }
+                 if(ClipTabSelected)
+                  {
+                    isClipLongPress=true;
+                    if( !ItemTransferredFromClip )
+                    {
+                       if(TDBTab::GetTabType(*DBTransaction,sourceTabKey)==TabClipp )
+                        {
+                             ItemTransferredFromClip =true;
+                        }
+                    }
+                  }
 
                  if(btnTransferFrom->Caption == btnTransferTo->Caption)
                  {
@@ -2198,18 +2200,18 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                 SelectionForm->Items.push_back(Item);
             }
         }break;
-//         case TabClipp:
-//        {
-//            TDBClippTab::GetOpenClippTabs(DBTransaction, TabList.get(), TabType);
-//            for (int i = 0; i < TabList->Count; i++)
-//            {
-//                Item.Title = TabList->Strings[i];
-//                Item.Properties["TabKey"] = (int)TabList->Objects[i];
-//                Item.Properties["Color"] = clInfoBk;
-//                Item.CloseSelection = true;
-//                SelectionForm->Items.push_back(Item);
-//            }
-//        }break;
+         case TabClipp:
+        {
+            //TDBClippTab::GetOpenClippTabs(DBTransaction, TabList.get(), TabType);
+            for (int i = 0; i < TabList->Count; i++)
+            {
+                Item.Title = TabList->Strings[i];
+                Item.Properties["TabKey"] = (int)TabList->Objects[i];
+                Item.Properties["Color"] = clInfoBk;
+                Item.CloseSelection = true;
+                SelectionForm->Items.push_back(Item);
+            }
+        }break;
     }
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
@@ -2236,10 +2238,10 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                {
                   CurrentSourceTabType = TabStaff;
                }
-//                if(TabType == TabClipp)
-//               {
-//                  CurrentSourceTabType = TabClipp;
-//               }
+                if(TabType == TabClipp)
+               {
+                  CurrentSourceTabType = TabClipp;
+               }
             }
             else
             {
@@ -2255,11 +2257,27 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                   CurrentDestTabType = TabStaff;
                }
 
-//                if(TabType == TabClipp)
-//                {
-//                    CurrentDestTabType = TabClipp;
-//                }
+                if(TabType == TabClipp)
+                {
+                    CurrentDestTabType = TabClipp;
+                }
                }
+            }
+            if(TDBTab::HasOnlineOrders(tabKey))
+            {
+                MessageBox("An online Order is saved on the Tab.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
+                Retval = mrAbort;
+                if(Section == "Select Transfer To")
+                {
+                    btnTransferTo->Caption =  "Select";
+                    lbDisplayTransferto->Clear();
+                }
+                else
+                {
+                    btnTransferFrom->Caption =  "Select";
+                    lbDisplayTransferfrom->Clear();
+                }
+                return mrAbort;
             }
             PopulateSourceDestTabDetails(DBTransaction, tabname, tabKey, listbox, true);
             UpdateListBox(listbox);
@@ -2307,7 +2325,7 @@ UnicodeString TfrmTransfer::GetSourceTabName(Database::TDBTransaction &DBTransac
 //----------------------------------------------------------------------------
 void TfrmTransfer::DeleteEmptyTabs(Database::TDBTransaction &DBTransaction)
 {
-   if(CurrentSourceDisplayMode == eTabs && (CurrentSourceTabType == TabNormal /*|| CurrentSourceTabType == TabClipp*/))
+   if(CurrentSourceDisplayMode == eTabs && (CurrentSourceTabType == TabNormal || CurrentSourceTabType == TabClipp))
    {
       if(lbDisplayTransferfrom->Count > 0)
       {
@@ -2339,12 +2357,12 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
 
             if(SelectionForm->ShowModal() != mrCancel)
             {
-//              if(ClipTabSelected)
-//                {
-//                    MessageBox("You cannot Changed option now once clip tab and table is selected", "Error",MB_OK + MB_ICONINFORMATION);
-//                    Retval = mrAbort;
-//                    return;
-//                }
+              if(ClipTabSelected)
+                {
+                    MessageBox("You cannot Changed option now once clip tab and table is selected", "Error",MB_OK + MB_ICONINFORMATION);
+                    Retval = mrAbort;
+                    return;
+                }
                 isTabOrItemSelected = false;
                 ItemTransferredFromClip=false;
                 if(title == "Select Transfer From")
@@ -2389,32 +2407,32 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                           Retval = ShowTabDetails(DBTransaction, TabStaff, lbDisplayTransferto, btnTransferTo, "Staff", "Select Transfer To");
                         }
                     }break;
-//                case TabClipp:
-//                  {
-//                    TDBTab::ReleaseTab(DBTransaction,TDeviceRealTerminal::Instance().ID.Name,0);
-//                    if(title == "Select Transfer From")
-//                    {
-//                       Retval = ShowTabDetails(DBTransaction, TabClipp, lbDisplayTransferfrom, btnTransferFrom, "Clipp Tabs", "Select Transfer From");
-//                    }
-//                    else
-//                    {
-//                      TempDestUserInfo.Clear();
-//                      Retval = ShowTabDetails(DBTransaction, TabClipp, lbDisplayTransferto, btnTransferTo, "Clipp Tabs", "Select Transfer To");
-//                    }
-//
-//                  if(title == "Select Transfer From")
-//                  {
-//                      ClipPresentInFromPanel =true;
-//                      ClipPresentInToPanel=false;
-//                  }
-//                  else
-//                  {
-//                     ClipPresentInToPanel=true;
-//                     ClipPresentInFromPanel=false;
-//                  }
-//                  isClipLongPress=false;
-//
-//                }break;
+                case TabClipp:
+                  {
+                    TDBTab::ReleaseTab(DBTransaction,TDeviceRealTerminal::Instance().ID.Name,0);
+                    if(title == "Select Transfer From")
+                    {
+                       Retval = ShowTabDetails(DBTransaction, TabClipp, lbDisplayTransferfrom, btnTransferFrom, "Clipp Tabs", "Select Transfer From");
+                    }
+                    else
+                    {
+                      TempDestUserInfo.Clear();
+                      Retval = ShowTabDetails(DBTransaction, TabClipp, lbDisplayTransferto, btnTransferTo, "Clipp Tabs", "Select Transfer To");
+                    }
+
+                  if(title == "Select Transfer From")
+                  {
+                      ClipPresentInFromPanel =true;
+                      ClipPresentInToPanel=false;
+                  }
+                  else
+                  {
+                     ClipPresentInToPanel=true;
+                     ClipPresentInFromPanel=false;
+                  }
+                  isClipLongPress=false;
+
+                }break;
                 case TabMember:
                     {
                         if(title == "Select Transfer From")
@@ -2470,6 +2488,13 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
                            {
                               lbDisplayTransferto->Clear();
+                              if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                              {
+                                MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                Retval = mrAbort;
+                                btnTransferTo->Caption =  "Select";
+                                break;
+                              }
                               if( CurrentDestTable != floorPlanReturnParams.TabContainerNumber )
                               {
                                  CurrentDestTable = floorPlanReturnParams.TabContainerNumber;
@@ -2494,13 +2519,21 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                             if(floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ))
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
                            {
-                             if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
-                             {
-                                CurrentSourceTable = floorPlanReturnParams.TabContainerNumber;
-                             }
-                             UpdateSourceTableDetails(DBTransaction);
-                             UpdateSourceSeatDetails(DBTransaction);
-                             CurrentSourceDisplayMode = eTables;
+                                if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                                {
+                                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                    Retval = mrAbort;
+                                    btnTransferFrom->Caption =  "Select";
+                                    lbDisplayTransferfrom->Clear();
+                                    break;
+                                }
+                                if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
+                                {
+                                    CurrentSourceTable = floorPlanReturnParams.TabContainerNumber;
+                                }
+                                UpdateSourceTableDetails(DBTransaction);
+                                UpdateSourceSeatDetails(DBTransaction);
+                                CurrentSourceDisplayMode = eTables;
                            }
                            else
                            {
@@ -2563,8 +2596,8 @@ void TfrmTransfer::PrepareItemList(Database::TDBTransaction &DBTransaction, int 
 //----------------------------------------------------------------------------
 void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
 {
-       //CheckClipAndTableCondition(DBTransaction);
-       if(IsSourceDestinationSame() /*&& !ClipTabSelected*/)
+       CheckClipAndTableCondition(DBTransaction);
+       if(IsSourceDestinationSame() && !ClipTabSelected)
        {
           IsPartialTransfer = true;
           return;
@@ -2584,13 +2617,13 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
             isTabSelected = CheckTabOrItemSelected(lbDisplayTransferfrom, i);
             sourcekey = GetTabKeyFromListBox(lbDisplayTransferfrom, i);
 
-//            if(ClipTabSelected && !ItemTransferredFromClip )
-//            {
-//               if(TDBTab::GetTabType(DBTransaction,sourcekey)==TabClipp )
-//                {
-//                     ItemTransferredFromClip =true;
-//                }
-//            }
+            if(ClipTabSelected && !ItemTransferredFromClip )
+            {
+               if(TDBTab::GetTabType(DBTransaction,sourcekey)==TabClipp )
+                {
+                     ItemTransferredFromClip =true;
+                }
+            }
            if(!isTabSelected)
             {
               itemName = lbDisplayTransferfrom->Items->Strings[i];
@@ -2653,7 +2686,7 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
 void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
 {
 
-       //CheckClipAndTableCondition(DBTransaction);
+       CheckClipAndTableCondition(DBTransaction);
 
        if(IsSourceDestinationSame() && !ClipTabSelected)
        {
@@ -2672,13 +2705,13 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
           {
             isTabSelected = CheckTabOrItemSelected(lbDisplayTransferto, i);
             sourcekey = GetTabKeyFromListBox(lbDisplayTransferto, i);
-//            if(ClipTabSelected && !ItemTransferredFromClip )
-//            {
-//               if(TDBTab::GetTabType(DBTransaction,sourcekey)==TabClipp )
-//                {
-//                     ItemTransferredFromClip =true;
-//                }
-//            }
+            if(ClipTabSelected && !ItemTransferredFromClip )
+            {
+               if(TDBTab::GetTabType(DBTransaction,sourcekey)==TabClipp )
+                {
+                     ItemTransferredFromClip =true;
+                }
+            }
             if(!isTabSelected)
             {
                isSideSelected = CheckSideIsSelected(lbDisplayTransferto, i);
@@ -2813,15 +2846,15 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 	  case eTables:
 		 {
             int DestTabKey = 0;
-//            if(ClipTabSelected && isTabSelected && !isClipLongPress)
-//            {
-//               TMMTabType tabtype = TDBTab::GetTabType(*DBTransaction, source_key,isTabSelected);
-//                if(tabtype == TabClipp)
-//                {
-//                    dest_tabkey = TDBTab::GetMaxAvailableSeatKey(*DBTransaction, CurrentSourceTable);
-//                }
-//
-//            }
+            if(ClipTabSelected && isTabSelected && !isClipLongPress)
+            {
+               TMMTabType tabtype = TDBTab::GetTabType(*DBTransaction, source_key,isTabSelected);
+                if(tabtype == TabClipp)
+                {
+                    dest_tabkey = TDBTab::GetMaxAvailableSeatKey(*DBTransaction, CurrentSourceTable);
+                }
+
+            }
 
             int SeatKey = TDBTables::GetOrCreateSeat(*DBTransaction, CurrentSourceTable, dest_tabkey);
             bool tabName = CheckNameIsNullOrNot(*DBTransaction, CurrentSourceTable, dest_tabkey, SeatKey); //reverse
@@ -2839,13 +2872,13 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
             PrepareItemList(*DBTransaction, source_key, isTabSelected , OrdersList.get()) ;
             int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTable(*DBTransaction,CurrentSourceTable);
 
-//            if(ClipTabSelected)
-//            {
-//                if(CheckIfClipTransferringToAnotherLinkedGuest(*DBTransaction,source_key, DestTabKey, isTabSelected ))
-//                {
-//                  return;
-//                }
-//            }
+            if(ClipTabSelected)
+            {
+                if(CheckIfClipTransferringToAnotherLinkedGuest(*DBTransaction,source_key, DestTabKey, isTabSelected ))
+                {
+                  return;
+                }
+            }
 
             int source_tabkey = 0;
             UnicodeString guestName = "";
@@ -2990,15 +3023,15 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
 	  case eTables:
 		 {
             int DestTabKey = 0;
-//           if(ClipTabSelected && isTabSelected && !isClipLongPress)
-//           {
-//
-//               TMMTabType tabtype = TDBTab::GetTabType(*DBTransaction, source_key,isTabSelected);
-//                if(tabtype == TabClipp)
-//                {
-//                    dest_tabkey = TDBTab::GetMaxAvailableSeatKey(*DBTransaction, CurrentDestTable);
-//                }
-//            }
+           if(ClipTabSelected && isTabSelected && !isClipLongPress)
+           {
+
+               TMMTabType tabtype = TDBTab::GetTabType(*DBTransaction, source_key,isTabSelected);
+                if(tabtype == TabClipp)
+                {
+                    dest_tabkey = TDBTab::GetMaxAvailableSeatKey(*DBTransaction, CurrentDestTable);
+                }
+            }
 
             int SeatKey = TDBTables::GetOrCreateSeat(*DBTransaction, CurrentDestTable, dest_tabkey);
             bool tabName = CheckNameIsNullOrNot(*DBTransaction, CurrentDestTable, dest_tabkey, SeatKey);
@@ -3021,13 +3054,13 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             {
                 UpdateTablePartyName(*DBTransaction, DestTabKey, source_key, isTabSelected);
             }
-//            if(ClipTabSelected)
-//            {
-//                if(CheckIfClipTransferringToAnotherLinkedGuest(*DBTransaction,source_key, DestTabKey, isTabSelected ))
-//                {
-//                  return;
-//                }
-//            }
+            if(ClipTabSelected)
+            {
+                if(CheckIfClipTransferringToAnotherLinkedGuest(*DBTransaction,source_key, DestTabKey, isTabSelected ))
+                {
+                  return;
+                }
+            }
             // get guest name to transfer from source to destination.....
             int source_tabkey = 0;
             UnicodeString guestName = "";
@@ -3328,15 +3361,15 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                       std::set <__int64> SelectedTabs;
                       int source_key = GetTabKeyFromListBox(lbDisplayTransferfrom, 0);
                       int dest_tabkey = 1;
-//                      if(ClipTabSelected  )
-//                      {
-//                           //create new seat in case of clipp transfer
-//                           TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, source_key);
-//                            if(tabtype == TabClipp)
-//                            {
-//                                dest_tabkey = TDBTab::GetMaxAvailableSeatKey(DBTransaction, CurrentDestTable);
-//                            }
-//                      }
+                      if(ClipTabSelected  )
+                      {
+                           //create new seat in case of clipp transfer
+                           TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, source_key);
+                            if(tabtype == TabClipp)
+                            {
+                                dest_tabkey = TDBTab::GetMaxAvailableSeatKey(DBTransaction, CurrentDestTable);
+                            }
+                      }
 
                       int SeatKey = TDBTables::GetOrCreateSeat(DBTransaction, CurrentDestTable, dest_tabkey);
                       int DestTabKey = TDBTab::GetOrCreateTab(DBTransaction, TDBTables::GetTabKey(DBTransaction, SeatKey));
@@ -3349,11 +3382,11 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                       UpdateTablePartyName(DBTransaction, DestTabKey, source_key, true);
                       if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), DestTabKey))
                       {
-//                         if(ClipTabSelected && linkCliptabToTable )
-//                         {
-//                           DoCliptabLinking(DBTransaction,source_key,DestTabKey);
-//                           NewClipTabKey = DestTabKey;
-//                         }
+                         if(ClipTabSelected && linkCliptabToTable )
+                         {
+                           DoCliptabLinking(DBTransaction,source_key,DestTabKey);
+                           NewClipTabKey = DestTabKey;
+                         }
 
                          TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key);
                          TDBOrder::SetOrderIdentificationNumberForTable(DBTransaction,CurrentDestTable,identificationNumber);
@@ -4118,68 +4151,68 @@ void TfrmTransfer:: SendTabDetails(AnsiString source, AnsiString dest, int sourc
 
     if (ClipTabSelected)
     {
-//        std::set <int> ClipTabToBeUpdatedKeys;
-//        std::set <int> ClipTabToBeClosedKeys;
-//        Database::TDBTransaction DBTransaction(DBControl);
-//        DBTransaction.StartTransaction();
-//
-//
-//
-//         for(int key = 0; key < lbDisplayTransferfrom->Count; key++)
-//            {
-//                 int sourcekey = GetTabKeyFromListBox(lbDisplayTransferfrom, key);
-//
-//                   TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, sourcekey);
-//                    if(tabtype == TabClipp)
-//                    {
-//                         if(CloseClipTab )//!linkCliptabToTable && CloseClipTab)
-//                         {
-//                            ClipTabToBeClosedKeys.insert(sourcekey);
-//                         }
-//                         else
-//                         {
-//                            ClipTabToBeUpdatedKeys.insert(sourcekey);
-//                         }
-//                   }
-//
-//              }
-//
-//        for(int key = 0; key < lbDisplayTransferto->Count; key++)
-//            {
-//                 int sourcekey = GetTabKeyFromListBox(lbDisplayTransferto, key);
-//
-//                   TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, sourcekey);
-//                    if(tabtype == TabClipp)
-//                    {
-//                         if(CloseClipTab)//!linkCliptabToTable &&CloseClipTab)
-//                         {
-//                            ClipTabToBeClosedKeys.insert(sourcekey);
-//                         }
-//                         else
-//                         {
-//                            ClipTabToBeUpdatedKeys.insert(sourcekey);
-//                         }
-//                   }
-//
-//              }
-//
-//         DBTransaction.Commit();
-//
-//        int size1= ClipTabToBeClosedKeys.size();
-//        std::set<int>::iterator key;
-//        for (key = ClipTabToBeClosedKeys.begin(); key != ClipTabToBeClosedKeys.end(); ++key)
-//        {
-//           int i= *key;
-//           CloseClippTab(*key);
-//        }
-//
-//        int size= ClipTabToBeUpdatedKeys.size();
-//        std::set<int>::iterator updateKey;
-//        for (updateKey = ClipTabToBeUpdatedKeys.begin(); updateKey != ClipTabToBeUpdatedKeys.end(); ++updateKey)
-//        {
-//           int i= *updateKey;
-//           SendClippTabDetails(*updateKey);
-//        }
+        std::set <int> ClipTabToBeUpdatedKeys;
+        std::set <int> ClipTabToBeClosedKeys;
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+
+
+
+         for(int key = 0; key < lbDisplayTransferfrom->Count; key++)
+            {
+                 int sourcekey = GetTabKeyFromListBox(lbDisplayTransferfrom, key);
+
+                   TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, sourcekey);
+                    if(tabtype == TabClipp)
+                    {
+                         if(CloseClipTab )//!linkCliptabToTable && CloseClipTab)
+                         {
+                            ClipTabToBeClosedKeys.insert(sourcekey);
+                         }
+                         else
+                         {
+                            ClipTabToBeUpdatedKeys.insert(sourcekey);
+                         }
+                   }
+
+              }
+
+        for(int key = 0; key < lbDisplayTransferto->Count; key++)
+            {
+                 int sourcekey = GetTabKeyFromListBox(lbDisplayTransferto, key);
+
+                   TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, sourcekey);
+                    if(tabtype == TabClipp)
+                    {
+                         if(CloseClipTab)//!linkCliptabToTable &&CloseClipTab)
+                         {
+                            ClipTabToBeClosedKeys.insert(sourcekey);
+                         }
+                         else
+                         {
+                            ClipTabToBeUpdatedKeys.insert(sourcekey);
+                         }
+                   }
+
+              }
+
+         DBTransaction.Commit();
+
+        int size1= ClipTabToBeClosedKeys.size();
+        std::set<int>::iterator key;
+        for (key = ClipTabToBeClosedKeys.begin(); key != ClipTabToBeClosedKeys.end(); ++key)
+        {
+           int i= *key;
+           CloseClippTab(*key);
+        }
+
+        int size= ClipTabToBeUpdatedKeys.size();
+        std::set<int>::iterator updateKey;
+        for (updateKey = ClipTabToBeUpdatedKeys.begin(); updateKey != ClipTabToBeUpdatedKeys.end(); ++updateKey)
+        {
+           int i= *updateKey;
+           SendClippTabDetails(*updateKey);
+        }
 
 
     }
@@ -4188,38 +4221,38 @@ void TfrmTransfer:: SendTabDetails(AnsiString source, AnsiString dest, int sourc
             int sourceTabKey = GetTabKeyFromListBox(lbDisplayTransferfrom, 0);
             int destTabKey =   GetTabKeyFromListBox(lbDisplayTransferto, 0);
 
-//            if((source == "Clipp Tabs") && (sourceItemCount > 1) && (IsBalAvailable))
-//            {
-//                if(!isTabOrItemSelected)
-//                {
-//                     CloseClippTab(sourceTabKey);
-//                }
-//                else
-//                {
-//                    SendClippTabDetails(sourceTabKey);
-//                }
-//            }
+            if((source == "Clipp Tabs") && (sourceItemCount > 1) && (IsBalAvailable))
+            {
+                if(!isTabOrItemSelected)
+                {
+                     CloseClippTab(sourceTabKey);
+                }
+                else
+                {
+                    SendClippTabDetails(sourceTabKey);
+                }
+            }
 
-//            else if((source == "Clipp Tabs") &&  (sourceItemCount == 1)&& (IsBalAvailable))
-//            {
-//                 CloseClippTab(sourceTabKey);
-//            }
-//
-//            if((dest == "Clipp Tabs") && (destItemCount > 1)&& (IsBalAvailable))
-//            {
-//                SendClippTabDetails(destTabKey);
-//            }
-//            else if((dest == "Clipp Tabs") &&  (destItemCount == 1) && (IsBalAvailable))
-//            {
-//                if(!isTabOrItemSelected && sourceItemCount > 1)
-//                {
-//                    SendClippTabDetails(destTabKey);
-//                }
-//                else
-//                {
-//                    CloseClippTab(destTabKey);
-//                }
-//            }
+            else if((source == "Clipp Tabs") &&  (sourceItemCount == 1)&& (IsBalAvailable))
+            {
+                 CloseClippTab(sourceTabKey);
+            }
+
+            if((dest == "Clipp Tabs") && (destItemCount > 1)&& (IsBalAvailable))
+            {
+                SendClippTabDetails(destTabKey);
+            }
+            else if((dest == "Clipp Tabs") &&  (destItemCount == 1) && (IsBalAvailable))
+            {
+                if(!isTabOrItemSelected && sourceItemCount > 1)
+                {
+                    SendClippTabDetails(destTabKey);
+                }
+                else
+                {
+                    CloseClippTab(destTabKey);
+                }
+            }
 
 
     }
@@ -4326,49 +4359,49 @@ bool TfrmTransfer::IsPWDAppliedOnDest(TList* Orders)
 void TfrmTransfer::SaveClipItemsInStructure(Database::TDBTransaction &DBTransaction)
 {
 
-//    TListBox *destinationListBox;
-//    int orderKey;
-//    double  qty;
-//
-//
-//   if(ClipPresentInFromPanel )
-//   {
-//     destinationListBox =  lbDisplayTransferfrom;
-//   }
-//   else
-//   {
-//      destinationListBox =  lbDisplayTransferto;
-//   }
-//
-//  ClipItemsContainer.clear();
-//
-// for(int destkey=0;destkey< destinationListBox->Count; destkey++)
-//   {
-//        TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
-//
-//        if( !getDestId->IsTabKey )
-//        {
-//           orderKey =getDestId->Orderkey;
-//           qty=  getDestId->Qty;
-//          ClipItemsContainer.insert( std::pair<int,double>(orderKey, qty) );
-//        }
-//
-//    }
+    TListBox *destinationListBox;
+    int orderKey;
+    double  qty;
+
+
+   if(ClipPresentInFromPanel )
+   {
+     destinationListBox =  lbDisplayTransferfrom;
+   }
+   else
+   {
+      destinationListBox =  lbDisplayTransferto;
+   }
+
+  ClipItemsContainer.clear();
+
+ for(int destkey=0;destkey< destinationListBox->Count; destkey++)
+   {
+        TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
+
+        if( !getDestId->IsTabKey )
+        {
+           orderKey =getDestId->Orderkey;
+           qty=  getDestId->Qty;
+          ClipItemsContainer.insert( std::pair<int,double>(orderKey, qty) );
+        }
+
+    }
  }
  ///-----------------------------------------------------------------------------------------------
  void  TfrmTransfer::DoCliptabLinking(Database::TDBTransaction &DBTransaction,int source_key,int DestTabKey)
  {
-//     UpdateTabNameAndKey(DBTransaction, source_key, DestTabKey);
-//     UpdatePanelSourceKey(source_key , DestTabKey);
+     UpdateTabNameAndKey(DBTransaction, source_key, DestTabKey);
+     UpdatePanelSourceKey(source_key , DestTabKey);
  }
 ///--------------------------------------------------------------------------------------------
 void TfrmTransfer::UpdateTabNameAndKey(Database::TDBTransaction &DBTransaction, int source_key, int dest_key)
 {
     //Get clipp customer Name
-    UnicodeString customerName = TDBClippTab::GetCustomerName(DBTransaction, source_key);
+    UnicodeString customerName = "";//TDBClippTab::GetCustomerName(DBTransaction, source_key);
 
     //update clipp Tab by table key to which it was transferred
-    TDBClippTab::UpdateClippTabTabKey(DBTransaction, source_key, dest_key);
+   //DBClippTab::UpdateClippTabTabKey(DBTransaction, source_key, dest_key);
 
     UnicodeString tabName =  "Clipp-" + customerName + "-" + dest_key;
 
@@ -4387,41 +4420,41 @@ bool TfrmTransfer::CheckLinkedTabValidations(Database::TDBTransaction &DBTransac
 {
    if( checkClipTabLimit)
    {
-//         if(lbDisplayTransferfrom->Count>1)
-//          {
-//           // for lbDisplayTransferfrom panel
-//             for(int key = 0; key < lbDisplayTransferfrom->Count; key++)
-//               {
-//                  int sourcekey = GetTabKeyFromListBox(lbDisplayTransferfrom, key);
-//                  if(CheckIfTransferringLinkedTabItems(DBTransaction,sourcekey,true) )
-//                    {
-//                      	Currency CreditLimit = TDBTab::GetTabCreditLimit(DBTransaction,sourcekey);
-//                        if(TDBTab::GetTabBalance(DBTransaction,sourcekey) > CreditLimit)
-//                        {
-//                          MessageBox("Insufficient credit on destination Tab.", "Warning", MB_OK + MB_ICONWARNING);
-//                          return false;
-//                        }
-//                     }
-//               }
-//          }
-//
-//        if( lbDisplayTransferto->Count >1)
-//        {
-//         // for lbDisplayTransferto panel
-//              for(int key = 0; key < lbDisplayTransferto->Count; key++)
-//               {
-//                  int sourcekey = GetTabKeyFromListBox(lbDisplayTransferto, key);
-//                  if(CheckIfTransferringLinkedTabItems(DBTransaction,sourcekey,true) )
-//                    {
-//                        Currency CreditLimit = TDBTab::GetTabCreditLimit(DBTransaction,sourcekey);
-//                        if(TDBTab::GetTabBalance(DBTransaction,sourcekey) > CreditLimit)
-//                        {
-//                          MessageBox("Insufficient credit on destination Tab.", "Warning", MB_OK + MB_ICONWARNING);
-//                          return false;
-//                        }
-//                    }
-//               }
-//         }
+         if(lbDisplayTransferfrom->Count>1)
+          {
+           // for lbDisplayTransferfrom panel
+             for(int key = 0; key < lbDisplayTransferfrom->Count; key++)
+               {
+                  int sourcekey = GetTabKeyFromListBox(lbDisplayTransferfrom, key);
+                  if(CheckIfTransferringLinkedTabItems(DBTransaction,sourcekey,true) )
+                    {
+                      	Currency CreditLimit = TDBTab::GetTabCreditLimit(DBTransaction,sourcekey);
+                        if(TDBTab::GetTabBalance(DBTransaction,sourcekey) > CreditLimit)
+                        {
+                          MessageBox("Insufficient credit on destination Tab.", "Warning", MB_OK + MB_ICONWARNING);
+                          return false;
+                        }
+                     }
+               }
+          }
+
+        if( lbDisplayTransferto->Count >1)
+        {
+         // for lbDisplayTransferto panel
+              for(int key = 0; key < lbDisplayTransferto->Count; key++)
+               {
+                  int sourcekey = GetTabKeyFromListBox(lbDisplayTransferto, key);
+                  if(CheckIfTransferringLinkedTabItems(DBTransaction,sourcekey,true) )
+                    {
+                        Currency CreditLimit = TDBTab::GetTabCreditLimit(DBTransaction,sourcekey);
+                        if(TDBTab::GetTabBalance(DBTransaction,sourcekey) > CreditLimit)
+                        {
+                          MessageBox("Insufficient credit on destination Tab.", "Warning", MB_OK + MB_ICONWARNING);
+                          return false;
+                        }
+                    }
+               }
+         }
 
 
 
@@ -4461,7 +4494,7 @@ bool TfrmTransfer::CheckLinkedTabValidations(Database::TDBTransaction &DBTransac
                                 {
                                   /// if linked clip tab or table is found in "from" then check the destination for dilinking case
                                   // if destination contain same tab key then it means it is a dilinking case
-                                   //DilinkingClipTab(DBTransaction,sourcekey, destTabKey);
+                                   DilinkingClipTab(DBTransaction,sourcekey, destTabKey);
                                    DBTransaction.Commit();
                                    ModalResult = mrOk;
                                 }
@@ -4482,11 +4515,11 @@ bool TfrmTransfer::CheckLinkedTabValidations(Database::TDBTransaction &DBTransac
 bool TfrmTransfer::CheckIfTransferringLinkedTabItems(Database::TDBTransaction &DBTransaction,int sourcekey,bool isTabSelected)
 {
 
-    //TMMTabType sourceTabType = TDBTab::GetLinkedTableAndClipTab(DBTransaction, sourcekey,isTabSelected);
-    //if(sourceTabType == TabClipp )
-    //{
-      //   return true;
-    //}
+    TMMTabType sourceTabType = TDBTab::GetLinkedTableAndClipTab(DBTransaction, sourcekey,isTabSelected);
+    if(sourceTabType == TabClipp )
+    {
+         return true;
+    }
 
     return false;
 
@@ -4494,11 +4527,11 @@ bool TfrmTransfer::CheckIfTransferringLinkedTabItems(Database::TDBTransaction &D
 /////----------------------------------------------------------------------------------
 void TfrmTransfer::DilinkingClipTab(Database::TDBTransaction &DBTransaction,long sourceTabKey,long destTabKey)
  {
-//    TDBTab::UpdateTabType(DBTransaction, sourceTabKey,TabClipp);
-//    int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, sourceTabKey);
-//    TDBTables::SetSeatTabToNull(DBTransaction, sourceTabKey);
-//    TDBOrder::UpdateOrderTableDlinkingWithClipp(DBTransaction, sourceTabKey);
-//    TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
+    TDBTab::UpdateTabType(DBTransaction, sourceTabKey,TabClipp);
+    int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, sourceTabKey);
+    TDBTables::SetSeatTabToNull(DBTransaction, sourceTabKey);
+    TDBOrder::UpdateOrderTableDlinkingWithClipp(DBTransaction, sourceTabKey);
+    TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
  }
 ///-----------------------------------------------------------------------------------------------
 bool TfrmTransfer::CheckItemsInSeat(Database::TDBTransaction &DBTransaction, long tableNo,long seatNo)
@@ -4535,109 +4568,109 @@ bool TfrmTransfer::CheckItemsInSeat(Database::TDBTransaction &DBTransaction, lon
 ///-------------------------------------------------------------------------
 void TfrmTransfer::UpdateGuestNameByClippName(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, bool isTabSelected)
 {
-//    UnicodeString clipTabName = GetTabNameForTable(DBTransaction, SourceKey, isTabSelected);
-//
-//    TDBOrder::UpdateTabNameInOrder(DBTransaction, SourceKey,clipTabName,isTabSelected);
-//    TDBTab::UpdateTabName(DBTransaction, DestTabKey,clipTabName,isTabSelected);
+    UnicodeString clipTabName = GetTabNameForTable(DBTransaction, SourceKey, isTabSelected);
+
+    TDBOrder::UpdateTabNameInOrder(DBTransaction, SourceKey,clipTabName,isTabSelected);
+    TDBTab::UpdateTabName(DBTransaction, DestTabKey,clipTabName,isTabSelected);
 }
 //---------------------------------------------------------------------------------
 bool TfrmTransfer::CheckPartialTransferInClipCase(Database::TDBTransaction &DBTransaction)
 {
-//    TListBox *destinationListBox;
-//    std::map<int ,double > DestinationItemsContainer;
-//    int orderKey;
-//    double qty;
-//    bool partialTransfer=false;
-//
-//   if(ClipPresentInFromPanel)
-//   {
-//     destinationListBox =lbDisplayTransferto  ;
-//   }
-//   else
-//   {
-//      destinationListBox =  lbDisplayTransferfrom;
-//   }
-//  DestinationItemsContainer.clear();
-//
-//   std::map<int, double>::iterator ptr = ClipItemsContainer.begin();
-//    for(; ptr != ClipItemsContainer.end(); advance(ptr,1))
-//    {
-//        bool itemFound=false;
-//        for(int destkey=0;destkey< destinationListBox->Count; destkey++)
-//          {
-//             TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
-//             if( !getDestId->IsTabKey )
-//              {
-//                    if(getDestId->Orderkey == ptr->first && ptr->second == getDestId->Qty)
-//                     {
-//                        itemFound=true;
-//                        NewClipTabKey = getDestId->Tabkey;
-//                        break;
-//                     }
-//              }
-//
-//           }
-//
-//          if(!itemFound )
-//          {
-//           partialTransfer=true;
-//           break;
-//          }
-//    }
-//
-//
-//
-// /*for(int destkey=0;destkey< destinationListBox->Count; destkey++)
-//   {
-//        TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
-//
-//        if( !getDestId->IsTabKey )
-//        {
-//            orderKey =getDestId->Orderkey;
-//            qty=  getDestId->Qty;
-//            std::map<int, int>::iterator ptr = ClipItemsContainer.begin();
-//            for(; ptr != ClipItemsContainer.end(); advance(ptr,1))
-//            {
-//                if (ptr->first == orderKey && ptr->second == qty)
-//                {
-//                     NewClipTabKey = getDestId->Tabkey;
-//                     break;
-//                }
-//            }
-//
-//             if(NewClipTabKey!=0)
-//             {
-//                break;
-//             }
-//        }
-//   }
-//          */
-//
-//   ///  if NewClipTabKey contain value other than zero then transfer all the items having same tab key to DestinationItemsContainer vector
-//     // it will include clip tab items and also previous items that were present in before tranfer (Partial tranfer case)
-//   if(NewClipTabKey!=0 && !partialTransfer)
-//     {
-//        for(int destkey=0;destkey< destinationListBox->Count; destkey++)
-//           {
-//                TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
-//
-//                if( !getDestId->IsTabKey )
-//                {
-//                   orderKey =getDestId->Orderkey;
-//                   qty=  getDestId->Qty;
-//                   if(getDestId->Tabkey == NewClipTabKey )
-//                   {
-//                     DestinationItemsContainer.insert( std::pair<int,int>(orderKey, qty) );
-//
-//                   }
-//                }
-//            }
-//
-//     if( DestinationItemsContainer.size() == ClipItemsContainer.size() )
-//       {
-//         return true;
-//       }
-//   }
+    TListBox *destinationListBox;
+    std::map<int ,double > DestinationItemsContainer;
+    int orderKey;
+    double qty;
+    bool partialTransfer=false;
+
+   if(ClipPresentInFromPanel)
+   {
+     destinationListBox =lbDisplayTransferto  ;
+   }
+   else
+   {
+      destinationListBox =  lbDisplayTransferfrom;
+   }
+  DestinationItemsContainer.clear();
+
+   std::map<int, double>::iterator ptr = ClipItemsContainer.begin();
+    for(; ptr != ClipItemsContainer.end(); advance(ptr,1))
+    {
+        bool itemFound=false;
+        for(int destkey=0;destkey< destinationListBox->Count; destkey++)
+          {
+             TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
+             if( !getDestId->IsTabKey )
+              {
+                    if(getDestId->Orderkey == ptr->first && ptr->second == getDestId->Qty)
+                     {
+                        itemFound=true;
+                        NewClipTabKey = getDestId->Tabkey;
+                        break;
+                     }
+              }
+
+           }
+
+          if(!itemFound )
+          {
+           partialTransfer=true;
+           break;
+          }
+    }
+
+
+
+ /*for(int destkey=0;destkey< destinationListBox->Count; destkey++)
+   {
+        TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
+
+        if( !getDestId->IsTabKey )
+        {
+            orderKey =getDestId->Orderkey;
+            qty=  getDestId->Qty;
+            std::map<int, int>::iterator ptr = ClipItemsContainer.begin();
+            for(; ptr != ClipItemsContainer.end(); advance(ptr,1))
+            {
+                if (ptr->first == orderKey && ptr->second == qty)
+                {
+                     NewClipTabKey = getDestId->Tabkey;
+                     break;
+                }
+            }
+
+             if(NewClipTabKey!=0)
+             {
+                break;
+             }
+        }
+   }
+          */
+
+   ///  if NewClipTabKey contain value other than zero then transfer all the items having same tab key to DestinationItemsContainer vector
+     // it will include clip tab items and also previous items that were present in before tranfer (Partial tranfer case)
+   if(NewClipTabKey!=0 && !partialTransfer)
+     {
+        for(int destkey=0;destkey< destinationListBox->Count; destkey++)
+           {
+                TTabColour *getDestId = (TTabColour *)destinationListBox->Items->Objects[destkey];
+
+                if( !getDestId->IsTabKey )
+                {
+                   orderKey =getDestId->Orderkey;
+                   qty=  getDestId->Qty;
+                   if(getDestId->Tabkey == NewClipTabKey )
+                   {
+                     DestinationItemsContainer.insert( std::pair<int,int>(orderKey, qty) );
+
+                   }
+                }
+            }
+
+     if( DestinationItemsContainer.size() == ClipItemsContainer.size() )
+       {
+         return true;
+       }
+   }
 
   return false;
 }
@@ -4679,33 +4712,33 @@ void TfrmTransfer::CheckClipAndTableCondition(Database::TDBTransaction &DBTransa
 {
     // if clip and table is selected in from and to panel ,vice versa
        // if clip and table is selected in from and to panel ,vice versa
-//          if( !ClipTabSelected )
-//          {
-//              if((CurrentSourceTabType == TabClipp  && CurrentDestDisplayMode == eTables) || (CurrentSourceDisplayMode == eTables  && CurrentDestTabType == TabClipp))
-//             {
-//                  ClipTabSelected=true;
-//                  SaveClipItemsInStructure(DBTransaction);
-//             }
-//          }
+          if( !ClipTabSelected )
+          {
+              if((CurrentSourceTabType == TabClipp  && CurrentDestDisplayMode == eTables) || (CurrentSourceDisplayMode == eTables  && CurrentDestTabType == TabClipp))
+             {
+                  ClipTabSelected=true;
+                  SaveClipItemsInStructure(DBTransaction);
+             }
+          }
 }
 ///------------------------------------------------------------------------------------------
 bool TfrmTransfer::CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey, bool isTabSelected )
 {
 
-//  if(source_key != DestTabKey)
-//  {
-//    TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, source_key,isTabSelected);
-//    if(tabtype == TabClipp)
-//     {
-//
-//        //now check the destination if it is linked guest
-//        if(CheckIfTransferringLinkedTabItems(DBTransaction,DestTabKey,true) )
-//         {
-//           MessageBox("Clip Tab cannot be transferred to guest which is linked to another Clip Tab.", "Error", MB_OK + MB_ICONERROR);
-//           return true;
-//         }
-//     }
-//  }
+  if(source_key != DestTabKey)
+  {
+    TMMTabType tabtype = TDBTab::GetTabType(DBTransaction, source_key,isTabSelected);
+    if(tabtype == TabClipp)
+     {
+
+        //now check the destination if it is linked guest
+        if(CheckIfTransferringLinkedTabItems(DBTransaction,DestTabKey,true) )
+         {
+           MessageBox("Clip Tab cannot be transferred to guest which is linked to another Clip Tab.", "Error", MB_OK + MB_ICONERROR);
+           return true;
+         }
+     }
+  }
 
  return false;
 }
