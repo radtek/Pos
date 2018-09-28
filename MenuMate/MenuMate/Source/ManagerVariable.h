@@ -225,7 +225,9 @@ enum vmVariables
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
-    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmOutletIdMewsSelected,vmServiceMewsSelected,vmClientToken,vmAccessToken,
+    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,
+vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,
+vmOutletIdMewsSelected,vmServiceMewsSelected,vmClientToken,vmAccessToken,
     vmMewsServiceCharge,vmMewsTips
 };
 

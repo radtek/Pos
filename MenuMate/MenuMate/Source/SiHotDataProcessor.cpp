@@ -22,7 +22,8 @@ TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> 
     roomRequest.IPAddress      = pmsIPAddress;
     roomRequest.PortNumber     = pmsPort;
     return roomRequest;
-}//----------------------------------------------------------------------------
+}
+//----------------------------------------------------------------------------
 void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTransaction, TRoomCharge &_roomCharge)
 {
     bool AddDiscountPart          = false;
@@ -110,7 +111,9 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 {
     double discountValue = 0.0;
     bool AddDiscountPart = false;
-    double taxPercentage = GetVATpercentage(itemComplete);
+    double taxPercentage = 0;
+    if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
+        taxPercentage = GetVATpercentage(itemComplete);
 
     if(itemComplete->RevenueCode == 0)
     {
@@ -174,16 +177,36 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool recalculateTax)
 {
      double price = 0;
-     if(recalculateTax)
+     if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                     -(double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
      else
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                 -(double)itemComplete->BillCalcResult.TotalDiscount);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value -
+                            (double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
-     price = RoundTo(price,-2);
      return price;
 }
 //----------------------------------------------------------------------------
@@ -219,9 +242,28 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
                                                    ,UnicodeString _billNo)
 {
     TSiHotService siHotService;
-    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
-    if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    UnicodeString categoryCode = "";
+    if(TGlobalSettings::Instance().SendNoTaxToSiHot)
+    {
+       categoryCode = TGlobalSettings::Instance().RevenueCodeDiscountPart;
+    }
+    else
+    {
+       categoryCode = itemComplete->RevenueCode;
+    }
+
+    if(categoryCode == 0 || categoryCode == "")
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               categoryCode = itRev->first;
+               break;
+            }
+        }
+    }
 
     std::map<UnicodeString,TSiHotService>::iterator it;
 
@@ -232,7 +274,8 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.SuperCategory         = categoryCode;
         siHotService.SuperCategory_Desc    = "";
         siHotService.MiddleCategory        = categoryCode;
-        siHotService.MiddleCategory_Desc   = itemComplete->MenuName;
+//        MessageBox(siHotService.MiddleCategory,"AddDiscountPartToService3",MB_OK);
+        siHotService.MiddleCategory_Desc   = "Discount";
         siHotService.ArticleCategory       = categoryCode;
         siHotService.ArticleCategory_Desc  = "";
         siHotService.ArticleNo             = categoryCode;
@@ -845,46 +888,46 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
 AnsiString TSiHotDataProcessor::DoRequiredInsertion(TPayment *payment, std::map<int,TPMSPaymentType> &paymentsMap)
 {
    AnsiString retValue = "";
-//   try
-//   {
-//       AnsiString defaultPayCode = GetPMSDefaultCode(paymentsMap);
-//       AddPaymentToPMSPaymentTypes(payment,defaultPayCode);
-//       GetPMSPaymentType(paymentsMap);
-//       retValue = GetPMSPaymentCode(payment,paymentsMap);
-//   }
-//   catch(Exception &Exc)
-//   {
-//       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
-//   }
+   try
+   {
+       AnsiString defaultPayCode = GetPMSDefaultCode(paymentsMap);
+       AddPaymentToPMSPaymentTypes(payment,defaultPayCode);
+       GetPMSPaymentType(paymentsMap);
+       retValue = GetPMSPaymentCode(payment,paymentsMap);
+   }
+   catch(Exception &Exc)
+   {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+   }
    return retValue;
 }
 //----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode)
 {
-//    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-//    DBTransaction.StartTransaction();
-//    try
-//    {
-//        TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
-//        InsertQuery->Close();
-//        InsertQuery->SQL->Text = " INSERT INTO PMSPAYMENTSCONFIG "
-//                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
-//                 " PMS_PAYTYPE_CATEGORY ,IS_ELECTRONICPAYMENT) VALUES"
-//                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
-//                 " :PMS_PAYTYPE_CATEGORY ,:IS_ELECTRONICPAYMENT)";
-//        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger =
-//                                 TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
-//        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
-//        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
-//        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
-//        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
-//        InsertQuery->ExecQuery();
-//        DBTransaction.Commit();
-//    }
-//    catch(Exception &Exc)
-//    {
-//        DBTransaction.Rollback();
-//        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
-//    }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = " INSERT INTO PMSPAYMENTSCONFIG "
+                 " (PMS_PAYTYPE_ID, PMS_PAYTYPE_NAME, PMS_PAYTYPE_CODE,"
+                 " PMS_PAYTYPE_CATEGORY ,IS_ELECTRONICPAYMENT) VALUES"
+                 " (:PMS_PAYTYPE_ID, :PMS_PAYTYPE_NAME, :PMS_PAYTYPE_CODE,"
+                 " :PMS_PAYTYPE_CATEGORY ,:IS_ELECTRONICPAYMENT)";
+        InsertQuery->ParamByName("PMS_PAYTYPE_ID")->AsInteger =
+                                 TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PMSPAYTYPEID");
+        InsertQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = payment->CardType;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CODE")->AsString = defaultCode;
+        InsertQuery->ParamByName("PMS_PAYTYPE_CATEGORY")->AsInteger = 2;
+        InsertQuery->ParamByName("IS_ELECTRONICPAYMENT")->AsString = "T";
+        InsertQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
 }
 //----------------------------------------------------------------------------

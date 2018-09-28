@@ -537,6 +537,8 @@ public:
     Currency CheckSaleMegaworld;
     Currency GiftCard_MegaworldForDaily;
     Currency CheckSaleMegaworldForDaily;
+    bool SendNoTaxToSiHot;
+    UnicodeString RevenueCodeDiscountPart;
     UnicodeString OutletIdMewsSelected;
     UnicodeString ServiceMewsSelected;
     UnicodeString ClientToken;
