@@ -32,5 +32,7 @@ class TMewsDataProcessor
         UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
         void GetRevenueCodesDetails(TStringGrid * StringGrid);
         void UpdateMewsMapToMMCategory(int key,UnicodeString code,UnicodeString id);
+        void CalculateQtyAndvariance(double &qtyItemD, int &qtyItem, double &varianceAdditive);
+        UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete);
 };
 #endif

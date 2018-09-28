@@ -403,7 +403,6 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
     double tip = 0;
     double tipEftPOS = 0;
     bool isSuccessful = false;
-    MessageBox("Export Data of Mews","",MB_OK);
     try
     {
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
@@ -462,13 +461,13 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         isSuccessful = true;
                     else
                     {
+                        MessageBox("Invoice posting to Mews failed./rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
                         isSuccessful = false;
                         break;
                     }
                 }
                 else
                 {
-                    MessageBox("composing Bill for mews","",MB_OK);
                     mewsOrder.Bills.clear();
                     mewsOrder.Bills = processor->GetMewsBill(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
                     bool value = mewsInterface->PostMewsBill(TCPIPAddress,mewsOrder);
@@ -476,6 +475,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         isSuccessful = true;
                     else
                     {
+                        MessageBox("Invoice posting to Mews failed./rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
                         isSuccessful = false;
                         break;
                     }

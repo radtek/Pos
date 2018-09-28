@@ -7,6 +7,8 @@
 #include "DeviceRealTerminal.h"
 #include <SysUtils.hpp>
 #include "GeneratorManager.h"
+#include <Math.hpp>
+#include <System.hpp>
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -322,6 +324,38 @@ TCustomerSearch TMewsDataProcessor::CreateInquiryForRoomByName(UnicodeString que
     return customerSearch;
 }
 //---------------------------------------------------------------------------
+void TMewsDataProcessor::CalculateQtyAndvariance(double &qtyItemD, int &qtyItem, double &varianceAdditive)
+{
+    if(qtyItemD >= 0)
+    {
+        double qtyAuxD = qtyItemD+ 0.5;  //2.8,3
+        qtyItem = (int)qtyAuxD;
+        if(qtyItem != 0)
+        {
+            varianceAdditive = qtyItemD - qtyItem;
+        }
+        else
+        {
+            qtyItem += 1;
+            varianceAdditive = qtyItemD - qtyItem;
+        }
+    }
+    else
+    {
+        double qtyAuxD = qtyItemD - 0.5;  //2.8,3
+        qtyItem = (int)qtyAuxD;
+        if(qtyItem != 0)
+        {
+            varianceAdditive = -(qtyItemD - qtyItem);
+        }
+        else
+        {
+            qtyItem -= 1;
+            varianceAdditive = -(qtyItemD - qtyItem);
+        }
+    }
+}
+//---------------------------------------------------------------------------
 std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex, double tipPortion, std::map<int,TAccountingCategory> accountingMap)
 {
     std::vector<TItemMews> itemsList;
@@ -334,18 +368,33 @@ std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &pay
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = itemComplete->Item;
-            itemMews.UnitCount = RoundTo((double)itemComplete->GetQty() * portion, -2);
+            int qtyItem = 0;
+            double qtyItemD = 0;
+            double varianceAdditive = 0;
+            qtyItemD = RoundTo((double)itemComplete->GetQty() * portion, -2);
+//            MessageBox(qtyItemD,"qtyItemD",MB_OK);
+
+            CalculateQtyAndvariance(qtyItemD, qtyItem, varianceAdditive);
+//            MessageBox(qtyItem,"qtyItem",MB_OK);
+
+//            itemMews.UnitCount = RoundTo((double)itemComplete->GetQty() * portion, -2);
+            itemMews.UnitCount = qtyItem;
             itemMews.UnitCost = GetUnitCost(itemComplete, portion);
+
+            varianceAdditive = varianceAdditive/qtyItem;
+//            itemMews.UnitCost.Amount += tipPortion*varianceAdditive;
+            itemMews.UnitCost.Amount = RoundTo((itemMews.UnitCost.Amount + (varianceAdditive*itemMews.UnitCost.Amount))/portion,-2);
             itemMews.Category.Code = "";
-            for(std::map<int,TAccountingCategory>::iterator itAcc = accountingMap.begin();
-                itAcc!= accountingMap.end(); advance(itAcc,1))
-            {
-                if(itAcc->first == itemComplete->RevenueCode)
-                {
-                   itemMews.Category.Code = itAcc->second.Code;
-                   break;
-                }
-            }
+//            for(std::map<int,TAccountingCategory>::iterator itAcc = accountingMap.begin();
+//                itAcc!= accountingMap.end(); advance(itAcc,1))
+//            {
+//                if(itAcc->first == itemComplete->RevenueCode)
+//                {
+//                   itemMews.Category.Code = itAcc->second.Code;
+//                   break;
+//                }
+//            }
+            itemMews.Category.Code = GetMewsCategoryCodeForItem(itemComplete);
             itemsList.push_back(itemMews);
             // add service charge as an item if present
         }
@@ -433,6 +482,7 @@ std::vector<TBill> TMewsDataProcessor::GetMewsBill(TPaymentTransaction &paymentT
         else
             itemMews.UnitCount = 1;
         double paymentAmount = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
+        //paymentAmount += tipPortion;
         itemMews.UnitCost.Amount = fabs(RoundTo(paymentAmount,-2));
         itemMews.UnitCost.Currency = CurrencyString;
         itemMews.UnitCost.Tax = 0;
@@ -444,18 +494,32 @@ std::vector<TBill> TMewsDataProcessor::GetMewsBill(TPaymentTransaction &paymentT
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = itemComplete->Item;
-            itemMews.UnitCount = RoundTo((double)itemComplete->GetQty() * portion, -2);
+
+
+            int qtyItem = 0;
+            double qtyItemD = 0;
+            double varianceAdditive = 0;
+            qtyItemD = RoundTo((double)itemComplete->GetQty() * portion, -2);
+            CalculateQtyAndvariance(qtyItemD, qtyItem, varianceAdditive);
+
+//            itemMews.UnitCount = RoundTo((double)itemComplete->GetQty() * portion, -2);
+            itemMews.UnitCount = qtyItem;
             itemMews.UnitCost = GetUnitCost(itemComplete, portion);
+            varianceAdditive = varianceAdditive/qtyItem;
+            //itemMews.UnitCost.Amount += tipPortion*varianceAdditive;
+            itemMews.UnitCost.Amount = RoundTo((itemMews.UnitCost.Amount + (varianceAdditive*itemMews.UnitCost.Amount))/portion,-2);
+
             itemMews.Category.Code = "";
-            for(std::map<int,TAccountingCategory>::iterator itAcc = accountingMap.begin();
-                itAcc!= accountingMap.end(); advance(itAcc,1))
-            {
-                if(itAcc->first == itemComplete->RevenueCode)
-                {
-                   itemMews.Category.Code = itAcc->second.Code;
-                   break;
-                }
-            }
+//            for(std::map<int,TAccountingCategory>::iterator itAcc = accountingMap.begin();
+//                itAcc!= accountingMap.end(); advance(itAcc,1))
+//            {
+//                if(itAcc->first == itemComplete->RevenueCode)
+//                {
+//                   itemMews.Category.Code = itAcc->second.Code;
+//                   break;
+//                }
+//            }
+            itemMews.Category.Code = GetMewsCategoryCodeForItem(itemComplete);
             billMews.Items.push_back(itemMews);
         }
         if(paymentTransaction.Money.ServiceCharge != 0)
@@ -531,9 +595,12 @@ TUnitCost TMewsDataProcessor::GetUnitCost(TItemComplete* itemComplete, double po
     {
         double unitAmount = fabs((double)itemComplete->BillCalcResult.FinalPrice);
         unitAmount = unitAmount * portion;
-        unitAmount -= fabs(RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2));
-        unitAmount = unitAmount / fabs(RoundTo((double)itemComplete->GetQty(),-2));
-        unitCost.Amount = RoundTo(unitAmount, -2);
+//        unitAmount -= fabs(RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2));
+        unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion);
+//        unitAmount = unitAmount / fabs(RoundTo((double)itemComplete->GetQty(),-2));
+        unitAmount = unitAmount / fabs((double)itemComplete->GetQty());
+//        unitCost.Amount = RoundTo(unitAmount, -2);
+        unitCost.Amount = unitAmount;
         unitCost.Currency = CurrencyString;
         unitCost.Tax = 0;
         for(int i = 0; i < itemComplete->BillCalcResult.Tax.size();i++)
@@ -548,6 +615,39 @@ TUnitCost TMewsDataProcessor::GetUnitCost(TItemComplete* itemComplete, double po
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
     return unitCost;
+}
+//----------------------------------------------------------------------------
+UnicodeString TMewsDataProcessor::GetMewsCategoryCodeForItem(TItemComplete *itemComplete)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    UnicodeString code = "";
+    try
+    {
+        IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEM_KEY = :ITEM_KEY "
+                                    "AND SIZE_NAME = :SIZE_NAME";
+        IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
+        IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
+        IBInternalQuery->ExecQuery();
+        int categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+        std::vector<TAccountingCategoriesMapping> ::iterator it = TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.begin();
+        for(;it != TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.end();advance(it,1))
+        {
+            if(it->CategoryKey == categoryKey)
+            {
+                code = it->MewsCategoryCode;
+                break;
+            }
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return code;
 }
 //----------------------------------------------------------------------------
 std::vector<TAccountingCategoriesMapping> TMewsDataProcessor::GetMewsCategoriesList()
