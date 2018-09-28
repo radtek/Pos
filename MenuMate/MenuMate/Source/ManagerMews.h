@@ -29,7 +29,6 @@ class TManagerMews : public TBasePMS
        bool GetRoundingandDefaultAccount();
        bool RetryDefaultRoomPost(TPaymentTransaction &_paymentTransaction, TRoomCharge roomCharge);
        AnsiString GetLogFileName();
-       void UpdateMewsLogs(bool status);
        bool ExportData(TPaymentTransaction &paymentTransaction);
        void WaitOrProceedWithPost();
        void SetPostingFlag();
@@ -39,5 +38,7 @@ class TManagerMews : public TBasePMS
        bool GetCategories(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken);
        void GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
        void GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews);
+       void UpdateMewsLogs(bool status);
+//       bool CategoriesAreSetUp();
 };
 #endif

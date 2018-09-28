@@ -9,6 +9,7 @@
 #include "SiHotInterface.h"
 #include "MewsDataProcessor.h"
 #include "MewsInterface.h"
+#include "Processing.h"
 
 //---------------------------------------------------------------------------
 
@@ -70,9 +71,23 @@ void TManagerMews::Initialise()
                         if(TipAccount.Trim() != "")
                         {
                             if(ServiceChargeAccount.Trim() != "")
-                                Enabled = true;
+                            {
+//                                if(CategoriesAreSetUp())
+                                for(int i = 0; i < MewsAccountingCategoriesList.size(); i++)
+                                {
+                                    if(MewsAccountingCategoriesList[i].MewsCategoryCode.Trim() == "")
+                                    {
+                                        Enabled = false;
+                                        MessageBox("Revenue Mapping is required to be setup.\rMews is not enabled.","Info",MB_OK+MB_ICONINFORMATION);
+                                        break;
+                                    }
+                                    Enabled = true;
+                                }
+                            }
                             else
+                            {
                                 MessageBox("Service Charge account is required to be selected.\rMews is not enabled.","Info",MB_OK+MB_ICONINFORMATION);
+                            }
                         }
                         else
                             MessageBox("Tip account is required to be selected.\rMews is not enabled.","Info",MB_OK+MB_ICONINFORMATION);
@@ -89,9 +104,9 @@ void TManagerMews::Initialise()
         }
         else
             MessageBox("Client Token value is not provided.\rMews is not enabled.","Info",MB_OK+MB_ICONINFORMATION);
-
 	}
-    //Enabled = true;
+    UpdateMewsLogs(Enabled);
+    UnsetPostingFlag();
     DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
@@ -129,36 +144,15 @@ AnsiString TManagerMews::GetLogFileName()
     AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
+    directoryName = directoryName + "\\logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
     directoryName = directoryName + "\\Mews Post Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
-    AnsiString name = "Mews " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString name = "MewsPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
     AnsiString fileName =  directoryName + "\\" + name;
     return fileName;
-}
-//---------------------------------------------------------------------------
-void TManagerMews::UpdateMewsLogs(bool status)
-{
-    try
-    {
-        AnsiString fileName = GetLogFileName();
-        std::auto_ptr<TStringList> List(new TStringList);
-        if (FileExists(fileName) )
-          List->LoadFromFile(fileName);
-        if(status)
-        {
-            List->Insert((List->Count-1),"<<< Mews Interface Enabled >>>");
-        }
-        else
-        {
-            List->Insert((List->Count-1),"<<< Mews Interface Not Enabled >>>");
-        }
-        List->SaveToFile(fileName );
-    }
-    catch(Exception &Exc)
-    {
-       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
-    }
 }
 //---------------------------------------------------------------------------
 void TManagerMews::WaitOrProceedWithPost()
@@ -315,9 +309,12 @@ bool TManagerMews::GetOutlets(UnicodeString url, UnicodeString clientToken, Unic
     {
         std::auto_ptr<TMewsInterface> siHotInterface(new TMewsInterface());
         std::vector<TOutlet> outlets = siHotInterface->GetOutlets(url,clientToken, accessToken);
-        std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
-        mewsDataProcessor->UpdateOutlets(outlets);
-        retValue = true;
+        if(outlets.size() > 0)
+        {
+            std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
+            mewsDataProcessor->UpdateOutlets(outlets);
+            retValue = true;
+        }
     }
     catch(Exception &ex)
     {
@@ -336,9 +333,12 @@ bool TManagerMews::GetServices(UnicodeString url, UnicodeString clientToken, Uni
     {
         std::auto_ptr<TMewsInterface> siHotInterface(new TMewsInterface());
         std::vector<TServiceMews> services = siHotInterface->GetServices(url,clientToken,accessToken);
-        std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
-        mewsDataProcessor->UpdateServices(services);
-        retValue = true;
+        if(services.size() > 0)
+        {
+            std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
+            mewsDataProcessor->UpdateServices(services);
+            retValue = true;
+        }
     }
     catch(Exception &ex)
     {
@@ -357,9 +357,12 @@ bool TManagerMews::GetSpaces(UnicodeString url, UnicodeString clientToken, Unico
     {
         std::auto_ptr<TMewsInterface> siHotInterface(new TMewsInterface());
         TSpaceDetails spaces = siHotInterface->GetSpaces(url,clientToken,accessToken);
-        std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
-        mewsDataProcessor->UpdateSpaces(spaces);
-        retValue = true;
+        if(spaces.Spaces.size() > 0)
+        {
+            std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
+            mewsDataProcessor->UpdateSpaces(spaces);
+            retValue = true;
+        }
     }
     catch(Exception &ex)
     {
@@ -378,10 +381,12 @@ bool TManagerMews::GetCategories(UnicodeString url, UnicodeString clientToken, U
     {
         std::auto_ptr<TMewsInterface> siHotInterface(new TMewsInterface());
         std::vector<TAccountingCategory> categories = siHotInterface->GetMewsAccountingCategories(url,clientToken,accessToken);
-        std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
-        mewsDataProcessor->UpdateCategories(categories);
-
-        retValue = true;
+        if(categories.size() > 0)
+        {
+            std::auto_ptr<TMewsDataProcessor> mewsDataProcessor(new TMewsDataProcessor());
+            mewsDataProcessor->UpdateCategories(categories);
+            retValue = true;
+        }
     }
     catch(Exception &ex)
     {
@@ -393,6 +398,7 @@ bool TManagerMews::GetCategories(UnicodeString url, UnicodeString clientToken, U
 //---------------------------------------------------------------------------
 bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int StaffID)
 {
+     WaitOrProceedWithPost();
     std::auto_ptr<TMewsDataProcessor> processor(new TMewsDataProcessor());
     double tip = 0;
     double tipEftPOS = 0;
@@ -449,74 +455,31 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     mewsOrder.CustomerId  = _paymentTransaction.Phoenix.AccountNumber;
                     mewsOrder.ServiceId   = SelectedMewsService;
                     mewsOrder.ConsumptionUtc = Now();
-                    MessageBox("composing order for mews","",MB_OK);
                     mewsOrder.Items.clear();
                     mewsOrder.Items = processor->GetMewsOrder(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
                     UnicodeString value = mewsInterface->PostMewsOrder(TCPIPAddress,mewsOrder);
-                    if(value.Trim() != "Successful")
+                    if(value.Trim() == "Successful")
                         isSuccessful = true;
+                    else
+                    {
+                        isSuccessful = false;
+                        break;
+                    }
                 }
                 else
                 {
                     MessageBox("composing Bill for mews","",MB_OK);
                     mewsOrder.Bills.clear();
                     mewsOrder.Bills = processor->GetMewsBill(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
+                    bool value = mewsInterface->PostMewsBill(TCPIPAddress,mewsOrder);
+                    if(value)
+                        isSuccessful = true;
+                    else
+                    {
+                        isSuccessful = false;
+                        break;
+                    }
                 }
-                double surcharge = 0;
-                if(_paymentTransaction.CreditTransaction)
-                    surcharge = payment->GetDiscount();
-                else
-                    surcharge = payment->GetSurcharge();
-//                if(surcharge != 0)
-//                {
-//                   surcharge = RoundTo(surcharge * 100 , -2);
-//                   AnsiString strSurcharge = (AnsiString)surcharge;
-//                   if(strSurcharge.Pos(".") != 0)
-//                   {
-//                      strSurcharge = strSurcharge.SubString(1,strSurcharge.Pos(".")-1);
-//                   }
-//                   for(int subtotalindex = 0; subtotalindex < 16; subtotalindex++)
-//                   {
-//                      if(postRequest.Subtotal1[subtotalindex] != "" && postRequest.Subtotal1[subtotalindex] != 0)
-//                      {
-//                        int paymentSurcharge = atoi(postRequest.ServiceCharge[subtotalindex].c_str());
-//                        paymentSurcharge += atoi(strSurcharge.c_str());
-//                        AnsiString str = paymentSurcharge;
-//                        postRequest.ServiceCharge[subtotalindex] = str;
-//                        break;
-//                      }
-//                   }
-//                }
-//
-//                if(_paymentTransaction.Money.TotalRounding  != 0)
-//                {
-//                    double totalRounding = (double)_paymentTransaction.Money.TotalRounding;
-//                    double roundingPortion = totalRounding * portion;
-//                    roundingPortion = RoundTo(roundingPortion,-2);
-//                    roundingPortion = roundingPortion * 100;
-//                    AnsiString roundingPortionStr = (AnsiString)roundingPortion;
-//                    if(roundingPortionStr.Pos(".") != 0)
-//                    {
-//                      roundingPortionStr = roundingPortionStr.SubString(1,roundingPortionStr.Pos(".")-1);
-//                    }
-//                    int roundingPortionInt = atoi(roundingPortionStr.c_str());
-//                    int oldTotal = atoi(postRequest.TotalAmount.c_str());
-//                    oldTotal += roundingPortionInt;
-//                    postRequest.TotalAmount = oldTotal;
-//                    for(int index = 0; index < postRequest.Subtotal1.size(); index++)
-//                    {
-//                       if(postRequest.Subtotal1[index].Trim() != "")
-//                       {
-//                           int oldSubTotal = atoi(postRequest.Subtotal1[index].c_str());
-//                           oldSubTotal += roundingPortionInt;
-//                           postRequest.Subtotal1[index] = oldSubTotal;
-//                           break;
-//                       }
-//                    }
-//                }
-//                postRequest.CheckNumber = checkNumber;
-                //  Send Post
-                //  Capture result
             }
          }
     }
@@ -525,6 +488,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 //        DBTransaction.Rollback();
     }
+    UnsetPostingFlag();
     return isSuccessful;
 }
 //---------------------------------------------------------------------------
@@ -548,6 +512,10 @@ std::vector<TAccountingCategory> TManagerMews::GetCategoriesFromDB()
 //---------------------------------------------------------------------------
 void TManagerMews::GetMewsCustomerByName(UnicodeString queryString, std::vector<TCustomerMews> &customerMews)
 {
+    std::auto_ptr<TfrmProcessing>
+    (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Getting Customer Details , Please Wait...";
+    Processing->Show();
     try
     {
         customerMews.clear();
@@ -562,10 +530,15 @@ void TManagerMews::GetMewsCustomerByName(UnicodeString queryString, std::vector<
     {
         MessageBox(ex.Message,"Exception",MB_OK);
     }
+    Processing->Close();
 }
 //---------------------------------------------------------------------------
 void TManagerMews::GetMewsCustomerBySpace(UnicodeString queryString, std::vector<TCustomerMews> &customerMews)
 {
+    std::auto_ptr<TfrmProcessing>
+    (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Getting Customer Details , Please Wait...";
+    Processing->Show();
     try
     {
         customerMews.clear();
@@ -579,6 +552,31 @@ void TManagerMews::GetMewsCustomerBySpace(UnicodeString queryString, std::vector
     catch(Exception &ex)
     {
         MessageBox(ex.Message,"Exception",MB_OK);
+    }
+    Processing->Close();
+}
+//---------------------------------------------------------------------------
+void TManagerMews::UpdateMewsLogs(bool status)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        if(status)
+        {
+            List->Insert((List->Count-1),"<<< Mews Interface Enabled >>>");
+        }
+        else
+        {
+            List->Insert((List->Count-1),"<<< Mews Interface Not Enabled >>>");
+        }
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }
 //---------------------------------------------------------------------------

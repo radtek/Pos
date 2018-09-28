@@ -61,7 +61,7 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
 	DrawUpDownPanel(ShiftDown, pnlShift1);
 	DrawUpDownPanel(CapsDown, pnlCapsLock);
 	DrawLetters();
-	edSearch->SetFocus();
+	//edSearch->SetFocus();
 	SelectionVisible = false;
 
 	UpdateInterface();	
@@ -102,6 +102,7 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
         Label32->Caption = "Please enter name in the text box below to search customers by Name." ;
         RadioGroupSelection->OnClick = RadioGroupSelectionClick;
         RadioGroupSelection->Enabled = true;
+        edSearch->Enabled = false;
         ShowSpaces();
     }
     else
@@ -163,25 +164,25 @@ void __fastcall TfrmPhoenixRoom::ButtonMouseUp(TObject *Sender,
 	if (((TPanel *)Sender)->Tag == 251)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\t', 0);
-		edSearch->SetFocus();
+		//edSearch->SetFocus();
 	}
 	// Print the backspace
 	else if (((TPanel *)Sender)->Tag == 252)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\b', 0);
-		edSearch->SetFocus();
+		//edSearch->SetFocus();
    }
 	// Print the Return
 	else if (((TPanel *)Sender)->Tag == 253)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\r', 0);
-      edSearch->SetFocus();		
+      //edSearch->SetFocus();
 	}
    // Print the space
 	else if (((TPanel *)Sender)->Tag == 254)
    {
       PostMessage(edSearch->Handle, WM_CHAR, ' ', 0);
-      edSearch->SetFocus();
+      //edSearch->SetFocus();
    }
    // Print the character
 	else if (((TPanel *)Sender)->Tag == 255)
@@ -189,7 +190,7 @@ void __fastcall TfrmPhoenixRoom::ButtonMouseUp(TObject *Sender,
       Word Key;
 		Key = ((TPanel *)Sender)->Caption.c_str()[0];
       PostMessage(edSearch->Handle, WM_CHAR, Key, 0);
-      edSearch->SetFocus();
+      //edSearch->SetFocus();
    }
    // Print the number / others
    else if (((TComponent *)Sender)->Tag != 0 && ((TComponent *)Sender)->Tag != 255)
@@ -373,6 +374,22 @@ void __fastcall TfrmPhoenixRoom::WMDisplayChange(TWMDisplayChange& Message)
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::btnOkClick(TObject *Sender)
 {
+    bool canProceed = true;
+    if(TGlobalSettings::Instance().PMSType == 4)
+    {
+        UnicodeString classifications = "";
+        for(int indexClassifications = 0;
+            indexClassifications < CustomersMews[List->Row].Classifications.size();
+                                                                        indexClassifications++)
+        {
+            if(CustomersMews[List->Row].Classifications[indexClassifications].Trim() == "Cashlist")
+            {
+                canProceed = false;
+                MessageBox("Room charges are not allowed for the selected customer","Info",MB_OK+MB_ICONINFORMATION);
+            }
+        }
+    }
+    if(canProceed)
 	ModalResult = mrOk;
 }
 //---------------------------------------------------------------------------
@@ -436,17 +453,20 @@ void TfrmPhoenixRoom::QuickSearch()
         if(!SpaceShow)
         {
            TDeviceRealTerminal::Instance().BasePMS->GetMewsCustomerByName(edSearch->Text.Trim(), CustomersMews);
+           edSearch->Enabled = true;
         }
         else
         {
             TDeviceRealTerminal::Instance().BasePMS->GetMewsCustomerBySpace(spaces[List->Row].Id, CustomersMews);
-            if(CustomersMews.size())
+            if(CustomersMews.size() > 0)
             {
                 memText->Clear();
+                edSearch->Enabled = true;
                 SpaceShow = false;
                 SelectedRoom.Folders->Clear();
                 List->RowCount = 1;
                 List->Cells[0][0] = "";
+                RadioGroupSelection->ItemIndex = 0;
             }
         }
         if(CustomersMews.size() == 0)
@@ -676,6 +696,16 @@ void TfrmPhoenixRoom::DisplayData()
                memText->Lines->Add("Room Number : " + CustomersMews[0].RoomNumber);
                memText->Lines->Add("Email       : " + CustomersMews[0].Email );
                memText->Lines->Add("Phone       : " + CustomersMews[0].Phone);
+                UnicodeString classifications = "";
+                for(int indexClassifications = 0;
+                    indexClassifications < CustomersMews[0].Classifications.size();
+                                                                                indexClassifications++)
+                {
+                    if(indexClassifications != 0)
+                        classifications += ", ";
+                    classifications += CustomersMews[0].Classifications[indexClassifications];
+                }
+                memText->Lines->Add("Classifications : " + classifications);
                for(std::vector<TCustomerMews>::iterator itcust = CustomersMews.begin();
                   itcust != CustomersMews.end(); ++itcust)
                {
@@ -820,21 +850,8 @@ void __fastcall TfrmPhoenixRoom::ListClick(TObject *Sender)
         }
         else
         {
-            bool canProceed = true;
-            for(int i = 0; i < CustomersMews[List->Row].Classifications.size();i++)
-            {
-                if(CustomersMews[List->Row].Classifications[i] == "Cashlist")
-                {
-                    canProceed = false;
-                    MessageBox("Selected guest can not be used as the guest is marked as Cashlist","Info",MB_OK+MB_ICONINFORMATION);
-                    break;
-                }
-            }
-            if(canProceed)
-            {
             edSearch->SelectAll();
             SetSelectedFolder(List->Row+1);
-            }
         }
     }
 }
@@ -989,9 +1006,19 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
                 SelectedRoom.SiHotRoom = CustomersMews[FolderNumber-1].RoomNumber;
 
                 memText->Clear();
-                memText->Lines->Add("Room Number : " + CustomersMews[FolderNumber-1].RoomNumber);
-                memText->Lines->Add("Email       : " + CustomersMews[FolderNumber-1].Email );
-                memText->Lines->Add("Phone       : " + CustomersMews[FolderNumber-1].Phone);
+                memText->Lines->Add("Room Number     : " + CustomersMews[FolderNumber-1].RoomNumber);
+                memText->Lines->Add("Email           : " + CustomersMews[FolderNumber-1].Email );
+                memText->Lines->Add("Phone           : " + CustomersMews[FolderNumber-1].Phone);
+                UnicodeString classifications = "";
+                for(int indexClassifications = 0;
+                    indexClassifications < CustomersMews[FolderNumber-1].Classifications.size();
+                                                                                indexClassifications++)
+                {
+                    if(indexClassifications != 0)
+                        classifications += ", ";
+                    classifications += CustomersMews[FolderNumber-1].Classifications[indexClassifications];
+                }
+                memText->Lines->Add("Classifications : " + classifications);
                 tbtnOk->Enabled = true;
             }
         }
@@ -1097,6 +1124,7 @@ void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
     {
         SpaceShow = true;
         edSearch->Clear();
+        edSearch->Enabled = false;
         memText->Clear();
         SpaceShow = false;
         SelectedRoom.Folders->Clear();
@@ -1112,6 +1140,7 @@ void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
         SelectedRoom.Folders->Clear();
 		List->RowCount = 1;
 		List->Cells[0][0] = "";
+        edSearch->Enabled = true;
     }
 }
 //---------------------------------------------------------------------------

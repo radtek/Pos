@@ -105,6 +105,8 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
+    if(TGlobalSettings::Instance().PMSType == Mews)
+       tbCredit->Visible = true;
     CalculatePatrons(CurrentTransaction);
 	int TotalCount = 0;
 	std::vector <TPatronType> ::iterator ptrPatronTypes = CurrentTransaction.Patrons.begin();
@@ -1544,20 +1546,20 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 								CurrentTransaction.Phoenix.RoomNumber =
 									atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 							}
-                            else if(TGlobalSettings::Instance().PMSType != Mews)
+                            else if(TGlobalSettings::Instance().PMSType == Mews)
                             {
-//                                MessageBox("Populate room details for psoting here for Mews","",MB_OK);
-                                CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
-//                                MessageBox(CurrentTransaction.Customer.RoomNumberStr,"CurrentTransaction.Customer.RoomNumberStr",MB_OK);
-                                CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
-//                                MessageBox(CurrentTransaction.Phoenix.FirstName,"CurrentTransaction.Phoenix.FirstName",MB_OK);
-                                CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
-//                                MessageBox(CurrentTransaction.Phoenix.LastName,"CurrentTransaction.Phoenix.LastName",MB_OK);
-                                CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
-//                                MessageBox(CurrentTransaction.Phoenix.AccountNumber,"CurrentTransaction.Phoenix.AccountNumber",MB_OK);
-                                TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+//                                    MessageBox("Populate room details for psoting here for Mews","",MB_OK);
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+//                                    MessageBox(CurrentTransaction.Customer.RoomNumberStr,"CurrentTransaction.Customer.RoomNumberStr",MB_OK);
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+//                                    MessageBox(CurrentTransaction.Phoenix.FirstName,"CurrentTransaction.Phoenix.FirstName",MB_OK);
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+//                                    MessageBox(CurrentTransaction.Phoenix.LastName,"CurrentTransaction.Phoenix.LastName",MB_OK);
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+//                                    MessageBox(CurrentTransaction.Phoenix.AccountNumber,"CurrentTransaction.Phoenix.AccountNumber",MB_OK);
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                             }
-                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            else if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
                                 TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;

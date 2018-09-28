@@ -991,7 +991,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		    TDeviceRealTerminal::Instance().ProcessingController.Pop();
         }
 		OnAfterTransactionComplete.Occured();
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Mews))
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
         delete logList;
         logList = NULL;
@@ -1001,7 +1001,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Mews))
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 
         TStringList* logList = new TStringList();
@@ -2616,7 +2616,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillLK;
 				IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 				IBInternalQuery->ParamByName("MENU_NAME")->AsString = Order->MenuName;
-				IBInternalQuery->ParamByName("TAB_NAME")->AsString = Order->TabName;
+				IBInternalQuery->ParamByName("TAB_NAME")->AsString = Order->TabName.SubString(1,32);
 				switch(Order->TabType)
 				{
 				case TabNormal:
@@ -2628,11 +2628,11 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                 case TabClipp:
 				case TabTableSeat:
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				case TabRoom:
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				}
 				IBInternalQuery->ParamByName("SEAT_NUMBER")->AsInteger = Order->SeatNo;
@@ -2765,7 +2765,6 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                          ":BASE_PRICE,"
                          ":DISCOUNT_WITHOUT_TAX,"
                          ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST );";
-
 					IBInternalQuery->ParamByName("CHIT_NAME")->AsString =
 					Order->ChitNumber.Name;
 					IBInternalQuery->ParamByName("CHIT_NAME")->IsNull =
@@ -2781,7 +2780,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 					// TODO 2 -o Michael -c Descrespancy: This Menuwill be inaccurate
 					IBInternalQuery->ParamByName("MENU_NAME")->AsString = Order->MenuName;
-					IBInternalQuery->ParamByName("TAB_NAME")->AsString = Order->TabName;
+					IBInternalQuery->ParamByName("TAB_NAME")->AsString = Order->TabName.SubString(1,32);
 					switch(Order->TabType)
 					{
 					case TabNormal:
@@ -2793,11 +2792,11 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                     case TabClipp:
 					case TabTableSeat:
 						IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
-						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 						break;
 					case TabRoom:
 						IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 						break;
 					}
 					IBInternalQuery->ParamByName("SEAT_NUMBER")->AsInteger = Order->SeatNo;

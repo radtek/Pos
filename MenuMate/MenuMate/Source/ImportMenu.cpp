@@ -12,6 +12,7 @@
 #include "MMLogging.h"
 #include "TaxProfile.h"
 #include "TaxProfileDBAccessManager_MM.h"
+#include "MewsDataProcessor.h"
 
 //#pragma link "IBDatabase"
 
@@ -625,6 +626,7 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
                 categoryKey = InsertCategoryInDB(
                                  description.Trim(),glcode.Trim(), !cDeleted, inCGroupKey, coo, inDBTransaction );
 
+
                 // This Key Map will be used in the ItemSize section.
                 AddKeyMap( "categories", xmlKey, categoryKey );
             }
@@ -634,6 +636,8 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
                     UpdateCategoryInDB(
                         tempCategoryKey, description.Trim(), glcode.Trim(), cDeleted, inCGroupKey, inDBTransaction );
 //                    // This Key Map will be used in the ItemSize section.
+                    std::auto_ptr<TMewsDataProcessor> processor(new TMewsDataProcessor());
+                    processor->UpdateCategories(tempCategoryKey, description.Trim(),cDeleted,inDBTransaction);
 					AddKeyMap( "categories", xmlKey, tempCategoryKey );
             }
         }

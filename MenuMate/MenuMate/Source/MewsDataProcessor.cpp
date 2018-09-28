@@ -52,7 +52,7 @@ void TMewsDataProcessor::UpdateOutlets(std::vector<TOutlet> outlets)
     }
     catch(Exception &ex)
     {
-        MessageBox(ex.Message,"Exception in OUTLETS",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
 }
@@ -94,7 +94,7 @@ void TMewsDataProcessor::UpdateServices(std::vector<TServiceMews> services)
     }
     catch(Exception &ex)
     {
-        MessageBox(ex.Message,"Exception in SERVICES",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
 }
@@ -142,7 +142,7 @@ void TMewsDataProcessor::UpdateSpaces(TSpaceDetails spaces)
     }
     catch(Exception &ex)
     {
-        MessageBox(ex.Message,"Exception in SPACES",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
 }
@@ -196,7 +196,7 @@ void TMewsDataProcessor::UpdateCategories(std::vector<TAccountingCategory> categ
     }
     catch(Exception &ex)
     {
-        MessageBox(ex.Message,"Exception in UpdateCategories",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
 }
@@ -232,6 +232,7 @@ std::vector<TOutlet> TMewsDataProcessor::GetOutlets()
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     return outlets;
 }
@@ -268,6 +269,7 @@ std::vector<TServiceMews> TMewsDataProcessor::GetServices()
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     return services;
 }
@@ -301,6 +303,7 @@ std::vector<TAccountingCategory> TMewsDataProcessor::GetCategoriesFromDB()
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     return categories;
 }
@@ -345,30 +348,17 @@ std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &pay
             }
             itemsList.push_back(itemMews);
             // add service charge as an item if present
-//            if(itemComplete->BillCalcResult.ServiceCharge.Value != 0)
-//            {
-//                TItemMews itemMews;
-//                itemMews.Type = "Revenue";
-//                itemMews.Name = "Service Charge";
-//                itemMews.UnitCount = 1;
-//                itemMews.UnitCost.Amount = itemComplete->BillCalcResult.ServiceCharge.Value;
-//                itemMews.UnitCost.Currency = CurrencyString;
-//                if(TGlobalSettings::Instance().ApplyServiceChargeTax)
-//                    itemMews.UnitCost.Tax = TGlobalSettings::Instance().ServiceChargeTaxRate;
-//                else
-//                    itemMews.UnitCost.Tax = 0;
-//                itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
-//                // get code for items
-//                itemsList.push_back(itemMews);
-//            }
         }
         if(paymentTransaction.Money.ServiceCharge != 0)
         {
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = "Service Charge";
-            itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = paymentTransaction.Money.ServiceCharge;
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo((double)paymentTransaction.Money.ServiceCharge * portion,-2));
             itemMews.UnitCost.Currency = CurrencyString;
             if(TGlobalSettings::Instance().ApplyServiceChargeTax)
                 itemMews.UnitCost.Tax = TGlobalSettings::Instance().ServiceChargeTaxRate;
@@ -383,8 +373,11 @@ std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &pay
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = "Tips";
-            itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = tipPortion;
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo(tipPortion,-2));
             itemMews.UnitCost.Currency = CurrencyString;
             itemMews.UnitCost.Tax = 0;
             itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->TipAccount;
@@ -402,8 +395,11 @@ std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &pay
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = "Surcharge";
-            itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = surcharge;
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo(surcharge,-2));
             itemMews.UnitCost.Currency = CurrencyString;
             itemMews.UnitCost.Tax = 0;
             itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
@@ -418,24 +414,108 @@ std::vector<TItemMews> TMewsDataProcessor::GetMewsOrder(TPaymentTransaction &pay
     return itemsList;
 }
 //---------------------------------------------------------------------------
-std::vector<TBill> TMewsDataProcessor::GetMewsBill(TPaymentTransaction &paymentTransaction, double portion, int index, double tipPortion, std::map<int,TAccountingCategory> accountingMap)
+std::vector<TBill> TMewsDataProcessor::GetMewsBill(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex, double tipPortion, std::map<int,TAccountingCategory> accountingMap)
 {
     std::vector<TBill> billList;
     billList.clear();
     try
     {
-//        order.Items.clear();
-//        for(int i = 0; i < paymentTransaction.Orders->Count; i++)
-//        {
-//            TItemComplete* itemComplete = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
-//            TItemMews itemMews;
-//            itemMews.Type = "Revenue";
-//            itemMews.Name = "";
-//            itemMews.UnitCount = itemComplete->GetQty();
-//            itemMews.UnitCost = GetUnitCost(itemComplete);
-//            itemMews.Category.Code = "";// get code for items
-//            order.Items.push_back(itemMews);
-//        }
+        TBill billMews;
+        billMews.OutletId = TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet;
+        billMews.Number   = GetInvoiceNumber(paymentTransaction);// Invoice Number
+        billMews.Items.clear();
+        TItemMews itemMews;
+        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
+        itemMews.Type = "Payment";
+        itemMews.Name = payment->Name;
+        if(paymentTransaction.CreditTransaction)
+            itemMews.UnitCount = -1;
+        else
+            itemMews.UnitCount = 1;
+        double paymentAmount = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
+        itemMews.UnitCost.Amount = fabs(RoundTo(paymentAmount,-2));
+        itemMews.UnitCost.Currency = CurrencyString;
+        itemMews.UnitCost.Tax = 0;
+        billMews.Items.push_back(itemMews);
+        //
+        for(int i = 0; i < paymentTransaction.Orders->Count; i++)
+        {
+            TItemComplete* itemComplete = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
+            TItemMews itemMews;
+            itemMews.Type = "Revenue";
+            itemMews.Name = itemComplete->Item;
+            itemMews.UnitCount = RoundTo((double)itemComplete->GetQty() * portion, -2);
+            itemMews.UnitCost = GetUnitCost(itemComplete, portion);
+            itemMews.Category.Code = "";
+            for(std::map<int,TAccountingCategory>::iterator itAcc = accountingMap.begin();
+                itAcc!= accountingMap.end(); advance(itAcc,1))
+            {
+                if(itAcc->first == itemComplete->RevenueCode)
+                {
+                   itemMews.Category.Code = itAcc->second.Code;
+                   break;
+                }
+            }
+            billMews.Items.push_back(itemMews);
+        }
+        if(paymentTransaction.Money.ServiceCharge != 0)
+        {
+            TItemMews itemMews;
+            itemMews.Type = "Revenue";
+            itemMews.Name = "Service Charge";
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo((double)paymentTransaction.Money.ServiceCharge * portion,-2));
+            itemMews.UnitCost.Currency = CurrencyString;
+            if(TGlobalSettings::Instance().ApplyServiceChargeTax)
+                itemMews.UnitCost.Tax = TGlobalSettings::Instance().ServiceChargeTaxRate;
+            else
+                itemMews.UnitCost.Tax = 0;
+            itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
+            // get code for items
+            billMews.Items.push_back(itemMews);
+        }
+        if(tipPortion != 0)
+        {
+            TItemMews itemMews;
+            itemMews.Type = "Revenue";
+            itemMews.Name = "Tips";
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo(tipPortion,-2));
+            itemMews.UnitCost.Currency = CurrencyString;
+            itemMews.UnitCost.Tax = 0;
+            itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->TipAccount;
+            // get code for items
+            billMews.Items.push_back(itemMews);
+        }
+
+        double surcharge = 0;
+        if(paymentTransaction.CreditTransaction)
+            surcharge = payment->GetDiscount();
+        else
+            surcharge = payment->GetSurcharge();
+        if(surcharge != 0)
+        {
+            TItemMews itemMews;
+            itemMews.Type = "Revenue";
+            itemMews.Name = "Surcharge";
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCount = -1;
+            else
+                itemMews.UnitCount = 1;
+            itemMews.UnitCost.Amount = fabs(RoundTo(surcharge,-2));
+            itemMews.UnitCost.Currency = CurrencyString;
+            itemMews.UnitCost.Tax = 0;
+            itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
+            // get code for items
+            billMews.Items.push_back(itemMews);
+        }
+        billList.push_back(billMews);
     }
 	catch(Exception &E)
 	{
@@ -449,9 +529,11 @@ TUnitCost TMewsDataProcessor::GetUnitCost(TItemComplete* itemComplete, double po
     TUnitCost unitCost;
     try
     {
-        unitCost.Amount = RoundTo((double)itemComplete->BillCalcResult.FinalPrice * portion, -2);
-        unitCost.Amount -= RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value,-2);
-        unitCost.Amount = fabs(unitCost.Amount);
+        double unitAmount = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+        unitAmount = unitAmount * portion;
+        unitAmount -= fabs(RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2));
+        unitAmount = unitAmount / fabs(RoundTo((double)itemComplete->GetQty(),-2));
+        unitCost.Amount = RoundTo(unitAmount, -2);
         unitCost.Currency = CurrencyString;
         unitCost.Tax = 0;
         for(int i = 0; i < itemComplete->BillCalcResult.Tax.size();i++)
@@ -480,7 +562,8 @@ std::vector<TAccountingCategoriesMapping> TMewsDataProcessor::GetMewsCategoriesL
     {
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
-          "SELECT * FROM PMSACCOUNTINGCATEGORIES";
+          "SELECT * FROM PMSACCOUNTINGCATEGORIES WHERE REVENUE_CENTRE = :REVENUE_CENTRE";
+        IBInternalQuery->ParamByName("REVENUE_CENTRE")->AsString =  TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet;
         IBInternalQuery->ExecQuery();
         //if(IBInternalQuery->RecordCount)
         for( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -497,7 +580,7 @@ std::vector<TAccountingCategoriesMapping> TMewsDataProcessor::GetMewsCategoriesL
     }
     catch(Exception &ex)
     {
-        MessageBox("Exception in GetMewsCategoriesMap()","",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
     return categoriesMMMews;
@@ -529,7 +612,7 @@ std::map<int,TAccountingCategory> TMewsDataProcessor::GetMewsCategoriesMap()
     }
     catch(Exception &ex)
     {
-        MessageBox("Exception in GetMewsCategoriesMap()","",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
     }
     return categoriesMMMews;
@@ -567,7 +650,7 @@ void TMewsDataProcessor::InitializeMewsCategories()
         catch(Exception &ex)
         {
             DBTransaction.Rollback();
-            MessageBox("Exception in InitializeMewsCategories",ex.Message,MB_OK);
+            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         }
     }
 }
@@ -584,7 +667,8 @@ std::map<int,UnicodeString> TMewsDataProcessor::GetFreshMenumateCategories()
         SelectQuery->Close();
         SelectQuery->SQL->Text =
                    "SELECT CATEGORY_KEY,CATEGORY FROM ARCCATEGORIES WHERE CATEGORY_KEY NOT IN "
-                   " ( SELECT CATEGORY_KEY FROM PMSACCOUNTINGCATEGORIES WHERE REVENUE_CENTRE = :REVENUE_CENTRE)";
+                   " ( SELECT CATEGORY_KEY FROM PMSACCOUNTINGCATEGORIES WHERE REVENUE_CENTRE = :REVENUE_CENTRE)"
+                   " AND VISIBLE = 'T'";
         SelectQuery->ParamByName("REVENUE_CENTRE")->AsString = TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet;
         SelectQuery->ExecQuery();
         for( ; !SelectQuery->Eof; SelectQuery->Next())
@@ -599,40 +683,159 @@ std::map<int,UnicodeString> TMewsDataProcessor::GetFreshMenumateCategories()
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
-        MessageBox("Exception in GetFreshMenumateCategories",ex.Message,MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     return missingMenumateCategories;
 }
 //----------------------------------------------------------------------------
-void TMewsDataProcessor::UpdateCategories(int categoryKey, UnicodeString name, bool isDeleted)
+void TMewsDataProcessor::UpdateCategories(int categoryKey, UnicodeString name, bool isDeleted,
+                                            Database::TDBTransaction *DBTransaction)
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
     try
     {
-        TIBSQL *QueryInternal = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *QueryInternal = DBTransaction->Query(DBTransaction->AddQuery());
         QueryInternal->Close();
         if(isDeleted)
         {
             QueryInternal->SQL->Text =
-                       "DELETE FROM ARCCATEGORIES WHERE CATEGORY_KEY = :CATEGORY_KEY";
+                       "DELETE FROM PMSACCOUNTINGCATEGORIES WHERE CATEGORY_KEY = :CATEGORY_KEY";
             QueryInternal->ParamByName("CATEGORY_KEY")->AsInteger = categoryKey;
             QueryInternal->ExecQuery();
         }
         else
         {
             QueryInternal->SQL->Text =
-                       "UPDATE ARCCATEGORIES SET CATEGORY = :CATEGORY WHERE CATEGORY_KEY = :CATEGORY_KEY";
+                       "UPDATE PMSACCOUNTINGCATEGORIES SET MM_CATEGORYNAME = :MM_CATEGORYNAME "
+                       "WHERE CATEGORY_KEY = :CATEGORY_KEY";
             QueryInternal->ParamByName("CATEGORY_KEY")->AsInteger = categoryKey;
-            QueryInternal->ParamByName("CATEGORY")->AsString = name;
+            QueryInternal->ParamByName("MM_CATEGORYNAME")->AsString = name;
             QueryInternal->ExecQuery();
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+UnicodeString TMewsDataProcessor::GetInvoiceNumber(TPaymentTransaction _paymentTransaction)
+{
+    UnicodeString invoiceNumber = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQueryGenerator= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQueryGenerator->Close();
+        bool IsCompDiscountApplied      = false;
+        bool IsNCDiscountApplied        = false;
+        bool IsNormalDiscountApplied    = false;
+        for(int index = 0; index < _paymentTransaction.Orders->Count; index++)
+        {
+            TItemComplete *itemcomplete = (TItemComplete*)_paymentTransaction.Orders->Items[index];
+            for(int discountIndex = 0; discountIndex < itemcomplete->Discounts.size(); discountIndex++)
+            {
+                if(itemcomplete->Discounts[discountIndex].IsComplimentaryDiscount())
+                {
+                    IsCompDiscountApplied = true;
+                    break;
+                }
+                if(itemcomplete->Discounts[discountIndex].IsNonChargableDiscount())
+                {
+                    IsNCDiscountApplied = true;
+                    break;
+                }
+            }
+            if(IsCompDiscountApplied || IsNCDiscountApplied)
+            {
+                break;
+            }
+        }
+        if(IsCompDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERCOMP, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "Comp " + IntToStr(number);
+        }
+        else if(IsNCDiscountApplied)
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBERNC, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = "NC "+ IntToStr(number);
+        }
+        else
+        {
+            IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_INVOICENUMBER, 0) FROM RDB$DATABASE ";
+            IBInternalQueryGenerator->ExecQuery();
+            int number = IBInternalQueryGenerator->Fields[0]->AsInteger + 1;
+            invoiceNumber = IntToStr(number);
         }
         DBTransaction.Commit();
     }
     catch(Exception &ex)
     {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         DBTransaction.Rollback();
-        MessageBox("Exception in UpdateCategories",ex.Message,MB_OK);
+    }
+    return invoiceNumber;
+}
+//----------------------------------------------------------------------------
+void TMewsDataProcessor::GetRevenueCodesDetails(TStringGrid * StringGrid)
+{
+    try
+    {
+       TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.clear();
+       TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList = GetMewsCategoriesList();
+       if(TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.size() < 2)
+       {
+           StringGrid->RowCount = 2;
+       }
+       else
+       {
+            StringGrid->RowCount = TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.size() + 1;
+       }
+        std::vector<TAccountingCategoriesMapping>::iterator it =
+                                        TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.begin();
+        int i = 0;
+        int Index = 0;
+        for(; it != TDeviceRealTerminal::Instance().BasePMS->MewsAccountingCategoriesList.end(); ++it)
+        {
+            Index = StringGrid->Cols[0]->Add(it->MMCategoryName);
+            StringGrid->Cols[0]->Objects[Index] = (TObject*)it->CategoryMapId;
+            Index = StringGrid->Cols[1]->Add(it->MewsCategoryCode);
+            StringGrid->Cols[1]->Objects[Index] = (TObject*)it->CategoryMapId;
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TMewsDataProcessor::UpdateMewsMapToMMCategory(int key,UnicodeString code,UnicodeString id)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *Query= DBTransaction.Query(DBTransaction.AddQuery());
+        Query->Close();
+        Query->SQL->Text = "UPDATE PMSACCOUNTINGCATEGORIES SET "
+                           "PMSACCOUNTINGID = :PMSACCOUNTINGID,"
+                           "MEWS_CATEGORYNAME = :MEWS_CATEGORYNAME "
+                           "WHERE CATEGORYMAPID = :CATEGORYMAPID";
+        Query->ParamByName("MEWS_CATEGORYNAME")->AsString = code;
+        Query->ParamByName("PMSACCOUNTINGID")->AsString = id;
+        Query->ParamByName("CATEGORYMAPID")->AsInteger = key;
+        Query->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
     }
 }
 //----------------------------------------------------------------------------

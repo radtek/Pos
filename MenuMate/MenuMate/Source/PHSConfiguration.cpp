@@ -242,7 +242,6 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbItemDefCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
@@ -291,7 +290,6 @@ void __fastcall TfrmPHSConfiguration::tbItemDefCatClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
@@ -322,7 +320,6 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
@@ -354,7 +351,6 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(
 		TObject *Sender)
 {
@@ -383,7 +379,6 @@ void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbSurchargeCatClick(TObject *Sender)
 {
 //	if(!PhoenixHM->Registered)
@@ -411,7 +406,6 @@ void __fastcall TfrmPHSConfiguration::tbSurchargeCatClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbRoundingCategoryClick(
       TObject *Sender)
 {
@@ -441,7 +435,6 @@ void __fastcall TfrmPHSConfiguration::tbRoundingCategoryClick(
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::TouchBtn1MouseClick(TObject *Sender)
 {
     if(PMSType != mews)
@@ -487,7 +480,6 @@ void __fastcall TfrmPHSConfiguration::TouchBtn1MouseClick(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbTipAccountClick(TObject *Sender)
 {
     if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
@@ -575,7 +567,6 @@ void __fastcall TfrmPHSConfiguration::cbEnableCustomerJourneyClick(TObject *Send
     DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
 {
    // For the selected Menu show categories used in that
@@ -583,9 +574,11 @@ void __fastcall TfrmPHSConfiguration::tbRevenueCodesClick(TObject *Sender)
    // Mews Categories.
    if(TGlobalSettings::Instance().PMSType == 4)
    {
-        if(TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet.Trim() != "")
-            MessageBox("Outlet Selection is mandatory to access Revenue Maps./rPlease Select an outlet.","Info",MB_OK);
+        if(TDeviceRealTerminal::Instance().BasePMS->SelectedMewsOutlet.Trim() == "")
+        {
+            MessageBox("Outlet Selection is mandatory to access Revenue Maps.\rPlease Select an outlet.","Info",MB_OK);
             return;
+        }
    }
    std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
                  (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
@@ -713,7 +706,6 @@ void __fastcall TfrmPHSConfiguration::tbOracleInterfacePortMouseClick(TObject *S
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbOracleInterfaceIPMouseClick(TObject *Sender)
 {
     if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
@@ -771,7 +763,6 @@ bool TfrmPHSConfiguration::CanEnablePOSServer()
     return retValue;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::tbTimeOutMouseClick(TObject *Sender)
 {
     if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
@@ -845,7 +836,6 @@ bool TfrmPHSConfiguration::DefaultPaymentInitRequired()
     }
     return retValue;
 }
-
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::InitDefaultPaymentInDB()
 {
@@ -884,7 +874,6 @@ void __fastcall TfrmPHSConfiguration::comboOutletsChange(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::comboServicesChange(TObject *Sender)
 {
     TDeviceRealTerminal::Instance().BasePMS->SelectedMewsService = services[comboServices->ItemIndex].Id;
@@ -893,8 +882,6 @@ void __fastcall TfrmPHSConfiguration::comboServicesChange(TObject *Sender)
     TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmServiceMewsSelected,TDeviceRealTerminal::Instance().BasePMS->SelectedMewsService);
     DBTransaction1.Commit();
 }
-//---------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateOracleUI()
 {
@@ -962,6 +949,7 @@ void TfrmPHSConfiguration::UpdateOracleUI()
     comboSurcharge->Visible         = false;
     comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+    tbRevenueCodes->Caption         = "Revenue Codes";
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateSiHotUI()
@@ -1004,6 +992,7 @@ void TfrmPHSConfiguration::UpdateSiHotUI()
     comboSurcharge->Visible         = false;
     comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+    tbRevenueCodes->Caption         = "Revenue Codes";
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateMotelMateUI()
@@ -1042,6 +1031,7 @@ void TfrmPHSConfiguration::UpdateMotelMateUI()
     comboSurcharge->Visible         = false;
     comboSurcharge->Enabled         = false;
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+    tbRevenueCodes->Caption         = "Revenue Codes";
 }
 //--------------------------------------------------------------------------
 void TfrmPHSConfiguration::UpdateMewsUI()
@@ -1098,8 +1088,9 @@ void TfrmPHSConfiguration::UpdateMewsUI()
     comboOutlets->ItemIndex = GetIndexForSelectedMewsOutlet();
     comboServices->ItemIndex = GetIndexForSelectedMewsService();
     comboTips->ItemIndex  = GetIndexForSelectedTips();
-    comboServiceCharge->ItemIndex = GetIndexForSelectedServiceCharge();
-    comboSurcharge->ItemIndex     = GetIndexForSelectedSurcharge();
+    comboServiceCharge->ItemIndex   = GetIndexForSelectedServiceCharge();
+    comboSurcharge->ItemIndex       = GetIndexForSelectedSurcharge();
+    tbRevenueCodes->Caption         = "Revenue Mapping";
 }
 //---------------------------------------------------------------------------
 void TfrmPHSConfiguration::SyncMewsDetailsFromCloud()
@@ -1246,7 +1237,6 @@ void __fastcall TfrmPHSConfiguration::comboServiceChargeChange(TObject *Sender)
     DBTransaction1.Commit();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmPHSConfiguration::comboTipsChange(TObject *Sender)
 {
     TDeviceRealTerminal::Instance().BasePMS->TipAccount = categories[comboTips->ItemIndex].Id;

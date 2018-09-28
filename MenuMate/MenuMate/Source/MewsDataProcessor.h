@@ -4,6 +4,7 @@
 #define MewsDataProcessorH
 #include "PaymentTransaction.h"
 #include "MewsDataObjects.h"
+#include "Grids.hpp"
 //---------------------------------------------------------------------------
 class TMewsDataProcessor
 {
@@ -26,7 +27,10 @@ class TMewsDataProcessor
         std::map<int,UnicodeString> GetFreshMenumateCategories();
         void InitializeMewsCategories();
         std::map<int,TAccountingCategory> GetMewsCategoriesMap();
-        void UpdateCategories(int categoryKey, UnicodeString name, bool isDeleted);
+        void UpdateCategories(int categoryKey, UnicodeString name, bool isDeleted,Database::TDBTransaction *DBTransaction);
         void InsertCategories(int categoryKey, UnicodeString name);
+        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
+        void GetRevenueCodesDetails(TStringGrid * StringGrid);
+        void UpdateMewsMapToMMCategory(int key,UnicodeString code,UnicodeString id);
 };
 #endif

@@ -4,12 +4,12 @@
 #pragma hdrstop
 #include <tchar.h>
 //---------------------------------------------------------------------------
-USEFORM("..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp", frmTouchNumpad);
-USEFORM("Main.cpp", frmMain);
-USEFORM("..\MenuMate\Source\SystemConfig.cpp", frmSystemConfig);
-USEFORM("..\..\Shared-Source\Touch Utils\MMMessageBox.cpp", frmMessageBox);
-USEFORM("..\MenuMate\Source\Processing.cpp", frmProcessing);
 USEFORM("..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp", frmTouchKeyboard);
+USEFORM("..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp", frmTouchNumpad);
+USEFORM("..\MenuMate\Source\SystemConfig.cpp", frmSystemConfig);
+USEFORM("..\MenuMate\Source\Processing.cpp", frmProcessing);
+USEFORM("..\..\Shared-Source\Touch Utils\MMMessageBox.cpp", frmMessageBox);
+USEFORM("Main.cpp", frmMain);
 //---------------------------------------------------------------------------
 WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {

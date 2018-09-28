@@ -1018,6 +1018,8 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 		 frmProcessing->Close();
 
 		 DBTransaction.Commit();
+         if(TGlobalSettings::Instance().PMSType == 4 && TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            TDeviceRealTerminal::Instance().BasePMS->Initialise();
 
 		 TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 	  }
@@ -1171,6 +1173,8 @@ bool TManagerMenusPOS::LoadMenus( TIBDatabase *IBDatabase, AnsiString inDirName 
 		}
 
 		frmProcessing->Close();
+         if(TGlobalSettings::Instance().PMSType == 4 && TDeviceRealTerminal::Instance().BasePMS->Enabled)
+            TDeviceRealTerminal::Instance().BasePMS->Initialise();
 
 		TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 

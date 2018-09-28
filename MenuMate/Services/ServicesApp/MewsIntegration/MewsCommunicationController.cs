@@ -287,8 +287,16 @@ namespace MewsIntegration
             string responseString = "";
             bool returnValue = false;
             string url = platformAddress + MewsRequestAddress.AddBill;
+            string dateTimeUTC = DateTime.UtcNow.ToString("s") + "Z";
+            foreach (var bill in order.Bills)
+            {
+                bill.ClosedUtc = dateTimeUTC;
+                foreach (var item in bill.Items)
+                {
+                    item.ConsumedUtc = dateTimeUTC;
+                }
+            }
             logsList.Add("**************Request to PostBill at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
-            order.ConsumptionUtc = DateTime.UtcNow.ToString("s") + "Z";
             var request = GetWebRequest(url, order, logsList);
             logsList.Add("Request Created ");
             HttpWebResponse webResponse = null;

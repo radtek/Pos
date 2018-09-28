@@ -255,10 +255,43 @@ UnicodeString TMewsInterface::PostMewsOrder(UnicodeString platformAddress,TOrder
 //---------------------------------------------------------------------------
 bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
 {
-    bool retValue = true;
+    bool retValue = false;
     try
     {
-        Order* order = new Order();
+        Order* orderMews = new Order();
+        orderMews->AccessToken = order.AccessToken;
+        orderMews->ClientToken = order.ClientToken;
+        ArrayOfBill arrayOfBills;
+        for(int i = 0; i < order.Bills.size(); i++)
+        {
+            Bill *billMews = new Bill();
+            billMews->Number = order.Bills[i].Number;
+            billMews->OutletId = order.Bills[i].OutletId;
+            ArrayOfItem arrayOfItems;
+            for(int j = 0; j < order.Bills[i].Items.size();j++)
+            {
+                Item *item = new Item();
+                item->Type = order.Bills[i].Items[j].Type;
+                item->Name = order.Bills[i].Items[j].Name;
+                item->UnitCost = new UnitCost();
+                item->UnitCost->Amount = order.Bills[i].Items[j].UnitCost.Amount;
+                item->UnitCost->Currency = order.Bills[i].Items[j].UnitCost.Currency;
+                item->UnitCost->Tax      = order.Bills[i].Items[j].UnitCost.Tax;
+                item->UnitCount = order.Bills[i].Items[j].UnitCount;
+                if(order.Bills[i].Items[j].Type == "Revenue")
+                {
+                    item->Category = new Category();
+                    item->Category->Code = order.Bills[i].Items[j].Category.Code;
+                }
+                arrayOfItems.Length = (arrayOfItems.Length + 1);
+                arrayOfItems[arrayOfItems.Length - 1] = item;
+            }
+            billMews->Items = arrayOfItems;
+            arrayOfBills.Length = (arrayOfBills.Length + 1);
+            arrayOfBills[arrayOfBills.Length - 1] = billMews;
+        }
+        orderMews->Bills = arrayOfBills;
+        retValue = mewsClient->PostBill(platformAddress,orderMews);
     }
     catch(Exception &ex)
     {
