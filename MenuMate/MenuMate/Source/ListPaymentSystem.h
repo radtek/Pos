@@ -244,6 +244,7 @@ protected:
      std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
      TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
      TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
+     bool IsRoomReceiptSettingEnable();
 };
 
 #endif

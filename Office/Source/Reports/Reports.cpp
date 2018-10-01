@@ -528,7 +528,7 @@ void __fastcall TfrmReports::TreeView1Change(TObject *Sender,
 		"Select Menu_Name From Menu Order By Menu_Name";
 
     static AnsiString OOAMenuListSQL =
-		"Select Menu_Name From Menu Order By Menu_Name";
+		"Select Menu_Name From Menu where Menu.PALMABLE = 'T' Order By Menu_Name ";
 
 	static AnsiString ConsumptionMenuList =
 			"Select Distinct "
