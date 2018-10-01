@@ -158,6 +158,9 @@
     <Compile Include="Views\StartupView.xaml.cs">
       <DependentUpon>StartupView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SummaryView.xaml.cs">
+      <DependentUpon>SummaryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TransferView.xaml.cs">
       <DependentUpon>TransferView.xaml</DependentUpon>
     </Compile>
@@ -204,6 +207,10 @@
     <Page Include="Views\StartupView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SummaryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TransferView.xaml">
       <SubType>Designer</SubType>
