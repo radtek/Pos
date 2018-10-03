@@ -590,7 +590,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
-                command.Parameters.AddWithValue("@TABLE_NAME", "Table# " + tableNumber);
+                command.Parameters.AddWithValue("@TABLE_NAME", "Table #" + tableNumber);
                 command.Parameters.AddWithValue("@PARTY_NAME", "");
                 command.Parameters.AddWithValue("@CIRCLE", 'F');
                 command.Parameters.AddWithValue("@TEMPORARY", 'F');
