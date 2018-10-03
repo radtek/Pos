@@ -16528,7 +16528,7 @@ void TfrmSelectDish::SyncSiteMenus()
             }
             else if(createResponse.IsSuccesful)
             {
-                MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+                //MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
             }
             else
             {
@@ -16570,7 +16570,7 @@ void TfrmSelectDish::SyncTaxSetting()
         }
         else if(createResponse.IsSuccesful)
         {
-            MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            //MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
         }
         else
         {
