@@ -43,12 +43,12 @@ private:
     void GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);
     void GetSavedSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);
     void GetLoyaltySalesDetail(Database::TDBTransaction &DBTransaction,TTransactionInfo &TransactionInfo,AnsiString DeviceName);
-    void GetSummaSalesDetail(Database::TDBTransaction &DBTransaction,TTransactionInfo &TransactionInfo,AnsiString DeviceName);
+//    void GetSummaSalesDetail(Database::TDBTransaction &DBTransaction,TTransactionInfo &TransactionInfo,AnsiString DeviceName);
     TDateTime GetPreviousZedTime(Database::TDBTransaction &DBTransaction);
     void GetBilledSalesQuantity(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);
     void GetSavedSalesQuantity(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);
-    void GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,AnsiString DeviceName, TCalculatedTotals &BaseSales);
-    void GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,AnsiString DeviceName,TCalculatedTotals &BaseSales);
+//    void GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,AnsiString DeviceName, TCalculatedTotals &BaseSales);
+//    void GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,AnsiString DeviceName,TCalculatedTotals &BaseSales);
     void BilledSalesDetailsForNormalZed(TIBSQL *IBInternalQuery, AnsiString DeviceName);
     void LoadBilledSalesDetails(TIBSQL *IBInternalQuery, TFinancialDetails &FinancialDetails);
     void GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName, TDateTime &startTime, TDateTime &endTime);

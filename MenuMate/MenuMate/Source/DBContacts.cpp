@@ -1197,34 +1197,34 @@ int TDBContacts::GetAvailableGroups(Database::TDBTransaction &DBTransaction, TMM
    }
 }
 
-int TDBContacts::GetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey ,TMMContactInfo &Info)
-{
-	try
-   {
-	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	  IBInternalQuery->Close();
-	  IBInternalQuery->SQL->Text =
-		" SELECT GROUPS.TYPE, GROUPS.NAME, GROUPS.GROUPS_KEY FROM GROUPS LEFT JOIN CONTACTGROUPS ON GROUPS.GROUPS_KEY = CONTACTGROUPS.GROUPS_KEY WHERE CONTACTGROUPS.CONTACTS_KEY = :CONTACTS_KEY and CONTACTGROUPS.SUMMA_GROUP = 1 ";
-	  IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
-	  IBInternalQuery->ExecQuery();
-	  if(IBInternalQuery->RecordCount)
-	  {
-
-		Info.summagroup.Name = IBInternalQuery->FieldByName("NAME")->AsString;
-		Info.summagroup.Key = IBInternalQuery->FieldByName("GROUPS_KEY")->AsInteger;
-		Info.summagroup.Type = IBInternalQuery->FieldByName("TYPE")->AsInteger;
-	  }
-
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-	  throw;
-   }
-
-
-}
+//int TDBContacts::GetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey ,TMMContactInfo &Info)
+//{
+//	try
+//   {
+//	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//
+//	  IBInternalQuery->Close();
+//	  IBInternalQuery->SQL->Text =
+//		" SELECT GROUPS.TYPE, GROUPS.NAME, GROUPS.GROUPS_KEY FROM GROUPS LEFT JOIN CONTACTGROUPS ON GROUPS.GROUPS_KEY = CONTACTGROUPS.GROUPS_KEY WHERE CONTACTGROUPS.CONTACTS_KEY = :CONTACTS_KEY and CONTACTGROUPS.SUMMA_GROUP = 1 ";
+//	  IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+//	  IBInternalQuery->ExecQuery();
+//	  if(IBInternalQuery->RecordCount)
+//	  {
+//
+//		Info.summagroup.Name = IBInternalQuery->FieldByName("NAME")->AsString;
+//		Info.summagroup.Key = IBInternalQuery->FieldByName("GROUPS_KEY")->AsInteger;
+//		Info.summagroup.Type = IBInternalQuery->FieldByName("TYPE")->AsInteger;
+//	  }
+//
+//   }
+//   catch(Exception & E)
+//   {
+//	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+//	  throw;
+//   }
+//
+//
+//}
 
 void TDBContacts::SetCurrentGroups(Database::TDBTransaction &DBTransaction, int inContactKey ,ContactGroup Info)
 {
@@ -1273,24 +1273,24 @@ void TDBContacts::RemoveCurrentGroups(Database::TDBTransaction &DBTransaction, i
    }
 }
 
-void TDBContacts::SetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)
-{
-   try
-   {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->SQL->Text =
-		"UPDATE CONTACTGROUPS SET SUMMA_GROUP = 1 WHERE GROUPS_KEY = :GROUPS_KEY and CONTACTS_KEY = :CONTACTS_KEY";
-	IBInternalQuery->ParamByName("GROUPS_KEY")->AsInteger = Info.summagroup.Key;
-		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
-	IBInternalQuery->ExecQuery();
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-   }
-
-
-}
+//void TDBContacts::SetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)
+//{
+//   try
+//   {
+//	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//	IBInternalQuery->SQL->Text =
+//		"UPDATE CONTACTGROUPS SET SUMMA_GROUP = 1 WHERE GROUPS_KEY = :GROUPS_KEY and CONTACTS_KEY = :CONTACTS_KEY";
+//	IBInternalQuery->ParamByName("GROUPS_KEY")->AsInteger = Info.summagroup.Key;
+//		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+//	IBInternalQuery->ExecQuery();
+//   }
+//   catch(Exception & E)
+//   {
+//	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+//   }
+//
+//
+//}
 
 void TDBContacts::GetAllTypes(Database::TDBTransaction &DBTransaction, std::vector<int> &inGroupKeys)
 {

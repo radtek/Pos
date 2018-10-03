@@ -38,11 +38,12 @@ public:
 private:
   TNetMessageChefMate *MakeMessage(TMemoryStream *Data) const
   {
-	 TNetMessageChefMate *msg = NULL;
+//	 TNetMessageChefMate *msg = NULL;
+    std::auto_ptr<TNetMessageChefMate> msg(new TNetMessageChefMate());
 	 try
 	 {
 		// construct the appropriate message type
-		msg = new TNetMessageChefMate;
+//		msg = new TNetMessageChefMate;
 		// tell the message to populate itself using the byte stream
 		msg->Decode(Data);
 	 }
@@ -50,7 +51,7 @@ private:
 	 {
 		// handle errors!
 	 }
-	 return(msg);
+	 return(msg.get());
   }
   static const TNetMsgMakerChefMate AutoRegister;
 };

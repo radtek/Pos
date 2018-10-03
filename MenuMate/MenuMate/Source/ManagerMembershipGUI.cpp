@@ -229,7 +229,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 					TDBContacts::SetCurrentGroups(DBTransaction, Info.ContactKey, Info.currentGroups.at(i));
 			   }
 
-			  TDBContacts::SetSummaGroup(DBTransaction, Info.ContactKey, Info);
+//			  TDBContacts::SetSummaGroup(DBTransaction, Info.ContactKey, Info);
 
 			  if(!Info.currentGroups.size())
 			  {
@@ -285,7 +285,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                     {
 					    MembershipSystem->GetContactDetails(DBTransaction, Info.ContactKey, Info);
                         TDBContacts::GetAvailableGroups(DBTransaction, Info);
-                        TDBContacts::GetSummaGroup(DBTransaction, Info.ContactKey, Info);
+//                        TDBContacts::GetSummaGroup(DBTransaction, Info.ContactKey, Info);
 
                         BeginMemberTransaction();
                         if (TDBTab::GetTabByOwner(DBTransaction, Info.ContactKey) != 0)
@@ -375,7 +375,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                             {
                                 TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,Info.currentGroups.at(i));
                             }
-                            TDBContacts::SetSummaGroup(DBTransaction,Info.ContactKey, Info);
+//                            TDBContacts::SetSummaGroup(DBTransaction,Info.ContactKey, Info);
 
                             if (!Info.currentGroups.size())
                             {

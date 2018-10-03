@@ -403,6 +403,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
     double tip = 0;
     double tipEftPOS = 0;
     bool isSuccessful = false;
+    bool postBill = false;
+    std::auto_ptr<TMewsInterface> mewsInterface(new TMewsInterface());
     try
     {
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
@@ -423,6 +425,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                                       + tipAux;
 //        MessageBox(roundedPaymentAmount,"roundedPaymentAmount",MB_OK);
 //        MessageBox(_paymentTransaction.Money.Change,"Change",MB_OK);
+        TOrder mewsOrderOutlet;
+        mewsOrderOutlet.Bills.clear();
         for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
         {
             TPayment *payment = _paymentTransaction.PaymentGet(i);
@@ -448,7 +452,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                 TOrder mewsOrder;
                 mewsOrder.ClientToken = ClientToken;
                 mewsOrder.AccessToken = AccessToken;
-                std::auto_ptr<TMewsInterface> mewsInterface(new TMewsInterface());
+
                 if(payment->GetPaymentAttribute(ePayTypeRoomInterface))
                 {
                     mewsOrder.CustomerId  = _paymentTransaction.Phoenix.AccountNumber;
@@ -468,18 +472,55 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                 }
                 else
                 {
-                    mewsOrder.Bills.clear();
-                    mewsOrder.Bills = processor->GetMewsBill(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
-                    bool value = mewsInterface->PostMewsBill(TCPIPAddress,mewsOrder);
-                    if(value)
-                        isSuccessful = true;
-                    else
+                    std::vector<TBill> billVector;
+                    billVector.clear();
+
+                    billVector = processor->GetMewsBill(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
+                    std::vector<TBill>::iterator it = billVector.begin();
+//                    for(int i = 0; i < billVector.size(); i++)
+                    int i = 0;
+                    for(;it != billVector.end();advance(it,1))
                     {
-                        MessageBox("Invoice posting to Mews failed./rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
-                        isSuccessful = false;
-                        break;
+                        if(i == 0 && mewsOrderOutlet.Bills.size() == 0)
+                        {
+                            TBill bill = *it;
+                            mewsOrderOutlet.Bills.push_back(bill);
+                            postBill = true;
+                        }
+                        else if( i > mewsOrderOutlet.Bills.size())
+                        {
+                            TBill bill = *it;
+                            mewsOrderOutlet.Bills.push_back(bill);
+                            postBill = true;
+                        }
+                        i++;
                     }
                 }
+//                else
+//                {
+//                    mewsOrder.Bills.clear();
+//                    mewsOrder.Bills = processor->GetMewsBill(_paymentTransaction,portion, i,tipPortion, MewsAccountingMap);
+//                    bool value = mewsInterface->PostMewsBill(TCPIPAddress,mewsOrder);
+//                    if(value)
+//                        isSuccessful = true;
+//                    else
+//                    {
+//                        MessageBox("Invoice posting to Mews failed./rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
+//                        isSuccessful = false;
+//                        break;
+//                    }
+//                }
+            }
+         }
+         if(mewsOrderOutlet.Bills.size() > 0)
+         {
+            bool value = mewsInterface->PostMewsBill(TCPIPAddress,mewsOrderOutlet);
+            if(value)
+                isSuccessful = true;
+            else
+            {
+                MessageBox("Invoice posting to Mews failed./rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
+                isSuccessful = false;
             }
          }
     }

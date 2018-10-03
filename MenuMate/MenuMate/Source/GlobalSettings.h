@@ -540,10 +540,6 @@ public:
     bool SendNoTaxToSiHot;
     UnicodeString RevenueCodeDiscountPart;
     bool EnableOnlineOrdering;
-    UnicodeString OutletIdMewsSelected;
-    UnicodeString ServiceMewsSelected;
-    UnicodeString ClientToken;
-    UnicodeString AccessToken;
 };
 
 #endif

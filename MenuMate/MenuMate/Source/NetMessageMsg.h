@@ -24,11 +24,12 @@ public:
 private:
   TNetMessage *MakeMessage(TMemoryStream *Data) const
   {
-	 TNetMessageMsg *msg = NULL;
+//	 TNetMessageMsg *msg = NULL;
+    std::auto_ptr<TNetMessageMsg> msg(new TNetMessageMsg());
 	 try
 	 {
 		// construct the appropriate message type
-		msg = new TNetMessageMsg;
+//		msg = new TNetMessageMsg;
 		// tell the message to populate itself using the byte stream
 		msg->Decode(Data);
 	 }
@@ -36,7 +37,7 @@ private:
 	 {
 		// handle errors!
 	 }
-	 return(msg);
+	 return(msg.get());
   }
   static const TNetMsgMakerMessage AutoRegister;
 };

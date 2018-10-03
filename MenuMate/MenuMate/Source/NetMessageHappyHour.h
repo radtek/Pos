@@ -44,11 +44,12 @@ public:
 private:
   TNetMessageHappyHour *MakeMessage(TMemoryStream *Data) const
   {
-	 TNetMessageHappyHour *msg = NULL;
+//	 TNetMessageHappyHour *msg = NULL;
+     std::auto_ptr<TNetMessageHappyHour> msg(new TNetMessageHappyHour());
 	 try
 	 {
 		// construct the appropriate message type
-		msg = new TNetMessageHappyHour;
+//		msg = new TNetMessageHappyHour;
 		// tell the message to populate itself using the byte stream
 		msg->Decode(Data);
 	 }
@@ -56,7 +57,7 @@ private:
 	 {
 		// handle errors!
 	 }
-	 return(msg);
+	 return(msg.get());
   }
   static const TNetMsgMakerHappyHour AutoRegister;
 };

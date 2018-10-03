@@ -5613,289 +5613,289 @@ TFinancialDetails TfrmAnalysis::GetFinancialDetails(Database::TDBTransaction &DB
 	return FinancialDetails;
 }
 
-void TfrmAnalysis::GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName, TCalculatedTotals &BaseSales)
-{ // Sales Excluding Discounts
-	try
-	{
-		// The Total Including Discounts.
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT SUM (DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) GROSS_TOTAL FROM DAYARCHIVE "
-		"left join DAYARCORDERDISCOUNTS on  "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal = IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
-		}
-
-		// The Total Qty.
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT COUNT(DAYARCBILL.ARCBILL_KEY) FROM DAYARCBILL where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Qty = IBInternalQuery->FieldByName("COUNT")->AsCurrency;
-		}
-
-		// Add Surcharges to the total.
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"SELECT SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT_TOTAL "
-		"FROM DAYARCHIVE "
-		"INNER JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"WHERE DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and "
-		" DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0 AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal += IBInternalQuery->FieldByName("DISCOUNT_TOTAL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY ) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL "
-		" FROM DAYARCHIVE "
-		"left join DAYARCORDERDISCOUNTS on "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
-		" or DAYARCHIVE.DISCOUNT = 0 and DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Total = IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( (((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_SURCHARGE_EXCL "
-		" FROM DAYARCORDERDISCOUNTS "
-		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
-		" WHERE (( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
-		"  and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0) "
-		"or DAYARCHIVE.DISCOUNT = 0) AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_SURCHARGE_EXCL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) - ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
-		" FROM DAYARCHIVE "
-		"left join DAYARCORDERDISCOUNTS on "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
-		" or DAYARCHIVE.DISCOUNT = 0 and DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.TaxContent = IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE -  ((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0) ) TOTAL_SURCHARGE_TAX "
-		" FROM DAYARCORDERDISCOUNTS "
-		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
-		" WHERE (( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and  "
-		" DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0) "
-		"or DAYARCHIVE.DISCOUNT = 0) AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_SURCHARGE_TAX")->AsCurrency;
-		}
-	}
-	catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-		throw;
-	}
-}
-
-void TfrmAnalysis::GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName,TCalculatedTotals &BaseSales)
-{
-	try
-	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT SUM ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) GROSS_TOTAL FROM DAYARCHIVE  "
-		"left join DAYARCORDERDISCOUNTS on  "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal = IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
-		}
-
-		// The Total Qty.
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT COUNT(DAYARCBILL.ARCBILL_KEY) FROM DAYARCBILL where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Qty = IBInternalQuery->FieldByName("COUNT")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"SELECT SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTAL_ADJUSTMENTS "
-		"FROM DAYARCHIVE "
-		"INNER JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL "
-		" FROM DAYARCHIVE "
-		"left join DAYARCORDERDISCOUNTS on  "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Total = IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( (((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_ADJUSTMENTS_EXCL "
-		" FROM DAYARCORDERDISCOUNTS "
-		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS_EXCL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) - (((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
-		" FROM DAYARCHIVE "
-		"left join DAYARCORDERDISCOUNTS on  "
-		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.TaxContent = IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE -  ((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0) ) TOTAL_ADJUSTMENTS_TAX "
-		" FROM DAYARCORDERDISCOUNTS "
-		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
-		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
-		" or DAYARCHIVE.DISCOUNT = 0 AND "
-		"TERMINAL_NAME = :TERMINAL_NAME";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS_TAX")->AsCurrency;
-		}
-	}
-	catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-		throw;
-	}
-}
-
-void TfrmAnalysis::GetSummaGrossNet(Database::TDBTransaction &DBTransaction,int ArchiveKey, TCalculatedTotals &BaseSales)
-{
-	try
-	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) GROSS_TOTAL FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
-		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal += IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) SURCHARGE_TOTAL FROM DAYARCORDERDISCOUNTS "
-		"WHERE DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0 AND ARCHIVE_KEY = :ARCHIVE_KEY";
-		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.RawTotal += IBInternalQuery->FieldByName("SURCHARGE_TOTAL")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" (((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) TOTAL_NET "
-		" FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
-		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_NET")->AsCurrency;
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM( (((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) - ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
-		" FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
-		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount > 0)
-		{
-			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
-		}
-	}
-	catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-		throw;
-	}
-}
+//void TfrmAnalysis::GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName, TCalculatedTotals &BaseSales)
+//{ // Sales Excluding Discounts
+//	try
+//	{
+//		// The Total Including Discounts.
+//		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT SUM (DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) GROSS_TOTAL FROM DAYARCHIVE "
+//		"left join DAYARCORDERDISCOUNTS on  "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal = IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
+//		}
+//
+//		// The Total Qty.
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT COUNT(DAYARCBILL.ARCBILL_KEY) FROM DAYARCBILL where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Qty = IBInternalQuery->FieldByName("COUNT")->AsCurrency;
+//		}
+//
+//		// Add Surcharges to the total.
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text =
+//		"SELECT SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT_TOTAL "
+//		"FROM DAYARCHIVE "
+//		"INNER JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+//		"WHERE DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and "
+//		" DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0 AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal += IBInternalQuery->FieldByName("DISCOUNT_TOTAL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY ) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL "
+//		" FROM DAYARCHIVE "
+//		"left join DAYARCORDERDISCOUNTS on "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
+//		" or DAYARCHIVE.DISCOUNT = 0 and DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Total = IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( (((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_SURCHARGE_EXCL "
+//		" FROM DAYARCORDERDISCOUNTS "
+//		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
+//		" WHERE (( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
+//		"  and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0) "
+//		"or DAYARCHIVE.DISCOUNT = 0) AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_SURCHARGE_EXCL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) - ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
+//		" FROM DAYARCHIVE "
+//		"left join DAYARCORDERDISCOUNTS on "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'   "
+//		" or DAYARCHIVE.DISCOUNT = 0 and DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.TaxContent = IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE -  ((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0) ) TOTAL_SURCHARGE_TAX "
+//		" FROM DAYARCORDERDISCOUNTS "
+//		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
+//		" WHERE (( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and  "
+//		" DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0) "
+//		"or DAYARCHIVE.DISCOUNT = 0) AND DAYARCHIVE.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_SURCHARGE_TAX")->AsCurrency;
+//		}
+//	}
+//	catch(Exception & E)
+//	{
+//		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+//		throw;
+//	}
+//}
+//
+//void TfrmAnalysis::GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName,TCalculatedTotals &BaseSales)
+//{
+//	try
+//	{
+//		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT SUM ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) GROSS_TOTAL FROM DAYARCHIVE  "
+//		"left join DAYARCORDERDISCOUNTS on  "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal = IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
+//		}
+//
+//		// The Total Qty.
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT COUNT(DAYARCBILL.ARCBILL_KEY) FROM DAYARCBILL where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Qty = IBInternalQuery->FieldByName("COUNT")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text =
+//		"SELECT SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTAL_ADJUSTMENTS "
+//		"FROM DAYARCHIVE "
+//		"INNER JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( ((((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL "
+//		" FROM DAYARCHIVE "
+//		"left join DAYARCORDERDISCOUNTS on  "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Total = IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( (((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_ADJUSTMENTS_EXCL "
+//		" FROM DAYARCORDERDISCOUNTS "
+//		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS_EXCL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) - (((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
+//		" FROM DAYARCHIVE "
+//		"left join DAYARCORDERDISCOUNTS on  "
+//		"DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY  "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.TaxContent = IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE -  ((DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0) ) TOTAL_ADJUSTMENTS_TAX "
+//		" FROM DAYARCORDERDISCOUNTS "
+//		" INNER JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY "
+//		"where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable'  "
+//		" or DAYARCHIVE.DISCOUNT = 0 AND "
+//		"TERMINAL_NAME = :TERMINAL_NAME";
+//		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+//		IBInternalQuery->ExecQuery();
+//
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_ADJUSTMENTS_TAX")->AsCurrency;
+//		}
+//	}
+//	catch(Exception & E)
+//	{
+//		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+//		throw;
+//	}
+//}
+//
+//void TfrmAnalysis::GetSummaGrossNet(Database::TDBTransaction &DBTransaction,int ArchiveKey, TCalculatedTotals &BaseSales)
+//{
+//	try
+//	{
+//		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT ((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) GROSS_TOTAL FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
+//		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal += IBInternalQuery->FieldByName("GROSS_TOTAL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM (DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) SURCHARGE_TOTAL FROM DAYARCORDERDISCOUNTS "
+//		"WHERE DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE > 0 AND ARCHIVE_KEY = :ARCHIVE_KEY";
+//		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.RawTotal += IBInternalQuery->FieldByName("SURCHARGE_TOTAL")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" (((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) TOTAL_NET "
+//		" FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
+//		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.Total += IBInternalQuery->FieldByName("TOTAL_NET")->AsCurrency;
+//		}
+//
+//		IBInternalQuery->Close();
+//		IBInternalQuery->SQL->Text = "SELECT "
+//		" SUM( (((DAYARCHIVE.PRICE - DAYARCHIVE.DISCOUNT) * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) - ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX "
+//		" FROM DAYARCHIVE WHERE ARCHIVE_KEY = :ARCHIVE_KEY";
+//		IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = ArchiveKey;
+//		IBInternalQuery->ExecQuery();
+//		if(IBInternalQuery->RecordCount > 0)
+//		{
+//			BaseSales.TaxContent += IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency;
+//		}
+//	}
+//	catch(Exception & E)
+//	{
+//		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+//		throw;
+//	}
+//}
 
 void TfrmAnalysis::UpdateBlindBlances(Database::TDBTransaction &DBTransaction, int ZedKey, TBlindBalances &Balance, AnsiString &BagID)
 {

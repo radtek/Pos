@@ -24,11 +24,12 @@ public:
 private:
   TNetMessageTabChanged *MakeMessage(TMemoryStream *Data) const
   {
-	 TNetMessageTabChanged *msg = NULL;
+//	 TNetMessageTabChanged *msg = NULL;
+    std::auto_ptr<TNetMessageTabChanged> msg(new TNetMessageTabChanged());
 	 try
 	 {
 		// construct the appropriate message type
-		msg = new TNetMessageTabChanged;
+//		msg = new TNetMessageTabChanged;
 		// tell the message to populate itself using the byte stream
 		msg->Decode(Data);
 	 }
@@ -36,7 +37,7 @@ private:
 	 {
 		// handle errors!
 	 }
-	 return(msg);
+	 return(msg.get());
   }
   static const TNetMsgMakerTabChanged AutoRegister;
 };

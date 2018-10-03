@@ -181,9 +181,9 @@ private:	// User declarations
 	void UpdatePaxCountDatabase(Database::TDBTransaction &DBTransaction,int ZedKey, TPaxCount &inPaxCount);
 
 
-	void GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName, TCalculatedTotals &BaseSales);
-	void GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName,TCalculatedTotals &BaseSales);
-	void GetSummaGrossNet(Database::TDBTransaction &DBTransaction,int ArchiveKey, TCalculatedTotals &BaseSales);
+//	void GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName, TCalculatedTotals &BaseSales);
+//	void GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName,TCalculatedTotals &BaseSales);
+//	void GetSummaGrossNet(Database::TDBTransaction &DBTransaction,int ArchiveKey, TCalculatedTotals &BaseSales);
 
 	void DefaultItemQuantities(Database::TDBTransaction &);
 

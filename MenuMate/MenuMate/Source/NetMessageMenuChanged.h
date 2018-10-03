@@ -29,11 +29,12 @@ public:
 private:
   TNetMessageMenuChanged *MakeMessage(TMemoryStream *Data) const
   {
-	 TNetMessageMenuChanged *msg = NULL;
+//	 TNetMessageMenuChanged *msg = NULL;
+     std::auto_ptr<TNetMessageMenuChanged> msg(new TNetMessageMenuChanged());
 	 try
 	 {
 		// construct the appropriate message type
-		msg = new TNetMessageMenuChanged;
+//		msg = new TNetMessageMenuChanged;
 		// tell the message to populate itself using the byte stream
 		msg->Decode(Data);
 	 }
@@ -41,7 +42,7 @@ private:
 	 {
 		// handle errors!
 	 }
-	 return(msg);
+	 return(msg.get());
   }
   static const TNetMsgMakerMenuChanged AutoRegister;
 };

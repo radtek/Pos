@@ -52,10 +52,10 @@ class TDBContacts
         static int HasAccountProfile(Database::TDBTransaction &DBTransaction, int inContactKey);
         static int GetCurrentGroups(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info);
         static int GetAvailableGroups(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info);
-        static int GetSummaGroup(Database::TDBTransaction &DBTransaction,int inContactKey, TMMContactInfo &Info);
+        //static int GetSummaGroup(Database::TDBTransaction &DBTransaction,int inContactKey, TMMContactInfo &Info);
         static void SetCurrentGroups(Database::TDBTransaction &DBTransaction, int inContactKey, ContactGroup Info);
         static void RemoveCurrentGroups(Database::TDBTransaction &DBTransaction, int inContactKey);
-        static void SetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info);
+//        static void SetSummaGroup(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info);
         static void GetAllTypes(Database::TDBTransaction &DBTransaction, std::vector<int> &inGroupKeys);
         static void RemoveDefaultGroup(Database::TDBTransaction &DBTransaction, int inContactKey);
 
