@@ -242,8 +242,8 @@ namespace FiscalLibraries
             {
                 stringList.Add("Trying To Open Port " + DateTime.Now.ToString("hh:mm:ss tt"));
                 posExplorer = new PosExplorer();
-                DeviceInfo fp = posExplorer.GetDevice(PrinterType, PrinterLogicalName);
-              //  DeviceInfo fp = posExplorer.GetDevice("FiscalPrinter", "EpsonFP1");
+                //DeviceInfo fp = posExplorer.GetDevice(PrinterType, PrinterLogicalName);
+               DeviceInfo fp = posExplorer.GetDevice("FiscalPrinter", "EpsonFP1");
                 posCommonFP = (PosCommon)posExplorer.CreateInstance(fp);
                  // posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
                 fiscalprinter = (FiscalPrinter)posCommonFP;
