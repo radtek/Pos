@@ -151,7 +151,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             orderRow.OnlinerderId = siteOrderViewModel.OrderId;
 
                             if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
+                            {
                                 orderRow.ContainerType = 0;
+                                orderRow.TransactionType = Loyaltymate.Enum.SiteSettingType.PickUp;
+                            }
 
                             //generate tab key if tab not exist..
                             orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
