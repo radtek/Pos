@@ -1886,6 +1886,15 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
             MB_OK + MB_ICONINFORMATION);
         }
+
+         else if(CurrentTransaction.Money.Change != 0)
+         {
+
+           wrkPayAmount =  -CurrentTransaction.Money.Change;
+           Payment->SetPay(wrkPayAmount);
+
+         }
+
         else
         {
             tempPaymentDue = CurrentTransaction.Money.PaymentDue;
