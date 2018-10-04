@@ -20,11 +20,13 @@ namespace Chefmate.Core.Model
         private string _itemFontFamily;
         private string _orderFontFamily;
         private string _analysisFontFamily;
+        private string _itemSummaryFontFamily;
         private string _firstWarningColor;
         private string _secondWarningColor;
         private string _newOrderColor;
         private string _headerBackgroundColor;
         private string _headerForegroundColor;
+        private string _itemSummaryBackgroundColor;
         private int _outputTerminal;
         private int _firstWarningTime;
         private int _secondWarningTime;
@@ -34,6 +36,7 @@ namespace Chefmate.Core.Model
         private int _groupFontSize;
         private int _orderHeaderFontSize;
         private int _analysisFontSize;
+        private int _itemSummaryFontSize;
         private bool _groupFontBold;
         private bool _analysisFontBold;
         private bool _autoHide;
@@ -67,14 +70,17 @@ namespace Chefmate.Core.Model
             GroupFontFamily = "Tahoma";
             GroupFontBold = true;
             OrderHeaderFontSize = 15;
-            OrderFontFamily = "Tahoma";
-            AnalysisFontSize = 18;
+            OrderFontFamily = "Tahoma";            
+            AnalysisFontSize = 18;            
             AnalysisFontFamily = "Tahoma";
             NewOrderColor = "#FFB4C7B4";
             FirstWarningColor = "#FFF1DAB4";
             SecondWarningColor = "#FFF4B4B4";
             HeaderBackgroundColor = "#F09422";
             HeaderForegroundColor = "#FFFFFF";
+            ItemSummaryFontFamily = "Tahoma";
+            ItemSummaryFontSize = 28;
+            ItemSummaryBackgroundColor = "#C4D3C4"; 
         }
         public Settings(TerminalType terminalType, string dbAddress, string dbPath, string terminalAddress, string terminalDisplayName)
             : this()
@@ -454,6 +460,33 @@ namespace Chefmate.Core.Model
             {
                 _orderLayout = value;
                 OnPropertyChanged("OrderLayout");
+            }
+        }
+        public string ItemSummaryBackgroundColor
+        {
+            get { return _itemSummaryBackgroundColor; }
+            set
+            {
+                _itemSummaryBackgroundColor = value;
+                OnPropertyChanged("ItemSummaryBackgroundColor");
+            }
+        }
+        public int ItemSummaryFontSize
+        {
+            get { return _itemSummaryFontSize; }
+            set
+            {
+                _itemSummaryFontSize = value;
+                OnPropertyChanged("ItemSummaryFontSize");
+            }
+        }
+        public string ItemSummaryFontFamily
+        {
+            get { return _itemSummaryFontFamily; }
+            set
+            {
+                _itemSummaryFontFamily = value;
+                OnPropertyChanged("ItemSummaryFontFamily");
             }
         }
         private void UpdateOutputScope(OutputTime outputTime)

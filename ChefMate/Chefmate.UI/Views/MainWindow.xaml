@@ -18,7 +18,7 @@
         <Grid Grid.Row="0" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width=".6*"/>
+                <ColumnDefinition Width=".8*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" HorizontalAlignment="Stretch" Background="{Binding GuiStyles.HeaderBackGround}">
                 <Grid.ColumnDefinitions>
@@ -54,33 +54,37 @@
             </Grid>
             <Grid Grid.Column="1" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".20*"/>
-                    <ColumnDefinition Width=".20*"/>
+                    <ColumnDefinition Width=".16*"/>
+                    <ColumnDefinition Width=".16*"/>
+                    <ColumnDefinition Width=".16*"/>
+                    <ColumnDefinition Width=".10*"/>
+                    <ColumnDefinition Width=".10*"/>
+                    <ColumnDefinition Width=".10*"/>
+                    <ColumnDefinition Width=".10*"/>
                     <ColumnDefinition Width=".12*"/>
-                    <ColumnDefinition Width=".12*"/>
-                    <ColumnDefinition Width=".12*"/>
-                    <ColumnDefinition Width=".12*"/>
-                    <ColumnDefinition Width=".15*"/>
                 </Grid.ColumnDefinitions>
-                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsRecallEnabled}" Grid.Column="0" Click="Recall" Content="Recall"/>
-                <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="1" Click="Setting" Content="Settings"/>
-                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="2" Command="{Binding NavigateLeftCommand}"
+                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsRecallEnabled}" Grid.Column="0"   Click="Recall" Content="Recall"/>
+                <Button Style="{StaticResource FunctionButtonStyle}" IsEnabled="{Binding IsSummaryEnabled}" Grid.Column="1" Click="Summary">
+                    <TextBlock  TextAlignment="Center" TextWrapping="Wrap">Summary View</TextBlock>
+                </Button>
+                <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="2" Click="Setting" Content="Settings"/>
+                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="3" Command="{Binding NavigateLeftCommand}"
                         Name="LeftNavigationButton">
                     <Path Data="M 0 0 L 0 40 L5 40 L 5 20 L 40 40 L 40 0 L 5 20 L 5 0  Z"/>
                 </Button>
-                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="3" Command="{Binding NavigateBackwardCommand}"
+                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="4" Command="{Binding NavigateBackwardCommand}"
                         Name="BackwardNavigationButton">
                     <Path Data="M 0 20 L 40 40 L 40 0 Z"/>
                 </Button>
-                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="4" Command="{Binding NavigateForwardCommand}"
+                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="5" Command="{Binding NavigateForwardCommand}"
                         Name="ForwardNavigationButton">
                     <Path Data="M 0 0 L 0 40 L 40 20 Z"/>
                 </Button>
-                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="5" Command="{Binding NavigateRightCommand}"
+                <Button Style="{StaticResource NavigationButtonStyle}" Grid.Column="6" Command="{Binding NavigateRightCommand}"
                         Name="RightNavigationButton">
                     <Path Data="M 0 0 L 0 40 L 35 20 L 35 40 L 40 40 L 40 0 L 35 0 L 35 20 Z"/>
                 </Button>
-                <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="6" Click="CloseClick" Content="Exit"/>
+                <Button Style="{StaticResource FunctionButtonStyle}" Grid.Column="7" Click="CloseClick" Content="Exit"/>
             </Grid>
         </Grid>
         <ScrollViewer Name="ParentScroller" Grid.Row="1" Margin="0,25,0,0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">

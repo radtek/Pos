@@ -462,10 +462,10 @@ __int32 TLoadMenu::ItemCount( __int32 inCourseHandle )
 //---------------------------------------------------------------------------
 
 __int32 TLoadMenu::ItemAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32& outKey, WideString& outLongDescription,
-WideString& outKitchenName, WideString& outHandheldName, WideString& outReceiptName,
-TColor& outColor, bool& outDisplaySizes, bool& outEnabled, bool& outItemOnlySide,
-bool& outPrintUnderlined,  bool& outPrintBold, TColor& outPrintColor, __int32& outPrintFont,
-bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
+                        WideString& outKitchenName, WideString& outHandheldName, WideString& outReceiptName,
+                        TColor& outColor, bool& outDisplaySizes, bool& outEnabled, bool& outItemOnlySide,
+                        bool& outPrintUnderlined,  bool& outPrintBold, TColor& outPrintColor, __int32& outPrintFont,
+                        bool& outPrintDoubleWidth, bool& outPrintDoubleHeight, int &outItemIdentifier )
 {
 	__int32 result = 0;
 
@@ -500,6 +500,7 @@ bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
 					outPrintFont         = StrToInt( AnsiString( itPtr->Attribute( "printFont" ) ) );
 					outPrintDoubleWidth  = AnsiString( itPtr->Attribute( "printDoubleWidth" ) ).UpperCase() == "TRUE";
 					outPrintDoubleHeight = AnsiString( itPtr->Attribute( "printDoubleHeight" ) ).UpperCase() == "TRUE";
+                    outItemIdentifier =  itPtr->Attribute("itemIdentifier") == NULL ? 0 : StrToInt( AnsiString( itPtr->Attribute( "itemIdentifier" ) ) );
 
 					result = ( __int32 )itPtr;
 
@@ -735,7 +736,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
-                                    Currency& outPriceForPoints,int &revenueCode)
+                                    Currency& outPriceForPoints,int &revenueCode, int &outItemSizeIdentifier)
 {
 	__int32 result = 0;
 
@@ -788,6 +789,7 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 					outDefaultPatronCount = StrToIntDef(AnsiString(itPtr->Attribute("defaultPatronCount")).Trim(), 0);
                     outPriceForPoints = itPtr->Attribute( "priceforpoints" ) == NULL ? 0.0 : StrToCurr(AnsiString(itPtr->Attribute( "priceforpoints" ))); // changes for read null value from xml
                     revenueCode       = itPtr->Attribute("revenueCode") == NULL ? 0: StrToInt(AnsiString(itPtr->Attribute( "revenueCode" )));
+                    outItemSizeIdentifier = itPtr->Attribute("itemSizeIdentifier") == NULL ? 0: StrToInt(AnsiString(itPtr->Attribute( "itemSizeIdentifier" )));
 					result = ( __int32 )itPtr;
 					break;
 				}

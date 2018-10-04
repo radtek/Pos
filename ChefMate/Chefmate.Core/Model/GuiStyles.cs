@@ -9,14 +9,17 @@ namespace Chefmate.Core.Model
         private FontFamily _itemFontFamily;
         private FontFamily _orderFontFamily;
         private FontFamily _analysisFontFamily;
+        private FontFamily _itemSummaryFontFamily;
         private int _itemFontSize;
         private int _groupFontSize;
         private int _orderHeaderFontSize;
         private int _analysisFontSize;
+        private int _itemSummaryFontSize;
         private FontWeight _groupFontWeight;
         private FontWeight _analysisFontWeight;
         private SolidColorBrush _headerBackGround;
         private SolidColorBrush _headerForeGround;
+        private SolidColorBrush _itemSummaryBackGround;
 
         public int ItemFontSize
         {
@@ -52,6 +55,15 @@ namespace Chefmate.Core.Model
             {
                 _analysisFontSize = value;
                 OnPropertyChanged("AnalysisFontSize");
+            }
+        }
+        public int ItemSummaryFontSize
+        {
+            get { return _itemSummaryFontSize; }
+            set
+            {
+                _itemSummaryFontSize = value;
+                OnPropertyChanged("ItemSummaryFontSize");
             }
         }
         public FontWeight GroupFontWeight
@@ -108,6 +120,15 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("OrderFontFamily");
             }
         }
+        public FontFamily ItemSummaryFontFamily
+        {
+            get { return _itemSummaryFontFamily; }
+            set
+            {
+                _itemSummaryFontFamily = value;
+                OnPropertyChanged("ItemSummaryFontFamily");
+            }
+        }
         public SolidColorBrush HeaderForeGround
         {
             get { return _headerForeGround; }
@@ -124,6 +145,15 @@ namespace Chefmate.Core.Model
             {
                 _headerBackGround = value;
                 OnPropertyChanged("HeaderBackGround");
+            }
+        }
+        public SolidColorBrush ItemSummaryBackGround
+        {
+            get { return _itemSummaryBackGround; }
+            set
+            {
+                _itemSummaryBackGround = value;
+                OnPropertyChanged("ItemSummaryBackGround");
             }
         }
     }

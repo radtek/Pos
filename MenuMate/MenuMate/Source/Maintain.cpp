@@ -72,8 +72,10 @@
 #include "FolderManager.h"
 
 #include "SetupGlCodes.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "SetUpPosPlus.h"
+#include "ManagerCloudSync.h"
+#include "SignalRUtility.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -1980,6 +1982,20 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
+    TVerticalSelection Item3;
+	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
+	Item3.Properties["Action"] = IntToStr(3);
+    if( TGlobalSettings::Instance().EnableOnlineOrdering )
+	{
+		Item3.Properties["Color"] = IntToStr(clGreen);
+	}
+	else
+	{
+		Item3.Properties["Color"] = IntToStr(clRed);
+	}
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
+
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
 	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -2020,10 +2036,14 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					switch(Action)
 					{
 					case 1 :
+                        // to-do
+                        // Make sync operation based on site code & syndicate provided.
+                        //                        ActivateLoyaltymate();
 						TGlobalSettings::Instance().LoyaltyMateEnabled = true;
 						break;
 					case 2 :
-						TGlobalSettings::Instance().LoyaltyMateEnabled = false;
+                         DeactivateLoyaltymate();
+						//TGlobalSettings::Instance().LoyaltyMateEnabled = false;
 						break;
 					}
 
@@ -2031,6 +2051,7 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
                     if(TGlobalSettings::Instance().UseMemberSubs)
                        MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
+                    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
                     TGlobalSettings::Instance().UseMemberSubs = false;
                     TManagerVariable &mv = TManagerVariable::Instance();
 
@@ -2045,6 +2066,10 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
             case 2 :
 			{
                ManageGiftCardValidations(DBTransaction);
+            }  break;
+            case 3 :
+			{
+               EnableOnlineOrdering(DBTransaction);
             }  break;
 		}
 	}
@@ -3388,7 +3413,7 @@ void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 						TGlobalSettings::Instance().IsClippIntegrationEnabled = true;
                         TouchBtnClipInterface->ButtonColor = clGreen;
                         TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-                        TManagerClippIntegration::Instance();
+//                        TManagerClippIntegration::Instance();
 						break;
 					case 2 :
 						TGlobalSettings::Instance().IsClippIntegrationEnabled = false;
@@ -4189,3 +4214,170 @@ bool TfrmMaintain::SetUpOracle()
     return true;
 }
 //---------------------------------------------------------------------------
+void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item);
+
+    TVerticalSelection Item1;
+    Item1.Title = "Enable";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = IntToStr(clGreen);
+    Item1.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+    Item2.Title = "Disable";
+    Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = IntToStr(clRed);
+    Item2.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item2);
+
+    SelectionForm1->ShowModal();
+    TVerticalSelection SelectedItem1;
+    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+        switch(Action)
+        {
+            case 1 :
+                CanEnableOnlineOrdering();
+                break;
+            case 2 :
+                UnloadSignalR();
+                break;
+        }
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+}
+//-----------------------------------------------------------------------------------------------
+bool TfrmMaintain::CanEnableOnlineOrdering()
+{
+    bool retValue = false;
+    if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        MessageBox("Please turn on the LoyaltyMate module first.\rOnline ordering needs Loyaltymate module to be turned on.","Info",MB_OK+MB_ICONINFORMATION);
+        return retValue;
+    }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY";
+        SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount == 0)
+        {
+            // to do
+            // 1. Make a seed file.
+            // 2. Use seed file and connect the SignalR application.
+            //if(TrySyncForLoyaltyMate())
+            if(SyncOnlineOrderingDetails())
+            {
+                std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+                if(signalRUtility->LoadSignalRUtility())
+                {
+                    TGlobalSettings::Instance().EnableOnlineOrdering = true;
+                    //If there is no OnlineOrder Device Create One.
+                    std::auto_ptr<TDeviceWeb> WebDevice(new TDeviceWeb());
+                    WebDevice->ID.Product = "OnlineOrder";
+                    WebDevice->ID.Name = "OnlineOrder";
+                    WebDevice->ID.Type = devPC;
+                    WebDevice->ID.LocationKey = TDeviceRealTerminal::Instance().ID.LocationKey;
+                    if(WebDevice->Locate(DBTransaction) == 0)
+                    {
+                        WebDevice->ID.ProfileKey = TManagerVariable::Instance().SetProfile(DBTransaction,eTerminalProfiles,WebDevice->ID.Name);
+                        WebDevice->Create(DBTransaction);
+                    }
+                    MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
+                }
+                else
+                {
+                    TGlobalSettings::Instance().EnableOnlineOrdering = false;
+                }
+            }
+            else
+            {
+                if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                    UnloadSignalR();
+                TGlobalSettings::Instance().EnableOnlineOrdering = false;
+            }
+        }
+        else
+        {
+            // to do
+            // 1. Stop SignalR app.
+            TGlobalSettings::Instance().EnableOnlineOrdering = false;
+            MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+        }
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TfrmMaintain::TrySyncForLoyaltyMate()
+{
+    bool retValue = false;
+    try
+    {
+        TManagerCloudSync ManagerCloudSync;
+        retValue = ManagerCloudSync.SyncCompanyDetails();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        retValue = false;
+	}
+    if(!retValue)
+    {
+        UnicodeString strValue = "Online ordering could not be enabled since sync with online module failed.\r";
+        strValue += "Please ensure below mentioned things:-.\r";
+        strValue += "1. Syndicate code & Site Id are correct.\r";
+        strValue += "2. POS terminal is connected to network.";
+        MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::DeactivateLoyaltymate()
+{
+    TGlobalSettings::Instance().LoyaltyMateEnabled = false;
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        UnloadSignalR();
+        MessageBox("Online ordering module is deactivated since Loyaltymate is disabled.","Info",MB_OK+MB_ICONINFORMATION);
+    }
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::UnloadSignalR()
+{
+    std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+    signalRUtility->UnloadSignalRUtility();
+    TGlobalSettings::Instance().EnableOnlineOrdering = false;
+}
+//-----------------------------------------------------------------------------
+bool TfrmMaintain::SyncOnlineOrderingDetails()
+{
+    bool result = false;
+    TManagerCloudSync ManagerCloudSync;
+    result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    return result;
+}
+//-----------------------------------------------------------------------------

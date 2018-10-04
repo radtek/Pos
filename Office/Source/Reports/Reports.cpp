@@ -527,6 +527,9 @@ void __fastcall TfrmReports::TreeView1Change(TObject *Sender,
 	static AnsiString MenuListSQL =
 		"Select Menu_Name From Menu Order By Menu_Name";
 
+    static AnsiString OOAMenuListSQL =
+		"Select Menu_Name From Menu where Menu.PALMABLE = 'T' Order By Menu_Name ";
+
 	static AnsiString ConsumptionMenuList =
 			"Select Distinct "
 				"Archive.Menu_Name "
@@ -1692,6 +1695,7 @@ static AnsiString PaymentTypeList =
 			ReportControl->AddFilter(ReportFilter);
 			break;
 		}
+
         	case Breakdown_Category:
 		{
 			requiredPermission = Security::MenuReports;
@@ -1712,6 +1716,28 @@ static AnsiString PaymentTypeList =
 			ReportControl->AddFilter(ReportFilter);
 			break;
 		}
+
+          case  MENU_ITEMS_IDENTIFIER:
+           {
+			requiredPermission = Security::MenuReports;
+
+			ReportControl									= new TReportControl;
+			ReportControl->PrintReport					= &TfrmReports::PrintMenuItemsIdentifier;
+			TSubReport *SubReport0						= ReportControl->AddSubReport("ItemName");
+
+			TReportCheckboxFilter *ReportFilter		= new TReportCheckboxFilter(ReportControl, MMFilterTransaction);
+
+			ReportFilter->Caption						= "Select the menus you wish to have appear in this report.";
+			ReportFilter->SQL								= OOAMenuListSQL;
+			ReportFilter->DisplayField					= "Menu_Name";
+			ReportFilter->SelectionField				= "Menu_Name";
+			ReportFilter->SelectionDateRange			= false;
+			SubReport0->AddFilterIndex(0);
+
+			ReportControl->AddFilter(ReportFilter);
+			break;
+		}
+
 
 		case CASHUP_INDEX:
 		{
@@ -5088,6 +5114,50 @@ void TfrmReports::PrintMenuItemBarcodes(TReportControl *ReportControl)
 		}
 	}
 }
+//-------------------------------------------------------------------------
+void TfrmReports::PrintMenuItemsIdentifier(TReportControl *ReportControl)
+{
+ 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+
+	try
+	{
+		TReportCheckboxFilter *MenuFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(0);
+		dmMMReportData->SetupMenuItemAndUniqueId(MenuFilter->Selection);
+
+		if (ReportType == rtExcel)
+		{
+			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+			ExcelDataSetsList ->AddObject("Menus",(TObject *)dmMMReportData->qrMenuItem);
+			ExportToExcel( ExcelDataSetsList.get(), TreeView1->Selected->Text );
+		}
+		else
+		{
+			if (rvMenuMate->SelectReport("repMenuItemIdentifiers", false))
+			{
+              
+				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+				rvMenuMate->Execute();
+			}
+			else
+			{
+				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+			}
+		}
+	}
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
+
+
 //---------------------------------------------------------------------------
 void TfrmReports::PrintCashup(TReportControl *ReportControl)
 {
@@ -10260,6 +10330,7 @@ case 9:
             }
 	break;
 }
+
 
   }
 	}

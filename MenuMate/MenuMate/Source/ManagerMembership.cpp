@@ -7,7 +7,7 @@
 #include "MembershipERS.h"
 #include "MembershipEBet.h"
 #include "MembershipExternal.h"
-#include "MembershipThorlink.h"
+//#include "MembershipThorlink.h"
 #include "MMLogging.h"
 #include "MMMessageBox.h"
 #include "DBTab.h"
@@ -46,9 +46,9 @@ void TManagerMembership::Initialise(Database::TDBTransaction &DBTransaction)
    case MembershipTypeExternal:
 	  MembershipSystem.reset(new TMembershipExternal(Modules, TGlobalSettings::Instance().MembershipDatabaseIP, TGlobalSettings::Instance().MembershipDatabasePort, TGlobalSettings::Instance().MembershipTillID));
 	  break;
-   case MembershipTypeThor:
-	  MembershipSystem.reset(new TMembershipThorlink(Modules, TGlobalSettings::Instance().ThorlinkAppKey, TGlobalSettings::Instance().ThorlinkSiteNo, TGlobalSettings::Instance().ThorlinkMerchantCode, TGlobalSettings::Instance().ThorlinkDeviceCode));
-	  break;
+//   case MembershipTypeThor:
+//	  MembershipSystem.reset(new TMembershipThorlink(Modules, TGlobalSettings::Instance().ThorlinkAppKey, TGlobalSettings::Instance().ThorlinkSiteNo, TGlobalSettings::Instance().ThorlinkMerchantCode, TGlobalSettings::Instance().ThorlinkDeviceCode));
+//	  break;
 
 
    default:

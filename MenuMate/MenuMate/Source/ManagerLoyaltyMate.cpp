@@ -833,3 +833,91 @@ void __fastcall TLoyaltyMateReleaseVoucherThread::Execute()
    ReleaseVouchers();
 }
 //---------------------------------------------------------------------------
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// TLoyaltyMateOnlineOrderingThread Methods
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+TLoyaltyMateOnlineOrderingThread::TLoyaltyMateOnlineOrderingThread(TSyndCode inSyndicateCode)
+	:TThread(true),
+	 _syndicateCode(inSyndicateCode),
+	 OperationSuccessful(false),
+	 ErrorMessage("")
+{
+	FreeOnTerminate = true;
+    UnsetSignalRStatus = false;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateOnlineOrderingThread::ThreadTerminated()
+{
+    OperationSuccessful = false;
+    ErrorMessage = "Sync operation thread terminated before completion.";
+}
+//---------------------------------------------------------------------------
+void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
+{
+    if(UnsetSignalRStatus)
+        UnsetSignalRStatusAtCloud();
+    else
+        SyncOnlineOrderingDetails();
+    ReturnValue = 1;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateOnlineOrderingThread::UnsetSignalRStatusAtCloud()
+{
+    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+    try
+    {
+        if(Terminated)
+        {
+            ThreadTerminated();
+            delete LoyaltyMateInterface;
+            return;
+        }
+        bool isSuccessful = LoyaltyMateInterface->UnsetOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
+        if(isSuccessful)
+            OperationSuccessful = true;
+        else
+            OperationSuccessful = false;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        ErrorMessage = E.Message;
+    }
+    delete LoyaltyMateInterface;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
+{
+   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+   try
+    {
+        if(Terminated)
+        {
+            ThreadTerminated();
+            delete LoyaltyMateInterface;
+            return;
+        }
+        MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->SyncOnlineOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
+
+        if(!createResponse.IsSuccesful  && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Loyaltymate Service");
+        }
+        else if(createResponse.IsSuccesful)
+        {
+            OperationSuccessful = true;
+        }
+        else
+        {
+            ErrorMessage = createResponse.Message;
+            throw Exception(createResponse.Message);
+        }
+   }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        ErrorMessage = E.Message;
+    }
+    delete LoyaltyMateInterface;
+}

@@ -444,5 +444,6 @@ TGlobalSettings::TGlobalSettings()
     CheckSaleMegaworldForDaily = 0;
     SendNoTaxToSiHot = false;
     RevenueCodeDiscountPart = "";
+    EnableOnlineOrdering = false;
 }
 

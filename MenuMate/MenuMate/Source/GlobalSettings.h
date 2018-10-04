@@ -539,6 +539,7 @@ public:
     Currency CheckSaleMegaworldForDaily;
     bool SendNoTaxToSiHot;
     UnicodeString RevenueCodeDiscountPart;
+    bool EnableOnlineOrdering;
 };
 
 #endif
