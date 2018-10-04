@@ -106,10 +106,9 @@ class TManagerReports
 {
    private :
       TForm *Owner;
-      void AddSectionTitle(TPrintout *Printout,AnsiString Title);
+      void AddSectionTitle(TPrintout *Printout,AnsiString Title, bool isNonPMSReport = true);
 	  void AddSubSectionTitle(TPrintout *Printout,AnsiString Title);
-      bool checkprintpmsreport ;
-	TMemoryStream * ZedToArchive;
+	  TMemoryStream * ZedToArchive;
    public :
       TManagerReports(TForm * inOwner);
 	  void PrintConsumption(Database::TDBTransaction &DBTransaction);
