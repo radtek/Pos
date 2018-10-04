@@ -108,6 +108,7 @@ class TManagerReports
       TForm *Owner;
       void AddSectionTitle(TPrintout *Printout,AnsiString Title);
 	  void AddSubSectionTitle(TPrintout *Printout,AnsiString Title);
+      bool checkprintpmsreport ;
 	TMemoryStream * ZedToArchive;
    public :
       TManagerReports(TForm * inOwner);
