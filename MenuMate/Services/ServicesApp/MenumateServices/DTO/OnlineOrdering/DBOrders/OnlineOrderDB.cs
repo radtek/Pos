@@ -143,6 +143,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             else
                                 orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
 
+                            bool isTabOrder = false;
                             if (IsFloorPlanEnabled())
                             {
                                 if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))
@@ -156,16 +157,14 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 }
                                 else
                                 {
-                                    orderRow.ContainerType = 0;
-                                    orderRow.TransactionType = Loyaltymate.Enum.SiteSettingType.PickUp;
+                                    isTabOrder = true;
                                 }
                             }
                             else
                             {
                                 if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
                                 {
-                                    orderRow.ContainerType = 0;
-                                    orderRow.TransactionType = Loyaltymate.Enum.SiteSettingType.PickUp;
+                                    isTabOrder = true;                                    
                                 }
                                 else
                                 {
@@ -174,6 +173,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         throw new Exception("Order can't be saved to this table because it already contains orders.");
                                     orderRow.TableName = "Table #" + orderRow.ContainerNumber;
                                 }
+                            }
+
+                            if (isTabOrder)
+                            {
+                                orderRow.ContainerType = siteOrderViewModel.ContainerType = 0;
+                                orderRow.TransactionType = siteOrderViewModel.TransactionType = Loyaltymate.Enum.SiteSettingType.PickUp;
+                                siteOrderViewModel.ContainerNumber = "0";
                             }
                         }
                         //orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
