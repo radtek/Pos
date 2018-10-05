@@ -499,6 +499,8 @@ private: // User declarations
     //void SyncMenuAndTaxSettings(int syncType);
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
     bool CheckOrderCompatability();
+    TLoginSuccess GetStaffLoginAccess(Database::TDBTransaction &DBTransaction, int access);
+    void  ShowErrorMessage(std::string message, TLoginSuccess Result);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
