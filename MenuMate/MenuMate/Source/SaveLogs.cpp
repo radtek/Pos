@@ -42,3 +42,10 @@ void TSaveLogs::RecordFiscalLogs(TStringList* logList)
         TSaveLogs::WriteLogsToFile(path, fileName, logList);
     }
 }
+//------------------------------------------------------------------------------------------
+void TSaveLogs::RecordEFTPOSLogs(TStringList* logList)
+{
+    AnsiString path = ExtractFilePath(Application->ExeName) + "/EFTPOS Logs";
+    AnsiString fileName = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+    TSaveLogs::WriteLogsToFile(path, fileName, logList);
+}
