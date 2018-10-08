@@ -7009,6 +7009,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel.IsConfirmed = true;
         siteOrderModel.UserEmailId = Order->Email;
         siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
+        siteOrderModel.TransactionType = Order->OnlineChitType;
         siteOrderModel.OrderInvoiceTransaction = GetOrderInvoiceTransaction(paymentTransaction);
     }
      catch(Exception &Ex)
