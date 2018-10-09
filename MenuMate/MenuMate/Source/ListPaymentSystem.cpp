@@ -6999,7 +6999,7 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
         siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
         siteOrderModel.ContainerNumber = Order->ContainerTabType == TabTableSeat ? Order->TableNo : Order->TabKey;
         siteOrderModel.ContainerType = Order->ContainerTabType == TabTableSeat ? OnlineTable : OnlineTab;
-        siteOrderModel.ContainerName = Order->TabContainerName;
+        siteOrderModel.ContainerName = Order->ContainerTabType == TabTableSeat ? Order->TabContainerName : Order->Email;
         siteOrderModel.OrderGuid = Order->OrderGuid;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
         siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
