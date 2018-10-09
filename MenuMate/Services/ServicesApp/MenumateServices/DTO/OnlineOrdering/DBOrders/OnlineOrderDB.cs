@@ -152,6 +152,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.TableName = tableName;
 
                                     bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
                                     if (retVal)
                                         throw new Exception("Order can't be saved to this table because it already contains orders.");
                                 }
@@ -171,6 +172,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
                                     if (retVal)
                                         throw new Exception("Order can't be saved to this table because it already contains orders.");
+                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
                                     orderRow.TableName = "Table #" + orderRow.ContainerNumber;
                                 }
                             }
@@ -200,9 +202,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                             : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
 
                         //Generate Security ref..
-                        orderRow.SecurityRef = GetNextSecurityRef();
-
-                        siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
+                        orderRow.SecurityRef = GetNextSecurityRef();                        
 
                         foreach (var item in siteOrderViewModel.OrderItems)
                         {
