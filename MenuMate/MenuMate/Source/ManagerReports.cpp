@@ -1274,18 +1274,17 @@ void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTran
             Printout->PrintFormat->AddLine();
 
             IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text = "Select a.ARCBILL_KEY, a.TOTAL,a.INVOICE_NUMBER,a.TERMINAL_NAME,a.TIME_STAMP, SUM(COALESCE(DA.QTY,0)) TotalQty, DA.TABLE_NAME "
+            IBInternalQuery->SQL->Text = "Select a.ARCBILL_KEY, a.TOTAL,a.INVOICE_NUMBER,a.TERMINAL_NAME,a.TIME_STAMP, DA.TABLE_NAME "
             "from DAYARCBILL a "
             "inner join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
             "inner join DAYARCHIVE DA on a.ARCBILL_KEY = DA.ARCBILL_KEY "
-            "where b.NOTE <> 'Total Change.'  and b.PROPERTIES = :PROPERTIES "
-            "GROUP BY 1,2,3,4,5,7 ";
-            IBInternalQuery->ParamByName("PROPERTIES")->AsString = "-16-";
-            IBInternalQuery->ExecQuery();
+            "where b.NOTE <> 'Total Change.' and b.PROPERTIES = :PROPERTIES "
+            "GROUP BY 1,2,3,4,5,6 ";
+             IBInternalQuery->ParamByName("PROPERTIES")->AsString = "-16-";
+             IBInternalQuery->ExecQuery();
 
              Float total = 0;
-             Float Totalqty=0;
-            
+            int invoiceCount = 0;
 
             AddSectionTitle(Printout.get(),"Room Payment Report for Zed Period", false);
             Printout->PrintFormat->NewLine();
@@ -1323,10 +1322,10 @@ void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTran
 
                 Printout->PrintFormat->AddLine();
                 total += IBInternalQuery->FieldByName("TOTAL")->AsFloat;
-                Totalqty += IBInternalQuery->FieldByName("TotalQty")->AsFloat;
+                invoiceCount++ ;
+                
 
             }
-
            	    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 				Printout->PrintFormat->Line->ColCount = 1;
 				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width + 3.2;
@@ -1356,7 +1355,7 @@ void TManagerReports::PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTran
 				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 				Printout->PrintFormat->Line->Columns[1]->Width =  Printout->PrintFormat->Width * 1/4 + 7; //Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
 				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-                Printout->PrintFormat->Add("Total Billed Qty|" + FormatFloat("0.00", Totalqty));
+                Printout->PrintFormat->Add("Total Invoice Billed |"+ FormatFloat("0", invoiceCount) );
 
                 Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 				Printout->PrintFormat->Line->ColCount = 1;
