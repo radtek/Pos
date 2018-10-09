@@ -202,6 +202,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         //Generate Security ref..
                         orderRow.SecurityRef = GetNextSecurityRef();
 
+                        siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
+
                         foreach (var item in siteOrderViewModel.OrderItems)
                         {
                             orderRow.Name = item.Name;
