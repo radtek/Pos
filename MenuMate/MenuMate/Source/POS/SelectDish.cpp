@@ -7209,7 +7209,9 @@ void TfrmSelectDish::SelectNewMenus()
 				{
 					Broadcast = true;
                     Refresh();
-                    SyncSiteMenus();
+
+                    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                        SyncSiteMenus();
 
 				}
 				else if (Result == lsDenied)
@@ -16596,7 +16598,6 @@ bool TfrmSelectDish::CheckOrderCompatability()
     bool retValue = true;
     try
     {
-
         retValue = !TDBTables::HasOnlineOrders(SelectedTable);
         if(!retValue)
             MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
