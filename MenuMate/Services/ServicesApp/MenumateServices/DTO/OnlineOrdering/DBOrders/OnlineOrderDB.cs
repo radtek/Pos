@@ -323,7 +323,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 if (tableKey == 0)
                     tableKey = CreateOnlineOrderTableInDB(tableNumber, tableName);
-                else if (IsFloorPlanEnabled())
+                if (IsFloorPlanEnabled())
                     SetTableName(tableKey, tableName);
                 int seatKey = GetOrCreateSeatForOnlineOrdering(tableKey);
                 tableKey = GetTabKey(seatKey, containerName);
