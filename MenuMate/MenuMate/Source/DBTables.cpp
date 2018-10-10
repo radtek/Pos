@@ -63,7 +63,7 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             "PARTY_NAME,"
                                             "CIRCLE,"
                                             "TEMPORARY,"
-                                            "TABLELOCK) "
+                                            "IS_TABLELOCK) "
                                     "VALUES ("
                                             ":TABLE_KEY,"
                                             ":TABLE_NUMBER,"
@@ -71,7 +71,7 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             ":PARTY_NAME,"
                                             ":CIRCLE,"
                                             ":TEMPORARY,"
-                                            ":TABLELOCK);";
+                                            ":IS_TABLELOCK);";
         IBInternalQuery->ParamByName("TABLE_KEY")->AsInteger = RetVal;
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
         IBInternalQuery->ParamByName("TABLE_NAME")->AsString = "";
@@ -79,9 +79,9 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
         IBInternalQuery->ParamByName("CIRCLE")->AsString = "F";
         IBInternalQuery->ParamByName("TEMPORARY")->AsString = "F";
         if(IsTableSelected)
-         IBInternalQuery->ParamByName("TABLELOCK")->AsString = "F";
+         IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F";
        else
-         IBInternalQuery->ParamByName("TABLELOCK")->AsString = "T";
+         IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "T";
 
         IBInternalQuery->ExecQuery();
       }
@@ -108,13 +108,13 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " UPDATE TABLES SET TABLELOCK = :TABLELOCK WHERE TABLE_NUMBER = :TABLE_NUMBER ";
+        IBInternalQuery->SQL->Text = " UPDATE TABLES SET IS_TABLELOCK = :IS_TABLELOCK WHERE TABLE_NUMBER = :TABLE_NUMBER ";
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
 
         if(IsTableSelected)
-            IBInternalQuery->ParamByName("TABLELOCK")->AsString = "F" ;
+            IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F" ;
         else
-            IBInternalQuery->ParamByName("TABLELOCK")->AsString = "T" ;
+            IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "T" ;
 
         IBInternalQuery->ExecQuery();
 
@@ -1775,14 +1775,14 @@ bool TDBTables::IsTableLocked(Database::TDBTransaction &DBTransaction,int TableN
        IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
 			"SELECT "
-				"TABLES.TABLELOCK "
+				"TABLES.IS_TABLELOCK "
 			"FROM "
 				"TABLES "
 			"WHERE "
 				"TABLES.TABLE_NUMBER = :TABLE_NUMBER";
 		IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNumber;
         IBInternalQuery->ExecQuery();
-        TableLock = IBInternalQuery->FieldByName("TABLELOCK")->AsString;
+        TableLock = IBInternalQuery->FieldByName("IS_TABLELOCK")->AsString;
       if (TableLock == 'T')
       {
 
