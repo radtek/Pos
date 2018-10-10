@@ -156,7 +156,8 @@ void __fastcall TfrmSelectTable::FormCreate(TObject *Sender)
 void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 		TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
-	if (GridButton->Tag == 100)
+
+    if (GridButton->Tag == 100)
 	{
         if(TableMode)
         {
@@ -170,16 +171,28 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 	else
 	{
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-		DBTransaction.StartTransaction();
+        DBTransaction.StartTransaction();
 
-		SelectedTabContainerNumber = GridButton->Tag;
-		SelectedPartyName = TDBTables::GetPartyName(DBTransaction,SelectedTabContainerNumber);
-		SelectedTabContainerName = TDBTables::GetTableName(DBTransaction,SelectedTabContainerNumber);
-		DBTransaction.Commit();
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectedTabContainerNumber = GridButton->Tag;
+        bool IsTableAvailable = TDBTables::IsTableLocked(DBTransaction,SelectedTabContainerNumber);
+        if(IsTableAvailable)
+         {
+            MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
+         
+         }
+         else
+         {
 
-        if(!TableMode)
+         int tableno = TDBTables::GetOrCreateTable(DBTransaction, SelectedTabContainerNumber, false);
+         SelectedPartyName = TDBTables::GetPartyName(DBTransaction,SelectedTabContainerNumber);
+         SelectedTabContainerName = TDBTables::GetTableName(DBTransaction,SelectedTabContainerNumber);
+         DBTransaction.Commit();
+         if(!TableMode)
         {
-		    ModalResult = mrOk;
+
+        ModalResult = mrOk;
+
         }
         else
         {
@@ -203,6 +216,7 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
             }
              UpdateColor(SelectedTabContainerNumber, isTableSelected);
         }
+     }
 	}
 }
 //---------------------------------------------------------------------------

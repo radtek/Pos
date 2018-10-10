@@ -32,6 +32,11 @@ void TApplyParser::upgrade6_53Tables()
 {
     update6_53Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_54Tables()
+{
+    update6_54Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -63,6 +68,12 @@ void TApplyParser::update6_53Tables()
     UpdateArchive6_53(_dbControl);
     AlterTableArcBills6_53(_dbControl);
     UpdateTableArcBills6_53(_dbControl);
+
+}
+//----------------------------------------
+void TApplyParser::update6_54Tables()
+{
+  AlterTableTables6_54(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -618,5 +629,22 @@ void TApplyParser::UpdateTableArcBills6_53(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
+
+void TApplyParser::AlterTableTables6_54(TDBControl* const inDBControl)
+{
+
+   if ( !fieldExists( "TABLES", "IS_TABLELOCK", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE TABLES ADD IS_TABLELOCK CHAR(1) DEFAULT 'F';",
+		inDBControl);
+    }
+
+
+}
 }
 //------------------------------------------------------------------------------
+
+
+
+

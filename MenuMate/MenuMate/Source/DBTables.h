@@ -29,7 +29,8 @@ class TDBTables
     static void DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails);
 
 	public:
-	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo);
+	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo, bool IsTableSelected = true);
+    static AnsiString UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo, bool IsTableSelected = true);
 	static int GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTableNo,int inSeatNo);
 
 	static int GetSeatKey(Database::TDBTransaction &DBTransaction,int TabKey);
@@ -63,6 +64,7 @@ class TDBTables
     static void ClearSeatsName(Database::TDBTransaction &DBTransaction,int TableNo);
 	static bool Valid(int inTableNo);
 	static bool Valid(int inTableNo, int inSeatNo);
+    static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
 
 	static bool IsEmpty(Database::TDBTransaction &DBTransaction,int inTableNo, int inSeatNo);
 	static bool IsEmpty(Database::TDBTransaction &DBTransaction,int inTableNo);

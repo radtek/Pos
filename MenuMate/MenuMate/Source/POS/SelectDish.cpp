@@ -4494,6 +4494,8 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 
         DBTransaction.StartTransaction();
+        // Tables table column tablock  is updated False
+		TDBTables::UpdateTableStatus(DBTransaction, SelectedTable);
 
         std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
         int patronCount = GetCount(selectedTablePatrons);
@@ -4509,8 +4511,8 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
             TGlobalSettings::Instance().EnableCustomerJourney)
     {
     	SeatOrders[0]->isChangeTablePressed = true;
-     }
-	showTablePicker();
+    }
+	 showTablePicker();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateTableButton()
@@ -9037,7 +9039,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-		showTablePicker();
+   showTablePicker();
 	}
 	else
 	{
@@ -9061,12 +9063,11 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
-
+			TDBTables::GetOrCreateTable(DBTransaction, frmBillGroup->CurrentTable);
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
 			setPatronCount( frmBillGroup->PatronCount );
-
-			SelectedTable = 0;
+            SelectedTable = 0;
 			SelectedTabContainerName = "";
 			SelectedSeat = 0;
 

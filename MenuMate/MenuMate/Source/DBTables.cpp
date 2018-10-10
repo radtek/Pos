@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------
 
-int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo)
+int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo, bool IsTableSelected)
 {
 	if(!Valid(inTableNo)) return 0;
 	int RetVal = 0;
@@ -38,8 +38,9 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
          "  TABLE_NUMBER = :TABLE_NUMBER";
 			IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
 			IBInternalQuery->ExecQuery();
-			if(IBInternalQuery->RecordCount)
-         {
+		  if(IBInternalQuery->RecordCount)
+          {
+
             RetVal = IBInternalQuery->FieldByName("TABLE_KEY")->AsInteger;
             CreateTable = false;
          }
@@ -61,21 +62,33 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             "TABLE_NAME,"
                                             "PARTY_NAME,"
                                             "CIRCLE,"
-                                            "TEMPORARY) "
+                                            "TEMPORARY,"
+                                            "TABLELOCK) "
                                     "VALUES ("
                                             ":TABLE_KEY,"
                                             ":TABLE_NUMBER,"
                                             ":TABLE_NAME,"
                                             ":PARTY_NAME,"
                                             ":CIRCLE,"
-                                            ":TEMPORARY);";
+                                            ":TEMPORARY,"
+                                            ":TABLELOCK);";
         IBInternalQuery->ParamByName("TABLE_KEY")->AsInteger = RetVal;
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
         IBInternalQuery->ParamByName("TABLE_NAME")->AsString = "";
         IBInternalQuery->ParamByName("PARTY_NAME")->AsString = "";
         IBInternalQuery->ParamByName("CIRCLE")->AsString = "F";
         IBInternalQuery->ParamByName("TEMPORARY")->AsString = "F";
+        if(IsTableSelected)
+         IBInternalQuery->ParamByName("TABLELOCK")->AsString = "F";
+       else
+         IBInternalQuery->ParamByName("TABLELOCK")->AsString = "T";
+
         IBInternalQuery->ExecQuery();
+      }
+      else
+      {
+
+             UpdateTableStatus(DBTransaction, inTableNo,IsTableSelected);
       }
 
 	   
@@ -86,6 +99,34 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
 	}
 	return RetVal;
 };
+
+//--------------------------------------------------------------------------------------------------------------------------
+  AnsiString TDBTables::UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo, bool IsTableSelected)
+ {
+  try
+     {
+
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " UPDATE TABLES SET TABLELOCK = :TABLELOCK WHERE TABLE_NUMBER = :TABLE_NUMBER ";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
+
+        if(IsTableSelected)
+            IBInternalQuery->ParamByName("TABLELOCK")->AsString = "F" ;
+        else
+            IBInternalQuery->ParamByName("TABLELOCK")->AsString = "T" ;
+
+        IBInternalQuery->ExecQuery();
+
+     }
+  	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+	}
+ }
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------
 
 int TDBTables::GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTableNo,int inSeatNo)
 {
@@ -101,7 +142,7 @@ int TDBTables::GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTab
       bool CreateSeat = true;
       if(inSeatNo != 0)
       {
-			IBInternalQuery->Close();
+        IBInternalQuery->Close();
          IBInternalQuery->SQL->Text =
          " SELECT "
          " SEAT.SEAT_KEY "
@@ -1723,3 +1764,42 @@ UnicodeString TDBTables::GetMemberEmail(int tableNumber)
     return email;
 }
 //-----------------------------------------------------------------------------
+bool TDBTables::IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber)
+{
+  // IsTableExist
+	bool RetVal = false;
+    UnicodeString TableLock = "";
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			"SELECT "
+				"TABLES.TABLELOCK "
+			"FROM "
+				"TABLES "
+			"WHERE "
+				"TABLES.TABLE_NUMBER = :TABLE_NUMBER";
+		IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNumber;
+        IBInternalQuery->ExecQuery();
+        TableLock = IBInternalQuery->FieldByName("TABLELOCK")->AsString;
+      if (TableLock == 'T')
+      {
+
+       RetVal = true;
+
+      }
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+   return RetVal;
+}
+
+//=======================================================================================
+
+
+
+
