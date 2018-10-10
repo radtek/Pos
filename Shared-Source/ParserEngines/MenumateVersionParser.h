@@ -954,6 +954,7 @@ namespace MenumateVersionParser
         void UpdateArchive6_53(TDBControl* const inDBControl);
         void AlterTableArcBills6_53(TDBControl* const inDBControl);
         void UpdateTableArcBills6_53(TDBControl* const inDBControl);
+        void AlterTableTab6_53(TDBControl* const inDBControl);
          void AlterTableTables6_54(TDBControl* const inDBControl);
     };// class
 } // namespace
