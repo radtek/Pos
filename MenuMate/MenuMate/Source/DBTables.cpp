@@ -1675,9 +1675,9 @@ bool TDBTables::HasOnlineOrders(int tableNumber)
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
         query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
-                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+                           "EMAIL <> :EMAIL AND EMAIL IS NOT NULL";
         query->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
-        query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ParamByName("EMAIL")->AsString = "";
         query->ExecQuery();
         if(query->RecordCount > 0)
         {
@@ -1705,10 +1705,10 @@ UnicodeString TDBTables::GetMemberEmail(int tableNumber)
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
         query->Close();
-        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
-                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER  " ;//AND
+                          // "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
         query->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
-        query->ParamByName("ORDER_GUID")->AsString = "";
+   //     query->ParamByName("ORDER_GUID")->AsString = "";
         query->ExecQuery();
         if(query->RecordCount > 0)
         {

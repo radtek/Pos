@@ -3674,6 +3674,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
+                Order->Email = SeatOrders[iSeat]->Orders->AppliedMembership.EMail;
                 Order->Loyalty_Key = SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey;
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
                             TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
@@ -15167,10 +15168,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		bool ApplyToAllSeats = false;
 		if (SelectedTable != 0 && !LoyaltyPending())
 		{
-			if (MessageBox("Do you wish to apply this membership to all seats?", "Query", MB_YESNO + MB_ICONQUESTION) == IDYES)
-			{
-				ApplyToAllSeats = true;
-			}
+            ApplyToAllSeats = true;
 		}
         if(TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
