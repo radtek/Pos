@@ -7209,7 +7209,9 @@ void TfrmSelectDish::SelectNewMenus()
 				{
 					Broadcast = true;
                     Refresh();
-                    SyncSiteMenus();
+
+                    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                        SyncSiteMenus();
 
 				}
 				else if (Result == lsDenied)
@@ -16528,7 +16530,7 @@ void TfrmSelectDish::SyncSiteMenus()
             }
             else if(createResponse.IsSuccesful)
             {
-                MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+                //MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
             }
             else
             {
@@ -16570,7 +16572,7 @@ void TfrmSelectDish::SyncTaxSetting()
         }
         else if(createResponse.IsSuccesful)
         {
-            MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            //MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
         }
         else
         {
@@ -16596,7 +16598,6 @@ bool TfrmSelectDish::CheckOrderCompatability()
     bool retValue = true;
     try
     {
-
         retValue = !TDBTables::HasOnlineOrders(SelectedTable);
         if(!retValue)
             MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
