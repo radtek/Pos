@@ -111,7 +111,9 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 {
     double discountValue = 0.0;
     bool AddDiscountPart = false;
-    double taxPercentage = GetVATpercentage(itemComplete);
+    double taxPercentage = 0;
+    if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
+        taxPercentage = GetVATpercentage(itemComplete);
 
     if(itemComplete->RevenueCode == 0)
     {
@@ -127,7 +129,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     }
 
     UnicodeString categoryCode        = itemComplete->RevenueCode;
-   
+
     if(categoryCode == "")
         categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
@@ -175,16 +177,36 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
 double TSiHotDataProcessor::GetPriceTotal(TItemComplete* itemComplete, bool recalculateTax)
 {
      double price = 0;
-     if(recalculateTax)
+     if(!TGlobalSettings::Instance().SendNoTaxToSiHot)
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice
+                     -(double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
      else
      {
-         price = fabs((double)itemComplete->BillCalcResult.FinalPrice
-                 -(double)itemComplete->BillCalcResult.TotalDiscount);
+         if(recalculateTax)
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value);
+         }
+         else
+         {
+             price = fabs((double)itemComplete->BillCalcResult.FinalPrice -
+                            (double)itemComplete->BillCalcResult.TotalTax -
+                            (double)itemComplete->BillCalcResult.ServiceCharge.Value -
+                            (double)itemComplete->BillCalcResult.TotalDiscount);
+         }
+         price = RoundTo(price,-2);
      }
-     price = RoundTo(price,-2);
      return price;
 }
 //----------------------------------------------------------------------------
@@ -220,9 +242,28 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
                                                    ,UnicodeString _billNo)
 {
     TSiHotService siHotService;
-    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
-    if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+    UnicodeString categoryCode = "";
+    if(TGlobalSettings::Instance().SendNoTaxToSiHot)
+    {
+       categoryCode = TGlobalSettings::Instance().RevenueCodeDiscountPart;
+    }
+    else
+    {
+       categoryCode = itemComplete->RevenueCode;
+    }
+
+    if(categoryCode == 0 || categoryCode == "")
+    {
+        for(std::map<int,TRevenueCodeDetails>::iterator itRev = TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.begin();
+            itRev!= TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.end(); advance(itRev,1))
+        {
+            if(itRev->second.IsDefault)
+            {
+               categoryCode = itRev->first;
+               break;
+            }
+        }
+    }
 
     std::map<UnicodeString,TSiHotService>::iterator it;
 
@@ -233,7 +274,8 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.SuperCategory         = categoryCode;
         siHotService.SuperCategory_Desc    = "";
         siHotService.MiddleCategory        = categoryCode;
-        siHotService.MiddleCategory_Desc   = itemComplete->MenuName;
+//        MessageBox(siHotService.MiddleCategory,"AddDiscountPartToService3",MB_OK);
+        siHotService.MiddleCategory_Desc   = "Discount";
         siHotService.ArticleCategory       = categoryCode;
         siHotService.ArticleCategory_Desc  = "";
         siHotService.ArticleNo             = categoryCode;
@@ -769,7 +811,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     }
 }
 //----------------------------------------------------------------------------
-bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort)
+bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString tcpPort, AnsiString apiKey)
 {
     bool retValue = false;
     std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
@@ -779,7 +821,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut) ;
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut,apiKey) ;
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")
@@ -810,7 +852,7 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
     return retValue;
 }
 //----------------------------------------------------------------------------
-bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiString tcpPort)
+bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiString tcpPort,AnsiString apiKey)
 {
     bool retValue = false;
     std::auto_ptr<TSiHotInterface> siHotInterface (new TSiHotInterface());
@@ -820,7 +862,7 @@ bool TSiHotDataProcessor::GetRoundingAccounting(AnsiString tcpIPAddress,AnsiStri
     roomRequest.TransactionNumber = GetTransNumber();
     roomRequest.RoomNumber = TDeviceRealTerminal::Instance().BasePMS->RoundingAccountSiHot;
     TRoomResponse roomresponse;
-    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut);
+    roomresponse = siHotInterface->SendRoomRequest(roomRequest,TGlobalSettings::Instance().PMSTimeOut,apiKey);
     if(roomresponse.GuestsInformation.size() != 0)
     {
         if(roomresponse.GuestsInformation[0].AccountNumber != "")

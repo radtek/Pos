@@ -242,7 +242,8 @@ namespace FiscalLibraries
             {
                 stringList.Add("Trying To Open Port " + DateTime.Now.ToString("hh:mm:ss tt"));
                 posExplorer = new PosExplorer();
-                DeviceInfo fp = posExplorer.GetDevice(PrinterType, PrinterLogicalName);
+                //DeviceInfo fp = posExplorer.GetDevice(PrinterType, PrinterLogicalName);
+               DeviceInfo fp = posExplorer.GetDevice("FiscalPrinter", "EpsonFP1");
                 posCommonFP = (PosCommon)posExplorer.CreateInstance(fp);
                  // posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
                 fiscalprinter = (FiscalPrinter)posCommonFP;
@@ -317,36 +318,12 @@ namespace FiscalLibraries
         public string PrintReceipt()
         {
             string printResponseString = "";
-            //FiscalPrinter fiscalprinter;
+
             try
             {
-                //stringList.Add("Before printing receipt " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //stringList.Add("Invoice Number is: " + InvoiceNumber);
-                //posExplorer = new PosExplorer();
-                //DeviceInfo fp = posExplorer.GetDevice(PrinterType, PrinterLogicalName);
-                //posCommonFP = (PosCommon)posExplorer.CreateInstance(fp);
-                //posCommonFP.StatusUpdateEvent += new StatusUpdateEventHandler(co_OnStatusUpdateEvent);
-
-                //stringList.Add("Creating instance of fiscal printer ");
-
-                //fiscalprinter = (FiscalPrinter)posCommonFP;
-
-                //stringList.Add("After Creating instance of fiscal printer ");
-                ////fiscalprinter.Release();
-                //fiscalprinter.Open();
-
-                //stringList.Add("fiscal printer opened ");
-              string ReceiptNo = "        Receipt No. " + InvoiceNumber;
+                string ReceiptNo = "        Receipt No. " + InvoiceNumber;
                 bool isNormalSale = true;
 
-                //fiscalprinter.Claim(1000);
-                //stringList.Add("printer claim ");
-
-                //fiscalprinter.PowerNotify = PowerNotification.Enabled;
-                //stringList.Add("power notifications enabled ");
-
-                //fiscalprinter.DeviceEnabled = true;
-                //stringList.Add("Device enabled ");
                 if(!CheckPortOpenAndRetry())
                 { return "Printer is not responding or might be busy"; }
                 fiscalprinter.ResetPrinter();
@@ -360,8 +337,9 @@ namespace FiscalLibraries
                     else
                         fiscalprinter.FiscalReceiptType = FiscalReceiptType.Refund;
                 }
+                 
                 stringList.Add("receipt type " + Saletype);
-
+                stringList.Add("Invoice Number is  " + InvoiceNumber);
                 stringList.Add("Before beginning fiscal receipt ");
 
                 fiscalprinter.BeginFiscalReceipt(true);
@@ -545,27 +523,25 @@ namespace FiscalLibraries
                 }
                 catch (Exception Ex)
                 {
-                    //stringList.Clear();
+                    //stringList.Clear();                    
                     stringList.Add("catch block of First Try block" + Ex.Message);
                     stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
+                    stringList.Add("printResponseString is: " + printResponseString);
                     WriteToFile(stringList);
-                    stringList.Clear();
+                    stringList.Clear();                    
                     //fiscalprinter.ResetPrinter();
                     fiscalprinter.Close();
                     throw;
                 }
                 stringList.Add("After first try completion " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //if (fiscalprinter.CapSlpFiscalDocument)
-                //{
-                //    FiscalDataItem dati = fiscalprinter.GetData(FiscalData.FiscalDocument, 0);
-                //    Console.WriteLine("FiscalDocument: " + dati.Data);
-                //}
-
-                fiscalprinter.Close();
-                stringList.Add("printer closed in print receipt ");
                 WriteToFile(stringList);
                 stringList.Clear();
+                fiscalprinter.Close();
+                stringList.Add("printer closed in print receipt ");
                 printResponseString = "OK";
+                stringList.Add("printResponseString: " + printResponseString);
+                WriteToFile(stringList);
+                stringList.Clear();                
             }
             catch (Exception Ex)
             {

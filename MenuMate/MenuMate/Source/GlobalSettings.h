@@ -403,6 +403,7 @@ public:
     UnicodeString ServiceChargeGLCode;
     UnicodeString ServiceChargeTaxGLCode;
     UnicodeString RoundingGLCode;
+    UnicodeString GiftCardGLCode;
     bool RefundingItems;
     bool GiftCardOnly;
 
@@ -531,6 +532,14 @@ public:
     UnicodeString EmailCapturedForLoyaltyOperation;
     bool EnableEftPosPaymentSense;
     UnicodeString EftPosTerminalId;
+    bool RestartServiceAtZED;
+    Currency GiftCard_Megaworld;
+    Currency CheckSaleMegaworld;
+    Currency GiftCard_MegaworldForDaily;
+    Currency CheckSaleMegaworldForDaily;
+    bool SendNoTaxToSiHot;
+    UnicodeString RevenueCodeDiscountPart;
+    bool EnableOnlineOrdering;
 };
 
 #endif

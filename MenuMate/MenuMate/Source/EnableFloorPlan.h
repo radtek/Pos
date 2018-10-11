@@ -17,6 +17,7 @@ struct TFloorPlanReturnParams
 	UnicodeString PartyName;
 	int TabContainerNumber;
 	eFloorPlanVer Ver;
+    bool HasOnlineOrders;
 };
 
 class TEnableFloorPlan

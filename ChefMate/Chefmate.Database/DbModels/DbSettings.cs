@@ -76,6 +76,9 @@ namespace ChefMate.Database
             settings.HeaderBackgroundColor = settingCollection["HeaderBackgroundColor"];
             settings.HeaderForegroundColor = settingCollection["HeaderForegroundColor"];
 
+            settings.ItemSummaryBackgroundColor = settingCollection["ItemSummaryBackgroundColor"];
+            settings.ItemSummaryFontFamily = settingCollection["ItemSummaryFontFamily"];
+            settings.ItemSummaryFontSize = settingCollection["ItemSummaryFontSize"].ToInteger();
 
             return settings;
         }
@@ -130,6 +133,10 @@ namespace ChefMate.Database
             AddSettingRow("SecondWarningColor", settings.SecondWarningColor, terminakKey);
             AddSettingRow("HeaderBackgroundColor", settings.HeaderBackgroundColor, terminakKey);
             AddSettingRow("HeaderForegroundColor", settings.HeaderForegroundColor, terminakKey);
+
+            AddSettingRow("ItemSummaryFontSize", settings.ItemSummaryFontSize, terminakKey);
+            AddSettingRow("ItemSummaryFontFamily", settings.ItemSummaryFontFamily, terminakKey);
+            AddSettingRow("ItemSummaryBackgroundColor", settings.ItemSummaryBackgroundColor, terminakKey);
 
             return true;
         }
@@ -217,6 +224,10 @@ namespace ChefMate.Database
             SaveSettingRow("SecondWarningColor", settings.SecondWarningColor, terminakKey);
             SaveSettingRow("HeaderBackgroundColor", settings.HeaderBackgroundColor, terminakKey);
             SaveSettingRow("HeaderForegroundColor", settings.HeaderForegroundColor, terminakKey);
+
+            SaveSettingRow("ItemSummaryFontSize", settings.ItemSummaryFontSize, terminakKey);
+            SaveSettingRow("ItemSummaryFontFamily", settings.ItemSummaryFontFamily, terminakKey);
+            SaveSettingRow("ItemSummaryBackgroundColor", settings.ItemSummaryBackgroundColor, terminakKey);
         }
         public static void SaveSettingRow(string key, string value, int terminakKey)
         {

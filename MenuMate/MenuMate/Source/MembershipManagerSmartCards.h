@@ -89,14 +89,14 @@ public:
    void SyncBarcodeMemberDetailWithCloud(TMMContactInfo &MMContactInfo);
    void RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction);
    void RewardFirstVisitPoints(TPaymentTransaction &PaymentTransaction);
+   bool GetMemberFromCloudForOO(TMMContactInfo &UserInfo);
+   bool runMemberDownloadThreadForOO(TSyndCode CurrentSyndicateCode, TMMContactInfo &SmartCardContact,bool useEmail,bool &memberNotExist);
 private:
     void SaveContactProfileOnDownload(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
     void SaveContactInfoOnDownload(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
 	int GetSmartCardStatus(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString Atr);
 	void BlockNewSmartCard(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSyndCode &SyndCode);
     void performLoyaltyMateOperations();
-	bool runMemberDownloadThread(TSyndCode CurrentSyndicateCode, TMMContactInfo &SmartCardContact,
-                                 bool useUUID, bool useMemberCode, bool useEmail,bool &memberNotExist);
 	AnsiString GetActivationEmailFromUser();
 	TDateTime GetCardCreationDateFromContactKey(Database::TDBTransaction &DBTransaction, int inContactKey);
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
@@ -111,6 +111,8 @@ private:
     int ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
     bool IsDuplicated(TMMContactInfo contactInfo);
     bool IsEmailLiveForDiffMember(TMMContactInfo contactInfo);
+    bool runMemberDownloadThread(TSyndCode CurrentSyndicateCode, TMMContactInfo &SmartCardContact,
+                                 bool useUUID, bool useMemberCode, bool useEmail,bool &memberNotExist);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
 

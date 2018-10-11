@@ -1704,6 +1704,43 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
     }
     else
     {
+      if(Payment->Name == "GC" || Payment->Name == "Check")
+      {
+	    std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        if(Payment->Name == "GC" )
+            frmTouchNumpad->Caption = "Enter Total Amount For GiftCard";
+
+        else if(Payment->Name == "Check")
+            frmTouchNumpad->Caption = "Enter Total Amount For Cheque";
+
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->Mode = pmCurrency;
+        frmTouchNumpad->CURInitial = 0;
+	    if (frmTouchNumpad->ShowModal() == mrOk)
+    	{
+            if(frmTouchNumpad->CURResult < CurrentTransaction.Money.RoundedPaymentDue)
+            {
+              MessageBox("Please Enter Value Greater or Equal to Bill Amount","",MB_OK) ;
+              return;
+            }
+		    else
+		    {
+                if(Payment->Name == "GC" )
+                {
+                    TGlobalSettings::Instance().GiftCard_Megaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().GiftCard_MegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+                else if(Payment->Name == "Check")
+                {
+                    TGlobalSettings::Instance().CheckSaleMegaworld = frmTouchNumpad->CURResult  ;
+                    TGlobalSettings::Instance().CheckSaleMegaworldForDaily = frmTouchNumpad->CURResult  ;
+                }
+		    }
+	    }
+      }
+
         GetPaymentNote(Payment);
         Payment->Result = eProcessing;
 
@@ -1883,6 +1920,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 // Set the System name in case it has been set by a Voucher Purchase attempt.
                 Payment->SysNameOveride = Payment->Name;
             }
+        }
+         else if(wrkPayAmount != 0)
+        {
+          Payment->ReferenceNumber = voucherNumber;
         }
 
         if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypePocketVoucher))
@@ -2769,7 +2810,9 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 		else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 		{
 
-           AnsiString voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+
+             voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+             Payment->ReferenceNumber = voucherNumber;
            if(voucherNumber == "")
            {
                 Payment->Reset();
@@ -3249,16 +3292,15 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 			}
 			Note = frmMessage->TextResult;
 
-			bool WriteOffStock;
-			if (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?",
-						MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON1) == IDYES)
-			{
-				WriteOffStock = false; // picked yes so reverse stock
-			}
-			else
-			{
-				WriteOffStock = true; // No so stock was tiped down drain do not reverse.
-			}
+			bool WriteOffStock = true;
+			if( IsReceipeAdded(CurrentTransaction.Orders))
+            {
+                if (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?",
+                            MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON1) == IDYES)
+                {
+                   WriteOffStock = false; // picked yes so reverse stock
+                }
+            }
 
 			// Add Security.
 			if (CurrentTransaction.Orders != NULL)
@@ -3272,11 +3314,15 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 					SecRef->UserKey = TempUserInfo.ContactKey;
                     //Following if is used for differentiating between refund and writeoff in Menumate
                     if(WriteOffStock == true)
-                    {        SecRef->Event=   SecurityTypes[secWriteOff];
+                    {
+
+                    SecRef->Event=   SecurityTypes[secWriteOff];
+
 
                     }
                     else
                     {         SecRef->Event = SecurityTypes[secCredit];
+
                     }
 
 					SecRef->From = "";
@@ -3296,46 +3342,48 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				}
 			}
 
-			if (MessageBox("Do you want to inform the chef?","Inform chef?",MB_YESNO | MB_ICONQUESTION)== IDYES)
-            {
+                      if(IsItemAssignToPrinter(CurrentTransaction.Orders))
+                       {
+                        if (MessageBox("Do you want to inform the chef?","Inform chef?",MB_YESNO | MB_ICONQUESTION)== IDYES)
+                        {
+                            /*
+                                The following fix to generate refeund orders print to kitchen can be re-done in an efficient way. I was trying to get a complete copy of
+                                paymentTransaction and pass it on to the kitchen so it will be used to generate the docket for chef.
+                                However I faced some weired access violation issue related to categories of refunding item
+                                hence end up with doing the inefficient way. this will need to be re-addressed in a later time.
+                            */
 
-				/*
-					The following fix to generate refeund orders print to kitchen can be re-done in an efficient way. I was trying to get a complete copy of
-					paymentTransaction and pass it on to the kitchen so it will be used to generate the docket for chef.
-					However I faced some weired access violation issue related to categories of refunding item
-					hence end up with doing the inefficient way. this will need to be re-addressed in a later time.
-				*/
+                            // resetting quantity values for sending the refund orders to chef
+                            if (CurrentTransaction.Orders != NULL)
+                            {
+                                for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
+                                {
+                                    TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
+                                    Order->ResetQty();
 
-				// resetting quantity values for sending the refund orders to chef
-				if (CurrentTransaction.Orders != NULL)
-				{
-					for (int i = 0; i < CurrentTransaction.Orders->Count; i++)
-					{
-						TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-						Order->ResetQty();
+                                    for (int i = 0; i < Order->SubOrders->Count; i++)
+                                    {
+                                        TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
+                                        SubOrder->ResetQty();
+                                    }
+                                }
+                            }
+                            std::auto_ptr<TReqPrintJob> req(
+                            new TReqPrintJob(&TDeviceRealTerminal::Instance()));
+                            req->Transaction = &CurrentTransaction;
+                            req->SenderType = devPC;
+                            req->Waiter = TempUserInfo.Name;
+                            CurrentTransaction.Money.Recalc(CurrentTransaction);
 
-						for (int i = 0; i < Order->SubOrders->Count; i++)
-						{
-							TItemCompleteSub *SubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
-							SubOrder->ResetQty();
-						}
-					}
-				}
-				std::auto_ptr<TReqPrintJob> req(
-				new TReqPrintJob(&TDeviceRealTerminal::Instance()));
-				req->Transaction = &CurrentTransaction;
-				req->SenderType = devPC;
-				req->Waiter = TempUserInfo.Name;
-				CurrentTransaction.Money.Recalc(CurrentTransaction);
-
-				std::auto_ptr<TKitchen> Kitchen(new TKitchen());
-				Kitchen->Initialise(CurrentTransaction.DBTransaction);
-				Kitchen->GetPrintouts(CurrentTransaction.DBTransaction,
-				req.get());
-				req->Printouts->Print(devPC);
-				if (req->Header.Error != proA_Ok)
-				ShowMessage(req->Header.ErrorMsg);
-			}
+                            std::auto_ptr<TKitchen> Kitchen(new TKitchen());
+                            Kitchen->Initialise(CurrentTransaction.DBTransaction);
+                            Kitchen->GetPrintouts(CurrentTransaction.DBTransaction,
+                            req.get());
+                            req->Printouts->Print(devPC);
+                            if (req->Header.Error != proA_Ok)
+                            ShowMessage(req->Header.ErrorMsg);
+                        }
+                    }
 
 			// setting the quantity to what it was before after printing to kitchen because the CurrentTransaction is used to generate receipts and affects zed as well.
 			if (CurrentTransaction.Orders != NULL)
@@ -4816,3 +4864,115 @@ void TfrmPaymentType::CalculatePatrons(TPaymentTransaction &CurrentTransaction)
         TManagerPatron::Instance().SetDefaultPatrons(CurrentTransaction.DBTransaction, CurrentTransaction.Patrons, 1);
 }
 //---------------------------------------------------------------------
+ bool TfrmPaymentType::IsReceipeAdded(TList *Orders)
+{
+    bool isReceipeAdded = false;
+    if (Orders->Count != NULL)
+    {
+        for (int i = 0; i < Orders->Count; i++)
+         {
+            TItemComplete *Order = (TItemComplete *)Orders->Items[i];;
+             if(Order->SalesRecipesToApply->Count)
+                {
+                    isReceipeAdded =true;
+                    break;
+                }
+          }
+
+      }
+    return isReceipeAdded;
+}
+//---------------------------------------------------------------------------------------
+bool TfrmPaymentType::IsItemAssignToPrinter(TList *Orders)
+{
+   bool InformToChef = false;
+   try
+   {
+       for (int i = 0; i < Orders->Count; i++)
+       {
+           Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+           DBTransaction.StartTransaction();
+           TItemComplete *Order = (TItemComplete*)Orders->Items[i];
+           bool Categorykey =   IsCategoryAssignedToKitchenPrinter(DBTransaction, Order->Categories->FinancialCategoryKey);
+           int coursekey = GettingCourseKey(DBTransaction, Order->ItemKey);
+           bool Itemcoursekey = IsCourseAssignedToKitchenPrinter(DBTransaction, coursekey) ;
+           if(Itemcoursekey || Categorykey)
+           {
+                InformToChef = true;
+                 break;
+           }
+       }
+   }
+   catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+   return InformToChef;
+}
+
+//----------------------------------------------------------------------------------
+bool TfrmPaymentType::IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int CategoryKey)
+{
+    bool RetVal = false;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT * FROM PRNCAT WHERE CATEGORY_KEY=:CATEGORY_KEY";
+        IBInternalQuery->ParamByName("CATEGORY_KEY")->AsInteger = CategoryKey;
+        IBInternalQuery->ExecQuery();
+        RetVal = IBInternalQuery->RecordCount;
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return RetVal;
+}
+//----------------------------------------------------------------------------------
+bool TfrmPaymentType::IsCourseAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int coursekey)
+{
+    bool RetVal = false;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT COURSE_KEY FROM PRNORDER WHERE COURSE_KEY=:COURSE_KEY";
+        IBInternalQuery->ParamByName("COURSE_KEY")->AsInteger = coursekey;
+        IBInternalQuery->ExecQuery();
+        RetVal = IBInternalQuery->RecordCount;
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return RetVal;
+}
+
+//------------------------------------------------------------------------
+
+int TfrmPaymentType::GettingCourseKey(Database::TDBTransaction &DBTransaction, int Itemkey)
+{
+    int RetVal = 0 ;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT COURSE_KEY FROM ITEM WHERE ITEM_KEY=:ITEM_KEY";
+        IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Itemkey;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+        RetVal = IBInternalQuery->FieldByName("COURSE_KEY")->AsInteger;
+        }
+
+    }
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return RetVal;
+}

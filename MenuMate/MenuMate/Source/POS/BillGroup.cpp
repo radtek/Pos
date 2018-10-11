@@ -12,7 +12,8 @@
 #include "GetMoney.h"
 #include "SplitPayment.h"
 #include "Rooms.h"
-#include "DBClippTab.h"
+//#include "DBClippTab.h"
+#include "DBTab.h"
 #include "ContactStaff.h"
 #include "Invoice.h"
 #include "MMMessageBox.h"
@@ -45,11 +46,14 @@
 #include "MMInvoicePaymentSystem.h"
 #include "ManagerDelayedPayment.h"
 #include "SelectSaveOption.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "MallExportOtherDetailsUpdate.h"
 #include "ManagerLoyaltyVoucher.h"
 #include "PMSHelper.h"
 #include "SCDPatronUtility.h"
+#include "SaveLogs.h"
+#include "DBOnlineOrdeing.h"
+#include "ManagerSyndCode.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -160,6 +164,7 @@ __fastcall TfrmBillGroup::TfrmBillGroup(TComponent* Owner, Database::TDBControl 
 TabList(new TStringList)
 {
 	MembershipConfirmed = false;
+    HasOnlineOrders = false;
 	Scaled = true;
 }
 // ---------------------------------------------------------------------------
@@ -184,6 +189,7 @@ void __fastcall TfrmBillGroup::FormDestroy(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 {
+    TGlobalSettings::Instance().EnableOnlineOrdering = true;
 	FormResize(this);
 	InCheckFunc = false;
     ClipTabInTable =false;
@@ -235,7 +241,6 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
                     tbtnSelectZone->Caption = "Rooms";
                     break;
             }
-
             UpdateRightButtonDisplay(Sender);
             Database::TDBTransaction DBTransaction(DBControl);
             TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -245,6 +250,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
             UpdateTableDetails(DBTransaction);
             TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
             DBTransaction.Commit();
+            UpdateTableForOnlineOrdering();
 	}
     TGlobalSettings::Instance().IsPOSOffline = true;
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -324,7 +330,6 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
 {
 	if (CurrentDisplayMode == eTabs)
 	{
-
             btnBillTable->Enabled = false;
             btnBillSelected->Enabled = true;
             btnPartialPayment->Enabled = true;
@@ -692,12 +697,6 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 				}
 				Note = frmMessage->TextResult;
 
-				// Get User Otpions
-				bool InformChef = (MessageBox("Do you wish to send a cancellation notice to the Chef?", "Inform Chef?",
-						MB_YESNO + MB_ICONQUESTION) == IDYES);
-
-				bool ReturnStock = (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)",
-						"Return To Stock?", MB_YESNO + MB_ICONQUESTION) == IDYES);
 
 				Database::TDBTransaction DBTransaction(DBControl);
 				DBTransaction.StartTransaction();
@@ -705,7 +704,17 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 				std::auto_ptr <TPaymentTransaction> TempTransaction(new TPaymentTransaction(DBTransaction));
 				std::auto_ptr <TList> OrdersList(new TList);
 				TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeCanceled);
-
+                 bool InformChef = false;
+                bool ReturnStock = false;
+                std::auto_ptr<TfrmPaymentType> frmPaymentType;
+                 if(frmPaymentType->IsReceipeAdded(OrdersList.get()))
+                {
+                   ReturnStock = (MessageBox("Do you wish to Return this Item to Stock. \n(i.e. Put it back on the shelf)", "Return To Stock?", MB_YESNO + MB_ICONQUESTION) == IDYES);
+                }
+                if(frmPaymentType->IsItemAssignToPrinter(OrdersList.get()))
+                {
+                    InformChef = (MessageBox("Do you wish to send a cancellation notice to the Chef?", "Inform Chef?", MB_YESNO + MB_ICONQUESTION) == IDYES);
+                }
 				for (int i = 0; i < OrdersList->Count; i++)
 				{
 					TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -860,9 +869,16 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 {
+    TStringList* logList = new TStringList();
+    logList->Add("-----------------------btnBillTableMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+        DownloadOnlineMember();
 	try
 	{
         TGlobalSettings::Instance().IsThorPay = true;
@@ -928,6 +944,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                        {
                           CheckLoyalty(ItemsToBill);
                        }
+
                        BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
 				}
 			}
@@ -936,24 +953,66 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 		{
 			MessageBox("No Seats to bill!", "Error", MB_OK + MB_ICONERROR);
 		}
+        logList->Add("Transaction Commit of  btnBillTableMouseClick()");
+        TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
 		DBTransaction.Commit();
 		ResetForm();
+        UpdateRightButtonDisplay(Sender);
+        if(CurrentDisplayMode == eTables)
+        {
+            if(NeedtoUpdateTableForOnlineOrdering())
+               UpdateTableForOnlineOrdering();
+        }
+        else if(CurrentDisplayMode == eTabs)
+        {
+            if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
+                UpdateTabForOnlineOrdering();
+        }
+        else
+            HasOnlineOrders = false;
 	}
+
 	catch(Exception & E)
 	{
         DBTransaction.Rollback();
 		MessageBox("Unable to process this bill.\r" "Please report the following message to your service provider :\r\r" + E.Message +
 			"\r\rPlease check this Table is not in use.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+
+        logList->Add("Transaction Rollback of  btnBillTableMouseClick()");
+        TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 {
+    TStringList* logList = new TStringList();
+    logList->Add("-----------------------btnBillSelectedMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     TGlobalSettings::Instance().IsThorBillSelected = true;
     TMMTabType type;
     int noOfTabs = 0;
     int tabKey;
+
+    if(CurrentDisplayMode == eTabs)
+    {
+        if(HasOnlineOrders)
+        {
+            if(VisibleItems.size() > SelectedItems.size())
+            {
+                MessageBox("To bill off Online ordering tab , please select all the Items.","Info",MB_OK+MB_ICONINFORMATION);
+                return;
+            }
+        }
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+            DownloadOnlineMember();
+    }
 	try
 	{
 		if (SelectedItems.empty())
@@ -1111,28 +1170,28 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                          TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = false;;
 
                           //check whether selected table's selected guest is linked to clipp tab
-                         TMMTabType allSelectedTabType = TDBTab::GetLinkedTableAndClipTab(DBTransaction, tabKey, true);
-                         if(allSelectedTabType == TabClipp)
-                         {
-                            CurrentSelectedTab = tabKey;
-                         }
+//                         TMMTabType allSelectedTabType = TDBTab::GetLinkedTableAndClipTab(DBTransaction, tabKey, true);
+//                         if(allSelectedTabType == TabClipp)
+//                         {
+//                            CurrentSelectedTab = tabKey;
+//                         }
 
                         //All itms are being billed on clipp so close Tab
-                        if( (CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp) || (sendCloseTabMessage && allSelectedTabType == TabClipp ) ) && (sendCloseTabMessage))
-                        {
-                            int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, CurrentSelectedTab);
-                            TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
-                            TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = true;
-                            TMMProcessingState State(Screen->ActiveForm, "Processing Transaction With Clipp Please Wait...", "Processing Clipp Transaction");
-                            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-                            TManagerClippIntegration::Instance()->CloseTab(CurrentSelectedTab);
-                            TManagerClippIntegration::Instance()->OnCloseTabTerminate = &(CloseTerminateCallBack);
-                        }
-                        else
-                        {
+//                        if( (CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp) || (sendCloseTabMessage && allSelectedTabType == TabClipp ) ) && (sendCloseTabMessage))
+//                        {
+//                            int tableKey = TDBTab::GetTableKeyFromSeat(DBTransaction, CurrentSelectedTab);
+//                            TDBTables::UpdateTablePartyName(DBTransaction, tableKey);
+//                            TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = true;
+//                            TMMProcessingState State(Screen->ActiveForm, "Processing Transaction With Clipp Please Wait...", "Processing Clipp Transaction");
+//                            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+//                            TManagerClippIntegration::Instance()->CloseTab(CurrentSelectedTab);
+//                            TManagerClippIntegration::Instance()->OnCloseTabTerminate = &(CloseTerminateCallBack);
+//                        }
+//                        else
+//                        {
 
                               BillItems(DBTransaction, SelectedItemKeys, transactionType );
-                        }
+//                        }
 
 					}
 					else
@@ -1147,13 +1206,16 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 				}
 
                     DBTransaction.Commit();
+                    logList->Add("Transaction commit in btnBillSelectedMouseClick() ");
+                    TSaveLogs::RecordFiscalLogs(logList);
+                    logList->Clear();
 
-                    if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (!sendCloseTabMessage) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
-                    {
-                        //send tab details if some items are selected for bill
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                    if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (!sendCloseTabMessage) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+//                    {
+//                        //send tab details if some items are selected for bill
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
                     ResetForm();
                     if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
                     {
@@ -1167,10 +1229,26 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 catch(Exception & E)
                 {
                     DBTransaction.Rollback();
+                    logList->Add("Transaction rollback in btnBillSelectedMouseClick() ");
+                    TSaveLogs::RecordFiscalLogs(logList);
+                    logList->Clear();
                     throw;
                 }
             }
 		}
+        UpdateRightButtonDisplay(Sender);
+        if(CurrentDisplayMode == eTables)
+        {
+            if(NeedtoUpdateTableForOnlineOrdering())
+               UpdateTableForOnlineOrdering();
+        }
+        else if(CurrentDisplayMode == eTabs)
+        {
+            if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
+                UpdateTabForOnlineOrdering();
+        }
+        else
+            HasOnlineOrders = false;
 	}
 	catch(Exception & E)
 	{
@@ -1179,6 +1257,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
     TGlobalSettings::Instance().IsThorBillSelected = false;
+
+    delete logList;
+    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
@@ -1189,6 +1270,11 @@ void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 {
+     TStringList* logList = new TStringList();
+     logList->Add("-----------------------btnPartialPaymentMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
     std::set <__int64> SplitItemKeySet;
     int SplitItemKey = 0;
 	try
@@ -1260,24 +1346,30 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
 
 				DBTransaction.Commit();
+                logList->Clear();
+                 logList->Add("Transaction commit of btnPartialPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
+
+
                 SplitItemKeySet.insert(SplitItemKey);
                 if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
                 {
                     RemoveLoyaltymateMembership(SplitItemKeySet);
                 }
                 //If tab is clipp tab than send the detail
-                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isClippTabFullyPaid) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
-                {
-                    //close clipp full payment done by partial button
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->CloseTab(CurrentSelectedTab);
-                }
-                else if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
-                {
-                    //Send tab Details if payment is done partially
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                }
+//                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isClippTabFullyPaid) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+//                {
+//                    //close clipp full payment done by partial button
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->CloseTab(CurrentSelectedTab);
+//                }
+//                 if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed))
+//                {
+//                    //Send tab Details if payment is done partially
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                }
 
                 ResetForm();
 			}
@@ -1289,11 +1381,22 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        logList->Clear();
+         logList->Add("Exception caught in btnPartialPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 {
+     TStringList* logList = new TStringList();
+     logList->Add("-----------------------btnSplitPaymentMouseClick() called-----------------------------");
+    TSaveLogs::RecordFiscalLogs(logList);
+    logList->Clear();
+
 	try
 	{
 		if (SelectedItems.empty())
@@ -1373,19 +1476,22 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 
 				DBTransaction.Commit();
 				ResetForm();
+                logList->Add("-Transaction commit in btnSplitPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 
                 //If tab is clipp tab than send the detail
-                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
-                {
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(BackupCurrentSelectedTab);
-                }
-                 //If tab is clipp tab than send the detail
-                else if((CurrentTabType == TabClipp ||  (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (!TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
-                {
-                    TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
-                    closeClippTab->CloseTab(BackupCurrentSelectedTab);
-                }
+//                if((CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
+//                {
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(BackupCurrentSelectedTab);
+//                }
+//                 //If tab is clipp tab than send the detail
+//                else if((CurrentTabType == TabClipp ||  (CurrentTabType == TabTableSeat && type == TabClipp)) && (TDeviceRealTerminal::Instance().PaymentSystem->isPaymentProcessed) && (!TDeviceRealTerminal::Instance().PaymentSystem->splittedDivisionLeft))
+//                {
+//                    TManagerClippIntegration* closeClippTab = TManagerClippIntegration::Instance();
+//                    closeClippTab->CloseTab(BackupCurrentSelectedTab);
+//                }
 
 				DBTransaction.StartTransaction();
 				// Now reslect all the remaining items.
@@ -1432,7 +1538,13 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+
+        logList->Add("-Exception in btnSplitPaymentMouseClick() ");
+                TSaveLogs::RecordFiscalLogs(logList);
+                logList->Clear();
 	}
+    delete logList;
+    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void TfrmBillGroup::RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys)
@@ -1589,6 +1701,7 @@ void __fastcall TfrmBillGroup::tbtnClearAllMouseClick(TObject *Sender)
         DisableToggleGSTButton(DBTransaction);
     }
 	UpdateContainerListColourDisplay();
+    UpdateTableForOnlineOrdering();
 	DBTransaction.Commit();
 	CheckLoyalty();
     ClearLoyaltyVoucher();
@@ -1604,18 +1717,20 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	{
 		TGridButton *GridButton = tgridContainerList->Buttons[i][CONTAINER_LIST_FUNC_COLUMN];
 		int SelectedTab = GridButton->Tag;
-
-		if (AddToSelectedTabs(DBTransaction, SelectedTab))
-		{
-			ItemSetAddItems(DBTransaction, SelectedTab);
-			CurrentSelectedTab = SelectedTab;
-		}
-        else
+        if(CheckTabCompatablityForOnlineOrdering(SelectedTab))
         {
-            if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+            if (AddToSelectedTabs(DBTransaction, SelectedTab))
             {
-                if(i > 1)
-                    break;
+                ItemSetAddItems(DBTransaction, SelectedTab);
+                CurrentSelectedTab = SelectedTab;
+            }
+            else
+            {
+                if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney )
+                {
+                    if(i > 1)
+                        break;
+                }
             }
         }
 	}
@@ -1631,6 +1746,10 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
         DisableToggleGSTButton(DBTransaction);
     }
 	UpdateContainerListColourDisplay();
+    if(CurrentDisplayMode == eTables)
+        UpdateTableForOnlineOrdering();
+    else if(CurrentDisplayMode == eTabs)
+        UpdateTabForOnlineOrdering();
     if(lbeMembership->Visible == false)//todo-Arpit
     {
       RemoveMembershipDiscounts(DBTransaction);
@@ -1718,8 +1837,8 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
                        // if items are moved to guest which is  linked to clip tab then update the clip tab
                         if(TDBTab::GetLinkedTableAndClipTab(DBTransaction,TabTransferTo,true)  )
                         {
-                           TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
-                           updateClippTab->SendTabDetails(TabTransferTo);
+//                           TManagerClippIntegration* updateClippTab = TManagerClippIntegration::Instance();
+//                           updateClippTab->SendTabDetails(TabTransferTo);
                         }
             		}
 					else
@@ -1744,11 +1863,11 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
 
 				DBTransaction.Commit();
                 //Send tab details back if selected tab is clipp tab.
-                if(CurrentTabType == TabClipp)
-                {
-                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                }
+//                if(CurrentTabType == TabClipp)
+//                {
+//                    TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                    sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                }
 				ShowReceipt();
 			}
 			else
@@ -1844,11 +1963,11 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 
             //Send tab details back if selected tab is clipp tab.
-            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
-            {
-                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-            }
+//            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
+//            {
+//                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//            }
 			ShowReceipt();
             EnableButtons();
 		}
@@ -1931,11 +2050,11 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 					DBTransaction.Commit();
 
                     //Send tab details back if selected tab is clipp tab.
-                     if(CurrentTabType == TabClipp|| (CurrentTabType == TabTableSeat && type == TabClipp))
-                    {
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                     if(CurrentTabType == TabClipp|| (CurrentTabType == TabTableSeat && type == TabClipp))
+//                    {
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
 					ShowReceipt();
 				}
 				else
@@ -1963,6 +2082,7 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
         {
            ChangeBillEntireTableState();
         }
+        UpdateTableForOnlineOrdering();
     }
     else
     {
@@ -2130,11 +2250,11 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                             //check whether selected table's selected guest is linked to clipp tab
                             TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
                             //Send tab details back if selected tab is clipp tab.
-                            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
-                            {
-                                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                            }
+//                            if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
+//                            {
+//                                TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                                sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                            }
                          }
                          else if (Result == lsAccountBlocked)
                          {
@@ -2291,12 +2411,12 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                 {
                     //check whether selected table's selected guest is linked to clipp tab
                     TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, CurrentSelectedTab, true);
-                    if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
-                    {
-                        //send tab details if discount is applied
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                    if(CurrentTabType == TabClipp || (CurrentTabType == TabTableSeat && type == TabClipp))
+//                    {
+//                        //send tab details if discount is applied
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
                 }
 			}
 		}
@@ -2407,11 +2527,11 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                            MessageBox("No discount for this voucher has been setup in Menumate.", "Warning", MB_ICONWARNING + MB_OK);
                         }
                     }
-                    if(CurrentTabType == TabClipp)
-                    {
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
-                    }
+//                    if(CurrentTabType == TabClipp)
+//                    {
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(CurrentSelectedTab);
+//                    }
 
                 }
             }
@@ -2613,8 +2733,11 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         if (tgridContainerList->Col(GridButton) == CONTAINER_LIST_TAB_COLUMN)
         {
             // Find the old Focused button and set it to just Selected
-            CurrentSelectedTab = SelectedTab;
-            SplitItemsInSet(DBTransaction, SelectedTab);
+            if(CheckTabCompatablityForOnlineOrdering(SelectedTab))
+            {
+                CurrentSelectedTab = SelectedTab;
+                SplitItemsInSet(DBTransaction, SelectedTab);
+            }
         }
         else if (tgridContainerList->Col(GridButton) == CONTAINER_LIST_FUNC_COLUMN)
         {
@@ -2665,12 +2788,21 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                     {
                         ClearTabOnDelayedPaymentSelection(DBTransaction,SelectedTab);
                     }
-
-                    if (AddToSelectedTabs(DBTransaction, SelectedTab))
+                    if(CheckTabCompatablityForOnlineOrdering(SelectedTab))
                     {
-                        SplitItemsInSet(DBTransaction, SelectedTab);
-                        ItemSetAddItems(DBTransaction,SelectedTab);
-                        CurrentSelectedTab = SelectedTab;
+                        if (AddToSelectedTabs(DBTransaction, SelectedTab))
+                        {
+                            SplitItemsInSet(DBTransaction, SelectedTab);
+                            ItemSetAddItems(DBTransaction,SelectedTab);
+                            CurrentSelectedTab = SelectedTab;
+                            HasOnlineOrders = TDBTab::HasOnlineOrders(SelectedTab);
+                            // Get online member.
+                        }
+                    }
+                    else
+                    {
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        return;
                     }
                 }
             }
@@ -2687,6 +2819,9 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
             DisableToggleGSTButton(DBTransaction);
         }
         UpdateContainerListColourDisplay();
+        UpdateTableForOnlineOrdering();
+//        MessageBox(CurrentSelectedTab,"CurrentSelectedTab in tgridClick",MB_OK);
+        UpdateTabForOnlineOrdering();
         UpdateSplitButtonState();
          if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
@@ -2851,7 +2986,10 @@ void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
     }
     else
     {
-        DeselectItem(GridButton);
+        if(HasOnlineOrders)
+            MessageBox("To bill off Online ordering tab , all items must be selected.","Info",MB_OK+MB_ICONINFORMATION);
+        else
+            DeselectItem(GridButton);
     }
 
     if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
@@ -3521,15 +3659,15 @@ void TfrmBillGroup::UpdateSeatDetails(Database::TDBTransaction &DBTransaction, T
 
 		if (CurrentTabType == TabNormal || CurrentTabType == TabDelayedPayment || CurrentTabType == TabClipp)
 		{
-            if(CurrentTabType == TabClipp)
-            {
-                TDBClippTab::GetOpenClippTabs(DBTransaction, TabList, CurrentTabType);
-
-            }
-            else
-            {
+//            if(CurrentTabType == TabClipp)
+//            {
+//                TDBClippTab::GetOpenClippTabs(DBTransaction, TabList, CurrentTabType);
+//
+//            }
+//            else
+//            {
 			    TDBTab::GetTabs(DBTransaction, TabList, CurrentTabType);
-            }
+           // }
 			tgridContainerList->RowCount = TabList->Count;
 
 			for (int i = 0; i < TabList->Count; i++)
@@ -4076,6 +4214,7 @@ bool TfrmBillGroup::AddToSelectedTabs(Database::TDBTransaction &DBTransaction, l
                 }
             }
         }
+
 		if (SelectedTabs.find(TabKey) == SelectedTabs.end())
 		{
 			if (TabInUseOk(TabKey))
@@ -4302,6 +4441,7 @@ void TfrmBillGroup::ResetForm()
 	{
 	   OnSmartCardRemoved(NULL);
 	}
+    UpdateTableForOnlineOrdering();
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::ResetSelection()
@@ -4573,7 +4713,6 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
-
     std::auto_ptr<TfrmSelectSaveOption>SelectionForm(TfrmSelectSaveOption::Create<TfrmSelectSaveOption>(this));
     SelectionForm->IsBillingMode = true;
    /* Disable the currently active membership. We don't want member discounts
@@ -4676,8 +4815,9 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                     CurrentDisplayMode = eTables;
                     CurrentTabType     = TabTableSeat;
                     UpdateRightButtonDisplay(NULL);
+
                     CurrentTable       = floorPlanReturnParams.TabContainerNumber;
-                    int i=     floorPlanReturnParams.TabContainerNumber;
+                    HasOnlineOrders    = floorPlanReturnParams.HasOnlineOrders;
                     CheckLinkedTable(floorPlanReturnParams.TabContainerNumber);
                     ResetForm();
                     floorPlan.reset();
@@ -4779,6 +4919,7 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 		RetVal = CurrentDisplayMode;
 	}
 	DBTransaction.Commit();
+    UpdateTableForOnlineOrdering();
 	return RetVal;
 }
 // ---------------------------------------------------------------------------
@@ -5667,5 +5808,158 @@ bool TfrmBillGroup::IsPMSConfigured()
                 (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot));
     return retValue;
 }
-
+//----------------------------------------------------------------------------
+//----------Delete this code--------------of no use now-----------------------
+bool TfrmBillGroup::NeedtoUpdateTableForOnlineOrdering()
+{
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        if(CurrentDisplayMode == eTables && (TDBTables::HasOnlineOrders(CurrentTable)))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 //---------------------------------------------------------------------------
+void TfrmBillGroup::UpdateTableForOnlineOrdering()
+{
+    if(CurrentDisplayMode == eTables && HasOnlineOrders)
+    {
+        btnBillSelected->Color      = clSilver;
+        btnBillSelected->Enabled    = false;
+        btnTransfer->Color          = clSilver;
+        btnTransfer->Enabled        = false;
+        tbtnMove->Color             = clSilver;
+        tbtnMove->Enabled           = false;
+        btnPartialPayment->Color    = clSilver;
+        btnPartialPayment->Enabled  = false;
+        btnSplitPayment->Color      = clSilver;
+        btnSplitPayment->Enabled    = false;
+        btnApplyMembership->Color   = clSilver;
+        btnApplyMembership->Enabled = false;
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmBillGroup::UpdateTabForOnlineOrdering()
+{
+    if(CurrentDisplayMode == eTabs)
+    {
+//        std::set<__int64> ::iterator itSelectedTabs = SelectedTabs.begin();
+//        for(;itSelectedTabs != SelectedTabs.end();advance(itSelectedTabs,1))
+//        {
+//            if(TDBTab::HasOnlineOrders(*itSelectedTabs))
+//            {
+        if(HasOnlineOrders)
+        {
+                btnTransfer->Color          = clSilver;
+                btnTransfer->Enabled        = false;
+                tbtnMove->Color             = clSilver;
+                tbtnMove->Enabled           = false;
+                btnPartialPayment->Color    = clSilver;
+                btnPartialPayment->Enabled  = false;
+                btnSplitPayment->Color      = clSilver;
+                btnSplitPayment->Enabled    = false;
+                btnApplyMembership->Color   = clSilver;
+                btnApplyMembership->Enabled = false;
+//                break;
+//            }
+//        }
+        }
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
+{
+    bool retValue = true;
+    try
+    {
+        bool currentTabHoldsOnlineOrders = TDBTab::HasOnlineOrders(tabKey);
+
+        std::set <__int64> ::iterator itTabsSelected = SelectedTabs.begin();
+        for(; itTabsSelected != SelectedTabs.end(); advance(itTabsSelected,1))
+        {
+            if(currentTabHoldsOnlineOrders)
+            {
+                if(!TDBTab::HasOnlineOrders(*itTabsSelected))
+                {
+                    retValue = false;
+                    MessageBox("Tabs with online orders and Normal Tabs can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
+                    break;
+                }
+            }
+            else
+            {
+                if(TDBTab::HasOnlineOrders(*itTabsSelected))
+                {
+                    retValue = false;
+                    MessageBox("Normal Tabs and Tabs with online orders can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
+                    break;
+                }
+            }
+        }
+    }
+    catch(Exception &Ex)
+    {
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TfrmBillGroup::DownloadOnlineMember()
+{
+    try
+    {
+        UnicodeString emailId = GetMemberEmailIdForOrder();
+        if(emailId.Trim() != "")
+            GetLoyaltyMemberByEmail(emailId);
+    }
+    catch(Exception &ex)
+    {
+    }
+}
+//---------------------------------------------------------------------------
+UnicodeString TfrmBillGroup::GetMemberEmailIdForOrder()
+{
+    UnicodeString emailId = "";
+    if(CurrentDisplayMode == eTabs)
+    {
+        emailId = TDBTab::GetMemberEmail(CurrentSelectedTab);
+    }
+    else if(CurrentDisplayMode == eTables)
+    {
+        emailId = TDBTables::GetMemberEmail(CurrentTable);
+    }
+    return emailId;
+}
+//---------------------------------------------------------------------------
+void TfrmBillGroup::GetLoyaltyMemberByEmail(UnicodeString email)
+{
+    bool memberDownloadStatus = false;
+    bool MemberNotExist = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo contactInfo;
+        contactInfo.EMail = email;
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(dbTransaction);
+        if(TDeviceRealTerminal::Instance().ManagerMembership->GetMemberFromCloudForOO(contactInfo))
+        {
+            int contactKey = TDBContacts::GetContactByEmail(dbTransaction,email);
+            TDBContacts::GetContactDetails(dbTransaction, contactKey, contactInfo);
+            TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+            ManagerLoyaltyVoucher.DisplayMemberVouchers(dbTransaction,contactInfo);
+            Membership.Assign(contactInfo, emsManual);
+        }
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        dbTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+

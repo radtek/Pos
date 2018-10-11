@@ -350,6 +350,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().SetTextFontSizeOnCustomerDisplay = TManagerVariable::Instance().GetBool(DBTransaction, vmSetTextFontSize, false);
         TGlobalSettings::Instance().CustomerDisplayFontSize = TManagerVariable::Instance().GetStr(DBTransaction, vmSetCustomerDisplayFontSize, "");
         TGlobalSettings::Instance().WeightLimit = TManagerVariable::Instance().GetNum(DBTransaction, vmWeightLimit, 0.000);
+         TGlobalSettings::Instance().GiftCardGLCode =  TManagerVariable::Instance().GetStr(DBTransaction, vmGiftCardGLCode, "");
+
         //add
         TGlobalSettings::Instance().ShowScreenToSelectItemForPoint = TManagerVariable::Instance().GetBool(DBTransaction, vmShowScreenToSelectItemForPoint, false);
         TGlobalSettings::Instance().PontsSpentCountedAsRevenue = TManagerVariable::Instance().GetBool(DBTransaction, vmPontsSpentCountedAsRevenue, false);
@@ -430,6 +432,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PrintMerchantReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintMerchantReceipt, false);
         TGlobalSettings::Instance().EnableEftPosPaymentSense = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPaymentSense, false);
         TGlobalSettings::Instance().EftPosTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTerminalId, "");
+        TGlobalSettings::Instance().RestartServiceAtZED = TManagerVariable::Instance().GetBool(DBTransaction, vmRestartServiceAtZED, false);
+        TGlobalSettings::Instance().SendNoTaxToSiHot = TManagerVariable::Instance().GetBool(DBTransaction, vmSendNoTaxToSihot, false);
+        TGlobalSettings::Instance().RevenueCodeDiscountPart = TManagerVariable::Instance().GetStr(DBTransaction, vmRevenueCodeDiscountPart, "");
+        TGlobalSettings::Instance().EnableOnlineOrdering = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

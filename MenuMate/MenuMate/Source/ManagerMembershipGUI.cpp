@@ -7,7 +7,7 @@
 #include "MembershipGUI.h"
 #include "MembershipEBetGUI.h"
 #include "MembershipExternalGUI.h"
-#include "MembershipThorlinkGUI.h"
+//#include "MembershipThorlinkGUI.h"
 #include "EditCustomer.h"
 #include "MMMessageBox.h"
 #include "MMLogging.h"
@@ -417,9 +417,9 @@ void TManagerMembershipGUI::Initialise(Database::TDBTransaction &DBTransaction)
    case MembershipTypeExternal:
 	  MembershipSystem.reset(new TMembershipExternalGUI(Modules, TGlobalSettings::Instance().MembershipDatabaseIP, TGlobalSettings::Instance().MembershipDatabasePort, TGlobalSettings::Instance().MembershipTillID));
 	  break;
-   case MembershipTypeThor:
-	  MembershipSystem.reset(new TMembershipThorlinkGUI(Modules, TGlobalSettings::Instance().ThorlinkAppKey, TGlobalSettings::Instance().ThorlinkSiteNo, TGlobalSettings::Instance().ThorlinkMerchantCode, TGlobalSettings::Instance().ThorlinkDeviceCode));
-	  break;
+//   case MembershipTypeThor:
+//	  MembershipSystem.reset(new TMembershipThorlinkGUI(Modules, TGlobalSettings::Instance().ThorlinkAppKey, TGlobalSettings::Instance().ThorlinkSiteNo, TGlobalSettings::Instance().ThorlinkMerchantCode, TGlobalSettings::Instance().ThorlinkDeviceCode));
+//	  break;
    default:
 	  MembershipSystem.reset(new TMembershipGUI(Modules));
    }

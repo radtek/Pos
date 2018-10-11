@@ -87,6 +87,8 @@ Source: {#GetEnv('BASEDIR')}\Static Files\zip.exe; DestDir: {app}; Flags: ignore
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Palm\MenuMate Bluetooth.prc; DestDir: {app}\Palm; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\BORLNDMM.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\CC32100MT.DLL; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\windowsxp-kb4019276-x86-embedded-enu_3822fc1692076429a7dc051b00213d5e1240ce3d.exe; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion
@@ -113,6 +115,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\printer.gif; DestDir: {app}\kios
 Source: {#GetEnv('BASEDIR')}\Static Files\kiosk\indexFinancial.html; DestDir: {app}\kiosk; Flags: ignoreversion 
 Source: {#GetEnv('BASEDIR')}\Static Files\OrderLogo.bmp; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe.config; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.AspNet.SignalR.Client.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\NewtonSoft.Json.dll; DestDir: {app}; Flags: ignoreversion;
 
 ;OpenSSL for Email - MM POS
 Source: {#GetEnv('BASEDIR')}\Static Files\email\openssl-0.9.8h-1-setup.exe; DestDir: {app}\email; Flags: ignoreversion onlyifdoesntexist

@@ -841,31 +841,29 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 		"Select  AB.Terminal_Name, UPPER(AB.Pay_Type) Pay_Type,AB.Group_number,	Sum (AB.SubTotal) SubTotal,	cast((Sum (AB.Trans_Count)  )   as  int) Trans_Count "
 	"FROM(	"
 		"Select "
-			"Security.Terminal_Name, "
+			"ArcBill.Terminal_Name, "
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
 			"ArcBillPay.Group_number, "
 			"Sum (ArcBillPay.SubTotal) SubTotal, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
             "From ArcBill "
-            "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
             "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
             "Where "
             "ArcBill.Time_Stamp >= :StartTime and "
             "ArcBill.Time_Stamp < :EndTime and "
             //"ArcBillPay.Properties != 131072 and "
             "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
-			"Security.Security_Event = 'Billed By' and "
-			"ArcBillPay.SubTotal <> 0  ";
+            "ArcBillPay.SubTotal <> 0  ";
 
 
 	if (Terminals->Count > 0)
 	{
 		qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
-										ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+										ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
 		"Group By "
-			"Security.Terminal_Name, "
+			"ArcBill.Terminal_Name, "
 			"ArcBillPay.Tax_Free, "
 			"ArcBillPay.Group_number, "
 			"UPPER(ArcBillPay.Pay_Type) "
@@ -914,19 +912,17 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
         "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
         "From ArcBill "
-        "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
         "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
         "WHERE "
         "ArcBill.Time_Stamp >= :StartTime and "
         "ArcBill.Time_Stamp < :EndTime and "
         //"ArcBillPay.Properties != 131072 and "
         "UPPER(ArcBillPay.Pay_Type) != 'CREDIT' and "
-        "Security.Security_Event = 'Billed By'    and "
-        "ArcBillPay.SubTotal <> 0  ";
+       "ArcBillPay.SubTotal <> 0  ";
 	if (Terminals->Count > 0)
 	{
 		qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
-												ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+												ParamString(Terminals->Count, "ArcBill.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrCashupTotal->SQL->Text		=	qrCashupTotal->SQL->Text +
 		"Group By "
@@ -2084,7 +2080,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Month From Archive.Time_Stamp) Order_Month, "
 			"Extract (Year From Archive.Time_Stamp) Order_Year, "
 			"Cast(Sum(Archive.Qty * Archive.Price ) +   Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) As PriceExc,"						//sales excl
+            "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"				//sales excl
 			"Cast(Sum(abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY )* Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2198,7 +2194,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Year From DayArchive.Time_Stamp) Order_Year, "
 
 			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.PRICE) ) +   Sum(DAYArchive.DISCOUNT) as Numeric(17,4)) Price,"				//sales excl
-			"Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DAYArchive.DISCOUNT_WITHOUT_TAX) as PriceExc,"
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2262,7 +2258,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
             "SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price )+ Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
+             "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //sales excl
 			"Cast(Sum(abs(Archive.Cost)* Archive.Qty) as Numeric(17,4)) Cost, "
             " Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4))SalesIncl "
 		"From "
@@ -2327,7 +2323,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count,"
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
+			 "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"    //salex excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
              "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2563,7 +2559,8 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"DayArchive.Size_Name,"
 		  	"Sum(DayArchive.Qty) Item_Count,"
    			"Cast(Sum(DayArchive.Qty * DayArchive.PRICE_LEVEL0 ) + Sum(coalesce(DAYARCHIVE.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(coalesce(Discounts_.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)  as Numeric(17,4)) PriceExc,"   //salex excl
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE ) ) +  Sum(coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0))+ COALESCE(Discounts_.TAX_ON_DISCOUNT,0)    as Numeric(17,4)) PriceExc," //salex excl
+
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(Discounts_.DISCOUNT_WITHOUT_TAX,0) + COALESCE(Discounts_.TAX_ON_DISCOUNT,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -2959,7 +2956,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Archive.Size_Name, "
            " SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-            "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc, "       //sales excl   //chng
+           "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl   //chng
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY)* Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3016,7 +3013,8 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"DayArchive.Size_Name, "
             "SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-            "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl chng
+            "Cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //sales excl chng
+
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
@@ -3157,7 +3155,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
+		"Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
 	        "Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3214,7 +3212,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount)as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
+            "Cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc," //sales excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
@@ -3408,7 +3406,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		   //sales excl
+              "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code, "
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -3475,7 +3473,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"			//sales excl
+            "Cast(Sum((abs(DayArchive.Qty) * DayArchive.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	//sales excl
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code, "
             "Cast(Sum(abs(DayArchive.QTY )* DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4218,7 +4216,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"(Extract (Hour From Archive.TIME_STAMP) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time ,"
 		 	"Archive.Qty Item_Count,"
 			"Cast((Archive.Qty * Archive.Price )+ (Archive.Discount) as Numeric(17,4)) Price,"
-            "Cast(((Archive.Qty * abs(Archive.BASE_PRICE) ) ) + (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,  "	 //sales excl
+             "Cast((abs(Archive.Qty) * Archive.BASE_PRICE  )  +  (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"  //sales excl
 			"Cast((abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost ,"
             "Cast(Null As VarChar(50)) Code, "
             "Cast((abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4285,7 +4283,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"(Extract (Hour From DayArchive.TIME_STAMP) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 		  	"DayArchive.Qty Item_Count,"
 			"Cast((DayArchive.Qty * DayArchive.Price ) + (DayArchive.Discount)   as Numeric(17,4)) Price,"
-            "Cast(((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)   ) ) + (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,  "		//sales excl
+            "Cast((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  )  +  (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,"  //sales excl
 			"Cast((abs(DayArchive.Qty) * DayArchive.Cost) as Numeric(17,4)) Cost , "
             "Cast(Null As VarChar(50)) Code, "
             "Cast((abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -4444,6 +4442,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 	qrConsumption->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrConsumption->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDateTime EndTime,TStrings *Terminals)
 {
@@ -4466,8 +4465,8 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From Archive.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From Archive.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-            "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
-			"max(Patron_Count) Patron_Count,"
+            "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"   	//sales excl
+            "max(Patron_Count) Patron_Count,"
 			"cast(SUM (Archive.QTY) as numeric(17,4))  SalesQty, "		   //sales Item count
             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE((AOT.VAT),0)+COALESCE((AOT.ServiceCharge),0) + COALESCE((AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
      		"From "
@@ -4577,7 +4576,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From DAYARCHIVE.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-           "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"	  //sales excl
+           "Cast(Sum((abs(DAYARCHIVE.Qty) * DAYARCHIVE.BASE_PRICE  ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"//sales excl
 			"max(Patron_Count) Patron_Count, "
 			"cast(SUM (DayArchive.QTY) as numeric(17,4)) SalesQty, "
             "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -5436,7 +5435,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.billed_by,                     "
 "            qpa.billed_at,                     "
 "            qpa.receipt_no  receipt_no,        "
-       " CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number else '' END voucher_number,"
+       " CASE WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) <> 'GIFT CARD' THEN qpa.voucher_number WHEN paymentPercent.PROPERTIES = '-5-' and UPPER(paymentPercent.pay_type) = 'GIFT CARD' then qpa.GiftCard_number  WHEN paymentPercent.PROPERTIES <> '-5-' THEN qpa.voucher_number else '' END voucher_number,"
             " CASE WHEN (UPPER(paymentPercent.pay_type) = 'CASH' AND coalesce(qpa.price,0) <> 0) THEN ABS(coalesce(aChange.CHANGE,0)+coalesce(aChange.CASHOUT,0)  )   when  (UPPER(paymentPercent.pay_type) = 'EFTPOS' )THEN ABS(coalesce(aChange.CASHOUT,0))  "
             " WHEN (UPPER(paymentPercent.pay_type) = 'CASH' ) THEN (coalesce(aChange.CASHOUT,0)) "
             "  ELSE 0 END change_recv,   "
@@ -5668,44 +5667,30 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
 {
 	qrSkimming->Close();
     qrSkimming->SQL->Text =
-            "Select "
-                "Refloat_Skim.Amount, "
+           
+  "Select "
+
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  -(Refloat_Skim.Amount)  else Refloat_Skim.Amount END) AS Amount, "
                 "Refloat_Skim.Staff, "
                 "Refloat_Skim.Terminal_Name, "
                 "Refloat_Skim.Time_Stamp, "
-                "Refloat_Skim.Transaction_type, "
-                "Refloat_Skim.Reasons, "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal ' THEN  'Withdrawal From Cash'   else Transaction_type END) AS Transaction_type, "
+                 "Refloat_Skim.Reasons, "
                 "zeds.initial_float, "
-                "zeds.Z_KEY "
+                "zeds.Z_KEY, "
+                "(CASE WHEN REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' AND REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' THEN  0  else Refloat_Skim.Amount  END) AS FloatAmount   "
             "From "
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
                 "Refloat_Skim.Time_Stamp >= :StartTime And "
-                "Refloat_Skim.Time_Stamp < :EndTime and "
-                "Refloat_Skim.REFLOAT_SKIM_KEY NOT IN( SELECT REFLOAT_SKIM_KEY FROM REFLOAT_SKIM WHERE (REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' AND REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
-                                                    "and Refloat_Skim.Time_Stamp >= :StartTime And Refloat_Skim.Time_Stamp < :EndTime) "
+                "Refloat_Skim.Time_Stamp < :EndTime "
+
             "Order by 3, 4;";
 
 
 	qrSkimming->ParamByName("StartTime")->AsDateTime	= StartTime;
-	qrSkimming->ParamByName("EndTime")->AsDateTime		= EndTime;
+	qrSkimming->ParamByName("EndTime")->AsDateTime		= EndTime;   
 
-
-
-
-
-
-/*
-
-	 while ( !qrSkimming->Eof )
-	 {
-
-    if(qrSkimming->FieldByName("Transaction_Type")->AsString == "Skim")
-        qrSkimming->FieldByName("Transaction_Type")->AsString = "Withdrawn";
-    else if(qrSkimming->FieldByName("Transaction_Type")->AsString == "Refloat")
-        qrSkimming->FieldByName("Transaction_Type")->AsString = "Deposit";
-     }
-  */
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupRefloat( TDateTime StartTime, TDateTime EndTime)
@@ -6008,10 +5993,12 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
                     "union all "
                     "Select ab.INVOICE_NUMBER, "
                     "case when (c.name is null) then 'Non-member transaction'else (c.name ||' '|| c.LAST_NAME) end billed_to "
-                    "From ARCHIVE "
-                    "left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
-                    "left join ARCBILL ab on ab.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY   "
-                    "Group By "
+                    "From ARCBILL ab "
+                    "left join ARCHIVE on ARCHIVE.ARCBILL_KEY = ab.ARCBILL_KEY "
+                   " left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
+                   " where "
+                   " ab.invoice_number  = :in "
+                   "Group By "
                     "1,2) c on c.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
 
            " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
@@ -6020,7 +6007,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
 		"Where "
-        
+
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and  "
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 			"ArcBill.Invoice_Number = :in and "
@@ -6037,6 +6024,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 
 		"Order By "
 			"4 Asc;";
+
 	qrBillPayments->ParamByName("in")->AsString = InvoiceNumber;
 
 	qrBillDetails->Close();
@@ -6080,6 +6068,7 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "
 			"Archive.ArcBill_Key = :ArcBill_Key And "
 			"Security.Security_Event = 'Ordered By' "
+
 		"Union All "
 
 		"Select "
@@ -6111,8 +6100,17 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'and "
 			"ArcSurcharge.ArcBill_Key = :ArcBill_Key And "
 			"Security.Security_Event = 'Billed By' "
+            "group by "
+	   	    "Item_Name,"
+	   	    "Price,"
+	   	   "Security.Time_Stamp,"
+	   	   "Security.Security_Ref,"
+	   	   "Security_Event,"
+           "Contacts.Name,"
+	   	   " Discount,"
+	      " DiscPrice "
 
-		"Order By "
+      "Order By "
 			"4,"
 			"2,"
 			"1,"
@@ -14402,9 +14400,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
 		"From "
-			"ArcBill  Left Join Security on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive on "
+			"ArcBill "
+                "Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
 			"Left Join ArcCategories on "
 				"Archive.Category_Key = ArcCategories.Category_Key "
@@ -14428,14 +14425,17 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
-
-          "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
+          "ARCHIVE.ARCHIVE_KEY not in (   select  ARCHIVE.ARCHIVE_KEY from ARCHIVE "
+          "left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF "
+         " where Archive.TIME_STAMP_BILLED >= :StartTime  "
+         "and Archive.TIME_STAMP_BILLED < :EndTime and ARCHIVE.PRICE=0 and SECURITY.SECURITY_EVENT='CancelY' or SECURITY.SECURITY_EVENT='Cancel')"
+          " and  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and  "
 
- "ARCHIVE.PRICE<>0 and "
+            //"ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"Archive.TIME_STAMP_BILLED < :EndTime  ";
+
 	if (Locations && Locations->Count > 0)
 	{
 		qrSalesSummary->SQL->Text	=	qrSalesSummary->SQL->Text + "and (" +
@@ -14480,12 +14480,11 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"ArcBill.Sales_Type,"
 			"Sum(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"Security Left Join ArcBill on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-		"Where "
+		"ARCBILL left join  PATRONCOUNT on ARCBILL.ARCBILL_KEY = PATRONCOUNT.ARCBILL_KEY "
+        "Where "
 			"ArcBill.Time_Stamp >= :StartTime and "
-			"ArcBill.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"ArcBill.Time_Stamp < :EndTime ";
+		
 	if (Locations && Locations->Count > 0)
 	{
 		qrPatronCount->SQL->Text	=	qrPatronCount->SQL->Text + "and (" +
@@ -14501,7 +14500,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrPatronCount->SQL->Text = qrPatronCount->SQL->Text +
 			"ArcBill.Sales_Type "
 		"Having "
-			"Count(Patron_Count) > 0 "
+			"Count(ArcBill.Patron_Count) > 0 "
 		"Order By "
 			"1,"
 			"ArcBill.Sales_Type";
@@ -14535,9 +14534,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"  Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Orders_Total ,	"
 			"Max(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"ArcBill  Left Join Security on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive on "
+		   	"ArcBill "
+                "Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
 			"Left Join ArcCategories on "
 				"Archive.Category_Key = ArcCategories.Category_Key "
@@ -14566,8 +14564,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
  "ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Billed By' ";
+			"Archive.TIME_STAMP_BILLED < :EndTime  " ;
+
 	if (Locations && Locations->Count > 0)
 	{
 		qrAveSummary->SQL->Text	=	qrAveSummary->SQL->Text + "and (" +
@@ -14612,15 +14610,16 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
 			"Cast('All Locations' As Varchar(25)) Location,";
 	}
-	qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
-   			"Count(ArcBill.ArcBill_Key) Bill_Count,"
+   //	qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
+   		qrDiscountSummary->SQL->Text = qrDiscountSummary->SQL->Text +
+               "CAST(Sum(Archive.Qty)AS NUMERIC(17,4)) Bill_Count," 
+            
             "cast(Sum(Archive.DISCOUNT_WITHOUT_TAX) as numeric(17, 4)) DISCOUNT_WITHOUT_TAX ,  "
 			 "  cast(Sum(Archive.TAX_ON_DISCOUNT) as numeric(17, 4)) TAX_ON_DISCOUNT  , "
 			"cast(Sum(Archive.Discount) as numeric(17, 4)) Discount_Total "
 		"From "
-			"Security Left Join ArcBill On "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive On "
+			"Arcbill "
+               "Left Join Archive On "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
             "inner JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
 		"FROM ARCORDERDISCOUNTS a "
@@ -14629,12 +14628,12 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 		"Where "
 
-         " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
+         "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary'  and "     //change include and
          "ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Discounted By' " ;
+			"Archive.TIME_STAMP_BILLED < :EndTime  " ;
+
 
 
    	if (Locations && Locations->Count > 0)
@@ -14681,15 +14680,15 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"Sum(Archive.Qty) Item_Count,"
 			"cast(Sum(Archive.Qty * Archive.PRICE_ADJUST - Archive.Qty * Archive.PRICE_LEVEL1) as numeric(17, 4)) Total "
 		"From "
-			"Archive  Left Join Security On "
-				"Security.Security_Ref = Archive.Security_Ref "
+			"Archive   Left Join Security On "
+			   "Security.Security_Ref = Archive.Security_Ref "
          "Left Join ARCBILL On "
 				 " Archive.ArcBill_Key=ArcBill.ArcBill_Key "
 	"Where "
             "Archive.Order_Type != 2 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Price Adjust' and "
+		 "Security.Security_Event = 'Price Adjust' and "
 			"Archive.Price <> Archive.Price_Level0  " ;
       	if (Locations && Locations->Count > 0)
 	{
@@ -14814,6 +14813,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		}
 	}
 }
+
 
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupFinanceDaily(TDateTime StartTime, TDateTime EndTime, TStrings *Terminals, TStrings *Locations)
@@ -17037,7 +17037,42 @@ void TdmMMReportData::SetupMezzanineSales(TDateTime StartTime, TDateTime EndTime
     qrMezzanine->ParamByName("EndTime")->AsDateTime	= EndTime;
 } 
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+  
+void TdmMMReportData::SetupMenuItemAndUniqueId(TStrings *Menus)
+{
+	 qrMenuItem->Close();
+	 qrMenuItem->SQL->Text =
+	 	"Select "
+	 		"Menu.Menu_Name,"
+	 		"Course.Course_Name,"
+			"Item.Item_Name, "
+            "Item.ITEM_IDENTIFIER "
+	 	"From "
+	 		"Menu Left Join Course On "
+	 			"Menu.Menu_Key = Course.Menu_Key "
+			"Left Join Item On "
+	 			"Course.Course_Key = Item.Course_Key "
+           "Where Menu.PALMABLE = 'T' ";
+	 if (Menus->Count > 0)
+	 {
+		qrMenuItem->SQL->Text	=	qrMenuItem->SQL->Text + "and (" +
+												ParamString(Menus->Count, "Menu.Menu_Name", "MenuParam") + ")";
+	 }
+	 qrMenuItem->SQL->Text		=	qrMenuItem->SQL->Text +
+		"Order By "
+			"Menu.Menu_Name,"
+			"Course.Course_Name,"
+			"Item.Item_Name";
 
+	for (int i=0; i<Menus->Count; i++)
+	{
+		qrMenuItem->ParamByName("MenuParam" + IntToStr(i))->AsString = Menus->Strings[i];
+	}
+}
+
+
+//--------------------------------------------------------
 
 
 

@@ -361,6 +361,7 @@ TGlobalSettings::TGlobalSettings()
     IsXeroEnabled = false;
     IsMYOBEnabled = false;
     SurchargeGLCode= "";
+    GiftCardGLCode = "";
 
     // MallExport Additional Settings
     ConsolidateReportPaths = "";
@@ -436,5 +437,13 @@ TGlobalSettings::TGlobalSettings()
     EmailCapturedForLoyaltyOperation = "";
     EnableEftPosPaymentSense = false;
     EftPosTerminalId = "";
+    RestartServiceAtZED = false;
+    GiftCard_Megaworld = 0;
+    CheckSaleMegaworld = 0;
+    GiftCard_MegaworldForDaily = 0;
+    CheckSaleMegaworldForDaily = 0;
+    SendNoTaxToSiHot = false;
+    RevenueCodeDiscountPart = "";
+    EnableOnlineOrdering = false;
 }
 

@@ -172,6 +172,10 @@ private:	// User declarations
     void RestructureBillForPatrons();
     bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
     void ApplyDiscount(TDiscount Discount);
+    AnsiString voucherNumber;
+    bool IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int CategoryKey);
+    bool IsCourseAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int coursekey);
+    int GettingCourseKey(Database::TDBTransaction &DBTransaction, int Itemkey);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);
@@ -202,6 +206,8 @@ __fastcall TfrmPaymentType(TComponent* Owner,TPaymentTransaction &inCurrentTrans
     void ProcessThorVouchers();
   bool IsMemberSelected;
   bool ThorMemberIsUnregistered();
+  bool IsReceipeAdded(TList *Orders);
+  bool IsItemAssignToPrinter(TList *Orders);
 };
 
 class TPaymentTypeTouchButton : public TTouchBtn

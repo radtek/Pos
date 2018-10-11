@@ -74,6 +74,20 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       ParentFont = False
       WordWrap = True
     end
+    object lblNoTaxToSihot: TLabel
+      Left = 310
+      Top = 544
+      Width = 201
+      Height = 22
+      Caption = 'Send No Tax To Sihot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16
       Top = 88
@@ -404,7 +418,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbOracleInterfaceIP: TTouchBtn
       Left = 16
-      Top = 532
+      Top = 587
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -423,7 +437,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbOracleInterfacePort: TTouchBtn
       Left = 310
-      Top = 532
+      Top = 587
       Width = 259
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -442,7 +456,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbTimeOut: TTouchBtn
       Left = 16
-      Top = 587
+      Top = 532
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -458,6 +472,14 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbTimeOutMouseClick
+    end
+    object cbNoTaxToSihot: TCheckBox
+      Left = 558
+      Top = 550
+      Width = 97
+      Height = 17
+      TabOrder = 21
+      OnClick = cbNoTaxToSihotClick
     end
   end
   object Panel2: TPanel

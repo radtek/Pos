@@ -2983,6 +2983,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "Surcharge GL Code.\r"
                     "Default is blank",
                     vmg3rdPartyInterface, "" );
+      SetVarStr( DBTransaction, vmGiftCardGLCode, "GiftCard GL Code",
+                    "Gift GL Code.\r"
+                    "Default is blank",
+                    vmg3rdPartyInterface, "" );
             SetVarBool(
             DBTransaction,
             vmSetTextFontSize,
@@ -3397,6 +3401,11 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmEnableEftPosPaymentSense, "Enable Payment Sense Integration", "Tells whether payment sense eftpos is enabled.\r"
          "Default is False", vmg3rdPartyInterface, false);
         SetVarStr(DBTransaction, vmEftPosTerminalId,  "Eftpos TPI", "Eftpos Terminal Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmPMSAPIKey,  "PMS API KEY", "This API Key can be used for PMS integration is provided", vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction,vmRestartServiceAtZED,"Restart Service", "This setting will restart service at ZED", vmgPOS, false);
+        SetVarBool(DBTransaction,vmSendNoTaxToSihot,"No Tax to SiHot", "This setting will Postings to SiHot with No Tax", vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmRevenueCodeDiscountPart, "Revenue Code for discount", "Revenue Code for discount", vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction,vmEnableOnlineOrdering,"Enable Online Ordering","Enable or disables online ordering access from pos", vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

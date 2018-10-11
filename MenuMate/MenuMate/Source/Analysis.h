@@ -214,7 +214,7 @@ private:	// User declarations
     void CalculateNextday(TDateTime &nextDay);
     void GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate);
     //--------------------------------------------------
-    void GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,TDateTime startTime,TDateTime endTime);
+    void GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,TDateTime startTime,TDateTime endTime, double &purchasedGiftCard);
     bool CheckContactsAdjustmentType(Database::TDBTransaction &DBTransaction, int contacts, int type); //MM5610
     void AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,double taxAmount);
     void GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTransaction,double &TabCreditReceived, double &TabRefundReceived,
@@ -232,6 +232,10 @@ private:	// User declarations
     void UpdateAccumulatedSales(Database::TDBTransaction &DBTransaction);
     void MakeZEDLogFile(TStringList *List);
     void UpdateStallCodeForEviaMall(int fieldindex);
+    bool RestartFireBirdService();
+    int UpdateZKeyInArcMallExportForMegaWorld();
+    bool DuplicateEntryInTable;
+
 public:		// User declarations
 	bool ZedCancel;
 	bool ZedCompleted;

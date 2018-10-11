@@ -274,11 +274,11 @@ public:
 //**************************************************
 
 __fastcall TfrmMenuEdit::TfrmMenuEdit(TComponent* Owner)
-: TForm(Owner),
-frmPreview(new TfrmPreview(NULL)),
-new_menu_element_key_generator_(menu_key_generator_t::Instance()),
-itemsList(new TStringList),
-forcedSideList(new TList)
+                        : TForm(Owner),
+                            frmPreview(new TfrmPreview(NULL)),
+                            new_menu_element_key_generator_(menu_key_generator_t::Instance()),
+                            itemsList(new TStringList),
+                            forcedSideList(new TList)
 {
 	new_menu_element_key_generator_->Reset(-2, -1);
 
@@ -347,7 +347,7 @@ void __fastcall TfrmMenuEdit::FormShow(TObject *Sender)
 	pcItemSizeDetails->ActivePage	= tsItemSizePrice;
 	ClearingTree						= false;
     ServingCoursesList = new TStringList;
-	DeletedServingCoursesInfo.DeletedServingCourseVector.clear();
+	DeletedServingCoursesInfo.DeletedServingCourseVector.clear(); 
 
     //store no of price Levels
     if (qrGetNoOfPriceLevels->Database->Connected && !qrGetNoOfPriceLevels->Transaction->InTransaction)
@@ -2502,6 +2502,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		}
 
 		cb3rdPartyGroupCode->Text = ItemSizeData->ThirdPartyCode;
+        tntedItemSizeIdentifier->Text = IntToStr(ItemSizeData->ItemSizeIdentifier);
         if(ItemSizeData->RevenueCode != 0)
         {
             cbRevenueGroupCode->Text = "";
@@ -2629,6 +2630,8 @@ void TfrmMenuEdit::RefreshItem(TItemNode *ItemData, bool isItemTranfer)
 	tntedKitchenName->Text			= ItemData->KitchenName;
 	tntedItemHandheldName->Text			= ItemData->HandheldName;
 	tntedItemReceiptName->Text			= ItemData->ReceiptName;
+    tntedItemIdentifier->Text =  IntToStr(ItemData->ItemIdentifier); 
+
 	try
 	{
 		cbItemEnable->OnClick		= NULL;                                         
@@ -3442,6 +3445,7 @@ int previousOptionGroup )
 void __fastcall TfrmMenuEdit::tvMenuChange(TObject *Sender,
 TTreeNode *Node)
 {
+    btnSizesEdit->Enabled = true;
 	PageControl4->ActivePage = tsProperties;
 	RefreshMenuDetails();
 }
@@ -5218,7 +5222,7 @@ void __fastcall TfrmMenuEdit::btnAddSizeClick(TObject *Sender)
 			int Index = InsertSize(NewGlassName);
 			RefreshMenuDetails();
 			lbAvailableSizes->ItemIndex = UpdateSizeItem(NewGlassName);
-
+			btnSizesEdit->Enabled = true;
 		}
 	}
 }
@@ -6448,6 +6452,9 @@ void __fastcall TfrmMenuEdit::btnCommitClick(TObject *Sender)
 	}
 	if (Application->MessageBox("Are your sure you want to force this menu? This will cause Palms to lose synch", "MenuMate", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 	{
+        if(chbAvailableOnPalm->Checked)
+            SetItemAndItemSizeIdentifier();
+            
 		AnsiString FilePath = CurrentConnection.ServerPath + "\\Menu Import";
 		AnsiString BackupFilePath = CurrentConnection.ServerPath + "\\Menu Backup";
 		if (!DirectoryExists(FilePath))
@@ -7378,7 +7385,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-
 			resetMenuTaxProfileProvider( dmMMData->dbMenuMate );
 
 			ClearTree();
@@ -7412,7 +7418,6 @@ bool TfrmMenuEdit::NewMenu()
 			rbFoodMenu->Checked = false;
 			rbDrinkMenu->Checked = false;
 			chbAvailableOnPalm->Checked = true;
-
 			tvMenu->Selected = MenuNode;
 			return true;
 		}
@@ -7450,6 +7455,7 @@ void __fastcall TfrmMenuEdit::btnEditMenuClick(TObject *Sender)
 			MenuNode->Text = NewMenuName;
 			MenuData->LongDescription = NewMenuName;
 			MenuEdited = true;
+            ResetItemAndItemSizeIdentifier();
 		}
 	}
 }
@@ -11379,8 +11385,8 @@ TList*           inForcedSideList)
 //---------------------------------------------------------------------------
 
 TTreeNode* TfrmMenuEdit::CreateItemTreeNode( TTreeNode*        inCourseNode,
-Menu::TItemInfo*  inItemInfo,
-TList*            inForcedSideList )
+                        Menu::TItemInfo*  inItemInfo,
+                        TList*            inForcedSideList )
 {
 	TTreeNode *itemNode		  = ((TEditorNode *)inCourseNode->Data)->AddNode(ITEM_NODE, false);
 	//:::::::::::::::::::::::::::::::::::::::::::::
@@ -11399,6 +11405,7 @@ TList*            inForcedSideList )
 	itemData->PrinterOptions.PrintFont		    = inItemInfo->Print_Font;
 	itemData->PrinterOptions.PrintDoubleWidth  = inItemInfo->Print_Double_Width;
 	itemData->PrinterOptions.PrintDoubleHeight = inItemInfo->Print_Double_Height;
+    itemData->ItemIdentifier = inItemInfo->Itemidentifier;
 
 	if( inItemInfo->Enabled )
 		itemData->Enable();
@@ -11520,6 +11527,7 @@ TTreeNode *TfrmMenuEdit::AddMenuSize(TTreeNode *ItemNode, Menu::TItemSizeInfo *I
     ItemSizeData->CostForPoints = ItemSizeInfo->PriceForPoints;
     ItemSizeData->RevenueCode = ItemSizeInfo->RevenueCode;
     ItemSizeData->RevenueCodeDescription = ItemSizeInfo->RevenueCodeDescription;
+    ItemSizeData->ItemSizeIdentifier = ItemSizeInfo->ItemSizeIdentifier;
 
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeInfo->ItemSizePriceLevels.begin();
     std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeInfo->ItemSizePriceLevels.end();
@@ -12090,7 +12098,8 @@ bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandl
 			itemInfo.Print_Colour,
 			itemInfo.Print_Font,
 			itemInfo.Print_Double_Width,
-			itemInfo.Print_Double_Height );
+			itemInfo.Print_Double_Height,
+            itemInfo.Itemidentifier );
 
 			itemInfo.Item_Name = itemName;
 			itemInfo.Item_Kitchen_Name = itemKitchenName;
@@ -12259,7 +12268,8 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 			itemSizeInfo.CanBePaidForUsingPoints,
 			itemSizeInfo.DefaultPatronCount,
             itemSizeInfo.PriceForPoints,
-            itemSizeInfo.RevenueCode);
+            itemSizeInfo.RevenueCode,
+            itemSizeInfo.ItemSizeIdentifier);
             itemSizeInfo.RevenueCodeDescription = GetRevenueDecriptionFromCode(itemSizeInfo.RevenueCode);
 			itemSizeInfo.Third_Party_Code = GetThirdPartyCodeFromKeyFromFile(&thirdPartyCodes, itemSizeInfo.ThirdPartyCodes_Key);
 			itemSizeInfo.Size_Name = itemSizeName;
@@ -12648,7 +12658,8 @@ __int32 TfrmMenuEdit::SaveMenuCourseItem( TSaveMenu* inSaveMenu, __int32 inCours
 	inItemData->PrinterOptions.PrintColour,
 	inItemData->PrinterOptions.PrintFont,
 	inItemData->PrinterOptions.PrintDoubleWidth,
-	inItemData->PrinterOptions.PrintDoubleHeight
+	inItemData->PrinterOptions.PrintDoubleHeight,
+    inItemData->ItemIdentifier
 	);
 
 
@@ -12764,7 +12775,8 @@ __int32 TfrmMenuEdit::SaveMenuItemSize( TSaveMenu* inSaveMenu, __int32 inItemID,
 	inDCData->CanBePaidForUsingPoints,
 	inDCData->DefaultPatronCount,
 	inDCData->CostForPoints,
-    inDCData->RevenueCode);
+    inDCData->RevenueCode,
+    inDCData->ItemSizeIdentifier);
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuBreakdownCategories( TSaveMenu* inSaveMenu, __int32 inItemSizeID, TItemSizeNode* inDCData )
@@ -13225,8 +13237,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
             clRed,
             0,
             0,   //double width
-            0    //double height
-            );
+            0,    //double height
+            0);  //ItemId
 
 
         return result;
@@ -13283,7 +13295,8 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
                             0, //CanBePaidForUsingPoints
                             0,  //DefaultPatronCount
                             itemSize.itemSizePrice,        // Price for points
-                            0);
+                            0,
+                            0);    //itemsizeid
 
                     //save the item recipe
                      CsvSaveMenuItemSizeRecipes(     inSaveMenu, xmlitemSizeID, itemSize );
@@ -13774,52 +13787,6 @@ Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency sale
     }
     return priceExcl;
 }
-
-/*
-void __fastcall TfrmMenuEdit::cbRevenueGroupCodeChange(TObject *Sender)
-{
-    int codeAlready = 0;
-	if (tvMenu->Selected)
-	{
-        if(cbRevenueGroupCode->Text.Length() > 0)
-        {
-            if (((TEditorNode *)tvMenu->Selected->Data)->NodeType == ITEM_SIZE_NODE)
-            {
-                TItemSizeNode *ItemSizeData = (TItemSizeNode *)tvMenu->Selected->Data;
-                if(codeAlready == 0 && ItemSizeData->RevenueCode)
-                {
-                    codeAlready = ItemSizeData->RevenueCode;
-                }
-                bool correctData = false;
-                for(int i = 0; i < cbRevenueGroupCode->Items->Count; i += 1)
-                {
-                    if(cbRevenueGroupCode->Items->Strings[i] == cbRevenueGroupCode->Text)
-                    {
-                        correctData = true;
-                        break;
-                    }
-                }
-                if(correctData)
-                {
-                    AnsiString stringVal = cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1);
-                    ItemSizeData->RevenueCode = StrToInt(cbRevenueGroupCode->Text.SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
-                    //ItemSizeData->RevenueCodeDescription = revenueCodesMap[ItemSizeData->RevenueCode];
-                }
-                else
-                {
-                    Application->MessageBox("Please select Revenue Codes from drop down list only.", "Error", MB_OK + MB_ICONWARNING);
-                    AnsiString revenueCodeOld = "";
-                    revenueCodeOld = ItemSizeData->RevenueCode;
-                    revenueCodeOld += "(";
-                    revenueCodeOld += revenueCodesMap[codeAlready];
-                    revenueCodeOld += ")";
-                    cbRevenueGroupCode->Text = revenueCodeOld;
-                }
-            }
-        }
-	}
-}
-*/
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuRevenueCodes(TSaveMenu* inSaveMenu, TTreeNode* inMenuNode)
 {
@@ -13969,5 +13936,216 @@ void __fastcall TfrmMenuEdit::cbRevenueGroupCodeSelect(TObject *Sender)
             StrToInt(cbRevenueGroupCode->Items->Strings[cbRevenueGroupCode->ItemIndex].SubString(1,cbRevenueGroupCode->Text.Pos("(")-1));
 	}
 }
-//---------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------
+ void __fastcall TfrmMenuEdit::lbAvailableSizesClick(TObject *Sender)
+ {
+        bool ItemSizeExists = false;
+        btnSizesEdit->Enabled = true;
+        TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+        AnsiString OldSizeName = lbAvailableSizes->Items->Strings[lbAvailableSizes->ItemIndex];
+        for (int i =FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+		 {
+			TTreeNode *CourseNode = MenuNode->Item[i];
+			for (int j=0; j<CourseNode->Count; j++)
+			{
+				TTreeNode *ItemNode = CourseNode->Item[j];
+				for (int k=0; k<ItemNode->Count; k++)
+				{
+					TTreeNode *ItemSizeNode = ItemNode->Item[k];
+					TEditorNode *ItemSizeData = (TEditorNode *)ItemSizeNode->Data;
+					if (ItemSizeData->NodeType == ITEM_SIZE_NODE)
+					{
+						if (ItemSizeData->LongDescription == OldSizeName)
+						{
+							ItemSizeExists = true;
+                            break;
+						}
+					}
+                   	if (ItemSizeExists) break;
+				}
+               	if (ItemSizeExists) break;
+			}
+
+		}
+        if (ItemSizeExists)
+		{
+			Application->MessageBox("An item size is already assigned to items and can't be edited.", "Error",
+			MB_OK + MB_ICONERROR);
+            btnSizesEdit->Enabled = false;
+
+
+		}
+        else
+        {
+
+         btnSizesEdit->Enabled = true;
+
+        }
+
+ }
+ //-------------------------------------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnGenItemIDClick(TObject *Sender)
+{
+    AnsiString ItemIdentifier = "SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+
+                    if(!ItemData->ItemIdentifier)
+                        ItemData->ItemIdentifier = GetItemIdentifier(ItemIdentifier);
+                }
+            }
+        }
+        MenuEdited = true;
+    }
+}
+//---------------------------------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::btnGenItemSizeIDClick(TObject *Sender)
+{
+    AnsiString ItemSizeIdentifier = "SELECT GEN_ID(GEN_ITEMSIZE_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                            if(!ItemSizeData->ItemSizeIdentifier)
+                                ItemSizeData->ItemSizeIdentifier = GetItemIdentifier(ItemSizeIdentifier);
+                        }
+                    }
+                }
+            }
+        }
+        MenuEdited = true;
+    }
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::ItemIdentifierChange(TObject *Sender)
+{
+    TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
+	if (CurrentNodeData->NodeType == ITEM_NODE)
+	{
+		TItemNode *ItemData		= (TItemNode *)CurrentNodeData;
+		ItemData->ItemIdentifier	= StrToInt(tntedItemIdentifier->Text);
+	}
+}
+//-----------------------------------------------------------------------------
+void __fastcall TfrmMenuEdit::ItemSizeIdentifierChange(TObject *Sender)
+{
+    TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
+	if (CurrentNodeData->NodeType == ITEM_SIZE_NODE)
+	{
+        TItemSizeNode   *dcData = (TItemSizeNode *)CurrentNodeData;
+        dcData->ItemSizeIdentifier = StrToInt(tntedItemSizeIdentifier->Text);
+	}
+}
+//----------------------------------------------------------------------------
+int TfrmMenuEdit::GetItemIdentifier(AnsiString genQuery)
+{
+    int ItemIdentifier = 0;
+    if (qrItemIdentifier->Database->Connected && !qrItemIdentifier->Transaction->InTransaction)
+    {
+        qrItemIdentifier->Transaction->StartTransaction();
+        qrItemIdentifier->Close();
+        qrItemIdentifier->SQL->Text = genQuery;
+        qrItemIdentifier->ExecQuery();
+        ItemIdentifier = qrItemIdentifier->Fields[0]->AsInteger;
+        qrItemIdentifier->Transaction->Commit();
+    }
+    return ItemIdentifier;
+}
+//---------------------------------------------------------------------------
+void TfrmMenuEdit::ResetItemAndItemSizeIdentifier()
+{
+     TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+                    ItemData->ItemIdentifier = 0;
+
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+                            ItemSizeData->ItemSizeIdentifier = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------------------
+void TfrmMenuEdit::SetItemAndItemSizeIdentifier()
+{
+    AnsiString ItemSizeIdentifier = "SELECT GEN_ID(GEN_ITEMSIZE_IDENTIFIER, 1) FROM RDB$DATABASE ";
+    AnsiString ItemIdentifier = "SELECT GEN_ID(GEN_ITEM_IDENTIFIER, 1) FROM RDB$DATABASE ";
+
+    TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
+    for (int i=FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
+    {
+        TTreeNode *CourseNode = MenuNode->Item[i];
+        if (((TEditorNode *)CourseNode->Data)->NodeType == COURSE_NODE)
+        {
+            for (int j=0; j<CourseNode->Count; j++)
+            {
+                TTreeNode *ItemNode = CourseNode->Item[j];
+
+                if (((TEditorNode *)ItemNode->Data)->NodeType == ITEM_NODE)
+                {
+                    TItemNode *ItemData = ( TItemNode* )ItemNode->Data;
+
+                    if(!ItemData->ItemIdentifier)
+                        ItemData->ItemIdentifier = GetItemIdentifier(ItemIdentifier);
+
+                    for (int k=0; k<ItemNode->Count; k++)
+                    {
+                        TTreeNode *ItemSizeNode = ItemNode->Item[k];
+                        if (ItemSizeNode->Data != tvMenu->Selected->Data)
+                        {
+                            TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
+
+                            if(!ItemSizeData->ItemSizeIdentifier)
+                                ItemSizeData->ItemSizeIdentifier = GetItemIdentifier(ItemSizeIdentifier);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

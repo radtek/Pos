@@ -22,7 +22,7 @@ void TSiHotInterface::initSIClient()
                             useWSDL, siHotURL, NULL );
 }
 //---------------------------------------------------------------------------
-TRoomResponse TSiHotInterface::SendRoomRequest(TRoomRequest _roomRequest, int timeOut)
+TRoomResponse TSiHotInterface::SendRoomRequest(TRoomRequest _roomRequest, int timeOut, UnicodeString apiKey)
 {
     TRoomResponse roomResponse;
     try
@@ -36,7 +36,7 @@ TRoomResponse TSiHotInterface::SendRoomRequest(TRoomRequest _roomRequest, int ti
         CoInitialize(NULL);
         // Send Request and get Response
         timeOut = timeOut * 1000;
-        roomDetails = siHotClient->GetRoomDetails(roomRequest,timeOut);
+        roomDetails = siHotClient->GetRoomDetails(roomRequest,timeOut,apiKey);
         ConvertSiHotRoomResponse(roomDetails, roomResponse);
         return roomResponse;
     }
@@ -81,7 +81,7 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
     }
 }
 //---------------------------------------------------------------------------
-TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut)
+TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey)
 {
     TRoomChargeResponse roomChargeResponse;
     roomChargeResponse.IsSuccessful = false;
@@ -125,7 +125,7 @@ TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge,
         roomChargeDetails->Total = _roomCharge.Total;
         CoInitialize(NULL);
         timeOut = timeOut * 1000;
-        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut);
+        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut,apiKey);
         roomChargeResponse.IsSuccessful = roomResponse->IsSuccessful;
         roomChargeResponse.ResponseMessage = roomResponse->Response;
         return roomChargeResponse;

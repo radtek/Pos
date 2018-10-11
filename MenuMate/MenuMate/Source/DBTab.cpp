@@ -14,6 +14,7 @@
 #include "TableManager.h"
 #include "ManagerPatron.h"
 #include <Memory>
+#include "DeviceRealTerminal.h"
 
 
 
@@ -2313,5 +2314,66 @@ std::vector<TPatronType> TDBTab::GetDelayedPatronCount(Database::TDBTransaction 
 		throw;
 	}
     return patrons;
+}
+//-----------------------------------------------------------------------------
+bool TDBTab::HasOnlineOrders(int tabKey)
+{
+    bool retValue = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
+                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+            retValue = true;
+        }
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       MessageBox(ex.Message,"",MB_OK);
+       TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+       dbTransaction.Rollback();
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+UnicodeString TDBTab::GetMemberEmail(int tabKey)
+{
+    UnicodeString email = "";
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
+                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ExecQuery();
+        if(query->RecordCount > 0)
+        {
+           if(query->FieldByName("EMAIL")->AsString != NULL && query->FieldByName("EMAIL")->AsString != "")
+               email = query->FieldByName("EMAIL")->AsString;
+           else
+              MessageBox("Membership details for the order are missing.","Info",MB_OK+MB_ICONINFORMATION);
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       dbTransaction.Rollback();
+    }
+    return email;
 }
 //-----------------------------------------------------------------------------

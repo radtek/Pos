@@ -61,6 +61,10 @@ Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignore
 Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Printers.dat; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\OracleTCPServer.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\OnlineOrderingApp.exe.config; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.AspNet.SignalR.Client.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\NewtonSoft.Json.dll; DestDir: {app}; Flags: ignoreversion;
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\LOYALTY - 6 Steps to Menumate Loyalty.pdf; DestDir: {app}\Documentation
 Source: {#GetEnv('BASEDIR')}\Static Files\Documentation\MYOB - Premier Integration (Australian Version).pdf; DestDir: {app}\Documentation
@@ -74,6 +78,8 @@ Source: {#GetEnv('BASEDIR')}\Static Files\UnzDLL.dll; DestDir: {app}; Flags: ign
 Source: {#GetEnv('BASEDIR')}\Static Files\ZipDll.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dbexpint.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\BORLNDMM.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\CC32100MT.DLL; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\windowsxp-kb4019276-x86-embedded-enu_3822fc1692076429a7dc051b00213d5e1240ce3d.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Microsoft.PointOfService.dll; DestDir: {app}; Flags: ignoreversion
  Source: {#GetEnv('BASEDIR')}\Static Files\FiscalIntegration.dll; DestDir: {app}; Flags: ignoreversion

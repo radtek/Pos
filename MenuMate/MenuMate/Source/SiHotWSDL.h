@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (29/05/2018 6:10:50 p.m. - - $Rev: 25127 $)
+// (4/07/2018 1:04:11 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -865,8 +865,8 @@ __published:
 __interface INTERFACE_UUID("{D882000E-B7D1-AD60-7B83-61CBF026BB1B}") ISiHotIntegrationWebService : public IInvokable
 {
 public:
-  virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest, const int timeOut) = 0; 
-  virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails, const int timeOut) = 0; 
+  virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest, const int timeOut, const UnicodeString apiKey) = 0; 
+  virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails, const int timeOut, const UnicodeString apiKey) = 0; 
   virtual bool            ValidateCreadentials(const UnicodeString address, const int port, const int transno) = 0; 
 };
 typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebService;
@@ -874,7 +874,7 @@ typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebSer
 _di_ISiHotIntegrationWebService GetISiHotIntegrationWebService(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__SiHotWSDL
+};     // NS__
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__SiHotWSDL;

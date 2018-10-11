@@ -53,6 +53,7 @@
 #include "StringTools.h"
 #include "MallFactory.h"
 #include "FiscalPrinterAdapter.h"
+#include "DbMegaworldMall.h"
 
 #include <string>
 #include <cassert>
@@ -63,6 +64,7 @@
 #include <dirent.h>
 
 #include <Math.hpp>
+#include "ServicesManager.h"
 // ---------------------------------------------------------------------------
 #pragma comment(lib, "wininet")
 #pragma package(smart_init)
@@ -1818,7 +1820,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             int Zedkey = zedKey;
 
 			IBArchive->Close();
-			IBArchive->SQL->Text = "insert into ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
+			IBArchive->SQL->Text = "INSERT INTO ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
 			"ARCHIVE.MENU_NAME, ARCHIVE.COURSE_NAME, ARCHIVE.ITEM_NAME, "
 			"ARCHIVE.ITEM_SHORT_NAME, ARCHIVE.ITEM_ID, ARCHIVE.ITEM_CATEGORY, "
 			"ARCHIVE.SIZE_NAME, ARCHIVE.TABLE_NUMBER, ARCHIVE.TABLE_NAME, " "ARCHIVE.SEAT_NUMBER, ARCHIVE.SERVER_NAME, ARCHIVE.TAB_NAME, "
@@ -1829,8 +1831,15 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"ARCHIVE.COST_GST_PERCENT, ARCHIVE.QTY, ARCHIVE.DISCOUNT, "
 			"ARCHIVE.REDEEMED, ARCHIVE.POINTS_PERCENT, ARCHIVE.POINTS_EARNED, "
 			"ARCHIVE.LOYALTY_KEY,ARCHIVE.THIRDPARTYCODES_KEY,ARCHIVE.CATEGORY_KEY,ARCHIVE.DISCOUNT_REASON, "
-			"ARCHIVE.PRICE_LEVEL0, ARCHIVE.PRICE_LEVEL1,ARCHIVE.SERVINGCOURSES_KEY,ARCHIVE.PLU,ARCHIVE.CHIT_NAME,ARCHIVE.CHIT_OPTION,ARCHIVE.BASE_PRICE,ARCHIVE.DISCOUNT_WITHOUT_TAX,ARCHIVE.TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST) "
-			"values " "(:ARCHIVE_KEY, :ARCBILL_KEY, :TERMINAL_NAME, :MENU_NAME, :COURSE_NAME, " ":ITEM_NAME, :ITEM_SHORT_NAME, :ITEM_ID, :ITEM_CATEGORY, :SIZE_NAME, " ":TABLE_NUMBER, :TABLE_NAME, :SEAT_NUMBER, :SERVER_NAME, :TAB_NAME, " ":LOYALTY_NAME, :ORDER_TYPE, :TIME_STAMP, :TIME_STAMP_BILLED, " ":ORDER_LOCATION, :PRICE, :COST, :HAPPY_HOUR, " ":NOTE, :SECURITY_REF, :TIME_KEY, :GST_PERCENT, :COST_GST_PERCENT, " ":QTY, :DISCOUNT, :REDEEMED, :POINTS_PERCENT, :POINTS_EARNED, " ":LOYALTY_KEY, :THIRDPARTYCODES_KEY, :CATEGORY_KEY, :DISCOUNT_REASON," ":PRICE_LEVEL0, :PRICE_LEVEL1, :SERVINGCOURSES_KEY, :PLU, :CHIT_NAME, :CHIT_OPTION,:BASE_PRICE,:DISCOUNT_WITHOUT_TAX,:TAX_ON_DISCOUNT,:PRICE_INCL, :PRICE_ADJUST); ";
+			"ARCHIVE.PRICE_LEVEL0, ARCHIVE.PRICE_LEVEL1,ARCHIVE.SERVINGCOURSES_KEY,ARCHIVE.PLU,ARCHIVE.CHIT_NAME,ARCHIVE.CHIT_OPTION,ARCHIVE.BASE_PRICE, "
+            "ARCHIVE.DISCOUNT_WITHOUT_TAX,ARCHIVE.TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ORDER_GUID ) "
+
+			"VALUES " "(:ARCHIVE_KEY, :ARCBILL_KEY, :TERMINAL_NAME, :MENU_NAME, :COURSE_NAME, " ":ITEM_NAME, :ITEM_SHORT_NAME, :ITEM_ID, :ITEM_CATEGORY, "
+                    " :SIZE_NAME, " ":TABLE_NUMBER, :TABLE_NAME, :SEAT_NUMBER, :SERVER_NAME, :TAB_NAME, " ":LOYALTY_NAME, :ORDER_TYPE, :TIME_STAMP, "
+                    ":TIME_STAMP_BILLED, " ":ORDER_LOCATION, :PRICE, :COST, :HAPPY_HOUR, " ":NOTE, :SECURITY_REF, :TIME_KEY, :GST_PERCENT, :COST_GST_PERCENT, "
+                     ":QTY, :DISCOUNT, :REDEEMED, :POINTS_PERCENT, :POINTS_EARNED, " ":LOYALTY_KEY, :THIRDPARTYCODES_KEY, :CATEGORY_KEY, :DISCOUNT_REASON," ":PRICE_LEVEL0, "
+                     ":PRICE_LEVEL1, :SERVINGCOURSES_KEY, :PLU, :CHIT_NAME, :CHIT_OPTION,:BASE_PRICE,:DISCOUNT_WITHOUT_TAX,:TAX_ON_DISCOUNT,:PRICE_INCL, "
+                     ":PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ORDER_GUID ); ";
 
 			IBArcBill->Close();
 			IBArcBill->SQL->Text = "insert into \"ARCBILL\" "
@@ -1839,12 +1848,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"RECEIPT\", \"ARCBILL\".\"SECURITY_REF\", \"ARCBILL\".\"SALES_TYPE\", "
 			"\"ARCBILL\".\"BILLED_LOCATION\", \"ARCBILL\".\"INVOICE_NUMBER\", \"ARCBILL\".\"INVOICE_KEY\","
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
-            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" , \"ARCBILL\".\"REFUND_REFRECEIPT\", \"ARCBILL\".\"IS_POSTED_TO_PANASONIC_SERVER\", \"ARCBILL\".\"CASH_DRAWER_OPENED\" ) "
+            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" , \"ARCBILL\".\"REFUND_REFRECEIPT\", "
+            " \"ARCBILL\".\"IS_POSTED_TO_PANASONIC_SERVER\", \"ARCBILL\".\"CASH_DRAWER_OPENED\" , \"ARCBILL\".\"EFTPOS_SERVICE_ID\") "
             "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
-            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\", :\"REFUND_REFRECEIPT\", :\"IS_POSTED_TO_PANASONIC_SERVER\", :\"CASH_DRAWER_OPENED\")";
+            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\", "
+            " :\"REFUND_REFRECEIPT\", :\"IS_POSTED_TO_PANASONIC_SERVER\", :\"CASH_DRAWER_OPENED\", :\"EFTPOS_SERVICE_ID\")";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
@@ -2355,8 +2366,10 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     Csv.SaveToFile(ExportFile);
                 }
 
-                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
-                {   zedLogsList->Add("updating zed table for mall");
+                if((TGlobalSettings::Instance().MallIndex == 7 && !DuplicateEntryInTable) ||
+                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7))
+                {
+                    zedLogsList->Add("updating zed table for mall");
                     UpdateArcMallExport(DBTransaction);
                 }
 
@@ -2795,6 +2808,10 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    bool canGoBeyond = RestartFireBirdService();
+    if(!canGoBeyond)
+       return;
+
     if(!TDeviceRealTerminal::Instance().OpenDatabases())
     {
         MessageBox("Till not closed at this time. \r"
@@ -2859,7 +2876,22 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 	else
 	{
 		bool UpdateingStock = false;
+        if(TGlobalSettings::Instance().MallIndex == 7)
+        {
+            TIBSQL *IBSelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBSelectQuery->Close();
+            IBSelectQuery->SQL->Text = "SELECT A.ME_HOURLY_KEY "
+                                          "FROM MALLEXPORT_HOURLY A";
 
+            IBSelectQuery->ExecQuery();
+
+            if(!IBSelectQuery->RecordCount)
+            {
+                MessageBox("Zed Cannot be Processed as there is No Sales Data ", "Zed Processing",MB_OK + MB_ICONERROR);
+                return;
+            }
+
+        }
 		std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
 		Processing->Message = "Please Wait...";
 		Processing->Show();
@@ -3448,6 +3480,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         double floatAmount = 0;
         double PurchasedPoints = 0;
         double PurchasedVoucher = 0;
+        double PurchasedGiftCard = 0;
         double TipAmount = 0;
         double tip = 0.0;
         double SurchargeAmount=0;
@@ -3507,7 +3540,8 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
             AddInvoiceItem(XeroInvoiceDetail,"Tab Deposit/Credit Received", -1 * TabCreditReceived,tabCreditReceivedGLCode,0);
         }
 
-        GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+        GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay, PurchasedGiftCard);
+        
         if(PurchasedPoints != 0)
         {
           catTotal += PurchasedPoints;
@@ -3517,6 +3551,12 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         {
           catTotal += PurchasedVoucher;
           AddInvoiceItem(XeroInvoiceDetail,"Voucher Purchased", PurchasedVoucher,TGlobalSettings::Instance().VoucherPurchasedGLCode,0);
+        }
+		
+		if(PurchasedGiftCard != 0)
+        {
+          catTotal += PurchasedGiftCard;
+          AddInvoiceItem(XeroInvoiceDetail,"Gift Card Purchased", PurchasedGiftCard,TGlobalSettings::Instance().GiftCardGLCode,0);
         }
 
         bool addFloatAdjustmentToPayments = false;
@@ -3830,6 +3870,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           double floatAmount = 0;
           double PurchasedPoints = 0;
           double PurchasedVoucher = 0;
+          double PurchasedGiftCard = 0;
           double TipAmount = 0;
           UnicodeString AccountCode = "";
 
@@ -3954,7 +3995,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
              AddMYOBInvoiceItem(MYOBInvoiceDetail,tabCreditReceivedGLCode,"Tab Deposit/Credit Received", -1 * RoundTo((TabCreditReceived),-2),0.0,jobCode,"ZeroTax");
           }
 
-          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay, PurchasedGiftCard);
           if(RoundTo((PurchasedPoints),-2) != 0.00)
            {
               catTotal += PurchasedPoints;
@@ -4149,7 +4190,7 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
 }
 
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
-                                 TDateTime startTime,TDateTime endTime)
+                                 TDateTime startTime,TDateTime endTime, double &purchasedGiftCard)
 {
     UnicodeString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
@@ -4185,14 +4226,15 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                 if(ptrPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
                  {
                     IBInternalQuery->Close();
-                    IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal from "
+                    IBInternalQuery->SQL->Text =    "select CAST(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal, F.PAY_TYPE from "
                                                     "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
                                                     "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                                     "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
                                                     "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME " + terminalNamePredicate + " ) e "
                                                     "left join "
-                                                    "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
-                                                    "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
+                                                    "(select c.ARCBILL_KEY,c.SUBTOTAL, c.PAY_TYPE PAY_TYPE from DAYARCSURCHARGE c where "
+                                                    "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY "
+                                                    "WHERE F.PAY_TYPE = :PAYTYPE  GROUP BY 2 ";
                     IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
                     IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
                     IBInternalQuery->ParamByName("PAYTYPE")->AsString = ptrPayment->Name;
@@ -4201,9 +4243,15 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
                         IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
                     }
                     IBInternalQuery->ExecQuery();
-                    if(!IBInternalQuery->Eof)
+
+                    if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled &&
+                        !IBInternalQuery->Eof && IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Gift Card" )
                     {
-                      PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
+                        purchasedGiftCard += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
+                    }
+                    else if(!IBInternalQuery->Eof)
+                    {
+                        PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
                     }
                  }
             }
@@ -4348,6 +4396,7 @@ void __fastcall TfrmAnalysis::FormShow(TObject *Sender)
 	FormResize(Sender);
 
     CheckCANCELITEMS_KEY = false;
+    DuplicateEntryInTable = false;
 
 }
 // ---------------------------------------------------------------------------
@@ -4536,7 +4585,9 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				"Count(Orders.Order_Key) > 0 ";
 
 				IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
+
 				IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
+
 				IBInternalQuery->ParamByName("Contacts_Key")->AsInteger = TempUserInfo.ContactKey;
 				IBInternalQuery->ExecQuery();
 				// Ordered By Sold By Data.
@@ -4697,6 +4748,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					TotalInBilledTips / TipCount));
 				}
 
+
 				Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 				Printout->PrintFormat->Line->ColCount = 1;
 				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
@@ -4704,6 +4756,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
 				Printout->PrintFormat->AddLine();
 				Printout->PrintFormat->NewLine();
+                //-------------------------------------------------------------------------------------
 
 				// TILL CASH IN DRAW REPORT.
 				// ---------------------------------------------------------------------
@@ -4765,7 +4818,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					{
 						TTransactionCount ThisTransaction = TransactionsCount[itCurrentPayment->second.Name];
 
-						AddSectionTitle(Printout.get(), itCurrentPayment->second.Name + " (" + IntToStr(ThisTransaction.Count) + ")");
+					   AddSectionTitle(Printout.get(), itCurrentPayment->second.Name + " (" + IntToStr(ThisTransaction.Count) + ")");
 
 						Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 						Printout->PrintFormat->Line->ColCount = 2;
@@ -4807,14 +4860,28 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				Printout->PrintFormat->Line->Columns[0]->Text = "";
 				Printout->PrintFormat->Line->Columns[1]->DoubleLine();
 				Printout->PrintFormat->AddLine();
+
 				Printout->PrintFormat->Add("GRAND TOTAL|" + FormatFloat("0.00", GrandTotal));
+               //  Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 
-				Printout->PrintFormat->NewLine();
-				Printout->PrintFormat->Line->Columns[0]->Text = "";
-				Printout->PrintFormat->Line->Columns[1]->DoubleLine();
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
 				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
 
-				// ---------------------------------------------------------------------------
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
+                 // ---------------------------------------------------------------------------
 				// Discount Report
 				// ---------------------------------------------------------------------------
 
@@ -4845,6 +4912,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					Item->Total = IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency;
 					ItemsList->AddObject(IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("hh:nn ")
 					+ IBInternalQuery->FieldByName("NOTE")->AsString, Item);
+
 				}
 
 				if (ItemsList->Count > 0)
@@ -4890,6 +4958,175 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 					Printout->PrintFormat->Add("TOTAL DISCOUNTS|" + FormatFloat("0.00", DiscountTotal));
 				}
 				delete ItemsList;
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+                Currency Tax = 0, ServiceCharge = 0, ServiceChargeTax = 0;
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "SELECT CAST(SUM( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, "
+                                             " Cast(SUM(coalesce(T.ServiceCharge,0)) as Numeric(17,4)) ServiceCharge,  "
+                                             " Cast(SUM(coalesce(T.ServiceChargeTax,0)) as Numeric(17,4)) ServiceChargeTax  "
+                                              "FROM DAYARCHIVE DA "
+                                                    "INNER JOIN DAYARCBILL AR ON AR.ARCBILL_KEY = DA.ARCBILL_KEY  "
+                                                     "LEFT JOIN SECURITY ON AR.SECURITY_REF = SECURITY.SECURITY_REF "
+                                                    "Left Join Contacts on  Security.user_key = Contacts.Contacts_Key "
+                                                 "LEFT JOIN "
+                                                   " ( "
+                                                      " SELECT "
+                                                          "DAYARCORDERTAXES.ARCHIVE_KEY, "
+                                                         " MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 0 THEN DAYARCORDERTAXES.TAX_VALUE END) AS Tax, "
+                                                          "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 2 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
+                                                          "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax "
+                                                       "FROM  "
+                                                          "( "
+                                                            " SELECT "
+                                                                "a.ARCHIVE_KEY,  "
+                                                                 "a.TAX_TYPE, "
+                                                                "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+                                                             "FROM DAYARCORDERTAXES a "
+                                                             "GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
+                                                            " ORDER BY 1 "
+                                                          ") DAYARCORDERTAXES "
+                                                       "GROUP BY DAYARCORDERTAXES.ARCHIVE_KEY "
+                                                   " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                                                 "AND "
+                                                " DA.Time_Stamp >= :StartTime  and "
+                                                " DA.Time_Stamp <  :EndTime  AND "
+                                                 "Security.Security_Event = '" +
+				                                   UnicodeString(SecurityTypes[secBilledBy]) + "' and " "Contacts.Contacts_Key = :Contacts_Key "
+
+
+                                 "UNION ALL  "
+
+                                     "SELECT cast(Sum( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, "
+                                     " Cast(SUM(COALESCE(T.ServiceCharge,0)) as Numeric(17,4)) ServiceCharge,  "
+                                         " Cast(SUM(coalesce(T.ServiceChargeTax,0)) as Numeric(17,4)) ServiceChargeTax  "
+                                          "FROM ARCHIVE DA "
+                                                      "INNER JOIN ARCBILL AR ON AR.ARCBILL_KEY = DA.ARCBILL_KEY  "
+                                                      "LEFT JOIN SECURITY ON AR.SECURITY_REF = SECURITY.SECURITY_REF "
+                                                    "Left Join Contacts on  Security.user_key = Contacts.Contacts_Key "
+
+                                             "LEFT JOIN "
+                                               " ( "
+                                                  " SELECT "
+                                                      "ARCORDERTAXES.ARCHIVE_KEY, "
+                                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS Tax, "
+                                                      "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
+                                                      "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax "
+                                                   "FROM  "
+                                                      "( "
+                                                        " SELECT "
+                                                            "a.ARCHIVE_KEY,  "
+                                                             "a.TAX_TYPE, "
+                                                            "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+                                                         "FROM ARCORDERTAXES a "
+                                                         "GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
+                                                        " ORDER BY 1 "
+                                                      ") ARCORDERTAXES "
+                                                   "GROUP BY ARCORDERTAXES.ARCHIVE_KEY "
+                                               " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                                             "AND "
+                                            " DA.Time_Stamp >= :StartTime  and "
+                                             " DA.Time_Stamp <  :EndTime  AND "
+                                              "Security.Security_Event = '" +
+                                              UnicodeString(SecurityTypes[secBilledBy]) + "' and " "Contacts.Contacts_Key = :Contacts_Key ";
+
+
+
+                IBInternalQuery->ParamByName("StartTime")->AsDateTime = StartTime;
+				IBInternalQuery->ParamByName("EndTime")->AsDateTime = EndTime;
+                IBInternalQuery->ParamByName("Contacts_Key")->AsInteger = TempUserInfo.ContactKey;
+                IBInternalQuery->ExecQuery();
+
+                for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+                {
+						Tax += IBInternalQuery->FieldByName("Tax")->AsCurrency;
+                        ServiceCharge += IBInternalQuery->FieldByName("ServiceCharge")->AsCurrency;
+                        ServiceChargeTax += IBInternalQuery->FieldByName("ServiceChargeTax")->AsCurrency;
+                }
+                if(Tax!=0)
+                {
+                     Printout->PrintFormat->Add("Tax Total|" + FormatFloat("0.00", Tax));
+                }
+
+                Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 1;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+				Printout->PrintFormat->Line->Columns[0]->DoubleLine();
+				Printout->PrintFormat->AddLine();
+				Printout->PrintFormat->NewLine();
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+                if(ServiceChargeTax!=0)
+                {
+                    Printout->PrintFormat->Add("Service Charge Tax|" + FormatFloat("0.00", ServiceChargeTax));
+                }
+
+
+                if(ServiceCharge!=0)
+                {
+                    Printout->PrintFormat->Add("Service Charge|" + FormatFloat("0.00", ServiceCharge));
+                }
+
+                if (TotalInBilledTips != 0)
+                 {
+                    Printout->PrintFormat->Add("Tips Billed | " + FormatFloat("0.00", TotalInBilledTips));
+
+                 }
+
+			    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+				Printout->PrintFormat->Line->ColCount = 2;
+				Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+				Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+				Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+				Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
+                    Currency servictip = 0 ;
+                    servictip = ServiceCharge + TotalInBilledTips ;
+
+                    Printout->PrintFormat->Add("Service Charge And Tip total | "+ FormatFloat("0.00",servictip));
+
+                    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                    Printout->PrintFormat->Line->ColCount = 2;
+                    Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+                    Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+                    Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+                    Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+                    Printout->PrintFormat->Add("Total Billed|" + FormatFloat("0.00", GrandTotal));
+                    //  Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+
+                    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                    Printout->PrintFormat->Line->ColCount = 2;
+                    Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+                    Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+                    Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+                    Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+
 
 				Printout->PrintFormat->PartialCut();
 				Printout->Print();
@@ -4921,6 +5158,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 }
+
 
 void __fastcall TfrmAnalysis::FormResize(TObject *Sender)
 {
@@ -7648,7 +7886,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             "ARCMALLEXPORT.ENDING_OR, ARCMALLEXPORT.LOCTAXEXEMPTDLY_SALES, ARCMALLEXPORT.FINEDINECUST_COUNT, ARCMALLEXPORT.TENDERSURCHARGES, ARCMALLEXPORT.NONVAT_SALES, "
             "ARCMALLEXPORT.CHECK_SALES, ARCMALLEXPORT.EPAY_SALES, ARCMALLEXPORT.NO_SALES, ARCMALLEXPORT.PREVEODCOUNTER, ARCMALLEXPORT.CURRENTEODCOUNTER, "
             "ARCMALLEXPORT.DISCOUNT_COUNT, ARCMALLEXPORT.CARD_SALES, ARCMALLEXPORT.OTHER_SALES, ARCMALLEXPORT.SALESTYPE_FOOD, ARCMALLEXPORT.SALESTYPE_NONFOOD, "
-            "ARCMALLEXPORT.SALESTYPE_GROCERIES, ARCMALLEXPORT.SALESTYPE_MEDICINES, ARCMALLEXPORT.SALESTYPE_OTHERS ) "
+            "ARCMALLEXPORT.SALESTYPE_GROCERIES, ARCMALLEXPORT.SALESTYPE_MEDICINES, ARCMALLEXPORT.SALESTYPE_OTHERS,ARCMALLEXPORT.Z_KEY ) "
 			"VALUES "
             "( "
             ":ARCMALLEXPORT_KEY, "
@@ -7672,7 +7910,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             ":ENDING_OR, :LOCTAXEXEMPTDLY_SALES, :FINEDINECUST_COUNT, :TENDERSURCHARGES, :NONVAT_SALES, "
             ":CHECK_SALES, :EPAY_SALES, :NO_SALES, :PREVEODCOUNTER, :CURRENTEODCOUNTER, "
             ":DISCOUNT_COUNT, :CARD_SALES, :OTHER_SALES, :SALESTYPE_FOOD, :SALESTYPE_NONFOOD, "
-            ":SALESTYPE_GROCERIES, :SALESTYPE_MEDICINES, :SALESTYPE_OTHERS);";
+            ":SALESTYPE_GROCERIES, :SALESTYPE_MEDICINES, :SALESTYPE_OTHERS, :Z_KEY);";
 
             IBArcMallExport->ParamByName("ARCMALLEXPORT_KEY")->AsString = ArcMallKey;
             IBArcMallExport->ParamByName("MALLCODE")->AsString = MALLCODE;
@@ -7779,6 +8017,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
             IBArcMallExport->ParamByName("SALESTYPE_GROCERIES")->AsCurrency = SALESTYPE_GROCERIES;
             IBArcMallExport->ParamByName("SALESTYPE_MEDICINES")->AsCurrency = SALESTYPE_MEDICINES;
             IBArcMallExport->ParamByName("SALESTYPE_OTHERS")->AsCurrency = SALESTYPE_OTHERS;
+            IBArcMallExport->ParamByName("Z_KEY")->AsInteger = 0;
 			IBArcMallExport->ExecQuery();
 
             // For ARCMALLEXPORTHOURLY
@@ -7802,14 +8041,15 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                 "ARCMALLEXPORTHOURLY.VAT_SALES, ARCMALLEXPORTHOURLY.TOTALDISCOUNT, ARCMALLEXPORTHOURLY.SCHARGE_AMOUNT, "
                 "ARCMALLEXPORTHOURLY.REFUND_COUNT, ARCMALLEXPORTHOURLY.REFUND_AMOUNT, ARCMALLEXPORTHOURLY.VOID_COUNT, "
                 "ARCMALLEXPORTHOURLY.VOID_AMOUNT, ARCMALLEXPORTHOURLY.SCDISCOUNT_AMOUNT, ARCMALLEXPORTHOURLY.MALLCODE, "
-                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT ) "
+                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT,ARCMALLEXPORTHOURLY.Z_KEY,ARCMALLEXPORTHOURLY.GIFT_CARD,ARCMALLEXPORTHOURLY.CHECK_SALES ) "
 		    	"VALUES "
                 "( "
                 ":AME_HOURLY_KEY, "
                 ":TERMINAL_NAME, :TENANT_NAME, :DATE_VALUE, :TIME_VALUE, :AMOUNT_VALUE, :TRANSACTION_COUNT, "
                 ":VAT_SALES, :TOTALDISCOUNT, :SCHARGE_AMOUNT, :REFUND_COUNT, :REFUND_AMOUNT, "
                 ":VOID_COUNT, :VOID_AMOUNT, :SCDISCOUNT_AMOUNT, :MALLCODE, :PATRON_COUNT, "
-                ":MINUTE_VALUE, :SCDISCOUNT_COUNT );";
+                ":MINUTE_VALUE, :SCDISCOUNT_COUNT, :Z_KEY, :Gift_Card, :Check_Sales );";
+
 
 				for (int i = 1; i < IBMallExportHourly->FieldCount; i++)
 				{
@@ -7854,6 +8094,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                     }
 				}
 				IBArcMallExportHourly->ParamByName("AME_HOURLY_KEY")->AsInteger = ArcMallHourKey;
+                IBArcMallExportHourly->ParamByName("Z_KEY")->AsInteger = 0;
                 IBArcMallExportHourly->ExecQuery();
                 IBMallExportHourly->Next();
             }
@@ -8516,7 +8757,9 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
             for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
             {
                 UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString, zedKey);
+                DuplicateEntryInTable = true;
             }
+            DuplicateEntryInTable = false;
         }
         else
         UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName, zedKey);
@@ -8671,15 +8914,34 @@ void TfrmAnalysis::UpdateMallExportDetails()
     try
     {
         // For Mall Export
-        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
+        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 )
         {
-            std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-            MEM->IMallManager->ZExport();
+           if(TGlobalSettings::Instance().MallIndex == 7)
+           {
+               int Zed_Key = UpdateZKeyInArcMallExportForMegaWorld();
+               bool IsValueGreaterThanZero = TDbMegaWorldMall::CheckValueExistInOtherSalesField(Zed_Key);
+
+               if(IsValueGreaterThanZero)
+               {
+                 bool Food_Type = false;
+                 bool NonFood_Type = false;
+                 bool Groceries_Type = false;
+                 bool Medicines_Type = false;
+                 bool Other_Type = false;
+                 int Count = TDbMegaWorldMall::GetCountForSalesTypeValue(Zed_Key,Food_Type,NonFood_Type,Groceries_Type,Medicines_Type,Other_Type) ;
+                 Currency Amount_Total = TDbMegaWorldMall::GetTotalSalesAmountFromArcMallExport(Zed_Key);
+                 Currency Divisible_Amount = Amount_Total/Count;
+                 TDbMegaWorldMall::UpdateSaleTypeValueInArcMallExport(Zed_Key,Divisible_Amount,Food_Type,NonFood_Type,Groceries_Type,Medicines_Type,Other_Type)  ;
+               }
+           }
+           std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
+           MEM->IMallManager->ZExport();
         }
         else
         {
             TGlobalSettings::Instance().ZCount += 1;
             SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+
         }
         TMallExportUpdateAdaptor exportUpdateAdaptor;
         TMallExportHourlyUpdate exportHourlyUpdate;
@@ -8689,6 +8951,7 @@ void TfrmAnalysis::UpdateMallExportDetails()
         exportHourlyUpdate.ResetHourlyExportTablesOnZed();
         exportTransactionUpdate.ResetTransactionExportTablesOnZed();
         exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
+
         zedLogsList->Add("updating .UpdateMallExportDetails");
     }
     catch(Exception & E)
@@ -9103,7 +9366,7 @@ void __fastcall TfrmAnalysis::FiscalPrinterSettlement()
        zPrinterResponse = "Exception found in FiscalPrinterSettlement()";
 	}
 }
-
+//-------------------------------------------------------------------------------
 void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
 {
     std::list<TMallExportSettings> ::iterator itUISettings;
@@ -9142,3 +9405,79 @@ void TfrmAnalysis::UpdateStallCodeForEviaMall(int fieldindex)
     TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
+// ------------------------------------------------------------------------------
+bool TfrmAnalysis::RestartFireBirdService()
+{
+    if(!TGlobalSettings::Instance().RestartServiceAtZED)
+        return true;
+
+    bool retValue = false;
+    TMMProcessingState State(Screen->ActiveForm, "Please Wait...", "Please Wait");
+    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+    try
+    {
+        std::auto_ptr<TServicesManager> servicesManager(new TServicesManager());
+        retValue = servicesManager->RestartService("FirebirdGuardianDefaultInstance");
+    }
+    catch(Exception &Ex)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+    }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
+    return retValue;
+}
+// ------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+int TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
+{
+    int ZedKey = 0;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS ";
+        IBInternalQuery->ExecQuery();
+        ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORTHOURLY SET ARCMALLEXPORTHOURLY.Z_KEY = :Z_KEY "
+                                     "WHERE ARCMALLEXPORTHOURLY.Z_KEY  =:Z_VALUE ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("Z_VALUE")->AsInteger = 0;
+
+        IBInternalQuery->ExecQuery();
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE ARCMALLEXPORT SET ARCMALLEXPORT.Z_KEY = :Z_KEY "
+                                     "WHERE ARCMALLEXPORT.Z_KEY  =:Z_VALUE ";
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("Z_VALUE")->AsInteger = 0;
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+    return ZedKey;
+
+
+}
+
+//-------------------------------------------------------------------------------
+
+
+
+
+

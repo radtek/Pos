@@ -55,7 +55,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-
 // ---------------------------------------------------------------------------
 #ifndef OrderOnHold
 #define OrderOnHold (OrderHeld && TGlobalSettings::Instance().EnableHoldSend)
@@ -496,6 +495,10 @@ private: // User declarations
     bool LoadPMSGuestDetails(TPaymentTransaction &PaymentTransaction);
     void LoadDefaultGuestDetailsToSeatOrders(UnicodeString roomNo, UnicodeString firstName, UnicodeString accNo,UnicodeString lastName = "");
     void GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSeat);
+    void SyncWithCloud();
+    //void SyncMenuAndTaxSettings(int syncType);
+    //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
+    bool CheckOrderCompatability();
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -699,6 +702,8 @@ public: // User declarations
     void UpdateMenuItemsAfterLoginScreen();
     int GetDefaultServingCourse(int item_key);
     bool CheckForServingCoursePrompt(int item_key);
+    void SyncSiteMenus();
+    void SyncTaxSetting();
  };
 // ---------------------------------------------------------------------------
 

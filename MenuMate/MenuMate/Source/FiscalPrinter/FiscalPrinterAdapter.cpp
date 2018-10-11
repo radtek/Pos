@@ -4,11 +4,12 @@
 #pragma hdrstop
 
 #include "FiscalPrinterAdapter.h"
-#include "main.h"
+//#include "main.h"
 #include <Math.hpp>
 #include "MMMessageBox.h"
 #include "FiscalIntegration_OCX.h"
 #include "DeviceRealTerminal.h"
+#include "SaveLogs.h"
 
 //---------------------------------------------------------------------------
 
@@ -329,8 +330,20 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
             fpclass->LoadReceiptDiscountInfo(4, WideString(i->Type).c_bstr());
             fpclass->AddDiscountInfoToList();
         }
+        TStringList* logList = new TStringList();
+        logList->Add("Inside PrintFiscalReceipt() function.");
+        std::auto_ptr<TSaveLogs> saveLogs(new TSaveLogs());
+        AnsiString path = ExtractFilePath(Application->ExeName) + "/Fiscal POS Logs";
+        AnsiString fileName = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+        TSaveLogs::RecordFiscalLogs(logList);
+
         BSTR responseMessage = fpclass->PrintReceipt();
+
+        logList->Clear();
+        logList->Add("After sending command to fiscal printer.");
         response = UnicodeString(responseMessage).t_str();
+        logList->Add("Response received from fiscal printer is:  " + response);
+        TSaveLogs::RecordFiscalLogs(logList);
     }
     catch(Exception & E)
     {

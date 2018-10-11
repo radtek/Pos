@@ -5374,7 +5374,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Top = 420
                               Width = 315
                               Height = 20
-                              Caption = 'Auto Print Room Receipt On Save'
+                              Caption = 'Auto Print Room Receipt On Sale'
                               Font.Charset = DEFAULT_CHARSET
                               Font.Color = clWindowText
                               Font.Height = -16

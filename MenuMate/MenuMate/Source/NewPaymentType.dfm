@@ -7,8 +7,8 @@ object frmNewPaymentType: TfrmNewPaymentType
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Payment Type'
-  ClientHeight = 738
-  ClientWidth = 994
+  ClientHeight = 748
+  ClientWidth = 1004
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,16 +21,18 @@ object frmNewPaymentType: TfrmNewPaymentType
   WindowState = wsMaximized
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
-    994
-    738)
+    1004
+    748)
   PixelsPerInch = 96
   TextHeight = 13
   object pnlButtons: TPanel
-    Left = 868
+    Left = 878
     Top = 0
     Width = 130
-    Height = 598
+    Height = 608
     Alignment = taRightJustify
     Anchors = [akTop, akRight, akBottom]
     BorderWidth = 5
@@ -135,17 +137,21 @@ object frmNewPaymentType: TfrmNewPaymentType
     Left = 0
     Top = 0
     Width = 884
-    Height = 738
-    ActivePage = tsInterfaces
+    Height = 748
+    ActivePage = tsPayment
     Align = alLeft
     TabOrder = 1
     object tsPayment: TTabSheet
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
         Width = 876
-        Height = 728
+        Height = 598
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -156,7 +162,6 @@ object frmNewPaymentType: TfrmNewPaymentType
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitLeft = 3
         object Label5: TLabel
           Left = 16
           Top = 16
@@ -182,6 +187,18 @@ object frmNewPaymentType: TfrmNewPaymentType
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+        end
+        object ccgColour: TCColorGrid
+          Left = 264
+          Top = 48
+          Width = 576
+          Height = 168
+          ClickEnablesColor = True
+          GridOrdering = go8x2
+          ForegroundEnabled = False
+          BackgroundEnabled = False
+          TabOrder = 0
+          OnClick = ccgColourChange
         end
         object tbExchange: TTouchBtn
           Left = 256
@@ -495,11 +512,15 @@ object frmNewPaymentType: TfrmNewPaymentType
       Caption = 'tsSecurity'
       ImageIndex = 1
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
         Width = 876
-        Height = 728
+        Height = 598
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -613,11 +634,15 @@ object frmNewPaymentType: TfrmNewPaymentType
       Caption = 'tsInterfaces'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 0
         Width = 876
-        Height = 728
+        Height = 598
         Align = alClient
         BevelOuter = bvNone
         Color = 14342874

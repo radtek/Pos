@@ -59,7 +59,7 @@ enum vmVariables
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
    vmIntaMateTerminalID, vmIntaMateIPTimeOut, vmPocketVoucherURL, vmMembershipTillID,
    vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,vmPMSTipAccount,vmPMSExpensesAccount,vmPMSServiceChargeAccount,
-   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName, vmEnableCustomerJourney,vmRevenueCentre,
+   vmPMSRoundingAccountSiHot, vmSiHotRounding,vmSiHotDefaultTransaction,vmSiHotDefaultTransactionName, vmEnableCustomerJourney,vmRevenueCentre, vmPMSAPIKey,
 	// Stock Master ----------------------------------------------------------------
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,
 
@@ -165,7 +165,7 @@ enum vmVariables
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
-   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,
+   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,vmGiftCardGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
     vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,
@@ -225,7 +225,7 @@ enum vmVariables
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
-    vmPrintCardHolderReceipt, vmPrintMerchantReceipt
+    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering
 };
 
 // ---------------------------------------------------------------------------
