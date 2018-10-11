@@ -877,7 +877,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled )     //&& HasOnlineOrders
         DownloadOnlineMember();
 	try
 	{
@@ -1010,7 +1010,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 return;
             }
         }
-        if(TGlobalSettings::Instance().LoyaltyMateEnabled && HasOnlineOrders)
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled )    //&& HasOnlineOrders
             DownloadOnlineMember();
     }
 	try
