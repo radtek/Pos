@@ -1896,6 +1896,8 @@ void TfrmMain::WriteDBPathAndIPToFile()
     std::auto_ptr <TStringList> logList(new TStringList);
     logList->Add(TGlobalSettings::Instance().InterbaseIP);
     logList->Add(TGlobalSettings::Instance().DatabasePath);
+    if(TGlobalSettings::Instance().ReservationsEnabled)
+        logList->Add(ExtractFilePath(Application->ExeName));
     logList->SaveToFile(fileName );
 }
 ////------------------------------------------------------------------------------------------
