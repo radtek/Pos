@@ -4495,7 +4495,7 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
 
         DBTransaction.StartTransaction();
         // Tables table column tablock  is updated False
-		TDBTables::UpdateTableStatus(DBTransaction, SelectedTable);
+	   	TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 
         std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
         int patronCount = GetCount(selectedTablePatrons);
@@ -8520,6 +8520,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         AutoLogOut();
         if(frmPOSMain->ShowTablePicker && TGlobalSettings::Instance().EnableTableDisplayMode)
         {
+
            showTablePicker();
         }
         if(!isExitPressed)
@@ -9041,7 +9042,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-   showTablePicker();
+        showTablePicker();
 	}
 	else
 	{
@@ -9065,7 +9066,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
-			TDBTables::GetOrCreateTable(DBTransaction, frmBillGroup->CurrentTable);
+
+		    //Set the table status as availabale.
+            TDBTables::UpdateTableStatus(DBTransaction, frmBillGroup->CurrentTable, false);
+
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
 			setPatronCount( frmBillGroup->PatronCount );
@@ -9182,6 +9186,9 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				}
                 else
                 {
+                    //Set the table status as availabale.
+                    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+
                    if(TGlobalSettings::Instance().IsThorlinkSelected)
                     {
                        RemoveMembership(DBTransaction);
@@ -11223,6 +11230,7 @@ void TfrmSelectDish::showOldTablePicker()
     {
         bool tableSelected = false;
         TFloorPlanReturnParams floorPlanReturnParams;
+
         // Runs new web app of floorPlan
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
         if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
@@ -11231,6 +11239,19 @@ void TfrmSelectDish::showOldTablePicker()
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
             SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
             SelectedParty            = floorPlanReturnParams.PartyName;
+
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            int TableKey = TDBTables::GetOrCreateTable(DBTransaction, SelectedTable);
+
+             if(TDBTables::IsTableLocked(DBTransaction,SelectedTable))
+             {
+                MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
+                showOldTablePicker();
+             }
+             TDBTables::UpdateTableStatus(DBTransaction, SelectedTable);
+             DBTransaction.Commit();
+
             if(floorPlanReturnParams.HasOnlineOrders)
             {
                 if(SeatOrders[SelectedSeat]->Orders->Count > 0)
@@ -11248,6 +11269,7 @@ void TfrmSelectDish::showOldTablePicker()
             }
         }
         floorPlan.reset();
+ //   }
     }
     catch(Exception & E)
     {

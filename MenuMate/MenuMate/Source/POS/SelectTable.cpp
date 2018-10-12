@@ -175,16 +175,7 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         SelectedTabContainerNumber = GridButton->Tag;
-        bool IsTableAvailable = TDBTables::IsTableLocked(DBTransaction,SelectedTabContainerNumber);
-        if(IsTableAvailable)
-         {
-            MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
-         
-         }
-         else
-         {
 
-         int tableno = TDBTables::GetOrCreateTable(DBTransaction, SelectedTabContainerNumber, false);
          SelectedPartyName = TDBTables::GetPartyName(DBTransaction,SelectedTabContainerNumber);
          SelectedTabContainerName = TDBTables::GetTableName(DBTransaction,SelectedTabContainerNumber);
          DBTransaction.Commit();
@@ -216,7 +207,6 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
             }
              UpdateColor(SelectedTabContainerNumber, isTableSelected);
         }
-     }
 	}
 }
 //---------------------------------------------------------------------------
