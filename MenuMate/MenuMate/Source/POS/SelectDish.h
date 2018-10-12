@@ -498,6 +498,8 @@ private: // User declarations
     void SyncWithCloud();
     //void SyncMenuAndTaxSettings(int syncType);
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
+    TLoginSuccess GetStaffLoginAccess(Database::TDBTransaction &DBTransaction, int access);
+    void  ShowErrorMessage(std::string message, TLoginSuccess Result);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
