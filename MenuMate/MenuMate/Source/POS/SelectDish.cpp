@@ -11269,6 +11269,10 @@ void TfrmSelectDish::showOldTablePicker()
                 TCustNameAndOrderType::Instance()->LoadFromOrdersDatabase( SelectedTable );
             }
         }
+        else
+        {
+            SelectedTable = 0;
+        }
         floorPlan.reset();
  //   }
     }
