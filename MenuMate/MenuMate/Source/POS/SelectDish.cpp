@@ -840,6 +840,12 @@ Currency TfrmSelectDish::GetPriceFromBarcode(AnsiString barcode)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 {
+    if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
+    {
+        MessageBox("Membership Cann not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+        return;
+    }
+
     TGlobalSettings::Instance().IsThorlinkTender = false;
 	enum TCardType
 	{
@@ -7997,15 +8003,15 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
         bool isSameMenuTypeItemExist = true;
-        bool onlineOrderCompatible = true;
-        if(SelectedTable != 0)
-        {
-           onlineOrderCompatible = CheckOrderCompatability();
-        }
+//        bool onlineOrderCompatible = true;
+//        if(SelectedTable != 0)
+//        {
+//           onlineOrderCompatible = CheckOrderCompatability();
+//        }
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
-		if (Item && isSameMenuTypeItemExist && onlineOrderCompatible)
+		if (Item && isSameMenuTypeItemExist )    //&& onlineOrderCompatible
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -8537,6 +8543,12 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
+    if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
+    {
+        MessageBox("Membership Cann not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+        return;
+    }
+
   //mm-5145
      if(TGlobalSettings::Instance().MandatoryMembershipCard )
      {
@@ -10222,13 +10234,13 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                            {
 
 
-                                    bool hasOnlineOrders = TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber);
-                                    if(hasOnlineOrders)
-                                    {
-                                      MessageBox("An online Order is saved on the Table.\rPlease Select some other Table.","Info",MB_OK+MB_ICONINFORMATION);
-                                      Retval = mrAbort;
-                                      break;
-                                    }
+//                                    bool hasOnlineOrders = TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber);
+//                                    if(hasOnlineOrders)
+//                                    {
+//                                      MessageBox("An online Order is saved on the Table.\rPlease Select some other Table.","Info",MB_OK+MB_ICONINFORMATION);
+//                                      Retval = mrAbort;
+//                                      break;
+//                                    }
 
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
@@ -10502,12 +10514,12 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
 
-                  bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]);
-                  if(hasOnlineOrders)
-                  {
-                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
-                      isItemSelected = false;
-                  }
+//                  bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]);
+//                  if(hasOnlineOrders)
+//                  {
+//                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
+//                      isItemSelected = false;
+//                  }
 
                   if(isItemSelected)
                    {
@@ -11231,15 +11243,15 @@ void TfrmSelectDish::showOldTablePicker()
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
             SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
             SelectedParty            = floorPlanReturnParams.PartyName;
-            if(floorPlanReturnParams.HasOnlineOrders)
-            {
-                if(SeatOrders[SelectedSeat]->Orders->Count > 0)
-                {
-                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
-                    SelectedTable = 0;
-                    return;
-                }
-            }
+//            if(floorPlanReturnParams.HasOnlineOrders)
+//            {
+//                if(SeatOrders[SelectedSeat]->Orders->Count > 0)
+//                {
+//                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+//                    SelectedTable = 0;
+//                    return;
+//                }
+//            }
             refreshSelectedSeat();
             RefreshSeats();
             if( TGlobalSettings::Instance().CaptureCustomerName )
@@ -16589,22 +16601,5 @@ void TfrmSelectDish::SyncTaxSetting()
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-}
-//------------------------------------------------------------------------------
-bool TfrmSelectDish::CheckOrderCompatability()
-{
-    bool retValue = true;
-    try
-    {
-        retValue = !TDBTables::HasOnlineOrders(SelectedTable);
-        if(!retValue)
-            MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return retValue;
 }
 //------------------------------------------------------------------------------

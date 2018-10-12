@@ -287,6 +287,27 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
+        public FbCommand UpdateTabName(FbConnection connection, FbTransaction transaction, int tabKey, string tabName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                         UPDATE TAB SET TAB_NAME = @TAB_NAME WHERE TAB_KEY = @TAB_KEY ";
+
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+                command.Parameters.AddWithValue("@TAB_NAME", tabName);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in UpdateTabName " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
         public FbCommand CreateSeatForTable(FbConnection connection, FbTransaction transaction, int tableKey, int seatKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
@@ -419,7 +440,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         REFERENCE_ORDER_ITEM_SIZE_ID,
                                         EMAIL,                                         
                                         ONLINE_ORDER_ID,
-                                        ORDER_GUID
+                                        ORDER_GUID,
+                                        ROOM_NO, 
+                                        FIRST_NAME, 
+                                        LAST_NAME
                                     )
 			                        VALUES (
 			                            @ORDER_KEY,
@@ -488,7 +512,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                         @REFERENCE_ORDER_ITEM_SIZE_ID,
                                         @EMAIL,                                         
                                         @ONLINE_ORDER_ID,
-                                        @ORDER_GUID)";
+                                        @ORDER_GUID,
+                                        @ROOM_NO, 
+                                        @FIRST_NAME, 
+                                        @LAST_NAME)";
 
                 command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderId);
                 command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
@@ -557,6 +584,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@EMAIL", orderDbItem.Email);
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", orderDbItem.OnlinerderId);
                 command.Parameters.AddWithValue("@ORDER_GUID", orderDbItem.OrderGuid);
+                command.Parameters.AddWithValue("@ROOM_NO", "");
+                command.Parameters.AddWithValue("@FIRST_NAME", "");
+                command.Parameters.AddWithValue("@LAST_NAME", "");
+
                 
 
                 if (orderDbItem.SideOrderKey > 0)

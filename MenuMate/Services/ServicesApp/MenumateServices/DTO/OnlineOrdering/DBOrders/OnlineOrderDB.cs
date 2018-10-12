@@ -361,6 +361,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     command.ExecuteNonQuery();
                     SetSeatTab(tabKey, seatKey);
                 }
+                else
+                {
+                    command = dbQueries.UpdateTabName(connection, transaction, tabKey, containerName);
+                    command.ExecuteNonQuery();
+                }
 
             }
             catch (Exception e)

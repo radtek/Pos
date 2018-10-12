@@ -1000,7 +1000,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
     int noOfTabs = 0;
     int tabKey;
 
-    if(CurrentDisplayMode == eTabs)
+    if(CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables)
     {
         if(HasOnlineOrders)
         {
@@ -1013,6 +1013,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
         if(TGlobalSettings::Instance().LoyaltyMateEnabled )    //&& HasOnlineOrders
             DownloadOnlineMember();
     }
+
 	try
 	{
 		if (SelectedItems.empty())
@@ -1292,6 +1293,9 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 			if (Proceed)
 			{
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables))
+                    DownloadOnlineMember();
+
 				DBTransaction.StartTransaction();
 				Proceed = false;
 				bool StuffToBill = false;
@@ -1414,6 +1418,9 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			if (Proceed)
 			{
 				DBTransaction.StartTransaction();
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables))
+                    DownloadOnlineMember();
 
 				std::set <__int64> SelectedItemKeys;
 				std::set <__int64> BackupOfSelectedTabKeys;
@@ -2100,15 +2107,21 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
 	{
         if (CurrentTabType == TabWeb)
         {
-            MessageBox("Membership Cannot be applied on Web Order billing" , "Warning", MB_OK + MB_ICONWARNING);
+            MessageBox("Membership Can not be applied on Web Order billing" , "Warning", MB_OK + MB_ICONWARNING);
             btnTransfer->Color = clSilver;
             btnTransfer->Enabled = false;
             btnApplyMembership->Enabled = false;
         }
         else if(TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
-          AnsiString Data = *((AnsiString*)Message.WParam);
-          GetMemberByBarcode(DBTransaction,Data);
+            if((CurrentDisplayMode == eTabs && TDBTab::HasOnlineOrders(CurrentSelectedTab)) ||
+                (CurrentDisplayMode == eTables && TDBTables::HasOnlineOrders(CurrentTable)))
+            {
+                MessageBox("Membership Can not be applied to the tab/table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+                return;
+            }
+            AnsiString Data = *((AnsiString*)Message.WParam);
+            GetMemberByBarcode(DBTransaction,Data);
         }
         else
         {

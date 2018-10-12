@@ -498,7 +498,6 @@ private: // User declarations
     void SyncWithCloud();
     //void SyncMenuAndTaxSettings(int syncType);
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
-    bool CheckOrderCompatability();
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
