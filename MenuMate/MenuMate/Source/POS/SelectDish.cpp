@@ -842,7 +842,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 {
     if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
     {
-        MessageBox("Membership Cann not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+        MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
         return;
     }
 
@@ -8545,7 +8545,7 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
     if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
     {
-        MessageBox("Membership Cann not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+        MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
         return;
     }
 
