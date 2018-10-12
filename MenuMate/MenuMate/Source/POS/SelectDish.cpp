@@ -8454,6 +8454,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
+    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 	bool Proceed = false;
     if(dc_item_show && TGlobalSettings::Instance().IsDrinkCommandEnabled)
     {
