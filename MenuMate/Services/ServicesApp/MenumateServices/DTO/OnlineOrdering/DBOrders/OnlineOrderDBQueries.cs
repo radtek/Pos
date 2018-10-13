@@ -99,6 +99,50 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
+        public FbCommand TableWithSameMemberAlreadyExist(FbConnection connection, FbTransaction transaction, string memberEmail, int tableNumber)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+            try
+            {
+                command.CommandText = @"
+                                    SELECT A.ORDER_KEY 
+                                    FROM ORDERS a
+                                    WHERE a.TABLE_NUMBER = @TABLE_NUMBER AND a.EMAIL = @EMAIL ";
+
+                command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                command.Parameters.AddWithValue("@EMAIL", memberEmail);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableWithSameMemberExist   " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand TableWithSameMemberAlreadyExist(FbConnection connection, FbTransaction transaction, string memberEmail, string tableName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+            try
+            {
+                command.CommandText = @"
+                                    SELECT A.ORDER_KEY 
+                                    FROM ORDERS a
+                                    WHERE a.TABLE_NAME = @TABLE_NAME AND a.EMAIL = @EMAIL ";
+
+                command.Parameters.AddWithValue("@TABLE_NAME", tableName);
+                command.Parameters.AddWithValue("@EMAIL", memberEmail);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableWithSameMemberExist   " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
         public FbCommand CheckTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, string tableName)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
