@@ -840,12 +840,6 @@ Currency TfrmSelectDish::GetPriceFromBarcode(AnsiString barcode)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 {
-    if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
-    {
-        MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
-        return;
-    }
-
     TGlobalSettings::Instance().IsThorlinkTender = false;
 	enum TCardType
 	{
@@ -4004,7 +3998,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey
                         && PaymentTransaction.Membership.Member.MemberVouchers.size())
-                {   
+                {
                     ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
                 }
 
@@ -8559,7 +8553,7 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
     if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
     {
-        MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+        MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
         return;
     }
 
@@ -9073,6 +9067,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
+            if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&  SelectedTable &&
+                                TDBTables::HasOnlineOrders(SelectedTable))
+            {
+                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+                return;
+            }
 
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
@@ -9143,9 +9143,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 		}
 		else
 		{
-            if(TDBTables::HasOnlineOrders(SelectedTable))
+            if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&  SelectedTable &&
+                                TDBTables::HasOnlineOrders(SelectedTable))
             {
-                MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
                 return;
             }
 

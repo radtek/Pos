@@ -2131,7 +2131,7 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
             if((CurrentDisplayMode == eTabs && TDBTab::HasOnlineOrders(CurrentSelectedTab)) ||
                 (CurrentDisplayMode == eTables && TDBTables::HasOnlineOrders(CurrentTable)))
             {
-                MessageBox("Membership Can not be applied to the tab/table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
                 return;
             }
             AnsiString Data = *((AnsiString*)Message.WParam);
