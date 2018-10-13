@@ -1245,7 +1245,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				break;
 			case TabRoom :
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 			case TabParkedSale :
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
@@ -1263,7 +1263,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("ORDER_TYPE")->AsInteger = Order->OrderType;
 			IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = Order->Terminal;
 			IBInternalQuery->ParamByName("MENU_NAME")->AsString = Order->MenuName;
-			IBInternalQuery->ParamByName("TAB_NAME")->AsString =  Order->TabName.SubString(1,32);
+			IBInternalQuery->ParamByName("TAB_NAME")->AsString =  Order->TabName.SubString(1,80);
 			IBInternalQuery->ParamByName("COURSE_NAME")->AsString = Order->Course;
 			IBInternalQuery->ParamByName("HAPPYHOUR")->AsString 	= Order->HappyHour?"T":"F";
 			IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
@@ -1674,11 +1674,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                                 case TabDelayedPayment :
 				case TabTableSeat :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				case TabRoom :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				case TabParkedSale :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
