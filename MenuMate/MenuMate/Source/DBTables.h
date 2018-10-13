@@ -31,7 +31,6 @@ class TDBTables
 	public:
 	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo);
 	static int GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTableNo,int inSeatNo);
-
 	static int GetSeatKey(Database::TDBTransaction &DBTransaction,int TabKey);
 	static int GetSeatNo(Database::TDBTransaction &DBTransaction,int SeatKey);
 	static int GetSeatNoFromTabKey(Database::TDBTransaction &DBTransaction,int TabKey);
@@ -63,7 +62,6 @@ class TDBTables
     static void ClearSeatsName(Database::TDBTransaction &DBTransaction,int TableNo);
 	static bool Valid(int inTableNo);
 	static bool Valid(int inTableNo, int inSeatNo);
-
 	static bool IsEmpty(Database::TDBTransaction &DBTransaction,int inTableNo, int inSeatNo);
 	static bool IsEmpty(Database::TDBTransaction &DBTransaction,int inTableNo);
 
@@ -93,6 +91,8 @@ class TDBTables
     static std::set<int> GetMezzanineAreaTables(TMezzanineTable mezzanineDetails);
     static bool HasOnlineOrders(int tableNumber);
     static UnicodeString GetMemberEmail(int tableNumber);
+    static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
+    static void UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo, bool IsTableSelected = true);
 };
 
 #endif
