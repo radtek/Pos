@@ -4007,6 +4007,13 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 {   
                     ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
                 }
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey && SelectedTable)
+                {
+                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, SelectedTable, PaymentTransaction.Membership.Member.ContactKey,
+                                                    PaymentTransaction.Membership.Member.EMail);
+                }
+
 				TDBOrder::ProcessOrders(DBTransaction, OrdersList.get()); // Put Orders in DB where required.
                 if(TableNo > 0)
                 {

@@ -54,8 +54,9 @@ void TApplyParser::update6_52Tables()
 void TApplyParser::update6_53Tables()
 {
     Create6_53Generators(_dbControl);
-    AlterTableTab6_54(_dbControl);
     AlterTableOrders6_54(_dbControl);
+    AlterTableArchives6_54(_dbControl);
+    AlterTableTab6_54(_dbControl);
     AlterTableItemSizes6_53(_dbControl);
     AlterTableOrders6_53(_dbControl);
     AlterTableDayArchive6_53(_dbControl);
@@ -632,6 +633,17 @@ void TApplyParser::AlterTableOrders6_54(TDBControl* const inDBControl)
     if (fieldExists( "ORDERS", "TAB_NAME", _dbControl ) )
 	{
         executeQuery ("ALTER TABLE ORDERS ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+}
+void TApplyParser::AlterTableArchives6_54(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DAYARCHIVE", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE DAYARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE ARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
 	}
 }
 }

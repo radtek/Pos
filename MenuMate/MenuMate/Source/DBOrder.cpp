@@ -5115,3 +5115,22 @@ UnicodeString TDBOrder::getOrderKeysList(TList *Orders)
     return orderKeyList;
 }
 //-----------------------------------------------------------------------------
+void TDBOrder::SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email)
+{
+    try
+    {   
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "UPDATE ORDERS SET LOYALTY_KEY =:LOYALTY_KEY, EMAIL = :EMAIL "
+                                      " WHERE TABLE_NUMBER=:TABLE_NUMBER";
+
+       IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+       IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = loyaltyKey;
+       IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+       IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}

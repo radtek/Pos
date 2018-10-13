@@ -148,6 +148,7 @@ public:
     static void SortOrders(TList * Orders);
     static void DeleteOrdersForreatructure(TList * Orders);
     static UnicodeString getOrderKeysList(TList *Orders);
+    static void SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email);
 };
 //---------------------------------------------------------------------------
 #endif

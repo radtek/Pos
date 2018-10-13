@@ -6005,6 +6005,9 @@ void TfrmBillGroup::DisableTransferButtonWhenLMIsEnabled()
             email = TDBTables::GetMemberEmail(CurrentTable);
 
         if(email.Trim() != "")
+        {
             btnTransfer->Enabled = false;
+            tbtnMove->Enabled = false;
+        }
     }
 }
