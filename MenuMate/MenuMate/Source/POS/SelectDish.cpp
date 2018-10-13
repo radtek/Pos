@@ -4001,6 +4001,12 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     }
 				}
                 int updatePatronCount = GetUpdatedPatronCount(DBTransaction,TableNo,SeatCounter);
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey
+                        && PaymentTransaction.Membership.Member.MemberVouchers.size())
+                {   
+                    ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
+                }
 				TDBOrder::ProcessOrders(DBTransaction, OrdersList.get()); // Put Orders in DB where required.
                 if(TableNo > 0)
                 {
@@ -15318,14 +15324,18 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
+
+  //  MessageBox("3.1","3.1",MB_OK);
     bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
     if(memberExist)
-     {
-     if (info.Valid())
-     {
+     {     //MessageBox("3.2","3.2",MB_OK);
+     if(info.Valid())
+     {          // MessageBox("3.3","3.3",MB_OK);
         TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+      //  MessageBox("3.4","3.4",MB_OK);
 		ApplyMembership(DBTransaction, info);
+      //  MessageBox("3.5","3.5",MB_OK);
      }
      }
 

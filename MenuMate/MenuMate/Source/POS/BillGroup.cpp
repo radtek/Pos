@@ -251,6 +251,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
             TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
             DBTransaction.Commit();
             UpdateTableForOnlineOrdering();
+            DisableTransferButtonWhenLMIsEnabled();
 	}
     TGlobalSettings::Instance().IsPOSOffline = true;
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -963,11 +964,15 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
         {
             if(NeedtoUpdateTableForOnlineOrdering())
                UpdateTableForOnlineOrdering();
+            else
+                DisableTransferButtonWhenLMIsEnabled();
         }
         else if(CurrentDisplayMode == eTabs)
         {
             if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
                 UpdateTabForOnlineOrdering();
+            else
+                DisableTransferButtonWhenLMIsEnabled();
         }
         else
             HasOnlineOrders = false;
@@ -1242,11 +1247,15 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
         {
             if(NeedtoUpdateTableForOnlineOrdering())
                UpdateTableForOnlineOrdering();
+            else
+                DisableTransferButtonWhenLMIsEnabled();
         }
         else if(CurrentDisplayMode == eTabs)
         {
             if(TDBTab::HasOnlineOrders(CurrentSelectedTab))
                 UpdateTabForOnlineOrdering();
+            else
+                DisableTransferButtonWhenLMIsEnabled();
         }
         else
             HasOnlineOrders = false;
@@ -1709,6 +1718,7 @@ void __fastcall TfrmBillGroup::tbtnClearAllMouseClick(TObject *Sender)
     }
 	UpdateContainerListColourDisplay();
     UpdateTableForOnlineOrdering();
+    DisableTransferButtonWhenLMIsEnabled();
 	DBTransaction.Commit();
 	CheckLoyalty();
     ClearLoyaltyVoucher();
@@ -1753,10 +1763,13 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
         DisableToggleGSTButton(DBTransaction);
     }
 	UpdateContainerListColourDisplay();
+
     if(CurrentDisplayMode == eTables)
         UpdateTableForOnlineOrdering();
     else if(CurrentDisplayMode == eTabs)
         UpdateTabForOnlineOrdering();
+
+    DisableTransferButtonWhenLMIsEnabled();
     if(lbeMembership->Visible == false)//todo-Arpit
     {
       RemoveMembershipDiscounts(DBTransaction);
@@ -2090,6 +2103,7 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
            ChangeBillEntireTableState();
         }
         UpdateTableForOnlineOrdering();
+        DisableTransferButtonWhenLMIsEnabled();
     }
     else
     {
@@ -2835,6 +2849,8 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         UpdateTableForOnlineOrdering();
 //        MessageBox(CurrentSelectedTab,"CurrentSelectedTab in tgridClick",MB_OK);
         UpdateTabForOnlineOrdering();
+        DisableTransferButtonWhenLMIsEnabled();
+
         UpdateSplitButtonState();
          if(lbeMembership->Visible == false && Membership.Member.AutoAppliedDiscounts.size()>0) //todo-Arpit
         {
@@ -4455,6 +4471,7 @@ void TfrmBillGroup::ResetForm()
 	   OnSmartCardRemoved(NULL);
 	}
     UpdateTableForOnlineOrdering();
+    DisableTransferButtonWhenLMIsEnabled();
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::ResetSelection()
@@ -4933,6 +4950,7 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 	}
 	DBTransaction.Commit();
     UpdateTableForOnlineOrdering();
+    DisableTransferButtonWhenLMIsEnabled();
 	return RetVal;
 }
 // ---------------------------------------------------------------------------
@@ -5975,4 +5993,18 @@ void TfrmBillGroup::GetLoyaltyMemberByEmail(UnicodeString email)
     }
 }
 //---------------------------------------------------------------------------
+void TfrmBillGroup::DisableTransferButtonWhenLMIsEnabled()
+{
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        UnicodeString email = "";
 
+        if(CurrentDisplayMode == eTabs)
+            email = TDBTab::GetMemberEmail(CurrentSelectedTab);
+        else if(CurrentDisplayMode == eTables)
+            email = TDBTables::GetMemberEmail(CurrentTable);
+
+        if(email.Trim() != "")
+            btnTransfer->Enabled = false;
+    }
+}
