@@ -2356,10 +2356,10 @@ UnicodeString TDBTab::GetMemberEmail(int tabKey)
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
         query->Close();
-        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TAB_KEY = :TAB_KEY ";//AND "
-                          // "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        query->SQL->Text = "SELECT EMAIL FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
+                           "EMAIL <> :EMAIL AND EMAIL IS NOT NULL";
         query->ParamByName("TAB_KEY")->AsInteger = tabKey;
-     //   query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ParamByName("EMAIL")->AsString = "";
         query->ExecQuery();
         if(query->RecordCount > 0)
         {

@@ -15325,18 +15325,19 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
 
-  //  MessageBox("3.1","3.1",MB_OK);
     bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
     if(memberExist)
-     {     //MessageBox("3.2","3.2",MB_OK);
-     if(info.Valid())
-     {          // MessageBox("3.3","3.3",MB_OK);
-        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
-      //  MessageBox("3.4","3.4",MB_OK);
-		ApplyMembership(DBTransaction, info);
-      //  MessageBox("3.5","3.5",MB_OK);
-     }
+     {
+         if(info.Valid())
+         {
+            TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+            ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+
+            TMMProcessingState State(Screen->ActiveForm, "Applying Membership...", "Applying Membership");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            ApplyMembership(DBTransaction, info);
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+         }
      }
 
 }
