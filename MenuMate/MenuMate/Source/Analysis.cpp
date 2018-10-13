@@ -81,22 +81,7 @@ const UnicodeString EndAdjustError = "Unable to committ DLL adjustments";
 using namespace StockInterface;
 
 
-__fastcall TfrmAnalysis::TfrmAnalysis(TComponent* Owner) : TZForm(Owner),
-GroupTotalsXML(new TPOS_XMLBase("Totals Group")),
-CategoriesTotalsXML(new TPOS_XMLBase("Totals Categories")),
-PaymentTotalsXML(new TPOS_XMLBase("Totals Payment")),
-CalculatedTotalsXML(new TPOS_XMLBase("Totals Calculated")),
-DiscountTotalsXML(new TPOS_XMLBase("Totals Discount")),
-ProductTotalsXML(new TPOS_XMLBase("Totals Product")),
-StaffTotalsXML(new TPOS_XMLBase("Totals Staff")),
-HourlyTotalsXML(new TPOS_XMLBase("Totals Hourly")),
-PatronCountXML(new TPOS_XMLBase("Totals Patron Counts")),
-PatronListXML(new TPOS_XMLBase("List Patron Counts")),
-DiscountListXML(new TPOS_XMLBase("List Discount Export")),
-StaffListXML(new TPOS_XMLBase("List Staff Export")),
-PaymentTypeListXML(new TPOS_XMLBase("List Payments Export")),
-GroupsListXML(new TPOS_XMLBase("List Category Groups Export")),
-CategoryListXML(new TPOS_XMLBase("List Categories Export"))
+__fastcall TfrmAnalysis::TfrmAnalysis(TComponent* Owner) : TZForm(Owner)
 {
     zedLogsList = new TStringList();
 }
@@ -1781,8 +1766,6 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 		UnicodeString ExportFile = StockMasterPath + "MMTR_" + FormatFloat("00000",TGlobalSettings::Instance().SiteID) + "_" + DeviceName + ".csv";
 		try
 		{
-			//BuildXMLTotalsProducts(DBTransaction);
-			//BuildXMLTotalsStaff(DBTransaction);
 			if (StockMasterPath != "" && FileExists(ExportFile))
 			{
 				Csv.LoadFromFile(ExportFile);
@@ -2936,16 +2919,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 				PaxCount = PaxCountController.Get();
                 zedLogsList->Add("After EnablePaxCount enable check ");
 			}
-
-			GroupTotalsXML->Clear();
-			CategoriesTotalsXML->Clear();
-			PaymentTotalsXML->Clear();
-			CalculatedTotalsXML->Clear();
-			DiscountTotalsXML->Clear();
-			ProductTotalsXML->Clear();
-			StaffTotalsXML->Clear();
-			HourlyTotalsXML->Clear();
-
             TTransactionInfo TransactionInfo;
             TTransactionInfoProcessor::Instance().RemoveEntryFromMap(DeviceName);
             zedLogsList->Add("Befor calling  GetTransactionInfo(DBTransaction, DeviceName)");
@@ -3130,7 +3103,6 @@ Zed:
 				}
                 TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
                 zedLogsList->Add("After chit reset. ");
-				PatronCountXML->Clear();
                 Processing->Message = "Processing End Of Day...";
                 UpdateSalesForce(); //update sales force
                 ClearParkedSale(DBTransaction); // clear parked sale
@@ -6128,254 +6100,6 @@ void TfrmAnalysis::UpdatePaxCountDatabase(Database::TDBTransaction &DBTransactio
     }
     zedLogsList->Add("After Updating PAXCOUNT table ");
 }
-
-void TfrmAnalysis::BuildXMLListCalculated(TPOS_XMLBase &Data)
-{
-	if (TDeviceRealTerminal::Instance().IMManager->Registered)
-	{
-		try
-		{
-			// Update the IntaMate ID with the Invoice Number.
-			Data.Doc.Clear();
-
-			TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-			Data.Doc.LinkEndChild(decl);
-			// Insert DOCTYPE definiation here.
-			TiXmlElement * List = new TiXmlElement(xmlEleListCalculated);
-			List->SetAttribute(xmlAttrID, AnsiString(Data.IntaMateID).c_str());
-			List->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
-
-			for (int i = etcTotalRawSales; i < ectEOF; i++)
-			{
-				TiXmlElement *EleCalculated = new TiXmlElement(xmlEleCalculated);
-				EleCalculated->SetAttribute(xmlAttrID, i);
-				EleCalculated->SetAttribute(xmlAttrName, UnicodeString(eStrCalculatedTotals[i]).t_str());
-				List->LinkEndChild(EleCalculated);
-			}
-
-			Data.Doc.LinkEndChild(List);
-		}
-		catch(Exception & E)
-		{
-			TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-			throw;
-		}
-	}
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateVersion()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Version...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("Version Export");
-	TDeviceRealTerminal::Instance().BuildXMLVersion( POSXML, TGlobalSettings::Instance().SiteID );
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMatePaymentTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Payment Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*PaymentTotalsXML.get());
-	PaymentTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateGroupTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Group Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*GroupTotalsXML.get());
-	GroupTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateCategoriesTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Categories Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*CategoriesTotalsXML.get());
-	CategoriesTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateDiscountTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Discount Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*DiscountTotalsXML.get());
-	DiscountTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateHourlyTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Hourly Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*HourlyTotalsXML.get());
-	HourlyTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateCalculatedTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Calculated Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*CalculatedTotalsXML.get());
-	CalculatedTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateProductTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Product Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*ProductTotalsXML.get());
-	ProductTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateStaffTotals()
-{
-	std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Staff Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*StaffTotalsXML.get());
-	StaffTotalsXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMatePatronCounts()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Patron Totals...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*PatronCountXML.get());
-	PatronCountXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListCalculated()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Calculated List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Calculated Export");
-	BuildXMLListCalculated(POSXML);
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListDiscounts()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Discounts List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*DiscountListXML.get());
-	DiscountListXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListStaff()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Staff List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*StaffListXML.get());
-	StaffListXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListPaymentTypes()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Payments List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*PaymentTypeListXML.get());
-	PaymentTypeListXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListGroups()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Groups List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*GroupsListXML.get());
-	GroupsListXML->SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmAnalysis::ExportIntaMateListCategories()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Categories List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TDeviceRealTerminal::Instance().IMManager->Export(*CategoryListXML.get());
-	CategoryListXML->SaveToFile();
-	frmProcessing->Close();
-}
-
 bool __fastcall TfrmAnalysis::ParamExists(TIBSQL *IBSQL, AnsiString FieldName)
 {
 	bool RetVal = false;
@@ -8995,25 +8719,6 @@ void TfrmAnalysis::PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroI
         else if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && MYOBInvoiceDetails.size() > 0 )
         {
              CreateMYOBInvoiceAndSend(MYOBInvoiceDetails);
-        }
-        if(TDeviceRealTerminal::Instance().IMManager->Registered && CompleteZed)
-        {
-            ExportIntaMateVersion();
-            ExportIntaMateListPaymentTypes();
-            ExportIntaMatePaymentTotals();
-            ExportIntaMateGroupTotals();
-            ExportIntaMateCategoriesTotals();
-            ExportIntaMateListDiscounts();
-            ExportIntaMateDiscountTotals();
-            ExportIntaMateListCalculated();
-            ExportIntaMateCalculatedTotals();
-            ExportIntaMateProductTotals();
-            ExportIntaMateListStaff();
-            ExportIntaMateStaffTotals();
-            ExportIntaMateHourlyTotals();
-            ExportIntaMatePatronCounts();
-            ExportIntaMateListGroups();
-            ExportIntaMateListCategories();
         }
     }
     catch(Exception & E)

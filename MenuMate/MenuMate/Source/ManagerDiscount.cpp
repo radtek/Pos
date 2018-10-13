@@ -57,37 +57,6 @@ bool __fastcall TManagerDiscount::GetEnabled()
 {
 	return fEnabled;
 }
-
-//---------------------------------------------------------------------------
-void TManagerDiscount::GetVoucherListThor(Database::TDBTransaction &tr,TStringList *destination_list,bool ShowPointsAsDiscount)
-{
-
-	TIBSQL *q;
-
-	if (!fEnabled || destination_list == NULL)
-	return;
-
- 	q = tr.Query(tr.AddQuery());
-    q->Close();
-
-    q->SQL->Text =  "select thor_vouchers_key key, name from thorlink_vouchers "
-                    "where VOUCHER_GROUP = 1 order by appearance_order asc";
-
-	for (q->ExecQuery(); !q->Eof; q->Next())
-    {
-		const int index =
-		destination_list->Add(q->FieldByName("name")->AsString);
-		destination_list->Objects[index] =
-		reinterpret_cast<TObject *>(q->FieldByName("key")->AsInteger);
-	}
-
-	if(TGlobalSettings::Instance().EnableSeperateEarntPts && ShowPointsAsDiscount)
-	{
-		const int index = destination_list->Add("Loyalty Points");
-		destination_list->Objects[index] = reinterpret_cast<TObject *>(dsMMMebersPointsKEY);
-	}
-
-}
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetDiscountList(Database::TDBTransaction &tr,TStringList *destination_list,
                                         std::vector<eDiscountFilter> filters, bool ShowPointsAsDiscount)
@@ -159,56 +128,6 @@ void TManagerDiscount::GetDiscountListByPriority(Database::TDBTransaction &DBTra
 			List->Objects[Index] = (TObject *)IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger;
 		}
 	}
-}
-//---------------------------------------------------------------------------
-bool TManagerDiscount::SetAmountDB(Database::TDBTransaction &DBTransaction,long DiscountKey, Currency Amount)
-{
-	if( !fEnabled )return false;
-	bool ReturnVal = false;
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-
-	if(DiscountKey != 0)
-	{
-           IBInternalQuery->SQL->Clear();
-           IBInternalQuery->SQL->Text =
-              "UPDATE THORLINK_VOUCHERS SET "
-                 "AMOUNT             = :AMOUNT "
-                 " WHERE THOR_VOUCHERS_KEY = :THOR_VOUCHERS_KEY";
-           IBInternalQuery->ParamByName("THOR_VOUCHERS_KEY")->AsInteger    = DiscountKey;
-           IBInternalQuery->ParamByName("AMOUNT")->AsString	            = Amount;
-           IBInternalQuery->ExecQuery();
-	}
-
-//	PopulateDiscountGroupPerType(DiscountKey, Discount);
-	return ReturnVal;
-}
-//---------------------------------------------------------------------------
-bool TManagerDiscount::GetThorlinkDiscount(Database::TDBTransaction &DBTransaction,TDiscount &Discount)
-{
-	if( !fEnabled )return false;
-	bool ReturnVal = false;
-//
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	if(Discount.DiscountKey != 0)
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		" SELECT THORLINK_VOUCHERS.VOUCHERS_CODE"
-		" FROM"
-		" THORLINK_VOUCHERS"
-        " LEFT JOIN DISCOUNTS ON THORLINK_VOUCHERS.PROPERTIES = DISCOUNTS.DISCOUNT_ID"
-		" WHERE"
-		" DISCOUNT_KEY = :DISCOUNT_KEY";
-		IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = Discount.DiscountKey;
-		IBInternalQuery->ExecQuery();
-		if(IBInternalQuery->RecordCount)
-		{
-            Discount.VoucherCode = IBInternalQuery->FieldByName("VOUCHERS_CODE")->AsString;
-			ReturnVal = true;
-		}
-	}
-	return ReturnVal;
 }
 //---------------------------------------------------------------------------
 bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount)
@@ -332,30 +251,6 @@ bool TManagerDiscount::GetNonChargableDiscount(Database::TDBTransaction &DBTrans
 	{
 		return false;
 	}
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::GetThorVoucherCategories(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount)
-{
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	if(DiscountKey != 0)
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		" SELECT CATEGORY_KEY"
-		" FROM"
-		"  THORVOUCHERS_CATEGORIES"
-		" WHERE "
-		" THOR_VOUCHERS_KEY = :THOR_VOUCHERS_KEY "
-        " AND Is_THORVOUCHERS = :Is_THORVOUCHER ";
-		IBInternalQuery->ParamByName("THOR_VOUCHERS_KEY")->AsInteger = DiscountKey;
-        IBInternalQuery->ParamByName("Is_THORVOUCHER")->AsString = "T";
-		for(IBInternalQuery->ExecQuery();!IBInternalQuery->Eof;IBInternalQuery->Next())
-		{
-			Discount.CategoryFilterKeys.insert(IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger);
-		}
-	}
-
 }
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetDiscountCategories(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount)
@@ -780,15 +675,6 @@ void TManagerDiscount::SetDiscountAmountDB(Database::TDBTransaction &DBTransacti
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
-	}
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::ClearThorVouchersDiscounts(TList * DiscountItems)
-{
-	for (int i = 0; i < DiscountItems->Count ; i++)
-	{
-		TItemMinorComplete *Order = (TItemMinorComplete *) DiscountItems->Items[i];
-		Order->ThorVouchersDiscountsClear();
 	}
 }
 //---------------------------------------------------------------------------
@@ -2238,52 +2124,6 @@ void TManagerDiscount::IncreaseAppearanceOrder(Database::TDBTransaction &DBTrans
 		IBInternalQuery->ExecQuery();
 	}
 }
-//---------------------------------------------------------------------------
-void TManagerDiscount::BuildXMLListDiscounts(Database::TDBTransaction &DBTransaction,TPOS_XMLBase &Data)
-{
-	try
-	{
-		// Update the IntaMate ID with the Invoice Number.
-		Data.Doc.Clear();
-		TiXmlDeclaration * decl = new TiXmlDeclaration(  _T("1.0"), _T("UTF-8"), _T("") );
-		Data.Doc.LinkEndChild( decl );
-
-		// Insert DOCTYPE definiation here.
-		TiXmlElement * List = new TiXmlElement( xmlEleListDiscounts );
-		List->SetAttribute(xmlAttrID, AnsiString(Data.IntaMateID).c_str());
-		List->SetAttribute(xmlAttrSiteID, TGlobalSettings::Instance().SiteID);
-
-		std::auto_ptr<TStringList>DiscountList(new TStringList);
-        std::vector<eDiscountFilter> discountFilter;
-		ManagerDiscount->GetDiscountList(DBTransaction,DiscountList.get(),discountFilter);
-
-		for (int i = 0; i < DiscountList->Count; i++)
-		{
-			TDiscount Discount;
-			GetDiscount(DBTransaction,(int)DiscountList->Objects[i], Discount);
-
-			TiXmlElement *EleDiscount = new TiXmlElement( xmlEleDiscount );
-			EleDiscount->SetAttribute(xmlAttrID,         Discount.DiscountKey);
-			EleDiscount->SetAttribute(xmlAttrName,       Discount.Name.t_str() );
-			EleDiscount->SetAttribute(xmlRequestType,    Discount.Type );
-			EleDiscount->SetAttribute(xmlAttrMode,       Discount.Mode );
-			EleDiscount->SetAttribute(xmlAttrDiscription,Discount.Description.t_str() );
-			EleDiscount->SetAttribute(xmlAttrPercent,    Discount.PercentAmount );
-			EleDiscount->SetAttribute(xmlAttrAmount,     Discount.Amount );
-			EleDiscount->SetAttribute(xmlAttrRounding,   Discount.Rounding );
-			EleDiscount->SetAttribute(xmlAttrInitials,   Discount.Source );
-
-			List->LinkEndChild( EleDiscount );
-		}
-		Data.Doc.LinkEndChild( List );
-	}
-	catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//---------------------------------------------------------------------------
 void TManagerDiscount::CheckDiscount(TForm *inDisplayOwner, TDiscount inDiscount, TList **Orders)
 {
 	switch(inDiscount.Mode)
@@ -2311,50 +2151,6 @@ void TManagerDiscount::PopulateDiscountGroupPerType(long DiscountKey, TDiscount 
 		delete group;
 	}
 	DGGList->Clear();   // TList::Clear() will empty the list, however it will not remove the items from the memory
-}
-//---------------------------------------------------------------------------
-int TManagerDiscount::GetDiscountKeyForVoucher(int id)
-{
-    int discountKey = 0;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    try
-    {
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        " SELECT NAME"
-        " FROM "
-        "  THORLINK_VOUCHERS "
-        " WHERE "
-        " THOR_VOUCHERS_KEY = :THOR_VOUCHERS_KEY ";
-        IBInternalQuery->ParamByName("THOR_VOUCHERS_KEY")->AsInteger = id;
-        IBInternalQuery->ExecQuery();
-        AnsiString voucherName = IBInternalQuery->FieldByName("NAME")->AsString;
-        int code = atoi((voucherName.SubString(0 , (voucherName.Pos(":") - 1))).c_str());
-
-        TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery1->Close();
-        IBInternalQuery1->SQL->Text =
-        " SELECT DISCOUNT_KEY"
-        " FROM "
-        "  DISCOUNTS "
-        " WHERE "
-        " DISCOUNT_ID = :DISCOUNT_ID ";
-        IBInternalQuery1->ParamByName("DISCOUNT_ID")->AsString = IntToStr(code);
-        IBInternalQuery1->ExecQuery();
-        if(IBInternalQuery1->RecordCount > 0)
-        {
-            discountKey = IBInternalQuery1->FieldByName("DISCOUNT_KEY")->AsInteger;
-        }
-        DBTransaction.Commit();
-     }
-     catch(Exception & E)
-     {
-        DBTransaction.Rollback();
- 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-     }
-     return discountKey;
 }
 //---------------------------------------------------------------------------
 void TManagerDiscount::DeleteCloudDiscounts(Database::TDBTransaction &DBTransaction,std::vector<AnsiString> discountsCodes)
@@ -2420,35 +2216,6 @@ bool TManagerDiscount::IsCloudDiscount(Database::TDBTransaction &DBTransaction,l
     }
 
     return retVal;
-}
-//------------------------------------------------------------------------------------------------------------------------------------
-bool TManagerDiscount::IsVouchersAvailable()
-{
-    Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    dBTransaction.StartTransaction();
-
-    TIBSQL *ibInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
-    bool retval = false;
-
-	try
-	{
-		ibInternalQuery->Close();
-		ibInternalQuery->SQL->Text = "select *  "
-                                        "FROM THORLINK_VOUCHERS " ;
-		ibInternalQuery->ExecQuery();
-        if(ibInternalQuery->RecordCount > 0)
-        {
-            retval = true;
-        }
-        dBTransaction.Commit();
-        return retval;
-	}
-	catch(Exception &E)
-	{
-        dBTransaction.Rollback();
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------
 void TManagerDiscount::GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys)

@@ -10,7 +10,6 @@
 #include "MM_DBCore.h"
 #include "MMContactInfo.h"
 #include "Discount.h"
-#include "POS_XMLBase.h"
 #include "ItemMinorComplete.h"
 //---------------------------------------------------------------------------
 
@@ -100,14 +99,10 @@ class TManagerDiscount
     __property bool Enabled  = { read=GetEnabled, write=SetEnabled };
     TManagerDiscount();
     ~TManagerDiscount();
-
-    void GetVoucherListThor(Database::TDBTransaction &,TStringList *destination_list,bool ShowPointsAsDiscount = true);
     void GetDiscountList(Database::TDBTransaction &,TStringList *destination_list,std::vector<eDiscountFilter> filters, bool ShowPointsAsDiscount = true);
     void GetDiscountListByPriority(Database::TDBTransaction &, TStringList *);
     UnicodeString GetDiscountDescription(Database::TDBTransaction &DBTransaction,long DiscountKey);
     bool GetDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount);
-    bool GetThorlinkDiscount(Database::TDBTransaction &DBTransaction, TDiscount &Discount);
-    bool SetAmountDB(Database::TDBTransaction &DBTransaction,long DiscountKey, Currency Amount);
     bool GetNonChargableDiscount(Database::TDBTransaction &DBTransaction, TDiscount &Discount);
     void GetReportDiscountInfo(Database::TDBTransaction &DBTransaction,std::set<int> &DiscountsList,TStringList *Report);
     void GetReportItemDiscounts(TItemMinorComplete *Item,TStringList *Report);
@@ -130,7 +125,6 @@ class TManagerDiscount
     void DecreaseAppearanceOrder(Database::TDBTransaction &DBTransaction, int DiscountKey);
     void IncreaseAppearanceOrder(Database::TDBTransaction &DBTransaction, int DiscountKey);
     void ClearDiscounts(TList * DiscountItems);
-    void ClearThorVouchersDiscounts(TList * DiscountItems);
     void ClearDiscount(TList * DiscountItems,TDiscount DiscountToBeApplied);
     void ClearMemberDiscounts(TList * DiscountItems);
     void ClearDiscountDB(Database::TDBTransaction &DBTransaction,const std::set<long> &OrderKeys);
@@ -145,18 +139,14 @@ class TManagerDiscount
     /*This function is broken for getting a $ value discount.
     Currency GetDiscountValue(TList * DiscountItems,TDiscount &Discount); */
     bool DiscountCodeExisits(Database::TDBTransaction &DBTransaction,long DiscountKey, AnsiString DiscountCode);
-    void BuildXMLListDiscounts(Database::TDBTransaction &DBTransaction,TPOS_XMLBase &Data);
     void CheckDiscount(TForm *inDisplayOwner, TDiscount inDiscount, TList **Orders);
     static void GetDiscountCategories(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount);
-    static void GetThorVoucherCategories(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount);
     static void SetDiscountCategories(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount);
     static void PopulateDiscountGroupPerType(long DiscountKey, TDiscount &Discount);
-    int GetDiscountKeyForVoucher(int id);
     void DeleteCloudDiscounts(Database::TDBTransaction &DBTransaction,std::vector<AnsiString> discountsCodes);
     bool IsCloudDiscount(Database::TDBTransaction &DBTransaction,long discountKey);
     void DeleteDiscounts(Database::TDBTransaction &DBTransaction);
     void ClearMemberExemtDiscounts(TList * DiscountItems);
-    bool IsVouchersAvailable();
     void GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys);
 };
 

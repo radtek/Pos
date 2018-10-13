@@ -583,7 +583,6 @@ void __fastcall TfrmSetup::tbtnIPSettingsRefreshMouseClick(TObject *Sender)
 		case MembershipTypeERS :
 		lbeMemDBPath->Caption = "Membership DB Path " + TGlobalSettings::Instance().MembershipDatabasePath;
 		break;
-		case MembershipTypeEBet :
 		case MembershipTypeExternal :
 		lbeMemDBPath->Caption = "Membership DB Port " + IntToStr(TGlobalSettings::Instance().MembershipDatabasePort);
 		break;

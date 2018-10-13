@@ -1,24 +1,19 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
-#include <fcntl.h> // for open & read constants
+#include <fcntl.h>
 #include <math.h>
 #include <MMTouchNumpad.h>
 #include "DeviceWeb.h"
 #include "FileCtrl.hpp"
 #ifdef MenuMate
-//#include "DeviceRealTerminal.h"
-
 #endif
 #ifdef  PalmMate
 #include "Palm.h"
 #endif
-
 #include "Maintain.h"
 #include "Main.h"
 #include "Login.h"
@@ -50,40 +45,28 @@
 #include "ContactStaff.h"
 #include "SmartCardConfigGUI.h"
 #include "ChitNumberController.h"
-#include "IntaMateConfiguration.h"
-#include "POS_XMLBase.h"
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
 #include "ManagerPanasonic.h"
-
-//#include "VerticalSelect.h"
 #include "ManagerPatron.h"
 #include "EnableFloorPlan.h"
 #include "WebMate.h"
-
 #include <process.h>
-
 #include "MMColourPicker.h"
 #include "SmartcardPreloader.h"
-
 #include "TaxMaintenance.h"
 #include "TierLevels.h"
 #include "FolderManager.h"
-
 #include "SetupGlCodes.h"
-//#include "ManagerClippIntegration.h"
 #include "SetUpPosPlus.h"
 #include "ManagerCloudSync.h"
 #include "SignalRUtility.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
-
 #define MAX_SHORT_NAME_LENGTH 10
 #define MAX_LOCATION_LENGTH 10
-
-//TfrmMaintain *frmMaintain;
 //---------------------------------------------------------------------------
 __fastcall TfrmMaintain::TfrmMaintain(TComponent* Owner)
 : TZForm(Owner)
@@ -120,28 +103,15 @@ void __fastcall TfrmMaintain::FormResize(TObject *Sender)
 void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 {
 	FormResize(this);
-
 	Top = 0;
 	Left = 0;
 	Width = Screen->Width;
 	Height = Screen->Height;
-
 	btnChangeRooms->Enabled = TRooms::Instance().Enabled;
 	btnChangeTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
-
 	btnLoyalty->Enabled = static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"]) &&
 	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
-
 	tbtnLocations->Caption  = "Location \r" + TDeviceRealTerminal::Instance().ID.Location;
-//    if((TDeviceRealTerminal::Instance().IMManager->Registered))
-//    {
-//    TouchBtnThorlink->Enabled = true;
-//    }
-//    else
-//    {
-//    TouchBtnThorlink->Enabled = false;
-//    }
-
 	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
@@ -158,43 +128,6 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 		tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
         tbPHSInterface->ButtonColor = clRed;
 	}
-
-	if(TDeviceRealTerminal::Instance().IMManager->Registered)
-	{
-		if(TDeviceRealTerminal::Instance().IMManager->Enabled)
-		{
-			TDeviceRealTerminal::Instance().IMManager->Status();
-			if(TDeviceRealTerminal::Instance().IMManager->OffLine)
-			{
-				tbIntaMate->Caption = "IntaMate Interface \r[Enabled][OffLine]";
-                TouchBtnBarExchange->Caption = "Bar Exchange \r[Enabled][OffLine]";
-				tbIntaMate->ButtonColor = clMaroon;
-                TouchBtnBarExchange->ButtonColor = clMaroon;
-			}
-			else
-			{
-				tbIntaMate->Caption = "IntaMate Interface \r[Enabled][Online]";
-                 TouchBtnBarExchange->Caption = "Bar Exchange \r[Enabled][Online]";
-                 TouchBtnBarExchange->ButtonColor = clGreen;
-				tbIntaMate->ButtonColor = clGreen;
-			}
-		}
-		else
-		{
-			tbIntaMate->Caption = "IntaMate Interface \r[Disabled]";
-            TouchBtnBarExchange->Caption = "Bar Exchange \r[Disabled]";
-			tbIntaMate->ButtonColor = clRed;
-            TouchBtnBarExchange->ButtonColor = clRed;
-		}
-	}
-	else
-	{
-		tbIntaMate->Caption = "IntaMate Interface \r[Unregistered]";
-		tbIntaMate->Enabled = TDeviceRealTerminal::Instance().IMManager->Registered;
-        TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
-        TouchBtnBarExchange->Enabled = TDeviceRealTerminal::Instance().IMManager->Registered;
-	}
-
 	RefreshReservationBtnColor();
 	if (TGlobalSettings::Instance().ReservationsEnabled)
 	btnChangeTable->Caption = "Edit Tables";
@@ -218,19 +151,7 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	RefreshBarExchangeBtnColor();
     InitXeroIntegrationConfig();
     RefreshDrinkCommandButtonColor();
-    RefreshThorlinkButtonColor();                                                // Refreshes the Thorlink button color
-	//Changing the color of clipp button
-    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        TouchBtnClipInterface->ButtonColor = clGreen;
-        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-    }
-    else
-    {
-        TouchBtnClipInterface->ButtonColor = clRed;
-        TouchBtnClipInterface->Caption = "Clipp Interface \r[Disabled]";
-    }
-     if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
+    if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
     {
         TouchBtnRunRateBoard->ButtonColor = clGreen;
         TouchBtnRunRateBoard->Caption = "Run Rate Board\r[Enabled]";
@@ -293,7 +214,6 @@ void __fastcall TfrmMaintain::btnUsersClick(TObject *Sender)
 		std::auto_ptr<TfrmUserMaintenance>(frmUserMaintenance)(TfrmUserMaintenance::Create<TfrmUserMaintenance>(this,TDeviceRealTerminal::Instance().DBControl));
 		frmUserMaintenance->UserMode = umStaff;
 		frmUserMaintenance->ShowModal();
-		ExportIntaMateListStaff();
 	}
 	else if (Result == lsDenied)
 	{
@@ -553,7 +473,6 @@ void __fastcall TfrmMaintain::BtnPaymentClick(TObject *Sender)
 	{
 		std::auto_ptr<TfrmPaymentMaintenance>(frmPaymentMaintenance)(TfrmPaymentMaintenance::Create(this,TDeviceRealTerminal::Instance().DBControl,TDeviceRealTerminal::Instance().PaymentSystem));
 		frmPaymentMaintenance->ShowModal();
-		ExportIntaMateDataPayments();
 	}
 	else if (Result == lsDenied)
 	{
@@ -616,7 +535,6 @@ void __fastcall TfrmMaintain::btnDiscountsClick(TObject *Sender)
         TfrmDiscounts *frmDiscounts = new TfrmDiscounts(this,TDeviceRealTerminal::Instance().DBControl);
 		frmDiscounts->ShowModal();
         delete frmDiscounts;
-		ExportIntaMateDiscounts();
 	}
 	else if (Result == lsDenied)
 	{
@@ -719,421 +637,6 @@ void __fastcall TfrmMaintain::TouchBtn1MouseClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMaintain::tbIntaMateMouseClick(TObject *Sender)
-{
-	TMMContactInfo TempUserInfo;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-	DBTransaction.Commit();
-	if (Result == lsAccepted)
-	{
-		// Display Launch List
-		std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-		TVerticalSelection Item;
-		Item.Title = "Cancel";
-		Item.Properties["Color"] = IntToStr(clMaroon);
-		Item.CloseSelection = true;
-		SelectionForm->Items.push_back(Item);
-
-		TVerticalSelection Item1;
-		Item1.Title = "Configure";
-		Item1.Properties["Action"] = IntToStr(1);
-		Item1.Properties["Color"] = IntToStr(clNavy);
-		Item1.CloseSelection = true;
-		SelectionForm->Items.push_back(Item1);
-
-		Item1.Title = "Export Data";
-		Item1.Properties["Action"] = IntToStr(2);
-		Item1.Properties["Color"] = IntToStr(clNavy);
-		Item1.CloseSelection = true;
-		SelectionForm->Items.push_back(Item1);
-
-		SelectionForm->ShowModal();
-		TVerticalSelection SelectedItem;
-		if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
-		{
-			int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
-			switch(Action)
-			{
-			case 1 :
-				{
-					std::auto_ptr<TfrmIntaMateConfiguration>(frmIntaMateConfiguration)(TfrmIntaMateConfiguration::Create<TfrmIntaMateConfiguration>(this));
-
-					frmIntaMateConfiguration->TCPIPAddress 	= TGlobalSettings::Instance().IntaMateIPAddress;
-					frmIntaMateConfiguration->TCPPort      	= TGlobalSettings::Instance().IntaMatePort;
-					frmIntaMateConfiguration->TCPTimeOut_ms   = TGlobalSettings::Instance().IntaMateTCPTimeOut_ms;
-					frmIntaMateConfiguration->POSID        	= TGlobalSettings::Instance().IntaMateTerminalID;
-
-					frmIntaMateConfiguration->ShowModal();
-
-					TGlobalSettings::Instance().IntaMateIPAddress    	= frmIntaMateConfiguration->TCPIPAddress;
-					TGlobalSettings::Instance().IntaMatePort         	= frmIntaMateConfiguration->TCPPort;
-					TGlobalSettings::Instance().IntaMateTerminalID   	= frmIntaMateConfiguration->POSID;
-					TGlobalSettings::Instance().IntaMateTCPTimeOut_ms	= frmIntaMateConfiguration->TCPTimeOut_ms;
-
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmIntaMateIPAddress,TGlobalSettings::Instance().IntaMateIPAddress);
-					TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmIntaMatePort,TGlobalSettings::Instance().IntaMatePort);
-					TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmIntaMateTerminalID,TGlobalSettings::Instance().IntaMateTerminalID);
-					TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmIntaMateIPTimeOut,TGlobalSettings::Instance().IntaMateTCPTimeOut_ms);
-					DBTransaction.Commit();
-
-					TDeviceRealTerminal::Instance().IMManager->Initialise(TGlobalSettings::Instance().IntaMateIPAddress,
-					TGlobalSettings::Instance().IntaMatePort,
-					TGlobalSettings::Instance().IntaMateTerminalID,
-					TGlobalSettings::Instance().IntaMateTCPTimeOut_ms);
-					TDeviceRealTerminal::Instance().IMManager->Status();
-					if(TDeviceRealTerminal::Instance().IMManager->Enabled)
-					{
-						if(TDeviceRealTerminal::Instance().IMManager->OffLine)
-						{
-							tbIntaMate->Caption = "IntaMate Interface \r[Enabled][OffLine]";
-							tbIntaMate->ButtonColor = clMaroon;
-						}
-						else
-						{
-							tbIntaMate->Caption = "IntaMate Interface \r[Enabled][Online]";
-							tbIntaMate->ButtonColor = clGreen;
-						}
-					}
-					else
-					{
-						MessageBox("Intamate Interface Disabled: " + TDeviceRealTerminal::Instance().IMManager->LastErrorMessage, "Intamate Interface Disabled.", MB_OK + MB_ICONERROR);
-						tbIntaMate->Caption = "IntaMate Interface \r[Disabled]";
-						tbIntaMate->ButtonColor = clRed;
-					}
-				}
-				break;
-			case 2 :
-				{
-					ExportIntaMateData();
-				}
-				break;
-			}
-		}
-	}
-	else if (Result == lsDenied)
-	{
-		MessageBox("You do not have access to the IntaMate Interface settings.", "Error", MB_OK + MB_ICONERROR);
-	}
-	else if (Result == lsPINIncorrect)
-	{
-		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-	}
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmMaintain::ExportIntaMateData()
-{
-	// Display Launch List
-	std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-	TVerticalSelection Item;
-	Item.Title = "Cancel";
-	Item.Properties["Color"] = IntToStr(clMaroon);
-	Item.CloseSelection = true;
-	SelectionForm->Items.push_back(Item);
-
-	TVerticalSelection Item1;
-	Item1.Title = "Export All";
-	Item1.Properties["Action"] = IntToStr(1);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Export Version";
-	Item1.Properties["Action"] = IntToStr(2);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Export Products";
-	Item1.Properties["Action"] = IntToStr(3);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Export Payments";
-	Item1.Properties["Action"] = IntToStr(4);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Export Categories and Groups";
-	Item1.Properties["Action"] = IntToStr(5);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Staff";
-	Item1.Properties["Action"] = IntToStr(6);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Members";
-	Item1.Properties["Action"] = IntToStr(7);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Discounts";
-	Item1.Properties["Action"] = IntToStr(8);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Fixed Totals";
-	Item1.Properties["Action"] = IntToStr(9);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Patron Counts";
-	Item1.Properties["Action"] = IntToStr(10);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-	Item1.Title = "Member Groups";
-	Item1.Properties["Action"] = IntToStr(11);
-	Item1.Properties["Color"] = IntToStr(clNavy);
-	Item1.CloseSelection = true;
-	SelectionForm->Items.push_back(Item1);
-
-
-
-	SelectionForm->ShowModal();
-	TVerticalSelection SelectedItem;
-	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
-	{
-		ExportIntaMate( StrToIntDef( SelectedItem.Properties["Action"],0 ) );
-	}
-}
-
-void __fastcall TfrmMaintain::ExportIntaMate( int inAction )
-{
-	switch( inAction )
-	{
-	case  1 : ExportIntaMateAll();	                break;
-	case  2 : ExportIntaMateVersion();	            break;
-	case  3 : ExportIntaMateDataProduct();          break;
-	case  4 : ExportIntaMateDataPayments();         break;
-	case  5 : ExportIntaMateDataCategoriesGroups(); break;
-	case  6 : ExportIntaMateListStaff();            break;
-	case  7 : ExportIntaMateDataMembers();          break;
-	case  8 : ExportIntaMateDiscounts();            break;
-	case  9 : ExportIntaMateFixed();                break;
-	case 10 : ExportIntaMatePatronCounts();         break;
-	case 11 : ExportIntaMateMemberGroups();         break;
-	}
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateAll()
-{
-	ExportIntaMateVersion();
-	ExportIntaMateDataProduct();
-	ExportIntaMateDataPayments();
-	ExportIntaMateDataCategoriesGroups();
-	ExportIntaMateListStaff();
-	ExportIntaMateDataMembers();
-	ExportIntaMateDiscounts();
-	ExportIntaMatePatronCounts();
-	ExportIntaMateFixed();
-	ExportIntaMateMemberGroups();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateVersion()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Version...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("Version Export");
-	TDeviceRealTerminal::Instance().BuildXMLVersion( POSXML, TGlobalSettings::Instance().SiteID );
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateDataProduct()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Products...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	// Update IntaMate.
-	TPOS_XMLBase POSXML("List Product Export");
-	TDeviceRealTerminal::Instance().Menus->BuildXMLMenu(TDeviceRealTerminal::Instance().DBControl,POSXML,TGlobalSettings::Instance().SiteID);
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateDataPayments()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Payments...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Payments Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TPaymentTransaction PaymentTransaction(DBTransaction);
-	TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(PaymentTransaction);
-	PaymentTransaction.BuildXMLPaymentTypes(POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateDataCategoriesGroups()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Categories and Groups...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Categories Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDeviceRealTerminal::Instance().Menus->BuildXMLListCategories(DBTransaction,POSXML,TGlobalSettings::Instance().SiteID);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	TPOS_XMLBase POSXML1("List Category Groups Export");
-	DBTransaction.StartTransaction();
-	//TDBGroups::BuildXMLListGroups(DBTransaction,POSXML1);
-	TDeviceRealTerminal::Instance().Menus->BuildXMLListGroup(DBTransaction,POSXML1,TGlobalSettings::Instance().SiteID);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML1);
-	POSXML1.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateListStaff()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Staff...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Staff Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-	Staff->BuildXMLListStaff(DBTransaction,POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMatePatronCounts()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Patron Types...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Patron Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TManagerPatron::Instance().BuildXMLListPatronCounts(DBTransaction,POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateDataMembers()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Members...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Members Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDeviceRealTerminal::Instance().ManagerMembership->BuildXMLListMembership(DBTransaction,POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateMemberGroups()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Member Groups...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Member Groups Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TDBGroups::BuildXMLListMemberGroups(DBTransaction,POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateDiscounts()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Discounts List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Discount Export");
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	ManagerDiscount->BuildXMLListDiscounts(DBTransaction,POSXML);
-	DBTransaction.Commit();
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-
-	frmProcessing->Close();
-}
-
-void __fastcall TfrmMaintain::ExportIntaMateFixed()
-{
-	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-	frmProcessing->CanCancel = false;
-	frmProcessing->Message = "Exporting Calculated List...";
-	frmProcessing->ShowProgress = false;
-	frmProcessing->Show();
-
-	TPOS_XMLBase POSXML("List Calculated Export");
-
-	std::auto_ptr<TfrmAnalysis>(frmAnalysis)(TfrmAnalysis::Create<TfrmAnalysis>(this));
-	frmAnalysis->BuildXMLListCalculated(POSXML);
-	TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	POSXML.SaveToFile();
-	frmProcessing->Close();
-}
-//---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::ResetWebMate()
 {
 	TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
@@ -1195,71 +698,6 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
 	DBTransaction.Commit();
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmMaintain::tbtnEBetMouseClick(TObject *Sender)
-{
-	TMMContactInfo TempUserInfo;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-	DBTransaction.Commit();
-	if (Result == lsAccepted)
-	{
-		// Display Launch List
-		std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-		TVerticalSelection Item;
-		Item.Title = "Cancel";
-		Item.Properties["Color"] = IntToStr(clMaroon);
-		Item.CloseSelection = true;
-		SelectionForm->Items.push_back(Item);
-
-		TVerticalSelection Item1;
-		Item1.Title = "Till ID \r" + IntToStr(TGlobalSettings::Instance().MembershipTillID );
-		Item1.Properties["Action"] = IntToStr(1);
-		Item1.Properties["Color"] = IntToStr(clNavy);
-		Item1.CloseSelection = true;
-		SelectionForm->Items.push_back(Item1);
-
-		SelectionForm->ShowModal();
-		TVerticalSelection SelectedItem;
-		if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
-		{
-			int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
-			switch(Action)
-			{
-			case 1 :
-				{
-					std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-					frmTouchNumpad->Caption = "Enter the EBet ID for this POS.";
-					frmTouchNumpad->btnSurcharge->Caption = "Ok";
-					frmTouchNumpad->btnSurcharge->Visible = true;
-					frmTouchNumpad->btnDiscount->Visible = false;
-					frmTouchNumpad->Mode = pmNumber;
-					frmTouchNumpad->INTInitial = TGlobalSettings::Instance().MembershipTillID;
-					if (frmTouchNumpad->ShowModal() == mrOk)
-					{
-						TGlobalSettings::Instance().MembershipTillID = frmTouchNumpad->INTResult;
-
-						DBTransaction.StartTransaction();
-						TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipTillID,TGlobalSettings::Instance().MembershipTillID);
-						DBTransaction.Commit();
-						MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);
-					}
-				}
-			}
-		}
-	}
-	else if (Result == lsDenied)
-	{
-		MessageBox("You do not have access to the IntaMate Interface settings.", "Error", MB_OK + MB_ICONERROR);
-	}
-	else if (Result == lsPINIncorrect)
-	{
-		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-	}
 }
 //---------------------------------------------------------------------------
 const SELDIRHELP = 1000;
@@ -2349,295 +1787,21 @@ TLoginSuccess TfrmMaintain::VerifyUserAuthorization()
 
 void __fastcall TfrmMaintain::tchbtnDrinkCommandMouseClick(TObject *Sender)
 {
-    //Will handle drink command interface
-    if ( TDeviceRealTerminal::Instance().IMManager->Registered)
-    {
-        TLoginSuccess Result = VerifyUserAuthorization();
-
-        if ((Result == lsAccepted))
-        {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            while(ShowDrinkCommandSettings(DBTransaction) != false);
-        }
-        else if (Result == lsDenied)
-        {
-            MessageBox("You do not have access to the DrinkCommand interface settings.", "Error", MB_OK + MB_ICONERROR);
-        }
-        else if (Result == lsPINIncorrect)
-        {
-            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-        }
-    }
-}
-
-void __fastcall TfrmMaintain::TouchBtnThorlinkClick(TObject *Sender)
-{
     TLoginSuccess Result = VerifyUserAuthorization();
-
     if ((Result == lsAccepted))
     {
-       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-       while(ShowThorlinkSettings(DBTransaction) != false);
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        while(ShowDrinkCommandSettings(DBTransaction) != false);
     }
     else if (Result == lsDenied)
     {
-       MessageBox("You do not have access to the Thorlink interface settings.", "Error", MB_OK + MB_ICONERROR);
+        MessageBox("You do not have access to the DrinkCommand interface settings.", "Error", MB_OK + MB_ICONERROR);
     }
     else if (Result == lsPINIncorrect)
     {
-       MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+        MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
     }
 }
-
-bool TfrmMaintain::ShowThorlinkSettings(Database::TDBTransaction & DBTransaction)
-{
-    SaveServerCheck();
-	bool keepFormAlive = true;
-
-    //Create the selection form to set the setting values..
-    std::auto_ptr<TfrmVerticalSelect> frmThorlinkSettingsSelection(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-    //Create Title Item to be added to the selection form..
-	TVerticalSelection titleItem = CreateSelectionItem("Cancel", "0x000098F5", true, clWhite, 0);
-	frmThorlinkSettingsSelection->Items.push_back(titleItem);
-//
-    //Create Enable/Disable Item to be added to the selection form..
-    TVerticalSelection enableDisableItem = CreateSelectionItem(UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsThorlinkEnabled ? "Enabled" : "Disabled")),
-                                                 TGlobalSettings::Instance().IsThorlinkEnabled ? IntToStr(clGreen) : IntToStr(clRed),
-                                                 true, 0, 1);
-    frmThorlinkSettingsSelection->Items.push_back(enableDisableItem);
-
-    //Create App Key Item to be added to the selection form..
-    TVerticalSelection appKeyItem = CreateSelectionItem("App Key. \r" + TGlobalSettings::Instance().ThorlinkAppKey, IntToStr(clNavy),
-                                                true, 0, 2);
-    frmThorlinkSettingsSelection->Items.push_back(appKeyItem);
-
-    //Create Site Number Item to be added to the selection form..
-    TVerticalSelection siteNoItem = CreateSelectionItem("Site No. \r" + TGlobalSettings::Instance().ThorlinkSiteNo, IntToStr(clNavy),
-                                                true, 0, 3);
-    frmThorlinkSettingsSelection->Items.push_back(siteNoItem);
-
-    //Create Server Path Item to be added to the selection form..
-    TVerticalSelection merchantCodeItem = CreateSelectionItem("Merchant Code. \r" + TGlobalSettings::Instance().ThorlinkMerchantCode, IntToStr(clNavy),
-                                                true, 0, 4);
-    frmThorlinkSettingsSelection->Items.push_back(merchantCodeItem);
-
-    //Create Server Port Item to be added to the selection form..
-    TVerticalSelection deviceCodeItem = CreateSelectionItem("Device Code. \r" + TGlobalSettings::Instance().ThorlinkDeviceCode, IntToStr(clNavy),
-                                                true, 0, 5);
-    frmThorlinkSettingsSelection->Items.push_back(deviceCodeItem);
-
-//    //Show the pop up for display to user..
-    frmThorlinkSettingsSelection->ShowModal();
-//
-    //Get the selection from user in order to persist the values..
-    TVerticalSelection selectedItem;
-    if (frmThorlinkSettingsSelection->GetFirstSelectedItem(selectedItem) && selectedItem.Title != "Cancel")
-    {
-        int action = StrToIntDef(selectedItem.Properties["Action"], 0);
-        switch(action)
-        {
-            case 1:
-            {
-                // Display Launch List for allowing user to enable or disable the setting..
-                std::auto_ptr <TfrmVerticalSelect> enableDisableSelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
-//
-                TVerticalSelection cancelSubItem = CreateSelectionItem("Cancel", IntToStr(clMaroon), true, 0, 0);
-                enableDisableSelectionForm->Items.push_back(cancelSubItem);
-
-                TVerticalSelection enableSubItem = CreateSelectionItem("Enable", IntToStr(clGreen), true, 0, 1);
-                enableDisableSelectionForm->Items.push_back(enableSubItem);
-
-                TVerticalSelection disableSubItem = CreateSelectionItem("Disable", IntToStr(clRed), true, 0, 2);
-                enableDisableSelectionForm->Items.push_back(disableSubItem);
-
-                //Get the selection from user in order to persist the values..
-                enableDisableSelectionForm->ShowModal();
-
-                TVerticalSelection subSelectedItem;
-                if (enableDisableSelectionForm->GetFirstSelectedItem(subSelectedItem) && subSelectedItem.Title != "Cancel")
-                {
-                    int subAction = StrToIntDef(subSelectedItem.Properties["Action"], 0);
-                    switch(subAction)
-                    {
-                        case 1:
-                        {
-                            if(TGlobalSettings::Instance().IsThorlinkSelected)
-                            {
-                               TGlobalSettings::Instance().IsThorlinkEnabled = true;
-                            }
-                            else
-                            {
-                              MessageBox("Please Select Thorlink Membership first.", "Warning", MB_ICONWARNING + MB_OK);
-                              TGlobalSettings::Instance().IsThorlinkEnabled = false;
-                            }
-                        }
-                        break;
-                        case 2:
-                        {
-                            TGlobalSettings::Instance().IsThorlinkEnabled = false;
-                        }
-                        break;
-                    }
-
-                    DBTransaction.StartTransaction();
-                    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsThorlinkEnabled,
-                                                                    TGlobalSettings::Instance().IsThorlinkEnabled);
-                    DBTransaction.Commit();
-                    RefreshThorlinkButtonColor();
-                }
-            }
-            break;
-            case 2:
-            {
-                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-                frmTouchKeyboard->MaxLength = 255;
-                frmTouchKeyboard->AllowCarriageReturn = false;
-                frmTouchKeyboard->StartWithShiftDown = false;
-                frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ThorlinkAppKey;
-                frmTouchKeyboard->Caption = "Enter App Key";
-
-                if (frmTouchKeyboard->ShowModal() == mrOk)
-                {
-                    if(frmTouchKeyboard->KeyboardText=="")
-                    {
-                      MessageBox("Enter App key.", "Warning", MB_ICONWARNING + MB_OK);
-                    }
-                    else
-                    {
-                    TGlobalSettings::Instance().ThorlinkAppKey = frmTouchKeyboard->KeyboardText;
-                    }
-
-                    DBTransaction.StartTransaction();
-                    TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmThorlinkAppKey,
-                                                                    TGlobalSettings::Instance().ThorlinkAppKey);
-                    DBTransaction.Commit();
-                }
-            }
-            break;
-            case 3:
-            {
-                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-                frmTouchKeyboard->MaxLength = 255;
-                frmTouchKeyboard->AllowCarriageReturn = false;
-                frmTouchKeyboard->StartWithShiftDown = false;
-                frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ThorlinkSiteNo;
-                frmTouchKeyboard->Caption = "Enter Site Number.";
-
-                if (frmTouchKeyboard->ShowModal() == mrOk)
-                {
-
-                    if(frmTouchKeyboard->KeyboardText=="")
-                    {
-                      MessageBox("Enter Site No.", "Warning", MB_ICONWARNING + MB_OK);
-                    }
-                    else
-                    {
-                    TGlobalSettings::Instance().ThorlinkSiteNo = frmTouchKeyboard->KeyboardText;
-                    }
-
-                    DBTransaction.StartTransaction();
-                    TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmThorlinkSiteNo,
-                                                                    TGlobalSettings::Instance().ThorlinkSiteNo);
-                    DBTransaction.Commit();
-                }
-            }
-            break;
-            case 4:
-            {
-                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-                frmTouchKeyboard->MaxLength = 255;
-                frmTouchKeyboard->AllowCarriageReturn = false;
-                frmTouchKeyboard->StartWithShiftDown = false;
-                frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ThorlinkMerchantCode;
-                frmTouchKeyboard->Caption = "Enter Merchant Code.";
-
-                if (frmTouchKeyboard->ShowModal() == mrOk)
-                {
-
-                    if(frmTouchKeyboard->KeyboardText=="")
-                    {
-                      MessageBox("Enter Merchant Code.", "Warning", MB_ICONWARNING + MB_OK);
-                    }
-                    else
-                    {
-                    TGlobalSettings::Instance().ThorlinkMerchantCode = frmTouchKeyboard->KeyboardText;
-                    }
-
-                    DBTransaction.StartTransaction();
-                    TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmThorlinkMerchantCode,
-                                                                    TGlobalSettings::Instance().ThorlinkMerchantCode);
-                    DBTransaction.Commit();
-                }
-            }
-            break;
-            case 5:
-            {
-                std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-                frmTouchKeyboard->MaxLength = 255;
-                frmTouchKeyboard->AllowCarriageReturn = false;
-                frmTouchKeyboard->StartWithShiftDown = false;
-                frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ThorlinkDeviceCode;
-                frmTouchKeyboard->Caption = "Enter Device Code.";
-
-                if (frmTouchKeyboard->ShowModal() == mrOk)
-                {
-
-                    if(frmTouchKeyboard->KeyboardText=="")
-                    {
-                      MessageBox("Enter Device Code.", "Warning", MB_ICONWARNING + MB_OK);
-                    }
-                    else
-                    {
-                    TGlobalSettings::Instance().ThorlinkDeviceCode = frmTouchKeyboard->KeyboardText;
-                    }
-
-                    DBTransaction.StartTransaction();
-                    TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmThorlinkDeviceCode,
-                                                                    TGlobalSettings::Instance().ThorlinkDeviceCode);
-                    DBTransaction.Commit();
-                }
-            }
-        }
-    }
-    else
-	    keepFormAlive = false;
-
-    return keepFormAlive;
-}
-
-void __fastcall TfrmMaintain::RefreshThorlinkButtonColor()
-{
-
-    if ( TDeviceRealTerminal::Instance().IMManager->Registered)
-    {
-        if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-        {
-            if ((TGlobalSettings::Instance().IsThorlinkEnabled) && (TGlobalSettings::Instance().IsThorlinkSelected))
-            {
-                TouchBtnThorlink->ButtonColor = clGreen;
-                TouchBtnThorlink->Caption = "Thorlink \r[Enabled]";
-            }
-            else
-            {
-                TouchBtnThorlink->ButtonColor = clRed;
-                TouchBtnThorlink->Caption = "Thorlink \r[Disabled]";
-            }
-        }
-        else
-        {
-            TouchBtnThorlink->ButtonColor = clRed;
-            TouchBtnThorlink->Caption = "Thorlink \r[Unregistered]";
-        }
-    }
-    else
-    {
-		TouchBtnThorlink->Caption = "Thorlink \r[Unregistered]";
-        TouchBtnThorlink->Enabled = TDeviceRealTerminal::Instance().IMManager->Registered;
-    }
-
-}
-
 TVerticalSelection TfrmMaintain::CreateSelectionItem(UnicodeString title, UnicodeString color, bool isCloseSelectionAllowed, int fontColor,
                                                 int action)
 {
@@ -3320,31 +2484,15 @@ void __fastcall TfrmMaintain::RefreshRunRateBoard()
 
 void __fastcall TfrmMaintain::RefreshDrinkCommandButtonColor()
 {
-    if ( TDeviceRealTerminal::Instance().IMManager->Registered)
+    if (TGlobalSettings::Instance().IsDrinkCommandEnabled)
     {
-        if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-        {
-            if (TGlobalSettings::Instance().IsDrinkCommandEnabled)
-            {
-                tchbtnDrinkCommand->ButtonColor = clGreen;
-                tchbtnDrinkCommand->Caption = "Drink Command \r[Enabled]";
-            }
-            else
-            {
-                tchbtnDrinkCommand->ButtonColor = clRed;
-                tchbtnDrinkCommand->Caption = "Drink Command \r[Disabled]";
-            }
-        }
-        else
-        {
-            tchbtnDrinkCommand->ButtonColor = clRed;
-            tchbtnDrinkCommand->Caption = "Drink Command \r[Unregistered]";
-        }
+        tchbtnDrinkCommand->ButtonColor = clGreen;
+        tchbtnDrinkCommand->Caption = "Drink Command \r[Enabled]";
     }
     else
     {
-		tchbtnDrinkCommand->Caption = "Drink Command \r[Unregistered]";
-        tchbtnDrinkCommand->Enabled = TDeviceRealTerminal::Instance().IMManager->Registered;
+        tchbtnDrinkCommand->ButtonColor = clRed;
+        tchbtnDrinkCommand->Caption = "Drink Command \r[Disabled]";
     }
 }
 //---------------------------------------------------------------------------
@@ -3374,58 +2522,6 @@ void __fastcall TfrmMaintain::SaveServerCheck()
 	{
 		ServerEnable=true;
 	}
-}
-
-void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
-{
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-				TVerticalSelection Item;
-				Item.Title = "Cancel";
-				Item.Properties["Color"] = "0x000098F5";
-				Item.Properties["FontColor"] = IntToStr(clWhite);;
-				Item.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item);
-
-				TVerticalSelection Item1;
-				Item1.Title = "Enable";
-				Item1.Properties["Action"] = IntToStr(1);
-				Item1.Properties["Color"] = IntToStr(clGreen);
-				Item1.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item1);
-
-				TVerticalSelection Item2;
-				Item2.Title = "Disable";
-				Item2.Properties["Action"] = IntToStr(2);
-				Item2.Properties["Color"] = IntToStr(clRed);
-				Item2.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item2);
-
-				SelectionForm1->ShowModal();
-				TVerticalSelection SelectedItem1;
-				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-				{
-					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-					switch(Action)
-					{
-					case 1 :
-						TGlobalSettings::Instance().IsClippIntegrationEnabled = true;
-                        TouchBtnClipInterface->ButtonColor = clGreen;
-                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Enabled]";
-//                        TManagerClippIntegration::Instance();
-						break;
-					case 2 :
-						TGlobalSettings::Instance().IsClippIntegrationEnabled = false;
-                        TouchBtnClipInterface->ButtonColor = clRed;
-                        TouchBtnClipInterface->Caption = "Clipp Interface \r[Disabled]";
-						break;
-					}
-
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsClippIntegrationEnabled,TGlobalSettings::Instance().IsClippIntegrationEnabled);
-					DBTransaction.Commit();
-                }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)

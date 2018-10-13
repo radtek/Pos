@@ -768,26 +768,6 @@ void TManagerTimeClock::MoveDisplayOrderDown(Database::TDBTransaction &DBTransac
    }
 }
 //---------------------------------------------------------------------------
-void TManagerTimeClock::BuildXMLTotalsTimeClock(TPOS_XMLBase &Data,int SiteID, int ContactKey, TDateTime &Login, TDateTime &LogOut)
-{
-   Data.Doc.Clear();
-
-	TiXmlDeclaration * decl = new TiXmlDeclaration( _T("1.0"), _T("UTF-8"), _T("") );
-   Data.Doc.LinkEndChild( decl );
-
-   // Insert DOCTYPE definiation here.
-   TiXmlElement * List = new TiXmlElement( xmlEleListRoster );
-	List->SetAttribute(xmlAttrID, AnsiString(Data.IntaMateID).c_str());
-	List->SetAttribute(xmlAttrSiteID, SiteID);
-
-	TiXmlElement *EleTimeClock = new TiXmlElement( xmlTimeClockInfo );
-	EleTimeClock->SetAttribute(xmlAttrXmlID,        ContactKey);
-	EleTimeClock->SetAttribute(xmlAttrTimeStart,    UnicodeString(Login.FormatString("YYYYMMDDHHMMSS")).t_str());
-	EleTimeClock->SetAttribute(xmlAttrTimeEnd,      UnicodeString(LogOut.FormatString("YYYYMMDDHHMMSS")).t_str());
-   List->LinkEndChild( EleTimeClock );
-   Data.Doc.LinkEndChild( List );
-}
-//---------------------------------------------------------------------------
 void TManagerTimeClock::UpdateClockInOut(Database::TDBTransaction &DBTransaction, int contact_time_key, int contact_key)
 {
 	try

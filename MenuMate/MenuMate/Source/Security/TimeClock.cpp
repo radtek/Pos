@@ -91,16 +91,6 @@ void __fastcall TfrmTimeClock::btnClockOutClick(TObject *Sender)
    TDateTime LogOutTime = Now();
    TDateTime LogInTime;
    int contact_time_key = ManagerTimeClock->ClockOut(DBTransaction,CurrentUser.ContactKey,LogInTime,LogOutTime);
-	if(contact_time_key)
-	{
-      if(TDeviceRealTerminal::Instance().IMManager->Registered)
-      {
-         TPOS_XMLBase Data("Totals TimeClock");
-         ManagerTimeClock->BuildXMLTotalsTimeClock(Data,TGlobalSettings::Instance().SiteID,CurrentUser.ContactKey, LogInTime, LogOutTime);
-         TDeviceRealTerminal::Instance().IMManager->Export(Data);
-         Data.SaveToFile();
-      }
-   }
     DBTransaction.Commit();
     ManagerTimeClock->UpdateClockInOut(DBTransaction, contact_time_key, CurrentUser.ContactKey);
     tbtnClockOut->Enabled = false;

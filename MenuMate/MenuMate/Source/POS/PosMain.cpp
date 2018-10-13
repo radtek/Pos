@@ -32,11 +32,8 @@
 #include "DBTables.h"
 #include "DBRooms.h"
 #include "Rooms.h"
-
 #include "ChefmateClient.h"
 #include "ManagerLoyaltyMate.h"
-//#include "ManagerClippIntegration.h"
-
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -47,11 +44,9 @@
 #pragma link "IdComponent"
 #pragma link "IdIPWatch"
 #pragma resource "*.dfm"
-
 USEFORM("POS\MenuManager.cpp", frmMenuManager);
 USEFORM("POS\SelectReceipt.cpp", frmSelectReceipt);
 USEFORM("POS\Transfer.cpp", frmTransfer);
-
 //---------------------------------------------------------------------------
 __fastcall TfrmPOSMain::TfrmPOSMain(TComponent* Owner,Database::TDBControl &inDBControl)
 : TZForm(Owner), DBControl(inDBControl)

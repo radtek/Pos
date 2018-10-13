@@ -5,9 +5,7 @@
 #include "ManagerLoyaltyMate.h"
 #include "ManagerMembershipGUI.h"
 #include "MembershipGUI.h"
-#include "MembershipEBetGUI.h"
 #include "MembershipExternalGUI.h"
-//#include "MembershipThorlinkGUI.h"
 #include "EditCustomer.h"
 #include "MMMessageBox.h"
 #include "MMLogging.h"
@@ -20,10 +18,6 @@
 #include "ContactStaff.h"
 #include "MembershipERSGUI.h"
 #include "LoyaltyMateUtilities.h"
-
-
-
-
 #pragma package(smart_init)
 
 TManagerMembershipGUI::TManagerMembershipGUI(Database::TDBControl &inDBControl,TMMSettings &inSystem, TModules &inModules)
@@ -411,15 +405,9 @@ void TManagerMembershipGUI::Initialise(Database::TDBTransaction &DBTransaction)
    case MembershipTypeERS:
       MembershipSystem.reset(new TContactMemberERSGUI(Modules, IBMembershipDatabase));
       break;
-   case MembershipTypeEBet:
-	  MembershipSystem.reset(new TMembershipEBetGUI(Modules, TGlobalSettings::Instance().MembershipDatabaseIP, TGlobalSettings::Instance().MembershipDatabasePort, TGlobalSettings::Instance().MembershipTillID));
-	  break;
    case MembershipTypeExternal:
 	  MembershipSystem.reset(new TMembershipExternalGUI(Modules, TGlobalSettings::Instance().MembershipDatabaseIP, TGlobalSettings::Instance().MembershipDatabasePort, TGlobalSettings::Instance().MembershipTillID));
 	  break;
-//   case MembershipTypeThor:
-//	  MembershipSystem.reset(new TMembershipThorlinkGUI(Modules, TGlobalSettings::Instance().ThorlinkAppKey, TGlobalSettings::Instance().ThorlinkSiteNo, TGlobalSettings::Instance().ThorlinkMerchantCode, TGlobalSettings::Instance().ThorlinkDeviceCode));
-//	  break;
    default:
 	  MembershipSystem.reset(new TMembershipGUI(Modules));
    }

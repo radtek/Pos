@@ -1,13 +1,9 @@
 //---------------------------------------------------------------------------
-
 #ifndef DeviceRealTerminalH
 #define DeviceRealTerminalH
-
 #include "DeviceRealControl.h"
 #include "ProxReader.h"
-
 #include "ScaleModel.h"
-#include "IMManager.h"
 #include "ManagerPocketVoucher.h"
 #include "PoleDisplay.h"
 #include "SystemEvents.h"
@@ -22,8 +18,6 @@
 #include "BasePMS.h"
 #include "PhoenixHotelSystem.h"
 #include "FiscalPort.h"
-//#include "OracleDataObjects.h"
-
 //---------------------------------------------------------------------------
 class TDeviceRealTerminal : public TDeviceRealControl
 {
@@ -43,7 +37,6 @@ public:
    #endif
 
    std::auto_ptr<TScaleModel> Scales;
-   std::auto_ptr<TIMManager> IMManager;
    std::auto_ptr<TManagerPocketVoucher> PocketVouchers;
    std::auto_ptr<TFiscalPort> FiscalPort;
 
@@ -100,8 +93,6 @@ public:
     void TriggerTabStateChanged();
 	// Events
 	TSystemEvents AfterTabStateChanged;
-
-	void BuildXMLVersion( TPOS_XMLBase &Data, int SiteID );
 
     // This collection holds number of global application messages shown throughout the system
     // by looking at the count we can determine whether a message box is already on screen if so do not display again

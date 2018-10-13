@@ -47,7 +47,6 @@ public:		// User declarations
    bool RequestClose;
    void EnableMenuMate();
    void EnableMembership();
-   void EnableEBetMembership();
    void EnableGeneralLedgerMembership();
    void EnableStock();
 };

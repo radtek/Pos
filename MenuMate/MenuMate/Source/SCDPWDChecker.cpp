@@ -20,10 +20,6 @@ bool TSCDPWDChecker::SeniorCitizensCheck(TDiscount inDiscount, TList* Orders, bo
     bool SeniorCitizenDiscCanBeApplied = !TOrderUtils::AnyDiscountsApplied(Orders) ||
                                          (TOrderUtils::SeniorCitizensDiscountApplied(Orders));
     bool discountValid = discIsSeniorCitizenDisc ? SeniorCitizenDiscCanBeApplied : !TOrderUtils::SeniorCitizensDiscountApplied(Orders);
-    if(isClippSale && discIsSeniorCitizenDisc)
-    {
-       discountValid = isClippSale;
-    }
     if(!discountValid)
     {
         UnicodeString errorMessage;
@@ -39,25 +35,13 @@ bool TSCDPWDChecker::SeniorCitizensCheck(TDiscount inDiscount, TList* Orders, bo
 
 		MessageBox(errorMessage, "Error", MB_ICONWARNING + MB_OK);
     }
-
-    if(isClippSale && !discIsSeniorCitizenDisc)
-    {
-       discountValid = false;
-    }
-
     return discountValid;
 }
 bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippSale)
 {
     bool discIsPWDDisc = inDiscount.IsPersonWithDisabilityDiscount();
     bool PWDDiscCanBeApplied = !TOrderUtils::AnyDiscountsApplied(Orders) || TOrderUtils::PWDDiscountApplied(Orders);
-
     bool discountValid = discIsPWDDisc ? PWDDiscCanBeApplied : !TOrderUtils::PWDDiscountApplied(Orders);
-
-    if(isClippSale && discIsPWDDisc)
-    {
-       discountValid = isClippSale;
-    }
     if(!discountValid)
     {
         UnicodeString errorMessage;
@@ -73,12 +57,6 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 
 		MessageBox(errorMessage, "Error", MB_ICONWARNING + MB_OK);
     }
-
-    if(isClippSale && !discIsPWDDisc)
-    {
-       discountValid = false;
-    }
-
     return discountValid;
 }
 bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)

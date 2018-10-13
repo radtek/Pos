@@ -293,16 +293,6 @@ void TfrmSystemConfig::EnableMembership()
 	tgridButtons->Buttons[6][0]->Enabled = true;
 }
 
-void TfrmSystemConfig::EnableEBetMembership()
-{
-	tgridButtons->Buttons[0][0]->Enabled = false;
-	tgridButtons->Buttons[1][0]->Enabled = false;
-	tgridButtons->Buttons[2][0]->Enabled = false;
-	tgridButtons->Buttons[3][0]->Enabled = false;
-	tgridButtons->Buttons[4][0]->Enabled = true;
-	tgridButtons->Buttons[5][0]->Enabled = false;
-	tgridButtons->Buttons[6][0]->Enabled = true;
-}
 
 void TfrmSystemConfig::EnableGeneralLedgerMembership()
 {

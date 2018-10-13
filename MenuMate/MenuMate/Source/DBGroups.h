@@ -5,7 +5,6 @@
 // ---------------------------------------------------------------------------
 #include "MM_DBCore.h"
 #include "ContactGroup.h"
-#include "POS_XMLBase.h"
 #include <vector>
 
 class TDBGroups
@@ -23,18 +22,13 @@ public:
 	static bool SummaGroupExists(Database::TDBTransaction &DBTransaction, int ContactKey);
 	static void RemoveSummaGroup(Database::TDBTransaction &DBTransaction, int GroupKey, int ContactKey);
 	static void RemoveSummaGroup(Database::TDBTransaction &DBTransaction, int ContactKey);
-	static void BuildXMLListGroups(Database::TDBTransaction &DBTransaction, TPOS_XMLBase &Data);
-	static void BuildXMLListMemberGroups(Database::TDBTransaction &DBTransaction, TPOS_XMLBase &Data);
-
 	static int GetOrCreateGroup(Database::TDBTransaction &DBTransaction, UnicodeString inGroupName, int inGroupNumber);
 	static int GetOrCreateGroup(Database::TDBTransaction &DBTransaction, UnicodeString inGroupName);
 	static void CreateGroup(Database::TDBTransaction &DBTransaction, ContactGroup inGroup);
-
    static bool GroupExists(Database::TDBTransaction &DBTransaction, int inGroupKey);
    static bool GroupExists(Database::TDBTransaction &DBTransaction, UnicodeString inGroupName);
    static int FindGroup(Database::TDBTransaction &DBTransaction,  UnicodeString inGroupName);
    static int GetGroupType(Database::TDBTransaction &DBTransaction, UnicodeString inGroupName);
-
    static void GetGroupsList(Database::TDBTransaction &DBTransaction,TStrings *GroupName, TStrings *GroupType);
    static void GetGroupsList(Database::TDBTransaction &DBTransaction, std::vector<ContactGroup> &DataVector);
    static void GetGroupsfromType(Database::TDBTransaction &DBTransaction, std::vector<ContactGroup> &DataVector, int inType);

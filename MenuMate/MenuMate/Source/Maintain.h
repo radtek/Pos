@@ -74,9 +74,7 @@ class TfrmMaintain : public TZForm
 	TTouchBtn *btnClose;
 	TTouchBtn *tbtnSmartCards;
 	TTouchBtn *TouchBtn1;
-	TTouchBtn *tbIntaMate;
 	TTouchBtn *tbtnPocketVouchers;
-	TTouchBtn *tbtnEBet;
 	TTouchBtn *tchbtnWebMate;
 	TTouchBtn *btnGUI;
 	TTouchBtn *btnSkimReasons;
@@ -87,7 +85,6 @@ class TfrmMaintain : public TZForm
 	TTouchBtn *tbtnDeals;
     TTouchBtn *tbtnTaxSettings;
     TTouchBtn *TouchBtnBarExchange;
-    TTouchBtn *TouchBtnThorlink;
     TTouchBtn *TouchBtnFiscalStorage;
     //add by frn
     TTouchBtn *tchbtnDrinkCommand;
@@ -95,7 +92,6 @@ class TfrmMaintain : public TZForm
     TTouchBtn *tbtnMaintenance;
     TTouchBtn *tbtnQuickMessages;
     TTouchBtn *tbtnInterfaces;
-    TTouchBtn *TouchBtnClipInterface;
     TPageControl *Pages;
     TTabSheet *tsMaintenance;
     TTabSheet *tsQuickMessages;
@@ -132,9 +128,7 @@ class TfrmMaintain : public TZForm
 	void __fastcall tbtnSmartCardsMouseClick(TObject *Sender);
 	void __fastcall tbtnMiscSettingsMouseClick(TObject *Sender);
 	void __fastcall TouchBtn1MouseClick(TObject *Sender);
-	void __fastcall tbIntaMateMouseClick(TObject *Sender);
 	void __fastcall tbtnPocketVouchersMouseClick(TObject *Sender);
-	void __fastcall tbtnEBetMouseClick(TObject *Sender);
 	void __fastcall tchbtnWebMateMouseClick(TObject *Sender);
 	void __fastcall btnGUIMouseClick(TObject *Sender);
 	void __fastcall btnSkimMouseclick(TObject *Sender);
@@ -146,7 +140,6 @@ class TfrmMaintain : public TZForm
     void __fastcall tbtnTaxSettingsMouseClick(TObject *Sender);
     void __fastcall btnTierLevelsMouseClick(TObject *Sender);
  	void __fastcall tchbtnDrinkCommandMouseClick(TObject *Sender);
- 	void __fastcall TouchBtnThorlinkClick(TObject *Sender);
     //add by frn
     void __fastcall tbMaintenanceClick(TObject *Sender);
     void __fastcall tbQuickMessagesClick(TObject *Sender);
@@ -154,7 +147,6 @@ class TfrmMaintain : public TZForm
     void RedrawButtons(TObject * Sender);
     void __fastcall TouchBtnBarExchangeMouseClick(TObject *Sender);
     void __fastcall btnAccountingInterfaceMouseClick(TObject *Sender);
-    void __fastcall TouchBtnClipInterfaceMouseClick(TObject *Sender);
     TTouchBtn *TouchBtnRunRateBoard;
     void __fastcall TouchBtnRunRateBoardMouseClick(TObject *Sender);
     TTouchBtn *TouchBtnMemberSalesOnly;
@@ -182,27 +174,13 @@ private:
     TVerticalSelection CreateSelectionItem(UnicodeString title, UnicodeString color, bool isCloseSelectionAllowed, int fontColor = 0, int action = 0);
 	void __fastcall ServiceStatus(UnicodeString Msg, Database::TIBServiceType ServiceType);
 	void __fastcall ServiceComplete(bool Success, UnicodeString ErrorMsg, Database::TIBServiceType ServiceType);
-	void __fastcall ExportIntaMateData();
 	void __fastcall PushBackItem( SelectionFormPtr inSelectionForm, UnicodeString inTitle, bool inWithAction, int inAction, TColor inColor, bool inCloseSelection );
-	void __fastcall ExportIntaMate( int inAction );
-	void __fastcall ExportIntaMateAll();
-	void __fastcall ExportIntaMateVersion();
-	void __fastcall ExportIntaMateDataProduct();
-	void __fastcall ExportIntaMateDataPayments();
-	void __fastcall ExportIntaMateDataCategoriesGroups();
-	void __fastcall ExportIntaMateListStaff();
-	void __fastcall ExportIntaMateDataMembers();
-	void __fastcall ExportIntaMateDiscounts();
-	void __fastcall ExportIntaMateFixed();
-	void __fastcall ExportIntaMatePatronCounts();
-	void __fastcall ExportIntaMateMemberGroups();
 	void __fastcall ResetWebMate();
 	void __fastcall RefreshWebMateBtnColor();
 	void __fastcall RefreshReservationBtnColor();
 	void __fastcall RefreshLoyaltyMateBtnColor();
 	void __fastcall RefreshBarExchangeBtnColor();
     void __fastcall RefreshDrinkCommandButtonColor();
-    void __fastcall RefreshThorlinkButtonColor();
 	void __fastcall  SaveServerCheck();
    // void __fastcall RefreshMembersaleOnly();
 	TLoginSuccess __fastcall CheckAccess(SecurityCheck AccessCheck);
@@ -210,7 +188,6 @@ private:
 	bool DisplayBarExchangeSettings(Database::TDBTransaction &DBTransaction);
 
     bool ShowDrinkCommandSettings(Database::TDBTransaction & DBTransaction);
-    bool ShowThorlinkSettings(Database::TDBTransaction & DBTransaction);
 	void CustomerOrderTypes(void);
     bool ServerEnable;
    	UnicodeString XeroMachineName;
