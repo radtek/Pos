@@ -9143,6 +9143,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 		}
 		else
 		{
+            if(TDBTables::HasOnlineOrders(SelectedTable))
+            {
+                MessageBox("Membership Can not be applied to the table which have online orders","Info",MB_OK+MB_ICONINFORMATION);
+                return;
+            }
+
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
