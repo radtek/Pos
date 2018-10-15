@@ -3676,7 +3676,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey)
-                    Order->Email = SeatOrders[iSeat]->Orders->AppliedMembership.EMail;
+                {
+                    Order->Email = Membership.Member.EMail;
+                    Order->Loyalty_Key = Membership.Member.ContactKey;
+                }
                 else
                     Order->Email = "";
 
@@ -9006,6 +9009,7 @@ void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButt
          GridButton->Latched = true;
 
         int CurrentSeat = tgridSeats->Col(GridButton) + 1; // Zero Indexed.
+
         if (CurrentSeat == SelectedSeat)
         {
             std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
