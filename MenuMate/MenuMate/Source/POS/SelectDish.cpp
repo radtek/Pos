@@ -11306,7 +11306,7 @@ void TfrmSelectDish::showOldTablePicker()
                 MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
                 showOldTablePicker();
              }
-             TDBTables::UpdateTableStatus(DBTransaction, SelectedTable);
+             TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, true);
              DBTransaction.Commit();
 
             refreshSelectedSeat();

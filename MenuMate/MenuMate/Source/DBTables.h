@@ -92,7 +92,7 @@ class TDBTables
     static bool HasOnlineOrders(int tableNumber);
     static UnicodeString GetMemberEmail(int tableNumber);
     static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
-    static void UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo, bool IsTableSelected = true);
+    static void UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo, bool IsTableSelected);
 };
 
 #endif
