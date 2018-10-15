@@ -1762,6 +1762,8 @@ bool TDBTables::IsTableLocked(Database::TDBTransaction &DBTransaction,int TableN
 //=======================================================================================
 void TDBTables::UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo , bool IsTableSelected)
 {
+    if(!inTableNo)
+        return;
     try
      {        
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());

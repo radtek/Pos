@@ -500,6 +500,7 @@ private: // User declarations
     //TSiteMenuInfo GetSiteMenus(Database::TDBTransaction &DBTransaction);
     TLoginSuccess GetStaffLoginAccess(Database::TDBTransaction &DBTransaction, int access);
     void  ShowErrorMessage(std::string message, TLoginSuccess Result);
+    bool ShowMemberValidationMessage(int selectedTable);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);

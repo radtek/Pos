@@ -8555,11 +8555,8 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
-    if(SelectedTable && TDBTables::HasOnlineOrders(SelectedTable))
-    {
-        MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+    if(SelectedTable && ShowMemberValidationMessage(SelectedTable))
         return;
-    }
 
   //mm-5145
      if(TGlobalSettings::Instance().MandatoryMembershipCard )
@@ -10543,13 +10540,6 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                 {
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
-
-//                  bool hasOnlineOrders = TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]);
-//                  if(hasOnlineOrders)
-//                  {
-//                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
-//                      isItemSelected = false;
-//                  }
                     
                     if(TGlobalSettings::Instance().LoyaltyMateEnabled && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
                     {
@@ -10748,15 +10738,8 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 	{
         int selectedTable = static_cast<int>(OrderContainer.Location["SelectedTable"]);
 
-        if(TGlobalSettings::Instance().LoyaltyMateEnabled && selectedTable && TDBTables::HasOnlineOrders(selectedTable))
-        {
-            UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
-            if(!memberEmail.Compare(Membership.Member.EMail))
-            {
-                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+        if(selectedTable && ShowMemberValidationMessage(selectedTable))
                 return mrAbort;
-            }
-        }
 
 		if(TGlobalSettings::Instance().CaptureCustomerName)
 		{
@@ -16690,4 +16673,20 @@ void  TfrmSelectDish::ShowErrorMessage(std::string message, TLoginSuccess Result
     {
         MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
     }
+}
+//-------------------------------------------------------------------------------
+bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
+{
+    bool retVal = false;
+
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTables::HasOnlineOrders(selectedTable))
+    {
+        UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
+        if(!memberEmail.Compare(Membership.Member.EMail))
+        {
+            MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+            retVal = true;
+        }
+    }
+    return retVal;
 }
