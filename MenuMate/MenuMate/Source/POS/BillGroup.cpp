@@ -2112,7 +2112,7 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
-{
+{    Membership.Member.Clear();
     TGlobalSettings::Instance().IsDiscountSelected = false;
 	Database::TDBTransaction DBTransaction(DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -2177,13 +2177,15 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
      {
         TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
-		ApplyMembership(DBTransaction, info);
 
         if(TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
             SetLoyaltyMemberInfo(DBTransaction,info);
             DownloadOnlineMember();
+
         }
+        ApplyMembership(DBTransaction, info);
+        ShowReceipt();
 	}
 
 }
@@ -5517,6 +5519,13 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 		DBTransaction.StartTransaction();
         TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,TempUserInfo);
+
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+            SetLoyaltyMemberInfo(DBTransaction,TempUserInfo);
+            DownloadOnlineMember();
+
+        }
 		ApplyMembership(DBTransaction, TempUserInfo);
 		DBTransaction.Commit();
 		ShowReceipt();
