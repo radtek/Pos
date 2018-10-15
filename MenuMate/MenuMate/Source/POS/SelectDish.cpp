@@ -10550,6 +10550,16 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 //                      MessageBox("An online Order is saved on the Tab.\rPlease Select some other tab.","Info",MB_OK+MB_ICONINFORMATION);
 //                      isItemSelected = false;
 //                  }
+                    
+                    if(TGlobalSettings::Instance().LoyaltyMateEnabled && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
+                    {
+                        UnicodeString memberEmail = TDBTab::GetMemberEmail(SelectedItem.Properties["TabKey"]);
+                        if(memberEmail.Compare(Membership.Member.EMail))
+                        {
+                            MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+                            return mrAbort;
+                        }
+                    }
 
                   if(isItemSelected)
                    {
@@ -10736,6 +10746,17 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 	TModalResult Retval = mrOk;
 	try
 	{
+        int selectedTable = static_cast<int>(OrderContainer.Location["SelectedTable"]);
+
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && selectedTable && TDBTables::HasOnlineOrders(selectedTable))
+        {
+            UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
+            if(!memberEmail.Compare(Membership.Member.EMail))
+            {
+                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+                return mrAbort;
+            }
+        }
 
 		if(TGlobalSettings::Instance().CaptureCustomerName)
 		{
@@ -12582,6 +12603,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
+
 	bool Proceed = GetOrderContainerForTab(DBTransaction, OrderContainer) == mrOk;
 	DBTransaction.Commit();
 
