@@ -3674,7 +3674,12 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
-                Order->Email = SeatOrders[iSeat]->Orders->AppliedMembership.EMail;
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey)
+                    Order->Email = SeatOrders[iSeat]->Orders->AppliedMembership.EMail;
+                else
+                    Order->Email = "";
+
                 Order->Loyalty_Key = SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey;
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
                             TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
@@ -8555,7 +8560,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
-    if(SelectedTable && ShowMemberValidationMessage(SelectedTable))
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SelectedTable && ShowMemberValidationMessage(SelectedTable))
         return;
 
   //mm-5145
@@ -9068,21 +9073,23 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
-            if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&  SelectedTable &&
-                                TDBTables::HasOnlineOrders(SelectedTable))
-            {
-                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+			DBTransaction.StartTransaction();
+
+            //Set the table status as availabale.
+            TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+            DBTransaction.Commit();
+
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&
+                        SelectedTable && ShowMemberValidationMessage(SelectedTable))
                 return;
-            }
 
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
             frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTable);
 
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction.StartTransaction();
-
+            DBTransaction.StartTransaction();
             //Get the patrons for the current selected table, verify if it is already keyed in
             std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, frmBillGroup->CurrentTable);
             int patronCount = GetCount(selectedTablePatrons);
@@ -9091,9 +9098,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
-
-		    //Set the table status as availabale.
-            TDBTables::UpdateTableStatus(DBTransaction, frmBillGroup->CurrentTable, false);
 
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
@@ -9105,7 +9109,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             //MM-1647: Clear Chit..
             ChitNumber.Clear();
 
-			DBTransaction.StartTransaction();
+		   	DBTransaction.StartTransaction();
 
 			TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
 
@@ -9145,13 +9149,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 		}
 		else
-		{
-            if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&  SelectedTable &&
-                                TDBTables::HasOnlineOrders(SelectedTable))
-            {
-                MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+		{     
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&
+                    SelectedTable && ShowMemberValidationMessage(SelectedTable))
                 return;
-            }
 
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -10541,7 +10542,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
                     
-                    if(TGlobalSettings::Instance().LoyaltyMateEnabled && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
+                    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
                     {
                         UnicodeString memberEmail = TDBTab::GetMemberEmail(SelectedItem.Properties["TabKey"]);
                         if(memberEmail.Compare(Membership.Member.EMail))
@@ -10549,6 +10550,11 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                             MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
                             return mrAbort;
                         }
+                    }
+                    else  if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+                    {
+                        TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, SelectedTable, Membership.Member.ContactKey,
+                                                        Membership.Member.EMail);
                     }
 
                   if(isItemSelected)
@@ -10738,7 +10744,7 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 	{
         int selectedTable = static_cast<int>(OrderContainer.Location["SelectedTable"]);
 
-        if(selectedTable && ShowMemberValidationMessage(selectedTable))
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && selectedTable && ShowMemberValidationMessage(selectedTable))
                 return mrAbort;
 
 		if(TGlobalSettings::Instance().CaptureCustomerName)
@@ -16679,10 +16685,11 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
 {
     bool retVal = false;
 
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTables::HasOnlineOrders(selectedTable))
+    if(TDBTables::HasOnlineOrders(selectedTable))
     {
         UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
-        if(!memberEmail.Compare(Membership.Member.EMail))
+        
+        if(memberEmail.Compare(Membership.Member.EMail))
         {
             MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
             retVal = true;
