@@ -5134,3 +5134,23 @@ void TDBOrder::SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTran
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
+//-----------------------------------------------------------------------------
+void TDBOrder::SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransaction,int tabKey,int loyaltyKey, UnicodeString email)
+{
+    try
+    {
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "UPDATE ORDERS SET LOYALTY_KEY =:LOYALTY_KEY, EMAIL = :EMAIL "
+                                      " WHERE TAB_KEY=:TAB_KEY";
+
+       IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+       IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = loyaltyKey;
+       IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+       IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}

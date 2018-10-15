@@ -10542,7 +10542,7 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
                     
-                    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
+                    if(isItemSelected && TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
                     {
                         UnicodeString memberEmail = TDBTab::GetMemberEmail(SelectedItem.Properties["TabKey"]);
                         if(memberEmail.Compare(Membership.Member.EMail))
@@ -10551,10 +10551,11 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                             return mrAbort;
                         }
                     }
-                    else  if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+                    else if(isItemSelected && TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
                     {
-                        TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, SelectedTable, Membership.Member.ContactKey,
+                        TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, SelectedItem.Properties["TabKey"], Membership.Member.ContactKey,
                                                         Membership.Member.EMail);
+
                     }
 
                   if(isItemSelected)
@@ -10747,6 +10748,7 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
         if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && selectedTable && ShowMemberValidationMessage(selectedTable))
                 return mrAbort;
 
+
 		if(TGlobalSettings::Instance().CaptureCustomerName)
 		{
 			TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
@@ -10799,6 +10801,12 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+                {
+                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
+                                                    Membership.Member.EMail);
+                }
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
                             TGlobalSettings::Instance().EnableCustomerJourney )
