@@ -9149,8 +9149,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 		}
 		else
-		{     
-            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&
+		{    
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey &&
                     SelectedTable && ShowMemberValidationMessage(SelectedTable))
                 return;
 
@@ -16700,7 +16700,7 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
     if(TDBTables::HasOnlineOrders(selectedTable))
     {
         UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
-        
+
         if(memberEmail.Compare(Membership.Member.EMail))
         {
             MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
