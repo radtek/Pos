@@ -2178,6 +2178,12 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
         TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
         ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
 		ApplyMembership(DBTransaction, info);
+
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+            SetLoyaltyMemberInfo(DBTransaction,info);
+            DownloadOnlineMember();
+        }
 	}
 
 }
@@ -2252,6 +2258,7 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                             if(TGlobalSettings::Instance().LoyaltyMateEnabled)
                             {
                                 GetLoyaltyMember(DBTransaction,TempMembershipInfo);
+                                SetLoyaltyMemberInfo(DBTransaction,TempMembershipInfo);
                             }
                             else
                             {
@@ -6009,5 +6016,17 @@ void TfrmBillGroup::DisableTransferButtonWhenLMIsEnabled()
             btnTransfer->Enabled = false;
             tbtnMove->Enabled = false;
         }
+    }
+}
+//--------------------------------------------------
+void TfrmBillGroup::SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo info)
+{
+    if(CurrentDisplayMode == eTables)
+    {
+        TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, CurrentTable, info.ContactKey, info.EMail);
+    }
+    else if(CurrentDisplayMode == eTabs)
+    {
+        TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, CurrentSelectedTab, info.ContactKey, info.EMail);
     }
 }
