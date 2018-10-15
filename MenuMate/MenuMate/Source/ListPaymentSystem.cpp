@@ -4051,16 +4051,23 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
 {
     bool paymentComplete = true;
     TWalletPaymentsInterface* WalletPaymentsInterface = new TWalletPaymentsInterface();
+    AnsiString oldMessage = State.Message;
+    bool changeMessage = false;
 	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = PaymentTransaction.PaymentGet(i);
 		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
 		{
+           TDeviceRealTerminal::Instance().ProcessingController.Pop();
+           State.Message = "Waiting for Wallet Payment to approve....";
+           TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+           changeMessage = true;
            TWalletTransactionResponse response = WalletPaymentsInterface->DoTransaction(*Payment);
            if(!response.IsSuccessful)
            {
               MessageBox(response.ResponseMessage, "Error", MB_OK + MB_ICONINFORMATION);
               paymentComplete = false;
+              ResetPayments(PaymentTransaction);
               break;
            }
            else
@@ -4069,6 +4076,12 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
            }
 		}
 	}
+    if(changeMessage)
+    {
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        State.Message = oldMessage;
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+    }
     delete WalletPaymentsInterface;
     return paymentComplete;
 }
@@ -5551,8 +5564,9 @@ TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 {
     UnicodeString message = "Processing Bill";
     if(TGlobalSettings::Instance().EnableEftPosAdyen && !_isSmartCardPresent())
+    {
         message = "Waiting For Adyen EFTPOS";
-
+    }
 	TMMProcessingState State(Screen->ActiveForm, message, "Processing Bill");
 
 	if (_isSmartCardPresent())
