@@ -9268,6 +9268,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 delete frmConfirmOrder;
                 frmConfirmOrder = NULL;
 			}
+            else
+            {
+                TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+            }
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
             int TabKey = TDBTab::GetOrCreateTab(DBTransaction,TDBTables::GetTabKey(DBTransaction,SeatKey));
