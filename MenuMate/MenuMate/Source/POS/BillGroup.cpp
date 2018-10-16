@@ -1734,7 +1734,7 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	{
 		TGridButton *GridButton = tgridContainerList->Buttons[i][CONTAINER_LIST_FUNC_COLUMN];
 		int SelectedTab = GridButton->Tag;
-        if(CheckTabCompatablityForOnlineOrdering(SelectedTab))
+        if(CheckTabCompatablityForOnlineOrdering(SelectedTab) )
         {
             if (AddToSelectedTabs(DBTransaction, SelectedTab))
             {
@@ -5890,7 +5890,8 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
 //---------------------------------------------------------------------------
 void TfrmBillGroup::UpdateTabForOnlineOrdering()
 {
-    if((CurrentDisplayMode == eTabs && HasOnlineOrders) || (CurrentTable && TDBTables::HasOnlineOrders(CurrentTable)))
+    bool isTableGuest = CurrentTable && TDBTables::HasOnlineOrders(CurrentTable);
+    if((CurrentDisplayMode == eTabs && HasOnlineOrders) || (isTableGuest))
     {
         btnTransfer->Color          = clSilver;
         btnTransfer->Enabled        = false;
@@ -5902,6 +5903,8 @@ void TfrmBillGroup::UpdateTabForOnlineOrdering()
         btnSplitPayment->Enabled    = false;
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
+        if(isTableGuest)
+            btnBillSelected->Enabled = false;
     }
 }
 //---------------------------------------------------------------------------
@@ -5912,25 +5915,28 @@ bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
     {
         bool currentTabHoldsOnlineOrders = TDBTab::HasOnlineOrders(tabKey);
 
-        std::set <__int64> ::iterator itTabsSelected = SelectedTabs.begin();
-        for(; itTabsSelected != SelectedTabs.end(); advance(itTabsSelected,1))
+        if(CurrentDisplayMode == eTabs)
         {
-            if(currentTabHoldsOnlineOrders)
+            std::set <__int64> ::iterator itTabsSelected = SelectedTabs.begin();
+            for(; itTabsSelected != SelectedTabs.end(); advance(itTabsSelected,1))
             {
-                if(!TDBTab::HasOnlineOrders(*itTabsSelected))
+                if(currentTabHoldsOnlineOrders)
                 {
-                    retValue = false;
-                    MessageBox("Tabs with online orders and Normal Tabs can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
-                    break;
+                    if(!TDBTab::HasOnlineOrders(*itTabsSelected))
+                    {
+                        retValue = false;
+                        MessageBox("Tabs with online orders and Normal Tabs can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
+                        break;
+                    }
                 }
-            }
-            else
-            {
-                if(TDBTab::HasOnlineOrders(*itTabsSelected))
+                else
                 {
-                    retValue = false;
-                    MessageBox("Normal Tabs and Tabs with online orders can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
-                    break;
+                    if(TDBTab::HasOnlineOrders(*itTabsSelected))
+                    {
+                        retValue = false;
+                        MessageBox("Normal Tabs and Tabs with online orders can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
+                        break;
+                    }
                 }
             }
         }
