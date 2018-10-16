@@ -5890,29 +5890,18 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
 //---------------------------------------------------------------------------
 void TfrmBillGroup::UpdateTabForOnlineOrdering()
 {
-    if(CurrentDisplayMode == eTabs)
+    if((CurrentDisplayMode == eTabs && HasOnlineOrders) || (CurrentTable && TDBTables::HasOnlineOrders(CurrentTable)))
     {
-//        std::set<__int64> ::iterator itSelectedTabs = SelectedTabs.begin();
-//        for(;itSelectedTabs != SelectedTabs.end();advance(itSelectedTabs,1))
-//        {
-//            if(TDBTab::HasOnlineOrders(*itSelectedTabs))
-//            {
-        if(HasOnlineOrders)
-        {
-                btnTransfer->Color          = clSilver;
-                btnTransfer->Enabled        = false;
-                tbtnMove->Color             = clSilver;
-                tbtnMove->Enabled           = false;
-                btnPartialPayment->Color    = clSilver;
-                btnPartialPayment->Enabled  = false;
-                btnSplitPayment->Color      = clSilver;
-                btnSplitPayment->Enabled    = false;
-                btnApplyMembership->Color   = clSilver;
-                btnApplyMembership->Enabled = false;
-//                break;
-//            }
-//        }
-        }
+        btnTransfer->Color          = clSilver;
+        btnTransfer->Enabled        = false;
+        tbtnMove->Color             = clSilver;
+        tbtnMove->Enabled           = false;
+        btnPartialPayment->Color    = clSilver;
+        btnPartialPayment->Enabled  = false;
+        btnSplitPayment->Color      = clSilver;
+        btnSplitPayment->Enabled    = false;
+        btnApplyMembership->Color   = clSilver;
+        btnApplyMembership->Enabled = false;
     }
 }
 //---------------------------------------------------------------------------
