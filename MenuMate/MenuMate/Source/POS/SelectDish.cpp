@@ -7132,8 +7132,9 @@ TItemMinor * TfrmSelectDish::GetSelectedSetMenuMaster()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnToggleMenusMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-	tbtnToggleMenus->Tag = 0;
-	btnTimer->Enabled = true;
+    tbtnToggleMenus->Tag = 0;
+    btnTimer->Enabled = true;
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
@@ -7189,12 +7190,14 @@ void TfrmSelectDish::SelectNewMenus()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
+    TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckMenuEditor);
+
         bool AskForLogin = false;
-	if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))
+	if ((!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))&&(Result == lsAccepted))
 	{
 		MessageBox("There are no menus to change to. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
 	}
-	else if (DeleteAllUnsentAndProceed(DBTransaction))
+	else if ((DeleteAllUnsentAndProceed(DBTransaction))&&(Result == lsAccepted))
 	{
 		std::auto_ptr<TfrmSelectActiveMenus>frmSelectActiveMenus(TfrmSelectActiveMenus::Create(this, TDeviceRealTerminal::Instance().Menus, DBTransaction));
 		if (frmSelectActiveMenus->ShowModal() == mrOk)
@@ -7202,23 +7205,19 @@ void TfrmSelectDish::SelectNewMenus()
 			bool Broadcast = false;
 			if (MessageBox("Do you wish all terminals to use this menu configuration?", "Update all terminals", MB_YESNO + MB_ICONQUESTION) == IDYES)
 			{
-				TMMContactInfo TempUserInfo;
-				std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-				TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckDisable);
+				TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckDisable);
 				if (Result == lsAccepted)
 				{
 					Broadcast = true;
                     Refresh();
-                    SyncSiteMenus();
+
+                    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                        SyncSiteMenus();
 
 				}
-				else if (Result == lsDenied)
+				else
 				{
-					MessageBox("You do not have access to change Menus system wide.", "Error", MB_OK + MB_ICONERROR);
-				}
-				else if (Result == lsPINIncorrect)
-				{
-					MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+                    ShowErrorMessage("You do not have access to change Menus system wide.", Result);
 				}
 			}
             else
@@ -7242,6 +7241,10 @@ void TfrmSelectDish::SelectNewMenus()
         {
            AskForLogin = true;
         }
+	}
+    else
+	{
+        ShowErrorMessage("You do not have access to make Menu available or unavailable.", Result);
 	}
 	DBTransaction.Commit();
     if (AskForLogin)
@@ -16528,7 +16531,7 @@ void TfrmSelectDish::SyncSiteMenus()
             }
             else if(createResponse.IsSuccesful)
             {
-                MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+                //MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
             }
             else
             {
@@ -16570,7 +16573,7 @@ void TfrmSelectDish::SyncTaxSetting()
         }
         else if(createResponse.IsSuccesful)
         {
-            MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            //MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
         }
         else
         {
@@ -16596,7 +16599,6 @@ bool TfrmSelectDish::CheckOrderCompatability()
     bool retValue = true;
     try
     {
-
         retValue = !TDBTables::HasOnlineOrders(SelectedTable);
         if(!retValue)
             MessageBox("An online Order is saved on the Table.\rPlease Select some other table","Info",MB_OK+MB_ICONINFORMATION);
@@ -16609,3 +16611,23 @@ bool TfrmSelectDish::CheckOrderCompatability()
     return retValue;
 }
 //------------------------------------------------------------------------------
+TLoginSuccess TfrmSelectDish::GetStaffLoginAccess(Database::TDBTransaction &DBTransaction, int access)
+{
+    TMMContactInfo TempUserInfo;
+	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, access);
+    return Result;
+
+}
+// -----------------------------------------------------------------------------
+void  TfrmSelectDish::ShowErrorMessage(std::string message, TLoginSuccess Result)
+{
+    if (Result == lsDenied)
+    {
+        MessageBox(message.c_str(), "Error", MB_OK + MB_ICONERROR);
+    }
+    else if (Result == lsPINIncorrect)
+    {
+        MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+    }
+}

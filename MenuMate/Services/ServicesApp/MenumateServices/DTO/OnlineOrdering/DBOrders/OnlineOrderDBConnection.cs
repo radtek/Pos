@@ -110,7 +110,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
             ServiceInfo serviceInfo = ServiceInfo.Instance;
             List<string> dbDeatils = new List<string>();
-            dbDeatils = GetDetailsFromFile();
+            dbDeatils = FileReader.GetDetailsFromFile("MenumateDBPath\\DBPathAndIP.txt");
             for (int i = 0; i < dbDeatils.Count; i++)
             {
                 if (i == 0)
@@ -119,32 +119,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     inDatabaseURI = dbDeatils[i];
             }
             
-        }
-
-        private static List<string> GetDetailsFromFile()
-        {
-            List<string> list = new List<string>();
-            string path = System.IO.Path.GetDirectoryName(
-                      System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-
-
-            string location = Path.Combine(path, "MenumateDBPath\\DBPathAndIP.txt");
-            if (location.Contains(@"file:\"))
-            {
-                location = location.Replace(@"file:\", "");
-            }
-            bool exists = File.Exists(location);
-            using (StreamReader r = new StreamReader(location))
-            {
-                // Use while != null pattern for loopOnlineOrderDBConnection
-                string line;
-                while ((line = r.ReadLine()) != null)
-                {
-                    list.Add(line);
-                }
-            }
-            return list;
-        }
+        }       
 
         #endregion
     }
