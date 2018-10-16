@@ -4007,7 +4007,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey
                         && PaymentTransaction.Membership.Member.MemberVouchers.size())
                 {
-                    ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
+                    ManagerDiscount->ClearLoyaltyMemberDiscounts(OrdersList.get());
                 }
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey && SelectedTable)

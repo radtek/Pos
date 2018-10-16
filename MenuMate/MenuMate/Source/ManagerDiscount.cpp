@@ -2466,3 +2466,18 @@ void TManagerDiscount::GetMembershipDiscounts(Database::TDBTransaction &DBTransa
        discountKeys.insert(IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger);
 	}
 }
+//---------------------------------------------------------------------------
+void TManagerDiscount::ClearLoyaltyMemberDiscounts(TList * DiscountItems)
+{
+	for (int i = 0; i < DiscountItems->Count ; i++)
+	{
+		TItemMinorComplete *Order = (TItemMinorComplete *) DiscountItems->Items[i];
+		Order->DiscountByTypeRemove(dsMMMembership);
+
+        for (int j = 0; j < Order->SubOrders->Count ; j++)
+	    {
+            TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
+            SubOrder->DiscountByTypeLevelRemove(dsMMMembership);
+        }
+	}
+}
