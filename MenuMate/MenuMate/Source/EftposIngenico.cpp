@@ -12,7 +12,6 @@
 #include "MMMessageBox.h"
 #include "Processing.h"
 #include "Printout.h"
-#include "SaveLogs.h"
 
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -47,9 +46,6 @@ void TEftPosIngenico::Initialise()
    {
 	  if(TGlobalSettings::Instance().EnableEftPosIngenico)
       {
-        TStringList* logList = new TStringList();
-        logList->Add("Inside EFTPOS Ingenico Initialise() function.");
-
         Enabled = true;
         EftPosControl = new TCsdEft(frmMain);
         EftPosControl->OnPrintReceiptEvent = PrintReceiptEvent;
@@ -65,11 +61,7 @@ void TEftPosIngenico::Initialise()
             Enabled = false;
 				TManagerLogs::Instance().Add("NA",EFTPOSLOG,"EFTPOS Version Mismatch Version 3 OCX Control Required");
             TManagerLogs::Instance().Add("NA",ERRORLOG,"EFTPOS Version Mismatch Version 3 OCX Control Required");
-            logList->Add("EFTPOS initialized. failed..");
          }
-        logList->Add("EFTPOS initialized...");
-        std::auto_ptr<TSaveLogs> saveLogs(new TSaveLogs());
-        TSaveLogs::RecordEFTPOSLogs(logList);
       }
       else
       {
@@ -164,22 +156,14 @@ void TEftPosIngenico::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurc
 
 void __fastcall TEftPosIngenico::TransactionEvent(TObject *Sender)
 {
-    TStringList* logList = new TStringList();
-    logList->Add("-------------------------Inside TransactionEvent function.--------------------------");
-    logList->Add("Inside EFTPOS Ingenico Initialise() function.");
-
 	//Loop though Payment Types and set as Appropreate.
 	TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(EftPosControl->TxnRef);
 	if(EftTrans != NULL)
 	{
-        logList->Add("EftPosControl->ResponseCode :------"+ EftPosControl->ResponseCode);
 		if(EftPosControl->ResponseCode == WideString("00") || EftPosControl->ResponseCode == WideString("08"))
 		{
 			EftTrans->Result = eAccepted;
 			EftTrans->ResultText = EftPosControl->ResponseText;
-            logList->Add("EftPosControl->ResponseText :------"+ EftPosControl->ResponseText);
-            logList->Add("EftPosControl->ResponseCode :------"+ EftPosControl->ResponseCode);
-            logList->Add("EftPosControl->CardType :------"+ EftPosControl->CardType);
 			if(EftPosControl->ResponseCode == WideString("08"))
 			{
 				EftTrans->SuppressReceipt = true;
@@ -190,13 +174,9 @@ void __fastcall TEftPosIngenico::TransactionEvent(TObject *Sender)
 		{
 			EftTrans->Result = eDeclined;
 			EftTrans->ResultText = EftPosControl->ResponseText;
-            logList->Add("EftPosControl->ResultText :------" + EftPosControl->ResponseText);
-            logList->Add("EftPosControl transaction declined.. :------" );
 		}
 		EftTrans->EventCompleted = true;
 	}
-    std::auto_ptr<TSaveLogs> saveLogs(new TSaveLogs());
-    TSaveLogs::RecordEFTPOSLogs(logList);
 }
 
 void __fastcall TEftPosIngenico::GetLastTransactionEvent(TObject *Sender)
