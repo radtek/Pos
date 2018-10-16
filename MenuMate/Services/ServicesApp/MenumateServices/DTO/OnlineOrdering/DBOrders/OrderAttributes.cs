@@ -33,7 +33,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public string SizeName { get; set; }
         public string SizeKitchenName { get; set; }
         public int ContainerNumber { get; set; }
-        public string TableName { get; set; }
         public long TramsNo { get; set; }
         public long PLU { get; set; }
         public long MenuItemKey { get; set; }

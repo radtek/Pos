@@ -18,6 +18,8 @@
 #include "ServingTime.h"
 #include "GlobalSettings.h"
 #include "StringTools.h"
+#include "MewsDataProcessor.h"
+#include "VerticalSelect.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -109,7 +111,12 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
     }
 
 	this->Caption = pnlLabel->Caption;
-
+    if(MessageType == eRevenueCodes && TGlobalSettings::Instance().PMSType == 4)
+    {
+        btnAdd->Enabled = false;
+        btnDelete->Enabled = false;
+        //btnEdit->Enabled = false;
+    }
 	FormResize(NULL);
 	ShowMessages();
 }
@@ -129,7 +136,12 @@ void __fastcall TfrmMessageMaintenance::FormResize(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::ShowMessages()
 {
-    if(MessageType != ePMSPaymentType)
+    if(TGlobalSettings::Instance().PMSType == 4 && MessageType == eRevenueCodes)
+    {
+	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 2;
+	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
+    }
+    else if(MessageType != ePMSPaymentType)
     {
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
@@ -160,9 +172,18 @@ void TfrmMessageMaintenance::ShowMessages()
       }
       case eRevenueCodes:
       {
-        sgDisplay->Cols[0]->Add("Code");
-        sgDisplay->Cols[1]->Add("Description");
-        LoadRevenueCodes(DBTransaction);
+        if(TGlobalSettings::Instance().PMSType != 4)
+        {
+            sgDisplay->Cols[0]->Add("Code");
+            sgDisplay->Cols[1]->Add("Description");
+            LoadRevenueCodes(DBTransaction);
+        }
+        else
+        {
+            sgDisplay->Cols[0]->Add("Menumate Category");
+            sgDisplay->Cols[1]->Add("Mews Category");
+            LoadRevenueCodesForMews(DBTransaction);
+        }
         break;
       }
       case eServingTimes:
@@ -187,7 +208,12 @@ void TfrmMessageMaintenance::ShowMessages()
 
     }
 	DBTransaction.Commit();
-    if(MessageType != ePMSPaymentType)
+    if(TGlobalSettings::Instance().PMSType == 4 && MessageType == eRevenueCodes)
+    {
+	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 2;
+	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
+    }
+    else if(MessageType != ePMSPaymentType)
     {
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
@@ -364,7 +390,10 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
             else if(MessageType == eRevenueCodes)
             {
                 int key = (int)sgDisplay->Objects[0][sgDisplay->Row];
-                UpdateRevenueCode(DBTransaction,key);
+                if(TGlobalSettings::Instance().PMSType != 4)
+                    UpdateRevenueCode(DBTransaction,key);
+                else
+                    UpdateRevenueCodeForMews(DBTransaction,key) ;
             }
             else if(MessageType == eServingTimes)
             {
@@ -809,6 +838,16 @@ void TfrmMessageMaintenance::LoadRevenueCodes(Database::TDBTransaction &DBTransa
     sgDisplay->Cols[0]->Add("Code");
     sgDisplay->Cols[1]->Add("Decription");
     managerPMSCodes->GetRevenueCodesDetails(DBTransaction,sgDisplay,managerPMSCodes->RevenueCodesMap);
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::LoadRevenueCodesForMews(Database::TDBTransaction &DBTransaction)
+{
+    sgDisplay->Cols[0]->Clear();
+    sgDisplay->Cols[1]->Clear();
+    sgDisplay->Cols[0]->Add("Menumate Category");
+    sgDisplay->Cols[1]->Add("Mews Category");
+    std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
+    mewsProcessor->GetRevenueCodesDetails(sgDisplay,DBTransaction);
 }
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::UpdateRevenueCode(Database::TDBTransaction &DBTransaction, int key)
@@ -1281,4 +1320,43 @@ void TfrmMessageMaintenance::AddPMSPaymentType(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
+void TfrmMessageMaintenance::UpdateRevenueCodeForMews(Database::TDBTransaction &DBTransaction, int key)
+{
+    try
+    {
+        MessageBox("Updating Revenue Codes for Mews","",MB_OK);
+        std::vector<TAccountingCategory> revenueCodes;
+        revenueCodes.clear();
+        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
+        revenueCodes = mewsProcessor->GetCategoriesFromDB(DBTransaction);
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+        for(int i = 0; i < revenueCodes.size(); i++)
+        {
+            Item.Title = revenueCodes[i].Code;
+            Item.Properties["Action"] = IntToStr(i);
+            Item.Properties["Color"] = IntToStr(clNavy);
+            Item.CloseSelection = true;
+            SelectionForm->Items.push_back(Item);
+        }
+        SelectionForm->ShowModal();
+		TVerticalSelection SelectedItem;
+		if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+		{
+			int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            mewsProcessor->UpdateMewsMapToMMCategory(key,revenueCodes[Action].Code,revenueCodes[Action].Id,DBTransaction);
+        }
+        DBTransaction.Commit();
+        ShowMessages();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------

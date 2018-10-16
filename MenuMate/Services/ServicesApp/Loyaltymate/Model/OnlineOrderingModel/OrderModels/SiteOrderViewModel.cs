@@ -13,7 +13,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public long OrderId { get; set; } //save in db
         public string Location { get; set; }
         public double TotalAmount { get; set; }
-        public string ContainerNumber { get; set; }
+        public int ContainerNumber { get; set; }
         public OrderContainerType ContainerType { get; set; }
         public string ContainerName { get; set; }
         public string OrderGuid { get; set; }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using SiHotIntegration.Domain;
-using SiHotIntegration.Utility;
-using System.Text;
+using System.Collections.Generic;
 
 namespace MenumateServices.WCFServices
 {
@@ -17,6 +16,5 @@ namespace MenumateServices.WCFServices
         RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut, string apiKey);
         [OperationContract]
         bool ValidateCreadentials(string address, int port, int transno);
-
     }
 }

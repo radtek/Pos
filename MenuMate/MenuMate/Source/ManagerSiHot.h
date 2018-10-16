@@ -3,8 +3,6 @@
 #ifndef ManagerSiHotH
 #define ManagerSiHotH
 #include "PaymentTransaction.h"
-//#include "SiHotDataObjects.h"
-//#include "BasePMS.h"
 #include "DeviceRealterminal.h"
 //---------------------------------------------------------------------------
 

@@ -3167,6 +3167,12 @@ void TfrmMaintain::SelectPMSType()
     Item3.CloseSelection = true;
     SelectionForm->Items.push_back(Item3);
 
+    TVerticalSelection Item4;
+    Item4.Title = "Mews";
+    Item4.Properties["Action"] = IntToStr(4);
+    Item4.Properties["Color"] = IntToStr(clNavy);
+    Item4.CloseSelection = true;
+    SelectionForm->Items.push_back(Item4);
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -3187,6 +3193,11 @@ void TfrmMaintain::SelectPMSType()
             case 3 :
             {
                SetUpOracle();
+               break;
+            }
+            case 4 :
+            {
+               SetUpMews();
                break;
             }
         }
@@ -3296,13 +3307,31 @@ bool TfrmMaintain::SetUpOracle()
     frmPHSConfiguration->ShowModal();
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
-//        MessageBox("Oracle Enabled","",MB_OK);
         tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
     }
     else
     {
-//        MessageBox("Oracle Disabled","",MB_OK);
+        tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
+        tbPHSInterface->ButtonColor = clRed;
+    }
+    return keepFormAlive;
+    return true;
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::SetUpMews()
+{
+    bool keepFormAlive = false;
+    std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
+    frmPHSConfiguration->PMSType = 4;
+    frmPHSConfiguration->ShowModal();
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+    {
+        tbPHSInterface->Caption = "P.M.S Interface\r[Mews Enabled]";
+        tbPHSInterface->ButtonColor = clGreen;
+    }
+    else
+    {
         tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
         tbPHSInterface->ButtonColor = clRed;
     }

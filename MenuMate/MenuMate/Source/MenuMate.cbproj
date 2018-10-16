@@ -2444,10 +2444,6 @@
 				<DependentOn>DiscountTypesManager.h</DependentOn>
 				<BuildOrder>528</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Manager.cpp">
-				<DependentOn>Manager.h</DependentOn>
-				<BuildOrder>393</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="SendForm.cpp">
 				<Form>frmSendForm</Form>
 				<DependentOn>SendForm.h</DependentOn>
@@ -3419,6 +3415,30 @@
 			<CppCompile Include="OnlineOrdering\OnlineOrderDocketPrinter.cpp">
 				<DependentOn>OnlineOrdering\OnlineOrderDocketPrinter.h</DependentOn>
 				<BuildOrder>793</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerMews.cpp">
+				<DependentOn>ManagerMews.h</DependentOn>
+				<BuildOrder>779</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MewsWSDL.cpp">
+				<DependentOn>MewsWSDL.h</DependentOn>
+				<BuildOrder>780</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Manager.cpp">
+				<DependentOn>Manager.h</DependentOn>
+				<BuildOrder>780</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MewsDataProcessor.cpp">
+				<DependentOn>MewsDataProcessor.h</DependentOn>
+				<BuildOrder>781</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MewsDataObjects.cpp">
+				<DependentOn>MewsDataObjects.h</DependentOn>
+				<BuildOrder>782</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MewsInterface.cpp">
+				<DependentOn>MewsInterface.h</DependentOn>
+				<BuildOrder>783</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SmartCards\SmartcardPreloader.dfm"/>
 			<FormResources Include="DiscountEditor.dfm"/>

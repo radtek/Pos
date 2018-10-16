@@ -221,8 +221,7 @@ private:
     void DeactivateLoyaltymate();
     void UnloadSignalR();
     bool SyncOnlineOrderingDetails();
-//    TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
-//    void __fastcall loyaltyMateOperationCompleted(TObject* sender);
+    bool SetUpMews();
 public: // User declarations
 };
 #endif

@@ -92,54 +92,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in CheckTableAlreadyOccupied table number " + e.Message, e);
-                throw;
-            }
-
-            return command;
-        }
-
-        public FbCommand CheckTableAlreadyOccupied(FbConnection connection, FbTransaction transaction, string memberEmail, string tableName)
-        {
-            FbCommand command = new FbCommand(@"", connection, transaction);
-            try
-            {
-                command.CommandText = @"
-                                    SELECT A.ORDER_KEY 
-                                    FROM ORDERS a
-                                    WHERE a.TABLE_NAME = @TABLE_NAME AND a.EMAIL <> @EMAIL ";
-
-                command.Parameters.AddWithValue("@TABLE_NAME", tableName);
-                command.Parameters.AddWithValue("@EMAIL", memberEmail);
-
-            }
-            catch (Exception e)
-            {
-                ServiceLogger.LogException(@"in CheckTableAlreadyOccupied table name " + e.Message, e);
-                throw;
-            }
-
-            return command;
-        }
-
-        //returning query because command.executrnonquery() > 0 creating problem at many places so iterating val
-        public FbCommand ReadFloorPlanProperty(FbConnection connection, FbTransaction transaction, int variableKey, int intVal)
-        {
-            FbCommand command = new FbCommand(@"", connection, transaction);
-            try
-            {
-                command.CommandText = @"
-                                    SELECT a.VARIABLES_KEY,  a.INTEGER_VAL
-                                    FROM VARSPROFILE a
-                                    WHERE a.VARIABLES_KEY = @VARIABLES_KEY and A.INTEGER_VAL = @INTEGER_VAL ";
-
-                command.Parameters.AddWithValue("@VARIABLES_KEY", variableKey);
-                command.Parameters.AddWithValue("@INTEGER_VAL", intVal);
-
-            }
-            catch (Exception e)
-            {
-                ServiceLogger.LogException(@"in IsFloorPlanEnabled " + e.Message, e);
+                ServiceLogger.LogException(@"in IsTableAlreadyOccupied " + e.Message, e);
                 throw;
             }
 
@@ -244,6 +197,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
+            //...........................................
+
             try
             {
                 command.CommandText = @"
@@ -255,34 +210,16 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@SEAT_KEY", seatKey);
                 command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in GetTabKeyBySeatKey " + e.Message, e);
                 throw;
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
 
-            return command;
-        }
-
-        public FbCommand UpdateTableName(FbConnection connection, FbTransaction transaction, int tableKey, string tableName)
-        {
-            FbCommand command = new FbCommand(@"", connection, transaction);
-
-            try
-            {
-                command.CommandText = @"
-                                         UPDATE TABLES a SET a.TABLE_NAME = @TABLE_NAME  
-                                         WHERE a.TABLE_KEY = @TABLE_KEY ";
-
-                command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
-                command.Parameters.AddWithValue("@TABLE_NAME", tableName);
-            }
-            catch (Exception e)
-            {
-                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
-                throw;
-            }
+            //............................................
 
             return command;
         }
@@ -327,11 +264,16 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
+            //...........................................
+
             try
             {
                 command.CommandText = @"
                                     SELECT TABLE_KEY FROM TABLES
-                                        WHERE TABLE_NUMBER = @TABLE_NUMBER ";
+                                        WHERE TABLE_NUMBER = @TABLE_NUMBER
+                                    ";
+
+
 
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
             }
@@ -339,7 +281,10 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 ServiceLogger.LogException(@"in GetTableKeyByTableName " + e.Message, e);
                 throw;
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
+
+            //............................................
 
             return command;
         }
@@ -499,7 +444,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@PARTY_NAME", "");
                 command.Parameters.AddWithValue("@TABLE_NUMBER", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderDbItem.ContainerNumber : 0);
                 command.Parameters.AddWithValue("@TABLE_NAME", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ?
-                    QueryUtilities.GetSubstring(orderDbItem.TableName, 1, 25) : QueryUtilities.GetSubstring(orderDbItem.ContainerName, 1, 25));
+                    QueryUtilities.GetSubstring("Table #" + orderDbItem.ContainerNumber, 1, 25) : QueryUtilities.GetSubstring(orderDbItem.ContainerName, 1, 25));
                 command.Parameters.AddWithValue("@SEATNO", orderDbItem.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? 1 : 0);
                 command.Parameters.AddWithValue("@PRICE", orderDbItem.Price);
                 command.Parameters.AddWithValue("@PRINTED", 'F');
@@ -617,7 +562,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber, string tableName)
+        public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
             if(tableNumber == 0)
@@ -645,7 +590,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@TABLE_KEY", tableKey);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
-                command.Parameters.AddWithValue("@TABLE_NAME", ""); //tableName todo later..
+                command.Parameters.AddWithValue("@TABLE_NAME", "Table# " + tableNumber);
                 command.Parameters.AddWithValue("@PARTY_NAME", "");
                 command.Parameters.AddWithValue("@CIRCLE", 'F');
                 command.Parameters.AddWithValue("@TEMPORARY", 'F');

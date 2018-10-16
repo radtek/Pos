@@ -72,6 +72,8 @@ private:	// User declarations
     void UpdatePMSPaymentType(Database::TDBTransaction &DBTransaction, int key) ;
     bool ValidatePMSPayTypeDeletion(Database::TDBTransaction &DBTransaction, int key);
     bool IsNotDuplicatePMSPayName(AnsiString name,bool forUpdate,int key);
+    void LoadRevenueCodesForMews(Database::TDBTransaction &DBTransaction);
+    void UpdateRevenueCodeForMews(Database::TDBTransaction &DBTransaction, int key);
 public:		// User declarations
 
 	eMessageType MessageType;
