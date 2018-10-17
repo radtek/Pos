@@ -1324,7 +1324,6 @@ void TfrmMessageMaintenance::UpdateRevenueCodeForMews(Database::TDBTransaction &
 {
     try
     {
-        MessageBox("Updating Revenue Codes for Mews","",MB_OK);
         std::vector<TAccountingCategory> revenueCodes;
         revenueCodes.clear();
         std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());

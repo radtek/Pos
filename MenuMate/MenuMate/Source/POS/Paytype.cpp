@@ -105,6 +105,8 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
+    if(TGlobalSettings::Instance().PMSType == Mews)
+       tbCredit->Visible = true;
     CalculatePatrons(CurrentTransaction);
 	int TotalCount = 0;
 	std::vector <TPatronType> ::iterator ptrPatronTypes = CurrentTransaction.Patrons.begin();
@@ -1507,7 +1509,15 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 								RoomNumber = atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								CurrentTransaction.Phoenix.RoomNumber =
 									atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
-							}							
+							}
+                            else if(TGlobalSettings::Instance().PMSType == Mews)
+                            {
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
                             if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -2052,6 +2062,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 									CurrentTransaction.Phoenix.RoomNumber =
 										atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								}
+                                else if(TGlobalSettings::Instance().PMSType == Mews)
+                                {
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                }
                                 else if(TGlobalSettings::Instance().PMSType != SiHot)
                                 {
                                     CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
