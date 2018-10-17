@@ -985,7 +985,8 @@ void __fastcall TfrmTabManager::btnRefundCreditToTabClick()
                     {
                         TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, CreditTransaction.Patrons, 1);
                         TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
-                        TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, (Credit.CurrentCredit + Credit.CreditRedeemed));
+                       // TDBTab::SetTabCreditLimit(DBTransaction, SelectedTab, (Credit.CurrentCredit + Credit.CreditRedeemed));
+
                     }
                     else
                     {
