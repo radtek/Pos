@@ -397,6 +397,7 @@ namespace MewsIntegration
                     {
                         details.Classifications.Add(classification);
                     }
+                    listDetails.Add(details);
                 }
             }
             catch (Exception ex)
