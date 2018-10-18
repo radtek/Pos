@@ -187,6 +187,8 @@ private:	// User declarations
     bool DownloadOnlineMember();
     UnicodeString GetMemberEmailIdForOrder();
     void GetLoyaltyMemberByEmail(UnicodeString email);
+    void DisableTransferButtonWhenLMIsEnabled();
+    void SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo info);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

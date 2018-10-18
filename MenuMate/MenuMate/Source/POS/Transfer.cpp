@@ -2110,9 +2110,10 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                }
                }
             }
-            if(TDBTab::HasOnlineOrders(tabKey))
+            UnicodeString email = TDBTab::GetMemberEmail(tabKey);
+            if(email.Trim() != "")
             {
-                MessageBox("An online Order is saved on the Tab.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
+                MessageBox("Tab is having Loyaltymate membership associated with it.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
                 Retval = mrAbort;
                 if(Section == "Select Transfer To")
                 {
@@ -2303,9 +2304,10 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
                            {
                               lbDisplayTransferto->Clear();
-                              if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                              UnicodeString email = TDBTables::GetMemberEmail(floorPlanReturnParams.TabContainerNumber);
+                              if(email.Trim() != "")
                               {
-                                MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
                                 Retval = mrAbort;
                                 btnTransferTo->Caption =  "Select";
                                 break;
@@ -2334,9 +2336,10 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                             if(floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ))
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
                            {
-                                if(TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber))
+                                UnicodeString email = TDBTables::GetMemberEmail(floorPlanReturnParams.TabContainerNumber);
+                                if(email.Trim() != "")
                                 {
-                                    MessageBox("An online Order is saved on the Table.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+                                    MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
                                     Retval = mrAbort;
                                     btnTransferFrom->Caption =  "Select";
                                     lbDisplayTransferfrom->Clear();

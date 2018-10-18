@@ -64,5 +64,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public string ItemSizeUniqueId { get; set; }
         public long ItemId { get; set; }
         public string MasterContainer { get; set; }
+        public string TableName { get; set; }
     }
 }

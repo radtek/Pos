@@ -5,6 +5,7 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using MenumateServices.Tools;
+using System.IO;
 
 namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {
@@ -122,104 +123,148 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         {
             try
             {
-                
-                    foreach (var siteOrderViewModel in siteOrderViewModelList)
+
+                foreach (var siteOrderViewModel in siteOrderViewModelList)
+                {
+                    try
                     {
-                        try
+                        OrderAttributes orderRow = new OrderAttributes();
+                        orderRow.ContainerNumber = 0;
+                        orderRow.ContainerType = siteOrderViewModel.ContainerType;
+                        orderRow.ContainerName = siteOrderViewModel.ContainerName;
+
+                        if (siteOrderViewModel.ContainerType == Loyaltymate.Enum.OrderContainerType.Table)
                         {
-                            OrderAttributes orderRow = new OrderAttributes();
+                            int containerNumber = 0;
+                            string tableName = "";
+                            bool isTableNumberInteger = int.TryParse(siteOrderViewModel.ContainerNumber, out containerNumber);
 
-                            if (siteOrderViewModel.ContainerType == Loyaltymate.Enum.OrderContainerType.Table)
+                            if (isTableNumberInteger)
+                                orderRow.ContainerNumber = containerNumber;
+                            else
+                                orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
+
+                            bool isTabOrder = false;
+                            if (IsFloorPlanEnabled())
                             {
-                                bool retVal = IsTableBusy(siteOrderViewModel.ContainerNumber, siteOrderViewModel.UserEmailId);
-                                if (retVal)
-                                    throw new Exception("Order can't be saved to this table because it already contains orders.");
-                            }
-                            orderRow.ContainerName = siteOrderViewModel.ContainerName;
-                            orderRow.ContainerType = siteOrderViewModel.ContainerType;
-                            orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
-                            orderRow.Location = siteOrderViewModel.Location;
-                            orderRow.OrderType = siteOrderViewModel.OrderType;
-                            orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                            orderRow.TerminalName = siteOrderViewModel.TerminalName;
-                            orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
-                            orderRow.TransactionType = siteOrderViewModel.TransactionType;
-                            orderRow.UserType = siteOrderViewModel.UserType;
-                            orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
-                            orderRow.Email = siteOrderViewModel.UserEmailId;
-                            orderRow.SiteId = siteOrderViewModel.SiteId;
-                            orderRow.OnlinerderId = siteOrderViewModel.OrderId;
-
-                            if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
-                                orderRow.ContainerType = 0;
-
-                            //generate tab key if tab not exist..
-                            orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName, "1")
-                                                : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName); //TODo 
-
-                            //Generate Security ref..
-                            orderRow.SecurityRef = GetNextSecurityRef();    
-
-                            foreach (var item in siteOrderViewModel.OrderItems)
-                            {
-                                orderRow.Name = item.Name;
-                                orderRow.OrderItemId = item.OrderItemId;
-                                orderRow.SiteItemId = item.SiteItemId;
-                                orderRow.ItemUniqueId = item.ItemUniqueId;
-                                foreach (var itemSize in item.OrderItemSizes)
+                                if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))
                                 {
-                                    orderRow.BasePrice = itemSize.BasePrice;
-                                    orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                    orderRow.MenuPrice = itemSize.MenuPrice;
-                                    orderRow.SizeName = itemSize.Name;
-                                    orderRow.Price = itemSize.Price;
-                                    orderRow.PriceInclusive = itemSize.PriceInclusive;
-                                    orderRow.Quantity = itemSize.Quantity;
-                                    orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                    orderRow.TimeKey = setTimeKey();
-                                    orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
-                                    orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
-                                    orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
-                                    orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
-                                    orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
+                                    orderRow.ContainerNumber = containerNumber;
+                                    orderRow.TableName = tableName;
 
-                                    //Generate order id..
-                                    orderRow.OrderId = GenerateKey("ORDERS");                                                                                                       
-
-                                    //Load Item info like course, sc, kitchen name etc.
-                                    LoadItemInfo(ref orderRow);
-
-                                    //Generate tansaction number..
-                                    if (orderRow.ReferenceOrderItemSizeId == 0)
-                                    {
-                                        orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
-                                        orderRow.MasterContainer = orderRow.SizeName;
-                                    }
-
-                                    //load And insert breakdown category into orderscategory..
-                                    GetAndInsertBreakDownCategories(ref orderRow);
-
-                                    //LoadTaxProfileKeys
-                                    LoadItemSizeTaxProfileOrders(ref orderRow);
-
-                                    //Insert records to orders..
-                                    ExecuteOrderQuery(orderRow);
-
-                                    //Insert Order tax profile info..
-                                    ExecuteTaxProfileOrders(orderRow);                                    
+                                    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
+                                    if (retVal)
+                                        throw new Exception("Order can't be saved to this table because it already contains orders.");
+                                }
+                                else
+                                {
+                                    isTabOrder = true;
                                 }
                             }
-                            siteOrderViewModel.IsConfirmed = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            siteOrderViewModel.IsConfirmed = false;
-                            //addDetailsTransaction.Rollback();
-                            ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
-                            throw;
-                        }
+                            else
+                            {
+                                if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
+                                {
+                                    isTabOrder = true;                                    
+                                }
+                                else
+                                {
+                                    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                                    if (retVal)
+                                        throw new Exception("Order can't be saved to this table because it already contains orders.");
+                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
+                                    orderRow.TableName = "Table #" + orderRow.ContainerNumber;
+                                }
+                            }
 
+                            if (isTabOrder)
+                            {
+                                orderRow.ContainerType = siteOrderViewModel.ContainerType = 0;
+                                orderRow.TransactionType = siteOrderViewModel.TransactionType = Loyaltymate.Enum.SiteSettingType.PickUp;
+                                siteOrderViewModel.ContainerNumber = "0";
+                            }
+                        }
+                        //orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
+                        orderRow.Location = siteOrderViewModel.Location;
+                        orderRow.OrderType = siteOrderViewModel.OrderType;
+                        orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                        orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                        orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
+                        orderRow.TransactionType = siteOrderViewModel.TransactionType;
+                        orderRow.UserType = siteOrderViewModel.UserType;
+                        orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
+                        orderRow.Email = siteOrderViewModel.UserEmailId;
+                        orderRow.SiteId = siteOrderViewModel.SiteId;
+                        orderRow.OnlinerderId = siteOrderViewModel.OrderId;
+
+                        //generate tab key if tab not exist..
+                        orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
+                                            : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
+
+                        //Generate Security ref..
+                        orderRow.SecurityRef = GetNextSecurityRef();                        
+
+                        foreach (var item in siteOrderViewModel.OrderItems)
+                        {
+                            orderRow.Name = item.Name;
+                            orderRow.OrderItemId = item.OrderItemId;
+                            orderRow.SiteItemId = item.SiteItemId;
+                            orderRow.ItemUniqueId = item.ItemUniqueId;
+                            foreach (var itemSize in item.OrderItemSizes)
+                            {
+                                orderRow.BasePrice = itemSize.BasePrice;
+                                orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                orderRow.MenuPrice = itemSize.MenuPrice;
+                                orderRow.SizeName = itemSize.Name;
+                                orderRow.Price = itemSize.Price;
+                                orderRow.PriceInclusive = itemSize.PriceInclusive;
+                                orderRow.Quantity = itemSize.Quantity;
+                                orderRow.ItemSizeId = itemSize.ItemSizeId;
+                                orderRow.TimeKey = setTimeKey();
+                                orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
+                                orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
+                                orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+                                orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
+                                orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
+
+                                //Generate order id..
+                                orderRow.OrderId = GenerateKey("ORDERS");
+
+                                //Load Item info like course, sc, kitchen name etc.
+                                LoadItemInfo(ref orderRow);
+
+                                //Generate tansaction number..
+                                if (orderRow.ReferenceOrderItemSizeId == 0)
+                                {
+                                    orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
+                                    orderRow.MasterContainer = orderRow.SizeName;
+                                }
+
+                                //load And insert breakdown category into orderscategory..
+                                GetAndInsertBreakDownCategories(ref orderRow);
+
+                                //LoadTaxProfileKeys
+                                LoadItemSizeTaxProfileOrders(ref orderRow);
+
+                                //Insert records to orders..
+                                ExecuteOrderQuery(orderRow);
+
+                                //Insert Order tax profile info..
+                                ExecuteTaxProfileOrders(orderRow);
+                            }
+                        }
+                        siteOrderViewModel.IsConfirmed = true;
                     }
+                    catch (Exception ex)
+                    {
+                        siteOrderViewModel.IsConfirmed = false;
+                        //addDetailsTransaction.Rollback();
+                        ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
+                        throw;
+                    }
+
+                }
             }
             catch (Exception ex)
             {
@@ -258,13 +303,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             public KeyGeneratorException(string message, System.Exception inner) : base(message, inner) { }
         }
 
-        private int GetOrCreateTabForOnlineOrdering(string tabName, string id_number)
+        private int GetOrCreateTabForOnlineOrdering(string tabName)
         {
             int tabKey = FindTabKeyForOnlineOrderTab(tabName);
             try
             {
                 if (tabKey == 0)
-                    tabKey = createTabForOnlineOrder(tabName, id_number);
+                    tabKey = createTabForOnlineOrder(tabName);
             }
             catch (Exception e)
             {
@@ -274,22 +319,21 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tabKey;
         }
 
-        private int GetOrCreateTableForOnlineOrdering(int tableNumber, string containerName)
+        private int GetOrCreateTableForOnlineOrdering(int tableNumber, string containerName, string tableName)
         {
-            if (tableNumber < 1 || tableNumber > 100)
-                throw new Exception("Table number must be between 1 and 100.");
-
             int tableKey = FindTableKeyForOnlineOrder(tableNumber);
             try
             {
                 if (tableKey == 0)
-                    tableKey = CreateOnlineOrderTableInDB(tableNumber);
+                    tableKey = CreateOnlineOrderTableInDB(tableNumber, tableName);
+                if (IsFloorPlanEnabled())
+                    SetTableName(tableKey, tableName);
                 int seatKey = GetOrCreateSeatForOnlineOrdering(tableKey);
                 tableKey = GetTabKey(seatKey, containerName);
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in getOrCreateTabForWebOrder " + e.Message, e);
+                ServiceLogger.LogException(@"in getOrCreateTableForWebOrder " + e.Message, e);
                 throw;
             }
             return tableKey;
@@ -317,6 +361,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     command = dbQueries.CreateTab(connection, transaction, tabKey, containerName, 3);
                     command.ExecuteNonQuery();
                     SetSeatTab(tabKey, seatKey);
+                }
+                else
+                {
+                    command = dbQueries.UpdateTabName(connection, transaction, tabKey, containerName);
+                    command.ExecuteNonQuery();
                 }
 
             }
@@ -353,12 +402,20 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return TabId > 0;
         }
 
-        private bool IsTableBusy(int tableNumber, string email)
+        private bool IsTableBusy(int tableNumber, string tableName, string email)
         {
             int orderKey = 0;
             try
             {
-                FbCommand command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableNumber);
+                FbCommand command;
+
+                if (tableNumber > 0)
+                {
+                    command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableNumber);
+                }
+                else
+                    command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableName);
+
                 using (FbDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -369,13 +426,62 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                                         0));
                 }
 
+                if (orderKey > 0)
+                {
+                    if (tableNumber > 0)
+                    {
+                        command = dbQueries.TableWithSameMemberAlreadyExist(connection, transaction, email, tableNumber);
+                    }
+                    else
+                        command = dbQueries.TableWithSameMemberAlreadyExist(connection, transaction, email, tableName);
+
+                    using (FbDataReader reader = command.ExecuteReader())
+                    {
+                        int secondOrderKey = 0;
+                        if (reader.Read())
+                            secondOrderKey = Convert.ToInt32(
+                                            getReaderColumnValue(
+                                                            reader,
+                                                            "ORDER_KEY",
+                                                            0));
+                        if (secondOrderKey > 0)
+                            orderKey = 0;
+                    }
+                }
+
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in IsTableBusy " + e.Message, e);
                 throw;
             }
+
             return orderKey > 0;
+        }
+
+        private bool IsFloorPlanEnabled()
+        {
+            int variableVal = 0;
+            try
+            {
+                FbCommand command = dbQueries.ReadFloorPlanProperty(connection, transaction, 2021, 1);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                        variableVal = Convert.ToInt32(
+                                        getReaderColumnValue(
+                                                        reader,
+                                                        "INTEGER_VAL",
+                                                        0));
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableBusy " + e.Message, e);
+                throw;
+            }
+            return variableVal > 0;
         }
 
         private void SetSeatTab(int tabKey, int seatKey)
@@ -422,7 +528,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             return seatKey;
         }
-        
+
         private int FindTabKeyForOnlineOrderTab(string tabName)
         {
             int tabKey = 0;
@@ -460,8 +566,6 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             {
                 FbCommand command = dbQueries.GetTableKeyByTableNumber(connection, transaction, tableNumber);
 
-                //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
-
                 using (FbDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -481,13 +585,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tableKey;
         }
 
-        private int createTabForOnlineOrder(string tabName, string id_number)
+        private int createTabForOnlineOrder(string tabName)
         {
-            int tabKey = CreateOnlineOrderTabInDB(tabName, id_number);
+            int tabKey = CreateOnlineOrderTabInDB(tabName);
             return tabKey;
         }
 
-        private int CreateOnlineOrderTabInDB(string tabName, string id_number)
+        private int CreateOnlineOrderTabInDB(string tabName)
         {
             int tabKey = GenerateKey("TAB");
 
@@ -508,16 +612,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return tabKey;
         }
 
-        private int CreateOnlineOrderTableInDB(int tableNumber)
+        private int CreateOnlineOrderTableInDB(int tableNumber, string tableName)
         {
             int tableKey = GenerateKey("TABLES");
 
             try
             {
-                FbCommand command = dbQueries.CreateTable(connection, transaction, tableKey, tableNumber);
-
-                //command.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
-
+                FbCommand command = dbQueries.CreateTable(connection, transaction, tableKey, tableNumber, tableName);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -527,6 +628,20 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
 
             return tableKey;
+        }
+
+        private void SetTableName(int tableKey, string tableName)
+        {
+            try
+            {
+                FbCommand command = dbQueries.UpdateTableName(connection, transaction, tableKey, tableName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
+                throw;
+            }
         }
 
         object getReaderColumnValue(FbDataReader reader, string columnName, object defaultValue)
@@ -660,13 +775,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderInfo.ItemCategory = reader.GetString(reader.GetOrdinal("ITEM_CATEGORY"));
                         orderInfo.Name = reader.GetString(reader.GetOrdinal("ITEM_NAME"));
                         orderInfo.ItemKitchenName = reader.GetString(reader.GetOrdinal("ITEM_KITCHEN_NAME"));
-                        orderInfo.ItemKitchenName = orderInfo.ItemKitchenName.Trim() == "" ? orderInfo.Name : orderInfo.ItemKitchenName;                        
+                        orderInfo.ItemKitchenName = orderInfo.ItemKitchenName.Trim() == "" ? orderInfo.Name : orderInfo.ItemKitchenName;
                         orderInfo.CourseName = reader.GetString(reader.GetOrdinal("COURSE_NAME"));
                         orderInfo.CourseKitchenName = reader.GetString(reader.GetOrdinal("COURSE_KITCHEN_NAME"));
                         orderInfo.CourseKitchenName = orderInfo.CourseKitchenName.Trim() == "" ? orderInfo.CourseName : orderInfo.CourseKitchenName;
                         orderInfo.MenuName = reader.GetString(reader.GetOrdinal("MENU_NAME"));
                         orderInfo.SetvingCourseKey = reader.GetInt32(reader.GetOrdinal("SERVINGCOURSES_KEY"));
-                        orderInfo.ItemId = reader.GetInt32(reader.GetOrdinal("ITEM_ID"));                        
+                        orderInfo.ItemId = reader.GetInt32(reader.GetOrdinal("ITEM_ID"));
                     }
                 }
             }
@@ -766,6 +881,65 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         private long GetNextSecurityRef()
         {
             return GenerateKey("SECURITY_REF");
+        }
+
+        private bool CheckTableExistAndGetTableInfo(ref int tableNumber, ref string tableName)
+        {
+            bool isTableExist = false;
+            try
+            {
+                List<string> dbDeatils = new List<string>();
+                dbDeatils = FileReader.GetDetailsFromFile("MenumateDBPath\\DBPathAndIP.txt");
+                string floorPlanDBPath = "", inDataSource = "";
+                for (int i = 0; i < dbDeatils.Count; i++)
+                {
+                    if (i == 0)
+                        inDataSource = dbDeatils[i];
+                    else if (i == 2)
+                    {
+                        floorPlanDBPath = dbDeatils[i];
+                        floorPlanDBPath = floorPlanDBPath + "Floorplan\\Service\\Reservations.fdb";
+                    }
+                }
+
+                FbConnection selectDetailsConnection = new FbConnection(BuildConnectionString(inDataSource, floorPlanDBPath));
+                selectDetailsConnection.Open();
+
+                FbTransaction selectTableTransaction = selectDetailsConnection.BeginTransaction();
+                string SQLCommandText = "";
+
+                if (tableNumber > 0)
+                    SQLCommandText = "SELECT a.NUMBER, a.NAME FROM TABLES a WHERE a.NUMBER = @NUMBER ";
+                else
+                    SQLCommandText = "SELECT a.NUMBER, a.NAME FROM TABLES a WHERE a.NAME = @NAME ";
+
+                FbCommand selectTableCommand = new FbCommand(SQLCommandText, selectDetailsConnection, selectTableTransaction);
+                if (tableNumber > 0)
+                    selectTableCommand.Parameters.Add("@NUMBER", tableNumber);
+                else
+                    selectTableCommand.Parameters.Add("@NAME", tableName);
+
+                selectTableCommand.ExecuteNonQuery();
+
+                using (FbDataReader reader = selectTableCommand.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        tableNumber = reader.GetInt32(reader.GetOrdinal("NUMBER"));
+                        tableName = reader.GetString(reader.GetOrdinal("NAME"));
+                        isTableExist = true;
+                    }
+                }
+
+                selectTableTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                isTableExist = false;
+                ServiceLogger.LogException(@"in CheckTableExistAndGetTableInfo " + ex.Message, ex);
+                throw;
+            }
+            return isTableExist;
         }
         #endregion
     }

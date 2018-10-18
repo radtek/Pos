@@ -1797,7 +1797,7 @@ PARSER_ERROR TApplyParser::apply6_53( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 PARSER_ERROR TApplyParser::apply6_54( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;

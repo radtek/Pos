@@ -36,9 +36,6 @@ C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\NLog.dll
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft.Json.xml
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\NLog.xml
-C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
-C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
-C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.dll
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
@@ -46,3 +43,6 @@ C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Deb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb
 C:\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.dll
 C:\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.pdb
+C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
+C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb

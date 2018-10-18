@@ -148,6 +148,7 @@ class TManagerDiscount
     void DeleteDiscounts(Database::TDBTransaction &DBTransaction);
     void ClearMemberExemtDiscounts(TList * DiscountItems);
     void GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys);
+    void ClearLoyaltyMemberDiscounts(TList * DiscountItems);
 };
 
 extern TManagerDiscount *ManagerDiscount;
