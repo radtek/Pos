@@ -627,28 +627,28 @@ void TApplyParser::AlterTableTab6_53(TDBControl* const inDBControl)
 	}
 }
 
-void TApplyParser::upgrade6_54Tables()
+void TApplyParser::upgrade6_55Tables()
 {
-    update6_54Tables();
+    update6_55Tables();
 }
 //::::::::::::::::::::::::Version 6.53:::::::::::::::::::::::::::::::::::::::::
-void TApplyParser::update6_54Tables()
+void TApplyParser::update6_55Tables()
 {
-    Create6_54Generators(_dbControl );
-    Create6_54Tables(_dbControl);
+    Create6_55Generators(_dbControl );
+    Create6_55Tables(_dbControl);
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54Tables(TDBControl* const inDBControl)
+void TApplyParser::Create6_55Tables(TDBControl* const inDBControl)
 {
-    Create6_54Generators(_dbControl);
-    Create6_54TableOutlets(_dbControl);
-    Create6_54TableServices(_dbControl);
-    Create6_54TableSpaces(_dbControl);
-    AlterTable6_54RevenueCodeDetails(_dbControl);
-    Create6_54TablePMSAccountingCategories(_dbControl);
+    Create6_55Generators(_dbControl);
+    Create6_55TableOutlets(_dbControl);
+    Create6_55TableServices(_dbControl);
+    Create6_55TableSpaces(_dbControl);
+    AlterTable6_55RevenueCodeDetails(_dbControl);
+    Create6_55TablePMSAccountingCategories(_dbControl);
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54Generators(TDBControl* const inDBControl)
+void TApplyParser::Create6_55Generators(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_PMSACCOUNTINGCATEGORIESID", _dbControl))
 	{
@@ -657,7 +657,7 @@ void TApplyParser::Create6_54Generators(TDBControl* const inDBControl)
 	}
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54TableOutlets(TDBControl* const inDBControl)
+void TApplyParser::Create6_55TableOutlets(TDBControl* const inDBControl)
 {
     if ( !tableExists( "OUTLETS", _dbControl ) )
 	{
@@ -672,7 +672,7 @@ void TApplyParser::Create6_54TableOutlets(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54TableServices(TDBControl* const inDBControl)
+void TApplyParser::Create6_55TableServices(TDBControl* const inDBControl)
 {
     if ( !tableExists( "SERVICES", _dbControl ) )
 	{
@@ -689,7 +689,7 @@ void TApplyParser::Create6_54TableServices(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54TableSpaces(TDBControl* const inDBControl)
+void TApplyParser::Create6_55TableSpaces(TDBControl* const inDBControl)
 {
     if ( !tableExists( "SPACES", _dbControl ) )
 	{
@@ -710,7 +710,7 @@ void TApplyParser::Create6_54TableSpaces(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::AlterTable6_54RevenueCodeDetails(TDBControl* const inDBControl)
+void TApplyParser::AlterTable6_55RevenueCodeDetails(TDBControl* const inDBControl)
 {
     if ( !fieldExists( "REVENUECODEDETAILS ", "UNIQUEID", _dbControl ) )
     {
@@ -777,7 +777,7 @@ void TApplyParser::AlterTable6_54RevenueCodeDetails(TDBControl* const inDBContro
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_54TablePMSAccountingCategories(TDBControl* const inDBControl)
+void TApplyParser::Create6_55TablePMSAccountingCategories(TDBControl* const inDBControl)
 {
     if ( !tableExists( "PMSACCOUNTINGCATEGORIES", _dbControl ) )
 	{
