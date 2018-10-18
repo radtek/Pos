@@ -9126,7 +9126,7 @@ void TPrintSection::PrintPOSPlusSerialNumber(TReqPrintJob* PrintJob)
 //------------------------------------------------------------------------------
 void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 {
-	UnicodeString OrgName = "Organization Number: ";
+	UnicodeString OrgName = ThisInstruction->Caption + ":";
 
 	if (TGlobalSettings::Instance().OrganizationNumber == "")
 	{
@@ -9148,7 +9148,7 @@ void TPrintSection::PrintOrganizationNumber(TReqPrintJob* PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintOracleCheckNumber(TReqPrintJob* PrintJob)
 {
-	UnicodeString OrgName = "Oracle Check Number: ";
+	UnicodeString OrgName = ThisInstruction->Caption + ":";
 
 	if (TGlobalSettings::Instance().OracleCheckNumber == "")
 	{
