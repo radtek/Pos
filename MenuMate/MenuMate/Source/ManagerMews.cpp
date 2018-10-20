@@ -37,15 +37,15 @@ void TManagerMews::LogPMSEnabling(TriggerLocation triggerType)
           List->LoadFromFile(fileName);
         if(triggerType == eUI)
         {
-            List->Add("Note- "+ (AnsiString)"Enabling SiHot as Selected from UI" +"\n");
+            List->Add("Note- "+ (AnsiString)"Enabling Mews as Selected from UI" +"\n");
         }
         else if(triggerType == eBoot)
         {
-            List->Add("Note- "+ (AnsiString)"Enabling SiHot at start of Menumate" +"\n");
+            List->Add("Note- "+ (AnsiString)"Enabling Mews at start of Menumate" +"\n");
         }
         else if(triggerType == eSelf)
         {
-            List->Add("Note- "+ (AnsiString)"Found SiHot disabled with necessary details present" +"\n" +
+            List->Add("Note- "+ (AnsiString)"Found Mews disabled with necessary details present" +"\n" +
                   "      "+ "Menumate is trying to enable SiHot and then sale would be processed" +"\n");
         }
         List->SaveToFile(fileName );
@@ -125,6 +125,7 @@ void TManagerMews::Initialise()
 		Enabled = false;
     if(Registered && TCPIPAddress.Trim() != "" && !Enabled)
         MessageBox(errorMessage,"Error",MB_OK+MB_ICONERROR);
+    UpdateMewsLogs(Enabled);
     DBTransaction.Commit();
 }
 bool TManagerMews::SetUpMews(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken,Database::TDBTransaction &DBTransaction)
@@ -439,10 +440,11 @@ AnsiString TManagerMews::GetLogFileName()
         CreateDir(directoryName);
     directoryName = directoryName + "\\logs";
     if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
     directoryName = directoryName + "\\Mews Post Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
-    AnsiString name = "Mews " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString name = "MewsPosts " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
     AnsiString fileName =  directoryName + "\\" + name;
     return fileName;
 }
@@ -773,7 +775,8 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
             unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
             discountValue = fabs((double)itemComplete->BillCalcResult.TotalDiscount);
             discountValue = discountValue * portion;
-            seperateDiscount = true;
+            if(fabs((double)itemComplete->BillCalcResult.TotalDiscount) > 0)
+                seperateDiscount = true;
         }
         unitAmount = unitAmount / fabs((double)itemComplete->GetQty());
         unitCost.Amount = unitAmount;
