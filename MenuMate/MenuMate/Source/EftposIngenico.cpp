@@ -168,7 +168,7 @@ void __fastcall TEftPosIngenico::TransactionEvent(TObject *Sender)
 			{
 				EftTrans->SuppressReceipt = true;
 			}
-            EftTrans->CardType = EftPosControl->CardType;
+            //EftTrans->CardType = EftPosControl->CardType;
 		}
 		else
 		{
@@ -195,7 +195,7 @@ void __fastcall TEftPosIngenico::GetLastTransactionEvent(TObject *Sender)
 				}
 			}
 			EftTrans->ResultText = EftPosControl->ResponseText;
-            EftTrans->CardType = EftPosControl->CardType;
+            //EftTrans->CardType = EftPosControl->CardType;
 			EftTrans->EventCompleted = true;
 		}
 	}
