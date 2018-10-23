@@ -625,8 +625,11 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	{
         TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
         // call api to set connection status of signalR
-        UnsetOrderingDetails();
-        UnloadSignalR();
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            UnsetOrderingDetails();
+            UnloadSignalR();
+        }
 		frmSecurity->LogOut();
 		frmMain->Close();
 	}
