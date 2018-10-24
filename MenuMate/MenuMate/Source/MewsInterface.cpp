@@ -197,6 +197,7 @@ UnicodeString TMewsInterface::PostMewsOrder(UnicodeString platformAddress,TOrder
         orderMews->ClientToken = order.ClientToken;
         orderMews->CustomerId = order.CustomerId;
         orderMews->ServiceId  = order.ServiceId;
+        orderMews->ConsumptionUtc = order.ConsumptionUtc;
         ArrayOfItem arrayOfItems;
         for(int i = 0; i < order.Items.size(); i++)
         {
@@ -246,11 +247,11 @@ bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
                 item->UnitCost->Currency = order.Bills[i].Items[j].UnitCost.Currency;
                 item->UnitCost->Tax      = order.Bills[i].Items[j].UnitCost.Tax;
                 item->UnitCount = order.Bills[i].Items[j].UnitCount;
-                if(order.Bills[i].Items[j].Type == "Revenue")
-                {
+//                if(order.Bills[i].Items[j].Type == "Revenue")
+//                {
                     item->Category = new Category();
                     item->Category->Code = order.Bills[i].Items[j].Category.Code;
-                }
+//                }
                 arrayOfItems.Length = (arrayOfItems.Length + 1);
                 arrayOfItems[arrayOfItems.Length - 1] = item;
             }

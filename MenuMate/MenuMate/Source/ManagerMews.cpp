@@ -21,6 +21,7 @@ TManagerMews::TManagerMews()
 	DefaultSurchargeAccount     = "";
 	TipAccount                  = "";
 	ServiceChargeAccount        = "";
+    PointsCategory              = "";
 	Enabled                     = false;
 	Registered                  = false;
 }
@@ -91,7 +92,8 @@ void TManagerMews::Initialise()
     ExpensesAccount             = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSExpensesAccount); // CLient Token
     RevenueCentre               = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);  // Access Token
 	DefaultTransactionAccount   = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount); // Outlet
-	DefaultPaymentCategory      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory); // Service
+//	DefaultPaymentCategory      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
+    PointsCategory              = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);  // Service
 	DefaultSurchargeAccount     = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount); // Surcharge
     TipAccount                  = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSTipAccount); // Tip Account
     ServiceChargeAccount        = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSServiceChargeAccount); // ServiceCharge
@@ -102,7 +104,7 @@ void TManagerMews::Initialise()
         if(ExpensesAccount.Trim() != "" && ExpensesAccount.Trim() != 0)
             if(RevenueCentre.Trim() != "" && RevenueCentre.Trim() != 0)
                 if(DefaultTransactionAccount.Trim() != "" && DefaultTransactionAccount.Trim() != 0)
-                    if(DefaultPaymentCategory.Trim() != "" && DefaultPaymentCategory.Trim() != 0)
+                    if(PointsCategory.Trim() != "" && PointsCategory.Trim() != 0)
                         if(DefaultSurchargeAccount.Trim() != "" && DefaultSurchargeAccount.Trim() != 0)
                             if(ServiceChargeAccount.Trim() != "" && ServiceChargeAccount.Trim() != 0)
                                 if(TipAccount.Trim() != "")
@@ -319,7 +321,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                 {
                     mewsOrder.CustomerId  = _paymentTransaction.Phoenix.AccountNumber;
                     hasRoomPost      = true;
-                    mewsOrder.ServiceId   = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+                    mewsOrder.ServiceId   = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
                     mewsOrder.ConsumptionUtc = Now();
                     mewsOrder.Items.clear();
                     GetDetailsForMewsOrderBill(_paymentTransaction, portion, i,tipPortion,mewsOrder,false);
@@ -362,6 +364,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     itemMews.UnitCost.Amount = fabs(RoundTo(paymentAmount,-2));
                     itemMews.UnitCost.Currency = CurrencyString;
                     itemMews.UnitCost.Tax = 0;
+                    itemMews.Category.Code = "";
+                    itemMews.Category.Code = GetMewsCategoryCodeForItem(NULL,payment->Name);
                     mewsOrderBill.Bills[0].Items.push_back(itemMews);
                     double surcharge = 0;
                     if(_paymentTransaction.CreditTransaction)
@@ -664,6 +668,12 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
         billMews.OutletId = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
         billMews.Number   = GetInvoiceNumber(paymentTransaction);// Invoice Number
         billMews.Items.clear();
+        mewsOrder.ConsumptionUtc = "";
+        if(!isBill)
+        {
+            mewsOrder.ConsumptionUtc = GetInvoiceNumber(paymentTransaction);
+        }
+
         TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
 
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
@@ -794,31 +804,59 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
 	}
     return unitCost;
 }
-UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComplete)
+UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComplete,UnicodeString name)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     std::vector<TAccountingCategoriesMapping> mewsAccountingCategoriesList;
     mewsAccountingCategoriesList.clear();
-    std::auto_ptr<TMewsDataProcessor> processor (new TMewsDataProcessor());
-    mewsAccountingCategoriesList = processor->GetMewsCategoriesList(DBTransaction);
+    if(name.Trim().Length() == 0)
+    {
+        std::auto_ptr<TMewsDataProcessor> processor (new TMewsDataProcessor());
+        mewsAccountingCategoriesList = processor->GetMewsCategoriesList(DBTransaction);
+    }
     UnicodeString code = "";
     try
     {
-        IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEM_KEY = :ITEM_KEY "
-                                    "AND SIZE_NAME = :SIZE_NAME";
-        IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
-        IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
-        IBInternalQuery->ExecQuery();
-        int categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
-        std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
-        for(;it != mewsAccountingCategoriesList.end();advance(it,1))
+        if(name.Trim().Length() == 0)
         {
-            if(it->CategoryKey == categoryKey)
+            IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEM_KEY = :ITEM_KEY "
+                                        "AND SIZE_NAME = :SIZE_NAME";
+            IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
+            IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
+            IBInternalQuery->ExecQuery();
+            int categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+            std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
+            for(;it != mewsAccountingCategoriesList.end();advance(it,1))
             {
-                code = it->MewsCategoryCode;
-                break;
+                if(it->CategoryKey == categoryKey)
+                {
+                    code = it->MewsCategoryCode;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_NAME = :PMS_PAYTYPE_NAME ";
+            IBInternalQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = name;
+            IBInternalQuery->ExecQuery();
+            if(IBInternalQuery->RecordCount > 0)
+            {
+                if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
+                    code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+            }
+            if(code.Trim() == "")
+            {
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_CATEGORY = 0 ";
+                IBInternalQuery->ExecQuery();
+                if(IBInternalQuery->RecordCount > 0)
+                {
+                    if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
+                        code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+                }
             }
         }
         DBTransaction.Commit();

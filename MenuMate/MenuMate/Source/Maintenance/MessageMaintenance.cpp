@@ -1188,27 +1188,70 @@ void TfrmMessageMaintenance::UpdatePMSPaymentType(Database::TDBTransaction &DBTr
                 DBTransaction.StartTransaction();
                 try
                 {
-                    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-                    frmTouchKeyboard->MaxLength = 10;
-                    frmTouchKeyboard->AllowCarriageReturn = false;
-                    frmTouchKeyboard->StartWithShiftDown = true;
-                    frmTouchKeyboard->KeyboardText = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCode;
-                    frmTouchKeyboard->Caption = "Enter PMS Code";
-
-                    if(frmTouchKeyboard->ShowModal() == mrOk )
+                    if(TGlobalSettings::Instance().PMSType != Mews)
                     {
-                        TPMSPaymentType codeDetails;
-                        codeDetails.PMSPayTypeID = key;
-                        if(isNameEditable)
-                            codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
-                        else
-                            codeDetails.PMSPayTypeName = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeName;
-                        codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
-                        codeDetails.PMSPayTypeCategory = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCategory;
-                        codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
-                        codeDetails.isElectronicPayment = managerPMSCodes->PMSPaymentTypeMap[key].isElectronicPayment;
-                        managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
-                        managerPMSCodes->UpdatePMSPaymentType(DBTransaction,codeDetails);
+                        std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+                        frmTouchKeyboard->MaxLength = 10;
+                        frmTouchKeyboard->AllowCarriageReturn = false;
+                        frmTouchKeyboard->StartWithShiftDown = true;
+                        frmTouchKeyboard->KeyboardText = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCode;
+                        frmTouchKeyboard->Caption = "Enter PMS Code";
+
+                        if(frmTouchKeyboard->ShowModal() == mrOk )
+                        {
+                            TPMSPaymentType codeDetails;
+                            codeDetails.PMSPayTypeID = key;
+                            if(isNameEditable)
+                                codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                            else
+                                codeDetails.PMSPayTypeName = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeName;
+                            codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
+                            codeDetails.PMSPayTypeCategory = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCategory;
+                            codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                            codeDetails.isElectronicPayment = managerPMSCodes->PMSPaymentTypeMap[key].isElectronicPayment;
+                            managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                            managerPMSCodes->UpdatePMSPaymentType(DBTransaction,codeDetails);
+                        }
+                    }
+                    else
+                    {
+                        std::vector<TAccountingCategory> revenueCodes;
+                        revenueCodes.clear();
+                        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
+                        revenueCodes = mewsProcessor->GetCategoriesFromDB(DBTransaction);
+                        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+                        TVerticalSelection Item;
+                        Item.Title = "Cancel";
+                        Item.Properties["Color"] = "0x000098F5";
+                        Item.CloseSelection = true;
+                        SelectionForm->Items.push_back(Item);
+                        for(int i = 0; i < revenueCodes.size(); i++)
+                        {
+                            Item.Title = revenueCodes[i].Code;
+                            Item.Properties["Action"] = IntToStr(i);
+                            Item.Properties["Color"] = IntToStr(clNavy);
+                            Item.CloseSelection = true;
+                            SelectionForm->Items.push_back(Item);
+                        }
+                        SelectionForm->ShowModal();
+                        TVerticalSelection SelectedItem;
+                        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+                        {
+                            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+                            //mewsProcessor->UpdateMewsMapToMMCategory(key,revenueCodes[Action].Code,revenueCodes[Action].Id,DBTransaction);
+                            TPMSPaymentType codeDetails;
+                            codeDetails.PMSPayTypeID = key;
+                            if(isNameEditable)
+                                codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                            else
+                                codeDetails.PMSPayTypeName = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeName;
+                            codeDetails.PMSPayTypeCode = revenueCodes[Action].Code;
+                            codeDetails.PMSPayTypeCategory = managerPMSCodes->PMSPaymentTypeMap[key].PMSPayTypeCategory;
+                            codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                            codeDetails.isElectronicPayment = managerPMSCodes->PMSPaymentTypeMap[key].isElectronicPayment;
+                            managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                            managerPMSCodes->UpdatePMSPaymentType(DBTransaction,codeDetails);
+                        }
                     }
                     DBTransaction.Commit();
                 }
@@ -1278,24 +1321,64 @@ void TfrmMessageMaintenance::AddPMSPaymentType(TObject *Sender)
                 DBTransaction.StartTransaction();
                 try
                 {
-                    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-                    frmTouchKeyboard->MaxLength = 10;
-                    frmTouchKeyboard->AllowCarriageReturn = false;
-                    frmTouchKeyboard->StartWithShiftDown = true;
-                    frmTouchKeyboard->KeyboardText = "";
-                    frmTouchKeyboard->Caption = "Enter PMS Code";
-
-                    if(frmTouchKeyboard->ShowModal() == mrOk )
+                    if(TGlobalSettings::Instance().PMSType != Mews)
                     {
-                        TPMSPaymentType codeDetails;
-                        codeDetails.PMSPayTypeID = 0;
-                        codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
-                        codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
-                        codeDetails.PMSPayTypeCategory = eExternalCategory;
-                        //codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
-                        codeDetails.isElectronicPayment = false;
-                       // managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
-                        managerPMSCodes->SetPMSPaymentType(DBTransaction,codeDetails,true,false);
+                        std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+                        frmTouchKeyboard->MaxLength = 10;
+                        frmTouchKeyboard->AllowCarriageReturn = false;
+                        frmTouchKeyboard->StartWithShiftDown = true;
+                        frmTouchKeyboard->KeyboardText = "";
+                        frmTouchKeyboard->Caption = "Enter PMS Code";
+
+                        if(frmTouchKeyboard->ShowModal() == mrOk )
+                        {
+                            TPMSPaymentType codeDetails;
+                            codeDetails.PMSPayTypeID = 0;
+                            codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                            codeDetails.PMSPayTypeCode = frmTouchKeyboard->KeyboardText;
+                            codeDetails.PMSPayTypeCategory = eExternalCategory;
+                            //codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                            codeDetails.isElectronicPayment = false;
+                           // managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                            managerPMSCodes->SetPMSPaymentType(DBTransaction,codeDetails,true,false);
+                        }
+                    }
+                    else
+                    {
+                        std::vector<TAccountingCategory> revenueCodes;
+                        revenueCodes.clear();
+                        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
+                        revenueCodes = mewsProcessor->GetCategoriesFromDB(DBTransaction);
+                        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+                        TVerticalSelection Item;
+                        Item.Title = "Cancel";
+                        Item.Properties["Color"] = "0x000098F5";
+                        Item.CloseSelection = true;
+                        SelectionForm->Items.push_back(Item);
+                        for(int i = 0; i < revenueCodes.size(); i++)
+                        {
+                            Item.Title = revenueCodes[i].Code;
+                            Item.Properties["Action"] = IntToStr(i);
+                            Item.Properties["Color"] = IntToStr(clNavy);
+                            Item.CloseSelection = true;
+                            SelectionForm->Items.push_back(Item);
+                        }
+                        SelectionForm->ShowModal();
+                        TVerticalSelection SelectedItem;
+                        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+                        {
+                            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+                            //mewsProcessor->UpdateMewsMapToMMCategory(key,revenueCodes[Action].Code,revenueCodes[Action].Id,DBTransaction);
+                            TPMSPaymentType codeDetails;
+                            codeDetails.PMSPayTypeID = 0;
+                            codeDetails.PMSPayTypeName = frmKeyBoard->KeyboardText;
+                            codeDetails.PMSPayTypeCode = revenueCodes[Action].Code;
+                            codeDetails.PMSPayTypeCategory = eExternalCategory;
+                            //codeDetails.PMSMMPayTypeLink = managerPMSCodes->PMSPaymentTypeMap[key].PMSMMPayTypeLink;
+                            codeDetails.isElectronicPayment = false;
+                           // managerPMSCodes->PMSPaymentTypeMap.insert(std::pair<int,TPMSPaymentType>(key,codeDetails));
+                            managerPMSCodes->SetPMSPaymentType(DBTransaction,codeDetails,true,false);
+                        }
                     }
                     DBTransaction.Commit();
                 }

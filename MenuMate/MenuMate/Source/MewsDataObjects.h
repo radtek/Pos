@@ -141,7 +141,7 @@ class TOrder
     UnicodeString AccessToken;
     UnicodeString CustomerId;
     UnicodeString ServiceId;
-    TDateTime ConsumptionUtc;
+    UnicodeString ConsumptionUtc;
     std::vector<TBill> Bills;
     std::vector<TItemMews> Items;
 };

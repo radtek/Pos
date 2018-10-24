@@ -119,6 +119,8 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
         else if(TGlobalSettings::Instance().PMSType == Oracle)
             tbPHSInterface->Caption = "P.M.S Interface\r[Oracle Enabled]";
+        else if(TGlobalSettings::Instance().PMSType == Mews)
+            tbPHSInterface->Caption = "P.M.S Interface\r[Mews Enabled]";
         else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;

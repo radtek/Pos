@@ -21,5 +21,7 @@ namespace MewsIntegration.Domain
         public string ConsumedUtc { get; set; }
         [DataMember]
         public Category Category { get; set; }
+        [DataMember]
+        public AccountingCategory AccountingCategory { get; set; }
     }
 }

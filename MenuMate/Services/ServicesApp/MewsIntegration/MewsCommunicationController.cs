@@ -16,6 +16,7 @@ namespace MewsIntegration
         }
         public List<Service> GetMewsServices(string platformAddress, BasicInquiry basicInquiry,List<string> logsList)
         {
+            basicInquiry.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.ServicesAll;
             logsList.Add("**************Request to get Services from Mews at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
@@ -57,6 +58,7 @@ namespace MewsIntegration
 
         public List<AccountingCategory> GetMewsAccountingCategories(string platformAddress, BasicInquiry basicInquiry, List<string> logsList)
         {
+            basicInquiry.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.AccountingCategoriesAll;
             logsList.Add("**************Request to categories from Mews at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
@@ -98,6 +100,7 @@ namespace MewsIntegration
 
         public List<Outlet> GetMewsOutlets(string platformAddress, BasicInquiry basicInquiry, List<string> logsList)
         {
+            basicInquiry.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.OutletsAll;
             logsList.Add("**************Request to get Outlets from Mews at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
@@ -140,6 +143,7 @@ namespace MewsIntegration
 
         public List<CustomerDetailsMews> GetCustomerSearchResult(string platformAddress, CustomerSearch customerSearch, List<string> logsList)
         {
+            customerSearch.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.CustomerSearch;
             logsList.Add("**************Request to get Customer from Mews at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
@@ -197,6 +201,7 @@ namespace MewsIntegration
 
         public SpaceDetails GetSpaceIds(string platformAddress, BasicInquiry basicInquiry, List<string> logsList)
         {
+            basicInquiry.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.SpaceIds;
             logsList.Add("**************Request to get Spaces from Mews at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
@@ -244,9 +249,11 @@ namespace MewsIntegration
 
         public string PostOrder(string platformAddress, Order order, List<string> logsList)
         {
+            order.ClientToken = MewsRequestAddress.ClientToken;
             string retValue = "";
             string url = platformAddress + MewsRequestAddress.AddOrder;
             logsList.Add("**************Request to PostOredr at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");
+            order.Notes = order.ConsumptionUtc;
             order.ConsumptionUtc = DateTime.UtcNow.ToString("s") + "Z";
             var request = GetWebRequest(url, order, logsList);
             logsList.Add("Request Created ");
@@ -289,16 +296,21 @@ namespace MewsIntegration
 
         public bool PostBill(string platformAddress, Order order, List<string> logsList)
         {
+            order.ClientToken = MewsRequestAddress.ClientToken;
             string responseString = "";
             bool returnValue = false;
             string url = platformAddress + MewsRequestAddress.AddBill;
             string dateTimeUTC = DateTime.UtcNow.ToString("s") + "Z";
+
             foreach (var bill in order.Bills)
             {
                 bill.ClosedUtc = dateTimeUTC;
                 foreach (var item in bill.Items)
                 {
                     item.ConsumedUtc = dateTimeUTC;
+                    item.AccountingCategory = new AccountingCategory();
+                    item.AccountingCategory.IsActive = true;
+                    item.AccountingCategory.Code = item.Category.Code;
                 }
             }
             logsList.Add("**************Request to PostBill at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");

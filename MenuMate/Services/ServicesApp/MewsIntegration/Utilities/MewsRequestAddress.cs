@@ -10,5 +10,6 @@
         public const string SpaceIds = "/api/connector/v1/spaces/getAll/";
         public const string AddOrder = "/api/connector/v1/orders/add";
         public const string AddBill = "/api/connector/v1/outletBills/add";
+        public const string ClientToken = "E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D";
     }
 }

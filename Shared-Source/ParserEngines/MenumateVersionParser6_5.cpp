@@ -818,7 +818,14 @@ void TApplyParser::AlterTable6_55RevenueCodeDetails(TDBControl* const inDBContro
     {
         executeQuery (
         "ALTER TABLE REVENUECODEDETAILS "
-        "ALTER REVENUECODE_DESCRIPTION TYPE char(50);",
+        "ALTER REVENUECODE_DESCRIPTION TYPE VARCHAR(50);",
+        inDBControl);
+    }
+    if (fieldExists( "PMSPAYMENTSCONFIG ", "PMS_PAYTYPE_CODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE PMSPAYMENTSCONFIG "
+        "ALTER PMS_PAYTYPE_CODE TYPE VARCHAR(50) ; ",
         inDBControl);
     }
 }

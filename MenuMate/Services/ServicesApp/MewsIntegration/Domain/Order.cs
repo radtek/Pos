@@ -23,5 +23,7 @@ namespace MewsIntegration.Domain
         public List<Bill> Bills { get; set; }
         [DataMember]
         public List<Item> Items { get; set; }
+        [DataMember]
+        public string Notes { get; set; }
     }
 }

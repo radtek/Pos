@@ -72,11 +72,14 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixPortNumberClick(TObject *Sender)
         }
         else
         {
-            int maxLength = 255;
-            UnicodeString caption = "Enter the Client Token.";
-            TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount,caption);
-            tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSExpensesAccount,TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount);
+            if(PMSType == mews)
+            {
+               std::auto_ptr<TfrmMessageMaintenance>(frmMessageMaintenance)
+                             (TfrmMessageMaintenance::Create<TfrmMessageMaintenance>
+                                          (this,TDeviceRealTerminal::Instance().DBControl));
+               frmMessageMaintenance->MessageType = ePMSPaymentType;
+               frmMessageMaintenance->ShowModal();
+            }
         }
         DBTransaction1.Commit();
 	}
@@ -230,7 +233,6 @@ void TfrmPHSConfiguration::UpdateGUI()
     }
     else if(PMSType == mews)
     {
-        tbPhoenixPortNumber->Enabled = true;
         TouchBtn1->Enabled = true;
         cbEnableCustomerJourney->Enabled = false;
         cbEnableCustomerJourney->Checked = false;
@@ -251,11 +253,11 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRoundingCategory->Enabled = false;
         TouchBtn1->Caption = "Get Details";
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
-        tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
+        //tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbRevenueCentre->Caption = "Access Token\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         AnsiString outletName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,Outlet);
         tbPhoenixID->Caption = "Outlet\r" + outletName;
-        AnsiString serviceName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory,Service);
+        AnsiString serviceName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,Service);
         tbPaymentDefCat->Caption = "Service\r" + serviceName;
         AnsiString serviceChargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount,AccountingCategory);
         tbServiceCharge->Caption = "Service Charge\r" + serviceChargeName;
@@ -264,6 +266,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         AnsiString tipName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->TipAccount,AccountingCategory);
         tbTipAccount->Caption = "Tip Account\r" + tipName;
         tbRevenueCodes->Caption = "Revenue Mapping";
+        tbPhoenixPortNumber->Enabled = true;
+        tbPhoenixPortNumber->Caption = "Payments Mapping";
     }
     else
     {
@@ -333,10 +337,10 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
             AnsiString codeSelected = GetDropDownResult(Service);
             if(codeSelected != "")
             {
-                TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory = codeSelected;
-                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory,Service);
+                TDeviceRealTerminal::Instance().BasePMS->PointsCategory = codeSelected;
+                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,Service);
                 tbPaymentDefCat->Caption = "Service\r" + labelName;
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPaymentCategory,TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,TDeviceRealTerminal::Instance().BasePMS->PointsCategory);
             }
        }
        DBTransaction1.Commit();
