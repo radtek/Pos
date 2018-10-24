@@ -428,6 +428,7 @@ void TfrmUseRecipe::UpdateDB(void)
         while (Node)
         {
             TRecipeNodeData *NodeData	= (TRecipeNodeData *)vtvStock->GetNodeData(Node);
+            NodeData->RecipeQty = NodeData->Qty * NumQty->Value;
             UpdateLocationsDB(NodeData->Text, NodeData->Location, -NodeData->RecipeQty);
 
             temp[0] = NodeData->Location;
