@@ -1887,7 +1887,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             MB_OK + MB_ICONINFORMATION);
         }
 
-         else if(CurrentTransaction.Money.Change != 0)
+         else if(CurrentTransaction.Money.Change != 0 && CurrentTransaction.SalesType == eCreditPurchase )
          {
 
            wrkPayAmount =  -CurrentTransaction.Money.Change;
