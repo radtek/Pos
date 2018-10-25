@@ -37,11 +37,15 @@ class TSumPayments
         Currency Total;
         Currency CashOut;
         Currency Surcharge;
+        Currency TipsRefunded;
+        Currency Tips;
         Currency Rounding;
         std::map<int, Currency> Points;
         bool IsLoyaltyVoucher();
         Currency TipAmount;
         int TipQty;
+        int TipsQty;
+        int TipsRefundedQty;
         void SetPaymentAttribute(ePaymentAttribute attributeIndex);
         bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
         void ExtractPaymentAttributes(AnsiString properties);
