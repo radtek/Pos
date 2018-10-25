@@ -430,10 +430,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 			TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 			if (NodeData->OrderQty != 0)
 			{
-                if(neTotalCost->Value == 0)
-                {
-                   neTotalCost->Value = 0;
-                }
+               
                 double totalcost = neTotalCost->Value;
 				// Total Cost
 				NodeData->SupplierTotalCost = totalcost;
