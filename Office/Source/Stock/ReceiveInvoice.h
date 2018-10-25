@@ -97,7 +97,6 @@ __published:	// IDE-managed Components
     TRadioButton *rbExcludingGST;
     TRadioButton *rbIncludingGST;
     TNumericEdit *neCost;
-    TRichEdit *neTotalCost;
     TLabel *Label1;
     TLabel *Label2;
     TLabel *Label3;
@@ -146,6 +145,7 @@ __published:	// IDE-managed Components
     TEdit *myEditBox;
 
     TRichEdit *reGstValue;
+    TNumericEdit *neTotalCost;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall vtvStockQtyAfterPaint(TBaseVirtualTree *Sender, TCanvas *TargetCanvas);
@@ -196,7 +196,6 @@ __published:	// IDE-managed Components
           TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall neCostChange(TObject *Sender);
     void __fastcall reGSTChange(TObject *Sender);
-    void __fastcall neTotalCostChange(TObject *Sender);
    
 
 private:	// User declarations
@@ -235,8 +234,10 @@ private:	// User declarations
     double GetStockTakeUnitSize(int stock_key, int supplier_key);
     bool CheckInvoiceQtyAndPrice();
     bool CheckPointEntered(TRichEdit *reValue);
+    bool CheckPointEnteredInTotalcost(TNumericEdit *reCost);
     void CalculateQtyValue();
     bool CheckNegativeEntered(TRichEdit *reValue);
+    bool CheckNegativeEnteredForTC(TNumericEdit *reCost);
     void CheckNegativeValue(TNumericEdit *neCost);
     bool IsNegativeQtyOrCost;
     int Decimalpalaces;
