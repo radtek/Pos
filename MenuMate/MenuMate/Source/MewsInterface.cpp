@@ -209,7 +209,7 @@ UnicodeString TMewsInterface::PostMewsOrder(UnicodeString platformAddress,TOrder
             item->UnitCost->Currency = order.Items[i].UnitCost.Currency;
             item->UnitCost->Tax  = order.Items[i].UnitCost.Tax;
             item->Category = new Category();
-            item->Category->Code = order.Items[i].Category.Code;
+            item->Category->Name = order.Items[i].Category.Name;
             arrayOfItems.Length = (arrayOfItems.Length + 1);
             arrayOfItems[arrayOfItems.Length - 1] = item;
         }
@@ -250,7 +250,7 @@ bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
 //                if(order.Bills[i].Items[j].Type == "Revenue")
 //                {
                     item->Category = new Category();
-                    item->Category->Code = order.Bills[i].Items[j].Category.Code;
+                    item->Category->Name = order.Bills[i].Items[j].Category.Name;
 //                }
                 arrayOfItems.Length = (arrayOfItems.Length + 1);
                 arrayOfItems[arrayOfItems.Length - 1] = item;

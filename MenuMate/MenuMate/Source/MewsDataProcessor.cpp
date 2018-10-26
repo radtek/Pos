@@ -227,7 +227,7 @@ void TMewsDataProcessor::UpdateCategories(std::vector<TAccountingCategory> categ
           IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
 
           IBInternalQuery->ParamByName("REVENUECODE")->AsInteger = i;
-          IBInternalQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->Code.Trim();
+          IBInternalQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->Name.Trim();
           IBInternalQuery->ParamByName("ISDEFAULT_REVENUECODE")->AsString = "F";
           IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
           if(it->IsActive)
@@ -271,6 +271,7 @@ void TMewsDataProcessor::InitializeMewsCategories(Database::TDBTransaction &DBTr
                 InsertQuery->ExecQuery();
             }
             DBTransaction.Commit();
+            DBTransaction.StartTransaction();
         }
         catch(Exception &ex)
         {
@@ -384,7 +385,7 @@ AnsiString TMewsDataProcessor::GetMewsName(Database::TDBTransaction &DBTransacti
         if(IBInternalQuery->RecordCount > 0)
         {
             if(identifier == 3)
-                name = IBInternalQuery->FieldByName("CODE")->AsString;
+                name = IBInternalQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
             else
                 name = IBInternalQuery->FieldByName("NAME")->AsString;
         }

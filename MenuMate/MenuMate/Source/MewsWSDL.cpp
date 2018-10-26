@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8747/MenumateServices/MewsService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (15/10/2018 5:51:58 p.m. - - $Rev: 25127 $)
+// (26/10/2018 6:11:02 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -56,9 +56,6 @@ __fastcall BasicInquiry::~BasicInquiry()
 
 __fastcall SpaceDetails::~SpaceDetails()
 {
-  for(int i=0; i<FSpaceCategories.Length; i++)
-    if (FSpaceCategories[i])
-      delete FSpaceCategories[i];
   for(int i=0; i<FSpaces.Length; i++)
     if (FSpaces[i])
       delete FSpaces[i];
@@ -120,14 +117,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCustomerDetailsMews), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfCustomerDetailsMews");
   /* CustomerDetailsMews */
   RemClassRegistry()->RegisterXSClass(__classid(CustomerDetailsMews), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"CustomerDetailsMews");
-  /* ArrayOfSpaceCategory */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSpaceCategory), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfSpaceCategory");
   /* ArrayOfSpace */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSpace), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfSpace");
   /* SpaceDetails */
   RemClassRegistry()->RegisterXSClass(__classid(SpaceDetails), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"SpaceDetails");
-  /* SpaceCategory */
-  RemClassRegistry()->RegisterXSClass(__classid(SpaceCategory), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"SpaceCategory");
   /* Space */
   RemClassRegistry()->RegisterXSClass(__classid(Space), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Space");
   /* ArrayOfBill */
@@ -138,10 +131,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(Order), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Order");
   /* Bill */
   RemClassRegistry()->RegisterXSClass(__classid(Bill), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Bill");
-  /* Item */
-  RemClassRegistry()->RegisterXSClass(__classid(Item), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Item");
   /* Category */
   RemClassRegistry()->RegisterXSClass(__classid(Category), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Category");
+  /* Item */
+  RemClassRegistry()->RegisterXSClass(__classid(Item), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Item");
   /* UnitCost */
   RemClassRegistry()->RegisterXSClass(__classid(UnitCost), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"UnitCost");
   /* BasicInquiry */
@@ -160,8 +153,6 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(CustomerDetailsMews2), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"CustomerDetailsMews2", L"CustomerDetailsMews");
   /* SpaceDetails */
   RemClassRegistry()->RegisterXSClass(__classid(SpaceDetails2), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"SpaceDetails2", L"SpaceDetails");
-  /* SpaceCategory */
-  RemClassRegistry()->RegisterXSClass(__classid(SpaceCategory2), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"SpaceCategory2", L"SpaceCategory");
   /* Space */
   RemClassRegistry()->RegisterXSClass(__classid(Space2), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"Space2", L"Space");
   /* Order */
@@ -178,20 +169,18 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfService), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfService");
   /* ArrayOfOutlet */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOutlet), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfOutlet");
-  /* ArrayOfSpaceCategory */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSpaceCategory), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfSpaceCategory");
+  /* ArrayOfSpace */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSpace), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfSpace");
+  /* ArrayOfItem */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItem), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfItem");
+  /* ArrayOfstring */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
+  /* ArrayOfCustomerDetailsMews */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCustomerDetailsMews), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfCustomerDetailsMews");
   /* ArrayOfBill */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfBill), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfBill");
   /* ArrayOfAccountingCategory */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfAccountingCategory), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfAccountingCategory");
-  /* ArrayOfSpace */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSpace), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfSpace");
-  /* ArrayOfstring */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfstring), L"http://schemas.microsoft.com/2003/10/Serialization/Arrays", L"ArrayOfstring");
-  /* ArrayOfItem */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItem), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfItem");
-  /* ArrayOfCustomerDetailsMews */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCustomerDetailsMews), L"http://schemas.datacontract.org/2004/07/MewsIntegration.Domain", L"ArrayOfCustomerDetailsMews");
 }
 #pragma startup RegTypes 32
 

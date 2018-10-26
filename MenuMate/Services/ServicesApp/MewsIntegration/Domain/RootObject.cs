@@ -16,7 +16,5 @@ namespace MewsIntegration.Domain
         public List<Customer> Customers { get; set; }
         [DataMember]
         public List<Space> Spaces { get; set; }
-        [DataMember]
-        public List<SpaceCategory> SpaceCategories { get; set; }
     }
 }

@@ -103,6 +103,7 @@ class TCategory
 {
     public:
     UnicodeString Code;
+    UnicodeString Name;
 };
 
 class TUnitCost

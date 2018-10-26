@@ -245,8 +245,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbNoTaxToSihot->Enabled = false;
         cbNoTaxToSihot->Checked = false;
         tbOracleInterfacePort->Enabled = false;
-        tbPointCat->Enabled = false;
-        tbCreditCat->Enabled = false;
+        tbPointCat->Enabled = true;
+        tbCreditCat->Enabled = true;
         tbRoundingCategory->Enabled = false;
         tbExpensesAccount->Enabled = false;
         tbDefTransAccount->Enabled = false;
@@ -257,7 +257,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRevenueCentre->Caption = "Access Token\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         AnsiString outletName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,Outlet);
         tbPhoenixID->Caption = "Outlet\r" + outletName;
-        AnsiString serviceName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,Service);
+        AnsiString serviceName   = GetMewsName(TGlobalSettings::Instance().OracleInterfaceIPAddress,Service);
         tbPaymentDefCat->Caption = "Service\r" + serviceName;
         AnsiString serviceChargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount,AccountingCategory);
         tbServiceCharge->Caption = "Service Charge\r" + serviceChargeName;
@@ -265,6 +265,10 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbSurchargeCat->Caption = "Surcharge Account\r" + surchargeName;
         AnsiString tipName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->TipAccount,AccountingCategory);
         tbTipAccount->Caption = "Tip Account\r" + tipName;
+        AnsiString creditName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->CreditCategory,AccountingCategory);
+        tbCreditCat->Caption = "Credit Account\r" + creditName;
+        AnsiString pointsName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,AccountingCategory);
+        tbPointCat->Caption = "Points Account\r" + pointsName;
         tbRevenueCodes->Caption = "Revenue Mapping";
         tbPhoenixPortNumber->Enabled = true;
         tbPhoenixPortNumber->Caption = "Payments Mapping";
@@ -337,10 +341,10 @@ void __fastcall TfrmPHSConfiguration::tbPaymentDefCatClick(TObject *Sender)
             AnsiString codeSelected = GetDropDownResult(Service);
             if(codeSelected != "")
             {
-                TDeviceRealTerminal::Instance().BasePMS->PointsCategory = codeSelected;
-                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,Service);
+                TGlobalSettings::Instance().OracleInterfaceIPAddress = codeSelected;
+                AnsiString labelName = GetMewsName(TGlobalSettings::Instance().OracleInterfaceIPAddress,Service);
                 tbPaymentDefCat->Caption = "Service\r" + labelName;
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,TDeviceRealTerminal::Instance().BasePMS->PointsCategory);
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmOracleInterfaceIPAddress,TGlobalSettings::Instance().OracleInterfaceIPAddress);
             }
        }
        DBTransaction1.Commit();
@@ -387,7 +391,7 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
 	{
 		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
 	}
-	else
+	else if(PMSType != mews)
 	{
         int maxLength = PMSType != oracle ? 255 : 6;
         UnicodeString caption = "Enter the Category Number for Points.";
@@ -398,6 +402,20 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
         TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,TDeviceRealTerminal::Instance().BasePMS->PointsCategory);
         DBTransaction1.Commit();
 	}
+    else
+    {
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        AnsiString codeSelected = GetDropDownResult(AccountingCategory);
+        if(codeSelected != "")
+        {
+            TDeviceRealTerminal::Instance().BasePMS->PointsCategory = codeSelected;
+            AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,AccountingCategory);
+            tbPointCat->Caption = "Points Account\r" + labelName;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,TDeviceRealTerminal::Instance().BasePMS->PointsCategory);
+        }
+        DBTransaction1.Commit();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
@@ -406,8 +424,8 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
 	{
 		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
 	}
-	else
-	{
+    else if(PMSType != mews)
+    {
         int maxLength = PMSType != oracle ? 255 : 6;
         UnicodeString caption = "Enter the Category Number for Credit.";
 		TDeviceRealTerminal::Instance().BasePMS->CreditCategory = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->CreditCategory,caption);
@@ -417,6 +435,20 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
         TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSCreditCategory,TDeviceRealTerminal::Instance().BasePMS->CreditCategory);
         DBTransaction1.Commit();
 	}
+    else
+    {
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        AnsiString codeSelected = GetDropDownResult(AccountingCategory);
+        if(codeSelected != "")
+        {
+            TDeviceRealTerminal::Instance().BasePMS->CreditCategory = codeSelected;
+            AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->CreditCategory,AccountingCategory);
+            tbCreditCat->Caption = "Credit Account\r" + labelName;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSCreditCategory,TDeviceRealTerminal::Instance().BasePMS->CreditCategory);
+        }
+        DBTransaction1.Commit();
+   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPHSConfiguration::tbDefTransAccountClick(

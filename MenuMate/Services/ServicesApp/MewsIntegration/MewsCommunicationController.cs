@@ -211,7 +211,6 @@ namespace MewsIntegration
             SpaceDetails spaceDetails = new SpaceDetails
             {
                 Spaces = new List<Space>(),
-                SpaceCategories = new List<SpaceCategory>()
             };
             try
             {
@@ -224,8 +223,6 @@ namespace MewsIntegration
                 
                 if (rootObject.Spaces != null)
                     spaceDetails.Spaces = rootObject.Spaces;
-                if (rootObject.SpaceCategories != null)
-                    spaceDetails.SpaceCategories = rootObject.SpaceCategories;
             }
             catch (WebException we)
             {
@@ -310,7 +307,7 @@ namespace MewsIntegration
                     item.ConsumedUtc = dateTimeUTC;
                     item.AccountingCategory = new AccountingCategory();
                     item.AccountingCategory.IsActive = true;
-                    item.AccountingCategory.Code = item.Category.Code;
+                    item.AccountingCategory.Name = item.Category.Name;
                 }
             }
             logsList.Add("**************Request to PostBill at " + DateTime.Now.ToString("hh:mm:ss tt") + "**************");

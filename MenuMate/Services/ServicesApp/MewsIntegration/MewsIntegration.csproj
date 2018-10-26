@@ -63,7 +63,6 @@
     <Compile Include="Domain\RootObject.cs" />
     <Compile Include="Domain\Service.cs" />
     <Compile Include="Domain\Space.cs" />
-    <Compile Include="Domain\SpaceCategory.cs" />
     <Compile Include="Domain\SpaceDetails.cs" />
     <Compile Include="Domain\UnitCost.cs" />
     <Compile Include="MewsCommunicationController.cs" />

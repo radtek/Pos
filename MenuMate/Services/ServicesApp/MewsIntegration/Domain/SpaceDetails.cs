@@ -11,7 +11,5 @@ namespace MewsIntegration.Domain
     {
         [DataMember]
         public List<Space> Spaces { get; set; }
-        [DataMember]
-        public List<SpaceCategory> SpaceCategories { get; set; }
     }
 }

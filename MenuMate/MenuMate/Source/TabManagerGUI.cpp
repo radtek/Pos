@@ -1576,6 +1576,11 @@ void __fastcall TfrmTabManager::btnTabCreditClick(TObject *Sender)
 	std::auto_ptr <TfrmDropDownFunc> (frmDropDown)(TfrmDropDownFunc::Create <TfrmDropDownFunc> (this));
 
 	frmDropDown->AddButton("Add Credit To Tab", &btnAddCreditToTabClick);
+    if(CurrentTabType != TabClipp)
+    {
+        frmDropDown->AddButton("Refund Credit From Tab", &btnRefundCreditToTabClick);
+        frmDropDown->AddButton("Set Credit Limit", &btnSetCreditLimitClick);
+    }
     if (frmDropDown->ShowModal() == mrOk)
 	{
 		frmDropDown->FunctionToCall();

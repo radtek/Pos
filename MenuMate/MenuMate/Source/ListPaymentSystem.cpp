@@ -2571,12 +2571,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                 ":ONLINE_CHIT_TYPE, "
                 ":ORDER_GUID "
 				");";
-
                 IBInternalQuery->ParamByName("CHIT_NAME")->AsString = Order->ChitNumber.Name;
                 IBInternalQuery->ParamByName("CHIT_NAME")->IsNull = Order->ChitNumber.ChitNumberKey == 0 || Order->ChitNumber.Name.Length() == 0;
                 IBInternalQuery->ParamByName("CHIT_OPTION")->AsString = Order->ChitNumber.ActiveOption();
                 IBInternalQuery->ParamByName("CHIT_OPTION")->IsNull = Order->ChitNumber.HasAnOption() == false;
-
 				IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = MasterArchiveKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillLK;
 				IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;

@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8747/MenumateServices/MewsService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (15/10/2018 5:51:58 p.m. - - $Rev: 25127 $)
+// (26/10/2018 6:11:02 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   MewsWSDLH
@@ -60,12 +60,11 @@ class SOAP_REMOTABLE_CLASS Outlet;
 class SOAP_REMOTABLE_CLASS CustomerSearch;
 class SOAP_REMOTABLE_CLASS CustomerDetailsMews;
 class SOAP_REMOTABLE_CLASS SpaceDetails;
-class SOAP_REMOTABLE_CLASS SpaceCategory;
 class SOAP_REMOTABLE_CLASS Space;
 class SOAP_REMOTABLE_CLASS Order;
 class SOAP_REMOTABLE_CLASS Bill;
-class SOAP_REMOTABLE_CLASS Item;
 class SOAP_REMOTABLE_CLASS Category;
+class SOAP_REMOTABLE_CLASS Item;
 class SOAP_REMOTABLE_CLASS UnitCost;
 class SOAP_REMOTABLE_CLASS BasicInquiry2;
 class SOAP_REMOTABLE_CLASS Extent2;
@@ -75,7 +74,6 @@ class SOAP_REMOTABLE_CLASS Outlet2;
 class SOAP_REMOTABLE_CLASS CustomerSearch2;
 class SOAP_REMOTABLE_CLASS CustomerDetailsMews2;
 class SOAP_REMOTABLE_CLASS SpaceDetails2;
-class SOAP_REMOTABLE_CLASS SpaceCategory2;
 class SOAP_REMOTABLE_CLASS Space2;
 class SOAP_REMOTABLE_CLASS Order2;
 class SOAP_REMOTABLE_CLASS Bill2;
@@ -448,7 +446,6 @@ __published:
 };
 
 
-typedef DynamicArray<SpaceCategory*> ArrayOfSpaceCategory; /* "http://schemas.datacontract.org/2004/07/MewsIntegration.Domain"[GblCplx] */
 typedef DynamicArray<Space*>      ArrayOfSpace;   /* "http://schemas.datacontract.org/2004/07/MewsIntegration.Domain"[GblCplx] */
 
 
@@ -458,14 +455,8 @@ typedef DynamicArray<Space*>      ArrayOfSpace;   /* "http://schemas.datacontrac
 // ************************************************************************ //
 class SpaceDetails : public TRemotable {
 private:
-  ArrayOfSpaceCategory FSpaceCategories;
-  bool            FSpaceCategories_Specified;
   ArrayOfSpace    FSpaces;
   bool            FSpaces_Specified;
-  void __fastcall SetSpaceCategories(int Index, ArrayOfSpaceCategory _prop_val)
-  {  FSpaceCategories = _prop_val; FSpaceCategories_Specified = true;  }
-  bool __fastcall SpaceCategories_Specified(int Index)
-  {  return FSpaceCategories_Specified;  } 
   void __fastcall SetSpaces(int Index, ArrayOfSpace _prop_val)
   {  FSpaces = _prop_val; FSpaces_Specified = true;  }
   bool __fastcall Spaces_Specified(int Index)
@@ -474,76 +465,7 @@ private:
 public:
   __fastcall ~SpaceDetails();
 __published:
-  __property ArrayOfSpaceCategory SpaceCategories = { index=(IS_OPTN|IS_NLBL), read=FSpaceCategories, write=SetSpaceCategories, stored = SpaceCategories_Specified };
   __property ArrayOfSpace     Spaces = { index=(IS_OPTN|IS_NLBL), read=FSpaces, write=SetSpaces, stored = Spaces_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SpaceCategory, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
-// ************************************************************************ //
-class SpaceCategory : public TRemotable {
-private:
-  UnicodeString   FDescription;
-  bool            FDescription_Specified;
-  int             FExtraUnitCount;
-  bool            FExtraUnitCount_Specified;
-  UnicodeString   FId;
-  bool            FId_Specified;
-  bool            FIsActive;
-  bool            FIsActive_Specified;
-  UnicodeString   FName;
-  bool            FName_Specified;
-  int             FOrdering;
-  bool            FOrdering_Specified;
-  UnicodeString   FShortName;
-  bool            FShortName_Specified;
-  int             FUnitCount;
-  bool            FUnitCount_Specified;
-  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
-  {  FDescription = _prop_val; FDescription_Specified = true;  }
-  bool __fastcall Description_Specified(int Index)
-  {  return FDescription_Specified;  } 
-  void __fastcall SetExtraUnitCount(int Index, int _prop_val)
-  {  FExtraUnitCount = _prop_val; FExtraUnitCount_Specified = true;  }
-  bool __fastcall ExtraUnitCount_Specified(int Index)
-  {  return FExtraUnitCount_Specified;  } 
-  void __fastcall SetId(int Index, UnicodeString _prop_val)
-  {  FId = _prop_val; FId_Specified = true;  }
-  bool __fastcall Id_Specified(int Index)
-  {  return FId_Specified;  } 
-  void __fastcall SetIsActive(int Index, bool _prop_val)
-  {  FIsActive = _prop_val; FIsActive_Specified = true;  }
-  bool __fastcall IsActive_Specified(int Index)
-  {  return FIsActive_Specified;  } 
-  void __fastcall SetName(int Index, UnicodeString _prop_val)
-  {  FName = _prop_val; FName_Specified = true;  }
-  bool __fastcall Name_Specified(int Index)
-  {  return FName_Specified;  } 
-  void __fastcall SetOrdering(int Index, int _prop_val)
-  {  FOrdering = _prop_val; FOrdering_Specified = true;  }
-  bool __fastcall Ordering_Specified(int Index)
-  {  return FOrdering_Specified;  } 
-  void __fastcall SetShortName(int Index, UnicodeString _prop_val)
-  {  FShortName = _prop_val; FShortName_Specified = true;  }
-  bool __fastcall ShortName_Specified(int Index)
-  {  return FShortName_Specified;  } 
-  void __fastcall SetUnitCount(int Index, int _prop_val)
-  {  FUnitCount = _prop_val; FUnitCount_Specified = true;  }
-  bool __fastcall UnitCount_Specified(int Index)
-  {  return FUnitCount_Specified;  } 
-__published:
-  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
-  __property int        ExtraUnitCount = { index=(IS_OPTN), read=FExtraUnitCount, write=SetExtraUnitCount, stored = ExtraUnitCount_Specified };
-  __property UnicodeString         Id = { index=(IS_OPTN|IS_NLBL), read=FId, write=SetId, stored = Id_Specified };
-  __property bool         IsActive = { index=(IS_OPTN), read=FIsActive, write=SetIsActive, stored = IsActive_Specified };
-  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
-  __property int          Ordering = { index=(IS_OPTN), read=FOrdering, write=SetOrdering, stored = Ordering_Specified };
-  __property UnicodeString  ShortName = { index=(IS_OPTN|IS_NLBL), read=FShortName, write=SetShortName, stored = ShortName_Specified };
-  __property int         UnitCount = { index=(IS_OPTN), read=FUnitCount, write=SetUnitCount, stored = UnitCount_Specified };
 };
 
 
@@ -644,6 +566,8 @@ private:
   bool            FCustomerId_Specified;
   ArrayOfItem     FItems;
   bool            FItems_Specified;
+  UnicodeString   FNotes;
+  bool            FNotes_Specified;
   UnicodeString   FServiceId;
   bool            FServiceId_Specified;
   void __fastcall SetAccessToken(int Index, UnicodeString _prop_val)
@@ -670,6 +594,10 @@ private:
   {  FItems = _prop_val; FItems_Specified = true;  }
   bool __fastcall Items_Specified(int Index)
   {  return FItems_Specified;  } 
+  void __fastcall SetNotes(int Index, UnicodeString _prop_val)
+  {  FNotes = _prop_val; FNotes_Specified = true;  }
+  bool __fastcall Notes_Specified(int Index)
+  {  return FNotes_Specified;  } 
   void __fastcall SetServiceId(int Index, UnicodeString _prop_val)
   {  FServiceId = _prop_val; FServiceId_Specified = true;  }
   bool __fastcall ServiceId_Specified(int Index)
@@ -684,6 +612,7 @@ __published:
   __property UnicodeString ConsumptionUtc = { index=(IS_OPTN|IS_NLBL), read=FConsumptionUtc, write=SetConsumptionUtc, stored = ConsumptionUtc_Specified };
   __property UnicodeString CustomerId = { index=(IS_OPTN|IS_NLBL), read=FCustomerId, write=SetCustomerId, stored = CustomerId_Specified };
   __property ArrayOfItem      Items = { index=(IS_OPTN|IS_NLBL), read=FItems, write=SetItems, stored = Items_Specified };
+  __property UnicodeString      Notes = { index=(IS_OPTN|IS_NLBL), read=FNotes, write=SetNotes, stored = Notes_Specified };
   __property UnicodeString  ServiceId = { index=(IS_OPTN|IS_NLBL), read=FServiceId, write=SetServiceId, stored = ServiceId_Specified };
 };
 
@@ -728,6 +657,32 @@ __published:
   __property ArrayOfItem      Items = { index=(IS_OPTN|IS_NLBL), read=FItems, write=SetItems, stored = Items_Specified };
   __property UnicodeString     Number = { index=(IS_OPTN|IS_NLBL), read=FNumber, write=SetNumber, stored = Number_Specified };
   __property UnicodeString   OutletId = { index=(IS_OPTN|IS_NLBL), read=FOutletId, write=SetOutletId, stored = OutletId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : Category, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
+// ************************************************************************ //
+class Category : public TRemotable {
+private:
+  UnicodeString   FCode;
+  bool            FCode_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  void __fastcall SetCode(int Index, UnicodeString _prop_val)
+  {  FCode = _prop_val; FCode_Specified = true;  }
+  bool __fastcall Code_Specified(int Index)
+  {  return FCode_Specified;  } 
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  } 
+__published:
+  __property UnicodeString       Code = { index=(IS_OPTN|IS_NLBL), read=FCode, write=SetCode, stored = Code_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
 };
 
 
@@ -785,25 +740,6 @@ __published:
   __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
   __property UnitCost*    UnitCost = { index=(IS_OPTN|IS_NLBL), read=FUnitCost, write=SetUnitCost, stored = UnitCost_Specified };
   __property int         UnitCount = { index=(IS_OPTN), read=FUnitCount, write=SetUnitCount, stored = UnitCount_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : Category, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
-// ************************************************************************ //
-class Category : public TRemotable {
-private:
-  UnicodeString   FCode;
-  bool            FCode_Specified;
-  void __fastcall SetCode(int Index, UnicodeString _prop_val)
-  {  FCode = _prop_val; FCode_Specified = true;  }
-  bool __fastcall Code_Specified(int Index)
-  {  return FCode_Specified;  } 
-__published:
-  __property UnicodeString       Code = { index=(IS_OPTN|IS_NLBL), read=FCode, write=SetCode, stored = Code_Specified };
 };
 
 
@@ -931,18 +867,6 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
 // ************************************************************************ //
 class SpaceDetails2 : public SpaceDetails {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SpaceCategory, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MewsIntegration.Domain
-// ************************************************************************ //
-class SpaceCategory2 : public SpaceCategory {
 private:
 __published:
 };

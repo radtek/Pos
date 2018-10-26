@@ -22,8 +22,6 @@ object frmPhoenixRoom: TfrmPhoenixRoom
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 24
   object Panel1: TPanel
@@ -55,9 +53,9 @@ object frmPhoenixRoom: TfrmPhoenixRoom
       TabOrder = 0
       object Label32: TLabel
         Left = 7
-        Top = 2
-        Width = 409
-        Height = 24
+        Top = 1
+        Width = 300
+        Height = 32
         AutoSize = False
         Caption = 'Search by'
         Font.Charset = DEFAULT_CHARSET

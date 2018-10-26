@@ -103,10 +103,10 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
             SpaceShow = true;
             btnSpaces->Enabled = true;
             btnSpaces->Visible = true;
-            Label32->Caption = "Please enter name in the text box below to search customers by Name." ;
+            Label32->Caption = "Search By Space." ;
             RadioGroupSelection->OnClick = RadioGroupSelectionClick;
             RadioGroupSelection->Enabled = true;
-            edSearch->Enabled = false;
+            //edSearch->Enabled = false;
             ShowSpaces(DBTransaction);
             DBTransaction.Commit();
         }
@@ -460,16 +460,47 @@ void TfrmPhoenixRoom::QuickSearch()
     else if(TGlobalSettings::Instance().PMSType == Mews)
     {
         // Name inquiry here
+        bool isInvalidSearchParameter = false;
         if(!SpaceShow)
         {
+//            MessageBox("!SpaceShow","",MB_OK);
             std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
             managerMews->GetMewsCustomer(edSearch->Text.Trim(), CustomersMews,false);
             edSearch->Enabled = true;
         }
         else
         {
-            std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
-            managerMews->GetMewsCustomer(spaces[List->Row].Id, CustomersMews,true);
+            if(edSearch->Text.Trim() == "")
+            {
+//                MessageBox("SpaceShow and edSearch->Text.Trim() == balnk","",MB_OK);
+                std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+                managerMews->GetMewsCustomer(spaces[List->Row].Id, CustomersMews,true);
+            }
+            else
+            {
+//                MessageBox("SpaceShow and edSearch->Text.Trim() != balnk","",MB_OK);
+                UnicodeString spaceValue = "";
+                for(int i = 0; i < spaces.size(); i++)
+                {
+                    if(edSearch->Text.Trim() == spaces[i].Number.Trim())
+                    {
+                        spaceValue = spaces[i].Id;
+                        break;
+                    }
+                }
+                if(spaceValue != "")
+                {
+//                    MessageBox(spaceValue,"Searching",MB_OK);
+                   std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+                   managerMews->GetMewsCustomer(spaceValue, CustomersMews,true);
+                }
+                else
+                {
+                    MessageBox("The value entered for space is not valid.\rPlease enter a valid value or update spaces and then retry."
+                                ,"Info",MB_OK+MB_ICONINFORMATION);
+                    isInvalidSearchParameter = true;
+                }
+            }
             if(CustomersMews.size() > 0)
             {
                 memText->Clear();
@@ -481,7 +512,7 @@ void TfrmPhoenixRoom::QuickSearch()
                 RadioGroupSelection->ItemIndex = 0;
             }
         }
-        if(CustomersMews.size() == 0)
+        if(CustomersMews.size() == 0 && !isInvalidSearchParameter)
             MessageBox("No customers found for selection criteria","Info",MB_OK+MB_ICONINFORMATION);
     }
     else
@@ -853,6 +884,7 @@ void __fastcall TfrmPhoenixRoom::ListClick(TObject *Sender)
         {
             int i1 = spaces.size();
             int i2 = List->Row;
+            edSearch->Text = "";
             if(i1 > i2)
             {
                 edSearch->Clear();
@@ -1146,14 +1178,17 @@ void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
         {
             SpaceShow = true;
             edSearch->Clear();
-            edSearch->Enabled = false;
+            //edSearch->Enabled = false;
             memText->Clear();
             SpaceShow = false;
             SelectedRoom.Folders->Clear();
             List->RowCount = 1;
             List->Cells[0][0] = "";
+            Label32->Caption = "Search By Space." ;
             CustomersMews.clear();
             ShowSpaces(DBTransaction);
+            tbtnOk->Enabled = false;
+            tbtnOk->Caption = "Select";
             DBTransaction.Commit();
         }
         catch(Exception &ex)
@@ -1165,6 +1200,7 @@ void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
     {
         memText->Clear();
         SpaceShow = false;
+        Label32->Caption = "Search By Name." ;
         SelectedRoom.Folders->Clear();
 		List->RowCount = 1;
 		List->Cells[0][0] = "";

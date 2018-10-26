@@ -1518,7 +1518,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                                     CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
                                     TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
                             }
-                            if(TGlobalSettings::Instance().PMSType != SiHot)
+                            else if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
                                 TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
