@@ -625,8 +625,11 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	{
         TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
         // call api to set connection status of signalR
-        UnsetOrderingDetails();
-        UnloadSignalR();
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            UnsetOrderingDetails();
+            UnloadSignalR();
+        }
 		frmSecurity->LogOut();
 		frmMain->Close();
 	}
@@ -1896,6 +1899,8 @@ void TfrmMain::WriteDBPathAndIPToFile()
     std::auto_ptr <TStringList> logList(new TStringList);
     logList->Add(TGlobalSettings::Instance().InterbaseIP);
     logList->Add(TGlobalSettings::Instance().DatabasePath);
+    if(TGlobalSettings::Instance().ReservationsEnabled)
+        logList->Add(ExtractFilePath(Application->ExeName));
     logList->SaveToFile(fileName );
 }
 ////------------------------------------------------------------------------------------------

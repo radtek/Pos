@@ -21,7 +21,7 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         [DataMember]
         public double TotalAmount { get; set; }
         [DataMember]
-        public int ContainerNumber { get; set; }
+        public string ContainerNumber { get; set; }
         [DataMember]
         public OrderContainerType ContainerType { get; set; }
         [DataMember]

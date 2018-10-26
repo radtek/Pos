@@ -32,6 +32,11 @@ void TApplyParser::upgrade6_53Tables()
 {
     update6_53Tables();
 }
+//----------------------------------------------------------------------------
+void TApplyParser::upgrade6_54Tables()
+{
+    update6_54Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -63,6 +68,15 @@ void TApplyParser::update6_53Tables()
     UpdateArchive6_53(_dbControl);
     AlterTableArcBills6_53(_dbControl);
     UpdateTableArcBills6_53(_dbControl);
+
+}
+//----------------------------------------
+void TApplyParser::update6_54Tables()
+{
+  AlterTableTables6_54(_dbControl);
+  AlterTableTab6_54(_dbControl);
+  AlterTableOrders6_54(_dbControl);
+  AlterTableArchives6_54(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -618,5 +632,47 @@ void TApplyParser::UpdateTableArcBills6_53(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
+void TApplyParser::AlterTableTab6_54(TDBControl* const inDBControl)
+{
+    if (fieldExists( "TAB", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE TAB ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+}
+
+void TApplyParser::AlterTableTables6_54(TDBControl* const inDBControl)
+{
+
+   if ( !fieldExists( "TABLES", "IS_TABLELOCK", _dbControl ) )
+    {
+        executeQuery(
+		"ALTER TABLE TABLES ADD IS_TABLELOCK CHAR(1) DEFAULT 'F';",
+		inDBControl);
+    }
+}
+
+void TApplyParser::AlterTableOrders6_54(TDBControl* const inDBControl)
+{
+    if (fieldExists( "ORDERS", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE ORDERS ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+}
+
+void TApplyParser::AlterTableArchives6_54(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DAYARCHIVE", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE DAYARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+    if (fieldExists( "ARCHIVE", "TAB_NAME", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE ARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
+	}
+}
 }
 //------------------------------------------------------------------------------
+
+
+
+
