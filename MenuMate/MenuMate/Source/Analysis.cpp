@@ -5116,8 +5116,6 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
                     Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
                     Printout->PrintFormat->Add("Total Billed|" + FormatFloat("0.00", GrandTotal));
-                    //  Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-
                     Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
                     Printout->PrintFormat->Line->ColCount = 2;
                     Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
@@ -5125,6 +5123,15 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
                     Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
                     Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
+                    Currency CashlessTips = 0;
+                    CashlessTips =  GrandTotal - TotalInBilledTips;
+                    Printout->PrintFormat->Add("Cashless Tips |" + FormatFloat("0.00", CashlessTips));
+                    Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+                    Printout->PrintFormat->Line->ColCount = 2;
+                    Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+                    Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+                    Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3);
+                    Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
 
 
