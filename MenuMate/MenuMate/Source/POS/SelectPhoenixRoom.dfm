@@ -2204,8 +2204,8 @@ object frmPhoenixRoom: TfrmPhoenixRoom
       Font.Style = [fsBold]
       ItemIndex = 0
       Items.Strings = (
-        'Search By Name'
-        'Search By Space')
+        'Search By Guest Name'
+        'Search By Property Spaces')
       ParentBackground = False
       ParentColor = False
       ParentFont = False
